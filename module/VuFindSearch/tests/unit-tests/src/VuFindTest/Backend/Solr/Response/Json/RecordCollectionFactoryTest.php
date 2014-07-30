@@ -55,4 +55,17 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
         $coll = $fact->factory(json_decode($json, true));
         $this->assertEquals(3, count($coll));
     }
+
+    /**
+     * Test invalid input.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     * @expectedExceptionMessage Unexpected type of value: Expected array, got string
+     */
+    public function testInvalidInput()
+    {
+        $fact = new RecordCollectionFactory();
+        $coll = $fact->factory('garbage');
+    }
 }

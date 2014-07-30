@@ -43,8 +43,25 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
  */
 class Koha extends AbstractBase
 {
+    /**
+     * Database connection
+     *
+     * @var PDO
+     */
     protected $db;
+
+    /**
+     * ILS base URL
+     *
+     * @var string
+     */
     protected $ilsBaseUrl;
+
+    /**
+     * Location codes
+     *
+     * @var array
+     */
     protected $locCodes;
 
     /**
@@ -98,7 +115,7 @@ class Koha extends AbstractBase
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $holding = array();
         $available = true;
@@ -199,6 +216,7 @@ class Koha extends AbstractBase
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($id, $details)
     {
@@ -386,6 +404,7 @@ class Koha extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {

@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Code\ISBN;
+use VuFind\Code\ISBN, VuFind\View\Helper\Root\RecordLink;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
@@ -40,6 +40,7 @@ use VuFind\Code\ISBN;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
 class SolrDefault extends AbstractBase
 {
@@ -320,6 +321,17 @@ class SolrDefault extends AbstractBase
     public function getCleanOCLCNum()
     {
         $nums = $this->getOCLC();
+        return empty($nums) ? false : $nums[0];
+    }
+
+    /**
+     * Get just the first listed UPC Number (or false if none available).
+     *
+     * @return mixed
+     */
+    public function getCleanUPC()
+    {
+        $nums = $this->getUPC();
         return empty($nums) ? false : $nums[0];
     }
 
@@ -610,7 +622,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the OCLC number of the record.
+     * Get the OCLC number(s) of the record.
      *
      * @return array
      */
@@ -645,6 +657,167 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get the COinS identifier.
+     *
+     * @return string
+     */
+    protected function getCoinsID()
+    {
+        // Get the COinS ID -- it should be in the OpenURL section of config.ini,
+        // but we'll also check the COinS section for compatibility with legacy
+        // configurations (this moved between the RC2 and 1.0 releases).
+        if (isset($this->mainConfig->OpenURL->rfr_id)
+            && !empty($this->mainConfig->OpenURL->rfr_id)
+        ) {
+            return $this->mainConfig->OpenURL->rfr_id;
+        }
+        if (isset($this->mainConfig->COinS->identifier)
+            && !empty($this->mainConfig->COinS->identifier)
+        ) {
+            return $this->mainConfig->COinS->identifier;
+        }
+        return 'vufind.svn.sourceforge.net';
+    }
+
+    /**
+     * Get default OpenURL parameters.
+     *
+     * @return array
+     */
+    protected function getDefaultOpenURLParams()
+    {
+        // Get a representative publication date:
+        $pubDate = $this->getPublicationDates();
+        $pubDate = empty($pubDate) ? '' : $pubDate[0];
+
+        // Start an array of OpenURL parameters:
+        return array(
+            'ctx_ver' => 'Z39.88-2004',
+            'ctx_enc' => 'info:ofi/enc:UTF-8',
+            'rfr_id' => 'info:sid/' . $this->getCoinsID() . ':generator',
+            'rft.title' => $this->getTitle(),
+            'rft.date' => $pubDate
+        );
+    }
+
+    /**
+     * Get OpenURL parameters for a book.
+     *
+     * @return array
+     */
+    protected function getBookOpenURLParams()
+    {
+        $params = $this->getDefaultOpenURLParams();
+        $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:book';
+        $params['rft.genre'] = 'book';
+        $params['rft.btitle'] = $params['rft.title'];
+        $series = $this->getSeries();
+        if (count($series) > 0) {
+            // Handle both possible return formats of getSeries:
+            $params['rft.series'] = is_array($series[0]) ?
+                $series[0]['name'] : $series[0];
+        }
+        $params['rft.au'] = $this->getPrimaryAuthor();
+        $publishers = $this->getPublishers();
+        if (count($publishers) > 0) {
+            $params['rft.pub'] = $publishers[0];
+        }
+        $params['rft.edition'] = $this->getEdition();
+        $params['rft.isbn'] = (string)$this->getCleanISBN();
+        return $params;
+    }
+
+    /**
+     * Get OpenURL parameters for an article.
+     *
+     * @return array
+     */
+    protected function getArticleOpenURLParams()
+    {
+        $params = $this->getDefaultOpenURLParams();
+        $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:journal';
+        $params['rft.genre'] = 'article';
+        $params['rft.issn'] = (string)$this->getCleanISSN();
+        // an article may have also an ISBN:
+        $params['rft.isbn'] = (string)$this->getCleanISBN();
+        $params['rft.volume'] = $this->getContainerVolume();
+        $params['rft.issue'] = $this->getContainerIssue();
+        $params['rft.spage'] = $this->getContainerStartPage();
+        // unset default title -- we only want jtitle/atitle here:
+        unset($params['rft.title']);
+        $params['rft.jtitle'] = $this->getContainerTitle();
+        $params['rft.atitle'] = $this->getTitle();
+        $params['rft.au'] = $this->getPrimaryAuthor();
+
+        $params['rft.format'] = 'Article';
+        $langs = $this->getLanguages();
+        if (count($langs) > 0) {
+            $params['rft.language'] = $langs[0];
+        }
+        return $params;
+    }
+
+    /**
+     * Get OpenURL parameters for an unknown format.
+     *
+     * @param string $format Name of format
+     *
+     * @return array
+     */
+    protected function getUnknownFormatOpenURLParams($format)
+    {
+        $params = $this->getDefaultOpenURLParams();
+        $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:dc';
+        $params['rft.creator'] = $this->getPrimaryAuthor();
+        $publishers = $this->getPublishers();
+        if (count($publishers) > 0) {
+            $params['rft.pub'] = $publishers[0];
+        }
+        $params['rft.format'] = $format;
+        $langs = $this->getLanguages();
+        if (count($langs) > 0) {
+            $params['rft.language'] = $langs[0];
+        }
+        return $params;
+    }
+
+    /**
+     * Get OpenURL parameters for a journal.
+     *
+     * @return array
+     */
+    protected function getJournalOpenURLParams()
+    {
+        $params = $this->getUnknownFormatOpenURLParams('Journal');
+        /* This is probably the most technically correct way to represent
+         * a journal run as an OpenURL; however, it doesn't work well with
+         * Zotero, so it is currently commented out -- instead, we just add
+         * some extra fields and to the "unknown format" case.
+        $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:journal';
+        $params['rft.genre'] = 'journal';
+        $params['rft.jtitle'] = $params['rft.title'];
+        $params['rft.issn'] = $this->getCleanISSN();
+        $params['rft.au'] = $this->getPrimaryAuthor();
+         */
+        $params['rft.issn'] = (string)$this->getCleanISSN();
+
+        // Including a date in a title-level Journal OpenURL may be too
+        // limiting -- in some link resolvers, it may cause the exclusion
+        // of databases if they do not cover the exact date provided!
+        unset($params['rft.date']);
+
+        // If we're working with the SFX resolver, we should add a
+        // special parameter to ensure that electronic holdings links
+        // are shown even though no specific date or issue is specified:
+        if (isset($this->mainConfig->OpenURL->resolver)
+            && strtolower($this->mainConfig->OpenURL->resolver) == 'sfx'
+        ) {
+            $params['sfx.ignore_date_threshold'] = 1;
+        }
+        return $params;
+    }
+
+    /**
      * Get the OpenURL parameters to represent this record (useful for the
      * title attribute of a COinS span tag).
      *
@@ -652,119 +825,24 @@ class SolrDefault extends AbstractBase
      */
     public function getOpenURL()
     {
-        // Get the COinS ID -- it should be in the OpenURL section of config.ini,
-        // but we'll also check the COinS section for compatibility with legacy
-        // configurations (this moved between the RC2 and 1.0 releases).
-        $coinsID = isset($this->mainConfig->OpenURL->rfr_id)
-            ? $this->mainConfig->OpenURL->rfr_id
-            : $this->mainConfig->COinS->identifier;
-        if (empty($coinsID)) {
-            $coinsID = 'vufind.svn.sourceforge.net';
-        }
-
-        // Get a representative publication date:
-        $pubDate = $this->getPublicationDates();
-        $pubDate = empty($pubDate) ? '' : $pubDate[0];
-
-        // Start an array of OpenURL parameters:
-        $params = array(
-            'ctx_ver' => 'Z39.88-2004',
-            'ctx_enc' => 'info:ofi/enc:UTF-8',
-            'rfr_id' => "info:sid/{$coinsID}:generator",
-            'rft.title' => $this->getTitle(),
-            'rft.date' => $pubDate
-        );
-
-        // Add additional parameters based on the format of the record:
-        $format = $this->getOpenURLFormat();
-        switch ($format) {
+        // Set up parameters based on the format of the record:
+        switch ($format = $this->getOpenURLFormat()) {
         case 'Book':
-            $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:book';
-            $params['rft.genre'] = 'book';
-            $params['rft.btitle'] = $params['rft.title'];
-            $series = $this->getSeries();
-            if (count($series) > 0) {
-                // Handle both possible return formats of getSeries:
-                $params['rft.series'] = is_array($series[0]) ?
-                    $series[0]['name'] : $series[0];
-            }
-            $params['rft.au'] = $this->getPrimaryAuthor();
-            $publishers = $this->getPublishers();
-            if (count($publishers) > 0) {
-                $params['rft.pub'] = $publishers[0];
-            }
-            $params['rft.edition'] = $this->getEdition();
-            $params['rft.isbn'] = $this->getCleanISBN();
+            $params = $this->getBookOpenURLParams();
             break;
         case 'Article':
-            $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:journal';
-            $params['rft.genre'] = 'article';
-            $params['rft.issn'] = $this->getCleanISSN();
-            // an article may have also an ISBN:
-            $params['rft.isbn'] = $this->getCleanISBN();
-            $params['rft.volume'] = $this->getContainerVolume();
-            $params['rft.issue'] = $this->getContainerIssue();
-            $params['rft.spage'] = $this->getContainerStartPage();
-            // unset default title -- we only want jtitle/atitle here:
-            unset($params['rft.title']);
-            $params['rft.jtitle'] = $this->getContainerTitle();
-            $params['rft.atitle'] = $this->getTitle();
-            $params['rft.au'] = $this->getPrimaryAuthor();
-
-            $params['rft.format'] = $format;
-            $langs = $this->getLanguages();
-            if (count($langs) > 0) {
-                $params['rft.language'] = $langs[0];
-            }
+            $params = $this->getArticleOpenURLParams();
             break;
         case 'Journal':
-            /* This is probably the most technically correct way to represent
-             * a journal run as an OpenURL; however, it doesn't work well with
-             * Zotero, so it is currently commented out -- instead, we just add
-             * some extra fields and then drop through to the default case.
-            $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:journal';
-            $params['rft.genre'] = 'journal';
-            $params['rft.jtitle'] = $params['rft.title'];
-            $params['rft.issn'] = $this->getCleanISSN();
-            $params['rft.au'] = $this->getPrimaryAuthor();
+            $params = $this->getJournalOpenURLParams();
             break;
-             */
-            $params['rft.issn'] = $this->getCleanISSN();
-
-            // Including a date in a title-level Journal OpenURL may be too
-            // limiting -- in some link resolvers, it may cause the exclusion
-            // of databases if they do not cover the exact date provided!
-            unset($params['rft.date']);
-
-            // If we're working with the SFX resolver, we should add a
-            // special parameter to ensure that electronic holdings links
-            // are shown even though no specific date or issue is specified:
-            if (isset($this->mainConfig->OpenURL->resolver)
-                && strtolower($this->mainConfig->OpenURL->resolver) == 'sfx'
-            ) {
-                $params['sfx.ignore_date_threshold'] = 1;
-            }
         default:
-            $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:dc';
-            $params['rft.creator'] = $this->getPrimaryAuthor();
-            $publishers = $this->getPublishers();
-            if (count($publishers) > 0) {
-                $params['rft.pub'] = $publishers[0];
-            }
-            $params['rft.format'] = $format;
-            $langs = $this->getLanguages();
-            if (count($langs) > 0) {
-                $params['rft.language'] = $langs[0];
-            }
+            $params = $this->getUnknownFormatOpenURLParams($format);
             break;
         }
 
         // Assemble the URL:
-        $parts = array();
-        foreach ($params as $key => $value) {
-            $parts[] = $key . '=' . urlencode($value);
-        }
-        return implode('&', $parts);
+        return http_build_query($params);
     }
 
     /**
@@ -845,6 +923,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get human readable publication dates for display purposes (may not be suitable
+     * for computer processing -- use getPublicationDates() for that).
+     *
+     * @return array
+     */
+    public function getHumanReadablePublicationDates()
+    {
+        return $this->getPublicationDates();
+    }
+
+    /**
      * Get an array of publication detail lines combining information from
      * getPublicationDates(), getPublishers() and getPlacesOfPublication().
      *
@@ -854,20 +943,17 @@ class SolrDefault extends AbstractBase
     {
         $places = $this->getPlacesOfPublication();
         $names = $this->getPublishers();
-        $dates = $this->getPublicationDates();
+        $dates = $this->getHumanReadablePublicationDates();
 
         $i = 0;
         $retval = array();
         while (isset($places[$i]) || isset($names[$i]) || isset($dates[$i])) {
-            // Put all the pieces together, and do a little processing to clean up
-            // unwanted whitespace.
-            $retval[] = trim(
-                str_replace(
-                    '  ', ' ',
-                    ((isset($places[$i]) ? $places[$i] . ' ' : '') .
-                    (isset($names[$i]) ? $names[$i] . ' ' : '') .
-                    (isset($dates[$i]) ? $dates[$i] : ''))
-                )
+            // Build objects to represent each set of data; these will
+            // transform seamlessly into strings in the view layer.
+            $retval[] = new Response\PublicationDetails(
+                isset($places[$i]) ? $places[$i] : '',
+                isset($names[$i]) ? $names[$i] : '',
+                isset($dates[$i]) ? $dates[$i] : ''
             );
             $i++;
         }
@@ -972,6 +1058,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get the item's source.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        // Not supported in base class:
+        return '';
+    }
+
+    /**
      * Get the subtitle of the record.
      *
      * @return string
@@ -1039,10 +1136,37 @@ class SolrDefault extends AbstractBase
      */
     public function getThumbnail($size = 'small')
     {
-        if ($isbn = $this->getCleanISBN()) {
-            return array('isn' => $isbn, 'size' => $size);
+        if (isset($this->fields['thumbnail']) && $this->fields['thumbnail']) {
+            return $this->fields['thumbnail'];
         }
-        return false;
+        $arr = array(
+            'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
+            'callnumber' => $this->getCallNumber(),
+            'size'       => $size,
+            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8')
+        );
+        if ($isbn = $this->getCleanISBN()) {
+            $arr['isbn'] = $isbn;
+        }
+        if ($issn = $this->getCleanISSN()) {
+            $arr['issn'] = $issn;
+        }
+        if ($oclc = $this->getCleanOCLCNum()) {
+            $arr['oclc'] = $oclc;
+        }
+        if ($upc = $this->getCleanUPC()) {
+            $arr['upc'] = $upc;
+        }
+        // If an ILS driver has injected extra details, check for IDs in there
+        // to fill gaps:
+        if ($ilsDetails = $this->getExtraDetail('ils_details')) {
+            foreach (array('isbn', 'issn', 'oclc', 'upc') as $key) {
+                if (!isset($arr[$key]) && isset($ilsDetails[$key])) {
+                    $arr[$key] = $ilsDetails[$key];
+                }
+            }
+        }
+        return $arr;
     }
 
     /**
@@ -1088,6 +1212,28 @@ class SolrDefault extends AbstractBase
     {
         return isset($this->fields['contents'])
             ? $this->fields['contents'] : array();
+    }
+
+    /**
+     * Get hierarchical place names
+     *
+     * @return array
+     */
+    public function getHierarchicalPlaceNames()
+    {
+        // Not currently stored in the Solr index
+        return array();
+    }
+
+    /**
+     * Get the UPC number(s) of the record.
+     *
+     * @return array
+     */
+    public function getUPC()
+    {
+        return isset($this->fields['upc_str_mv']) ?
+            $this->fields['upc_str_mv'] : array();
     }
 
     /**
@@ -1277,6 +1423,29 @@ class SolrDefault extends AbstractBase
         return $retVal;
     }
 
+     /**
+     * Get the titles of this item within parent collections.  Returns an array
+     * of parent ID => sequence number.
+     *
+     * @return Array
+     */
+    public function getTitlesInHierarchy()
+    {
+        $retVal = array();
+        if (isset($this->fields['title_in_hierarchy'])
+            && is_array($this->fields['title_in_hierarchy'])
+        ) {
+            $titles = $this->fields['title_in_hierarchy'];
+            $parentIDs = $this->fields['hierarchy_parent_id'];
+            if (count($titles) === count($parentIDs)) {
+                foreach ($parentIDs as $key => $val) {
+                    $retVal[$val] = $titles[$key];
+                }
+            }
+        }
+        return $retVal;
+    }
+
     /**
      * Get a list of hierarchy trees containing this record.
      *
@@ -1333,12 +1502,16 @@ class SolrDefault extends AbstractBase
      * Return an XML representation of the record using the specified format.
      * Return false if the format is unsupported.
      *
-     * @param string $format Name of format to use (corresponds with OAI-PMH
+     * @param string     $format     Name of format to use (corresponds with OAI-PMH
      * metadataPrefix parameter).
+     * @param string     $baseUrl    Base URL of host containing VuFind (optional;
+     * may be used to inject record URLs into XML when appropriate).
+     * @param RecordLink $recordLink Record link helper (optional; may be used to
+     * inject record URLs into XML when appropriate).
      *
      * @return mixed         XML, or false if format unsupported.
      */
-    public function getXML($format)
+    public function getXML($format, $baseUrl = null, $recordLink = null)
     {
         // For OAI-PMH Dublin Core, produce the necessary XML:
         if ($format == 'oai_dc') {
@@ -1377,6 +1550,10 @@ class SolrDefault extends AbstractBase
                     'subject', htmlspecialchars(implode(' -- ', $subj)), $dc
                 );
             }
+            if (null !== $baseUrl && null !== $recordLink) {
+                $url = $baseUrl . $recordLink->getUrl($this);
+                $xml->addChild('identifier', $url, $dc);
+            }
 
             return $xml->asXml();
         }
@@ -1411,9 +1588,9 @@ class SolrDefault extends AbstractBase
      *
      * @return array Strings representing citation formats.
      */
-    public function getCitationFormats()
+    protected function getSupportedCitationFormats()
     {
-        return array('APA', 'MLA');
+        return array('APA', 'Chicago', 'MLA');
     }
 
     /**
@@ -1507,5 +1684,65 @@ class SolrDefault extends AbstractBase
     {
         return isset($this->fields['long_lat'])
             ? $this->fields['long_lat'] : false;
+    }
+
+    /**
+     * Get schema.org type mapping, an array of sub-types of
+     * http://schema.org/CreativeWork, defaulting to CreativeWork
+     * itself if nothing else matches.
+     *
+     * @return array
+     */
+    public function getSchemaOrgFormatsArray()
+    {
+        $types = array();
+        foreach ($this->getFormats() as $format) {
+            switch ($format) {
+            case 'Book':
+            case 'eBook':
+                $types['Book'] = 1;
+                break;
+            case 'Video':
+            case 'VHS':
+                $types['Movie'] = 1;
+                break;
+            case 'Photo':
+                $types['Photograph'] = 1;
+                break;
+            case 'Map':
+                $types['Map'] = 1;
+                break;
+            case 'Audio':
+                $types['MusicAlbum'] = 1;
+                break;
+            default:
+                $types['CreativeWork'] = 1;
+            }
+        }
+        return array_keys($types);
+    }
+
+    /**
+     * Get schema.org type mapping, expected to be a space-delimited string of
+     * sub-types of http://schema.org/CreativeWork, defaulting to CreativeWork
+     * itself if nothing else matches.
+     *
+     * @return string
+     */
+    public function getSchemaOrgFormats()
+    {
+        return implode(' ', $this->getSchemaOrgFormatsArray());
+    }
+
+    /**
+     * Get information on records deduplicated with this one
+     *
+     * @return array Array keyed by source id containing record id
+     */
+    public function getDedupData()
+    {
+        return isset($this->fields['dedup_data'])
+            ? $this->fields['dedup_data']
+            : array();
     }
 }

@@ -21,14 +21,25 @@
 #      - field2^boost
 #      - field3^boost
 #    # DismaxParams is optional and allows you to override default Dismax settings
-#    #     (i.e. mm / bf) on a search-by-search basis.  If you want global default
-#    #     values for these settings, you can edit the "dismax" search handler in
+#    #     (i.e. mm / bf) on a search-by-search basis. Enclose the parameter values
+#    #     in quotes for proper behavior. If you want global default values for these
+#    #     settings, you can edit the appropriate search handler in
 #    #     solr/biblio/conf/solrconfig.xml.
 #    DismaxParams:
 #      - [param1_name, param1_value]
 #      - [param2_name, param2_value]
 #      - [param3_name, param3_value]
-#    # QueryFields define the fields we are searching when not using Dismax
+#    # This optional setting may be used to specify which Dismax handler to use. By
+#    #     default, VuFind provides two options: dismax (for the old, standard
+#    #     Dismax) and edismax (for Extended Dismax). You can also configure your own
+#    #     in solrconfig.xml, but VuFind relies on the name "edismax" to identify an
+#    #     Extended Dismax handler. If you omit this setting, the default value from
+#    #     the default_dismax_handler setting in the [Index] section of config.ini
+#    #     will be used.
+#    DismaxHandler: dismax|edismax
+#    # QueryFields define the fields we are searching when not using Dismax; VuFind
+#    #     detects queries that will not work with Dismax and switches to QueryFields
+#    #     as needed.
 #    QueryFields:
 #      SolrField:
 #        - [howToMungeSearchstring, weight]
@@ -40,7 +51,13 @@
 #    #     for an example.  This is applied whether we use DismaxFields or
 #    #     QueryFields.
 #    FilterQuery: (optional Lucene filter query)
-#
+#    ExactSettings:
+#      DismaxFields: ...
+#      QueryFields: ...
+#    # All the same settings as above, but for exact searches, i.e. search terms
+#    #     enclosed in quotes. Allows different fields or weights for exact
+#    #     searches. See below for commented-out examples.  
+#       
 # ...etc.
 #
 #-----------------------------------------------------------------------------------
@@ -197,6 +214,14 @@ Subject:
     era:
       - [and, 100]
       - [or, ~]
+#  ExactSettings:
+#    DismaxFields:
+#      - topic_unstemmed^150
+#    QueryFields:
+#      - topic_unstemmed:
+#        - [onephrase, 350]
+#        - [and, 150]
+#        - [or, ~]
 
 # This field definition is a compromise that supports both journal-level and
 # article-level data.  The disadvantage is that hits in article titles will
@@ -242,6 +267,14 @@ JournalTitle:
       - [onephrase, 50]
       - [and , ~]
   FilterQuery: "format:Journal OR format:Article"
+#  ExactSettings:
+#    DismaxFields:
+#      - title_full_unstemmed^450
+#    QueryFields:
+#      - title_full_unstemmed:
+#        - [onephrase, 450]
+#        - [and, 400]
+#    FilterQuery: "format:Journal OR format:Article"
 
 Title:
   DismaxFields:
@@ -277,6 +310,13 @@ Title:
     series2:
       - [onephrase, 50]
       - [and , ~]
+#  ExactSettings:
+#    DismaxFields:
+#      - title_full_unstemmed^450
+#    QueryFields:
+#      - title_full_unstemmed:
+#        - [onephrase, 450]
+#        - [and, 400]
 
 Series:
   DismaxFields:
@@ -313,6 +353,9 @@ AllFields:
     - fulltext_unstemmed^10
     - allfields
     - fulltext
+    - description
+    - isbn
+    - issn
   QueryFields:
     0:
       0:
@@ -365,6 +408,35 @@ AllFields:
       - [or, ~]
     fulltext:
       - [or, ~]
+    description:
+      - [or, ~]
+    isbn:
+      - [onephrase, ~]
+    issn:
+      - [onephrase, ~]
+#  ExactSettings:
+#    DismaxFields:
+#      - title_full_unstemmed^600
+#      - topic_unstemmed^550
+#      - allfields_unstemmed^10
+#      - fulltext_unstemmed^10
+#      - isbn
+#      - issn
+#    QueryFields:
+#      title_full_unstemmed:
+#        - [onephrase, 600]
+#        - [and, 500]
+#      topic_unstemmed:
+#        - [onephrase, 550]
+#        - [and, 500]
+#      allfields_unstemmed:
+#        - [or, 10]
+#      fulltext_unstemmed:
+#        - [or, 10]
+#      isbn:
+#        - [onephrase, ~]
+#      issn:
+#        - [onephrase, ~]
 
 # These are advanced searches that never use Dismax:
 id:
@@ -476,7 +548,7 @@ geographic:
     geographic:
       - [and, 50]
     geographic_facet:
-      - [and ~]
+      - [and, ~]
 
 genre:
   QueryFields:

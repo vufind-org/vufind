@@ -37,13 +37,13 @@ use VuFindSearch\Query\AbstractQuery;
 
 use VuFindSearch\ParamBag;
 
+use VuFindSearch\Feature\RetrieveBatchInterface;
+
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
-
-use Zend\Log\LoggerInterface;
 
 /**
  * Summon backend.
@@ -54,22 +54,8 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface
+class Backend extends AbstractBackend implements RetrieveBatchInterface
 {
-    /**
-     * Record collection factory.
-     *
-     * @var RecordCollectionFactoryInterface
-     */
-    protected $collectionFactory;
-
-    /**
-     * Logger, if any.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
-
     /**
      * Connector.
      *
@@ -78,45 +64,29 @@ class Backend implements BackendInterface
     protected $connector;
 
     /**
-     * Backend identifier.
-     *
-     * @var string
-     */
-    protected $identifier;
-
-    /**
      * Query builder.
      *
      * @var QueryBuilder
      */
-    protected $queryBuilder;
+    protected $queryBuilder = null;
 
     /**
      * Constructor.
      *
      * @param Connector                        $connector Summon connector
      * @param RecordCollectionFactoryInterface $factory   Record collection factory
+     * (null for default)
      *
      * @return void
      */
     public function __construct(Connector $connector,
-        RecordCollectionFactoryInterface $factory
+        RecordCollectionFactoryInterface $factory = null
     ) {
-        $this->setRecordCollectionFactory($factory);
+        if (null !== $factory) {
+            $this->setRecordCollectionFactory($factory);
+        }
         $this->connector    = $connector;
         $this->identifier   = null;
-    }
-
-    /**
-     * Set the backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setIdentifier($identifier)
-    {
-        $this->identifier = $identifier;
     }
 
     /**
@@ -180,15 +150,55 @@ class Backend implements BackendInterface
     }
 
     /**
-     * Set the Logger.
+     * Retrieve a batch of documents.
      *
-     * @param LoggerInterface $logger Logger
+     * @param array    $ids    Array of document identifiers
+     * @param ParamBag $params Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function retrieveBatch($ids, ParamBag $params = null)
+    {
+        // Load 50 records at a time; this is the limit for Summon.
+        $pageSize = 50;
+
+        // Retrieve records a page at a time:
+        $results = false;
+        while (count($ids) > 0) {
+            $currentPage = array_splice($ids, 0, $pageSize, array());
+            $query = new SummonQuery(
+                null,
+                array(
+                    'idsToFetch' => $currentPage,
+                    'pageNumber' => 1,
+                    'pageSize' => $pageSize
+                )
+            );
+            $next = $this->createRecordCollection(
+                $this->connector->query($query)
+            );
+            if (!$results) {
+                $results = $next;
+            } else {
+                foreach ($next->getRecords() as $record) {
+                    $results->add($record);
+                }
+            }
+        }
+        $this->injectSourceIdentifier($results);
+        return $results;
+    }
+
+    /**
+     * Set the query builder.
+     *
+     * @param QueryBuilder $queryBuilder Query builder
      *
      * @return void
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setQueryBuilder(QueryBuilder $queryBuilder)
     {
-        $this->logger = $logger;
+        $this->queryBuilder = $queryBuilder;
     }
 
     /**
@@ -207,43 +217,6 @@ class Backend implements BackendInterface
     }
 
     /**
-     * Set the query builder.
-     *
-     * @param QueryBuilder $queryBuilder Query builder
-     *
-     * @return void
-     *
-     * @todo Typehint QueryBuilderInterface
-     */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
-    {
-        $this->queryBuilder = $queryBuilder;
-    }
-
-    /**
-     * Return backend identifier.
-     *
-     * @return string
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
-    }
-
-    /**
-     * Set the record collection factory.
-     *
-     * @param RecordCollectionFactoryInterface $factory Factory
-     *
-     * @return void
-     */
-    public function setRecordCollectionFactory(
-        RecordCollectionFactoryInterface $factory
-    ) {
-        $this->collectionFactory = $factory;
-    }
-
-    /**
      * Return the record collection factory.
      *
      * Lazy loads a generic collection factory.
@@ -252,6 +225,9 @@ class Backend implements BackendInterface
      */
     public function getRecordCollectionFactory()
     {
+        if ($this->collectionFactory === null) {
+            $this->collectionFactory = new Response\RecordCollectionFactory();
+        }
         return $this->collectionFactory;
     }
 
@@ -266,38 +242,6 @@ class Backend implements BackendInterface
     }
 
     /// Internal API
-
-    /**
-     * Inject source identifier in record collection and all contained records.
-     *
-     * @param ResponseInterface $response Response
-     *
-     * @return void
-     */
-    protected function injectSourceIdentifier(RecordCollectionInterface $response)
-    {
-        $response->setSourceIdentifier($this->identifier);
-        foreach ($response as $record) {
-            $record->setSourceIdentifier($this->identifier);
-        }
-        return $response;
-    }
-
-    /**
-     * Send a message to the logger.
-     *
-     * @param string $level   Log level
-     * @param string $message Log message
-     * @param array  $context Log context
-     *
-     * @return void
-     */
-    protected function log($level, $message, array $context = array())
-    {
-        if ($this->logger) {
-            $this->logger->$level($message, $context);
-        }
-    }
 
     /**
      * Create record collection.
@@ -328,14 +272,11 @@ class Backend implements BackendInterface
 
         // Convert the options:
         $options = array();
+        // Most parameters need to be flattened from array format, but a few
+        // should remain as arrays:
+        $arraySettings = array('facets', 'filters', 'groupFilters', 'rangeFilters');
         foreach ($params as $key => $param) {
-            // Most parameters need to be flattened from array format, but a few
-            // should remain as arrays:
-            if (in_array($key, array('facets', 'filters', 'rangeFilters'))) {
-                $options[$key] = $param;
-            } else {
-                $options[$key] = $param[0];
-            }
+            $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }
 
         return new SummonQuery($query, $options);

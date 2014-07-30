@@ -16,6 +16,10 @@
         "php": ">=5.3.3",
         "zendframework/zend-stdlib": "self.version"
     },
+    "suggest": {
+        "zendframework/zend-json": "Zend\\Json component",
+        "zendframework/zend-session": "To support progressbar persistent"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "2.2-dev",

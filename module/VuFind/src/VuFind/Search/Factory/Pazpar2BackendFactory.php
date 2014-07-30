@@ -101,6 +101,14 @@ class Pazpar2BackendFactory implements FactoryInterface
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
+        if (isset($this->config->General->max_query_time)) {
+            $backend->setMaxQueryTime($this->config->General->max_query_time);
+        }
+        if (isset($this->config->General->progress_target)) {
+            $backend->setSearchProgressTarget(
+                $this->config->General->progress_target
+            );
+        }
         return $backend;
     }
 

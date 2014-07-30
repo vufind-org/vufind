@@ -5,7 +5,7 @@
 <div data-role="page" id="MyResearch-checkedout">
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
-    <h3><?=$this->translate('Your Holds and Recalls') ?></h3>
+    <h3><?=$this->transEsc('Your Holds and Recalls') ?></h3>
 
     <?=$this->flashmessages()?>
 
@@ -13,8 +13,8 @@
       <? if ($this->cancelForm): ?>
         <form name="cancelForm" method="post" id="cancelHold">
           <fieldset data-type="horizontal" data-role="controlgroup">
-            <input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->translate("hold_cancel_selected") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_selected_text") ?>')" />
-            <input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->translate("hold_cancel_all") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_all_text") ?>')" />
+            <input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->transEsc("hold_cancel_selected") ?>" onClick="return confirm('<?=$this->transEsc("confirm_hold_cancel_selected_text") ?>')" />
+            <input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->transEsc("hold_cancel_all") ?>" onClick="return confirm('<?=$this->transEsc("confirm_hold_cancel_all_text") ?>')" />
           </fieldset>
       <? endif; ?>
 
@@ -54,6 +54,13 @@
 
             <? if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
               <p><strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?></p>
+            <? endif; ?>
+
+            <? if (!empty($ilsDetails['requestGroup'])): ?>
+              <p>
+                <strong><?=$this->transEsc('hold_requested_group') ?>:</strong>
+                <?=$this->transEsc('location_' . $ilsDetails['requestGroup'], array(), $ilsDetails['requestGroup'])?>
+              </p>
             <? endif; ?>
 
             <? /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
@@ -105,8 +112,8 @@
               <fieldset data-type="horizontal" data-role="controlgroup">
                 <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
                 <label for="checkbox_<?=$safeId?>"><?=$this->transEsc("Select this record")?></label>
-                <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" />
-                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" class="checkbox" style="margin-left:0;" id="checkbox_<?=$safeId?>" />
+                <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
+                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" class="checkbox" style="margin-left:0;" id="checkbox_<?=$safeId?>" />
               </fieldset>
             </div>
           <? endif; ?>
@@ -115,8 +122,8 @@
       </ul>
       <? if ($this->cancelForm): ?>
           <fieldset data-type="horizontal" data-role="controlgroup">
-            <input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->translate("hold_cancel_selected") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_selected_text") ?>')" />
-            <input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->translate("hold_cancel_all") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_all_text") ?>')" />
+            <input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->transEsc("hold_cancel_selected") ?>" onClick="return confirm('<?=$this->transEsc("confirm_hold_cancel_selected_text") ?>')" />
+            <input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->transEsc("hold_cancel_all") ?>" onClick="return confirm('<?=$this->transEsc("confirm_hold_cancel_all_text") ?>')" />
           </fieldset>
       </form>
       <? endif; ?>

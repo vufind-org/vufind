@@ -148,7 +148,8 @@ class Tags extends Gateway
      * Get a list of tags based on a sort method ($sort)
      *
      * @param string   $sort        Sort/search parameter
-     * @param int      $limit       Maximum number of tags
+     * @param int      $limit       Maximum number of tags (default = 100,
+     * < 1 = no limit)
      * @param callback $extra_where Extra code to modify $select (null for none)
      *
      * @return array Tag details.
@@ -189,8 +190,10 @@ class Tags extends Gateway
                 );
                 break;
             }
-            // Limit the size of our results based on the ini browse limit setting
-            //$select->limit($limit);
+            // Limit the size of our results
+            if ($limit > 0) {
+                $select->limit($limit);
+            }
         };
 
         $tagList = array();

@@ -166,9 +166,11 @@ class ResourceTags extends Gateway
     /**
      * Get statistics on use of tags.
      *
+     * @param bool $extended Include extended (unique/anonymous) stats.
+     *
      * @return array
      */
-    public function getStatistics()
+    public function getStatistics($extended = false)
     {
         $select = $this->sql->select();
         $select->columns(
@@ -186,7 +188,12 @@ class ResourceTags extends Gateway
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
-        return (array)$result->current();
+        $stats = (array)$result->current();
+        if ($extended) {
+            $stats['unique'] = count($this->getUniqueTags());
+            $stats['anonymous'] = count($this->getAnonymousCount());
+        }
+        return $stats;
     }
 
     /**
@@ -274,5 +281,186 @@ class ResourceTags extends Gateway
             $select->where->isNull('user_id');
         };
         $this->update(array('user_id' => $id), $callback);
+    }
+
+    /**
+     * Gets unique resources from the table
+     *
+     * @param string $userId     ID of user
+     * @param string $resourceId ID of the resource
+     * @param string $tagId      ID of the tag
+     *
+     * @return \Zend\Db\ResultSet\AbstractResultSet
+     */
+    public function getUniqueResources(
+        $userId = null, $resourceId = null, $tagId = null
+    ) {
+        $callback = function ($select) use ($userId, $resourceId, $tagId) {
+            $select->join(
+                array('r' => 'resource'),
+                'resource_tags.resource_id = r.id',
+                array("title" => "title")
+            );
+            if (!is_null($userId)) {
+                $select->where->equalTo('resource_tags.user_id', $userId);
+            }
+            if (!is_null($resourceId)) {
+                $select->where->equalTo('resource_tags.resource_id', $resourceId);
+            }
+            if (!is_null($tagId)) {
+                $select->where->equalTo('resource_tags.tag_id', $tagId);
+            }
+            $select->group(array("resource_id"));
+            $select->order(array("title"));
+        };
+        return $this->select($callback);
+    }
+
+    /**
+     * Gets unique tags from the table
+     *
+     * @param string $userId     ID of user
+     * @param string $resourceId ID of the resource
+     * @param string $tagId      ID of the tag
+     *
+     * @return \Zend\Db\ResultSet\AbstractResultSet
+     */
+    public function getUniqueTags($userId = null, $resourceId = null, $tagId = null)
+    {
+
+        $callback = function ($select) use ($userId, $resourceId, $tagId) {
+            $select->join(
+                array('t' => 'tags'),
+                'resource_tags.tag_id = t.id',
+                array("tag" => "tag")
+            );
+            if (!is_null($userId)) {
+                $select->where->equalTo('resource_tags.user_id', $userId);
+            }
+            if (!is_null($resourceId)) {
+                $select->where->equalTo('resource_tags.resource_id', $resourceId);
+            }
+            if (!is_null($tagId)) {
+                $select->where->equalTo('resource_tags.tag_id', $tagId);
+            }
+            $select->group(array("tag_id"));
+            $select->order(array("tag"));
+        };
+        return $this->select($callback);
+    }
+
+    /**
+     * Gets unique users from the table
+     *
+     * @param string $userId     ID of user
+     * @param string $resourceId ID of the resource
+     * @param string $tagId      ID of the tag
+     *
+     * @return \Zend\Db\ResultSet\AbstractResultSet
+     */
+    public function getUniqueUsers($userId = null, $resourceId = null, $tagId = null)
+    {
+        $callback = function ($select) use ($userId, $resourceId, $tagId) {
+            $select->join(
+                array('u' => 'user'),
+                'resource_tags.user_id = u.id',
+                array("username" => "username")
+            );
+            if (!is_null($userId)) {
+                $select->where->equalTo('resource_tags.user_id', $userId);
+            }
+            if (!is_null($resourceId)) {
+                $select->where->equalTo('resource_tags.resource_id', $resourceId);
+            }
+            if (!is_null($tagId)) {
+                $select->where->equalTo('resource_tags.tag_id', $tagId);
+            }
+            $select->group(array("user_id"));
+            $select->order(array("username"));
+        };
+        return $this->select($callback);
+    }
+
+    /**
+     * Get Resource Tags
+     *
+     * @param string $userId     ID of user
+     * @param string $resourceId ID of the resource
+     * @param string $tagId      ID of the tag
+     * @param string $order      The order in which to return the data
+     * @param string $page       The page number to select
+     * @param string $limit      The number of items to fetch
+     *
+     * @return \Zend\Paginator\Paginator
+     */
+    public function getResourceTags(
+        $userId = null, $resourceId = null, $tagId = null,
+        $order = null, $page = null, $limit = 20
+    ) {
+        $order = (null !== $order)
+            ? array($order)
+            : array("username", "tag", "title");
+
+        $sql = $this->getSql();
+        $select = $sql->select();
+        $select->join(
+            array('t' => 'tags'),
+            'resource_tags.tag_id = t.id',
+            array("tag" => "tag")
+        );
+        $select->join(
+            array('u' => 'user'),
+            'resource_tags.user_id = u.id',
+            array("username" => "username")
+        );
+        $select->join(
+            array('r' => 'resource'),
+            'resource_tags.resource_id = r.id',
+            array("title" => "title")
+        );
+        if (null !== $userId) {
+            $select->where->equalTo('resource_tags.user_id', $userId);
+        }
+        if (null !== $resourceId) {
+            $select->where->equalTo('resource_tags.resource_id', $resourceId);
+        }
+        if (null !== $tagId) {
+            $select->where->equalTo('resource_tags.tag_id', $tagId);
+        }
+        $select->order($order);
+
+        if (null !== $page) {
+            $select->limit($limit);
+            $select->offset($limit * ($page - 1));
+        }
+
+        $adapter = new \Zend\Paginator\Adapter\DbSelect($select, $sql);
+        $paginator = new \Zend\Paginator\Paginator($adapter);
+        $paginator->setItemCountPerPage($limit);
+        if (null !== $page) {
+            $paginator->setCurrentPageNumber($page);
+        }
+        return $paginator;
+    }
+
+    /**
+     * Delete a group of tags.
+     *
+     * @param array $ids IDs of tags to delete.
+     *
+     * @return int       Count of $ids
+     */
+    public function deleteByIdArray($ids)
+    {
+        // Do nothing if we have no IDs to delete!
+        if (empty($ids)) {
+            return;
+        }
+
+        $callback = function ($select) use ($ids) {
+            $select->where->in('id', $ids);
+        };
+        $this->delete($callback);
+        return count($ids);
     }
 }

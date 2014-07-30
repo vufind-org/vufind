@@ -4,11 +4,18 @@
   $params = $results->getParams();
   $lookfor = $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
+
+  // More link should use default limit, not custom limit:
+  $limit = $params->getLimit();
+  $params->setLimit($params->getOptions()->getDefaultLimit());
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
+  $params->setLimit($limit);
 ?>
-<div style="float: right;">
-  <a href="<?=$moreUrl?>"><?=$this->transEsc('More options')?></a>
-</div>
+<? if ($currentSearch['more_link']): ?>
+  <div style="float: right;">
+    <a href="<?=$moreUrl?>"><?=$this->transEsc('More options')?></a>
+  </div>
+<? endif; ?>
 <h2><?=$this->transEsc($currentSearch['label'])?></h2>
 <? if (isset($currentSearch['sublabel'])): ?>
   <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
@@ -17,9 +24,9 @@
   <div class="floatleft">
     <? if ($recordTotal > 0): ?>
       <?=$this->transEsc("Showing")?>
-      <strong><?=$results->getStartRecord()?></strong> - <strong><?=$results->getEndRecord()?></strong>
+      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
       <? if (!isset($view->skipTotalCount)): ?>
-        <?=$this->transEsc('of')?> <strong><?=$recordTotal?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
       <? endif; ?>
       <? if (isset($view->overrideSearchHeading)): ?>
         <?=$view->overrideSearchHeading?>
@@ -27,7 +34,7 @@
         <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
       <? endif; ?>
       <? if ($qtime = $results->getQuerySpeed()): ?>
-        <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
+        <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
       <? endif; ?>
       <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $results, $this); ?>
     <? else: ?>
@@ -57,6 +64,9 @@
     <?=$this->recommend($current)?>
   <? endforeach; ?>
 <? else: ?>
-  <?=$this->render('search/list-' . $params->getView() . '.phtml', array('results' => $results, 'params' => $params))?>
-  <p class="more_link"><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?></a></p>
+  <? $viewType = in_array('list', array_keys($params->getViewList())) ? 'list' : $params->getView(); ?>
+  <?=$this->render('search/list-' . $viewType . '.phtml', array('results' => $results, 'params' => $params))?>
+  <? if ($currentSearch['more_link']): ?>
+    <p class="more_link"><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?></a></p>
+  <? endif; ?>
 <? endif; ?>

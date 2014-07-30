@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Mvc_View_Http
+ * @package  Theme
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -32,7 +32,7 @@ namespace VuFindTheme;
  * default template configurations to something more appropriate for VuFind.
  *
  * @category VuFind2
- * @package  Mvc_View_Http
+ * @package  Theme
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -59,6 +59,7 @@ class InjectTemplateListener extends \Zend\Mvc\View\Http\InjectTemplateListener
      * @param string $controller Controller name
      *
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function deriveModuleNamespace($controller)
     {

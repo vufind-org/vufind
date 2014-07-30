@@ -3,12 +3,14 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\Ldap\Collection;
 
+use Countable;
+use Iterator;
 use Zend\Ldap;
 use Zend\Ldap\Exception;
 use Zend\Stdlib\ErrorHandler;
@@ -17,7 +19,7 @@ use Zend\Stdlib\ErrorHandler;
  * Zend\Ldap\Collection\DefaultIterator is the default collection iterator implementation
  * using ext/ldap
  */
-class DefaultIterator implements \Iterator, \Countable
+class DefaultIterator implements Iterator, Countable
 {
     const ATTRIBUTE_TO_LOWER = 1;
     const ATTRIBUTE_TO_UPPER = 2;

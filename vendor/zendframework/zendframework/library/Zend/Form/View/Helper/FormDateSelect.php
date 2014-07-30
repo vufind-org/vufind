@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -92,8 +92,8 @@ class FormDateSelect extends FormMonthSelectHelper
 
         $result = array();
         for ($day = 1; $day <= 31; $day++) {
-            $key   = $keyFormatter->format($date);
-            $value = $valueFormatter->format($date);
+            $key   = $keyFormatter->format($date->getTimestamp());
+            $value = $valueFormatter->format($date->getTimestamp());
             $result[$key] = $value;
 
             $date->modify('+1 day');

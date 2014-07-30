@@ -49,6 +49,20 @@ class Manager implements ServiceLocatorAwareInterface
     protected $auth = false;
 
     /**
+     * Authentication module currently proxied (false if uninitialized)
+     *
+     * @var \VuFind\Auth\AbstractBase|bool
+     */
+    protected $authProxied = false;
+
+    /**
+     * Authentication module to proxy (false if uninitialized)
+     *
+     * @var string|bool
+     */
+    protected $authToProxy = false;
+
+    /**
      * VuFind configuration
      *
      * @var \Zend\Config\Config
@@ -111,22 +125,88 @@ class Manager implements ServiceLocatorAwareInterface
      */
     protected function getAuth()
     {
-        if (!$this->auth) {
-            $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
-            $this->auth = $manager->get($this->config->Authentication->method);
-            $this->auth->setConfig($this->config);
+        if ($this->authToProxy == false) {
+            if (!$this->auth) {
+                $this->auth = $this->makeAuth($this->config->Authentication->method);
+            }
+            return $this->auth;
+        } else {
+            if (!$this->authProxied) {
+                $this->authProxied = $this->makeAuth($this->authToProxy);
+            }
+            return $this->authProxied;
         }
-        return $this->auth;
+    }
+
+    /**
+     * Helper
+     *
+     * @param string $method auth method to instantiate
+     *
+     * @return AbstractBase
+     */
+    protected function makeAuth($method)
+    {
+        $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
+        $auth = $manager->get($method);
+        $auth->setConfig($this->config);
+        return $auth;
     }
 
     /**
      * Does the current configuration support account creation?
      *
+     * @param string $authMethod optional; check this auth method rather than
+     *  the one in config file
+     *
      * @return bool
      */
-    public function supportsCreation()
+    public function supportsCreation($authMethod=null)
     {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
         return $this->getAuth()->supportsCreation();
+    }
+
+    /**
+     * Does the current configuration support password recovery?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     *  the one in config file
+     *
+     * @return bool
+     */
+    public function supportsRecovery($authMethod=null)
+    {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
+        if ($this->getAuth()->supportsPasswordChange()) {
+            return isset($this->config->Authentication->recover_password)
+                && $this->config->Authentication->recover_password;
+        }
+        return false;
+    }
+
+    /**
+     * Is new passwords currently allowed?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     *  the one in config file
+     *
+     * @return bool
+     */
+    public function supportsPasswordChange($authMethod=null)
+    {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
+        if ($this->getAuth()->supportsPasswordChange()) {
+            return isset($this->config->Authentication->change_password)
+                && $this->config->Authentication->change_password;
+        }
+        return false;
     }
 
     /**
@@ -134,7 +214,7 @@ class Manager implements ServiceLocatorAwareInterface
      * form is inadequate).  Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
-     * send user to after login (some drivers may override this).
+     * send user after login (some drivers may override this).
      *
      * @return bool|string
      */
@@ -151,6 +231,63 @@ class Manager implements ServiceLocatorAwareInterface
     public function getAuthClass()
     {
         return get_class($this->getAuth());
+    }
+
+    /**
+     * Does the current auth class allow for authentication from more than
+     * one auth method? (e.g. choiceauth)
+     * If so return an array that lists the classes for the methods allowed.
+     *
+     * @return array
+     */
+    public function getAuthClasses()
+    {
+        $classes = $this->getAuth()->getClasses();
+        if ($classes) {
+            return $classes;
+        } else {
+            return array($this->getAuthClass());
+        }
+    }
+
+    /**
+     * Does the current auth class allow for authentication from more than
+     * one target? (e.g. MultiILS)
+     * If so return an array that lists the targets.
+     *
+     * @return array
+     */
+    public function getLoginTargets()
+    {
+        $auth = $this->getAuth();
+        return is_callable(array($auth, 'getLoginTargets'))
+            ? $auth->getLoginTargets() : array();
+    }
+
+    /**
+     * Does the current auth class allow for authentication from more than
+     * one target? (e.g. MultiILS)
+     * If so return the default target.
+     *
+     * @return string
+     */
+    public function getDefaultLoginTarget()
+    {
+        $auth = $this->getAuth();
+        return is_callable(array($auth, 'getDefaultLoginTarget'))
+            ? $auth->getDefaultLoginTarget() : null;
+    }
+
+    /**
+     * Get the name of the current authentication method.
+     *
+     * @return string
+     */
+    public function getAuthMethod()
+    {
+        $className = $this->getAuthClass();
+        $classParts = explode('\\', $className);
+        return array_pop($classParts);
     }
 
     /**
@@ -289,6 +426,22 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Update a user's password from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     */
+    public function updatePassword($request)
+    {
+        $user = $this->getAuth()->updatePassword($request);
+        $this->updateSession($user);
+        return $user;
+    }
+
+    /**
      * Try to log in the user using current query parameters; return User object
      * on success, throws exception on failure.
      *
@@ -310,7 +463,12 @@ class Manager implements ServiceLocatorAwareInterface
             // Pass password security exceptions through unmodified
             throw $e;
         } catch (\Exception $e) {
-            // Catch other exceptions and treat them as technical difficulties
+            // Catch other exceptions, log verbosely, and treat them as technical
+            // difficulties
+            error_log(
+                "Exception in " . get_class($this) . "::login: " . $e->getMessage()
+            );
+            error_log($e);
             throw new AuthException('authentication_error_technical');
         }
 
@@ -417,5 +575,18 @@ class Manager implements ServiceLocatorAwareInterface
     public function getServiceLocator()
     {
         return $this->serviceLocator;
+    }
+
+    /**
+     * Setter
+     *
+     * @param string $method The auth class to proxy
+     *
+     * @return void
+     */
+    public function setActiveAuthClass($method)
+    {
+        $this->authToProxy = $method;
+        $this->authProxied = false;
     }
 }

@@ -1,0 +1,49 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('An error has occurred'));
+
+  $this->layout()->breadcrumbs = '<li class="active">Error</li>';
+?>
+<div class="alert alert-danger">
+  <p><?=$this->transEsc('An error has occurred')?></p>
+  <p><?=$this->transEsc($this->message)?></p>
+  <p>
+    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
+    <br/>
+    <? $supportEmail = $this->escapeHtmlAttr($this->systememail()); ?>
+    <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
+  </p>
+</div>
+
+<? if ($this->showInstallLink): ?>
+  <h2><a href="<?=$this->url('install-home')?>"><?=$this->transEsc('auto_configure_title', array(), 'Auto Configure')?></a></h2>
+  <?=$this->transEsc('auto_configure_description', array(), 'If this is a new installation, you may be able to fix the error using VuFind\'s Auto Configure tool.')?>
+  <h2><a href="<?=$this->url('upgrade-home')?>"><?=$this->transEsc('Upgrade VuFind')?></a></h2>
+  <?=$this->transEsc('upgrade_description', array(), 'If you are upgrading a previous VuFind version, you can load your old settings with this tool.')?>
+<? endif; ?>
+
+<? if (isset($this->display_exceptions) && $this->display_exceptions): ?>
+  <h2><?=$this->transEsc('Exception')?>:</h2>
+  <p>
+    <b><?=$this->transEsc('Message')?>:</b> <?=$this->exception->getMessage()?>
+  </p>
+
+  <h2><?=$this->transEsc('Backtrace')?>:</h2>
+  <pre><?=$this->exception->getTraceAsString()?>
+  </pre>
+
+  <? if ($e = $this->exception->getPrevious()): ?>
+    <h3>Previous exceptions:</h3>
+    <? while($e): ?>
+        <h4><?php echo get_class($e); ?></h4>
+        <p><?=$e->getMessage()?></p>
+        <pre><?=$e->getTraceAsString()?></pre>
+        <? $e = $e->getPrevious(); ?>
+    <? endwhile; ?>
+  <? endif; ?>
+
+  <? if (isset($this->request)): ?>
+    <h2><?=$this->transEsc('error_page_parameter_list_heading')?>:</h2>
+    <pre><?=$this->escapeHtml(var_export($this->request->getParams(), true))?></pre>
+  <? endif; ?>
+<? endif ?>

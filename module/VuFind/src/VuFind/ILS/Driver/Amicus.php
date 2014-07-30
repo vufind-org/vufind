@@ -448,7 +448,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         include_once 'File/MARC.php';
 
@@ -469,7 +469,6 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         foreach ($possibleQueries as $sql) {
             // Execute SQL
             try {
-                $holding = array();
                 $sqlStmt = $this->db->prepare($sql);
                 $sqlStmt->execute();
             } catch (PDOException $e) {
@@ -477,7 +476,6 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             }
 
             // Build Holdings Array
-            $i = 0;
             $data = array();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 // Determine Location
@@ -491,7 +489,6 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
 
                 $status = $this->sacaStatus($row['CPY_ID_NBR']);
                 $availability = $this->determineAvailability(array($status));
-                $signatura=$row['CALLNUMBER'];
                 $currentItem = array(
                     'id' => $id,
                     'availability' => $availability['available'],
@@ -744,7 +741,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                                 'zip' => $row['ZIP_POSTAL'],
                                 'phone' => $row['TFNO'],
                                 'email' => $row['EMAIL'],
-                                'GROUP' => $ROW['PATRON_GROUP_NAME']);
+                                'group' => $row['PATRON_GROUP_NAME']);
                 return $patron;
             } else {
                 return null;
@@ -765,6 +762,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @param array  $details  Item details from getHoldings return array
      *
      * @return string          URL to ILS's OPAC's place hold screen.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($recordId, $details)
     {
@@ -788,6 +786,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -880,6 +879,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {

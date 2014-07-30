@@ -8,14 +8,14 @@
     <? endif; ?>
     
     <? foreach ($this->records as $favorite): ?>
-      <strong><?=$this->translate('Title') ?>:</strong>
+      <strong><?=$this->transEsc('Title') ?>:</strong>
       <?=$this->escapeHtml($favorite->getBreadcrumb())?><br />
     <? endforeach; ?>
     <br />
     <input class="submit" type="submit" name="submit" value="<?=$this->transEsc('Delete')?>"/>
     <? foreach ($this->deleteIDS as $deleteID): ?>
-      <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($deleteID)?>" />
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($deleteID)?>" />
     <? endforeach; ?>
-      <input type="hidden" name="listID" value="<?=$this->list?$this->escapeHtml($this->list->id):''?>" />
+      <input type="hidden" name="listID" value="<?=$this->list?$this->escapeHtmlAttr($this->list->id):''?>" />
   </div>
 </form>

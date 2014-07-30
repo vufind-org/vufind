@@ -144,8 +144,11 @@ class Summon extends SolrDefault
      */
     public function getHighlightedAuthor()
     {
-        // Don't check for highlighted values if highlighting is disabled:
-        if (!$this->highlight) {
+        // Don't check for highlighted values if highlighting is disabled;
+        // also, don't try to highlight multi-author works, because it will
+        // cause display problems -- it's currently impossible to properly
+        // synchronize the 'Author' and 'Author_xml' lists.
+        if (!$this->highlight || count($this->fields['Author']) > 1) {
             return '';
         }
         return isset($this->fields['Author']) ?
@@ -417,18 +420,12 @@ class Summon extends SolrDefault
      */
     public function getThumbnail($size = 'small')
     {
+        $params = parent::getThumbnail($size);
         $formats = $this->getFormats();
-        if (($isbn = $this->getCleanISBN()) || !empty($formats)) {
-            $params = array('size' => $size);
-            if ($isbn) {
-                $params['isn'] = $isbn;
-            }
-            if (!empty($formats)) {
-                $params['contenttype'] = $formats[0];
-            }
-            return $params;
+        if (!empty($formats)) {
+            $params['contenttype'] = $formats[0];
         }
-        return false;
+        return $params;
     }
 
     /**
@@ -556,7 +553,10 @@ class Summon extends SolrDefault
     {
         if (isset($this->fields['EndPage'])) {
             return $this->fields['EndPage'][0];
-        } else if (isset($this->fields['PageCount'])) {
+        } else if (isset($this->fields['PageCount'])
+            && $this->fields['PageCount'] > 1
+            && intval($this->fields['StartPage'][0]) > 0
+        ) {
             return $this->fields['StartPage'][0] + $this->fields['PageCount'][0] - 1;
         }
         return $this->getContainerStartPage();

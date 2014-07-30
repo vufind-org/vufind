@@ -28,7 +28,7 @@
 namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
-use VuFindSearch\Query\Query;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query;
 use VuFind\Search\QueryAdapter;
 
 /**
@@ -51,28 +51,103 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected $query;
 
-    protected $searchTerms = array();
-    // Page number
+    /**
+     * Page number
+     *
+     * @var int
+     */
     protected $page = 1;
-    // Sort settings
+
+    /**
+     * Sort setting
+     *
+     * @var string
+     */
     protected $sort = null;
+
+    /**
+     * Override special RSS sort feature?
+     *
+     * @var bool
+     */
     protected $skipRssSort = false;
-    // Result limit
+
+    /**
+     * Result limit
+     *
+     * @var int
+     */
     protected $limit = 20;
+
+    /**
+     * Search type (basic or advanced)
+     *
+     * @var string
+     */
     protected $searchType  = 'basic';
-    // Shards
+
+    /**
+     * Shards
+     *
+     * @var array
+     */
     protected $selectedShards = array();
-    // View
+
+    /**
+     * View
+     *
+     * @var string
+     */
     protected $view = null;
-    // \VuFind\Search\Base\Options subclass
+
+    /**
+     * Search options
+     *
+     * @var Options
+     */
     protected $options;
-    // Recommendation settings
+
+    /**
+     * Recommendation settings
+     *
+     * @var array
+     */
     protected $recommend = array();
+
+    /**
+     * Are recommendations turned on?
+     *
+     * @var bool
+     */
     protected $recommendationEnabled = false;
-    // Facet settings
+
+    /**
+     * Main facet configuration
+     *
+     * @var array
+     */
     protected $facetConfig = array();
+
+    /**
+     * Checkbox facet configuration
+     *
+     * @var array
+     */
     protected $checkboxFacets = array();
+
+    /**
+     * Applied filters
+     *
+     * @var array
+     */
     protected $filterList = array();
+
+    /**
+     * Facets in "OR" mode
+     *
+     * @var array
+     */
+    protected $orFacets = array();
 
     /**
      * Override Query
@@ -87,10 +162,19 @@ class Params implements ServiceLocatorAwareInterface
     protected $serviceLocator;
 
     /**
+     * Are default filters applied?
+     *
+     * @var bool
+     */
+    protected $defaultsApplied = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
      * @param \VuFind\Config\PluginManager $configLoader Config loader
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
@@ -226,8 +310,16 @@ class Params implements ServiceLocatorAwareInterface
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
         if (($limit = $request->get('limit')) != $defaultLimit) {
-            // make sure the url parameter is a valid limit
-            if (in_array($limit, $this->getOptions()->getLimitOptions())) {
+            // make sure the url parameter is a valid limit -- either
+            // one of the explicitly allowed values, or at least smaller
+            // than the largest allowed. (This leniency is useful in
+            // combination with combined search, where it is often useful
+            // to reduce the size of result lists without actually enabling
+            // the user's ability to select a reduced list size).
+            $legalOptions = $this->getOptions()->getLimitOptions();
+            if (in_array($limit, $legalOptions)
+                || ($limit > 0 && $limit < max($legalOptions))
+            ) {
                 $this->limit = $limit;
                 return;
             }
@@ -468,7 +560,7 @@ class Params implements ServiceLocatorAwareInterface
     /**
      * Return the sorting value
      *
-     * @return int
+     * @return string
      */
     public function getSort()
     {
@@ -694,7 +786,8 @@ class Params implements ServiceLocatorAwareInterface
 
         // Process recommendations for each location:
         $this->recommend = array(
-            'top' => array(), 'side' => array(), 'noresults' => array()
+            'top' => array(), 'side' => array(), 'noresults' => array(),
+            'bottom' => array(),
         );
         foreach ($settings as $location => $currentSet) {
             // If the current location is disabled, skip processing!
@@ -852,15 +945,31 @@ class Params implements ServiceLocatorAwareInterface
      *
      * @param string $newField Field name
      * @param string $newAlias Optional on-screen display label
+     * @param bool   $ored     Should we treat this as an ORed facet?
      *
      * @return void
      */
-    public function addFacet($newField, $newAlias = null)
+    public function addFacet($newField, $newAlias = null, $ored = false)
     {
         if ($newAlias == null) {
             $newAlias = $newField;
         }
         $this->facetConfig[$newField] = $newAlias;
+        if ($ored) {
+            $this->orFacets[] = $newField;
+        }
+    }
+
+    /**
+     * Get facet operator for the specified field
+     *
+     * @param string $field Field name
+     *
+     * @return string
+     */
+    public function getFacetOperator($field)
+    {
+        return in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
 
     /**
@@ -926,8 +1035,7 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Return an array structure containing all current filters
-     *    and urls to remove them.
+     * Return an array structure containing information about all current filters.
      *
      * @param bool $excludeCheckboxFilters Should we exclude checkbox filters from
      * the list (to be used as a complement to getCheckboxFacets()).
@@ -937,37 +1045,87 @@ class Params implements ServiceLocatorAwareInterface
     public function getFilterList($excludeCheckboxFilters = false)
     {
         // Get a list of checkbox filters to skip if necessary:
-        $skipList = array();
-        if ($excludeCheckboxFilters) {
-            foreach ($this->checkboxFacets as $current) {
-                list($field, $value) = $this->parseFilter($current['filter']);
-                if (!isset($skipList[$field])) {
-                    $skipList[$field] = array();
-                }
-                $skipList[$field][] = $value;
-            }
-        }
+        $skipList = $excludeCheckboxFilters
+            ? $this->getCheckboxFacetValues() : array();
 
         $list = array();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
-            // and each value currently used for that field
+            list($operator, $field) = $this->parseOperatorAndFieldName($field);
             $translate
                 = in_array($field, $this->getOptions()->getTranslatedFacets());
+            // and each value currently used for that field
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
                 if (!isset($skipList[$field])
                     || !in_array($value, $skipList[$field])
                 ) {
                     $facetLabel = $this->getFacetLabel($field);
-                    $list[$facetLabel][] = array(
-                        'value'       => $value,
-                        'displayText' =>
-                            $translate ? $this->translate($value) : $value,
-                        'field'       => $field
+                    $list[$facetLabel][] = $this->formatFilterListEntry(
+                        $field, $value, $operator, $translate
                     );
                 }
             }
+        }
+        return $list;
+    }
+
+    /**
+     * Format a single filter for use in getFilterList().
+     *
+     * @param string $field     Field name
+     * @param string $value     Field value
+     * @param string $operator  Operator (AND/OR/NOT)
+     * @param bool   $translate Should we translate the label?
+     *
+     * @return array
+     */
+    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    {
+        return array(
+            'value'       => $value,
+            'displayText' => $translate ? $this->translate($value) : $value,
+            'field'       => $field,
+            'operator'    => $operator,
+        );
+    }
+
+    /**
+     * Parse the operator and field name from a prefixed field string.
+     *
+     * @param string $field Prefixed string
+     *
+     * @return array (0 = operator, 1 = field name)
+     */
+    protected function parseOperatorAndFieldName($field)
+    {
+        $firstChar = substr($field, 0, 1);
+        if ($firstChar == '-') {
+            $operator = 'NOT';
+            $field = substr($field, 1);
+        } else if ($firstChar == '~') {
+            $operator = 'OR';
+            $field = substr($field, 1);
+        } else {
+            $operator = 'AND';
+        }
+        return array($operator, $field);
+    }
+
+    /**
+     * Get a formatted list of checkbox filter values ($field => array of values).
+     *
+     * @return array
+     */
+    protected function getCheckboxFacetValues()
+    {
+        $list = array();
+        foreach ($this->checkboxFacets as $current) {
+            list($field, $value) = $this->parseFilter($current['filter']);
+            if (!isset($list[$field])) {
+                $list[$field] = array();
+            }
+            $list[$field][] = $value;
         }
         return $list;
     }
@@ -998,6 +1156,21 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Initialize all range filters.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initRangeFilters($request)
+    {
+        $this->initDateFilters($request);
+        $this->initGenericRangeFilters($request);
+        $this->initNumericRangeFilters($request);
+    }
+
+    /**
      * Support method for initDateFilters() -- normalize a year for use in a date
      * range.
      *
@@ -1021,6 +1194,120 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Support method for initNumericRangeFilters() -- normalize a year for use in
+     * a date range.
+     *
+     * @param string $num Value to format into a number.
+     *
+     * @return string     Formatted number.
+     */
+    protected function formatValueForNumericRange($num)
+    {
+        // empty strings are always wildcards:
+        if ($num == '') {
+            return '*';
+        }
+
+        // it's a string by default so this will kick it into interpreting it as a
+        // number
+        $num = $num + 0;
+        return $num = !is_float($num) && !is_int($num) ? '*' : $num;
+    }
+
+    /**
+     * Support method for initGenericRangeFilters() -- build a filter query based on
+     * a range of values.
+     *
+     * @param string $field field to use for filtering.
+     * @param string $from  start of range.
+     * @param string $to    end of range.
+     * @param bool   $cs    Should ranges be case-sensitive?
+     *
+     * @return string       filter query.
+     */
+    protected function buildGenericRangeFilter($field, $from, $to, $cs = true)
+    {
+        // Assume Solr syntax -- this should be overridden in child classes where
+        // other indexing methodologies are used.
+        $range = "{$field}:[{$from} TO {$to}]";
+        if (!$cs) {
+            // Flip values if out of order:
+            if (strcmp(strtolower($from), strtolower($to)) > 0) {
+                $range = "{$field}:[{$to} TO {$from}]";
+            }
+            $helper = new LuceneSyntaxHelper(false, false);
+            $range = $helper->capitalizeRanges($range);
+        }
+        return $range;
+    }
+
+    /**
+     * Support method for initFilters() -- initialize range filters.  Factored
+     * out as a separate method so that it can be more easily overridden by child
+     * classes.
+     *
+     * @param \Zend\StdLib\Parameters $request         Parameter object representing
+     * user request.
+     * @param string                  $requestParam    Name of parameter containing
+     * names of range filter fields.
+     * @param Callable                $valueFilter     Optional callback to process
+     * values in the range.
+     * @param Callable                $filterGenerator Optional callback to create
+     * a filter query from the range values.
+     *
+     * @return void
+     */
+    protected function initGenericRangeFilters($request,
+        $requestParam = 'genericrange', $valueFilter = null, $filterGenerator = null
+    ) {
+        $rangeFacets = $request->get($requestParam);
+        if (!empty($rangeFacets)) {
+            $ranges = is_array($rangeFacets) ? $rangeFacets : array($rangeFacets);
+            foreach ($ranges as $range) {
+                // Load start and end of range:
+                $from = $request->get($range . 'from');
+                $to = $request->get($range . 'to');
+
+                // Apply filtering/validation if necessary:
+                if (is_callable($valueFilter)) {
+                    $from = call_user_func($valueFilter, $from);
+                    $to = call_user_func($valueFilter, $to);
+                }
+
+                // Build filter only if necessary:
+                if (!empty($range) && ($from != '*' || $to != '*')) {
+                    $rangeFacet = is_callable($filterGenerator)
+                        ? call_user_func($filterGenerator, $range, $from, $to)
+                        : $this->buildGenericRangeFilter($range, $from, $to, false);
+                    $this->addFilter($rangeFacet);
+                }
+            }
+        }
+    }
+
+    /**
+     * Support method for initNumericRangeFilters() -- build a filter query based on
+     * a range of numbers.
+     *
+     * @param string $field field to use for filtering.
+     * @param string $from  number for start of range.
+     * @param string $to    number for end of range.
+     *
+     * @return string       filter query.
+     */
+    protected function buildNumericRangeFilter($field, $from, $to)
+    {
+        // Make sure that $to is less than $from:
+        if ($to != '*' && $from!= '*' && $to < $from) {
+            $tmp = $to;
+            $to = $from;
+            $from = $tmp;
+        }
+
+        return $this->buildGenericRangeFilter($field, $from, $to);
+    }
+
+    /**
      * Support method for initDateFilters() -- build a filter query based on a range
      * of dates.
      *
@@ -1032,16 +1319,8 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function buildDateRangeFilter($field, $from, $to)
     {
-        // Make sure that $to is less than $from:
-        if ($to != '*' && $from!= '*' && $to < $from) {
-            $tmp = $to;
-            $to = $from;
-            $from = $tmp;
-        }
-
-        // Assume Solr syntax -- this should be overridden in child classes where
-        // other indexing methodologies are used.
-        return "{$field}:[{$from} TO {$to}]";
+        // Dates work just like numbers:
+        return $this->buildNumericRangeFilter($field, $from, $to);
     }
 
     /**
@@ -1056,26 +1335,28 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function initDateFilters($request)
     {
-        $daterange = $request->get('daterange');
-        if (!empty($daterange)) {
-            $ranges = is_array($daterange) ? $daterange : array($daterange);
-            foreach ($ranges as $range) {
-                // Validate start and end of range:
-                $yearFrom = $this->formatYearForDateRange(
-                    $request->get($range . 'from')
-                );
-                $yearTo = $this->formatYearForDateRange(
-                    $request->get($range . 'to')
-                );
+        return $this->initGenericRangeFilters(
+            $request, 'daterange', array($this, 'formatYearForDateRange'),
+            array($this, 'buildDateRangeFilter')
+        );
+    }
 
-                // Build filter only if necessary:
-                if (!empty($range) && ($yearFrom != '*' || $yearTo != '*')) {
-                    $dateFilter
-                        = $this->buildDateRangeFilter($range, $yearFrom, $yearTo);
-                    $this->addFilter($dateFilter);
-                }
-            }
-        }
+    /**
+     * Support method for initFilters() -- initialize numeric range filters. Factored
+     * out as a separate method so that it can be more easily overridden by child
+     * classes.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initNumericRangeFilters($request)
+    {
+        return $this->initGenericRangeFilters(
+            $request, 'numericrange', array($this, 'formatValueForNumericRange'),
+            array($this, 'buildNumericRangeFilter')
+        );
     }
 
     /**
@@ -1100,8 +1381,22 @@ class Params implements ServiceLocatorAwareInterface
             }
         }
 
-        // Handle date range filters:
-        $this->initDateFilters($request);
+        // If we don't have the special flag indicating that defaults have
+        // been applied, and if we do have defaults, apply them:
+        if ($request->get('dfApplied')) {
+            $this->defaultsApplied = true;
+        } else {
+            $defaults = $this->getOptions()->getDefaultFilters();
+            if (!empty($defaults)) {
+                foreach ($defaults as $current) {
+                    $this->addFilter($current);
+                }
+                $this->defaultsApplied = true;
+            }
+        }
+
+        // Handle range filters:
+        $this->initRangeFilters($request);
     }
 
     /**
@@ -1196,6 +1491,13 @@ class Params implements ServiceLocatorAwareInterface
         $this->filterList   = $minified->f;
         $this->searchType   = $minified->ty;
 
+        // Deminified searches will always have defaults already applied;
+        // we don't want to accidentally manipulate them further.
+        $defaults = $this->getOptions()->getDefaultFilters();
+        if (!empty($defaults)) {
+            $this->defaultsApplied = true;
+        }
+
         // Search terms, we need to expand keys
         $this->query = QueryAdapter::deminify($minified->t);
     }
@@ -1210,10 +1512,11 @@ class Params implements ServiceLocatorAwareInterface
      * will be favored.
      *
      * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function activateAllFacets($preferredSection = false)
     {
-        // By default, there is only set of facet settings, so this function isn't
+        // By default, there is only 1 set of facet settings, so this function isn't
         // really necessary.  However, in the Search History screen, we need to
         // use this for Solr-based Search Objects, so we need this dummy method to
         // allow other types of Search Objects to co-exist with Solr-based ones.
@@ -1228,6 +1531,7 @@ class Params implements ServiceLocatorAwareInterface
      * @param array $ids Record IDs to load
      *
      * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setQueryIDs($ids)
     {
@@ -1357,5 +1661,44 @@ class Params implements ServiceLocatorAwareInterface
             return new Query($this->overrideQuery);
         }
         return $this->query;
+    }
+
+    /**
+     * Initialize facet settings for the specified configuration sections.
+     *
+     * @param string $facetList     Config section containing fields to activate
+     * @param string $facetSettings Config section containing related settings
+     * @param string $cfgFile       Name of configuration to load
+     *
+     * @return bool                 True if facets set, false if no settings found
+     */
+    protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        if (!isset($config->$facetList)) {
+            return false;
+        }
+        if (isset($config->$facetSettings->orFacets)) {
+            $orFields
+                = array_map('trim', explode(',', $config->$facetSettings->orFacets));
+        } else {
+            $orFields = array();
+        }
+        foreach ($config->$facetList as $key => $value) {
+            $useOr = (isset($orFields[0]) && $orFields[0] == '*')
+                || in_array($key, $orFields);
+            $this->addFacet($key, $value, $useOr);
+        }
+        return true;
+    }
+
+    /**
+     * Are default filters applied?
+     *
+     * @return bool
+     */
+    public function hasDefaultsApplied()
+    {
+        return $this->defaultsApplied;
     }
 }

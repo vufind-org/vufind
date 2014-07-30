@@ -51,26 +51,8 @@ class HelpController extends AbstractBase
     public function homeAction()
     {
         $this->layout()->setTemplate('layout/help');
-
-        // Sanitize the topic name to include only alphanumeric characters
-        // or underscores.
-        $safe_topic
-            = preg_replace('/[^\w]/', '', $this->params()->fromQuery('topic'));
-
-        // Construct two possible template names -- the help screen in the
-        // current selected language and help in English (most likely to exist).
-        // The code will attempt to display the most appropriate existing help screen
-        $language = $this->getServiceLocator()->has('VuFind\Translator')
-            ? $this->getServiceLocator()->get('VuFind\Translator')->getLocale()
-            : 'en';
-
-        $tpl_lang = 'HelpTranslations/' . $language
-            . '/' . $safe_topic . '.phtml';
-        $tpl_en = 'HelpTranslations/en/' . $safe_topic . '.phtml';
-       
-        // Best case -- help is available in the user's chosen language
         return $this->createViewModel(
-            array('tpl_lang' => $tpl_lang, 'tpl_en' => $tpl_en)
+            array('topic' => $this->params()->fromQuery('topic'))
         );
     }
 }

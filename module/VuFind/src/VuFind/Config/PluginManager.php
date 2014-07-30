@@ -49,6 +49,7 @@ class PluginManager extends Base
      *
      * @throws ServiceManagerRuntimeException if invalid
      * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function validatePlugin($plugin)
     {

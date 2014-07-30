@@ -132,6 +132,32 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test simple getters.
+     *
+     * @return void
+     */
+    public function testGetters()
+    {
+        $url = 'http://example.tld/';
+        $map  = new HandlerMap(array('select' => array('fallback' => true)));
+        $key = 'foo';
+        $conn = new Connector($url, $map, $key);
+        $this->assertEquals($url, $conn->getUrl());
+        $this->assertEquals($map, $conn->getMap());
+        $this->assertEquals($key, $conn->getUniqueKey());
+    }
+
+    /**
+     * Test default timeout value
+     *
+     * @return void
+     */
+    public function testDefaultTimeout()
+    {
+        $this->assertEquals(30, $this->createConnector()->getTimeout());
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file

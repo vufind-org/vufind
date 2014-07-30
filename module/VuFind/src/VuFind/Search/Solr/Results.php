@@ -26,15 +26,9 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Solr;
-use VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\Base\Results as BaseResults;
-
+use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
-use VuFindSearch\Query\Query;
-
-use VuFindSearch\ParamBag;
-use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 
 /**
  * Solr Search Parameters
@@ -46,7 +40,7 @@ use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Results extends BaseResults
+class Results extends \VuFind\Search\Base\Results
 {
     /**
      * Facet details:
@@ -67,7 +61,39 @@ class Results extends BaseResults
      *
      * @var string
      */
-    protected $spellingQuery;
+    protected $spellingQuery = '';
+
+    /**
+     * Class to process spelling.
+     *
+     * @var SpellingProcessor
+     */
+    protected $spellingProcessor = null;
+
+    /**
+     * Get spelling processor.
+     *
+     * @return SpellingProcessor
+     */
+    public function getSpellingProcessor()
+    {
+        if (null === $this->spellingProcessor) {
+            $this->spellingProcessor = new SpellingProcessor();
+        }
+        return $this->spellingProcessor;
+    }
+
+    /**
+     * Set spelling processor.
+     *
+     * @param SpellingProcessor $processor Spelling processor
+     *
+     * @return void
+     */
+    public function setSpellingProcessor(SpellingProcessor $processor)
+    {
+        $this->spellingProcessor = $processor;
+    }
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -80,177 +106,100 @@ class Results extends BaseResults
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->createBackendParameters($query, $this->getParams());
-        $collection = $this->getSearchService()
-            ->search($this->backendId, $query, $offset, $limit, $params);
+        $params = $this->getParams()->getBackendParameters();
+        $searchService = $this->getSearchService();
+
+        try {
+            $collection = $searchService
+                ->search($this->backendId, $query, $offset, $limit, $params);
+        } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
+            // If the query caused a parser error, see if we can clean it up:
+            if ($e->hasTag('VuFind\Search\ParserError')
+                && $newQuery = $this->fixBadQuery($query)
+            ) {
+                // We need to get a fresh set of $params, since the previous one was
+                // manipulated by the previous search() call.
+                $params = $this->getParams()->getBackendParameters();
+                $collection = $searchService
+                    ->search($this->backendId, $newQuery, $offset, $limit, $params);
+            } else {
+                throw $e;
+            }
+        }
 
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
 
         // Process spelling suggestions
         $spellcheck = $collection->getSpellcheck();
-        $this->processSpelling($spellcheck);
+        $this->spellingQuery = $spellcheck->getQuery();
+        $this->suggestions = $this->getSpellingProcessor()
+            ->getSuggestions($spellcheck, $this->getParams()->getQuery());
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
     }
 
     /**
-     * Normalize sort parameters.
+     * Try to fix a query that caused a parser error.
      *
-     * @param string $sort Sort parameter
+     * @param AbstractQuery $query Bad query
      *
-     * @return string
+     * @return bool|AbstractQuery  Fixed query, or false if no solution is found.
      */
-    protected function normalizeSort($sort)
+    protected function fixBadQuery(AbstractQuery $query)
     {
-        static $table = array(
-            'year' => array('field' => 'publishDateSort', 'order' => 'desc'),
-            'publishDateSort' =>
-                array('field' => 'publishDateSort', 'order' => 'desc'),
-            'author' => array('field' => 'authorStr', 'order' => 'asc'),
-            'title' => array('field' => 'title_sort', 'order' => 'asc'),
-            'relevance' => array('field' => 'score', 'order' => 'desc'),
-            'callnumber' => array('field' => 'callnumber', 'order' => 'asc'),
-        );
-        $normalized = array();
-        foreach (explode(',', $sort) as $component) {
-            $parts = explode(' ', trim($component));
-            $field = reset($parts);
-            $order = next($parts);
-            if (isset($table[$field])) {
-                $normalized[] = sprintf(
-                    '%s %s',
-                    $table[$field]['field'],
-                    $order ?: $table[$field]['order']
-                );
+        if ($query instanceof QueryGroup) {
+            return $this->fixBadQueryGroup($query);
+        } else {
+            // Single query? Can we fix it on its own?
+            $oldString = $string = $query->getString();
+
+            // Are there any unescaped colons in the string?
+            $string = str_replace(':', '\\:', str_replace('\\:', ':', $string));
+
+            // Did we change anything? If so, we should replace the query:
+            if ($oldString != $string) {
+                $query->setString($string);
+                return $query;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Support method for fixBadQuery().
+     *
+     * @param QueryGroup $query Query to fix
+     *
+     * @return bool|QueryGroup  Fixed query, or false if no solution is found.
+     */
+    protected function fixBadQueryGroup(QueryGroup $query)
+    {
+        $newQueries = array();
+        $fixed = false;
+
+        // Try to fix each query in the group; replace any query that needs to
+        // be changed.
+        foreach ($query->getQueries() as $current) {
+            $fixedQuery = $this->fixBadQuery($current);
+            if ($fixedQuery) {
+                $fixed = true;
+                $newQueries[] = $fixedQuery;
             } else {
-                $normalized[] = sprintf(
-                    '%s %s',
-                    $field,
-                    $order ?: 'asc'
-                );
-            }
-        }
-        return implode(',', $normalized);
-    }
-
-    /**
-     * Create search backend parameters for advanced features.
-     *
-     * @param AbstractQuery $query  Current search query
-     * @param Params        $params Search parameters
-     *
-     * @return ParamBag
-     */
-    protected function createBackendParameters(AbstractQuery $query, Params $params)
-    {
-        $backendParams = new ParamBag();
-
-        // Spellcheck
-        if ($params->getOptions()->spellcheckEnabled()) {
-            $spelling = $query->getAllTerms();
-            if ($spelling) {
-                $backendParams->set('spellcheck.q', $spelling);
-                $this->spellingQuery = $spelling;
+                $newQueries[] = $current;
             }
         }
 
-        // Facets
-        $facets = $params->getFacetSettings();
-        if (!empty($facets)) {
-            $backendParams->add('facet', 'true');
-            foreach ($facets as $key => $value) {
-                $backendParams->add("facet.{$key}", $value);
-            }
-            $backendParams->add('facet.mincount', 1);
+        // If any of the queries in the group was fixed, we'll treat the whole
+        // group as being fixed.
+        if ($fixed) {
+            $query->setQueries($newQueries);
+            return $query;
         }
 
-        // Filters
-        $filters = $params->getFilterSettings();
-        foreach ($filters as $filter) {
-            $backendParams->add('fq', $filter);
-        }
-
-        // Shards
-        $allShards = $params->getOptions()->getShards();
-        $shards = $params->getSelectedShards();
-        if (is_null($shards)) {
-            $shards = array_keys($allShards);
-        }
-
-        // If we have selected shards, we need to format them:
-        if (!empty($shards)) {
-            $selectedShards = array();
-            foreach ($shards as $current) {
-                $selectedShards[$current] = $allShards[$current];
-            }
-            $shards = $selectedShards;
-            $backendParams->add('shards', implode(',', $selectedShards));
-        }
-
-        // Sort
-        $sort = $params->getSort();
-        if ($sort) {
-            $backendParams->add('sort', $this->normalizeSort($sort));
-        }
-
-        // Highlighting -- on by default, but we should disable if necessary:
-        if (!$params->getOptions()->highlightEnabled()) {
-            $backendParams->add('hl', 'false');
-        }
-
-        return $backendParams;
-    }
-
-    /**
-     * Process SOLR spelling suggestions.
-     *
-     * @param Spellcheck $spellcheck Spellcheck information
-     *
-     * @return void
-     */
-    protected function processSpelling(Spellcheck $spellcheck)
-    {
-        $this->suggestions = array();
-        foreach ($spellcheck as $term => $info) {
-
-            // TODO: Avoid reference to Options
-            if ($this->getOptions()->shouldSkipNumericSpelling()
-                && is_numeric($term)
-            ) {
-                continue;
-            }
-            // Term is not part of the query
-            if (!$this->getParams()->getQuery()->containsTerm($term)) {
-                continue;
-            }
-            // Filter out suggestions that are already part of the query
-            // TODO: Avoid reference to Options
-            $suggestionLimit = $this->getOptions()->getSpellingLimit();
-            $suggestions     = array();
-            foreach ($info['suggestion'] as $suggestion) {
-                if (count($suggestions) >= $suggestionLimit) {
-                    break;
-                }
-                $word = $suggestion['word'];
-                if (!$this->getParams()->getQuery()->containsTerm($word)) {
-                    // TODO: Avoid reference to Options
-                    // Note: !a || !b eq !(a && b)
-                    if (!is_numeric($word)
-                        || !$this->getOptions()->shouldSkipNumericSpelling()
-                    ) {
-                        $suggestions[$word] = $suggestion['freq'];
-                    }
-                }
-            }
-            if ($suggestions) {
-                $this->suggestions[$term] = array(
-                    'freq' => $info['origFreq'],
-                    'suggestions' => $suggestions
-                );
-            }
-        }
+        // If we got this far, nothing was changed -- report failure:
+        return false;
     }
 
     /**
@@ -261,92 +210,9 @@ class Results extends BaseResults
      */
     public function getSpellingSuggestions()
     {
-        $returnArray = array();
-        $suggestions = $this->getRawSuggestions();
-        $tokens = $this->spellingTokens($this->spellingQuery);
-
-        foreach ($suggestions as $term => $details) {
-            // Find out if our suggestion is part of a token
-            $inToken = false;
-            $targetTerm = "";
-            foreach ($tokens as $token) {
-                // TODO - Do we need stricter matching here, similar to that in
-                // \VuFindSearch\Query\Query::replaceTerm()?
-                if (stripos($token, $term) !== false) {
-                    $inToken = true;
-                    // We need to replace the whole token
-                    $targetTerm = $token;
-                    // Go and replace this token
-                    $returnArray = $this->doSpellingReplace(
-                        $term, $targetTerm, $inToken, $details, $returnArray
-                    );
-                }
-            }
-            // If no tokens were found, just look for the suggestion 'as is'
-            if ($targetTerm == "") {
-                $targetTerm = $term;
-                $returnArray = $this->doSpellingReplace(
-                    $term, $targetTerm, $inToken, $details, $returnArray
-                );
-            }
-        }
-        return $returnArray;
-    }
-
-    /**
-     * Process one instance of a spelling replacement and modify the return
-     *   data structure with the details of what was done.
-     *
-     * @param string $term        The actually term we're replacing
-     * @param string $targetTerm  The term above, or the token it is inside
-     * @param bool   $inToken     Flag for whether the token or term is used
-     * @param array  $details     The spelling suggestions
-     * @param array  $returnArray Return data structure so far
-     *
-     * @return array              $returnArray modified
-     */
-    protected function doSpellingReplace($term, $targetTerm, $inToken, $details,
-        $returnArray
-    ) {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-
-        $returnArray[$targetTerm]['freq'] = $details['freq'];
-        foreach ($details['suggestions'] as $word => $freq) {
-            // If the suggested word is part of a token
-            if ($inToken) {
-                // We need to make sure we replace the whole token
-                $replacement = str_replace($term, $word, $targetTerm);
-            } else {
-                $replacement = $word;
-            }
-            //  Do we need to show the whole, modified query?
-            if ($config->Spelling->phrase) {
-                $label = $this->getParams()->getDisplayQueryWithReplacedTerm(
-                    $targetTerm, $replacement
-                );
-            } else {
-                $label = $replacement;
-            }
-            // Basic spelling suggestion data
-            $returnArray[$targetTerm]['suggestions'][$label] = array(
-                'freq' => $freq,
-                'new_term' => $replacement
-            );
-
-            // Only generate expansions if enabled in config
-            if ($config->Spelling->expand) {
-                // Parentheses differ for shingles
-                if (strstr($targetTerm, " ") !== false) {
-                    $replacement = "(($targetTerm) OR ($replacement))";
-                } else {
-                    $replacement = "($targetTerm OR $replacement)";
-                }
-                $returnArray[$targetTerm]['suggestions'][$label]['expand_term']
-                    = $replacement;
-            }
-        }
-
-        return $returnArray;
+        return $this->getSpellingProcessor()->processSuggestions(
+            $this->getRawSuggestions(), $this->spellingQuery, $this->getParams()
+        );
     }
 
     /**
@@ -397,8 +263,11 @@ class Results extends BaseResults
                 $currentSettings['displayText']
                     = $translate ? $this->translate($value) : $value;
                 $currentSettings['count'] = $count;
+                $currentSettings['operator']
+                    = $this->getParams()->getFacetOperator($field);
                 $currentSettings['isApplied']
-                    = $this->getParams()->hasFilter("$field:".$value);
+                    = $this->getParams()->hasFilter("$field:".$value)
+                    || $this->getParams()->hasFilter("~$field:".$value);
 
                 // Store the collected values:
                 $list[$field]['list'][] = $currentSettings;
@@ -441,6 +310,9 @@ class Results extends BaseResults
             }
         }
 
+        // Don't waste time on spellcheck:
+        $params->getOptions()->spellcheckEnabled(false);
+
         // Do search
         $result = $clone->getFacetList();
 
@@ -452,5 +324,26 @@ class Results extends BaseResults
 
         // Send back data:
         return $result;
+    }
+
+    /**
+     * Returns data on pivot facets for the last search
+     *
+     * @return ArrayObject        Flare-formatted object
+     */
+    public function getPivotFacetList()
+    {
+        // Make sure we have processed the search before proceeding:
+        if (null === $this->responseFacets) {
+            $this->performAndProcessSearch();
+        }
+
+        // Start building the flare object:
+        $flare = new \stdClass();
+        $flare->name = "flare";
+        $flare->total = $this->resultTotal;
+        $visualFacets = $this->responseFacets->getPivotFacets();
+        $flare->children = $visualFacets;
+        return $flare;
     }
 }

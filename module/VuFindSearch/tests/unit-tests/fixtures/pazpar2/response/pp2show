@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<show><status>OK</status>
+<activeclients>0</activeclients>
+<merged>54</merged>
+<total>57</total>
+<start>0</start>
+<num>20</num>
+<hit>
+
+<md-author>test</md-author>
+<md-title>test</md-title>
+<md-medium>book</md-medium><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="532613528">
+<md-author>test</md-author>
+<md-title>test</md-title>
+<md-medium>book</md-medium></location>
+<relevance>73446</relevance>
+<recid>content: author test title test medium book</recid>
+</hit>
+<hit>
+
+<md-author>Goldberg, Deborah T</md-author>
+<md-title>SAT subject test</md-title>
+<md-title-remainder>: biiology E/M</md-title-remainder>
+<md-medium>book</md-medium>
+<md-description>12-26-2007</md-description>
+<md-description>Barron&apos;s: the leader in test preparation</md-description><location id="library.nnl.gov.np:8880/biblios"
+ name="Nepal National Library" checksum="979336482">
+<md-author>Goldberg, Deborah T</md-author>
+<md-title>SAT subject test</md-title>
+<md-title-remainder>: biiology E/M</md-title-remainder>
+<md-medium>book</md-medium>
+<md-description>12-26-2007</md-description>
+<md-description>Barron&apos;s: the leader in test preparation</md-description></location>
+<relevance>22296</relevance>
+<recid>content: author goldberg deborah t title sat subject test medium book</recid>
+</hit>
+<hit>
+
+<md-author>Gear, Jolene</md-author>
+<md-author>Gear, Robert</md-author>
+<md-title>Cambridge preparation for the TOEFL test</md-title>
+<md-medium>book</md-medium>
+<md-description>04-11-2005</md-description>
+<md-description>04-23-2007</md-description><location id="library.nnl.gov.np:8880/biblios"
+ name="Nepal National Library" checksum="2155577781">
+<md-author>Gear, Jolene</md-author>
+<md-author>Gear, Robert</md-author>
+<md-title>Cambridge preparation for the TOEFL test</md-title>
+<md-medium>book</md-medium>
+<md-description>04-23-2007</md-description></location>
+<location id="library.nnl.gov.np:8880/biblios"
+ name="Nepal National Library" checksum="1389334382">
+<md-author>Gear, Jolene</md-author>
+<md-author>Gear, Robert</md-author>
+<md-title>Cambridge preparation for the TOEFL test</md-title>
+<md-medium>book</md-medium>
+<md-description>04-11-2005</md-description></location>
+<count>2</count>
+<relevance>18361</relevance>
+<recid>content: author gear jolene author gear robert title cambridge preparation for the toefl test medium book</recid>
+</hit>
+<hit>
+
+<md-author>Costanzo, Linda S</md-author>
+<md-date>2006</md-date>
+<md-title>Physiology</md-title>
+<md-title-responsibility>Linda S Costanzo</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="2501216124">
+<md-author>Costanzo, Linda S</md-author>
+<md-date>2006</md-date>
+<md-title>Physiology</md-title>
+<md-title-responsibility>Linda S Costanzo</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description></location>
+<relevance>13771</relevance>
+<recid>content: author costanzo linda s title physiology medium book</recid>
+</hit>
+<hit>
+
+<md-author>Kanski, Jack J</md-author>
+<md-date>1997</md-date>
+<md-title>Picture test in ophthalmology</md-title>
+<md-title-responsibility>Jack J. Kanski</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="1996288257">
+<md-author>Kanski, Jack J</md-author>
+<md-date>1997</md-date>
+<md-title>Picture test in ophthalmology</md-title>
+<md-title-responsibility>Jack J. Kanski</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description></location>
+<relevance>13771</relevance>
+<recid>content: author kanski jack j title picture test in ophthalmology medium book</recid>
+</hit>
+<hit>
+
+<md-author>Jaffe, Eugene D</md-author>
+<md-author>Hilbert, Stephen</md-author>
+<md-title>GMAT</md-title>
+<md-title-remainder>:graduate management admission test</md-title-remainder>
+<md-medium>book</md-medium>
+<md-description>07-21-2009</md-description>
+<md-description>with CD</md-description><location id="library.nnl.gov.np:8880/biblios"
+ name="Nepal National Library" checksum="2921821180">
+<md-author>Jaffe, Eugene D</md-author>
+<md-author>Hilbert, Stephen</md-author>
+<md-title>GMAT</md-title>
+<md-title-remainder>:graduate management admission test</md-title-remainder>
+<md-medium>book</md-medium>
+<md-description>07-21-2009</md-description>
+<md-description>with CD</md-description></location>
+<relevance>11475</relevance>
+<recid>content: author jaffe eugene d author hilbert stephen title gmat medium book</recid>
+</hit>
+<hit>
+
+<md-author>Dornan, Tim</md-author>
+<md-date>2006</md-date>
+<md-title>Core clinical skills for osces in medicine</md-title>
+<md-title-responsibility>Dornan, Tim</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="3057252863">
+<md-author>Dornan, Tim</md-author>
+<md-date>2006</md-date>
+<md-title>Core clinical skills for osces in medicine</md-title>
+<md-title-responsibility>Dornan, Tim</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description></location>
+<relevance>10098</relevance>
+<recid>content: author dornan tim title core clinical skills for osces in medicine medium book</recid>
+</hit>
+<hit>
+
+<md-author>Fix, James D</md-author>
+<md-date>2000</md-date>
+<md-title>High-yield neuroanatomy</md-title>
+<md-title-responsibility>James D Fix</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Includes index</md-description><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="3664398474">
+<md-id>863</md-id>
+<md-author>Fix, James D</md-author>
+<md-date>2000</md-date>
+<md-title>High-yield neuroanatomy</md-title>
+<md-title-responsibility>James D Fix</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Includes index</md-description></location>
+<relevance>10098</relevance>
+<recid>content: author fix james d title high yield neuroanatomy medium book</recid>
+</hit>
+<hit>
+
+<md-author>Gupta K</md-author>
+<md-date>1983</md-date>
+<md-title>100 short cases for the MRCP</md-title>
+<md-title-responsibility>K. Gupta</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="4169326341">
+<md-author>Gupta K</md-author>
+<md-date>1983</md-date>
+<md-title>100 short cases for the MRCP</md-title>
+<md-title-responsibility>K. Gupta</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description></location>
+<relevance>10098</relevance>
+<recid>content: author gupta k title 100 short cases for the mrcp medium book</recid>
+</hit>
+<hit>
+
+<md-author>Manoj Ramachandran</md-author>
+<md-date>2003</md-date>
+<md-title>Clinical cases and osces in surgery</md-title>
+<md-title-responsibility>Manoj Ramachandran</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="935323651">
+<md-id>557</md-id>
+<md-author>Manoj Ramachandran</md-author>
+<md-date>2003</md-date>
+<md-title>Clinical cases and osces in surgery</md-title>
+<md-title-responsibility>Manoj Ramachandran</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description></location>
+<relevance>10098</relevance>
+<recid>content: author manoj ramachandran title clinical cases and osces in surgery medium book</recid>
+</hit>
+<hit>
+
+<md-author>Patwardhan</md-author>
+<md-date>2003</md-date>
+<md-title>Plab 2 course manual</md-title>
+<md-title-responsibility>Patwardhan</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="1491360390">
+<md-author>Patwardhan</md-author>
+<md-date>2003</md-date>
+<md-title>Plab 2 course manual</md-title>
+<md-title-responsibility>Patwardhan</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description></location>
+<relevance>10098</relevance>
+<recid>content: author patwardhan title plab 2 course manual medium book</recid>
+</hit>
+<hit>
+
+<md-author>Reteguiz, Jo-Ann</md-author>
+<md-date>2005</md-date>
+<md-title>Mastering the USMLE step 2 cs  : clinical skills examination</md-title>
+<md-title-responsibility>Jo-Ann Reteguiz</md-title-responsibility>
+<md-medium>book</md-medium><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="379286912">
+<md-id>983</md-id>
+<md-author>Reteguiz, Jo-Ann</md-author>
+<md-date>2005</md-date>
+<md-title>Mastering the USMLE step 2 cs  : clinical skills examination</md-title>
+<md-title-responsibility>Jo-Ann Reteguiz</md-title-responsibility>
+<md-medium>book</md-medium></location>
+<relevance>10098</relevance>
+<recid>content: author reteguiz jo ann title mastering the usmle step 2 cs clinical skills examination medium book</recid>
+</hit>
+<hit>
+
+<md-date>2008</md-date>
+<md-title>Lippincott&apos;s illustrated reviews : pharmacology</md-title>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description>
+<md-description>Lippincott&apos;s Illustrated Reviews: Pharmacology, Fourth Edition enables rapid review and assimilation of large amounts of complex information about the essentials of medical pharmacology. Clear, sequential pictures of mechanisms of action actually show students how drugs work, instead of just telling them. As in previous editions, the book features an outline format, over 500 full-color illustrations, cross-references to other volumes in the series, and over 125 review questions. Content has been thoroughly updated, and a new chapter covers toxicology. New to this edition will be a companion Website containing all of the illustrations, fully searchable text, and an interactive question bank. NOTE: International Edition available for sales outside North America and Caribbean (ISBN: 978-1-60547-200-3) &quot;Doody&apos;s Core Titles  2009.&quot;</md-description><location id="library.tuiommcl.edu.np:9998/biblios"
+ name="TUIOMN Central Library" checksum="4135424882">
+<md-id>ASIN0781771552</md-id>
+<md-date>2008</md-date>
+<md-title>Lippincott&apos;s illustrated reviews : pharmacology</md-title>
+<md-medium>book</md-medium>
+<md-description>Paperback</md-description>
+<md-description>Lippincott&apos;s Illustrated Reviews: Pharmacology, Fourth Edition enables rapid review and assimilation of large amounts of complex information about the essentials of medical pharmacology. Clear, sequential pictures of mechanisms of action actually show students how drugs work, instead of just telling them. As in previous editions, the book features an outline format, over 500 full-color illustrations, cross-references to other volumes in the series, and over 125 review questions. Content has been thoroughly updated, and a new chapter covers toxicology. New to this edition will be a companion Website containing all of the illustrations, fully searchable text, and an interactive question bank. NOTE: International Edition available for sales outside North America and Caribbean (ISBN: 978-1-60547-200-3) &quot;Doody&apos;s Core Titles  2009.&quot;</md-description>
+<md-electronic-url>http://www.amazon.com/exec/obidos/ASIN/0781771552/chopaconline-20</md-electronic-url>
+<md-electronic-url>http://www.chopac.org/cgi-bin/tools/azrev.pl?q=0781771552</md-electronic-url>
+<md-electronic-text>Amazon.com</md-electronic-text>
+<md-electronic-text>Amazon customer reviews</md-electronic-text></location>
+<relevance>10098</relevance>
+<recid>content: title lippincotts illustrated reviews pharmacology medium book</recid>
+</hit>
+<hit>
+
+<md-date>1998</md-date>
+<md-title>Postgraduate surgery</md-title>
+<md-title-remainder>the candidate&apos;s guide</md-title-remainder>
+<md-title-responsibility>edited by M.A.R. Al-Fallouji</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Hardcover</md-description><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="3613289602">
+<md-date>1998</md-date>
+<md-title>Postgraduate surgery</md-title>
+<md-title-remainder>the candidate&apos;s guide</md-title-remainder>
+<md-title-responsibility>edited by M.A.R. Al-Fallouji</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Hardcover</md-description></location>
+<relevance>10098</relevance>
+<recid>content: title postgraduate surgery medium book</recid>
+</hit>
+<hit>
+
+<md-author>Kaye, Andrew H</md-author>
+<md-date>1997</md-date>
+<md-title>Essential neurosurgery</md-title>
+<md-title-responsibility>Andrew H. Kaye</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Includes index</md-description><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="2047397129">
+<md-id>848</md-id>
+<md-author>Kaye, Andrew H</md-author>
+<md-date>1997</md-date>
+<md-title>Essential neurosurgery</md-title>
+<md-title-responsibility>Andrew H. Kaye</md-title-responsibility>
+<md-medium>book</md-medium>
+<md-description>Includes index</md-description></location>
+<relevance>9180</relevance>
+<recid>content: author kaye andrew h title essential neurosurgery medium book</recid>
+</hit>
+<hit>
+
+<md-date>1977</md-date>
+<md-title>Advances in dermatology</md-title>
+<md-title-responsibility>American Academy of Dermatology</md-title-responsibility>
+<md-title-medium>[slide]</md-title-medium>
+<md-medium>slide</md-medium>
+<md-description>Sound accompaniment compatible for manual and automatic operation</md-description>
+<md-description>Includes post-test</md-description>
+<md-description>Rating: Not recommended</md-description>
+<md-description>Review date: Mar. 1978</md-description>
+<md-description>Reviewer: Association of American Medical Colleges (AAMC)</md-description>
+<md-description>Learning method: Self instructional</md-description>
+<md-description>Highlights from the American Academy of Dermatology&apos;s Annual Meeting December, 1976</md-description>
+<md-description>Approved for continuing education credit by the AMA</md-description>
+<md-description>(Critical)  This program presents highlights of research findings obtained in 1975-76 for twenty-four subjects of dermatologic interest.  Most of the subjects concern therapy.  The presentation contains specialized content most of which is outdated.  Technologically, pictures tend to be underexposed and charts are too small to read.  Thus, this program is not recommended</md-description><location id="library.tuiommcl.edu.np:9998/biblios"
+ name="TUIOMN Central Library" checksum="1834882478">
+<md-id>495014</md-id>
+<md-date>1977</md-date>
+<md-title>Advances in dermatology</md-title>
+<md-title-responsibility>American Academy of Dermatology</md-title-responsibility>
+<md-title-medium>[slide]</md-title-medium>
+<md-medium>slide</md-medium>
+<md-description>Sound accompaniment compatible for manual and automatic operation</md-description>
+<md-description>Includes post-test</md-description>
+<md-description>Rating: Not recommended</md-description>
+<md-description>Review date: Mar. 1978</md-description>
+<md-description>Reviewer: Association of American Medical Colleges (AAMC)</md-description>
+<md-description>Learning method: Self instructional</md-description>
+<md-description>Highlights from the American Academy of Dermatology&apos;s Annual Meeting December, 1976</md-description>
+<md-description>Approved for continuing education credit by the AMA</md-description>
+<md-description>(Critical)  This program presents highlights of research findings obtained in 1975-76 for twenty-four subjects of dermatologic interest.  Most of the subjects concern therapy.  The presentation contains specialized content most of which is outdated.  Technologically, pictures tend to be underexposed and charts are too small to read.  Thus, this program is not recommended</md-description></location>
+<relevance>9180</relevance>
+<recid>content: title advances in dermatology medium slide</recid>
+</hit>
+<hit>
+
+<md-author>Singh, Asha</md-author>
+<md-title>Admission test a predictor of fetal outcome</md-title>
+<md-medium>book</md-medium><location id="library.nams.org.np:9997/biblios"
+ name="National Academy of Medical Sciences" checksum="2098506001">
+<md-author>Singh, Asha</md-author>
+<md-title>Admission test a predictor of fetal outcome</md-title>
+<md-medium>book</md-medium></location>
+<relevance>7869</relevance>
+<recid>content: author singh asha title admission test a predictor of fetal outcome medium book</recid>
+</hit>
+<hit>
+
+<md-author>Gautam, Pradeep Chandra</md-author>
+<md-title>Evaluation of early childhood education programmes in Nepal</md-title>
+<md-medium>book</md-medium>
+<md-description>03-04-2004</md-description>
+<md-description>Thesis submitted for the degree of Doctor of Philosophy in Education</md-description><location id="library.nnl.gov.np:8880/biblios"
+ name="Nepal National Library" checksum="2975573581">
+<md-author>Gautam, Pradeep Chandra</md-author>
+<md-title>Evaluation of early childhood education programmes in Nepal</md-title>
+<md-medium>book</md-medium>
+<md-description>03-04-2004</md-description>
+<md-description>Thesis submitted for the degree of Doctor of Philosophy in Education</md-description></location>
+<relevance>6885</relevance>
+<recid>content: author gautam pradeep chandra title evaluation of early childhood education programmes in nepal medium book</recid>
+</hit>
+<hit>
+
+<md-author>Leonard, J. Paul</md-author>
+<md-author>Eurich, alwin C.  ed</md-author>
+<md-title>An evaluation of modern education</md-title>
+<md-medium>book</md-medium>
+<md-description>02-11-2004</md-description>
+<md-description>Includes index</md-description><location id="library.nnl.gov.np:8880/biblios"
+ name="Nepal National Library" checksum="4151814880">
+<md-author>Leonard, J. Paul</md-author>
+<md-author>Eurich, alwin C.  ed</md-author>
+<md-title>An evaluation of modern education</md-title>
+<md-medium>book</md-medium>
+<md-description>02-11-2004</md-description>
+<md-description>Includes index</md-description></location>
+<relevance>6885</relevance>
+<recid>content: author leonard j paul author eurich alwin c ed title an evaluation of modern education medium book</recid>
+</hit>
+<hit>
+
+<md-author>Navalani, K</md-author>
+<md-author>Gidwani, N. N</md-author>
+<md-title>A Practical guide to Colon Classification</md-title>
+<md-medium>book</md-medium>
+<md-description>02-01-2004</md-description>
+<md-description>Includes test questions</md-description><location id="library.nnl.gov.np:8880/biblios"
+ name="Nepal National Library" checksum="2209330182">
+<md-author>Navalani, K</md-author>
+<md-author>Gidwani, N. N</md-author>
+<md-title>A Practical guide to Colon Classification</md-title>
+<md-medium>book</md-medium>
+<md-description>02-01-2004</md-description>
+<md-description>Includes test questions</md-description></location>
+<relevance>6885</relevance>
+<recid>content: author navalani k author gidwani n n title a practical guide to colon classification medium book</recid>
+</hit>
+</show>

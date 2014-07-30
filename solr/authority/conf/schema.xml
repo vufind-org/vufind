@@ -5,7 +5,7 @@
     <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
     <fieldtype name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
     <fieldtype name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
-    <fieldtype name="date" class="solr.DateField" sortMissingLast="true" omitNorms="true"/>
+    <fieldtype name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
     <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>

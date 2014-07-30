@@ -210,7 +210,7 @@ class Connector
      */
     public function ping()
     {
-        $ping = $this->query('ping');
+        $this->query('ping');
     }
 
     /**

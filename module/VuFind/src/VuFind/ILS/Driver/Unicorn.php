@@ -172,6 +172,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -204,6 +205,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
@@ -387,6 +389,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
@@ -409,7 +412,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         return $this->getStatus($id);
     }
@@ -559,8 +562,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $response = $this->querySirsi($params);
 
-        list($user_key, $alt_id, $barcode, $name, $library, $profile,
-        $cat1, $cat2, $cat3, $cat4, $cat5, $expiry, $holds, 
+        list(, , , , $library, $profile, , , , , , , ,
         $email, $address1, $zip, $phone, $address2) = explode('|', $response);
 
         return array(
@@ -660,10 +662,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lines = explode("\n", $response);
         $items = array();
         foreach ($lines as $item) {
-            list($catkey, $holdkey, $available, $recall_status, $date_expires,
-            $reserve, $date_created, $priority, $type, $pickup_library,
-            $suspend_begin, $suspend_end, $date_recalled, $special_request,
-            $date_available, $date_available_expires, $barcode)
+            list($catkey, $holdkey, $available, , $date_expires, , $date_created, ,
+            $type, $pickup_library, , , , , , , $barcode)
                 = explode('|', $item);
 
             $date_created = $this->parseDateTime($date_created);
@@ -738,7 +738,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             foreach ($lines as $line) {
                 // error lines start with '**'
                 if (strpos(trim($line), '**') === 0) {
-                    list($message, $holdKey) = explode(':', $line);
+                    list(, $holdKey) = explode(':', $line);
                     $failures[] = trim($holdKey, '()');
                 }
             }
@@ -998,6 +998,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {

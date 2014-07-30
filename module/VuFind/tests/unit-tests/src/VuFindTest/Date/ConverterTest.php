@@ -59,6 +59,16 @@ class ConverterTest extends \VuFindTest\Unit\TestCase
             '11-29-1973', $date->convertToDisplayDate('U', 123456879)
         );
         $this->assertEquals(
+            '11-29-1973', $date->convertToDisplayDate('U', 123456879.1234)
+        );
+        $this->assertEquals(
+            '11-29-1973--16:34',
+            $date->convertToDisplayDateAndTime('U', 123456879, '--')
+        );
+        $this->assertEquals(
+            '16:34 11-29-1973', $date->convertToDisplayTimeAndDate('U', 123456879)
+        );
+        $this->assertEquals(
             '11-29-1973', $date->convertToDisplayDate('m-d-y', '11-29-73')
         );
         $this->assertEquals(

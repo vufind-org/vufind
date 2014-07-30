@@ -5,13 +5,23 @@ Develop: [![Build Status](https://secure.travis-ci.org/zendframework/zf2.png?bra
 
 ## RELEASE INFORMATION
 
-*Zend Framework 2.2.1*
+*Zend Framework 2.2.7*
 
-This is the first maintenance release for the 2.2 series.
+This is the seventh maintenance release for the 2.2 series.
 
-12 Jun 2013
+15 Apr 2014
 
-### UPDATES IN 2.2.1
+### UPDATES IN 2.2.7
+
+**This release contains security updates:**
+
+- **ZF2014-03:** Potential XSS vector in multiple view helpers due to
+  inappropriate HTML attribute escaping. Many view helpers were using the
+  `escapeHtml()` view helper in order to escape HTML attributes. This release
+  patches them to use the `escapeHtmlAttr()` view helper in these situations.
+  If you use form or navigation view helpers, or "HTML element" view helpers
+  (such as `gravatar()`, `htmlFlash()`, `htmlPage()`, or `htmlQuicktime()`), we
+  recommend upgrading immediately.
 
 Please see [CHANGELOG.md](CHANGELOG.md).
 
@@ -46,6 +56,20 @@ https://github.com/zendframework/zf2/issues
 If you would like to be notified of new releases, you can subscribe to
 the fw-announce mailing list by sending a blank message to
 <fw-announce-subscribe@lists.zend.com>.
+
+## Reporting Potential Security Issues
+
+If you have encountered a potential security vulnerability in Zend Framework, please report it to us at [zf-security@zend.com](mailto:zf-security@zend.com). We will work with you to verify the vulnerability and patch it.
+
+When reporting issues, please provide the following information:
+
+- Component(s) affected
+- A description indicating how to reproduce the issue
+- A summary of the security vulnerability and impact
+
+We request that you contact us via the email address above and give the project contributors a chance to resolve the vulnerability and issue a new release prior to any public exposure; this helps protect Zend Framework users and provides them with a chance to upgrade and/or update in order to protect their applications.
+
+For sensitive email communications, please use [our PGP key](http://framework.zend.com/zf-security-pgp-key.asc).
 
 ### LICENSE
 

@@ -38,25 +38,8 @@ namespace VuFind\View\Helper\Blueprint;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class LayoutClass extends \Zend\View\Helper\AbstractHelper
+class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
 {
-    /**
-     * Does the sidebar go on the left?
-     *
-     * @var bool
-     */
-    protected $left;
-
-    /**
-     * Constructor
-     *
-     * @param bool $left Does the sidebar go on the left?
-     */
-    public function __construct($left = false)
-    {
-        $this->left = $left;
-    }
-
     /**
      * Helper to allow easily configurable page layout -- given a broad class
      * name, return appropriate CSS classes to lay out the page according to

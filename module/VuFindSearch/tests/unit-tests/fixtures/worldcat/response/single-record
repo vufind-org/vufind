@@ -1,0 +1,75 @@
+a:3:{s:4:"docs";a:1:{i:0;s:4246:"<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<record xmlns="http://www.loc.gov/MARC21/slim">
+    <leader>00000npc a22000003u 4500</leader>
+    <controlfield tag="001">690250223</controlfield>
+    <controlfield tag="008">130803nuuuuuuuuxx      o           und d</controlfield>
+    <datafield ind1="8" ind2=" " tag="024">
+      <subfield code="a">Watt-Smith, M. J., Kolaczkowski, S. T., Rigby, S. P. and Chudek, J. A., 2006. Prediction of gas sorption kinetics for porous media using MRI. AIChE Journal, 52 (9), pp. 3278-3289.</subfield>
+    </datafield>
+    <datafield ind1="0" ind2=" " tag="029">
+      <subfield code="a">UKBTH</subfield>
+      <subfield code="b">oai:opus.bath.ac.uk:852</subfield>
+      <subfield code="c">http://opus.bath.ac.uk/cgi/oai2 7374617475733D707562</subfield>
+      <subfield code="t">DGCNT</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="040">
+      <subfield code="a">UKBTH</subfield>
+      <subfield code="c">UKBTH</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="042">
+      <subfield code="a">dc</subfield>
+    </datafield>
+    <datafield ind1="0" ind2="0" tag="245">
+      <subfield code="a">Prediction of gas sorption kinetics for porous media using MRI</subfield>
+      <subfield code="h">[electronic resource].</subfield>
+    </datafield>
+    <datafield ind1="8" ind2=" " tag="520">
+      <subfield code="a">Diffusion and reaction within porous media involving condensable vapors are important processes in catalysis, fuel cells, and membrane sepns. In this work, 3-D maps of the spatial variation of porosity, pore size and network tortuosity within a porous solid, derived from magnetic resonance images, have been used to construct a structural model for a mesoporous catalyst pellet. Simulations of the kinetic uptake, adsorption and capillary condensation of butane vapor within the porous solid, conducted on the structural model, have successfully predicted exptl. measurements of the effects of the onset of capillary condensation on mass transfer rates without the need of the various adjustable parameters prevalent in other models. These findings suggest that accurate math. models for both the complex void space of the porous medium, and the mass transport processes taking place within it, have been successfully developed. [on SciFinder (R)]</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="598">
+      <subfield code="b">Articles</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="598">
+      <subfield code="b">PeerReviewed</subfield>
+    </datafield>
+    <datafield ind1=" " ind2="4" tag="655">
+      <subfield code="a">Articles</subfield>
+    </datafield>
+    <datafield ind1=" " ind2="4" tag="655">
+      <subfield code="a">PeerReviewed</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="720">
+      <subfield code="a">Watt-Smith, Matthew J</subfield>
+      <subfield code="4">cre</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="720">
+      <subfield code="a">Kolaczkowski, Stan T</subfield>
+      <subfield code="4">cre</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="720">
+      <subfield code="a">Rigby, Sean P</subfield>
+      <subfield code="4">cre</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="720">
+      <subfield code="a">Chudek, John A</subfield>
+      <subfield code="4">cre</subfield>
+    </datafield>
+    <datafield ind1="0" ind2=" " tag="787">
+      <subfield code="n">http://opus.bath.ac.uk/852/</subfield>
+    </datafield>
+    <datafield ind1="0" ind2=" " tag="773">
+      <subfield code="g">Watt-Smith, M. J., Kolaczkowski, S. T., Rigby, S. P. and Chudek, J. A., 2006. Prediction of gas sorption kinetics for porous media using MRI. AIChE Journal, 52 (9), pp. 3278-3289.</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="902">
+      <subfield code="g">UNIV OF BATH</subfield>
+      <subfield code="h">Articles</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="902">
+      <subfield code="g">UNIV OF BATH</subfield>
+      <subfield code="h">PeerReviewed</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="949">
+      <subfield code="x">i</subfield>
+    </datafield>
+  </record>
+";}s:6:"offset";i:0;s:5:"total";i:1;}

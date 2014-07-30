@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr;
 
 /**
@@ -47,14 +46,14 @@ namespace VuFindSearch\Backend\Solr;
  */
 class SearchHandler
 {
-
     /**
      * Known configuration keys.
      *
      * @var array
      */
     protected static $configKeys = array(
-        'CustomMunge', 'DismaxFields', 'QueryFields', 'DismaxParams', 'FilterQuery'
+        'CustomMunge', 'DismaxFields', 'DismaxHandler', 'QueryFields',
+        'DismaxParams', 'FilterQuery'
     );
 
     /**
@@ -74,14 +73,20 @@ class SearchHandler
     /**
      * Constructor.
      *
-     * @param array $spec Search handler specification
+     * @param array  $spec                 Search handler specification
+     * @param string $defaultDismaxHandler Default dismax handler (if no
+     * DismaxHandler set in specs).
      *
      * @return void
      */
-    public function __construct(array $spec)
+    public function __construct(array $spec, $defaultDismaxHandler = 'dismax')
     {
         foreach (self::$configKeys as $key) {
             $this->specs[$key] = isset($spec[$key]) ? $spec[$key] : array();
+        }
+        // Set dismax handler to default if not specified:
+        if (empty($this->specs['DismaxHandler'])) {
+            $this->specs['DismaxHandler'] = $defaultDismaxHandler;
         }
     }
 
@@ -97,7 +102,7 @@ class SearchHandler
      *
      * @return string
      *
-     * @see \VuFind\Service\Solr\QueryBuilder::containsAdvancedLuceneSyntax()
+     * @see \VuFind\Service\Solr\LuceneSyntaxHelper::containsAdvancedLuceneSyntax()
      */
     public function createAdvancedQueryString($search)
     {
@@ -163,11 +168,31 @@ class SearchHandler
     /**
      * Return true if the handler defines Dismax fields.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasDismax()
     {
         return !empty($this->specs['DismaxFields']);
+    }
+
+    /**
+     * Get the name of the Dismax handler to be used with this search.
+     *
+     * @return string
+     */
+    public function getDismaxHandler()
+    {
+        return $this->specs['DismaxHandler'];
+    }
+
+    /**
+     * Return true if the handler supports Extended Dismax.
+     *
+     * @return bool
+     */
+    public function hasExtendedDismax()
+    {
+        return $this->hasDismax() && ('edismax' == $this->getDismaxHandler());
     }
 
     /**
@@ -205,7 +230,7 @@ class SearchHandler
     /**
      * Return true if handler defines a filter query.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasFilterQuery()
     {
@@ -240,7 +265,8 @@ class SearchHandler
             );
         }
         $dismaxQuery = sprintf(
-            '{!dismax qf="%s" %s}%s',
+            '{!%s qf="%s" %s}%s',
+            $this->getDismaxHandler(),
             implode(' ', $this->specs['DismaxFields']),
             implode(' ', $dismaxParams),
             $search
@@ -253,8 +279,8 @@ class SearchHandler
      *
      * If optional argument $tokenize is true tokenize the search string.
      *
-     * @param string  $search   Search string
-     * @param boolean $tokenize Tokenize the search string?
+     * @param string $search   Search string
+     * @param bool   $tokenize Tokenize the search string?
      *
      * @return string
      */
@@ -279,8 +305,13 @@ class SearchHandler
             // unmodified (it's probably an advanced search that won't benefit from
             // tokenization).  We'll just set all possible values to the same thing,
             // except that we'll try to do the "one phrase" in quotes if possible.
-            // IMPORTANT: If we detect a boolean NOT, we MUST omit the quotes.
-            if (strstr($search, '"') || strstr($search, ' NOT ')) {
+            // IMPORTANT: If we detect a boolean NOT, we MUST omit the quotes. We
+            // also omit quotes if the phrase is already quoted or if there is no
+            // whitespace (in which case phrase searching is pointless and might
+            // interfere with wildcard behavior):
+            if (strstr($search, '"') || strstr($search, ' NOT ')
+                || !preg_match('/\s/', $search)
+            ) {
                 $mungeValues['onephrase'] = $search;
             } else {
                 $mungeValues['onephrase'] = sprintf('"%s"', $search);
@@ -323,19 +354,18 @@ class SearchHandler
      * If optional argument $advanced is true the search string contains
      * advanced lucene query syntax.
      *
-     * @param string  $search   Search string
-     * @param boolean $advanced Is the search an advanced search string?
+     * @param string $search   Search string
+     * @param bool   $advanced Is the search an advanced search string?
      *
      * @return string
      *
      */
     protected function createQueryString($search, $advanced = false)
     {
-
-        // If this is a basic query and we have Dismax settings, let's build
-        // a Dismax subquery to avoid some of the ugly side effects of our Lucene
-        // query generation logic.
-        if (!$advanced && $this->hasDismax()) {
+        // If this is a basic query and we have Dismax settings (or if we have
+        // Extended Dismax available), let's build a Dismax subquery to avoid
+        // some of the ugly side effects of our Lucene query generation logic.
+        if (($this->hasExtendedDismax() || !$advanced) && $this->hasDismax()) {
             $query = $this->dismaxSubquery($search);
         } else {
             $mungeRules  = $this->mungeRules();
@@ -366,7 +396,7 @@ class SearchHandler
     }
 
     /**
-     * Return modified search strign after applying the transformation rules.
+     * Return modified search string after applying the transformation rules.
      *
      * @param array  $mungeRules  Munge rules
      * @param array  $mungeValues Munge values

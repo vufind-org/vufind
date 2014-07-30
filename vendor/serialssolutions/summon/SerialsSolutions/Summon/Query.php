@@ -64,6 +64,12 @@ class SerialsSolutions_Summon_Query
     protected $filters = array();
 
     /**
+     * An array of group filters to be applied
+     * @var array
+     */
+    protected $groupFilters = array();
+
+    /**
      * An array of range filters to be applied
      * @var array
      */
@@ -112,6 +118,30 @@ class SerialsSolutions_Summon_Query
     protected $highlightEnd = '';
 
     /**
+     * Preferred search language (affects relevancy ranking)
+     * @var string
+     */
+    protected $language = 'en';
+
+    /**
+     * Query expansion setting
+     * @var bool
+     */
+    protected $expand = false;
+
+    /**
+     * IDs to fetch in place of a regular query
+     * @var array
+     */
+    protected $idsToFetch = array();
+
+    /**
+     * Maximum topics to explore
+     * @var int
+     */
+    protected $maxTopics = 1;
+
+    /**
      * Constructor
      *
      * Sets up the Summon API Client
@@ -153,19 +183,32 @@ class SerialsSolutions_Summon_Query
             's.ps' => $this->pageSize,
             's.pn' => $this->pageNumber,
             's.ho' => $this->holdings ? 'true' : 'false',
-            's.dym' => $this->didYouMean ? 'true' : 'false'
+            's.dym' => $this->didYouMean ? 'true' : 'false',
+            's.l' => $this->language,
         );
+        if (!empty($this->idsToFetch)) {
+            $options['s.fids'] = implode(',', (array)$this->idsToFetch);
+        }
         if (!empty($this->facets)) {
             $options['s.ff'] = $this->facets;
         }
         if (!empty($this->filters)) {
             $options['s.fvf'] = $this->filters;
         }
+        if ($this->maxTopics !== false) {
+            $options['s.rec.topic.max'] = $this->maxTopics;
+        }
+        if (!empty($this->groupFilters)) {
+            $options['s.fvgf'] = $this->groupFilters;
+        }
         if (!empty($this->rangeFilters)) {
             $options['s.rf'] = $this->rangeFilters;
         }
         if (!empty($this->sort)) {
             $options['s.sort'] = $this->sort;
+        }
+        if ($this->expand) {
+            $options['s.exp'] = 'true';
         }
         if ($this->highlight) {
             $options['s.hl'] = 'true';
@@ -188,6 +231,18 @@ class SerialsSolutions_Summon_Query
     public function addFilter($f)
     {
         $this->filters[] = $f;
+    }
+
+    /**
+     * Add a group filter
+     *
+     * @param string $f Filter to apply
+     *
+     * @return void
+     */
+    public function addGroupFilter($f)
+    {
+        $this->groupFilters[] = $f;
     }
 
     /**

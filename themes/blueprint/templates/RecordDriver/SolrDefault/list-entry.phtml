@@ -10,11 +10,11 @@
         $user_id = $this->user ? $this->user->id : null;
     }
 ?>
-<div class="listentry recordId source<?=$this->escapeHtml($source)?><?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>" id="record<?=$this->escapeHtml($id)?>">
-  <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
+<div class="listentry recordId source<?=$this->escapeHtmlAttr($source)?><?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>" id="record<?=$this->escapeHtmlAttr($id)?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <div class="span-2">
     <? if ($listThumb = $this->record($this->driver)->getThumbnail()): ?>
-      <img src="<?=$this->escapeHtml($listThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+      <img src="<?=$this->escapeHtmlAttr($listThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
     <? else: ?>
       <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
     <? endif; ?>
@@ -32,10 +32,10 @@
       <?=$this->transEsc('by')?>:
       <a href="<?=$this->record($this->driver)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
     <? endif; ?>
-    <? $listTags = $this->driver->getTags(
+    <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
         $list_id, // get tags for all lists if no single list is selected
         $user_id, 'tag'
-       );
+       ) : array();
     ?>
     <? if (count($listTags) > 0): ?>
       <strong><?=$this->transEsc('Your Tags')?>:</strong>
@@ -76,9 +76,30 @@
         <? endif; ?>
       <? endif; ?>
     </div>
+    <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
+          but even if we don't plan to display the link, we still want to get the $openUrl
+          value for use in generating a COinS (Z3988) tag -- see bottom of file.
+        */
+       $openUrl = $this->driver->getOpenURL();
+       $openUrlActive = $this->driver->openURLActive('results');
+       $urls = $this->record($this->driver)->getLinkDetails();
+       if ($openUrlActive || !empty($urls)): ?>
+      <? if ($openUrlActive): ?>
+        <br/>
+        <?=$this->openUrl($openUrl)?>
+        <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
+      <? endif; ?>
+      <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
+        <br/>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+      <? endforeach; ?>
+    <? endif; ?>
+
+    <br class="hideIfDetailed"/>
     <?=$this->record($this->driver)->getFormatList()?>
-    <? if ($this->driver->supportsAjaxStatus()): ?>
-      <div class="status ajax_availability hide"><?=$this->transEsc('Loading')?>...</div>
+
+    <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+    <div class="status ajax_availability hide"><?=$this->transEsc('Loading')?>...</div>
     <? endif; ?>
   </div>
 
@@ -93,9 +114,11 @@
             : $this->url('userList', array('id' => $list_id));
         $deleteUrl .= '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
       ?>
-      <a href="<?=$deleteUrl?>" title="<?=$this->transEsc('confirm_delete_brief')?>" class="delete tool source<?=$this->escapeHtml($source)?>"><?=$this->transEsc('Delete')?></a>
+      <a href="<?=$deleteUrl?>" title="<?=$this->transEsc('confirm_delete_brief')?>" class="delete tool source<?=$this->escapeHtmlAttr($source)?>"><?=$this->transEsc('Delete')?></a>
     </div>
   <? endif; ?>
 
   <div class="clear"></div>
 </div>
+
+<?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>

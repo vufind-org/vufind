@@ -196,7 +196,9 @@ abstract class AbstractBase
     {
         $server = $request->getServer();
         $agent = $server->get('HTTP_USER_AGENT');
-        list($browser, $version) = explode(' ', $this->getBrowser($agent));
+        $parts = explode(' ', $this->getBrowser($agent));
+        $browser = $parts[0];
+        $version = isset($parts[1]) ? $parts[1] : '';
         return array(
             'id'               => uniqid('', true),
             'datestamp'        => substr(date('c', strtotime('now')), 0, -6) . 'Z',

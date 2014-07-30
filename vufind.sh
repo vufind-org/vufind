@@ -106,7 +106,36 @@ findDirectory()
 ##################################################
 # Set Performance options for JETTY
 ##################################################
-#JAVA_OPTIONS="-server -Xms1048576k -Xmx1048576k -XX:+UseParallelGC -XX:NewRatio=5"
+# -Xms    Sets the initial heap size for when the JVM starts.
+# -Xmx    Sets the maximum heap size.
+# If you often get a "catalog error" or need to restart vufind you
+# may need to increase the Xmx value if your system has the memory
+# to support it. For example, on a system with 4GB of memory that is
+# dedicated to running Vufind you may want to set the Xmx value to
+# 2048m or 3,072m.
+#
+# IMPORTANT NOTE: You may want to skip setting the Xms value
+# so that JAVA / Vufind will only use what it needs - potentialy
+# leaving more memory for the rest of the system. To see the JVM memory
+# usage visit your solr URL, possibly the same URL as your vufind,
+# instance but appended with :8080/solr/
+#
+# The most important factors for determining the amount of memory
+# that you will need to allocate are the number of records you have
+# indexed, and how much traffic your site receives. It may also be
+# beneficial to limit or block crawlers and robots as they can,
+# at times, generate so many requests that your site has poor
+# performance for your human patrons
+#
+# For more information on tuning vufind and java, see the
+# vufind wiki article at https://vufind.org/wiki/performance
+# and http://www.oracle.com/technetwork/java/gc-tuning-5-138395.html
+#
+# Some example settings:
+# JAVA_OPTIONS="-server -Xms1048576k -Xmx1048576k -XX:+UseParallelGC -XX:NewRatio=5"
+# JAVA_OPTIONS="-server -Xmx1048576k -XX:+UseParallelGC -XX:NewRatio=5"
+# JAVA_OPTIONS="-server -Xms1024m -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
+# JAVA_OPTIONS="-server -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
 if [ -z "$JAVA_OPTIONS" ]
 then
   JAVA_OPTIONS="-server -Xms1024m -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
@@ -117,7 +146,7 @@ fi
 ##################################################
 if [ -z "$VUFIND_HOME" ]
 then
-  VUFIND_HOME="/usr/local/vufind"
+  VUFIND_HOME="/usr/local/vufind2"
 fi
 
 
@@ -321,14 +350,14 @@ then
         /opt/java \
         /opt/jdk \
         /opt/jre \
-    " 
+    "
     JAVA_NAMES="java jdk jre"
     for N in $JAVA_NAMES ; do
         for L in $JAVA_LOCATIONS ; do
-            [ -d $L ] || continue 
+            [ -d $L ] || continue
             find $L -name "$N" ! -type d | grep -v threads | while read J ; do
                 [ -x $J ] || continue
-                VERSION=`eval $J -version 2>&1`       
+                VERSION=`eval $J -version 2>&1`
                 [ $? = 0 ] || continue
                 VERSION=`expr "$VERSION" : '.*"\(1.[0-9\.]*\)["_]'`
                 [ "$VERSION" = "" ] && continue
@@ -435,7 +464,7 @@ case "$ACTION" in
 
         echo "STARTED VuFind `date`" >> $JETTY_CONSOLE
         echo "$RUN_CMD"
-        nohup sh -c "exec $RUN_CMD >>$JETTY_CONSOLE 2>&1" &
+        nohup sh -c "exec $RUN_CMD >>$JETTY_CONSOLE 2>&1" > /dev/null &
         echo $! > $JETTY_PID
         echo "VuFind running pid="`cat $JETTY_PID`
         ;;

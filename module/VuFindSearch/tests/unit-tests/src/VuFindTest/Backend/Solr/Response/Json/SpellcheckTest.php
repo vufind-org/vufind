@@ -55,16 +55,60 @@ class SpellcheckTest extends TestCase
                 array('this is a phrase', array()),
                 array('foo', array()),
                 array('foobar', array())
-            )
+            ),
+            'fake query'
         );
         $s2 = new Spellcheck(
             array(
                 array('is a', array()),
                 array('bar', array()),
                 array('foo bar', array())
-            )
+            ),
+            'fake query'
         );
         $s1->mergeWith($s2);
         $this->assertCount(5, $s1);
+        $this->assertEquals($s2, $s1->getSecondary());
+    }
+
+    /**
+     * Test double merge.
+     *
+     * @return void
+     */
+    public function testDoubleMerge()
+    {
+        $s1 = new Spellcheck(array(array('a', array())), 'fake');
+        $s2 = new Spellcheck(array(array('b', array())), 'fake');
+        $s3 = new Spellcheck(array(array('c', array())), 'fake');
+        $s1->mergeWith($s2);
+        $s1->mergeWith($s3);
+        $this->assertCount(3, $s1);
+        $this->assertCount(2, $s1->getSecondary());
+        $this->assertCount(1, $s1->getSecondary()->getSecondary());
+    }
+
+    /**
+     * Test exact duplication.
+     *
+     * @return void
+     */
+    public function testExactDuplication()
+    {
+        $s1 = new Spellcheck(array(array('a', array())), 'fake');
+        $s2 = new Spellcheck(array(array('a', array())), 'fake');
+        $s1->mergeWith($s2);
+        $this->assertCount(1, $s1);
+    }
+
+    /**
+     * Test getQuery()
+     *
+     * @return void
+     */
+    public function testGetQuery()
+    {
+        $s = new Spellcheck(array(), 'test');
+        $this->assertEquals('test', $s->getQuery());
     }
 }

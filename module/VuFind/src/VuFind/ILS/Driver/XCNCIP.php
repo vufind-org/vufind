@@ -277,7 +277,7 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $request = $this->getStatusRequest($id);
         $response = $this->sendRequest($request);
@@ -301,6 +301,7 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
@@ -481,13 +482,16 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($patron)
     {
-        //$request = $this->getUserLookupRequest($patron['id'], 'Visible User Id',
-        //    'LoanedItemsDesired');
+        /* TODO -- process response
+        $request = $this->getUserLookupRequest(
+            $patron['id'], 'Visible User Id', 'LoanedItemsDesired'
+        );
         $response = $this->sendRequest($request);
-        // TODO -- process response
+         */
         return array();
     }
 
@@ -501,13 +505,16 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyFines($patron)
     {
-        //$request = $this->getUserLookupRequest($patron['id'], 'Visible User Id',
-        //    'UserFiscalAccountDesired');
-        //$response = $this->sendRequest($request);
-        // TODO -- process response
+        /* TODO -- process response
+        $request = $this->getUserLookupRequest(
+            $patron['id'], 'Visible User Id', 'UserFiscalAccountDesired'
+        );
+        $response = $this->sendRequest($request);
+         */
         return array();
     }
 
@@ -521,13 +528,16 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyHolds($patron)
     {
-        //$request = $this->getUserLookupRequest($patron['id'], 'Visible User Id',
-        //    'RequestedItemsDesired');
-        //$response = $this->sendRequest($request);
-        // TODO -- process response
+        /* TODO -- process response
+        $request = $this->getUserLookupRequest(
+            $patron['id'], 'Visible User Id', 'RequestedItemsDesired'
+        );
+        $response = $this->sendRequest($request);
+         */
         return array();
     }
 
@@ -606,6 +616,7 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -680,6 +691,7 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {

@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -17,24 +17,6 @@ use Zend\Code\Reflection\DocBlock\Tag\TagInterface as ReflectionDocBlockTag;
 class Tag extends AbstractGenerator
 {
     /**
-     * @var array
-     */
-    protected static $typeFormats = array(
-        array(
-            'param',
-            '@param <type> <variable> <description>'
-        ),
-        array(
-            'return',
-            '@return <type> <description>'
-        ),
-        array(
-            'tag',
-            '@<name> <description>'
-        )
-    );
-
-    /**
      * @var string
      */
     protected $name = null;
@@ -43,19 +25,6 @@ class Tag extends AbstractGenerator
      * @var string
      */
     protected $description = null;
-
-    /**
-     * @param  array $options
-     */
-    public function __construct(array $options = array())
-    {
-        if (isset($options['name'])) {
-            $this->setName($options['name']);
-        }
-        if (isset($options['description'])) {
-            $this->setDescription($options['description']);
-        }
-    }
 
     /**
      * Build a Tag generator object from a reflection object

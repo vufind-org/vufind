@@ -71,21 +71,29 @@ class Loader
     /**
      * Given an ID and record source, load the requested record object.
      *
-     * @param string $id     Record ID
-     * @param string $source Record source
+     * @param string $id              Record ID
+     * @param string $source          Record source
+     * @param bool   $tolerateMissing Should we load a "Missing" placeholder
+     * instead of throwing an exception if the record cannot be found?
      *
      * @throws \Exception
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public function load($id, $source = 'VuFind')
+    public function load($id, $source = 'VuFind', $tolerateMissing = false)
     {
         $results = $this->searchService->retrieve($source, $id)->getRecords();
-        if (count($results) < 1) {
-            throw new RecordMissingException(
-                'Record ' . $source . ':' . $id . ' does not exist.'
-            );
+        if (count($results) > 0) {
+            return $results[0];
         }
-        return $results[0];
+        if ($tolerateMissing) {
+            $record = $this->recordFactory->get('Missing');
+            $record->setRawData(array('id' => $id));
+            $record->setSourceIdentifier($source);
+            return $record;
+        }
+        throw new RecordMissingException(
+            'Record ' . $source . ':' . $id . ' does not exist.'
+        );
     }
 
     /**

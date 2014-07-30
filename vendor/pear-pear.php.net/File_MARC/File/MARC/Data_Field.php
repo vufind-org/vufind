@@ -32,7 +32,7 @@
  * @author    Dan Scott <dscott@laurentian.ca>
  * @copyright 2003-2008 Oy Realnode Ab, Dan Scott
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version   CVS: $Id: Data_Field.php 301737 2010-07-31 04:14:44Z dbs $
+ * @version   CVS: $Id$
  * @link      http://pear.php.net/package/File_MARC
  */
 
@@ -179,15 +179,14 @@ class File_MARC_Data_Field extends File_MARC_Field
      */
     function appendSubfield(File_MARC_Subfield $new_subfield)
     {
-        /* Append as the last field in the record */
+        /* Append as the last subfield in the field */
         $this->subfields->appendNode($new_subfield);
-        return $new_subfield;
     }
     // }}}
 
     // {{{ prependSubfield()
     /**
-     * Prepends subfield to subfield liss 
+     * Prepends subfield to subfield list
      *
      * Adds a File_MARC_Subfield object to the  start of the existing list
      * of subfields.
@@ -198,7 +197,15 @@ class File_MARC_Data_Field extends File_MARC_Field
      */
     function prependSubfield(File_MARC_Subfield $new_subfield)
     {
-        $this->subfields->prependNode($new_subfield);
+        $pos = 0;
+        $new_subfield->setPosition($pos);
+        $this->subfields->shift($new_subfield);
+        $node = null;
+        $this->subfields->rewind();
+        while ($node = $this->subfields->next()) {
+            $pos++;
+            $node->setPosition($pos);
+        }
         return $new_subfield;
     }
     // }}}
@@ -230,8 +237,8 @@ class File_MARC_Data_Field extends File_MARC_Field
             break;
 
         default: 
-             $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INSERTSUBFIELD_MODE], array("mode" => $mode));
-             throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INSERTSUBFIELD_MODE);
+            $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INSERTSUBFIELD_MODE], array("mode" => $mode));
+            throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INSERTSUBFIELD_MODE);
             return false;
         }
         return $new_field;
@@ -279,14 +286,11 @@ class File_MARC_Data_Field extends File_MARC_Field
      *
      * @param File_MARC_Subfield $subfield The subfield to delete
      *
-     * @return bool                         Success or failure
+     * @return void
      */
     function deleteSubfield(File_MARC_Subfield $subfield)
     {
-        if ($this->subfields->deleteNode($subfield)) {
-            return true;
-        }
-        return false;
+        $this->subfields->deleteNode($subfield);
     }
     // }}}
 
@@ -334,8 +338,8 @@ class File_MARC_Data_Field extends File_MARC_Field
             break;
 
         default:
-             $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INVALID_INDICATOR_REQUEST], array("indicator" => $ind));
-             throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INVALID_INDICATOR_REQUEST);
+            $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INVALID_INDICATOR_REQUEST], array("indicator" => $ind));
+            throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INVALID_INDICATOR_REQUEST);
             return false;
         }
 

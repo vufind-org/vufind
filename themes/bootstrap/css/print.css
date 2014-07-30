@@ -1,0 +1,6 @@
+.noprint,.noprint *,.noprint[class*="span"] {display:none}
+.row-fluid .span9 {margin:auto;width:90%}
+a[href]:after{content:''}
+* {background-color:#FFF}
+.container {margin:0}
+#datevispublishDatexWrapper {width:90%}

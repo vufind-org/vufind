@@ -63,7 +63,7 @@ class Tag implements AutocompleteInterface, \VuFind\Db\Table\DbTableAwareInterfa
         $tagTable = $this->getTagsTable();
         $tags = $tagTable->matchText($query);
         if ($tags) {
-            foreach ($tags as $i=>$tag) {
+            foreach ($tags as $tag) {
                 $tagList[] = $tag['tag'];
             }
         }

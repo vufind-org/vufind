@@ -32,11 +32,13 @@
  * @author    Dan Scott <dscott@laurentian.ca>
  * @copyright 2003-2008 Oy Realnode Ab, Dan Scott
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version   CVS: $Id: Field.php 301737 2010-07-31 04:14:44Z dbs $
+ * @version   CVS: $Id$
  * @link      http://pear.php.net/package/File_MARC
  */
 
-// {{{ class File_MARC_Field extends Structures_LinkedList_DoubleNode
+require_once 'File/MARC/List.php';
+
+// {{{ class File_MARC_Field extends File_MARC_List
 /**
  * The File_MARC_Field class is expected to be extended to reflect the
  * requirements of control and data fields.
@@ -50,7 +52,7 @@
  * @license  http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  * @link     http://pear.php.net/package/File_MARC
  */
-class File_MARC_Field extends Structures_LinkedList_DoubleNode
+class File_MARC_Field extends File_MARC_List
 {
 
     // {{{ properties
@@ -93,7 +95,6 @@ class File_MARC_Field extends Structures_LinkedList_DoubleNode
     function __destruct()
     {
         $this->tag = null;
-        parent::__destruct();
     }
     // }}}
 

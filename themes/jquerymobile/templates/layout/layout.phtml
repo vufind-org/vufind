@@ -1,5 +1,5 @@
 <?=$this->doctype('HTML5')?>
-<html>
+<html lang="<?=$this->layout()->userLang?>">
   <head>
     <meta charset="utf-8"/>
     <meta name="format-detection" content="telephone=no"/>
@@ -12,6 +12,16 @@
     <?
         // Set global path for Javascript code:
         $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
+
+        // Session keep-alive
+        if ($this->KeepAlive()) {
+            $this->headScript()->appendScript('var keepAliveInterval = '
+                . $this->KeepAlive());
+            $this->headScript()->appendFile("keep_alive.js");
+        }
+        if ($this->recaptcha()->active()) {
+            $this->headScript()->appendFile("recaptcha_ajax.js");
+        }
     ?>
     <?=$this->headScript()?>
   </head>

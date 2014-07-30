@@ -18,16 +18,12 @@ return array(
         'jquery-ui/js/jquery-ui.js',
         'lightbox.js',
         'common.js',
+        'd3.js',
     ),
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
         'factories' => array(
-            'layoutclass' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $left = !isset($config->Site->sidebarOnLeft)
-                    ? false : $config->Site->sidebarOnLeft;
-                return new \VuFind\View\Helper\Blueprint\LayoutClass($left);
-            },
+            'layoutclass' => 'VuFind\View\Helper\Blueprint\Factory::getLayoutClass',
         ),
         'invokables' => array(
             'search' => 'VuFind\View\Helper\Blueprint\Search',

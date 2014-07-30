@@ -1,0 +1,9 @@
+<? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
+  <div class="bulkActionButtons hidden-print">
+    <label class="checkbox">
+      <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"/> <?=$this->transEsc('select_page')?>
+        | <?=$this->transEsc('with_selected')?>:
+    </label>
+    <input id="<?=$this->idPrefix?>updateCart" type="submit" class="btn btn-default" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
+  </div>
+<? endif; ?>

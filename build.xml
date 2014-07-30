@@ -16,7 +16,7 @@
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
-  <property name="version" value="2.0.2" />
+  <property name="version" value="2.3" />
 
   <!-- Main Target -->
   <target name="main" description="main target">
@@ -52,7 +52,7 @@
 
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
-    <exec command="phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests --reportfile ${builddir}/reports/phpmd.xml" />
+    <exec command="phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
   </target>
 
   <!-- Measure project with phploc -->
@@ -67,7 +67,7 @@
 
   <!-- PHP copy-and-paste detection -->
   <target name="phpcpd">
-    <exec command="phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude ${srcdir}/module/VuFind/tests/unit-tests/src/Auth ${srcdir}/module" />
+    <exec command="phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude tests ${srcdir}/module" />
   </target>
 
   <!-- PHP CodeSniffer -->
@@ -120,7 +120,7 @@
         <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
         <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
         <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
-        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/postgres.sql ${vufinddb}" checkreturn="true" />
+        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
 
         <!-- configure VuFind -->
         <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
@@ -183,7 +183,6 @@
 
     <!-- delete the configuration, sample index, logs and cache data -->
     <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/stats/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />

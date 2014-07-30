@@ -41,6 +41,11 @@ use VuFind\Exception\Mail as MailException,
 
 class CartController extends AbstractBase
 {
+    /**
+     * Session container
+     *
+     * @var SessionContainer
+     */
     protected $session;
 
     /**
@@ -71,7 +76,7 @@ class CartController extends AbstractBase
     {
         // We came in from the cart -- let's remember this we can redirect there
         // when we're done:
-        $this->session->url = $this->url()->fromRoute('cart-home');
+        $this->session->url = $this->getLightboxAwareUrl('cart-home');
 
         // Now forward to the requested action:
         if (strlen($this->params()->fromPost('email', '')) > 0) {
@@ -180,16 +185,11 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
-        $view = $this->createViewModel();
+        $view = $this->createEmailViewModel();
         $view->records = $this->getRecordLoader()->loadBatch($ids);
 
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
-            // Send parameters back to view so form can be re-populated:
-            $view->to = $this->params()->fromPost('to');
-            $view->from = $this->params()->fromPost('from');
-            $view->message = $this->params()->fromPost('message');
-
+        if ($this->formWasSubmitted('submit')) {
             // Build the URL to share:
             $params = array();
             foreach ($ids as $current) {
@@ -227,8 +227,12 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
-        $this->getRequest()->getQuery()->set('id', $ids);
-        return $this->forwardTo('Records', 'Home');
+        $callback = function ($i) {
+            return 'id[]=' . urlencode($i);
+        };
+        $query = '?print=true&' . implode('&', array_map($callback, $ids));
+        $url = $this->url()->fromRoute('records-home') . $query;
+        return $this->redirect()->toUrl($url);
     }
 
     /**
@@ -260,7 +264,7 @@ class CartController extends AbstractBase
         $export = $this->getExport();
 
         // Process form submission if necessary:
-        if (!is_null($this->params()->fromPost('submit'))) {
+        if ($this->formWasSubmitted('submit')) {
             $format = $this->params()->fromPost('format');
             $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
             if ($export->needsRedirect($format)) {
@@ -333,10 +337,15 @@ class CartController extends AbstractBase
      */
     public function saveAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
         $ids = is_null($this->params()->fromPost('selectAll'))
-            ? $this->params()->fromPost('ids')
+            ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids'))
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
@@ -349,7 +358,7 @@ class CartController extends AbstractBase
         }
 
         // Process submission if necessary:
-        if (!is_null($this->params()->fromPost('submit'))) {
+        if ($this->formWasSubmitted('submit')) {
             $this->favorites()
                 ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
             $this->flashMessenger()->setNamespace('info')

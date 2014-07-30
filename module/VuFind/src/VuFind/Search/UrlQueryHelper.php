@@ -68,6 +68,13 @@ class UrlQueryHelper
     protected $defaultParams = array();
 
     /**
+     * Should we suppress the standard query parameter?
+     *
+     * @var bool
+     */
+    protected $suppressQuery = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params VuFind search results object.
@@ -104,6 +111,28 @@ class UrlQueryHelper
     }
 
     /**
+     * Control query suppression
+     *
+     * @param bool $suppress Should we suppress queries?
+     *
+     * @return void
+     */
+    public function setSuppressQuery($suppress)
+    {
+        $this->suppressQuery = $suppress;
+    }
+
+    /**
+     * Is query suppressed?
+     *
+     * @return bool
+     */
+    public function isQuerySuppressed()
+    {
+        return $this->suppressQuery;
+    }
+
+    /**
      * Get an array of URL parameters.
      *
      * @return array
@@ -113,40 +142,45 @@ class UrlQueryHelper
         $params = $this->defaultParams;
 
         // Build all the URL parameters based on search object settings:
-        if ($this->params->getSearchType() == 'advanced') {
-            $query = $this->params->getQuery();
-            if ($query instanceof QueryGroup) {
-                $params['join'] = $query->getOperator();
-                foreach ($query->getQueries() as $i => $current) {
-                    if ($current instanceof QueryGroup) {
-                        $operator = $current->isNegated()
-                            ? 'NOT' : $current->getOperator();
-                        $params['bool' . $i] = array($operator);
-                        foreach ($current->getQueries() as $inner) {
-                            if (!isset($params['lookfor' . $i])) {
-                                $params['lookfor' . $i] = array();
+        if (!$this->suppressQuery) {
+            if ($this->params->getSearchType() == 'advanced') {
+                $query = $this->params->getQuery();
+                if ($query instanceof QueryGroup) {
+                    $params['join'] = $query->getOperator();
+                    foreach ($query->getQueries() as $i => $current) {
+                        if ($current instanceof QueryGroup) {
+                            $operator = $current->isNegated()
+                                ? 'NOT' : $current->getOperator();
+                            $params['bool' . $i] = array($operator);
+                            foreach ($current->getQueries() as $inner) {
+                                if (!isset($params['lookfor' . $i])) {
+                                    $params['lookfor' . $i] = array();
+                                }
+                                if (!isset($params['type' . $i])) {
+                                    $params['type' . $i] = array();
+                                }
+                                $params['lookfor'.$i][] = $inner->getString();
+                                $params['type' . $i][] = $inner->getHandler();
+                                if (null !== ($op = $inner->getOperator())) {
+                                    $params['op' . $i][] = $op;
+                                }
                             }
-                            if (!isset($params['type' . $i])) {
-                                $params['type' . $i] = array();
-                            }
-                            $params['lookfor'.$i][] = $inner->getString();
-                            $params['type' . $i][] = $inner->getHandler();
+                        } else {
+                            throw new \Exception('Unexpected Query object.');
                         }
-                    } else {
-                        throw new \Exception('Unexpected Query object.');
                     }
+                } else {
+                    throw new \Exception('Unexpected Query object.');
                 }
             } else {
-                throw new \Exception('Unexpected Query object.');
-            }
-        } else {
-            $search = $this->params->getDisplayQuery();
-            if (!empty($search)) {
-                $params[$this->basicSearchParam] = $search;
-            }
-            $type = $this->params->getSearchHandler();
-            if (!empty($type)) {
-                $params['type'] = $type;
+                $search = $this->params->getDisplayQuery();
+                if (!empty($search)) {
+                    $params[$this->basicSearchParam] = $search;
+                }
+                $type = $this->params->getSearchHandler();
+                if (!empty($type)) {
+                    $params['type'] = $type;
+                }
             }
         }
         $sort = $this->params->getSort();
@@ -182,12 +216,14 @@ class UrlQueryHelper
         $shards = $this->params->getSelectedShards();
         if (!empty($shards)) {
             sort($shards);
-            $key = implode(':::', $shards);
             $defaultShards = $this->options->getDefaultSelectedShards();
             sort($defaultShards);
             if (implode(':::', $shards) != implode(':::', $defaultShards)) {
                 $params['shard'] = $shards;
             }
+        }
+        if ($this->params->hasDefaultsApplied()) {
+            $params['dfApplied'] = 1;
         }
 
         return $params;
@@ -212,15 +248,17 @@ class UrlQueryHelper
     /**
      * Add a facet to the parameters.
      *
-     * @param string $field Facet field
-     * @param string $value Facet value
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param string $operator Facet type to add (AND, OR, NOT)
      *
      * @return string
      */
-    public function addFacet($field, $value)
+    public function addFacet($field, $value, $operator = 'AND')
     {
         // Facets are just a special case of filters:
-        return $this->addFilter($field . ':"' . $value . '"');
+        $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
+        return $this->addFilter($prefix . $field . ':"' . $value . '"');
     }
 
     /**
@@ -261,15 +299,23 @@ class UrlQueryHelper
     /**
      * Remove a facet from the parameters.
      *
-     * @param string $field  Facet field
-     * @param string $value  Facet value
-     * @param bool   $escape Should we escape the string for use in the view?
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param bool   $escape   Should we escape the string for use in the view?
+     * @param string $operator Facet type to add (AND, OR, NOT)
      *
      * @return string
      */
-    public function removeFacet($field, $value, $escape = true)
+    public function removeFacet($field, $value, $escape = true, $operator = 'AND')
     {
         $params = $this->getParamArray();
+
+        // Account for operators:
+        if ($operator == 'NOT') {
+            $field = '-' . $field;
+        } else if ($operator == 'OR') {
+            $field = '~' . $field;
+        }
 
         // Remove the filter:
         $newFilter = array();
@@ -389,6 +435,37 @@ class UrlQueryHelper
         return $this->updateQueryString(
             'limit', $l, $this->options->getDefaultLimit(), $escape, true
         );
+    }
+
+    /**
+     * Return HTTP parameters to render the current page with a different set
+     * of search terms.
+     *
+     * @param string $lookfor New search terms
+     * @param bool   $escape  Should we escape the string for use in the view?
+     *
+     * @return string
+     */
+    public function setSearchTerms($lookfor, $escape = true)
+    {
+        // If we're currently dealing with an advanced query, turn it off so
+        // that it can be overridden:
+        if ($this->params->getSearchType() == 'advanced') {
+            $savedSuppressQuery = $this->suppressQuery;
+            $this->suppressQuery = true;
+        }
+
+        // Generate the URL:
+        $new = $this->updateQueryString(
+            $this->basicSearchParam, $lookfor, null, $escape, true
+        );
+
+        // Restore settings to their previous state:
+        if (isset($savedSuppressQuery)) {
+            $this->suppressQuery = $savedSuppressQuery;
+        }
+
+        return $new;
     }
 
     /**

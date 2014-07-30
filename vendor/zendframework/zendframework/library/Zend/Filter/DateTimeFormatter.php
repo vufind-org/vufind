@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -36,7 +36,7 @@ class DateTimeFormatter extends AbstractFilter
      * Set the format string accepted by date() to use when formatting a string
      *
      * @param  string $format
-     * @return \Zend\Filter\DateTimeFormatter
+     * @return self
      */
     public function setFormat($format)
     {
@@ -66,8 +66,8 @@ class DateTimeFormatter extends AbstractFilter
     /**
      * Normalize the provided value to a formatted string
      *
-     * @param string|int|DateTime $value
-     * @returns string
+     * @param  string|int|DateTime $value
+     * @return string
      */
     protected function normalizeDateTime($value)
     {

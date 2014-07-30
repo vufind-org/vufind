@@ -38,15 +38,14 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
 
     // AJAX call
     var url = baseURL + '/AJAX/json?method=getVisData&facetFields=' + encodeURIComponent(facetFields) + '&' + searchParams;
-    //alert(url);
     $.getJSON(url, function (data) {
         if (data.status == 'OK') {
             $.each(data['data'], function(key, val) {
                 //check if there is data to display, if there isn't hide the box
-                if (val['data'].length == 0){
-                    $("#datevis" + key + "xWrapper").hide();
+                if (val['data'] == undefined || val['data'].length == 0) {
                     return;
                 }
+                $("#datevis" + key + "xWrapper").show();
 
                 // plot graph
                 var placeholder = $("#datevis" + key + "x");

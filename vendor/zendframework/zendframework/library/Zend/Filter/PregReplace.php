@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -52,7 +52,7 @@ class PregReplace extends AbstractFilter
      * @see preg_replace()
      *
      * @param  string|array $pattern - same as the first argument of preg_replace
-     * @return PregReplace
+     * @return self
      * @throws Exception\InvalidArgumentException
      */
     public function setPattern($pattern)
@@ -94,7 +94,7 @@ class PregReplace extends AbstractFilter
      * @see preg_replace()
      *
      * @param  array|string $replacement - same as the second argument of preg_replace
-     * @return PregReplace
+     * @return self
      * @throws Exception\InvalidArgumentException
      */
     public function setReplacement($replacement)

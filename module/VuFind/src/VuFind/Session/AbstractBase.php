@@ -87,6 +87,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      * @param string $sess_name Session name
      *
      * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function open($sess_path, $sess_name)
     {
@@ -102,30 +103,6 @@ abstract class AbstractBase implements SaveHandlerInterface,
     public function close()
     {
         return true;
-    }
-
-    /**
-     * Read function must return string value always to make save handler work as
-     * expected. Return empty string if there is no data to read.
-     *
-     * @param string $sess_id The session ID to read
-     *
-     * @return string
-     */
-    public function read($sess_id)
-    {
-    }
-
-    /**
-     * Write function that is called when session data is to be saved.
-     *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
-     *
-     * @return void
-     */
-    public function write($sess_id, $data)
-    {
     }
 
     /**
@@ -153,6 +130,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
      * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function gc($sess_maxlifetime)
     {

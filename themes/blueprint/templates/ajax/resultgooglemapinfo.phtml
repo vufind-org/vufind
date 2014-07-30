@@ -6,12 +6,12 @@
     <? $i++; ?>
       <div class="mapInfoResult <? if ($i % 2 == 0): ?>alt <? endif; ?>record<?=$i ?>">
         <div class="mapInfoResultThumb">
-          <? if ($thumb = $this->record($record)->getThumbnail()): ?><img class="mapInfoResultThumbImg" src="<?=$this->escapeHtml($thumb) ?>" style="display:block"/><? endif; ?>
+          <? if ($thumb = $this->record($record)->getThumbnail()): ?><img class="mapInfoResultThumbImg" src="<?=$this->escapeHtmlAttr($thumb) ?>" style="display:block"/><? endif; ?>
         </div>
 
         <div class="mapInfoResultText">
         <a href="<?=$this->recordLink()->getUrl($record)?>"><?=$record->getTitle() ?></a><br/>
-        <?=$this->translate('by') ?> <a href="<?=$this->url('author-home')?>?author=<?=urlencode($record->getPrimaryAuthor())?>"><?=$this->escapeHtml($record->getPrimaryAuthor())?></a>
+        <?=$this->transEsc('by') ?> <a href="<?=$this->url('author-home')?>?author=<?=urlencode($record->getPrimaryAuthor())?>"><?=$this->escapeHtml($record->getPrimaryAuthor())?></a>
         </div>
 
       </div>
@@ -21,7 +21,7 @@
   </div>
   <? if ($this->recordCount > 5): ?>
     <div class="mapSeeAllDiv">
-      <a href="<?=$this->url('search-results') ?><?=$this->results->getUrlQuery()->getParams() ?>"><?=$this->translate('see all') ?> <?=$this->escapeHtml($this->recordCount) ?>...</a>
+      <a href="<?=$this->url('search-results') ?><?=$this->results->getUrlQuery()->getParams() ?>"><?=$this->transEsc('see all') ?> <?=$this->escapeHtml($this->recordCount) ?>...</a>
     </div>
   <? endif; ?>
 </div>

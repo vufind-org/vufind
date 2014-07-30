@@ -61,21 +61,15 @@ class Module
      */
     public function getServiceConfig()
     {
-        // @codingStandardsIgnoreStart
         return array(
             'factories' => array(
-                'VuFindTheme\ThemeInfo' => function ($sm) {
-                    return new \VuFindTheme\ThemeInfo(
-                        realpath(__DIR__ . '/../../themes'), 'blueprint'
-                    );
-                }
+                'VuFindTheme\ThemeInfo' => 'VuFindTheme\Module::getThemeInfo',
             ),
             'invokables' => array(
                 'VuFindTheme\Mobile' => 'VuFindTheme\Mobile',
                 'VuFindTheme\ResourceContainer' => 'VuFindTheme\ResourceContainer',
             ),
         );
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -85,50 +79,27 @@ class Module
      */
     public function getViewHelperConfig()
     {
-        // @codingStandardsIgnoreStart
         return array(
             'factories' => array(
-                'headlink' => function ($sm) {
-                    return new \VuFindTheme\View\Helper\HeadLink(
-                        $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
-                    );
-                },
-                'headscript' => function ($sm) {
-                    return new \VuFindTheme\View\Helper\HeadScript(
-                        $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
-                    );
-                },
-                'headthemeresources' => function ($sm) {
-                    return new \VuFindTheme\View\Helper\HeadThemeResources(
-                        $sm->getServiceLocator()->get('VuFindTheme\ResourceContainer')
-                    );
-                },
-                'imagelink' => function ($sm) {
-                    return new \VuFindTheme\View\Helper\ImageLink(
-                        $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
-                    );
-                },
-                'inlinescript' => function ($sm) {
-                    return new \VuFindTheme\View\Helper\InlineScript(
-                        $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
-                    );
-                },
-                'mobileurl' => function ($sm) {
-                    return new \VuFindTheme\View\Helper\MobileUrl(
-                        $sm->getServiceLocator()->get('VuFindTheme\Mobile')
-                    );
-                },
+                'headlink' => 'VuFindTheme\View\Helper\Factory::getHeadLink',
+                'headscript' => 'VuFindTheme\View\Helper\Factory::getHeadScript',
+                'headthemeresources' =>
+                    'VuFindTheme\View\Helper\Factory::getHeadThemeResources',
+                'imagelink' => 'VuFindTheme\View\Helper\Factory::getImageLink',
+                'inlinescript' =>
+                    'VuFindTheme\View\Helper\Factory::getInlineScript',
+                'mobileurl' => 'VuFindTheme\View\Helper\Factory::getMobileUrl',
             ),
         );
-        // @codingStandardsIgnoreEnd
     }
 
     /**
-     * Perform initialization
+     * Factory function for ThemeInfo object.
      *
-     * @return void
+     * @return ThemeInfo
      */
-    public function init()
+    public static function getThemeInfo()
     {
+        return new ThemeInfo(realpath(__DIR__ . '/../../themes'), 'blueprint');
     }
 }

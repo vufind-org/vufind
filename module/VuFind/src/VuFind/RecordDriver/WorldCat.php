@@ -125,6 +125,16 @@ class WorldCat extends SolrMarc
     }
 
     /**
+     * Get the OCLC number of the record.
+     *
+     * @return array
+     */
+    public function getOCLC()
+    {
+        return array($this->getUniqueID());
+    }
+
+    /**
      * Return the unique identifier of this record within the Solr index;
      * useful for retrieving additional information (like tags and user
      * comments) from the external MySQL database.
@@ -244,7 +254,7 @@ class WorldCat extends SolrMarc
      */
     public function getPublishers()
     {
-        return $this->getFieldArray('260', array('b'));
+        return $this->getPublicationInfo('b');
     }
 
     /**
@@ -254,7 +264,7 @@ class WorldCat extends SolrMarc
      */
     public function getPublicationDates()
     {
-        return $this->getFieldArray('260', array('c'));
+        return $this->getPublicationInfo('c');
     }
 
     /**

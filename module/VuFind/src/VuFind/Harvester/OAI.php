@@ -56,9 +56,9 @@ class OAI
     protected $baseURL;
 
     /**
-     * Target set to harvest (null for all records)
+     * Target set(s) to harvest (null for all records)
      *
-     * @var string
+     * @var string|array
      */
     protected $set = null;
 
@@ -67,7 +67,7 @@ class OAI
      *
      * @var string
      */
-    protected $metadata = 'oai_dc';
+    protected $metadataPrefix = 'oai_dc';
 
     /**
      * OAI prefix to strip from ID values
@@ -105,7 +105,14 @@ class OAI
     protected $lastHarvestFile;
 
     /**
-     * Harvest start date (null for all records)
+     * Harvest end date (null for no specific end)
+     *
+     * @var string
+     */
+    protected $harvestEndDate;
+
+    /**
+     * Harvest start date (null for no specific start)
      *
      * @var string
      */
@@ -175,6 +182,34 @@ class OAI
     protected $verbose = false;
 
     /**
+     * Should we sanitize XML?
+     *
+     * @var bool
+     */
+    protected $sanitize = false;
+
+    /**
+     * Filename for logging bad XML responses (false for none)
+     *
+     * @var string|bool
+     */
+    protected $badXMLLog = false;
+
+    /**
+     * Username for HTTP basic authentication (false for none)
+     *
+     * @var string|bool
+     */
+    protected $httpUser = false;
+
+    /**
+     * Password for HTTP basic authentication (false for none)
+     *
+     * @var string|bool
+     */
+    protected $httpPass = false;
+
+    /**
      * As we harvest records, we want to track the most recent date encountered
      * so we can set a start point for the next harvest.  (Unix timestamp format)
      *
@@ -188,9 +223,13 @@ class OAI
      * @param string            $target   Target directory for harvest.
      * @param array             $settings OAI-PMH settings from oai.ini.
      * @param \Zend\Http\Client $client   HTTP client
+     * @param string            $from     Harvest start date (omit to use
+     * last_harvest.txt)
+     * @param string            $until    Harvest end date (optional)
      */
-    public function __construct($target, $settings, \Zend\Http\Client $client)
-    {
+    public function __construct($target, $settings, \Zend\Http\Client $client,
+        $from = null, $until = null
+    ) {
         // Store client:
         $this->client = $client;
 
@@ -207,61 +246,36 @@ class OAI
 
         // Check if there is a file containing a start date:
         $this->lastHarvestFile = $this->basePath . 'last_harvest.txt';
-        $this->loadLastHarvestedDate();
 
-        // Set up base URL:
-        if (empty($settings['url'])) {
-            throw new \Exception("Missing base URL for {$target}.");
-        }
-        $this->baseURL = $settings['url'];
-        if (isset($settings['set'])) {
-            $this->set = $settings['set'];
-        }
-        if (isset($settings['metadataPrefix'])) {
-            $this->metadata = $settings['metadataPrefix'];
-        }
-        if (isset($settings['idPrefix'])) {
-            $this->idPrefix = $settings['idPrefix'];
-        }
-        if (isset($settings['idSearch'])) {
-            $this->idSearch = $settings['idSearch'];
-        }
-        if (isset($settings['idReplace'])) {
-            $this->idReplace = $settings['idReplace'];
-        }
-        if (isset($settings['harvestedIdLog'])) {
-            $this->harvestedIdLog = $settings['harvestedIdLog'];
-        }
-        if (isset($settings['injectId'])) {
-            $this->injectId = $settings['injectId'];
-        }
-        if (isset($settings['injectSetSpec'])) {
-            $this->injectSetSpec = $settings['injectSetSpec'];
-        }
-        if (isset($settings['injectSetName'])) {
-            $this->injectSetName = $settings['injectSetName'];
+        // Set up start/end dates:
+        $this->setStartDate(empty($from) ? $this->loadLastHarvestedDate() : $from);
+        $this->setEndDate($until);
+
+        // Save configuration:
+        $this->setConfig($target, $settings);
+
+        // Load set names if we're going to need them:
+        if ($this->injectSetName) {
             $this->loadSetNames();
         }
-        if (isset($settings['injectDate'])) {
-            $this->injectDate = $settings['injectDate'];
-        }
-        if (isset($settings['injectHeaderElements'])) {
-            $this->injectHeaderElements
-                = is_array($settings['injectHeaderElements'])
-                    ? $settings['injectHeaderElements']
-                    : array($settings['injectHeaderElements']);
-        }
-        if (isset($settings['dateGranularity'])) {
-            $this->granularity = $settings['dateGranularity'];
-        }
-        if (isset($settings['verbose'])) {
-            $this->verbose = $settings['verbose'];
-        }
+
+        // Autoload granularity if necessary:
         if ($this->granularity == 'auto') {
             $this->loadGranularity();
         }
     }
 
+    /**
+     * Set an end date for the harvest (only harvest records BEFORE this date).
+     *
+     * @param string $date End date (YYYY-MM-DD format).
+     *
+     * @return void
+     */
+    public function setEndDate($date)
+    {
+        $this->harvestEndDate = $date;
+    }
     /**
      * Set a start date for the harvest (only harvest records AFTER this date).
      *
@@ -281,12 +295,22 @@ class OAI
      */
     public function launch()
     {
-        // Start harvesting at the requested date:
-        $token = $this->getRecordsByDate($this->startDate, $this->set);
+        // Normalize sets setting to an array:
+        $sets = (array)$this->set;
+        if (empty($sets)) {
+            $sets = array(null);
+        }
 
-        // Keep harvesting as long as a resumption token is provided:
-        while ($token !== false) {
-            $token = $this->getRecordsByToken($token);
+        // Loop through all of the selected sets:
+        foreach ($sets as $set) {
+            // Start harvesting at the requested date:
+            $token = $this
+                ->getRecordsByDate($this->startDate, $set, $this->harvestEndDate);
+
+            // Keep harvesting as long as a resumption token is provided:
+            while ($token !== false) {
+                $token = $this->getRecordsByToken($token);
+            }
         }
     }
 
@@ -323,19 +347,12 @@ class OAI
      * Retrieve the date from the "last harvested" file and use it as our start
      * date if it is available.
      *
-     * @return void
+     * @return string
      */
     protected function loadLastHarvestedDate()
     {
-        if (file_exists($this->lastHarvestFile)) {
-            $lines = file($this->lastHarvestFile);
-            if (is_array($lines)) {
-                $date = trim($lines[0]);
-                if (!empty($date)) {
-                    $this->setStartDate(trim($date));
-                }
-            }
-        }
+        return (file_exists($this->lastHarvestFile))
+            ? trim(current(file($this->lastHarvestFile))) : null;
     }
 
     /**
@@ -380,7 +397,7 @@ class OAI
     {
         // Debug:
         if ($this->verbose) {
-            Console::write(
+            $this->write(
                 "Sending request: verb = {$verb}, params = " . print_r($params, true)
             );
         }
@@ -392,6 +409,11 @@ class OAI
             $this->client->setUri($this->baseURL);
             // TODO: make timeout configurable
             $this->client->setOptions(array('timeout' => 60));
+
+            // Set authentication, if necessary:
+            if ($this->httpUser && $this->httpPass) {
+                $this->client->setAuth($this->httpUser, $this->httpPass);
+            }
 
             // Load request parameters:
             $query = $this->client->getRequest()->getQuery();
@@ -408,7 +430,7 @@ class OAI
                     ? $delayHeader->getDeltaSeconds() : 0;
                 if ($delay > 0) {
                     if ($this->verbose) {
-                        Console::writeLine(
+                        $this->writeLine(
                             "Received 503 response; waiting {$delay} seconds..."
                         );
                     }
@@ -427,6 +449,43 @@ class OAI
     }
 
     /**
+     * Log a bad XML response.
+     *
+     * @param string $xml Bad XML
+     *
+     * @return void
+     */
+    protected function logBadXML($xml)
+    {
+        $file = fopen($this->basePath . $this->badXMLLog, 'a');
+        if (!$file) {
+            throw new \Exception("Problem opening {$this->badXMLLog}.");
+        }
+        fputs($file, $xml . "\n\n");
+        fclose($file);
+    }
+
+    /**
+     * Sanitize XML.
+     *
+     * @param string $xml XML to sanitize
+     *
+     * @return string
+     */
+    protected function sanitizeXML($xml)
+    {
+        // Sanitize the XML if requested:
+        $regex = '/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u';
+        $newXML = trim(preg_replace($regex, ' ', $xml, -1, $count));
+
+        if ($count > 0 && $this->badXMLLog) {
+            $this->logBadXML($xml);
+        }
+
+        return $newXML;
+    }
+
+    /**
      * Process an OAI-PMH response into a SimpleXML object.  Die if an error is
      * detected.
      *
@@ -436,6 +495,11 @@ class OAI
      */
     protected function processResponse($xml)
     {
+        // Sanitize if necessary:
+        if ($this->sanitize) {
+            $xml = $this->sanitizeXML($xml);
+        }
+
         // Parse the XML:
         $result = simplexml_load_string($xml);
         if (!$result) {
@@ -500,7 +564,8 @@ class OAI
         // there is probably a cleaner way to do this, but this simple method avoids
         // the complexity of dealing with namespaces in SimpleXML:
         $xml = trim($record->metadata->asXML());
-        $xml = preg_replace('/(^<metadata>)|(<\/metadata>$)/m', '', $xml);
+        preg_match('/^<metadata([^\>]*)>/', $xml, $extractedNs);
+        $xml = preg_replace('/(^<metadata[^\>]*>)|(<\/metadata>$)/m', '', $xml);
 
         // If we are supposed to inject any values, do so now inside the first
         // tag of the file:
@@ -543,9 +608,39 @@ class OAI
         if (!empty($insert)) {
             $xml = preg_replace('/>/', '>' . $insert, $xml, 1);
         }
+        $xml = $this->fixNamespaces(
+            $xml, $record->getDocNamespaces(),
+            isset($extractedNs[1]) ? $extractedNs[1] : ''
+        );
 
         // Save our XML:
         file_put_contents($this->getFilename($id, 'xml'), trim($xml));
+    }
+
+    /**
+     * Support method for saveRecord() -- fix namespaces in the top tag of the XML
+     * document to compensate for bugs in the SimpleXML library.
+     *
+     * @param string $xml  XML document to clean up
+     * @param array  $ns   Namespaces to check
+     * @param string $attr Attributes extracted from the <metadata> tag
+     *
+     * @return string
+     */
+    protected function fixNamespaces($xml, $ns, $attr = '')
+    {
+        foreach ($ns as $key => $val) {
+            if (!empty($key)
+                && strstr($xml, $key . ':') && !strstr($xml, 'xmlns:' . $key)
+                && !strstr($attr, 'xmlns:' . $key)
+            ) {
+                $attr .= ' xmlns:' . $key . '="' . $val . '"';
+            }
+        }
+        if (!empty($attr)) {
+            $xml = preg_replace('/>/', $attr . '>', $xml, 1);
+        }
+        return $xml;
     }
 
     /**
@@ -555,10 +650,10 @@ class OAI
      */
     protected function loadGranularity()
     {
-        Console::write("Autodetecting date granularity... ");
+        $this->write("Autodetecting date granularity... ");
         $response = $this->sendRequest('Identify');
         $this->granularity = (string)$response->Identify->granularity;
-        Console::writeLine("found {$this->granularity}.");
+        $this->writeLine("found {$this->granularity}.");
     }
 
     /**
@@ -568,7 +663,7 @@ class OAI
      */
     protected function loadSetNames()
     {
-        Console::write("Loading set list... ");
+        $this->write("Loading set list... ");
 
         // On the first pass through the following loop, we want to get the
         // first page of sets without using a resumption token:
@@ -597,14 +692,14 @@ class OAI
                 $params['resumptionToken']
                     = (string)$response->ListSets->resumptionToken;
             } else {
-                Console::writeLine("found " . count($this->setNames));
+                $this->writeLine("found " . count($this->setNames));
                 return;
             }
         }
     }
 
     /**
-     * Extract the ID from a record object (support method for _processRecords()).
+     * Extract the ID from a record object (support method for processRecords()).
      *
      * @param object $record SimpleXML record.
      *
@@ -638,7 +733,7 @@ class OAI
      */
     protected function processRecords($records)
     {
-        Console::writeLine('Processing ' . count($records) . " records...");
+        $this->writeLine('Processing ' . count($records) . " records...");
 
         // Array for tracking successfully harvested IDs:
         $harvestedIds = array();
@@ -715,19 +810,23 @@ class OAI
     /**
      * Harvest records via OAI-PMH using date and set.
      *
-     * @param string $date Harvest start date (null for all records).
-     * @param string $set  Set to harvest (null for all records).
+     * @param string $from  Harvest start date (null for no specific start).
+     * @param string $set   Set to harvest (null for all records).
+     * @param string $until Harvest end date (null for no specific end).
      *
      * @return mixed        Resumption token if provided, false if finished
      */
-    protected function getRecordsByDate($date = null, $set = null)
+    protected function getRecordsByDate($from = null, $set = null, $until = null)
     {
-        $params = array('metadataPrefix' => $this->metadata);
-        if (!empty($date)) {
-            $params['from'] = $date;
+        $params = array('metadataPrefix' => $this->metadataPrefix);
+        if (!empty($from)) {
+            $params['from'] = $from;
         }
         if (!empty($set)) {
             $params['set'] = $set;
+        }
+        if (!empty($until)) {
+            $params['until'] = $until;
         }
         return $this->getRecords($params);
     }
@@ -742,5 +841,78 @@ class OAI
     protected function getRecordsByToken($token)
     {
         return $this->getRecords(array('resumptionToken' => (string)$token));
+    }
+
+    /**
+     * Set configuration (support method for constructor).
+     *
+     * @param string $target   Target directory for harvest.
+     * @param array  $settings Configuration
+     *
+     * @return void
+     */
+    protected function setConfig($target, $settings)
+    {
+        // Set up base URL:
+        if (empty($settings['url'])) {
+            throw new \Exception("Missing base URL for {$target}.");
+        }
+        $this->baseURL = $settings['url'];
+
+        // Settings that may be mapped directly from $settings to class properties:
+        $mappableSettings = array(
+            'set', 'metadataPrefix', 'idPrefix', 'idSearch', 'idReplace',
+            'harvestedIdLog', 'injectId', 'injectSetSpec', 'injectSetName',
+            'injectDate', 'injectHeaderElements', 'verbose', 'sanitize', 'badXMLLog',
+            'httpUser', 'httpPass',
+        );
+        foreach ($mappableSettings as $current) {
+            if (isset($settings[$current])) {
+                $this->$current = $settings[$current];
+            }
+        }
+
+        // Special case: $settings value does not match property value (for
+        // readability):
+        if (isset($settings['dateGranularity'])) {
+            $this->granularity = $settings['dateGranularity'];
+        }
+
+        // Normalize injectHeaderElements to an array:
+        if (!is_array($this->injectHeaderElements)) {
+            $this->injectHeaderElements = array($this->injectHeaderElements);
+        }
+    }
+
+    /**
+     * Write a string to the Console.
+     *
+     * @param string $str String to write.
+     *
+     * @return void
+     */
+    protected function write($str)
+    {
+        // Bypass output when testing:
+        if (defined('VUFIND_PHPUNIT_RUNNING')) {
+            return;
+        }
+        Console::write($str);
+    }
+
+    /**
+     * Write a string w/newline to the Console.
+     *
+     * @param string $str String to write.
+     *
+     * @return void
+     */
+    protected function writeLine($str)
+    {
+        // Bypass output when testing:
+        if (defined('VUFIND_PHPUNIT_RUNNING')) {
+            return;
+        }
+        Console::writeLine($str);
     }
 }

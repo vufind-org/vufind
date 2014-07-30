@@ -61,7 +61,7 @@ class User extends Gateway
         if ($create && empty($row)) {
             $row = $this->createRow();
             $row->username = $username;
-            $row->created = date('Y-m-d h:i:s');
+            $row->created = date('Y-m-d H:i:s');
         }
         return $row;
     }
@@ -92,5 +92,18 @@ class User extends Gateway
                 ->OR->isNotNull('cat_password');
         };
         return $this->select($callback);
+    }
+
+    /**
+     * Return a row by a verification hash
+     *
+     * @param string $hash User-unique hash string
+     *
+     * @return mixed
+     */
+    public function getByVerifyHash($hash)
+    {
+        $row = $this->select(array('verify_hash' => $hash))->current();
+        return $row;
     }
 }

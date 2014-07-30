@@ -278,6 +278,7 @@ class Sierra extends AbstractBase
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $instructor, $department)
     {
@@ -358,17 +359,22 @@ class Sierra extends AbstractBase
             // Use the database ids to get the item-level information (status,
             // location, and potentially call number) associated with that bib record
             $query1 = "SELECT item_view.item_status_code, "
-                    . "item_view.location_code, "
+                    . "location_name.name, "
                     . "varfield_view.field_content, "
                     . "varfield_view.varfield_type_code, "
                     . "checkout.due_gmt "
                     . "FROM sierra_view.item_view "
                     . "LEFT JOIN sierra_view.varfield_view "
                     . "ON (item_view.id = varfield_view.record_id) "
+                    . "LEFT JOIN sierra_view.location "
+                    . "ON (item_view.location_code = location.code) "
+                    . "LEFT JOIN sierra_view.location_name "
+                    . "ON (location.id = location_name.location_id) "
                     . "LEFT JOIN sierra_view.checkout "
                     . "ON (item_view.id = checkout.item_record_id) "
-                    . "WHERE item_view.id = $1"
-            . "AND varfield_view.record_type_code = 'i';";
+                    . "WHERE item_view.id = $1 "
+                    . "AND varfield_view.record_type_code = 'i' "
+                    . "AND location_name.iii_language_id = '1';";
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
@@ -423,7 +429,7 @@ class Sierra extends AbstractBase
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         try {
             $holdings = array();
@@ -432,19 +438,24 @@ class Sierra extends AbstractBase
             // location, and potentially call number) associated with that bib record
             $query1 = "SELECT
                         item_view.item_status_code,
-                        item_view.location_code,
+                        location_name.name,
                         checkout.due_gmt,
                         varfield_view.field_content,
                         varfield_view.varfield_type_code
                             FROM
-                        sierra_view.item_view
+                            sierra_view.item_view
+                        LEFT JOIN sierra_view.location
+                        ON (item_view.location_code = location.code) 
+                        LEFT JOIN sierra_view.location_name 
+                        ON (location.id = location_name.location_id) 
                         LEFT JOIN sierra_view.checkout
                         ON (item_view.id = checkout.item_record_id)
                         LEFT JOIN sierra_view.varfield_view
                         ON (item_view.id = varfield_view.record_id)
                         WHERE item_view.id = $1
-                        AND varfield_view.record_type_code = 'i';";
-            $prep_query = pg_prepare($this->db, "prep_query", $query1);
+                        AND varfield_view.record_type_code = 'i'
+                        AND location_name.iii_language_id = '1';";
+            pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
                 $results1 = pg_execute($this->db, "prep_query", array($item));
@@ -514,6 +525,7 @@ class Sierra extends AbstractBase
         try {
             $newItems = array();
             $offset = $limit * ($page - 1);
+            $daysOld = (int) $daysOld;
             if (is_int($daysOld) == false || $daysOld > 30) {
                 $daysOld = "30";
             }
@@ -578,6 +590,7 @@ class Sierra extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {

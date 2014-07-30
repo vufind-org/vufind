@@ -52,13 +52,28 @@ class Spellcheck implements IteratorAggregate, Countable
     protected $terms;
 
     /**
+     * Spelling query that generated suggestions
+     *
+     * @var string
+     */
+    protected $query;
+
+    /**
+     * Secondary spelling suggestions (in case merged results are not useful).
+     *
+     * @var Spellcheck
+     */
+    protected $secondary = false;
+
+    /**
      * Constructor.
      *
-     * @param array $spellcheck SOLR spellcheck information
+     * @param array  $spellcheck SOLR spellcheck information
+     * @param string $query      Spelling query that generated suggestions
      *
      * @return void
      */
-    public function __construct(array $spellcheck)
+    public function __construct(array $spellcheck, $query)
     {
         $this->terms = new ArrayObject();
         $list = new NamedList($spellcheck);
@@ -67,6 +82,27 @@ class Spellcheck implements IteratorAggregate, Countable
                 $this->terms->offsetSet($term, $info);
             }
         }
+        $this->query = $query;
+    }
+
+    /**
+     * Get spelling query.
+     *
+     * @return string
+     */
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
+    /**
+     * Get secondary suggestions (or return false if none exist).
+     *
+     * @return Spellcheck|bool
+     */
+    public function getSecondary()
+    {
+        return $this->secondary;
     }
 
     /**
@@ -78,11 +114,20 @@ class Spellcheck implements IteratorAggregate, Countable
      */
     public function mergeWith(Spellcheck $spellcheck)
     {
+        // Merge primary suggestions:
         $this->terms->uksort(array($this, 'compareTermLength'));
         foreach ($spellcheck as $term => $info) {
             if (!$this->contains($term)) {
                 $this->terms->offsetSet($term, $info);
             }
+        }
+
+        // Store secondary suggestions in case merge yielded non-useful
+        // result set:
+        if (!$this->secondary) {
+            $this->secondary = $spellcheck;
+        } else {
+            $this->secondary->mergeWith($spellcheck);
         }
     }
 
@@ -127,7 +172,7 @@ class Spellcheck implements IteratorAggregate, Countable
 
         $qTerm = preg_quote($term, '/');
         $length = strlen($term);
-        foreach ($this->terms as $key => $value) {
+        foreach (array_keys((array)$this->terms) as $key) {
             if ($length > strlen($key)) {
                 return false;
             }

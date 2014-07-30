@@ -26,7 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind;
-use VuFindSearch\Backend\Solr\Backend, Zend\Config\Config;
+use VuFindSearch\Backend\Solr\Backend, VuFind\Search\BackendManager,
+    VuFindSearch\ParamBag, Zend\Config\Config;
 
 /**
  * Class for generating sitemaps
@@ -40,11 +41,11 @@ use VuFindSearch\Backend\Solr\Backend, Zend\Config\Config;
 class Sitemap
 {
     /**
-     * Search backend from which to retrieve record IDs.
+     * Search backend manager.
      *
-     * @var Backend
+     * @var BackendManager
      */
-    protected $backend;
+    protected $backendManager;
 
     /**
      * Base URL for site
@@ -54,11 +55,11 @@ class Sitemap
     protected $baseUrl;
 
     /**
-     * Base URL for record
+     * Settings specifying which backends to index.
      *
-     * @var string
+     * @var array
      */
-    protected $resultUrl;
+    protected $backendSettings;
 
     /**
      * Sitemap configuration (sitemap.ini)
@@ -103,22 +104,45 @@ class Sitemap
     protected $warnings = array();
 
     /**
+     * Mode of retrieving IDs from the index (may be 'terms' or 'search')
+     *
+     * @var string
+     */
+    protected $retrievalMode = 'terms';
+
+    /**
      * Constructor
      *
-     * @param Backend $backend Search backend
-     * @param string  $baseUrl VuFind base URL
-     * @param Config  $config  Sitemap configuration settings
+     * @param BackendManager $bm      Search backend
+     * @param string         $baseUrl VuFind base URL
+     * @param Config         $config  Sitemap configuration settings
      */
-    public function __construct(Backend $backend, $baseUrl, Config $config)
+    public function __construct(BackendManager $bm, $baseUrl, Config $config)
     {
-        $this->backend = $backend;
+        // Save incoming parameters:
+        $this->backendManager = $bm;
         $this->baseUrl = $baseUrl;
-        $this->resultUrl = $this->baseUrl . '/Record/';
         $this->config = $config;
+
+        // Process backend configuration:
+        $backendConfig = isset($this->config->Sitemap->index)
+            ? $this->config->Sitemap->index : array('Solr,/Record/');
+        $backendConfig = is_callable(array($backendConfig, 'toArray'))
+            ? $backendConfig->toArray() : (array)$backendConfig;
+        $callback = function ($n) {
+            $parts = array_map('trim', explode(',', $n));
+            return array('id' => $parts[0], 'url' => $parts[1]);
+        };
+        $this->backendSettings = array_map($callback, $backendConfig);
+
+        // Store other key config settings:
         $this->frequency = $this->config->Sitemap->frequency;
         $this->countPerPage = $this->config->Sitemap->countPerPage;
         $this->fileStart = $this->config->Sitemap->fileLocation . "/" .
             $this->config->Sitemap->fileName;
+        if (isset($this->config->Sitemap->retrievalMode)) {
+            $this->retrievalMode = $this->config->Sitemap->retrievalMode;
+        }
         if (isset($this->config->SitemapIndex->indexFileName)) {
             $this->indexFile = $this->config->Sitemap->fileLocation . "/" .
                 $this->config->SitemapIndex->indexFileName. ".xml";
@@ -132,33 +156,18 @@ class Sitemap
      */
     public function generate()
     {
+        // Initialize variable
         $currentPage = 1;
-        $last_term = '';
 
-        while (true) {
-            // Get
-            $currentPageInfo
-                = $this->backend->terms('id', $last_term, $this->countPerPage)
-                    ->getFieldTerms('id');
-            if (null === $currentPageInfo || count($currentPageInfo) < 1) {
-                break;
-            } else {
-                $filename = $this->getFilenameForPage($currentPage);
-                $smf = $this->openSitemapFile($filename, 'urlset');
-                foreach ($currentPageInfo as $item => $count) {
-                    $loc = htmlspecialchars($this->resultUrl . urlencode($item));
-                    if (strpos($loc, 'http') === false) {
-                        $loc = 'http://'.$loc;
-                    }
-                    $this->writeSitemapEntry($smf, $loc);
-                    $last_term = $item;
-                }
-
-                fwrite($smf, '</urlset>');
-                fclose($smf);
+        // Loop through all backends
+        foreach ($this->backendSettings as $current) {
+            $backend = $this->backendManager->get($current['id']);
+            if (!($backend instanceof Backend)) {
+                throw new \Exception('Unsupported backend: ' . get_class($backend));
             }
-
-            $currentPage++;
+            $recordUrl = $this->baseUrl . $current['url'];
+            $currentPage = $this
+                ->generateForBackend($backend, $recordUrl, $currentPage);
         }
 
         // Set-up Sitemap Index
@@ -173,6 +182,114 @@ class Sitemap
     public function getWarnings()
     {
         return $this->warnings;
+    }
+
+    /**
+     * Generate sitemap files for a single search backend.
+     *
+     * @param Backend $backend     Search backend
+     * @param string  $recordUrl   Base URL for record links
+     * @param int     $currentPage Sitemap page number to start generating
+     *
+     * @return int                 Next sitemap page number to generate
+     */
+    protected function generateForBackend(Backend $backend, $recordUrl, $currentPage)
+    {
+        $lastTerm = '';
+        $count = 0;
+
+        while (true) {
+            // Get IDs and break out of the loop if we've run out:
+            $ids = $this->getIdsFromBackend($backend, $lastTerm, $count);
+            if (empty($ids)) {
+                break;
+            }
+
+            // Write the current entry:
+            $filename = $this->getFilenameForPage($currentPage);
+            $smf = $this->openSitemapFile($filename, 'urlset');
+            foreach ($ids as $item) {
+                $loc = htmlspecialchars($recordUrl . urlencode($item));
+                if (strpos($loc, 'http') === false) {
+                    $loc = 'http://'.$loc;
+                }
+                $this->writeSitemapEntry($smf, $loc);
+                $lastTerm = $item;
+            }
+            fwrite($smf, '</urlset>');
+            fclose($smf);
+
+            // Update counters:
+            $count += $this->countPerPage;
+            $currentPage++;
+        }
+        return $currentPage;
+    }
+
+    /**
+     * Retrieve a batch of IDs.
+     *
+     * @param Backend $backend  Search backend
+     * @param string  $lastTerm Last term retrieved
+     * @param int     $offset   Number of terms previously retrieved
+     *
+     * @return array
+     */
+    protected function getIdsFromBackend(Backend $backend, $lastTerm, $offset)
+    {
+        if ($this->retrievalMode == 'terms') {
+            return $this->getIdsFromBackendUsingTerms($backend, $lastTerm);
+        }
+        return $this->getIdsFromBackendUsingSearch($backend, $offset);
+    }
+
+    /**
+     * Retrieve a batch of IDs using the terms component.
+     *
+     * @param Backend $backend  Search backend
+     * @param string  $lastTerm Last term retrieved
+     *
+     * @return array
+     */
+    protected function getIdsFromBackendUsingTerms(Backend $backend, $lastTerm)
+    {
+        $key = $backend->getConnector()->getUniqueKey();
+        $info = $backend->terms($key, $lastTerm, $this->countPerPage)
+            ->getFieldTerms($key);
+        return null === $info ? array() : array_keys($info->toArray());
+    }
+
+    /**
+     * Retrieve a batch of IDs using regular search.
+     *
+     * @param Backend $backend Search backend
+     * @param int     $offset  Number of terms previously retrieved
+     *
+     * @return array
+     */
+    protected function getIdsFromBackendUsingSearch(Backend $backend, $offset)
+    {
+        $connector = $backend->getConnector();
+        $key = $connector->getUniqueKey();
+        $params = new ParamBag(
+            array(
+                'q' => '*:*',
+                'fl' => $key,
+                'rows' => $this->countPerPage,
+                'start' => $offset,
+                'wt' => 'json',
+                'sort' => $key . ' asc',
+            )
+        );
+        $raw = $connector->search($params);
+        $result = json_decode($raw);
+        $ids = array();
+        if (isset($result->response->docs)) {
+            foreach ($result->response->docs as $doc) {
+                $ids[] = $doc->$key;
+            }
+        }
+        return $ids;
     }
 
     /**

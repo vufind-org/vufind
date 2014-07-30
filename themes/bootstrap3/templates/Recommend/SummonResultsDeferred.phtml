@@ -1,0 +1,10 @@
+<?
+  // Set up Javascript for use below:
+  $loadJs = 'var url = path + "/AJAX/Recommend?' . $this->recommend->getUrlParams() . '";'
+    . "\$('#SummonDeferredRecommend').load(url);";
+?>
+<div id="SummonDeferredRecommend">
+  <h3><?=$this->transEsc("Summon Results")?></h3>
+  <p><?=$this->transEsc("Loading")?>... <i class="fa fa-spinner"></i></p>
+  <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
+</div>

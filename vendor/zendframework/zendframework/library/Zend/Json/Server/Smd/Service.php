@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -395,12 +395,13 @@ class Service
         $transport  = $this->getTransport();
         $parameters = $this->getParams();
         $returns    = $this->getReturn();
+        $name       = $this->getName();
 
         if (empty($target)) {
-            return compact('envelope', 'transport', 'parameters', 'returns');
+            return compact('envelope', 'transport', 'name', 'parameters', 'returns');
         }
 
-        return $paramInfo = compact('envelope', 'target', 'transport', 'parameters', 'returns');
+        return compact('envelope', 'target', 'transport', 'name', 'parameters', 'returns');
     }
 
     /**

@@ -39,8 +39,8 @@
 
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
       <p>
-        <strong><?=$this->escapeHtml($this->results->getStartRecord())?></strong> - <strong><?=$this->escapeHtml($this->results->getEndRecord())?></strong>
-        <?=$this->transEsc('of')?> <strong><?=$this->escapeHtml($recordTotal)?></strong>
+        <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
       </p>
 
       <ul class="results mylist" data-role="listview" data-split-icon="minus" data-split-theme="d" data-inset="false">

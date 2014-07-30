@@ -39,6 +39,11 @@ use VuFind\Cover\Loader;
  */
 class CoverController extends AbstractBase
 {
+    /**
+     * Cover loader
+     *
+     * @var Loader
+     */
     protected $loader = false;
 
     /**
@@ -52,6 +57,7 @@ class CoverController extends AbstractBase
         if (!$this->loader) {
             $this->loader = new Loader(
                 $this->getConfig(),
+                $this->getServiceLocator()->get('VuFind\ContentCoversPluginManager'),
                 $this->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
                 $this->getServiceLocator()->get('VuFind\Http')->createClient(),
                 $this->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir()
@@ -72,9 +78,16 @@ class CoverController extends AbstractBase
     {
         $this->writeSession();  // avoid session write timing bug
         $this->getLoader()->loadImage(
-            $this->params()->fromQuery('isn'),
+            // Legacy support for "isn" param which has been superseded by isbn:
+            $this->params()->fromQuery('isbn', $this->params()->fromQuery('isn')),
             $this->params()->fromQuery('size'),
-            $this->params()->fromQuery('contenttype')
+            $this->params()->fromQuery('contenttype'),
+            $this->params()->fromQuery('title'),
+            $this->params()->fromQuery('author'),
+            $this->params()->fromQuery('callnumber'),
+            $this->params()->fromQuery('issn'),
+            $this->params()->fromQuery('oclc'),
+            $this->params()->fromQuery('upc')
         );
         return $this->displayImage();
     }
@@ -104,6 +117,22 @@ class CoverController extends AbstractBase
         $headers->addHeaderLine(
             'Content-type', $this->getLoader()->getContentType()
         );
+
+        // Send proper caching headers so that the user's browser
+        // is able to cache the cover images and not have to re-request
+        // then on each page load. Default TTL set at 14 days
+
+        $coverImageTtl = (60*60*24*14); // 14 days
+        $headers->addHeaderLine(
+            'Cache-Control', "maxage=".$coverImageTtl
+        );
+        $headers->addHeaderLine(
+            'Pragma', 'public'
+        );
+        $headers->addHeaderLine(
+            'Expires', gmdate('D, d M Y H:i:s', time()+$coverImageTtl) . ' GMT'
+        );
+
         $response->setContent($this->getLoader()->getImage());
         return $response;
     }

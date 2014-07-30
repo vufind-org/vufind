@@ -55,6 +55,13 @@ class NamedList implements Countable, Iterator
     protected $list;
 
     /**
+     * The current position
+     *
+     * @var array
+     */
+    protected $current = null;
+
+    /**
      * Constructor.
      *
      * @param array $list Named list
@@ -64,6 +71,20 @@ class NamedList implements Countable, Iterator
     public function __construct(array $list)
     {
         $this->list = $list;
+    }
+
+    /**
+     * Convert the named list into a standard associative array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $arr = array();
+        foreach ($this as $k => $v) {
+            $arr[$k] = $v;
+        }
+        return $arr;
     }
 
     /// Countable

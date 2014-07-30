@@ -1,0 +1,13 @@
+<ul class="nav nav-list well well-small">
+<? foreach ($result as $i => $item): ?>
+  <li>
+    <a href="<?=$this->url('collection', array('id' => $item['value']))?>">
+      <strong><?=$this->escapeHtml($item['displayText'])?></strong>
+      <span class="pull-right small">
+        <?=$item['count']?> <?=$this->transEsc('items')?>
+        <i class="icon-angle-right"></i>
+      </span>
+    </a>
+  </li>
+<? endforeach; ?>
+</ul>

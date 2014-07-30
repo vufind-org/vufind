@@ -47,7 +47,7 @@ class SummonrecordController extends AbstractRecord
     {
         // Override some defaults:
         $this->searchClassId = 'Summon';
-        $this->defaultTab = 'Description';
+        $this->fallbackDefaultTab = 'Description';
 
         // Call standard record controller initialization:
         parent::__construct();
@@ -66,13 +66,11 @@ class SummonrecordController extends AbstractRecord
     }
 
     /**
-     * preDispatch -- block access when appropriate.
-     *
-     * @param MvcEvent $e Event object
+     * preDispatch -- add Summon message.
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function preDispatch()
     {
         $this->layout()->poweredBy
             = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';

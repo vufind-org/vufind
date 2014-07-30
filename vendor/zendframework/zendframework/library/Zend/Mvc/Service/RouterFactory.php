@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -11,7 +11,6 @@ namespace Zend\Mvc\Service;
 
 use Zend\Console\Console;
 use Zend\Mvc\Router\Console\SimpleRouteStack as ConsoleRouter;
-use Zend\Mvc\Router\Http\TreeRouteStack as HttpRouter;
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -41,12 +40,9 @@ class RouterFactory implements FactoryInterface
         if ($rName === 'ConsoleRouter'                       // force console router
             || ($cName === 'router' && Console::isConsole()) // auto detect console
         ) {
-            // We are in a console, use console router.
-            if (isset($config['console']) && isset($config['console']['router'])) {
-                $routerConfig = $config['console']['router'];
-            }
-
+            // We are in a console, use console router defaults.
             $routerClass = 'Zend\Mvc\Router\Console\SimpleRouteStack';
+            $routerConfig = isset($config['console']['router']) ? $config['console']['router'] : array();
         }
 
         // Obtain the configured router class, if any

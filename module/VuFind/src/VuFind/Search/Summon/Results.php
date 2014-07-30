@@ -26,11 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Summon;
-use SerialsSolutions_Summon_Query as SummonQuery,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\Base\Results as BaseResults,
-    VuFind\Solr\Utils as SolrUtils,
-    VuFindSearch\ParamBag;
 
 /**
  * Summon Search Parameters
@@ -41,7 +36,7 @@ use SerialsSolutions_Summon_Query as SummonQuery,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Results extends BaseResults
+class Results extends \VuFind\Search\Base\Results
 {
     /**
      * Facet details:
@@ -65,6 +60,13 @@ class Results extends BaseResults
     protected $databaseRecommendations = false;
 
     /**
+     * Topic recommendations
+     *
+     * @var array|bool
+     */
+    protected $topicRecommendations = false;
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -75,7 +77,7 @@ class Results extends BaseResults
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->createBackendParameters($this->getParams());
+        $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()->search(
             'Summon', $query, $offset, $limit, $params
         );
@@ -94,6 +96,7 @@ class Results extends BaseResults
         // Get best bets and database recommendations.
         $this->bestBets = $collection->getBestBets();
         $this->databaseRecommendations = $collection->getDatabaseRecommendations();
+        $this->topicRecommendations = $collection->getTopicRecommendations();
 
         // Add fake date facets if flagged earlier; this is necessary in order
         // to display the date range facet control in the interface.
@@ -101,8 +104,8 @@ class Results extends BaseResults
         if (!empty($dateFacets)) {
             foreach ($dateFacets as $dateFacet) {
                 $this->responseFacets[] = array(
-                    'fieldName' => 'PublicationDate',
-                    'displayName' => 'PublicationDate',
+                    'fieldName' => $dateFacet,
+                    'displayName' => $dateFacet,
                     'counts' => array()
                 );
             }
@@ -110,113 +113,6 @@ class Results extends BaseResults
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
-    }
-
-    /**
-     * Create search backend parameters for advanced features.
-     *
-     * @param Params $params Search parameters
-     *
-     * @return ParamBag
-     */
-    protected function createBackendParameters(Params $params)
-    {
-        $backendParams = new ParamBag();
-
-        $options = $params->getOptions();
-
-        // The "relevance" sort option is a VuFind reserved word; we need to make
-        // this null in order to achieve the desired effect with Summon:
-        $sort = $params->getSort();
-        $finalSort = ($sort == 'relevance') ? null : $sort;
-        $backendParams->set('sort', $finalSort);
-
-        $backendParams->set('didYouMean', $options->spellcheckEnabled());
-
-        if ($options->highlightEnabled()) {
-            $backendParams->set('highlight', true);
-            $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
-            $backendParams->set('highlightEnd', '{{{{END_HILITE}}}}');
-        }
-        $backendParams->set(
-            'facets',
-            $this->createBackendFacetParameters($params->getFullFacetSettings())
-        );
-        $this->createBackendFilterParameters(
-            $backendParams, $params->getFilterList()
-        );
-
-        return $backendParams;
-    }
-
-    /**
-     * Set up facets based on VuFind settings.
-     *
-     * @param array $facets Facet settings
-     *
-     * @return array
-     */
-    protected function createBackendFacetParameters($facets)
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
-        $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
-            ? $config->Facet_Settings->facet_limit : 30;
-
-        $finalFacets = array();
-        foreach ($facets as $facet) {
-            // See if parameters are included as part of the facet name;
-            // if not, override them with defaults.
-            $parts = explode(',', $facet);
-            $facetName = $parts[0];
-            $facetMode = isset($parts[1]) ? $parts[1] : 'and';
-            $facetPage = isset($parts[2]) ? $parts[2] : 1;
-            $facetLimit = isset($parts[3]) ? $parts[3] : $defaultFacetLimit;
-            $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
-            $finalFacets[] = "{$facetName},{$facetParams}";
-        }
-        return $finalFacets;
-    }
-
-    /**
-     * Set up filters based on VuFind settings.
-     *
-     * @param ParamBag $params     Parameter collection to update
-     * @param array    $filterList Filter settings
-     *
-     * @return void
-     */
-    public function createBackendFilterParameters(ParamBag $params, $filterList)
-    {
-        // Which filters should be applied to our query?
-        if (!empty($filterList)) {
-            // Loop through all filters and add appropriate values to request:
-            foreach ($filterList as $filterArray) {
-                foreach ($filterArray as $filt) {
-                    $safeValue = SummonQuery::escapeParam($filt['value']);
-                    // Special case -- "holdings only" is a separate parameter from
-                    // other facets.
-                    if ($filt['field'] == 'holdingsOnly') {
-                        $params->set(
-                            'holdings', strtolower(trim($safeValue)) == 'true'
-                        );
-                    } else if ($filt['field'] == 'excludeNewspapers') {
-                        // Special case -- support a checkbox for excluding
-                        // newspapers:
-                        $params
-                            ->add('filters', "ContentType,Newspaper Article,true");
-                    } else if ($range = SolrUtils::parseRange($filt['value'])) {
-                        // Special case -- range query (translate [x TO y] syntax):
-                        $from = SummonQuery::escapeParam($range['from']);
-                        $to = SummonQuery::escapeParam($range['to']);
-                        $params
-                            ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
-                    } else {
-                        // Standard case:
-                        $params->add('filters', "{$filt['field']},{$safeValue}");
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -230,34 +126,17 @@ class Results extends BaseResults
     public function getFacetList($filter = null)
     {
         // If there is no filter, we'll use all facets as the filter:
-        if (is_null($filter)) {
-            $filter = $this->getParams()->getFacetConfig();
-        } else {
-            // If there is a filter, make sure the field names are properly
-            // stripped of extra parameters:
-            $oldFilter = $filter;
-            $filter = array();
-            foreach ($oldFilter as $key => $value) {
-                $key = explode(',', $key);
-                $key = trim($key[0]);
-                $filter[$key] = $value;
-            }
-        }
+        $filter = is_null($filter)
+            ? $this->getParams()->getFacetConfig()
+            : $this->stripFilterParameters($filter);
 
         // We want to sort the facets to match the order in the .ini file.  Let's
         // create a lookup array to determine order:
-        $i = 0;
-        $order = array();
-        foreach ($filter as $key => $value) {
-            $order[$key] = $i++;
-        }
+        $order = array_flip(array_keys($filter));
 
         // Loop through the facets returned by Summon.
         $facetResult = array();
         if (is_array($this->responseFacets)) {
-            // Get the filter list -- we'll need to check it below:
-            $filterList = $this->getParams()->getFilters();
-
             foreach ($this->responseFacets as $current) {
                 // The "displayName" value is actually the name of the field on
                 // Summon's side -- we'll probably need to translate this to a
@@ -266,50 +145,16 @@ class Results extends BaseResults
 
                 // Is this one of the fields we want to display?  If so, do work...
                 if (isset($filter[$field])) {
-                    // Should we translate values for the current facet?
-                    $translate = in_array(
-                        $field, $this->getOptions()->getTranslatedFacets()
-                    );
+                    // Basic reformatting of the data:
+                    $current = $this->formatFacetData($current);
 
-                    // Loop through all the facet values to see if any are applied.
-                    foreach ($current['counts'] as $facetIndex => $facetDetails) {
-                        // Is the current field negated?  If so, we don't want to
-                        // show it -- this is currently used only for the special
-                        // "exclude newspapers" facet:
-                        if ($facetDetails['isNegated']) {
-                            unset($current['counts'][$facetIndex]);
-                            continue;
-                        }
-
-                        // We need to check two things to determine if the current
-                        // value is an applied filter.  First, is the current field
-                        // present in the filter list?  Second, is the current value
-                        // an active filter for the current field?
-                        $isApplied = in_array($field, array_keys($filterList))
-                            && in_array(
-                                $facetDetails['value'], $filterList[$field]
-                            );
-
-                        // Inject "applied" value into Summon results:
-                        $current['counts'][$facetIndex]['isApplied'] = $isApplied;
-
-                        // Create display value:
-                        $current['counts'][$facetIndex]['displayText'] = $translate
-                            ? $this->translate($facetDetails['value'])
-                            : $facetDetails['value'];
-                    }
+                    // Inject label from configuration:
+                    $current['label'] = $filter[$field];
 
                     // Put the current facet cluster in order based on the .ini
                     // settings, then override the display name again using .ini
                     // settings.
-                    $i = $order[$field];
-                    $current['label'] = $filter[$field];
-
-                    // Create a reference to counts called list for consistency with
-                    // Solr output format -- this allows the facet recommendations
-                    // modules to be shared between the Search and Summon modules.
-                    $current['list'] = & $current['counts'];
-                    $facetResult[$i] = $current;
+                    $facetResult[$order[$field]] = $current;
                 }
             }
         }
@@ -322,6 +167,85 @@ class Results extends BaseResults
         }
 
         return $finalResult;
+    }
+
+    /**
+     * Support method for getFacetList() -- strip extra parameters from field names.
+     *
+     * @param array $rawFilter Raw filter list
+     *
+     * @return array           Processed filter list
+     */
+    protected function stripFilterParameters($rawFilter)
+    {
+        $filter = array();
+        foreach ($rawFilter as $key => $value) {
+            $key = explode(',', $key);
+            $key = trim($key[0]);
+            $filter[$key] = $value;
+        }
+        return $filter;
+    }
+
+    /**
+     * Support method for getFacetList() -- format a single facet field.
+     *
+     * @param array $current Facet data to format
+     *
+     * @return array         Formatted data
+     */
+    protected function formatFacetData($current)
+    {
+        // We'll need this in the loop below:
+        $filterList = $this->getParams()->getFilters();
+
+        // Should we translate values for the current facet?
+        $field = $current['displayName'];
+        $translate = in_array(
+            $field, $this->getOptions()->getTranslatedFacets()
+        );
+
+        // Loop through all the facet values to see if any are applied.
+        foreach ($current['counts'] as $facetIndex => $facetDetails) {
+            // Is the current field negated?  If so, we don't want to
+            // show it -- this is currently used only for the special
+            // "exclude newspapers" facet:
+            if ($facetDetails['isNegated']) {
+                unset($current['counts'][$facetIndex]);
+                continue;
+            }
+
+            // We need to check two things to determine if the current
+            // value is an applied filter.  First, is the current field
+            // present in the filter list?  Second, is the current value
+            // an active filter for the current field?
+            $orField = '~' . $field;
+            $itemsToCheck = isset($filterList[$field])
+                ? $filterList[$field] : array();
+            if (isset($filterList[$orField])) {
+                $itemsToCheck += $filterList[$orField];
+            }
+            $isApplied = in_array($facetDetails['value'], $itemsToCheck);
+
+            // Inject "applied" value into Summon results:
+            $current['counts'][$facetIndex]['isApplied'] = $isApplied;
+
+            // Set operator:
+            $current['counts'][$facetIndex]['operator']
+                = $this->getParams()->getFacetOperator($field);
+
+            // Create display value:
+            $current['counts'][$facetIndex]['displayText'] = $translate
+                ? $this->translate($facetDetails['value'])
+                : $facetDetails['value'];
+        }
+
+        // Create a reference to counts called list for consistency with
+        // Solr output format -- this allows the facet recommendations
+        // modules to be shared between the Search and Summon modules.
+        $current['list'] = & $current['counts'];
+
+        return $current;
     }
 
     /**
@@ -383,5 +307,15 @@ class Results extends BaseResults
     public function getDatabaseRecommendations()
     {
         return $this->databaseRecommendations;
+    }
+
+    /**
+     * Get topic recommendations from Summon, if any.
+     *
+     * @return array|bool false if no recommendations, detailed array otherwise.
+     */
+    public function getTopicRecommendations()
+    {
+        return $this->topicRecommendations;
     }
 }

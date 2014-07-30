@@ -1,0 +1,22 @@
+<li><a href="<?=$this->url('home') ?>">Home</a> <span class="divider">&gt;</span></li>
+<li><a href="<?=$this->url('vudl-default-collection') ?>">Collections</a> <span class="divider">&gt;</span></li>
+<li class="dropdown">
+  <a class="dropdown-toggle pointer">In <?=count($this->layout()->breadcrumbs) ?> Collections</a>
+  <ul class="dropdown-menu" role="menu">
+    <? foreach ($this->layout()->breadcrumbs as $trail): ?>
+      <ul class="inline" style="margin:0 .5em;white-space:nowrap">
+      <? foreach ($trail as $id=>$title): ?>
+        <li><span class="muted">&gt;</span> <a href="<?=$this->url('vudl-record', array('id'=>$id))?>"><?=$title ?></a></li>
+      <? endforeach; ?>
+      </ul>
+    <? endforeach; ?>
+  </ul>
+  <span class="divider">&gt;</span>
+</li>
+<? if(isset($this->layout()->end)): ?>
+  <li title="<?=$this->layout()->title ?>"><?=$this->truncate($this->layout()->title, 100) ?> <span class="divider">&gt;</span></li>
+  <li class="active"><?=$this->layout()->end ?></li>
+<? else: ?>
+  <li class="active" title="<?=$this->layout()->title ?>"><?=$this->truncate($this->layout()->title, 100) ?></li>
+<? endif; ?>
+<script>$('.dropdown-toggle').dropdown()</script>

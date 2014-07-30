@@ -60,16 +60,26 @@ class Editions implements RelatedInterface
     protected $wcUtils;
 
     /**
+     * Maximum limit
+     *
+     * @var int
+     */
+    protected $maxLimit;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
-     * @param \VuFind\Connection\WorldCatUtils     $wcUtils WorldCat utils object
+     * @param \VuFind\Search\Results\PluginManager $results  Results plugin manager
+     * @param \VuFind\Connection\WorldCatUtils     $wcUtils  WorldCat utils object
+     * @param int                                  $maxLimit The maximum number of
+     * results to look up in Solr; set to -1 to use the "max boolean clauses" limit.
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \VuFind\Connection\WorldCatUtils $wcUtils
+        \VuFind\Connection\WorldCatUtils $wcUtils, $maxLimit = -1
     ) {
         $this->resultsManager = $results;
         $this->wcUtils = $wcUtils;
+        $this->maxLimit = $maxLimit;
     }
 
     /**
@@ -90,7 +100,11 @@ class Editions implements RelatedInterface
             // Limit the number of parts based on the boolean clause limit:
             $result = $this->resultsManager->get('Solr');
             $params = $result->getParams();
+            $params->getOptions()->spellcheckEnabled(false);
             $limit = $params->getQueryIDLimit();
+            if ($this->maxLimit > 0 && $limit > $this->maxLimit) {
+                $limit = $this->maxLimit;
+            }
             if (count($parts) > $limit) {
                 $parts = array_slice($parts, 0, $limit);
             }
@@ -134,31 +148,25 @@ class Editions implements RelatedInterface
     protected function getQueryParts($driver)
     {
         $parts = array();
-        if (method_exists($driver, 'getCleanOCLCNum')) {
-            $oclcNum = $driver->getCleanOCLCNum();
-            if (!empty($oclcNum)) {
-                $oclcList = $this->wcUtils->getXOCLCNUM($oclcNum);
-                foreach ($oclcList as $current) {
-                    $parts[] = "oclc_num:" . $current;
-                }
+        $oclcNum = $driver->tryMethod('getCleanOCLCNum');
+        if (!empty($oclcNum)) {
+            $oclcList = $this->wcUtils->getXOCLCNUM($oclcNum);
+            foreach ($oclcList as $current) {
+                $parts[] = "oclc_num:" . $current;
             }
         }
-        if (method_exists($driver, 'getCleanISBN')) {
-            $isbn = $driver->getCleanISBN();
-            if (!empty($isbn)) {
-                $isbnList = $this->wcUtils->getXISBN($isbn);
-                foreach ($isbnList as $current) {
-                    $parts[] = 'isbn:' . $current;
-                }
+        $isbn = $driver->tryMethod('getCleanISBN');
+        if (!empty($isbn)) {
+            $isbnList = $this->wcUtils->getXISBN($isbn);
+            foreach ($isbnList as $current) {
+                $parts[] = 'isbn:' . $current;
             }
         }
-        if (method_exists($driver, 'getCleanISSN')) {
-            $issn = $driver->getCleanISSN();
-            if (!empty($issn)) {
-                $issnList = $this->wcUtils->getXISSN($issn);
-                foreach ($issnList as $current) {
-                    $parts[] = 'issn:' . $current;
-                }
+        $issn = $driver->tryMethod('getCleanISSN');
+        if (!empty($issn)) {
+            $issnList = $this->wcUtils->getXISSN($issn);
+            foreach ($issnList as $current) {
+                $parts[] = 'issn:' . $current;
             }
         }
         return $parts;

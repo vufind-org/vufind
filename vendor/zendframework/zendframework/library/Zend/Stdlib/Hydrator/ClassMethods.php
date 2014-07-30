@@ -3,13 +3,12 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\Stdlib\Hydrator;
 
-use ReflectionMethod;
 use Traversable;
 use Zend\Stdlib\Exception;
 use Zend\Stdlib\ArrayUtils;
@@ -183,7 +182,7 @@ class ClassMethods extends AbstractHydrator implements HydratorOptionsInterface
         foreach ($data as $property => $value) {
             $method = 'set' . ucfirst($property);
             if ($this->underscoreSeparatedKeys) {
-                $method = preg_replace_callback('/(_[a-z])/', $transform, $method);
+                $method = preg_replace_callback('/(_[a-z])/i', $transform, $method);
             }
             if (is_callable(array($object, $method))) {
                 $value = $this->hydrateValue($property, $value, $data);

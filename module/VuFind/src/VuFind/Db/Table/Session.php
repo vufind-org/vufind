@@ -62,7 +62,7 @@ class Session extends Gateway
         if ($create && empty($row)) {
             $row = $this->createRow();
             $row->session_id = $sid;
-            $row->created = date('Y-m-d h:i:s');
+            $row->created = date('Y-m-d H:i:s');
         }
         return $row;
     }
@@ -137,5 +137,23 @@ class Session extends Gateway
                 ->lessThan('last_used', time() - intval($sess_maxlifetime));
         };
         $this->delete($callback);
+    }
+
+    /**
+     * Get a query representing expired sessions (this can be passed
+     * to select() or delete() for further processing).
+     *
+     * @param int $daysOld Age in days of an "expired" session.
+     *
+     * @return function
+     */
+    public function getExpiredQuery($daysOld = 2)
+    {
+        // Determine the expiration date:
+        $expireDate = time() - $daysOld * 24 * 60 * 60;
+        $callback = function ($select) use ($expireDate) {
+            $select->where->lessThan('last_used', $expireDate);
+        };
+        return $callback;
     }
 }

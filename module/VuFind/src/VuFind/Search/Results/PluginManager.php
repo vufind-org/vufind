@@ -20,18 +20,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  RecordDrivers
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\Search\Results;
+use Zend\ServiceManager\ConfigInterface;
 
 /**
  * Search results plugin manager
  *
  * @category VuFind2
- * @package  RecordDrivers
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
@@ -41,11 +42,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Constructor
      *
-     * @param null|ConfigInterface $configuration Configuration settings (optional)
+     * @param ConfigInterface $configuration Configuration settings (optional)
      */
-    public function __construct(
-        \Zend\ServiceManager\ConfigInterface $configuration = null
-    ) {
+    public function __construct(ConfigInterface $configuration = null)
+    {
         // These objects are not meant to be shared -- every time we retrieve one,
         // we are building a brand new object.
         $this->setShareByDefault(false);

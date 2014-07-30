@@ -107,4 +107,20 @@ class SolrTest extends \VuFindTest\Unit\TestCase
          $this->assertEquals($item['count'], count($item['ids']));
          $this->assertEquals('123.46 .Q39', $item['heading']);
      }
+
+    /**
+     * Check that the terms handler is working.
+     *
+     * @return void
+     */
+    public function testTermsHandler()
+    {
+        $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+            ->get('Solr');
+        $currentPageInfo = $solr->terms('id', 'test', 1)->getFieldTerms('id');
+        $this->assertEquals(1, count($currentPageInfo));
+        foreach ($currentPageInfo as $key => $value) {
+            $this->assertEquals('test', substr($key, 0, 4));
+        }
+    }
 }

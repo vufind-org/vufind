@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Blueprint;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * Helper class for displaying search-related HTML chunks.
@@ -37,49 +36,30 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Search extends AbstractHelper
+class Search extends \VuFind\View\Helper\AbstractSearch
 {
     /**
-     * Support function to display spelling suggestions.
-     *
-     * @param string                          $msg     HTML to display at the top of
-     * the spelling section.
-     * @param \VuFind\Search\Base\Results     $results Results object
-     * @param \Zend\View\Renderer\PhpRenderer $view    View renderer object
+     * Get the CSS classes for the container holding the suggestions.
      *
      * @return string
      */
-    public function renderSpellingSuggestions($msg, $results, $view)
+    protected function getContainerClass()
     {
-        $spellingSuggestions = $results->getSpellingSuggestions();
-        if (empty($spellingSuggestions)) {
-            return '';
-        }
+        return 'corrections';
+    }
 
-        $html = '<div class="corrections">';
-        $html .= $msg;
-        foreach ($spellingSuggestions as $term => $details) {
-            $html .= '<br/>' . $view->escapeHtml($term) . ' &raquo; ';
-            $i = 0;
-            foreach ($details['suggestions'] as $word => $data) {
-                if ($i++ > 0) {
-                    $html .= ', ';
-                }
-                $html .= '<a href="'
-                    . $results->getUrlQuery()
-                        ->replaceTerm($term, $data['new_term'])
-                    . '">' . $view->escapeHtml($word) . '</a>';
-                if (isset($data['expand_term']) && !empty($data['expand_term'])) {
-                    $html .= '<a href="'
-                        . $results->getUrlQuery()
-                            ->replaceTerm($term, $data['expand_term'])
-                        . '"><img src="' . $view->imageLink('silk/expand.png')
-                        . '" alt="' . $view->transEsc('spell_expand_alt')
-                        . '"/></a>';
-                }
-            }
-        }
-        $html .= '</div>';
-        return $html;
+    /**
+     * Render an expand link.
+     *
+     * @param string                          $url  Link href
+     * @param \Zend\View\Renderer\PhpRenderer $view View renderer object
+     *
+     * @return string
+     */
+    protected function renderExpandLink($url, $view)
+    {
+        return '<a href="' . $url . '"><img src="'
+            . $view->imageLink('silk/expand.png')
+            . '" alt="' . $view->transEsc('spell_expand_alt') . '"/></a>';
     }
 }

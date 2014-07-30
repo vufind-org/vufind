@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -50,58 +49,61 @@ use VuFindSearch\ParamBag;
  */
 class QueryBuilder implements QueryBuilderInterface
 {
-
     /**
-     * Regular expression matching a SOLR range.
+     * Default dismax handler (if no DismaxHandler set in specs).
      *
      * @var string
      */
-    const SOLR_RANGE_RE = '/(\[.+\s+TO\s+.+\])|(\{.+\s+TO\s+.+\})/';
-
-    /**
-     * Lookahead that detects whether or not we are inside quotes.
-     *
-     * @var string
-     */
-    protected static $insideQuotes = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
+    protected $defaultDismaxHandler;
 
     /**
      * Search specs.
      *
      * @var array
      */
-    protected $specs;
+    protected $specs = array();
 
     /**
-     * Force ranges to uppercase?
+     * Search specs for exact searches.
      *
-     * @var bool
+     * @var array
      */
-    public $caseSensitiveRanges = true;
-
-    /**
-     * Force boolean operators to uppercase?
-     *
-     * @var bool
-     */
-    public $caseSensitiveBooleans = true;
+    protected $exactSpecs = array();
 
     /**
      * Should we create the hl.q parameter when appropriate?
      *
      * @var bool
      */
-    public $createHighlightingQuery = false;
+    protected $createHighlightingQuery = false;
+
+    /**
+     * Should we create the spellcheck.q parameter when appropriate?
+     *
+     * @var bool
+     */
+    protected $createSpellingQuery = false;
+
+    /**
+     * Lucene syntax helper
+     *
+     * @var LuceneSyntaxHelper
+     */
+    protected $luceneHelper = null;
 
     /**
      * Constructor.
      *
-     * @param array $specs Search handler specifications
+     * @param array  $specs                Search handler specifications
+     * @param string $defaultDismaxHandler Default dismax handler (if no
+     * DismaxHandler set in specs).
      *
      * @return void
      */
-    public function __construct(array $specs = array())
-    {
+    public function __construct(array $specs = array(),
+        $defaultDismaxHandler = 'dismax'
+    ) {
+        $this->defaultDismaxHandler = $defaultDismaxHandler;
         $this->setSpecs($specs);
     }
 
@@ -116,19 +118,28 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function build(AbstractQuery $query)
     {
+        $params = new ParamBag();
+
+        // Add spelling query if applicable -- note that we mus set this up before
+        // we process the main query in order to avoid unwanted extra syntax:
+        if ($this->createSpellingQuery) {
+            $params->set('spellcheck.q', $query->getAllTerms());
+        }
+
         if ($query instanceOf QueryGroup) {
             $query = $this->reduceQueryGroup($query);
         } else {
-            $query->setString($this->normalizeSearchString($query->getString()));
+            $query->setString(
+                $this->getLuceneHelper()->normalizeSearchString($query->getString())
+            );
         }
 
         $string  = $query->getString() ?: '*:*';
-        $handler = $this->getSearchHandler($query->getHandler());
 
-        $params  = new ParamBag();
-
-        if ($this->containsAdvancedLuceneSyntax($string)) {
-            if ($handler) {
+        if ($handler = $this->getSearchHandler($query->getHandler(), $string)) {
+            if (!$handler->hasExtendedDismax()
+                && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
+            ) {
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
                 if ($handler->hasDismax()) {
                     $oldString = $string;
@@ -140,19 +151,17 @@ class QueryBuilder implements QueryBuilderInterface
                         $params->set('hl.q', $oldString);
                     }
                 }
-            }
-        } else {
-            if ($handler && $handler->hasDismax()) {
-                $params->set('qf', implode(' ', $handler->getDismaxFields()));
-                $params->set('qt', 'dismax');
-                foreach ($handler->getDismaxParams() as $param) {
-                    $params->add(reset($param), next($param));
-                }
-                if ($handler->hasFilterQuery()) {
-                    $params->add('fq', $handler->getFilterQuery());
-                }
             } else {
-                if ($handler) {
+                if ($handler->hasDismax()) {
+                    $params->set('qf', implode(' ', $handler->getDismaxFields()));
+                    $params->set('qt', $handler->getDismaxHandler());
+                    foreach ($handler->getDismaxParams() as $param) {
+                        $params->add(reset($param), next($param));
+                    }
+                    if ($handler->hasFilterQuery()) {
+                        $params->add('fq', $handler->getFilterQuery());
+                    }
+                } else {
                     $string = $handler->createSimpleQueryString($string);
                 }
             }
@@ -177,67 +186,16 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
-     * Return true if the search string contains advanced Lucene syntax.
+     * Control whether or not the QueryBuilder should create a spellcheck.q
+     * parameter. (Turned off by default).
      *
-     * @param string $searchString Search string
+     * @param bool $enable Should spelling query generation be enabled?
      *
-     * @return bool
-     *
-     * @todo Maybe factor out to dedicated UserQueryAnalyzer
+     * @return void
      */
-    public function containsAdvancedLuceneSyntax($searchString)
+    public function setCreateSpellingQuery($enable)
     {
-        // Check for various conditions that flag an advanced Lucene query:
-        if ($searchString == '*:*') {
-            return true;
-        }
-
-        // The following conditions do not apply to text inside quoted strings,
-        // so let's just strip all quoted strings out of the query to simplify
-        // detection.  We'll replace quoted phrases with a dummy keyword so quote
-        // removal doesn't interfere with the field specifier check below.
-        $searchString = preg_replace('/"[^"]*"/', 'quoted', $searchString);
-
-        // Check for field specifiers:
-        if (preg_match("/[^\s]\:[^\s]/", $searchString)) {
-            return true;
-        }
-
-        // Check for parentheses and range operators:
-        if (strstr($searchString, '(') && strstr($searchString, ')')) {
-            return true;
-        }
-        $rangeReg = self::SOLR_RANGE_RE;
-        if (!$this->caseSensitiveRanges) {
-            $rangeReg .= "i";
-        }
-        if (preg_match($rangeReg, $searchString)) {
-            return true;
-        }
-
-        // Build a regular expression to detect booleans -- AND/OR/NOT surrounded
-        // by whitespace, or NOT leading the query and followed by whitespace.
-        $boolReg = '/((\s+(AND|OR|NOT)\s+)|^NOT\s+)/';
-        if (!$this->caseSensitiveBooleans) {
-            $boolReg .= "i";
-        }
-        if (preg_match($boolReg, $searchString)) {
-            return true;
-        }
-
-        // Check for wildcards and fuzzy matches:
-        if (strstr($searchString, '*') || strstr($searchString, '?')
-            || strstr($searchString, '~')
-        ) {
-            return true;
-        }
-
-        // Check for boosts:
-        if (preg_match('/[\^][0-9]+/', $searchString)) {
-            return true;
-        }
-
-        return false;
+        $this->createSpellingQuery = $enable;
     }
 
     /**
@@ -250,22 +208,40 @@ class QueryBuilder implements QueryBuilderInterface
     public function setSpecs(array $specs)
     {
         foreach ($specs as $handler => $spec) {
-            $this->specs[strtolower($handler)] = new SearchHandler($spec);
+            if (isset($spec['ExactSettings'])) {
+                $this->exactSpecs[strtolower($handler)] = new SearchHandler(
+                    $spec['ExactSettings'], $this->defaultDismaxHandler
+                );
+                unset($spec['ExactSettings']);
+            }
+            $this->specs[strtolower($handler)]
+                = new SearchHandler($spec, $this->defaultDismaxHandler);
         }
     }
 
     /**
-     * Return search specs.
+     * Get Lucene syntax helper
      *
-     * @return array
+     * @return LuceneSyntaxHelper
      */
-    public function getSpecs()
+    public function getLuceneHelper()
     {
-        $specs = array();
-        foreach ($specs as $handler => $spec) {
-            $specs[$handler] = $spec->toArray();
+        if (null === $this->luceneHelper) {
+            $this->luceneHelper = new LuceneSyntaxHelper();
         }
-        return $specs;
+        return $this->luceneHelper;
+    }
+
+    /**
+     * Set Lucene syntax helper
+     *
+     * @param LuceneSyntaxHelper $helper Lucene syntax helper
+     *
+     * @return void
+     */
+    public function setLuceneHelper(LuceneSyntaxHelper $helper)
+    {
+        $this->luceneHelper = $helper;
     }
 
     /// Internal API
@@ -273,18 +249,32 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Return named search handler.
      *
-     * @param string $handler Search handler name
+     * @param string $handler      Search handler name
+     * @param string $searchString Search query
      *
      * @return SearchHandler|null
      */
-    protected function getSearchHandler($handler)
+    protected function getSearchHandler($handler, $searchString)
     {
         $handler = $handler ? strtolower($handler) : $handler;
-        if ($handler && isset($this->specs[$handler])) {
-            return $this->specs[$handler];
-        } else {
-            return null;
+        if ($handler) {
+            // Since we will rarely have exactSpecs set, it is less expensive
+            // to check for a handler first before doing multiple string
+            // operations to determine eligibility for exact handling.
+            if (isset($this->exactSpecs[$handler])) {
+                $searchString = isset($searchString) ? trim($searchString) : '';
+                if (strlen($searchString) > 1
+                    && substr($searchString, 0, 1) == '"'
+                    && substr($searchString, -1, 1) == '"'
+                ) {
+                    return $this->exactSpecs[$handler];
+                }
+            }
+            if (isset($this->specs[$handler])) {
+                return $this->specs[$handler];
+            }
         }
+        return null;
     }
 
     /**
@@ -324,8 +314,12 @@ class QueryBuilder implements QueryBuilderInterface
                 '(%s)', implode(" {$component->getOperator()} ", $reduced)
             );
         } else {
-            $searchString  = $this->normalizeSearchString($component->getString());
-            $searchHandler = $this->getSearchHandler($component->getHandler());
+            $searchString  = $this->getLuceneHelper()
+                ->normalizeSearchString($component->getString());
+            $searchHandler = $this->getSearchHandler(
+                $component->getHandler(),
+                $searchString
+            );
             if ($searchHandler) {
                 $searchString
                     = $this->createSearchString($searchString, $searchHandler);
@@ -345,7 +339,7 @@ class QueryBuilder implements QueryBuilderInterface
      */
     protected function createSearchString($string, SearchHandler $handler = null)
     {
-        $advanced = $this->containsAdvancedLuceneSyntax($string);
+        $advanced = $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string);
 
         if ($advanced && $handler) {
             return $handler->createAdvancedQueryString($string);
@@ -363,7 +357,6 @@ class QueryBuilder implements QueryBuilderInterface
      * @param SearchHandler $handler Search handler
      *
      * @return string
-     *
      */
     protected function createAdvancedInnerSearchString($string,
         SearchHandler $handler
@@ -374,19 +367,11 @@ class QueryBuilder implements QueryBuilderInterface
             return $handler->getFilterQuery();
         }
 
-        // Strip out any colons that are NOT part of a field specification:
-        $string = preg_replace('/(\:\s+|\s+:)/', ' ', $string);
-
         // If the query already includes field specifications, we can't easily
         // apply it to other fields through our defined handlers, so we'll leave
         // it as-is:
         if (strstr($string, ':')) {
             return $string;
-        }
-
-        // Convert empty queries to return all values in a field:
-        if (empty($string)) {
-            $string = '[* TO *]';
         }
 
         // If the query ends in a non-escaped question mark, the user may not really
@@ -403,234 +388,5 @@ class QueryBuilder implements QueryBuilderInterface
 
         return $handler
             ? $handler->createAdvancedQueryString($string, false) : $string;
-    }
-
-    /**
-     * Return normalized input string.
-     *
-     * @param string $searchString Input search string
-     *
-     * @return string
-     */
-    protected function normalizeSearchString($searchString)
-    {
-        $searchString = $this->prepareForLuceneSyntax($searchString);
-
-        // Force boolean operators to uppercase if we are in a
-        // case-insensitive mode:
-        if (!$this->caseSensitiveBooleans) {
-            $searchString = $this->capitalizeBooleans($searchString);
-        }
-        // Adjust range operators if we are in a case-insensitive mode:
-        if (!$this->caseSensitiveRanges) {
-            $searchString = $this->capitalizeRanges($searchString);
-        }
-        return $searchString;
-    }
-
-    /**
-     * Prepare input to be used in a SOLR query.
-     *
-     * Handles certain cases where the input might conflict with Lucene
-     * syntax rules.
-     *
-     * @param string $input Input string
-     *
-     * @return string
-     *
-     * @todo Check if it is safe to assume $input to be an UTF-8 encoded string.
-     */
-    protected function prepareForLuceneSyntax($input)
-    {
-        // Normalize fancy quotes:
-        $quotes = array(
-            "\xC2\xAB"     => '"', // « (U+00AB) in UTF-8
-            "\xC2\xBB"     => '"', // » (U+00BB) in UTF-8
-            "\xE2\x80\x98" => "'", // ‘ (U+2018) in UTF-8
-            "\xE2\x80\x99" => "'", // ’ (U+2019) in UTF-8
-            "\xE2\x80\x9A" => "'", // ‚ (U+201A) in UTF-8
-            "\xE2\x80\x9B" => "'", // ? (U+201B) in UTF-8
-            "\xE2\x80\x9C" => '"', // “ (U+201C) in UTF-8
-            "\xE2\x80\x9D" => '"', // ” (U+201D) in UTF-8
-            "\xE2\x80\x9E" => '"', // „ (U+201E) in UTF-8
-            "\xE2\x80\x9F" => '"', // ? (U+201F) in UTF-8
-            "\xE2\x80\xB9" => "'", // ‹ (U+2039) in UTF-8
-            "\xE2\x80\xBA" => "'", // › (U+203A) in UTF-8
-        );
-        $input = strtr($input, $quotes);
-
-        // If the user has entered a lone BOOLEAN operator, convert it to lowercase
-        // so it is treated as a word (otherwise it will trigger a fatal error):
-        switch(trim($input)) {
-        case 'OR':
-            return 'or';
-        case 'AND':
-            return 'and';
-        case 'NOT':
-            return 'not';
-        }
-
-        // If the string consists only of control characters and/or BOOLEANs with no
-        // other input, wipe it out entirely to prevent weird errors:
-        $operators = array('AND', 'OR', 'NOT', '+', '-', '"', '&', '|');
-        if (trim(str_replace($operators, '', $input)) == '') {
-            return '';
-        }
-
-        // Translate "all records" search into a blank string
-        if (trim($input) == '*:*') {
-            return '';
-        }
-
-        // Ensure wildcards are not at beginning of input
-        if ((substr($input, 0, 1) == '*') || (substr($input, 0, 1) == '?')) {
-            $input = substr($input, 1);
-        }
-
-        // Ensure all parens match
-        //   Better: Remove all parens if they are not balanced
-        //     -- dmaus, 2012-11-11
-        $start = preg_match_all('/\(/', $input, $tmp);
-        $end = preg_match_all('/\)/', $input, $tmp);
-        if ($start != $end) {
-            $input = str_replace(array('(', ')'), '', $input);
-        }
-
-        // Ensure ^ is used properly
-        //   Better: Remove all ^ if not followed by digits
-        //     -- dmaus, 2012-11-11
-        $cnt = preg_match_all('/\^/', $input, $tmp);
-        $matches = preg_match_all('/[^^]+\^[0-9]/', $input, $tmp);
-        if (($cnt) && ($cnt !== $matches)) {
-            $input = str_replace('^', '', $input);
-        }
-
-        // Remove unwanted brackets/braces that are not part of range queries.
-        // This is a bit of a shell game -- first we replace valid brackets and
-        // braces with tokens that cannot possibly already be in the query (due
-        // to ^ normalization in the step above).  Next, we remove all remaining
-        // invalid brackets/braces, and transform our tokens back into valid ones.
-        // Obviously, the order of the patterns/merges array is critically
-        // important to get this right!!
-        $patterns = array(
-            // STEP 1 -- escape valid brackets/braces
-            '/\[([^\[\]\s]+\s+TO\s+[^\[\]\s]+)\]/' .
-            ($this->caseSensitiveRanges ? '' : 'i'),
-            '/\{([^\{\}\s]+\s+TO\s+[^\{\}\s]+)\}/' .
-            ($this->caseSensitiveRanges ? '' : 'i'),
-            // STEP 2 -- destroy remaining brackets/braces
-            '/[\[\]\{\}]/',
-            // STEP 3 -- unescape valid brackets/braces
-            '/\^\^lbrack\^\^/', '/\^\^rbrack\^\^/',
-            '/\^\^lbrace\^\^/', '/\^\^rbrace\^\^/');
-        $matches = array(
-            // STEP 1 -- escape valid brackets/braces
-            '^^lbrack^^$1^^rbrack^^', '^^lbrace^^$1^^rbrace^^',
-            // STEP 2 -- destroy remaining brackets/braces
-            '',
-            // STEP 3 -- unescape valid brackets/braces
-            '[', ']', '{', '}');
-        $input = preg_replace($patterns, $matches, $input);
-
-        // Freestanding hyphens can cause problems:
-        $lookahead = self::$insideQuotes;
-        $input = preg_replace('/\s+-\s+' . $lookahead . '/', ' ', $input);
-
-        // A proximity of 1 is illegal and meaningless -- remove it:
-        $input = preg_replace('/~1(\.0*)?$/', '', $input);
-        $input = preg_replace('/~1(\.0*)?\s+' . $lookahead . '/', ' ', $input);
-
-        // Remove empty parentheses outside of quotation marks -- these will
-        // cause a fatal Solr error and should be ignored.
-        $parenRegex = '/\(\s*\)' . $lookahead . '/';
-        while (preg_match($parenRegex, $input)) {
-            $input = preg_replace($parenRegex, '', $input);
-        }
-
-        return $input;
-    }
-
-    /**
-     * Capitalize boolean operators.
-     *
-     * @param string $string Search string
-     *
-     * @return string
-     */
-    public function capitalizeBooleans($string)
-    {
-        // Load the "inside quotes" lookahead so we can use it to prevent
-        // switching case of Boolean reserved words inside quotes, since
-        // that can cause problems in case-sensitive fields when the reserved
-        // words are actually used as search terms.
-        $lookahead = self::$insideQuotes;
-        $regs = array("/\s+AND\s+{$lookahead}/i", "/\s+OR\s+{$lookahead}/i",
-                "/(\s+NOT\s+|^NOT\s+){$lookahead}/i", "/\(NOT\s+{$lookahead}/i");
-        $replace = array(' AND ', ' OR ', ' NOT ', '(NOT ');
-        return trim(preg_replace($regs, $replace, $string));
-    }
-
-    /**
-     * Capitalize range operator.
-     *
-     * @param string $string Search string
-     *
-     * @return string
-     */
-    public function capitalizeRanges($string)
-    {
-        // Load the "inside quotes" lookahead so we can use it to prevent
-        // switching case of ranges inside quotes, since that can cause
-        // problems in case-sensitive fields when the reserved words are
-        // actually used as search terms.
-        $lookahead = self::$insideQuotes;
-        $regs = array("/(\[)([^\]]+)\s+TO\s+([^\]]+)(\]){$lookahead}/i",
-            "/(\{)([^}]+)\s+TO\s+([^}]+)(\}){$lookahead}/i");
-        $callback = array($this, 'capitalizeRangesCallback');
-        return trim(preg_replace_callback($regs, $callback, $string));
-    }
-
-    /**
-     * Callback helper function.
-     *
-     * @param array $match Matches as of preg_replace_callback()
-     *
-     * @return string
-     *
-     * @see self::capitalizeRanges
-     *
-     * @todo Check possible problem with umlauts/non-ASCII word characters
-     */
-    protected function capitalizeRangesCallback($match)
-    {
-        // Extract the relevant parts of the expression:
-        $open = $match[1];         // opening symbol
-        $close = $match[4];        // closing symbol
-        $start = $match[2];        // start of range
-        $end = $match[3];          // end of range
-
-        // Is this a case-sensitive range?
-        if (strtoupper($start) != strtolower($start)
-            || strtoupper($end) != strtolower($end)
-        ) {
-            // Build a lowercase version of the range:
-            $lower = $open . trim(strtolower($start)) . ' TO ' .
-                trim(strtolower($end)) . $close;
-            // Build a uppercase version of the range:
-            $upper = $open . trim(strtoupper($start)) . ' TO ' .
-                trim(strtoupper($end)) . $close;
-
-            // Special case: don't create illegal timestamps!
-            $timestamp = '/[0-9]{4}-[0-9]{2}-[0-9]{2}t[0-9]{2}:[0-9]{2}:[0-9]{2}z/i';
-            if (preg_match($timestamp, $start) || preg_match($timestamp, $end)) {
-                return $upper;
-            }
-
-            // Accept results matching either range:
-            return '(' . $lower . ' OR ' . $upper . ')';
-        } else {
-            // Simpler case -- case insensitive (probably numeric) range:
-            return $open . trim($start) . ' TO ' . trim($end) . $close;
-        }
     }
 }

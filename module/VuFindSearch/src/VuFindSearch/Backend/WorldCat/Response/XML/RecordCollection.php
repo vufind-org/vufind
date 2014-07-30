@@ -59,6 +59,7 @@ class RecordCollection extends AbstractRecordCollection
     public function __construct(array $response)
     {
         $this->response = $response;
+        $this->offset = $this->response['offset'];
         $this->rewind();
     }
 
@@ -80,15 +81,5 @@ class RecordCollection extends AbstractRecordCollection
     public function getFacets()
     {
         return array(); // not supported by WorldCat
-    }
-
-    /**
-     * Return offset in the total search result set.
-     *
-     * @return int
-     */
-    public function getOffset()
-    {
-        return $this->response['offset'];
     }
 }

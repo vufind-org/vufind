@@ -3,16 +3,19 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\Ldap;
 
+use Countable;
+use Iterator;
+
 /**
  * Zend\Ldap\Collection wraps a list of LDAP entries.
  */
-class Collection implements \Iterator, \Countable
+class Collection implements Iterator, Countable
 {
     /**
      * Iterator

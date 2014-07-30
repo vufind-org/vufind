@@ -5,7 +5,7 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<a href="' . $this->url('myresearch-home') . '">'
         . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>'
-        . $this->transEsc('Checked Out') . '</em>';
+        . $this->transEsc('Checked Out Items') . '</em>';
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h3><?=$this->transEsc('Your Checked Out Items')?></h3>
@@ -29,16 +29,16 @@
       <li class="result<?=(++$i % 2 == 0) ? ' alt' : ''?>">
         <? if ($this->renewForm): ?>
           <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
-              <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
+              <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
               <label for="checkbox_<?=$safeId?>" class="offscreen"><?=$this->transEsc("Select this record")?></label>
-              <input type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" class="checkbox" style="margin-left: 0" id="checkbox_<?=$safeId?>" />
-              <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" />
+              <input type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" class="checkbox" style="margin-left: 0" id="checkbox_<?=$safeId?>" />
+              <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
           <? endif; ?>
         <? endif; ?>
-        <div id="record<?=$this->escapeHtml($resource->getUniqueId())?>">
+        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>">
           <div class="span-2">
             <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-              <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+              <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
             <? else: ?>
               <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
             <? endif; ?>
@@ -63,20 +63,6 @@
               <?=$this->transEsc('by')?>:
               <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
             <? endif; ?>
-            <? /* TODO: tags
-            {if $resource.tags}
-              <?=$this->transEsc('Your Tags')?>:
-              {foreach from=$resource.tags item=tag name=tagLoop}
-                <a href="{$url}/Search/Results?tag={$tag->tag|escape:"url"}">{$tag->tag|escape}</a>{if !$smarty.foreach.tagLoop.last},{/if}
-              {/foreach}
-              <br/>
-            {/if}
-             */ ?>
-            <? /* TODO: notes
-            {if $resource.notes}
-              <?=$this->transEsc('Notes')?>: {$resource.notes|escape}<br/>
-            {/if}
-             */ ?>
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=$this->record($resource)->getFormatList()?>
               <br/>
@@ -91,6 +77,19 @@
               <br />
             <? endif; ?>
 
+            <? if (isset($ilsDetails['institution_name']) && !empty($ilsDetails['institution_name'])): ?>
+              <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name'])?></strong>
+              <br />
+            <? endif; ?>
+
+            <? if (isset($ilsDetails['renew'])): ?>
+              <strong><?=$this->transEsc('Renewed')?>:</strong> <?=$this->transEsc($ilsDetails['renew'])?>
+              <? if (isset($ilsDetails['renewLimit'])): ?>
+                / <?=$this->transEsc($ilsDetails['renewLimit'])?>
+              <? endif; ?>
+              <br />
+            <? endif; ?>            
+            
             <? $showStatus = true; ?>
 
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
@@ -118,7 +117,7 @@
               <div class="info"><?=$this->transEsc($ilsDetails['message'])?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_link'])): ?>
-              <a href="<?=$this->escapeHtml($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
+              <a href="<?=$this->escapeHtmlAttr($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
             <? endif; ?>
           </div>
           <div class="clear"></div>

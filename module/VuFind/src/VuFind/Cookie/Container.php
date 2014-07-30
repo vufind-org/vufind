@@ -40,6 +40,11 @@ namespace VuFind\Cookie;
  */
 class Container
 {
+    /**
+     * Prefix to use for cookie values.
+     *
+     * @var string
+     */
     protected $groupName;
 
     /**

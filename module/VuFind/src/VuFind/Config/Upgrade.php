@@ -104,6 +104,13 @@ class Upgrade
     protected $warnings = array();
 
     /**
+     * Are we upgrading files in place rather than creating them?
+     *
+     * @var bool
+     */
+    protected $inPlaceUpgrade;
+
+    /**
      * Constructor
      *
      * @param string $from   Version we're upgrading from.
@@ -120,6 +127,7 @@ class Upgrade
         $this->oldDir = $oldDir;
         $this->rawDir = $rawDir;
         $this->newDir = $newDir;
+        $this->inPlaceUpgrade = ($this->oldDir == $this->newDir);
     }
 
     /**
@@ -148,8 +156,10 @@ class Upgrade
 
         // The following routines load special configurations that were not
         // explicitly loaded by loadConfigs:
-        $this->upgradeSolrMarc();
-        $this->upgradeSearchSpecs();
+        if ($this->from < 2) {  // some pieces only apply to 1.x upgrade!
+            $this->upgradeSolrMarc();
+            $this->upgradeSearchSpecs();
+        }
         $this->upgradeILS();
     }
 
@@ -330,7 +340,16 @@ class Upgrade
             return;
         }
 
+        // If we're doing an in-place upgrade, and the source file is empty,
+        // there is no point in upgrading anything (the file doesn't exist).
+        if (empty($this->oldConfigs[$filename]) && $this->inPlaceUpgrade) {
+            return;
+        }
+
+        // If target file already exists, back it up:
         $outfile = $this->newDir . '/' . $filename;
+        copy($outfile, $outfile . '.bak.' . time());
+
         $writer = new ConfigWriter(
             $outfile, $this->newConfigs[$filename], $this->comments[$filename]
         );
@@ -353,6 +372,10 @@ class Upgrade
     protected function saveUnmodifiedConfig($filename)
     {
         if (null === $this->newDir) {   // skip write if no destination
+            return;
+        }
+
+        if ($this->inPlaceUpgrade) {    // skip write if doing in-place upgrade
             return;
         }
 
@@ -409,6 +432,55 @@ class Upgrade
     }
 
     /**
+     * Is this a default BulkExport options setting?
+     *
+     * @param string $eo Bulk export options
+     *
+     * @return bool
+     */
+    protected function isDefaultBulkExportOptions($eo)
+    {
+        return
+            ($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
+            || ($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
+            || ($this->from == '1.2' && $eo == 'MARC:EndNote:BibTeX')
+            || ($this->from == '1.1' && $eo == 'MARC:EndNote');
+    }
+
+    /**
+     * Add warnings if Amazon problems were found.
+     *
+     * @param array $config Configuration to check
+     *
+     * @return void
+     */
+    protected function checkAmazonConfig($config)
+    {
+        // Warn the user if they have Amazon enabled but do not have the appropriate
+        // credentials set up.
+        $hasAmazonReview = isset($config['Content']['reviews'])
+            && stristr($config['Content']['reviews'], 'amazon');
+        $hasAmazonCover = isset($config['Content']['coverimages'])
+            && stristr($config['Content']['coverimages'], 'amazon');
+        if ($hasAmazonReview || $hasAmazonCover) {
+            if (!isset($config['Content']['amazonsecret'])) {
+                $this->addWarning(
+                    'WARNING: You have Amazon content enabled but are missing '
+                    . 'the required amazonsecret setting in the [Content] section '
+                    . 'of config.ini'
+                );
+            }
+            if (!isset($config['Content']['amazonassociate'])) {
+                $this->addWarning(
+                    'WARNING: You have Amazon content enabled but are missing '
+                    . 'the required amazonassociate setting in the [Content] section'
+                    . ' of config.ini'
+                );
+            }
+        }
+    }
+
+    /**
      * Upgrade config.ini.
      *
      * @throws FileAccessException
@@ -422,46 +494,15 @@ class Upgrade
         // Set up reference for convenience (and shorter lines):
         $newConfig = & $this->newConfigs['config.ini'];
 
-        // Brazilian Portuguese language file is now disabled by default (since
-        // it is very incomplete, and regular Portuguese file is now available):
-        if (isset($newConfig['Languages']['pt-br'])) {
-            unset($newConfig['Languages']['pt-br']);
-        }
-
         // If the [BulkExport] options setting is an old default, update it to
         // reflect the fact that we now support more options.
-        $eo = $newConfig['BulkExport']['options'];
-        if (($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
-            || ($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
-            || ($this->from == '1.2' && $eo == 'MARC:EndNote:BibTeX')
-            || ($this->from == '1.1' && $eo == 'MARC:EndNote')
-        ) {
+        if ($this->isDefaultBulkExportOptions($newConfig['BulkExport']['options'])) {
             $newConfig['BulkExport']['options']
                 = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX';
         }
 
-        // Warn the user if they have Amazon enabled but do not have the appropriate
-        // credentials set up.
-        $hasAmazonReview = isset($newConfig['Content']['reviews'])
-            && stristr($newConfig['Content']['reviews'], 'amazon');
-        $hasAmazonCover = isset($newConfig['Content']['coverimages'])
-            && stristr($newConfig['Content']['coverimages'], 'amazon');
-        if ($hasAmazonReview || $hasAmazonCover) {
-            if (!isset($newConfig['Content']['amazonsecret'])) {
-                $this->addWarning(
-                    'WARNING: You have Amazon content enabled but are missing '
-                    . 'the required amazonsecret setting in the [Content] section '
-                    . 'of config.ini'
-                );
-            }
-            if (!isset($newConfig['Content']['amazonassociate'])) {
-                $this->addWarning(
-                    'WARNING: You have Amazon content enabled but are missing '
-                    . 'the required amazonassociate setting in the [Content] section'
-                    . ' of config.ini'
-                );
-            }
-        }
+        // Warn the user about Amazon configuration issues:
+        $this->checkAmazonConfig($newConfig);
 
         // Warn the user if they have enabled a deprecated Google API:
         if (isset($newConfig['GoogleSearch'])) {
@@ -471,6 +512,28 @@ class Upgrade
                 . 'longer supported due to changes in Google APIs.'
             );
         }
+        if (isset($newConfig['GoogleAnalytics']['apiKey'])) {
+            if (!isset($newConfig['GoogleAnalytics']['universal'])
+                || !$newConfig['GoogleAnalytics']['universal']
+            ) {
+                $this->addWarning(
+                    'The [GoogleAnalytics] universal setting is off. See config.ini '
+                    . 'for important information on how to upgrade your Analytics.'
+                );
+            }
+        }
+
+        // Warn the user about deprecated WorldCat setting:
+        if (isset($newConfig['WorldCat']['LimitCodes'])) {
+            unset($newConfig['WorldCat']['LimitCodes']);
+            $this->addWarning(
+                'The [WorldCat] LimitCodes setting never had any effect and has been'
+                . ' removed.'
+            );
+        }
+
+        // Disable unused, obsolete setting:
+        unset($newConfig['Index']['local']);
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'blueprint');
@@ -515,6 +578,14 @@ class Upgrade
             && $newConfig['Site']['generator'] == 'VuFind ' . $this->from
         ) {
             $newConfig['Site']['generator'] = 'VuFind ' . $this->to;
+        }
+
+        // Update Syndetics config:
+        if (isset($newConfig['Syndetics']['url'])) {
+            $newConfig['Syndetics']['use_ssl']
+                = (strpos($newConfig['Syndetics']['url'], 'https://') === false)
+                ? '' : 1;
+            unset($newConfig['Syndetics']['url']);
         }
 
         // Deal with shard settings (which may have to be moved to another file):
@@ -700,6 +771,17 @@ class Upgrade
         );
         $this->applyOldSettings('Summon.ini', $groups);
 
+        // Turn on advanced checkbox facets if we're upgrading from a version
+        // prior to 2.3.
+        if ((float)$this->from < 2.3) {
+            $cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings'];
+            if (!isset($cfg['special_facets']) || empty($cfg['special_facets'])) {
+                $cfg['special_facets'] = 'checkboxes:Summon';
+            } else if (false === strpos('checkboxes', $cfg['special_facets'])) {
+                $cfg['special_facets'] .= ',checkboxes:Summon';
+            }
+        }
+
         // save the file
         $this->saveModifiedConfig('Summon.ini');
     }
@@ -729,6 +811,26 @@ class Upgrade
     }
 
     /**
+     * Does the specified properties file contain any meaningful
+     * (non-empty/non-comment) lines?
+     *
+     * @param string $src File to check
+     *
+     * @return bool
+     */
+    protected function fileContainsMeaningfulLines($src)
+    {
+        // Does the file contain any meaningful lines?
+        foreach (file($src) as $line) {
+            $line = trim($line);
+            if (!empty($line) && substr($line, 0, 1) != '#') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Upgrade SolrMarc configurations.
      *
      * @throws FileAccessException
@@ -746,19 +848,8 @@ class Upgrade
             return;
         }
 
-        // Does the file contain any meaningful lines?
-        $lines = file($src);
-        $empty = true;
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if (!empty($line) && substr($line, 0, 1) != '#') {
-                $empty = false;
-                break;
-            }
-        }
-
         // Copy the file if it contains customizations:
-        if (!$empty) {
+        if ($this->fileContainsMeaningfulLines($src)) {
             $dest = realpath($this->newDir . '/../../import')
                 . '/marc_local.properties';
             if (!copy($src, $dest) || !file_exists($dest)) {

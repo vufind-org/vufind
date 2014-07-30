@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -56,6 +56,7 @@ class ValidatorPluginManager extends AbstractPluginManager
         'csrf'                     => 'Zend\Validator\Csrf',
         'date'                     => 'Zend\Validator\Date',
         'datestep'                 => 'Zend\Validator\DateStep',
+        'datetime'                 => 'Zend\I18n\Validator\DateTime',
         'dbnorecordexists'         => 'Zend\Validator\Db\NoRecordExists',
         'dbrecordexists'           => 'Zend\Validator\Db\RecordExists',
         'digits'                   => 'Zend\Validator\Digits',
@@ -93,6 +94,7 @@ class ValidatorPluginManager extends AbstractPluginManager
         'isinstanceof'             => 'Zend\Validator\IsInstanceOf',
         'lessthan'                 => 'Zend\Validator\LessThan',
         'notempty'                 => 'Zend\Validator\NotEmpty',
+        'phonenumber'              => 'Zend\I18n\Validator\PhoneNumber',
         'postcode'                 => 'Zend\I18n\Validator\PostCode',
         'regex'                    => 'Zend\Validator\Regex',
         'sitemapchangefreq'        => 'Zend\Validator\Sitemap\Changefreq',

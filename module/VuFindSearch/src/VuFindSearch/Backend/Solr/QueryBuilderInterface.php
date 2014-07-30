@@ -66,4 +66,14 @@ interface QueryBuilderInterface
      * @return void
      */
     public function setCreateHighlightingQuery($enable);
+
+    /**
+     * Control whether or not the QueryBuilder should create a spellcheck.q
+     * parameter. (Turned off by default).
+     *
+     * @param bool $enable Should spelling query generation be enabled?
+     *
+     * @return void
+     */
+    public function setCreateSpellingQuery($enable);
 }

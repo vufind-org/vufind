@@ -157,11 +157,14 @@ class UpgradeController extends AbstractBase
      */
     public function fixconfigAction()
     {
+        $localConfig
+            = dirname(ConfigLocator::getLocalConfigPath('config.ini', null, true));
+        $confDir = $this->cookie->oldVersion < 2
+            ? $this->cookie->sourceDir . '/web/conf'
+            : $localConfig;
         $upgrader = new \VuFind\Config\Upgrade(
-            $this->cookie->oldVersion, $this->cookie->newVersion,
-            $this->cookie->sourceDir . '/web/conf',
-            dirname(ConfigLocator::getBaseConfigPath('config.ini')),
-            dirname(ConfigLocator::getLocalConfigPath('config.ini', null, true))
+            $this->cookie->oldVersion, $this->cookie->newVersion, $confDir,
+            dirname(ConfigLocator::getBaseConfigPath('config.ini')), $localConfig
         );
         try {
             $upgrader->run();
@@ -385,7 +388,7 @@ class UpgradeController extends AbstractBase
             $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
 
             // Process form submission:
-            if (strlen($this->params()->fromPost('submit', '')) > 0) {
+            if ($this->formWasSubmitted('submit')) {
                 $pass = $this->params()->fromPost('dbrootpass');
 
                 // Test the connection:
@@ -440,7 +443,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if (strlen($this->params()->fromPost('submit', '')) > 0) {
+        if ($this->formWasSubmitted('submit')) {
             $user = $this->params()->fromPost('username');
             if (empty($user)) {
                 $this->flashMessenger()->setNamespace('error')
@@ -483,7 +486,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if (strlen($this->params()->fromPost('submit', '')) > 0) {
+        if ($this->formWasSubmitted('submit')) {
             $this->getTable('Tags')->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
@@ -504,6 +507,9 @@ class UpgradeController extends AbstractBase
             return $this->forwardTo('Upgrade', 'Home');
         }
 
+        // This can take a while -- don't time out!
+        set_time_limit(0);
+
         // Check for problems:
         $table = $this->getTable('Resource');
         $problems = $table->findMissingMetadata();
@@ -515,7 +521,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Process submit button:
-        if (strlen($this->params()->fromPost('submit', '')) > 0) {
+        if ($this->formWasSubmitted('submit')) {
             $converter = $this->getServiceLocator()->get('VuFind\DateConverter');
             foreach ($problems as $problem) {
                 try {
@@ -535,7 +541,7 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Prompt the user for a source directory.
+     * Prompt the user for a source directory (to upgrade from 1.x).
      *
      * @return mixed
      */
@@ -561,6 +567,38 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel();
+    }
+
+    /**
+     * Prompt the user for a source version (to upgrade from 2.x).
+     *
+     * @return mixed
+     */
+    public function getsourceversionAction()
+    {
+        // Process form submission:
+        $version = $this->params()->fromPost('sourceversion');
+        if (!empty($version)) {
+            $this->cookie->newVersion
+                = $this->getVersion(realpath(APPLICATION_PATH));
+            if (floor($version) != 2) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('Illegal version number.');
+            } else if ($version >= $this->cookie->newVersion) {
+                $this->flashMessenger()->setNamespace('error')->addMessage(
+                    "Source version must be less than {$this->cookie->newVersion}."
+                );
+            } else {
+                $this->cookie->oldVersion = $version;
+                $this->cookie->sourceDir = realpath(APPLICATION_PATH);
+                // Clear out request to avoid infinite loop:
+                $this->getRequest()->getPost()->set('sourceversion', '');
+                return $this->forwardTo('Upgrade', 'Home');
+            }
+        }
+
+        // If we got this far, we need to send the user back to the form:
+        return $this->forwardTo('Upgrade', 'GetSourceDir');
     }
 
     /**
@@ -624,7 +662,8 @@ class UpgradeController extends AbstractBase
                 'configDir' => dirname(
                     ConfigLocator::getLocalConfigPath('config.ini', null, true)
                 ),
-                'importDir' => LOCAL_OVERRIDE_DIR . '/import'
+                'importDir' => LOCAL_OVERRIDE_DIR . '/import',
+                'oldVersion' => $this->cookie->oldVersion
             )
         );
     }
@@ -636,7 +675,7 @@ class UpgradeController extends AbstractBase
      */
     public function resetAction()
     {
-        foreach ($this->cookie->getAllValues() as $k => $v) {
+        foreach (array_keys($this->cookie->getAllValues()) as $k) {
             unset($this->cookie->$k);
         }
         $storage = $this->session->getManager()->getStorage();

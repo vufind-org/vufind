@@ -38,31 +38,6 @@ namespace VuFindSearch\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-abstract class AbstractQuery
+abstract class AbstractQuery implements QueryInterface
 {
-    /**
-     * Does the query contain the specified term?
-     *
-     * @param string $needle Term to check
-     *
-     * @return bool
-     */
-    abstract public function containsTerm($needle);
-
-    /**
-     * Get a concatenated list of all query strings within the object.
-     *
-     * @return string
-     */
-    abstract public function getAllTerms();
-
-    /**
-     * Replace a term.
-     *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
-     *
-     * @return void
-     */
-    abstract public function replaceTerm($from, $to);
 }

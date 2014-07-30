@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -12,7 +12,6 @@ namespace Zend\Form\View\Helper;
 use Zend\Form\Element\Button;
 use Zend\Form\ElementInterface;
 use Zend\Form\Exception;
-use Zend\Form\View\Helper\AbstractHelper;
 
 class FormRow extends AbstractHelper
 {
@@ -92,7 +91,7 @@ class FormRow extends AbstractHelper
 
         if ($labelPosition !== null) {
             $this->setLabelPosition($labelPosition);
-        } else {
+        } elseif ($this->labelPosition === null) {
             $this->setLabelPosition(self::LABEL_PREPEND);
         }
 
@@ -310,7 +309,7 @@ class FormRow extends AbstractHelper
     }
 
     /**
-     * Retrive if the errors are rendered by this helper
+     * Retrieve if the errors are rendered by this helper
      *
      * @return bool
      */
@@ -332,7 +331,7 @@ class FormRow extends AbstractHelper
     }
 
     /**
-     * Retrive current partial
+     * Retrieve current partial
      *
      * @return null|string
      */

@@ -51,7 +51,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     protected static $template = array(
         'responseHeader' => array(),
-        'response'       => array('start' => 0),
+        'response'       => array('numFound' => 0, 'start' => 0),
         'spellcheck'     => array('suggestions' => array()),
         'facet_counts'   => array(),
     );
@@ -87,6 +87,7 @@ class RecordCollection extends AbstractRecordCollection
     public function __construct(array $response)
     {
         $this->response = array_replace_recursive(static::$template, $response);
+        $this->offset = $this->response['response']['start'];
         $this->rewind();
     }
 
@@ -98,8 +99,14 @@ class RecordCollection extends AbstractRecordCollection
     public function getSpellcheck()
     {
         if (!$this->spellcheck) {
-            $this->spellcheck
-                = new Spellcheck($this->response['spellcheck']['suggestions']);
+            $params = isset($this->response['responseHeader']['params'])
+                ? $this->response['responseHeader']['params'] : array();
+            $sq = isset($params['spellcheck.q'])
+                ? $params['spellcheck.q']
+                : (isset($params['q']) ? $params['q'] : '');
+            $sugg = isset($this->response['spellcheck']['suggestions'])
+                ? $this->response['spellcheck']['suggestions'] : array();
+            $this->spellcheck = new Spellcheck($sugg, $sq);
         }
         return $this->spellcheck;
     }
@@ -147,15 +154,5 @@ class RecordCollection extends AbstractRecordCollection
     {
         return isset($this->response['highlighting'])
             ? $this->response['highlighting'] : array();
-    }
-
-    /**
-     * Return offset in the total search result set.
-     *
-     * @return int
-     */
-    public function getOffset()
-    {
-        return $this->response['response']['start'];
     }
 }

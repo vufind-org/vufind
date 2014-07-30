@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Mail as MailException, VuFind\Search\Memory,
-    VuFind\Solr\Utils as SolrUtils;
+use VuFind\Exception\Mail as MailException;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -55,15 +54,20 @@ class SearchController extends AbstractSearch
         $view->facetList = $this->processAdvancedFacets(
             $this->getAdvancedFacets()->getFacetList(), $view->saved
         );
-        $specialFacets = $view->options->getSpecialAdvancedFacets();
-        if (stristr($specialFacets, 'illustrated')) {
+        $specialFacets = $this->parseSpecialFacetsSetting(
+            $view->options->getSpecialAdvancedFacets()
+        );
+        if (isset($specialFacets['illustrated'])) {
             $view->illustratedLimit
                 = $this->getIllustrationSettings($view->saved);
         }
-        if (stristr($specialFacets, 'daterange')) {
-            $view->dateRangeLimit
-                = $this->getDateRangeSettings($view->saved);
+        if (isset($specialFacets['checkboxes'])) {
+            $view->checkboxFacets = $this->processAdvancedCheckboxes(
+                $specialFacets['checkboxes'], $view->saved
+            );
         }
+        $view->ranges = $this->getAllRangeSettings($specialFacets, $view->saved);
+
         return $view;
     }
 
@@ -76,7 +80,7 @@ class SearchController extends AbstractSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $view = $this->createViewModel();
+        $view = $this->createEmailViewModel();
         $view->url = $this->params()->fromPost(
             'url', $this->params()->fromQuery(
                 'url', $this->getRequest()->getServer()->get('HTTP_REFERER')
@@ -104,12 +108,7 @@ class SearchController extends AbstractSearch
         }
 
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
-            // Send parameters back to view so form can be re-populated:
-            $view->to = $this->params()->fromPost('to');
-            $view->from = $this->params()->fromPost('from');
-            $view->message = $this->params()->fromPost('message');
-
+        if ($this->formWasSubmitted('submit')) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
@@ -167,38 +166,6 @@ class SearchController extends AbstractSearch
     }
 
     /**
-     * Get the current settings for the date range facet, if it is set:
-     *
-     * @param object $savedSearch Saved search object (false if none)
-     *
-     * @return array              Date range: Key 0 = from, Key 1 = to.
-     */
-    protected function getDateRangeSettings($savedSearch = false)
-    {
-        // Default to blank strings:
-        $from = $to = '';
-
-        // Check to see if there is an existing range in the search object:
-        if ($savedSearch) {
-            $filters = $savedSearch->getParams()->getFilters();
-            if (isset($filters['publishDate'])) {
-                foreach ($filters['publishDate'] as $current) {
-                    if ($range = SolrUtils::parseRange($current)) {
-                        $from = $range['from'] == '*' ? '' : $range['from'];
-                        $to = $range['to'] == '*' ? '' : $range['to'];
-                        $savedSearch->getParams()
-                            ->removeFilter('publishDate:' . $current);
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Send back the settings:
-        return array($from, $to);
-    }
-
-    /**
      * Process the facets to be used as limits on the Advanced Search screen.
      *
      * @param array  $facetList    The advanced facet values
@@ -212,7 +179,8 @@ class SearchController extends AbstractSearch
         foreach ($facetList as $facet => $list) {
             foreach ($list['list'] as $key => $value) {
                 // Build the filter string for the URL:
-                $fullFilter = $facet.':"'.$value['value'].'"';
+                $fullFilter = ($value['operator'] == 'OR' ? '~' : '')
+                    . $facet.':"'.$value['value'].'"';
 
                 // If we haven't already found a selected facet and the current
                 // facet has been applied to the search, we should store it as
@@ -270,7 +238,7 @@ class SearchController extends AbstractSearch
                     $current->delete();
 
                     // We don't want to remember the last search after a purge:
-                    Memory::forgetSearch();
+                    $this->getSearchMemory()->forgetSearch();
                 } else {
                     // Otherwise add to the list
                     $unsaved[] = $minSO->deminify($this->getResultsManager());
@@ -307,28 +275,11 @@ class SearchController extends AbstractSearch
             return $this->forwardTo('Search', 'NewItemResults');
         }
 
-        // Find out if there are user configured range options; if not,
-        // default to the standard 1/5/30 days:
-        $ranges = array();
-        $searchSettings = $this->getConfig('searches');
-        if (isset($searchSettings->NewItem->ranges)) {
-            $tmp = explode(',', $searchSettings->NewItem->ranges);
-            foreach ($tmp as $range) {
-                $range = intval($range);
-                if ($range > 0) {
-                    $ranges[] = $range;
-                }
-            }
-        }
-        if (empty($ranges)) {
-            $ranges = array(1, 5, 30);
-        }
-
-        $catalog = $this->getILS();
-        $fundList = $catalog->checkCapability('getFunds')
-            ? $catalog->getFunds() : array();
         return $this->createViewModel(
-            array('fundList' => $fundList, 'ranges' => $ranges)
+            array(
+                'fundList' => $this->newItems()->getFundList(),
+                'ranges' => $this->newItems()->getRanges()
+            )
         );
     }
 
@@ -345,78 +296,50 @@ class SearchController extends AbstractSearch
 
         // Validate the range parameter -- it should not exceed the greatest
         // configured value:
-        $searchSettings = $this->getConfig('searches');
-        $maxAge = 0;
-        if (isset($searchSettings->NewItem->ranges)) {
-            $tmp = explode(',', $searchSettings->NewItem->ranges);
-            foreach ($tmp as $current) {
-                if (intval($current) > $maxAge) {
-                    $maxAge = intval($current);
-                }
-            }
-        }
+        $maxAge = $this->newItems()->getMaxAge();
         if ($maxAge > 0 && $range > $maxAge) {
             $range = $maxAge;
         }
 
-        // The code always pulls in enough catalog results to get a fixed number
-        // of pages worth of Solr results.  Note that if the Solr index is out of
-        // sync with the ILS, we may see fewer results than expected.
-        if (isset($searchSettings->NewItem->result_pages)) {
-            $resultPages = intval($searchSettings->NewItem->result_pages);
-            if ($resultPages < 1) {
-                $resultPages = 10;
-            }
-        } else {
-            $resultPages = 10;
-        }
-        $catalog = $this->getILS();
-        $params = $this->getResultsManager()->get('Solr')->getParams();
-        $perPage = $params->getLimit();
-        $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
-
-        // Build a list of unique IDs
-        $bibIDs = array();
-        for ($i=0; $i<count($newItems['results']); $i++) {
-            $bibIDs[] = $newItems['results'][$i]['id'];
-        }
-
-        // Truncate the list if it is too long:
-        $limit = $params->getQueryIDLimit();
-        if (count($bibIDs) > $limit) {
-            $bibIDs = array_slice($bibIDs, 0, $limit);
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('too_many_new_items');
-        }
-
-        // Use standard search action with override parameter to show results:
-        $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
-
         // Are there "new item" filter queries specified in the config file?
-        // If so, we should apply them as hidden filters so they do not show
-        // up in the user-selected facet list.
-        if (isset($searchSettings->NewItem->filter)) {
-            if (is_string($searchSettings->NewItem->filter)) {
-                $hiddenFilters = array($searchSettings->NewItem->filter);
-            } else {
-                $hiddenFilters = array();
-                foreach ($searchSettings->NewItem->filter as $current) {
-                    $hiddenFilters[] = $current;
-                }
-            }
+        // If so, load them now; we may add more values. These will be applied
+        // later after the whole list is collected.
+        $hiddenFilters = $this->newItems()->getHiddenFilters();
+
+        // Depending on whether we're in ILS or Solr mode, we need to do some
+        // different processing here to retrieve the correct items:
+        if ($this->newItems()->getMethod() == 'ils') {
+            // Use standard search action with override parameter to show results:
+            $bibIDs = $this->newItems()->getBibIDsFromCatalog(
+                $this->getILS(),
+                $this->getResultsManager()->get('Solr')->getParams(),
+                $range, $dept, $this->flashMessenger()
+            );
+            $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
+        } else {
+            // Use a Solr filter to show results:
+            $hiddenFilters[] = $this->newItems()->getSolrFilter($range);
+        }
+
+        // If we found hidden filters above, apply them now:
+        if (!empty($hiddenFilters)) {
             $this->getRequest()->getQuery()->set('hiddenFilters', $hiddenFilters);
         }
+
+        // Don't save to history -- history page doesn't handle correctly:
+        $this->saveToHistory = false;
 
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();
 
-        // Customize the URL helper to make sure it builds proper reserves URLs
+        // Customize the URL helper to make sure it builds proper new item URLs
         // (check it's set first -- RSS feed will return a response model rather
         // than a view model):
         if (isset($view->results)) {
             $url = $view->results->getUrlQuery();
             $url->setDefaultParameter('range', $range);
             $url->setDefaultParameter('department', $dept);
+            $url->setSuppressQuery(true);
         }
 
         return $view;
@@ -436,7 +359,7 @@ class SearchController extends AbstractSearch
         ) {
             return $this->forwardTo('Search', 'ReservesResults');
         }
-        
+
         // No params?  Show appropriate form (varies depending on whether we're
         // using driver-based or Solr-based reserves searching).
         if ($this->reserves()->useIndex()) {
@@ -506,6 +429,9 @@ class SearchController extends AbstractSearch
         // Use standard search action with override parameter to show results:
         $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
 
+        // Don't save to history -- history page doesn't handle correctly:
+        $this->saveToHistory = false;
+
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();
 
@@ -522,6 +448,7 @@ class SearchController extends AbstractSearch
         $url->setDefaultParameter('course', $course);
         $url->setDefaultParameter('inst', $inst);
         $url->setDefaultParameter('dept', $dept);
+        $url->setSuppressQuery(true);
         return $view;
     }
 

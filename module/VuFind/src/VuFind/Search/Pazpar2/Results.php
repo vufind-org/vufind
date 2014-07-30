@@ -26,8 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Pazpar2;
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\ParamBag;
 
 /**
  * Pazpar2 Search Parameters
@@ -51,7 +49,7 @@ class Results extends \VuFind\Search\Base\Results
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->createBackendParameters($query, $this->getParams());
+        $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()
             ->search('Pazpar2', $query, $offset, $limit, $params);
 
@@ -71,30 +69,5 @@ class Results extends \VuFind\Search\Base\Results
     {
         // No facets in Pazpar2:
         return array();
-    }
-
-    /**
-     * Create search backend parameters for advanced features.
-     *
-     * @param AbstractQuery $query  Query being processed
-     * @param Params        $params Search parameters
-     *
-     * @return ParamBag
-     */
-    protected function createBackendParameters(AbstractQuery $query, Params $params)
-    {
-        $backendParams = new ParamBag();
-
-        // Sources
-        $sources = $params->getSelectedShards();
-        if (!empty($sources)) {
-            $allShards = $params->getOptions()->getShards();
-            foreach ($sources as $i=>$current) {
-                $sources[$i] = $allShards[$current];
-            }
-            $backendParams->set('filter', 'pz:id='.implode('|', $sources));
-        }
-
-        return $backendParams;
     }
 }

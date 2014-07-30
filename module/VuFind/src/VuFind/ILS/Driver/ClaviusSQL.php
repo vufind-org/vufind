@@ -208,7 +208,7 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Get a list of funds that can be used to limit the “new item” search
+      * Get a list of funds that can be used to limit the "new item" search
       *
       * @throws ILSException
       *
@@ -325,7 +325,7 @@ class ClaviusSQL extends AbstractBase
       *
       * todo: reserve
       */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $holding = array();
         $originalId = $id;
@@ -380,18 +380,18 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Get Hold Link
-      *
-      * The goal for this method is to return a URL to a "place hold" web page on
-      * the ILS OPAC. This is used for ILSs that do not support an API or method
-      * to place Holds.
-      *
-      * @param string $id      The id of the bib record
-      * @param array  $details Item details from getHoldings return array
-      *
-      * @return string         URL to ILS's OPAC's place hold screen.
-      */
-
+     * Get Hold Link
+     *
+     * The goal for this method is to return a URL to a "place hold" web page on
+     * the ILS OPAC. This is used for ILSs that do not support an API or method
+     * to place Holds.
+     *
+     * @param string $id      The id of the bib record
+     * @param array  $details Item details from getHoldings return array
+     *
+     * @return string         URL to ILS's OPAC's place hold screen.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function getHoldLink($id, $details)
     {
         // Web link of the ILS for placing hold on the item
@@ -418,7 +418,7 @@ class ClaviusSQL extends AbstractBase
       *   <li>fine - A string describing the reason for the fine (i.e. "Overdue",
       * "Long Overdue").</li>
       *   <li>balance - The unpaid portion of the fine IN PENNIES.</li>
-      *   <li>createdate – A string representing the date when the fine was accrued
+      *   <li>createdate - A string representing the date when the fine was accrued
       * (optional)</li>
       *   <li>duedate - A string representing the date when the item was due.</li>
       *   <li>id - The bibliographic ID of the record involved in the fine.</li>
@@ -467,6 +467,7 @@ class ClaviusSQL extends AbstractBase
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -491,7 +492,7 @@ class ClaviusSQL extends AbstractBase
      * @return array        Array of associative arrays, one for each hold associated
      *      with the specified account. Each associative array contains these keys:
      * <ul>
-     *   <li>type - A string describing the type of hold – i.e. hold vs. recall
+     *   <li>type - A string describing the type of hold - i.e. hold vs. recall
      * (optional).</li>
      *   <li>id - The bibliographic record ID associated with the hold
      * (optional).</li>
@@ -502,15 +503,16 @@ class ClaviusSQL extends AbstractBase
      *   <li>reqnum - A control number for the request (optional).</li>
      *   <li>expire - The expiration date of the hold (a string).</li>
      *   <li>create - The creation date of the hold (a string).</li>
-     *   <li>position – The position of the user in the holds queue (optional)</li>
-     *   <li>available – Whether or not the hold is available (true) or not (false)
+     *   <li>position - The position of the user in the holds queue (optional)</li>
+     *   <li>available - Whether or not the hold is available (true) or not (false)
      * (optional)</li>
-     *   <li>item_id – The item id the request item (optional).</li>
-     *   <li>volume – The volume number of the item (optional)</li>
-     *   <li>publication_year – The publication year of the item (optional)</li>
-     *   <li>title - The title of the item (optional – only used if the record
+     *   <li>item_id - The item id the request item (optional).</li>
+     *   <li>volume - The volume number of the item (optional)</li>
+     *   <li>publication_year - The publication year of the item (optional)</li>
+     *   <li>title - The title of the item (optional - only used if the record
      * cannot be found in VuFind's index).</li>
      * </ul>
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyHolds($patron)
     {
@@ -533,7 +535,7 @@ class ClaviusSQL extends AbstractBase
             address2
             zip
             phone
-            group – i.e. Student, Staff, Faculty, etc.
+            group - i.e. Student, Staff, Faculty, etc.
      */
     public function getMyProfile($patron)
     {
@@ -572,6 +574,7 @@ class ClaviusSQL extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
@@ -672,9 +675,6 @@ class ClaviusSQL extends AbstractBase
         } else {
             $coding = array_combine($from, $to);
         }
-        //echo "<pre>";
-        //var_dump($coding);
-        //echo "</pre>";
         $toCodeArray = str_split($stringToCode);
         $output = "";
         foreach ($toCodeArray as $char) {
@@ -799,16 +799,17 @@ class ClaviusSQL extends AbstractBase
      *   <li>barcode - The barcode of the item (optional).</li>
      *   <li>renew - The number of times the item has been renewed (optional).</li>
      *   <li>request - The number of pending requests for the item (optional).</li>
-     *   <li>volume – The volume number of the item (optional)</li>
-     *   <li>publication_year – The publication year of the item (optional)</li>
-     *   <li>renewable – Whether or not an item is renewable (required for
+     *   <li>volume - The volume number of the item (optional)</li>
+     *   <li>publication_year - The publication year of the item (optional)</li>
+     *   <li>renewable - Whether or not an item is renewable (required for
      * renewals)</li>
-     *   <li>message – A message regarding the item (optional)</li>
-     *   <li>title - The title of the item (optional – only used if the record
+     *   <li>message - A message regarding the item (optional)</li>
+     *   <li>title - The title of the item (optional - only used if the record
      * cannot be found in VuFind's index).</li>
      *   <li>item_id - this is used to match up renew responses and must match
      * the item_id in the renew response</li>
      * </ul>
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($user, $history = false)
     {
@@ -830,7 +831,7 @@ class ClaviusSQL extends AbstractBase
             foreach ($sqlSt->fetchAll() as $item) {
                 $id = $this->getLongId($item['tcislo'], $item['druhdoku']);
                 //TODO - requests
-                $requestsSql = "";
+                //$requestsSql = "";
                 $transactions[] = array(
                     'duedate' => $item['duedate'],
                     'id' => $id,

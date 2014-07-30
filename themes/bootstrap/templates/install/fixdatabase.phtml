@@ -1,0 +1,78 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') .'">' . $this->transEsc('auto_configure_title') . '</a> <span class="divider">&gt;</span><li>'
+    . '<li class="active">' . $this->transEsc('Fix Database') . '</li>';
+?>
+<h2><?=$this->transEsc('auto_configure_title')?></h2>
+
+<?=$this->flashmessages()?>
+
+<p>To create a new database for VuFind, please fill in this form:</p>
+
+<form class="form-horizontal" action="" method="post">
+  <div class="control-group">
+    <label class="control-label" for="dbname">Select database type:</label>
+    <div class="controls">
+      <select name="driver"><option value="mysql">MySQL</option><option <? if ($driver == 'pgsql'): ?>selected="selected" <? endif; ?>value="pgsql">PostgreSQL</option></select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="dbname">New database name:</label>
+    <div class="controls">
+      <input type="text" name="dbname" value="<?=$this->escapeHtmlAttr($this->dbname)?>"/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="dbuser">New database user:</label>
+    <div class="controls">
+      <input type="text" name="dbuser" value="<?=$this->escapeHtmlAttr($this->dbuser)?>"/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="dbpass">New user password:</label>
+    <div class="controls">
+      <input type="password" name="dbpass" value=""/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="dbpassconfirm">Confirm new user password:</label>
+    <div class="controls">
+      <input type="password" name="dbpassconfirm" value=""/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="dbhost">SQL Host:</label>
+    <div class="controls">
+      <input type="text" name="dbhost" value="<?=$this->escapeHtmlAttr($this->dbhost)?>"/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="dbrootuser">SQL Root User:</label>
+    <div class="controls">
+      <input type="text" name="dbrootuser" value="<?=$this->escapeHtmlAttr($this->dbrootuser)?>"/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="dbrootpass">SQL Root Password:</label>
+    <div class="controls">
+      <input type="password" name="dbrootpass" value=""/>
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" />
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="printsql">If you don't have the credentials or you wish to print the SQL out :</label>
+    <div class="controls">
+      <span class="help-inline">Click here to</span>
+      <input class="btn" type="submit" name="printsql" value="Skip"/>
+      <span class="help-inline">credentials.</span>
+    </div>
+  </div>
+</form>

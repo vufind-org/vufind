@@ -120,15 +120,16 @@ class Bootstrapper
 
         // Use naming conventions to set up a bunch of services based on namespace:
         $namespaces = array(
-            'Auth', 'Autocomplete', 'Db\Table', 'Hierarchy\Driver',
-            'Hierarchy\TreeDataSource', 'Hierarchy\TreeRenderer', 'ILS\Driver',
-            'Recommend', 'RecordDriver', 'RecordTab', 'Related', 'Resolver\Driver',
-            'Search\Options', 'Search\Params', 'Search\Results', 'Session',
-            'Statistics\Driver'
+            'Auth', 'Autocomplete', 'Content', 'Content\AuthorNotes',
+            'Content\Covers', 'Content\Excerpts', 'Content\Reviews', 'Db\Table',
+            'Hierarchy\Driver', 'Hierarchy\TreeDataSource', 'Hierarchy\TreeRenderer',
+            'ILS\Driver', 'Recommend', 'RecordDriver', 'RecordTab', 'Related',
+            'Resolver\Driver', 'Search\Options', 'Search\Params', 'Search\Results',
+            'Session', 'Statistics\Driver'
         );
         foreach ($namespaces as $ns) {
             $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';
-            $factory = function ($sm) use ($config, $ns) {
+            $factory = function () use ($config, $ns) {
                 $className = 'VuFind\\' . $ns . '\PluginManager';
                 $configKey = strtolower(str_replace('\\', '_', $ns));
                 return new $className(
@@ -310,7 +311,7 @@ class Bootstrapper
         $validLanguages = array_keys($this->config->Languages->toArray());
 
         // return first valid language
-        foreach ($langs as $language => $rating) {
+        foreach (array_keys($langs) as $language) {
             // Make sure language code is valid
             $language = strtolower($language);
             if (in_array($language, $validLanguages)) {
@@ -363,9 +364,8 @@ class Bootstrapper
             }
 
             $sm = $event->getApplication()->getServiceManager();
-            $langFile = APPLICATION_PATH  . '/languages/' . $language . '.ini';
             $sm->get('VuFind\Translator')
-                ->addTranslationFile('ExtendedIni', $langFile, 'default', $language)
+                ->addTranslationFile('ExtendedIni', null, 'default', $language)
                 ->setLocale($language);
 
             // Send key values to view:
@@ -445,7 +445,7 @@ class Bootstrapper
         $sm     = $this->event->getApplication()->getServiceManager();
         $bm     = $sm->get('VuFind\Search\BackendManager');
         $events = $sm->get('SharedEventManager');
-        $events->attach('VuFind\Search', 'resolve', array($bm, 'onResolve'));
+        $events->attach('VuFindSearch', 'resolve', array($bm, 'onResolve'));
     }
 
     /**

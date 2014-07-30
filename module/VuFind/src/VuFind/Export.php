@@ -230,6 +230,11 @@ class Export
      */
     public function recordSupportsFormat($driver, $format)
     {
+        // Check if the driver explicitly disallows the format:
+        if ($driver->tryMethod('exportDisabled', array($format))) {
+            return false;
+        }
+
         // Check the requirements for export in the requested format:
         if (isset($this->exportConfig->$format)) {
             if (isset($this->exportConfig->$format->requiredMethods)) {
@@ -268,7 +273,7 @@ class Export
 
         // Loop through all possible formats:
         $formats = array();
-        foreach ($this->exportConfig as $format => $details) {
+        foreach (array_keys($this->exportConfig->toArray()) as $format) {
             if (isset($active[$format]) && $active[$format]
                 && $this->recordSupportsFormat($driver, $format)
             ) {

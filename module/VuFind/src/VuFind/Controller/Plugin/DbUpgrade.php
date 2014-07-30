@@ -40,8 +40,25 @@ use Zend\Db\Adapter\Adapter as DbAdapter, Zend\Db\Metadata\Metadata as DbMetadat
  */
 class DbUpgrade extends AbstractPlugin
 {
+    /**
+     * Database commands to generate table
+     *
+     * @var array
+     */
     protected $dbCommands = array();
+
+    /**
+     * Database adapter
+     *
+     * @var DbAdapter
+     */
     protected $adapter;
+
+    /**
+     * Table metadata
+     *
+     * @var array
+     */
     protected $tableInfo = false;
 
     /**
@@ -219,6 +236,9 @@ class DbUpgrade extends AbstractPlugin
                 $oldType = $details['Type'];
                 $parts = explode('(', $oldType);
                 switch ($parts[0]) {
+                case 'char':
+                    $newType = 'binary(' . $parts[1];
+                    break;
                 case 'text':
                     $newType = 'blob';
                     break;
@@ -230,8 +250,9 @@ class DbUpgrade extends AbstractPlugin
                 }
                 // Set up default:
                 if (null !== $details['Default']) {
-                    $safeDefault = mysql_real_escape_string($details['Default']);
-                    $currentDefault = " DEFAULT '{$safeDefault}'";
+                    $safeDefault = $this->getAdapter()->getPlatform()
+                        ->quoteValue($details['Default']);
+                    $currentDefault = " DEFAULT {$safeDefault}";
                 } else {
                     $currentDefault = '';
                 }
@@ -288,7 +309,7 @@ class DbUpgrade extends AbstractPlugin
     {
         $tables = $this->getAllTables();
         $missing = array();
-        foreach ($this->dbCommands as $table => $sql) {
+        foreach (array_keys($this->dbCommands) as $table) {
             if (!in_array(trim(strtolower($table)), $tables)) {
                 $missing[] = $table;
             }

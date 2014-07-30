@@ -13,7 +13,7 @@
     <h2><?=$this->transEsc('ils_offline_title')?></h2>
     <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
     <p><?=$this->transEsc('ils_offline_holdings_message')?></p>
-    <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
+    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
     <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
   </div>
 <? endif; ?>
@@ -25,17 +25,17 @@
       </div>
     <? elseif (!$user->cat_username): ?>
       <div class="info">
-        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true'))?>
+        <?=str_replace('href="', 'rel="external" href="', $this->translate("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true')))?>
       </div>
     <? endif; ?>
   <? endif; ?>
 <? endif; ?>
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-    <a rel="external" class="holdPlace" href="<?=$this->recordLink()->getHoldUrl($holdingTitleHold, false)?>"><?=$this->transEsc('title_hold_place')?></a>
+    <a rel="external" class="holdPlace" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold, false)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
-<? foreach ($holdings as $location => $holding): ?>
-<h4><?=$this->transEsc($location)?></h4>
-<table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($location)?>">
+<? foreach ($holdings as $holding): ?>
+<h4><?=$this->transEsc($holding['location'])?></h4>
+<table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
@@ -46,26 +46,19 @@
     </td>
   </tr>
   <? endif; ?>
-  <? if (!empty($holding['summary'])): ?>
-  <tr>
-    <th><?=$this->transEsc("Volume Holdings")?>: </th>
-    <td>
-      <? foreach ($holding['summary'] as $current): ?>
-        <?=$this->escapeHtml($current)?><br/>
-      <? endforeach; ?>
-    </td>
-  </tr>
-  <? endif; ?>
-  <? if (!empty($holding['notes'])): ?>
-  <tr>
-    <th><?=$this->transEsc("Notes")?>: </th>
-    <td>
-      <? foreach ($holding['notes'] as $data): ?>
-        <?=$this->escapeHtml($data)?><br/>
-      <? endforeach; ?>
-    </td>
-  </tr>
-  <? endif; ?>
+  <? foreach ($this->ils()->getHoldingsTextFieldNames() as $textField): ?>
+    <? if (!empty($holding[$textField])): ?>
+      <tr>
+        <? // Translation for summary is a special case for backwards-compatibility ?>
+        <th><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>: </th>
+        <td>
+          <? foreach ($holding[$textField] as $current): ?>
+            <?=$this->escapeHtml($current)?><br/>
+          <? endforeach; ?>
+        </td>
+      </tr>
+    <? endif; ?>
+  <? endforeach; ?>
   <? foreach ($holding['items'] as $row): ?>
     <? $check = (isset($row['check']) && $row['check']); ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
@@ -73,8 +66,9 @@
         <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
         <td>
           <? if ($row['reserve'] == "Y"): ?>
-          <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?>
-          <? elseif (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
+            <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
+          <? endif; ?>
+          <? if (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
             <span class="unknown"><?=$this->transEsc("status_unknown_message")?></span>
           <? else: ?>
             <? if ($row['availability']): ?>
@@ -82,7 +76,7 @@
                <span class="available"><?=$this->transEsc("Available")?></span>
               <? if (isset($row['link']) && $row['link']): ?>
                 <br />
-                <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getHoldUrl($row['link'], false)?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
+                <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getRequestUrl($row['link'], false)?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
               <? endif; ?>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>
@@ -96,7 +90,7 @@
               <? endif; ?>
               <? if (isset($row['link']) && $row['link']): ?>
                 <br />
-                <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getHoldUrl($row['link'], false)?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
+                <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getRequestUrl($row['link'], false)?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
               <? endif; ?>
             <? endif; ?>
           <? endif; ?>
@@ -104,6 +98,16 @@
       </tr>
     <? endif; ?>
   <? endforeach; ?>
+  <? if (!empty($holding['purchase_history'])): ?>
+    <tr>
+      <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
+      <td>
+        <? foreach ($holding['purchase_history'] as $current): ?>
+          <?=$this->escapeHtml($current['issue'])?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
 </table>
 <? endforeach; ?>
 

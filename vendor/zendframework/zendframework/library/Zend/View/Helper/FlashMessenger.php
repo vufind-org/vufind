@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -12,8 +12,6 @@ namespace Zend\View\Helper;
 use Zend\Mvc\Controller\Plugin\FlashMessenger as PluginFlashMessenger;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\View\Helper\AbstractHelper;
-use Zend\View\Helper\EscapeHtml;
 use Zend\I18n\View\Helper\AbstractTranslatorHelper;
 
 /**
@@ -104,10 +102,17 @@ class FlashMessenger extends AbstractTranslatorHelper implements ServiceLocatorA
         $flashMessenger = $this->getPluginFlashMessenger();
         $messages = $flashMessenger->getMessagesFromNamespace($namespace);
 
+        if (empty($messages)) {
+            return '';
+        }
+
         // Prepare classes for opening tag
         if (empty($classes)) {
-            $classes = isset($this->classMessages[$namespace]) ?
-                $this->classMessages[$namespace] : $this->classMessages[PluginFlashMessenger::NAMESPACE_DEFAULT];
+            if (isset($this->classMessages[$namespace])) {
+                $classes = $this->classMessages[$namespace];
+            } else {
+                $classes = $this->classMessages[PluginFlashMessenger::NAMESPACE_DEFAULT];
+            }
             $classes = array($classes);
         }
 
@@ -118,10 +123,11 @@ class FlashMessenger extends AbstractTranslatorHelper implements ServiceLocatorA
         $translator = $this->getTranslator();
         $translatorTextDomain = $this->getTranslatorTextDomain();
 
-        array_walk_recursive($messages, function($item) use (&$messagesToPrint, $escapeHtml, $translator, $translatorTextDomain) {
+        array_walk_recursive($messages, function ($item) use (&$messagesToPrint, $escapeHtml, $translator, $translatorTextDomain) {
             if ($translator !== null) {
                 $item = $translator->translate(
-                        $item, $translatorTextDomain
+                    $item,
+                    $translatorTextDomain
                 );
             }
             $messagesToPrint[] = $escapeHtml($item);

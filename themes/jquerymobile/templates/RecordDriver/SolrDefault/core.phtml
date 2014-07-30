@@ -1,9 +1,9 @@
 <? /* Display thumbnail if appropriate: */ ?>
 <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
 <? if ($mediumThumb): ?>
-  <? if ($largeThumb): ?><a rel="external" href="<?=$this->escapeHtml($largeThumb)?>"><? endif; ?>
+  <? if ($largeThumb): ?><a rel="external" href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
     <div class="recordcover">
-      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtml($mediumThumb);?>"/>
+      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
     </div>
   <? if ($largeThumb): ?></a><? endif; ?>
 <? endif; ?>
@@ -134,7 +134,7 @@
     <dt><?=$this->transEsc('Online Access')?>: </dt>
     <dd>
       <? foreach ($urls as $current): ?>
-        <p><a rel="external" href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a></p>
+        <p><a rel="external" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a></p>
       <? endforeach; ?>
       <? if ($openUrl): ?>
         <?=$this->openUrl($openUrl)?><br/>
@@ -143,18 +143,25 @@
   <? endif; ?>
 
   <? $recordLinks = $this->driver->getAllRecordLinks(); if (!empty($recordLinks)): ?>
-    <dt><?=$this->transEsc('Related Items')?></dt>
+    <dt><?=$this->transEsc('Related Items')?>:</dt>
     <dd>
       <? foreach ($recordLinks as $recordLink): ?>
         <p>
-          <?=$this->transEsc($recordLink['title'])?>: 
+          <?=$this->transEsc($recordLink['title'])?>:
           <a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a>
         </p>
       <? endforeach; ?>
+      <? /* if we have record links, display relevant explanatory notes */
+        $related = $this->driver->getRelationshipNotes();
+        if (!empty($related)): ?>
+          <? foreach ($related as $field): ?>
+            <p><?=$this->escapeHtml($field)?></p>
+          <? endforeach; ?>
+      <? endif; ?>
     </dd>
   <? endif; ?>
 
-  <? $tagList = $this->driver->getTags(); ?>
+  <? $tagList = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags() : array(); ?>
   <? if (count($tagList) > 0): ?>
     <dt><?=$this->transEsc('Tags')?>: </dt>
     <dd>

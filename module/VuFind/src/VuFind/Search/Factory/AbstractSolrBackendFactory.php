@@ -30,15 +30,20 @@
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\InjectHighlightingListener;
+use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
+use VuFind\Search\Solr\DeduplicationListener;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Backend;
+
+use Zend\Config\Config;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
@@ -54,7 +59,6 @@ use Zend\ServiceManager\FactoryInterface;
  */
 abstract class AbstractSolrBackendFactory implements FactoryInterface
 {
-
     /**
      * Logger.
      *
@@ -98,6 +102,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $solrCore = '';
 
     /**
+     * Solr field used to store unique identifiers
+     *
+     * @var string
+     */
+    protected $uniqueKey = 'id';
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -133,21 +144,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
-
-        $config  = $this->config->get('config');
         $backend = new Backend($connector);
         $backend->setQueryBuilder($this->createQueryBuilder());
-
-        // Spellcheck
-        if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
-            if (isset($config->Spelling->simple) && $config->Spelling->simple) {
-                $dictionaries = array('basicSpell');
-            } else {
-                $dictionaries = array('default', 'basicSpell');
-            }
-            $backend->setDictionaries($dictionaries);
-        }
-
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
@@ -165,12 +163,25 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $events = $this->serviceLocator->get('SharedEventManager');
 
+        // Load configurations:
+        $config = $this->config->get('config');
+        $search = $this->config->get($this->searchConfig);
+
         // Highlighting
-        $highlightListener = new InjectHighlightingListener($backend);
-        $highlightListener->attach($events);
+        $this->getInjectHighlightingListener($backend, $search)->attach($events);
+
+        // Spellcheck
+        if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
+            if (isset($config->Spelling->simple) && $config->Spelling->simple) {
+                $dictionaries = array('basicSpell');
+            } else {
+                $dictionaries = array('default', 'basicSpell');
+            }
+            $spellingListener = new InjectSpellingListener($backend, $dictionaries);
+            $spellingListener->attach($events);
+        }
 
         // Apply field stripping if applicable:
-        $search = $this->config->get($this->searchConfig);
         if (isset($search->StripFields) && isset($search->IndexShards)) {
             $strip = $search->StripFields->toArray();
             foreach ($strip as $k => $v) {
@@ -183,6 +194,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $this->loadSpecs()
             );
             $mindexListener->attach($events);
+        }
+
+        // Apply deduplication if applicable:
+        if (isset($search->Records->deduplication)
+            && $search->Records->deduplication
+        ) {
+            $this->getDeduplicationListener($backend)->attach($events);
         }
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
@@ -214,6 +232,33 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
+     * Get all hidden filter settings.
+     *
+     * @return array
+     */
+    protected function getHiddenFilters()
+    {
+        $search = $this->config->get($this->searchConfig);
+        $hf = array();
+
+        // Hidden filters
+        if (isset($search->HiddenFilters)) {
+            foreach ($search->HiddenFilters as $field => $value) {
+                $hf[] = sprintf('%s:"%s"', $field, $value);
+            }
+        }
+
+        // Raw hidden filters
+        if (isset($search->RawHiddenFilters)) {
+            foreach ($search->RawHiddenFilters as $filter) {
+                $hf[] = $filter;
+            }
+        }
+
+        return $hf;
+    }
+
+    /**
      * Create the SOLR connector.
      *
      * @return Connector
@@ -221,7 +266,6 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createConnector()
     {
         $config = $this->config->get('config');
-        $search = $this->config->get($this->searchConfig);
 
         $handlers = array(
             'select' => array(
@@ -229,32 +273,18 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 'defaults' => array('fl' => '*,score'),
                 'appends'  => array('fq' => array()),
             ),
-            'terms' => array(
+            'term' => array(
                 'functions' => array('terms'),
             ),
         );
 
-        // Hidden filters
-        if (isset($search->HiddenFilters)) {
-            foreach ($search->HiddenFilters as $field => $value) {
-                array_push(
-                    $handlers['select']['appends']['fq'],
-                    sprintf('%s:"%s"', $field, $value)
-                );
-            }
+        foreach ($this->getHiddenFilters() as $filter) {
+            array_push($handlers['select']['appends']['fq'], $filter);
         }
 
-        // Raw hidden filters
-        if (isset($search->RawHiddenFilters)) {
-            foreach ($search->RawHiddenFilters as $filter) {
-                array_push(
-                    $handlers['select']['appends']['fq'],
-                    $filter
-                );
-            }
-        }
-
-        $connector = new Connector($this->getSolrUrl(), new HandlerMap($handlers));
+        $connector = new Connector(
+            $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
+        );
         $connector->setTimeout(
             isset($config->Index->timeout) ? $config->Index->timeout : 30
         );
@@ -276,16 +306,23 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createQueryBuilder()
     {
         $specs   = $this->loadSpecs();
-        $builder = new QueryBuilder($specs);
+        $config = $this->config->get('config');
+        $defaultDismax = isset($config->Index->default_dismax_handler)
+            ? $config->Index->default_dismax_handler : 'dismax';
+        $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
         $search = $this->config->get($this->searchConfig);
-        $builder->caseSensitiveRanges
-            = isset($search->General->case_sensitive_ranges)
-            ? $search->General->case_sensitive_ranges : true;
-        $builder->caseSensitiveBooleans
+        $caseSensitiveBooleans
             = isset($search->General->case_sensitive_bools)
             ? $search->General->case_sensitive_bools : true;
+        $caseSensitiveRanges
+            = isset($search->General->case_sensitive_ranges)
+            ? $search->General->case_sensitive_ranges : true;
+        $helper = new LuceneSyntaxHelper(
+            $caseSensitiveBooleans, $caseSensitiveRanges
+        );
+        $builder->setLuceneHelper($helper);
 
         return $builder;
     }
@@ -299,5 +336,37 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         return $this->serviceLocator->get('VuFind\SearchSpecsReader')
             ->get($this->searchYaml);
+    }
+    
+    /**
+     * Get a deduplication listener for the backend
+     * 
+     * @param BackendInterface $backend Search backend
+     * 
+     * @return DeduplicationListener
+     */
+    protected function getDeduplicationListener(BackendInterface $backend)
+    {
+        return new DeduplicationListener(
+            $backend,
+            $this->serviceLocator,
+            $this->searchConfig
+        );
+    }
+
+    /**
+     * Get a highlighting listener for the backend
+     * 
+     * @param BackendInterface $backend Search backend
+     * @param Config           $search  Search configuration
+     *
+     * @return InjectHighlightingListener
+     */
+    protected function getInjectHighlightingListener(BackendInterface $backend,
+        Config $search
+    ) {
+        $fl = isset($search->General->highlighting_fields)
+            ? $search->General->highlighting_fields : '*';
+        return new InjectHighlightingListener($backend, $fl);
     }
 }

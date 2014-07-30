@@ -15,7 +15,8 @@
         // the last location encountered.
         $callno = $location = $backupLocation = false;
         $useBackupLocation = true;
-        foreach ($holdings as $location => $details) {
+        foreach ($holdings as $details) {
+            $location = $details['location'];
             foreach ($details['items'] as $item) {
                 $callno = isset($item['callnumber']) ? $item['callnumber'] : false;
                 if ($item['availability']) {

@@ -62,6 +62,7 @@ class SerialsSolutions_Summon_Zend extends SerialsSolutions_Summon_Base
      *      <li>host - base URL of Summon API</li>
      *      <li>sessionId - Summon session ID to apply</li>
      *      <li>version - API version to use</li>
+     *      <li>responseType - Acceptable response (json or xml)</li>
      *    </ul>
      * @param Zend_Http_Client $client  HTTP client object (optional)
      */

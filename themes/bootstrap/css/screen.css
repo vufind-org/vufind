@@ -1,0 +1,77 @@
+.block { display:block }
+.centered-pills { text-align:center }
+.centered-pills ul.nav-pills { display:inline-block }
+.centered-pills li { display:inline }
+.centered-pills a { float:left }
+#commentList table {width:100%}
+.comment {width:100%}
+.comment .popover {display:block;margin-top:6px;max-width:none;position:relative}
+form.comment .span3 {padding-top:60px}
+.front { position:absolute;top:0;left:0;width:100%;padding-top:20%;z-index:5 }
+* html .centered-pills ul.nav-pills { display:inline } /* IE6 */
+*+html .centered-pills ul.nav-pills { display:inline } /* IE7 */
+.inlineblock {display:inline-block}
+li a.hidden {display:none}
+.modal .lightbox-header {display:none}
+.modal-body { max-height:600px }
+.nav-list i[class^="icon-"] { margin:0;padding:0;text-align:center;width:16px }
+.pad { padding:12px }
+.pager { margin:0 0 8px 0 }
+.sidebar { padding:4px 0 0 0 }
+.sidebar h4 { margin:6px 8px }
+.sidebar .checkbox { margin-left:10px }
+.sidebar .nav-list li:not(.divider) { min-height:26px }
+.sidebar .nav-list li span.main { display:inline-block;padding:3px 0 }
+.sidebar .nav-list li input[type="checkbox"] { float:left;margin:4px 3px 0 0 }
+.sidebar .nav-list li.applied input[type="checkbox"] { margin-top:7px }
+.sidebar .nav-list li .icon-ok { margin-top:3px }
+.sidebar .nav-list li .icon-remove { margin-left:3px }
+.sidebar .small { color:#333;line-height:85% }
+.sidebar a .small { margin-top:6px }
+.sidebar a.small,.sidebar .small a { color:#08C }
+.small { font-size:85% }
+.switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
+div.xml { display:block;font:10pt Courier;text-align:left;padding-left:1em }
+div.xml.collapsed > div { display:none;margin-left:2px }
+.xmlt { cursor:pointer;margin-left:-16px }
+.xmlt:before { content:'- ' }
+.collapsed .xmlt:before { content:'+ ' }
+/* --- Collapsing Facets ---*/
+.sidebar .collapsed .nav-header {cursor:pointer}
+.sidebar .collapsed .nav-header:before {
+    content:'\25BC';
+    display:block;
+    float:right;
+    width:10px;
+    margin:1px 3px 0 0;
+    text-align:center;
+    font-size:8pt;
+}
+.sidebar .collapsed li:not(.nav-header) {display:none}
+.sidebar .collapsed.open .nav-header:before {content:'\25B2'}
+.sidebar .collapsed.open li:not(.hidden) {display:block}
+/* --- Search result flexing --- */
+@media (min-width: 601px) and (max-width: 767px) {
+  .result .left,.result .middle,.result .right {
+    display:table;
+    float:left;
+    margin:0 10px;
+    max-width:44%;
+    width:auto;
+  }
+  .result .right {float:right}
+  .grid[id^=result] {
+    float:left;
+    width:25%;
+  }
+}
+@media (max-width: 600px) {
+  .result .left,.result .middle,.result .right {
+    display:table;
+    margin:auto;
+    width:auto;
+  }
+  .result .middle {
+    width:75%;
+  }
+}

@@ -1,4 +1,4 @@
-/*global getLightbox, path*/
+/*global getLightbox, path, vufindString*/
 
 /**
  * Initialize common functions and event handlers.
@@ -29,12 +29,12 @@ function toggleMenu(elemId) {
 }
 
 function moreFacets(name) {
-    $("#more"+name).hide();
+    $("#more"+name).addClass("offscreen");
     $("#narrowGroupHidden_"+name).removeClass("offscreen");
 }
 
 function lessFacets(name) {
-    $("#more"+name).show();
+    $("#more"+name).removeClass("offscreen");
     $("#narrowGroupHidden_"+name).addClass("offscreen");
 }
 
@@ -44,6 +44,8 @@ function filterAll(element, formId) {
         formId = "searchForm";
     }
     $("#" + formId + " :input[type='checkbox'][name='filter[]']")
+        .attr('checked', element.checked);
+    $("#" + formId + " :input[type='checkbox'][name='dfApplied']")
         .attr('checked', element.checked);
 }
 
@@ -277,6 +279,25 @@ function extractSource(element)
     return x.length == 0 ? 'VuFind' : x;
 }
 
+// Advanced facets
+function updateOrFacets(url, op) {
+  window.location.assign(url);
+  var list = $(op).parents('dl');
+  var header = $(list).find('dt');
+  list.html(header[0].outerHTML+'<div class="info">'+vufindString.loading+'...</div>');
+}
+function setupOrFacets() {
+  var facets = $('.facetOR');
+  for(var i=0;i<facets.length;i++) {
+    var $facet = $(facets[i]);
+    if($facet.hasClass('applied')) {
+      $facet.prepend('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/>');
+    } else {
+      $facet.before('<input type="checkbox" onChange="updateOrFacets($(this).next(\'a\').attr(\'href\'), this)"/>');
+    }
+  }
+}
+
 $(document).ready(function(){
     // initialize autocomplete
     initAutocomplete();
@@ -299,6 +320,12 @@ $(document).ready(function(){
     // attach click event to the advanced search help links
     $('a.advsearchHelp').click(function(){
         window.open(path + '/Help/Home?topic=advsearch', 'Help', 'width=625, height=510');
+        return false;
+    });
+
+    // attach click event to the visualization help links
+    $('a.visualizationHelp').click(function(){
+        window.open(path + '/Help/Home?topic=visualization', 'Help', 'width=625, height=510');
         return false;
     });
 
@@ -329,6 +356,17 @@ $(document).ready(function(){
         var $dialog = getLightbox('Cart', 'Home', null, null, this.title, '', '', '', {viewCart:"1"});
         return false;
     });
+    
+    // handle QR code links
+    $('a.qrcodeLink').click(function() {
+        if ($(this).hasClass("active")) {
+            $(this).html(vufindString.qrcode_show).removeClass("active");
+        } else {
+            $(this).html(vufindString.qrcode_hide).addClass("active");
+        }
+        $(this).next('.qrcodeHolder').toggle();
+        return false;
+    });
 
     // Print
     var url = window.location.href;
@@ -336,8 +374,46 @@ $(document).ready(function(){
         $("link[media='print']").attr("media", "all");
         window.print();
     }
+    
+    // Collapsing facets
+    $('.narrowList dt').click(function(){
+      $(this).parent().toggleClass('open');
+      $(this.className.replace('facet_', '#narrowGroupHidden_')).toggleClass('open');
+    });
+
+    // Support holds cancel list buttons:
+    function cancelHolds(type) {
+      var typeIDS = type+'IDS';
+      var selector = '[name="'+typeIDS+'[]"]';
+      if (type == 'cancelSelected') {
+          selector += ':checked';
+      }
+      var ids = $(selector);
+      var cancelIDS = [];
+      for(var i=0;i<ids.length;i++) {
+        cancelIDS.push(ids[i].value);
+      }
+      // Skip submission if no selection.
+      if (cancelIDS.length < 1) {
+          return false;
+      }
+      var postParams = {'confirm':0};
+      postParams[type] = 1;
+      postParams[typeIDS] = cancelIDS;
+      getLightbox('MyResearch', 'Holds', '', '', '', 'MyResearch', 'Holds', '', postParams);
+      return false;
+    }
+    $('.holdCancel').unbind('click').click(function(){
+      return cancelHolds('cancelSelected');
+    });
+    $('.holdCancelAll').unbind('click').click(function(){
+      return cancelHolds('cancelAll');
+    });
 
     //ContextHelp
     contextHelp.init();
     contextHelp.contextHelpSys.load();
+    
+    // Advanced facets
+    setupOrFacets();
 });

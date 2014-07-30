@@ -1,0 +1,63 @@
+<h2><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
+<a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc('View Full ' . ($this->driver->isCollection() ? 'Collection' : 'Record'))?></a>
+
+<table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
+  <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
+  <? if ($summary): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Description')?>: </th>
+      <td><?=$this->escapeHtml($summary)?></td>
+    </tr>
+  <? endif; ?>
+
+  <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
+  <? if (isset($authors['main']) && !empty($authors['main'])): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Main Author')?>: </th>
+      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></td>
+    </tr>
+  <? endif; ?>
+
+  <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Corporate Author')?>: </th>
+      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></td>
+    </tr>
+  <? endif; ?>
+
+  <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Language')?>: </th>
+      <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
+    </tr>
+  <? endif; ?>
+
+  <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Format')?>: </th>
+      <td><?=$this->record($this->driver)->getFormatList()?></td>
+    </tr>
+  <? endif; ?>
+
+  <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Access')?>: </th>
+      <td>
+        <? foreach ($access as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? $related = $this->driver->getRelationshipNotes(); if (!empty($related)): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Related Items')?>: </th>
+      <td>
+        <? foreach ($related as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+</table>

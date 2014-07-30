@@ -112,7 +112,7 @@ class Resource extends ServiceLocatorAwareGateway
         $row->user_id = $user->id;
         $row->resource_id = $this->id;
         $row->comment = $comment;
-        $row->created = date('Y-m-d h:i:s');
+        $row->created = date('Y-m-d H:i:s');
         $row->save();
         return $row->id;
     }

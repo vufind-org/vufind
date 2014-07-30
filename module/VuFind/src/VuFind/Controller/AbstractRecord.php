@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException,
+    VuFind\RecordDriver\AbstractBase as AbstractRecordDriver,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -48,11 +49,18 @@ class AbstractRecord extends AbstractBase
     protected $allTabs = null;
 
     /**
-     * Default tab to display
+     * Default tab to display (configured at record driver level)
      *
      * @var string
      */
-    protected $defaultTab = 'Holdings';
+    protected $defaultTab = null;
+
+    /**
+     * Default tab to display (fallback used if no record driver configuration)
+     *
+     * @var string
+     */
+    protected $fallbackDefaultTab = 'Holdings';
 
     /**
      * Type of record to display
@@ -71,7 +79,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Record driver
      *
-     * @var \VuFind\RecordDriver\AbstractBase
+     * @var AbstractRecordDriver
      */
     protected $driver = null;
 
@@ -86,9 +94,7 @@ class AbstractRecord extends AbstractBase
     {
         $view = parent::createViewModel($params);
         $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
-        if (!is_null($this->driver)) {
-            $view->driver = $this->driver;
-        }
+        $view->driver = $this->loadRecord();
         return $view;
     }
 
@@ -170,6 +176,11 @@ class AbstractRecord extends AbstractBase
      */
     public function addtagAction()
     {
+        // Make sure tags are enabled:
+        if (!$this->tagsEnabled()) {
+            throw new \Exception('Tags disabled');
+        }
+
         // Force login:
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
@@ -179,7 +190,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Save tags, if any:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             $tags = $this->params()->fromPost('tag');
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
@@ -199,20 +210,15 @@ class AbstractRecord extends AbstractBase
      */
     public function homeAction()
     {
-        // Set up default tab (first fixing it if it is invalid):
-        $tabs = $this->getAllTabs();
-        if (!isset($tabs[$this->defaultTab])) {
-            $keys = array_keys($tabs);
-            $this->defaultTab = isset($keys[0]) ? $keys[0] : null;
-        }
-
         // Save statistics:
         if ($this->logStatistics) {
             $this->getServiceLocator()->get('VuFind\RecordStats')
                 ->log($this->loadRecord(), $this->getRequest());
         }
 
-        return $this->showTab($this->params()->fromRoute('tab', $this->defaultTab));
+        return $this->showTab(
+            $this->params()->fromRoute('tab', $this->getDefaultTab())
+        );
     }
 
     /**
@@ -223,8 +229,9 @@ class AbstractRecord extends AbstractBase
     public function ajaxtabAction()
     {
         $this->loadRecord();
+        $this->layout()->setTemplate('layout/lightbox');
         return $this->showTab(
-            $this->params()->fromPost('tab', $this->defaultTab), true
+            $this->params()->fromPost('tab', $this->getDefaultTab()), true
         );
     }
 
@@ -251,14 +258,9 @@ class AbstractRecord extends AbstractBase
         $this->flashMessenger()->setNamespace('info')
             ->addMessage('bulk_save_success');
 
-        // Grab the followup namespace so we know where to send the user next:
-        $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
-        $url = isset($followup->url) ? (string)$followup->url : false;
-        if (!empty($url)) {
-            // Clear followup URL in session -- we're done with it now:
-            unset($followup->url);
-
-            // Redirect!
+        // redirect to followup url saved in saveAction
+        if ($url = $this->getFollowupUrl()) {
+            $this->clearFollowupUrl();
             return $this->redirect()->toUrl($url);
         }
 
@@ -274,8 +276,13 @@ class AbstractRecord extends AbstractBase
      */
     public function saveAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             return $this->processSave();
         }
 
@@ -288,13 +295,15 @@ class AbstractRecord extends AbstractBase
         // ProcessSave action (to get back to where we came from after saving).
         // We shouldn't save follow-up information if it points to the Save
         // screen or the "create list" screen, as this causes confusing workflows;
-        // in these cases, we will simply default to pushing the user to record view.
-        $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
+        // in these cases, we will simply push the user to record view
+        // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         if (substr($referer, -5) != '/Save'
             && stripos($referer, 'MyResearch/EditList/NEW') === false
         ) {
-            $followup->url = $referer;
+            $this->setFollowupUrlToReferer();
+        } else {
+            $this->clearFollowupUrl();
         }
 
         // Retrieve the record driver:
@@ -353,20 +362,26 @@ class AbstractRecord extends AbstractBase
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 
+        // Create view
+        $view = $this->createEmailViewModel();
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('email');
         // Process form submission:
-        $view = $this->createViewModel();
-        if ($this->params()->fromPost('submit')) {
-            // Send parameters back to view so form can be re-populated:
-            $view->to = $this->params()->fromPost('to');
-            $view->from = $this->params()->fromPost('from');
-            $view->message = $this->params()->fromPost('message');
-
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
+                if ($this->params()->fromPost('ccself')
+                    && $view->from != $view->to
+                ) {
+                    $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                        $view->from, $view->from, $view->message, $driver,
+                        $this->getViewRenderer()
+                    );
+                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();
@@ -396,9 +411,10 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
-
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('sms');
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');
             $view->provider = $this->params()->fromPost('provider');
@@ -431,7 +447,6 @@ class AbstractRecord extends AbstractBase
      */
     public function citeAction()
     {
-        $this->loadRecord();
         $view = $this->createViewModel();
         $view->setTemplate('record/cite');
         return $view;
@@ -498,7 +513,7 @@ class AbstractRecord extends AbstractBase
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
      *
-     * @return \VuFind\RecordDriver\AbstractBase
+     * @return AbstractRecordDriver
      */
     protected function loadRecord()
     {
@@ -540,6 +555,65 @@ class AbstractRecord extends AbstractBase
     {
         $cfg = $this->getServiceLocator()->get('Config');
         return $cfg['vufind']['recorddriver_tabs'];
+    }
+
+    /**
+     * Get a default tab by looking up the provided record driver in the tab
+     * configuration array.
+     *
+     * @param AbstractRecordDriver $driver Record driver
+     *
+     * @return string
+     */
+    protected function getDefaultTabForRecord(AbstractRecordDriver $driver)
+    {
+        // Load configuration:
+        $config = $this->getTabConfiguration();
+
+        // Get the current record driver's class name, then start a loop
+        // in case we need to use a parent class' name to find the appropriate
+        // setting.
+        $className = get_class($driver);
+        while (true) {
+            if (isset($config[$className]['defaultTab'])) {
+                return $config[$className]['defaultTab'];
+            }
+            $className = get_parent_class($className);
+            if (empty($className)) {
+                // No setting found...
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Get default tab for a given driver
+     *
+     * @return string
+     */
+    protected function getDefaultTab()
+    {
+        // Load default tab if not already retrieved:
+        if (null === $this->defaultTab) {
+            // Load record driver tab configuration:
+            $driver = $this->loadRecord();
+            $this->defaultTab = $this->getDefaultTabForRecord($driver);
+
+            // Missing/invalid record driver configuration? Fall back to configured
+            // default:
+            $tabs = $this->getAllTabs();
+            if (empty($this->defaultTab) || !isset($tabs[$this->defaultTab])) {
+                $this->defaultTab = $this->fallbackDefaultTab;
+            }
+
+            // Is configured tab also invalid? If so, pick first existing tab:
+            if (empty($this->defaultTab) || !isset($tabs[$this->defaultTab])) {
+                $keys = array_keys($tabs);
+                $this->defaultTab = isset($keys[0]) ? $keys[0] : '';
+            }
+        }
+
+        return $this->defaultTab;
     }
 
     /**
@@ -596,7 +670,7 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel();
         $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
-        $view->defaultTab = strtolower($this->defaultTab);
+        $view->defaultTab = strtolower($this->getDefaultTab());
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {

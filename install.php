@@ -118,9 +118,12 @@ function getApacheLocation($overrideDir)
         } else if (is_dir('/etc/apache2/2.2/conf.d')) {         // Solaris
             $confD = '/etc/apache2/2.2/conf.d';
             $httpdConf = '/etc/apache2/2.2/httpd.conf';
-        } else if (is_dir('/etc/apache2/conf.d')) {             // Ubuntu / OpenSUSE
+        } else if (is_dir('/etc/apache2/conf.d')) {         // old Ubuntu / OpenSUSE
             $confD = '/etc/apache2/conf.d';
             $httpdConf = '/etc/apache2/httpd.conf';
+        } else if (is_dir('/etc/apache2/conf-enabled')) {   // new Ubuntu / OpenSUSE
+            $confD = '/etc/apache2/conf-enabled';
+            $httpdConf = '/etc/apache2/apache2.conf';
         } else if (is_dir('/opt/local/apache2/conf/extra')) {   // Mac with Mac Ports
             $confD = '/opt/local/apache2/conf/extra';
             $httpdConf = '/opt/local/apache2/conf/httpd.conf';
@@ -134,12 +137,18 @@ function getApacheLocation($overrideDir)
         $httpdConf = ($httpdConf && file_exists($httpdConf))
             ? $httpdConf : 'httpd.conf';
 
+        // Suggest a symlink name based on the local directory, so if running in
+        // multisite mode, we don't use the same symlink for multiple instances:
+        $symlink = basename($overrideDir);
+        $symlink = ($symlink == 'local') ? 'vufind' : ('vufind-' . $symlink);
+        $symlink .= '.conf';
+
         echo "You can do it in either of two ways:\n\n";
         echo "    a) Add this line to your {$httpdConf} file:\n";
         echo "       Include {$overrideDir}/httpd-vufind.conf\n\n";
         echo "    b) Link the configuration to Apache's conf.d directory like this:";
-        echo "\n       ln -s {$overrideDir}/httpd-vufind.conf {$confD}/vufind\n\n";
-        echo "Option b is preferable if your platform supports it,\n";
+        echo "\n       ln -s {$overrideDir}/httpd-vufind.conf {$confD}/{$symlink}\n";
+        echo "\nOption b is preferable if your platform supports it,\n";
         echo "but option a is more certain to be supported.\n\n";
     }
 }
@@ -345,7 +354,7 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
     }
     $config = str_replace("/usr/local/vufind/local", "%override-dir%", $config);
     $config = str_replace("/usr/local/vufind", "%base-dir%", $config);
-    $config = str_replace("/vufind", "%base-path%", $config);
+    $config = preg_replace("|([^/])\/vufind|", "$1%base-path%", $config);
     $config = str_replace("%override-dir%", $overrideDir, $config);
     $config = str_replace("%base-dir%", $baseDir, $config);
     $config = str_replace("%base-path%", $basePath, $config);

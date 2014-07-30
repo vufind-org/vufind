@@ -39,7 +39,7 @@ use VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class SideFacets implements RecommendInterface
+class SideFacets extends AbstractFacets
 {
     /**
      * Date facet configuration
@@ -47,6 +47,20 @@ class SideFacets implements RecommendInterface
      * @var array
      */
     protected $dateFacets = array();
+
+    /**
+     * Generic range facet configuration
+     *
+     * @var array
+     */
+    protected $genericRangeFacets = array();
+
+    /**
+     * Numeric range facet configuration
+     *
+     * @var array
+     */
+    protected $numericRangeFacets = array();
 
     /**
      * Main facet configuration
@@ -63,28 +77,11 @@ class SideFacets implements RecommendInterface
     protected $checkboxFacets = array();
 
     /**
-     * Search results
+     * Collapsed facet setting
      *
-     * @var \VuFind\Search\Base\Results
+     * @var bool|string
      */
-    protected $results;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
-    {
-        $this->configLoader = $configLoader;
-    }
+    protected $collapsedFacets = false;
 
     /**
      * setConfig
@@ -110,10 +107,21 @@ class SideFacets implements RecommendInterface
         $this->mainFacets = isset($config->$mainSection) ?
             $config->$mainSection->toArray() : array();
 
-        // Get a list of fields that should be displayed as date ranges rather than
+        // Load boolean configurations:
+        $this->loadBooleanConfigs($config, array_keys($this->mainFacets));
+
+        // Get a list of fields that should be displayed as ranges rather than
         // standard facet lists.
         if (isset($config->SpecialFacets->dateRange)) {
             $this->dateFacets = $config->SpecialFacets->dateRange->toArray();
+        }
+        if (isset($config->SpecialFacets->genericRange)) {
+            $this->genericRangeFacets
+                = $config->SpecialFacets->genericRange->toArray();
+        }
+        if (isset($config->SpecialFacets->numericRange)) {
+            $this->numericRangeFacets
+                = $config->SpecialFacets->numericRange->toArray();
         }
 
         // Checkbox facets:
@@ -126,6 +134,11 @@ class SideFacets implements RecommendInterface
             ? $config->$checkboxSection->toArray() : array();
         if (isset($flipCheckboxes) && $flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
+        }
+
+        // Collapsed facets:
+        if (isset($config->Results_Settings->collapsedFacets)) {
+            $this->collapsedFacets = $config->Results_Settings->collapsedFacets;
         }
     }
 
@@ -147,27 +160,11 @@ class SideFacets implements RecommendInterface
     {
         // Turn on side facets in the search results:
         foreach ($this->mainFacets as $name => $desc) {
-            $params->addFacet($name, $desc);
+            $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
         foreach ($this->checkboxFacets as $name => $desc) {
             $params->addCheckboxFacet($name, $desc);
         }
-    }
-
-    /**
-     * process
-     *
-     * Called after the Search Results object has performed its main search.  This
-     * may be used to extract necessary information from the Search Results object
-     * or to perform completely unrelated processing.
-     *
-     * @param \VuFind\Search\Base\Results $results Search results object
-     *
-     * @return void
-     */
-    public function process($results)
-    {
-        $this->results = $results;
     }
 
     /**
@@ -191,31 +188,132 @@ class SideFacets implements RecommendInterface
      */
     public function getDateFacets()
     {
-        $filters = $this->results->getParams()->getFilters();
-        $result = array();
-        foreach ($this->dateFacets as $current) {
-            $from = $to = '';
-            if (isset($filters[$current])) {
-                foreach ($filters[$current] as $filter) {
-                    if ($range = SolrUtils::parseRange($filter)) {
-                        $from = $range['from'] == '*' ? '' : $range['from'];
-                        $to = $range['to'] == '*' ? '' : $range['to'];
-                        break;
-                    }
-                }
-            }
-            $result[$current] = array($from, $to);
-        }
-        return $result;
+        return $this->getRangeFacets('dateFacets');
     }
 
     /**
-     * Get results stored in the object.
+     * getGenericRangeFacets
      *
-     * @return \VuFind\Search\Base\Results
+     * Return generic range facet information in a format processed for use in the
+     * view.
+     *
+     * @return array Array of from/to value arrays keyed by field.
      */
-    public function getResults()
+    public function getGenericRangeFacets()
     {
-        return $this->results;
+        return $this->getRangeFacets('genericRangeFacets');
+    }
+
+    /**
+     * getNumericRangeFacets
+     *
+     * Return numeric range facet information in a format processed for use in the
+     * view.
+     *
+     * @return array Array of from/to value arrays keyed by field.
+     */
+    public function getNumericRangeFacets()
+    {
+        return $this->getRangeFacets('numericRangeFacets');
+    }
+
+    /**
+     * Get combined range details.
+     *
+     * @return array
+     */
+    public function getAllRangeFacets()
+    {
+        $raw = array(
+            'date' => $this->getDateFacets(),
+            'generic' => $this->getGenericRangeFacets(),
+            'numeric' => $this->getNumericRangeFacets()
+        );
+        $processed = array();
+        foreach ($raw as $type => $values) {
+            foreach ($values as $field => $range) {
+                $processed[$field] = array('type' => $type, 'values' => $range);
+            }
+        }
+        return $processed;
+    }
+
+    /**
+     * Return the list of facets configured to be collapsed
+     *
+     * @return array
+     */
+    public function getCollapsedFacets()
+    {
+        if (empty($this->collapsedFacets)) {
+            return array();
+        } elseif ($this->collapsedFacets == '*') {
+            return array_keys($this->getFacetSet());
+        }
+        return array_map('trim', explode(',', $this->collapsedFacets));
+    }
+
+    /**
+     * Get the list of filters to display
+     *
+     * @param array $extraFilters Extra filters to add to the list.
+     *
+     * @return array
+     */
+    public function getVisibleFilters($extraFilters = array())
+    {
+        // Merge extras into main list:
+        $filterList = array_merge(
+            $this->results->getParams()->getFilterList(true), $extraFilters
+        );
+
+        // Filter out suppressed values:
+        $final = array();
+        foreach ($filterList as $field => $filters) {
+            $current = array();
+            foreach ($filters as $i => $filter) {
+                if (!isset($filter['suppressDisplay'])
+                    || !$filter['suppressDisplay']
+                ) {
+                    $current[] = $filter;
+                }
+            }
+            if (!empty($current)) {
+                $final[$field] = $current;
+            }
+        }
+
+        return $final;
+    }
+
+    /**
+     * getRangeFacets
+     *
+     * Return range facet information in a format processed for use in the view.
+     *
+     * @param string $property Name of property containing active range facets
+     *
+     * @return array Array of from/to value arrays keyed by field.
+     */
+    protected function getRangeFacets($property)
+    {
+        $filters = $this->results->getParams()->getFilters();
+        $result = array();
+        if (isset($this->$property) && is_array($this->$property)) {
+            foreach ($this->$property as $current) {
+                $from = $to = '';
+                if (isset($filters[$current])) {
+                    foreach ($filters[$current] as $filter) {
+                        if ($range = SolrUtils::parseRange($filter)) {
+                            $from = $range['from'] == '*' ? '' : $range['from'];
+                            $to = $range['to'] == '*' ? '' : $range['to'];
+                            break;
+                        }
+                    }
+                }
+                $result[$current] = array($from, $to);
+            }
+        }
+        return $result;
     }
 }

@@ -65,7 +65,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     protected $pointer = 0;
 
     /**
-     * Zero-based offset in complete search resul.
+     * Zero-based offset in complete search result.
      *
      * @var int
      */
@@ -82,6 +82,16 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
+     * Shuffles records.
+     *
+     * @return bool
+     */
+    public function shuffle()
+    {
+        return shuffle($this->records);
+    }
+
+    /**
      * Return first record in response.
      *
      * @return RecordInterface|null
@@ -89,6 +99,16 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     public function first()
     {
         return isset($this->records[0]) ? $this->records[0] : null;
+    }
+
+    /**
+     * Return offset in the total search result set.
+     *
+     * @return int
+     */
+    public function getOffset()
+    {
+        return $this->offset;
     }
 
     /**
@@ -125,6 +145,22 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
         if (!in_array($record, $this->records, true)) {
             $this->records[$this->pointer] = $record;
             $this->next();
+        }
+    }
+
+    /**
+     * Replace a record in the collection.
+     *
+     * @param RecordInterface $record      Record to be replaced
+     * @param RecordInterface $replacement Replacement record
+     *
+     * @return void
+     */
+    public function replace(RecordInterface $record, RecordInterface $replacement)
+    {
+        $key = array_search($record, $this->records, true);
+        if ($key !== false) {
+            $this->records[$key] = $replacement;
         }
     }
 
@@ -177,7 +213,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function key()
     {
-        return $this->pointer + $this->offset;
+        return $this->pointer + $this->getOffset();
     }
 
     /// Countable interface

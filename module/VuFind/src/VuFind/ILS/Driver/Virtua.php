@@ -348,7 +348,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         // Strip off the prefix from vtls exports
         $db_id = str_replace("vtls", "", $id);
@@ -993,7 +993,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Prepare the set for sorting on '8' subfields, also move the tag data out
         $sort_set = array();
         // Loop through each sequence
-        foreach ($data_set as $seq => $row) {
+        foreach ($data_set as $row) {
             $sort = '';
             $tag  = '';
             $data = array();
@@ -1423,6 +1423,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst = false, $dept = false)
     {
@@ -1626,6 +1627,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @param array $holdDetails An array of item data
      *
      * @return string Data for use in a form field
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getCancelHoldDetails($holdDetails)
     {
@@ -1642,6 +1644,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function cancelHolds($cancelDetails)
     {
@@ -1744,6 +1747,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @param array $checkOutDetails An array of item data
      *
      * @return string Data for use in a form field
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRenewDetails($checkOutDetails)
     {

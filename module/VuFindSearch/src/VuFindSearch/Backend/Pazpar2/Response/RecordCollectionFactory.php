@@ -67,7 +67,12 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      */
     public function __construct($recordFactory = null, $collectionClass = null)
     {
-        if (!is_callable($recordFactory)) {
+        // Set default record factory if none provided:
+        if (null === $recordFactory) {
+            $recordFactory = function ($i) {
+                return new Record($i);
+            };
+        } else if (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;

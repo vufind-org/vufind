@@ -44,7 +44,18 @@ use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
 
 class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
 {
+    /**
+     * Cache for policy information
+     *
+     * @var object
+     */
     protected $policyCache = false;
+
+    /**
+     * Policy information
+     *
+     * @var array
+     */
     protected $policies;
 
     /**
@@ -135,10 +146,23 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
         static $soapClients = array();
 
         if (!isset($soapClients[$service])) {
-            $soapClients[$service] = new SoapClient(
-                $this->config['WebServices']['baseURL']."/soap/$service?wsdl",
-                $this->config['WebServices']['soapOptions']
-            );
+            try {
+                $soapClients[$service] = new SoapClient(
+                    $this->config['WebServices']['baseURL']."/soap/$service?wsdl",
+                    $this->config['WebServices']['soapOptions']
+                );
+            } catch (SoapFault $e) {
+                // This SoapFault may have happened because, e.g., PHP's
+                // SoapClient won't load SymWS 3.1's Patron service WSDL.
+                // However, we can't check the SymWS version if this fault
+                // happened with the Standard service (which contains the
+                // 'version' operation).
+                if ($service != 'standard') {
+                    $this->checkSymwsVersion();
+                }
+
+                throw $e;
+            }
         }
 
         return $soapClients[$service];
@@ -281,8 +305,40 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 return $soapClient->$operation($parameters);
             } elseif ($operation == 'logoutUser') {
                 return null;
+            } elseif ($operation == 'lookupSessionInfo') {
+                // lookupSessionInfo did not exist in SymWS 3.0.
+                $this->checkSymwsVersion();
+                throw $e;
             } else {
                 throw $e;
+            }
+        }
+    }
+
+    /**
+     * Check the SymWS version, and throw an Exception if it's too old.
+     *
+     * Always checking at initialization would result in many unnecessary
+     * roundtrips with the SymWS server, so this method is intended to be
+     * called when an error happens that might be correctable by upgrading
+     * SymWS. In such a case it will produce a potentially more helpful error
+     * message than the original error would have.
+     * 
+     * @throws Exception if the SymWS version is too old
+     * @return void
+     */
+    protected function checkSymwsVersion()
+    {
+        $resp = $this->makeRequest('standard', 'version', array());
+        foreach ($resp->version as $v) {
+            if ($v->product == 'SYM-WS') {
+                if (version_compare($v->version, 'v3.2', '<')) {
+                    // ILSException didn't seem to produce an error message
+                    // when checkSymwsVersion() was called from the catch
+                    // block in makeRequest().
+                    throw new \Exception("SymWS version too old");
+                }
+                break;
             }
         }
     }
@@ -331,6 +387,8 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 $location   = $library . ' - ' . ($available && !empty($curr_loc)
                     ? $curr_loc : $home_loc);
 
+                $material = $this->translatePolicyID('ITYP', $result['item type']);
+
                 $items[$result['id']][] = array(
                     'id' => $result['id'],
                     'availability' => $available,
@@ -364,6 +422,18 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
     {
         $ids = is_array($ids) ? $ids : array($ids);
 
+        // SymWS ignores invalid titleIDs instead of rejecting them, so
+        // checking ahead of time for obviously invalid titleIDs is a useful
+        // sanity check (which has a good chance of catching, for example,
+        // the use of something other than catkeys as record IDs).
+        $invalid = preg_grep('/^[1-9][0-9]*$/', $ids, PREG_GREP_INVERT);
+        if (count($invalid) > 0) {
+            $titleIDs = count($invalid) == 1 ? 'titleID' : 'titleIDs';
+            $msg = "Invalid $titleIDs: " . implode(', ', $invalid);
+            throw new ILSException($msg);
+        }
+
+        // Prepare $params array for makeRequest().
         $params = array(
             'titleID' => $ids,
             'includeAvailabilityInfo' => 'true',
@@ -699,7 +769,6 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                     'reserve' => 'N',
                     'number' => $i,
                     'barcode' => true,
-                    'unicorn_boundwith' => $ckey,
                     'offsite' => $library_id == 'OFFSITE',
                 );
             }
@@ -857,7 +926,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         return $this->getStatus($id);
     }
@@ -1220,7 +1289,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
             try {
                 $options = array('holdKey' => $holdKey);
 
-                $hold = $this->makeRequest(
+                $this->makeRequest(
                     'patron',
                     'cancelMyHold',
                     $options,
@@ -1296,7 +1365,6 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      */
     public function renewMyItems($renewDetails)
     {
-        $blocks  = array();
         $details = array();
         $patron  = $renewDetails['patron'];
 
@@ -1372,7 +1440,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 $options['comment'] = $holdDetails['comment'];
             }
 
-            $hold = $this->makeRequest(
+            $this->makeRequest(
                 'patron',
                 'createMyHold',
                 $options,
@@ -1457,6 +1525,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -1485,6 +1554,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {

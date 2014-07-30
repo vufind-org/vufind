@@ -37,26 +37,13 @@ use VuFind\ILS\Driver\Evergreen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class EvergreenTest extends \VuFindTest\Unit\TestCase
+class EvergreenTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
-    protected $driver;
-
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->driver = new Evergreen();
-    }
-
-    /**
-     * Test that driver complains about missing configuration.
-     *
-     * @return void
-     */
-    public function testMissingConfiguration()
-    {
-        $this->setExpectedException('VuFind\Exception\ILS');
-        $this->driver->init();
     }
 }

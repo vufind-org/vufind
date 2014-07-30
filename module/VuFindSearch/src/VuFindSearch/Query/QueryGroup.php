@@ -42,7 +42,6 @@ use VuFindSearch\Exception\InvalidArgumentException;
  */
 class QueryGroup extends AbstractQuery
 {
-
     /**
      * Valid boolean operators.
      *
@@ -175,6 +174,19 @@ class QueryGroup extends AbstractQuery
      * @return void
      */
     public function setQueries(array $queries)
+    {
+        $this->queries = array();
+        $this->addQueries($queries);
+    }
+
+    /**
+     * Add group queries.
+     *
+     * @param array $queries Group queries
+     *
+     * @return void
+     */
+    public function addQueries(array $queries)
     {
         foreach ($queries as $query) {
             $this->addQuery($query);

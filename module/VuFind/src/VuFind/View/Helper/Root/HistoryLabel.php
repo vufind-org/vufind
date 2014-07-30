@@ -55,8 +55,8 @@ class HistoryLabel extends \Zend\View\Helper\AbstractHelper
     /**
      * Constructor
      *
-     * @param array    $config Label configuration
-     * @param TransEsc $url    Translation helper
+     * @param array    $config     Label configuration
+     * @param TransEsc $translator Translation helper
      */
     public function __construct(array $config, TransEsc $translator)
     {

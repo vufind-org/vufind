@@ -90,10 +90,10 @@ class HttpService implements HttpServiceInterface
      *
      * Returns the client given as argument with appropriate proxy setup.
      *
-     * @param Zend\Http\Client $client  HTTP client
-     * @param array            $options ZF2 ProxyAdapter options
+     * @param \Zend\Http\Client $client  HTTP client
+     * @param array             $options ZF2 ProxyAdapter options
      *
-     * @return Zend\Http\Client
+     * @return \Zend\Http\Client
      */
     public function proxify(\Zend\Http\Client $client, array $options = array())
     {
@@ -264,7 +264,7 @@ class HttpService implements HttpServiceInterface
      */
     public static function isAssocParams(array $array)
     {
-        foreach ($array as $key => $value) {
+        foreach (array_keys($array) as $key) {
             if (!is_numeric($key)) {
                 return true;
             }

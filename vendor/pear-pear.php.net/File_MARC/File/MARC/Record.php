@@ -32,7 +32,7 @@
  * @author    Dan Scott <dscott@laurentian.ca>
  * @copyright 2003-2008 Oy Realnode Ab, Dan Scott
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version   CVS: $Id: Record.php 308146 2011-02-08 20:36:20Z dbs $
+ * @version   CVS: $Id$
  * @link      http://pear.php.net/package/File_MARC
  */
 
@@ -240,8 +240,8 @@ class File_MARC_Record
             break;
 
         default: 
-             $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INSERTFIELD_MODE], array("mode" => $before));
-             throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INSERTFIELD_MODE);
+            $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INSERTFIELD_MODE], array("mode" => $before));
+            throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INSERTFIELD_MODE);
         }
         return $new_field;
     }
@@ -550,7 +550,9 @@ class File_MARC_Record
         /* End fields and record */
 
         $json->fields = $fields;
-        return json_encode($json);
+        $json_rec = json_encode($json);
+        // Required because json_encode() does not let us stringify integer keys
+        return preg_replace('/("subfields":)(.*?)\["([^\"]+?)"\]/', '\1\2{"0":"\3"}', $json_rec);
     }
 
     // }}}
@@ -629,9 +631,14 @@ class File_MARC_Record
     {
         $this->marcxml->setIndent($indent);
         if ($single) {
-            $this->marc->toXMLHeader();
+            $this->marcxml->startElement("collection");
+            $this->marcxml->writeAttribute("xmlns", "http://www.loc.gov/MARC21/slim");
+            $this->marcxml->startElement("record");
+        } else {
+            $this->marcxml->startElement("record");
+            $this->marcxml->writeAttribute("xmlns", "http://www.loc.gov/MARC21/slim");
         }
-        $this->marcxml->startElement("record");
+        
 
         // MARCXML schema has some strict requirements
         // We'll set reasonable defaults to avoid invalid MARCXML
@@ -680,10 +687,11 @@ class File_MARC_Record
 
         $this->marcxml->endElement(); // end record
         if ($single) {
-            return $this->marc->toXMLFooter();
+            $this->marcxml->endElement(); // end collection
+            $this->marcxml->endDocument();
         }
+        return $this->marcxml->outputMemory();
     }
-
     // }}}
 
 }

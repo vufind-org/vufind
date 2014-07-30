@@ -48,6 +48,13 @@ class HarvestController extends AbstractBase
     {
         $this->checkLocalSetting();
 
+        // Parse switches:
+        $this->consoleOpts->addRules(
+            array('from-s' => 'Harvest start date', 'until-s' => 'Harvest end date')
+        );
+        $from = $this->consoleOpts->getOption('from');
+        $until = $this->consoleOpts->getOption('until');
+
         // Read Config files
         $configFile = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
         $oaiSettings = @parse_ini_file($configFile, true);
@@ -76,7 +83,7 @@ class HarvestController extends AbstractBase
                 try {
                     $client = $this->getServiceLocator()->get('VuFind\Http')
                         ->createClient();
-                    $harvest = new OAI($target, $settings, $client);
+                    $harvest = new OAI($target, $settings, $client, $from, $until);
                     $harvest->launch();
                 } catch (\Exception $e) {
                     Console::writeLine($e->getMessage());

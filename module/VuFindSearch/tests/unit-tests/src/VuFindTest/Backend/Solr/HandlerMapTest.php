@@ -96,6 +96,34 @@ class HandlerMapTest extends TestCase
     }
 
     /**
+     * Test exception on unexpected type.
+     *
+     * @return void
+     *
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Invalid parameter key: bad
+     */
+    public function testGetParametersThrowsOnUndefinedType()
+    {
+        $map = new HandlerMap(array('h1' => array('functions' => array('foo'))));
+        $map->getParameters('h1', 'bad');
+    }
+
+    /**
+     * Test exception on unexpected type.
+     *
+     * @return void
+     *
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Invalid parameter key: bad
+     */
+    public function testSetParametersThrowsOnUndefinedType()
+    {
+        $map = new HandlerMap(array('h1' => array('functions' => array('foo'))));
+        $map->setParameters('h1', 'bad', array());
+    }
+
+    /**
      * Test retrieve defaults, appends, invariants.
      *
      * @return void
@@ -133,7 +161,7 @@ class HandlerMapTest extends TestCase
      *
      * @see http://vufind.org/jira/browse/VUFIND-820 VUFIND-820
      */
-    public function testGetDefaultsAppendsInvariantsPureFallback ()
+    public function testGetDefaultsAppendsInvariantsPureFallback()
     {
         $map = new HandlerMap(
             array(
@@ -156,6 +184,28 @@ class HandlerMapTest extends TestCase
         $this->assertEquals(
             array('p3' => array('v3')),
             $map->getAppends('search')->getArrayCopy()
-        );       
+        );
+    }
+
+    /**
+     * Test addParameter
+     *
+     * @return void
+     */
+    public function testAddParameter()
+    {
+        $map = new HandlerMap(
+            array(
+                'search' => array(
+                    'functions' => array('search'),
+                    'invariants' => array('p1' => 'v1'),
+                )
+            )
+        );
+        $map->addParameter('search', 'invariants', 'p2', 'v2');
+        $this->assertEquals(
+            array('p1' => array('v1'), 'p2' => array('v2')),
+            $map->getInvariants('search')->getArrayCopy()
+        );
     }
 }

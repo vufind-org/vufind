@@ -1,0 +1,143 @@
+a:3:{s:4:"docs";a:3:{i:0;s:1157:"<recordData>
+<record xmlns="http://www.loc.gov/MARC21/slim">
+    <leader>00000cam a2200000Mu 4500</leader>
+    <controlfield tag="001">793503125</controlfield>
+    <controlfield tag="008">120513suuuu    xxu           000 0 dut d</controlfield>
+    <controlfield tag="009">6946</controlfield>
+    <datafield ind1=" " ind2=" " tag="040">
+      <subfield code="a">ZMY</subfield>
+      <subfield code="c">ZMY</subfield>
+      <subfield code="d">YDXCP</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="042">
+      <subfield code="a">dc</subfield>
+    </datafield>
+    <datafield ind1="2" ind2=" " tag="110">
+      <subfield code="a">OCLC</subfield>
+    </datafield>
+    <datafield ind1="0" ind2="0" tag="245">
+      <subfield code="a">foobar</subfield>
+      <subfield code="c">OCLC</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="260">
+      <subfield code="a">whatever</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="938">
+      <subfield code="a">YBP Library Services</subfield>
+      <subfield code="b">YANK</subfield>
+      <subfield code="n">10955362</subfield>
+    </datafield>
+  </record>
+</recordData>";i:1;s:2444:"<recordData>
+<record xmlns="http://www.loc.gov/MARC21/slim">
+    <leader>00000npc a22000003u 4500</leader>
+    <controlfield tag="001">798169104</controlfield>
+    <controlfield tag="008">120703s2004    xx      o           ger d</controlfield>
+    <datafield ind1="0" ind2=" " tag="029">
+      <subfield code="a">TXCON</subfield>
+      <subfield code="b">oai:cnx.org:m12442</subfield>
+      <subfield code="c">http://cnx.org/content/OAI DCG_ENTIRE_REPOSITORY</subfield>
+      <subfield code="t">DGCNT</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="040">
+      <subfield code="a">TXCON</subfield>
+      <subfield code="c">TXCON</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="042">
+      <subfield code="a">dc</subfield>
+    </datafield>
+    <datafield ind1="0" ind2="0" tag="245">
+      <subfield code="a">foobar</subfield>
+      <subfield code="h">[electronic resource].</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="260">
+      <subfield code="c">2004-11-30T16:11:25Z</subfield>
+    </datafield>
+    <datafield ind1="8" ind2=" " tag="520">
+      <subfield code="a">test</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="540">
+      <subfield code="a">http://creativecommons.org/licenses/by/1.0</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="546">
+      <subfield code="a">German</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="653">
+      <subfield code="a">test</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="720">
+      <subfield code="a">Christine Zoechbauer</subfield>
+      <subfield code="4">cre</subfield>
+    </datafield>
+    <datafield ind1="4" ind2="0" tag="856">
+      <subfield code="u">http://cnx.org/content/m12442/1.2</subfield>
+      <subfield code="3">Item Resolution URL</subfield>
+      <subfield code="x">This 856 field was generated using the WorldCat Digital Collection Gateway</subfield>
+      <subfield code="y">View online</subfield>
+      <subfield code="i">Put this Resolution URL in a web browser to view this item.</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="917">
+      <subfield code="j">Non-English</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="902">
+      <subfield code="g">CONNEXIONS</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="949">
+      <subfield code="x">i</subfield>
+    </datafield>
+  </record>
+</recordData>";i:2;s:2587:"<recordData>
+<record xmlns="http://www.loc.gov/MARC21/slim">
+    <leader>00000cam a22000003  4500</leader>
+    <controlfield tag="001">44310183</controlfield>
+    <controlfield tag="006">m     o  u        </controlfield>
+    <controlfield tag="008">970910nuuuuuuuuxx      o     000 0 eng d</controlfield>
+    <datafield ind1=" " ind2=" " tag="040">
+      <subfield code="a">N@F</subfield>
+      <subfield code="c">N@F</subfield>
+      <subfield code="d">OCLCQ</subfield>
+    </datafield>
+    <datafield ind1="0" ind2="4" tag="082">
+      <subfield code="a">384.330994</subfield>
+    </datafield>
+    <datafield ind1="0" ind2="4" tag="082">
+      <subfield code="a">384.3309794</subfield>
+    </datafield>
+    <datafield ind1="0" ind2="0" tag="245">
+      <subfield code="a">Foobar Internet.</subfield>
+      <subfield code="h">[electronic resource]</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="260">
+      <subfield code="b">Absolute Communications Ltd..</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="270">
+      <subfield code="m">sales@foobar.co.uk;www@foobar.co.uk</subfield>
+      <subfield code="h">Information;Feedback</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="516">
+      <subfield code="a">World Wide Web Resource</subfield>
+    </datafield>
+    <datafield ind1="8" ind2=" " tag="520">
+      <subfield code="a">Presents Leicester, England-based Foobar Internet, a provider of Internet access services in the UK. Provides information on multiuser connections, including dialup service, reserved line, and 64k leased line. Allows access to commercial sites and classified ads. Lists company directors and staff, and offers pointers to Web sites of interest. Provides company contact information via telephone, fax, and e-mail.</subfield>
+    </datafield>
+    <datafield ind1="2" ind2="4" tag="610">
+      <subfield code="a">Foobar Internet.</subfield>
+    </datafield>
+    <datafield ind1=" " ind2="4" tag="650">
+      <subfield code="a">Internet access provider</subfield>
+    </datafield>
+    <datafield ind1=" " ind2="4" tag="651">
+      <subfield code="a">Great Britain</subfield>
+    </datafield>
+    <datafield ind1=" " ind2=" " tag="653">
+      <subfield code="a">Internet access provider</subfield>
+    </datafield>
+    <datafield ind1="4" ind2="0" tag="856">
+      <subfield code="u">http://www.stayfree.co.uk/</subfield>
+    </datafield>
+    <datafield ind1="0" ind2=" " tag="029">
+      <subfield code="a">N@F</subfield>
+      <subfield code="b">87718</subfield>
+    </datafield>
+  </record>
+</recordData>";}s:6:"offset";i:0;s:5:"total";i:10;}

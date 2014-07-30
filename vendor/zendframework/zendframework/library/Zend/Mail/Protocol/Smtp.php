@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -282,6 +282,11 @@ class Smtp extends AbstractProtocol
         $this->_send('DATA');
         $this->_expect(354, 120); // Timeout set for 2 minutes as per RFC 2821 4.5.3.2
 
+        // Ensure newlines are CRLF (\r\n)
+        if (PHP_EOL === "\n") {
+            $data = str_replace("\n", "\r\n", str_replace("\r", '', $data));
+        }
+
         foreach (explode(self::EOL, $data) as $line) {
             if (strpos($line, '.') === 0) {
                 // Escape lines prefixed with a '.'
@@ -348,6 +353,7 @@ class Smtp extends AbstractProtocol
     public function quit()
     {
         if ($this->sess) {
+            $this->auth = false;
             $this->_send('QUIT');
             $this->_expect(221, 300); // Timeout set for 5 minutes as per RFC 2821 4.5.3.2
             $this->_stopSession();

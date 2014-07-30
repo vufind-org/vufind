@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\SMS;
+use VuFind\Exception\Mail as MailException;
 
 /**
  * VuFind Mailer Class for SMS messages

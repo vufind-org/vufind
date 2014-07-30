@@ -40,6 +40,23 @@ use VuFind\Search\Memory, Zend\View\Helper\AbstractHelper;
 class GetLastSearchLink extends AbstractHelper
 {
     /**
+     * Search memory
+     *
+     * @var Memory
+     */
+    protected $memory;
+
+    /**
+     * Constructor
+     *
+     * @param Memory $memory Search memory
+     */
+    public function __construct(Memory $memory)
+    {
+        $this->memory = $memory;
+    }
+
+    /**
      * If a previous search is recorded in the session, return a link to it;
      * otherwise, return a blank string.
      *
@@ -51,7 +68,7 @@ class GetLastSearchLink extends AbstractHelper
      */
     public function __invoke($link, $prefix = '', $suffix = '')
     {
-        $last = Memory::retrieve();
+        $last = $this->memory->retrieve();
         if (!empty($last)) {
             $escaper = $this->getView()->plugin('escapeHtml');
             return $prefix . '<a href="' . $escaper($last) . '">' . $link . '</a>'

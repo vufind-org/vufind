@@ -179,28 +179,31 @@
          autowarmCount - the number of entries to prepopulate from
            and old cache.
          -->
+
+    <!-- VuFind uses the default Solr settings for filterCache, which should produce a high
+         hit rate. You can carefully adjust the filterCache and check the hit ratio in 
+         admin>plugins>stats -->  
     <filterCache
       class="solr.FastLRUCache"
-      size="300000"
-      initialSize="300000"
-      autowarmCount="50000"/>
+      size="512"
+      initialSize="512"
+      autowarmCount="256"/>
 
    <!-- queryResultCache caches results of searches - ordered lists of
          document ids (DocList) based on a query, a sort, and the range
          of documents requested.  -->
     <queryResultCache
       class="solr.LRUCache"
-      size="100000"
-      initialSize="100000"
-      autowarmCount="50000"/>
+      size="512"
+      initialSize="512"
+      autowarmCount="256"/>
 
   <!-- documentCache caches Lucene Document objects (the stored fields for each document).
        Since Lucene internal document ids are transient, this cache will not be autowarmed.  -->
     <documentCache
       class="solr.LRUCache"
-      size="50000"
-      initialSize="50000"
-      autowarmCount="10000"/>
+      size="16384"
+      initialSize="16384"/>
 
     <!-- If true, stored fields that are not requested will be loaded lazily.
 
@@ -366,13 +369,13 @@
     </arr>
   </requestHandler>
 
-  <!-- the following handler will be used for eligible dismax searches defined
-     in web/conf/searchspecs.yaml.  Searches relying on advanced features
-     incompatible with dismax will be sent to the standard handler instead.
-     You can use this handler definition to set global Dismax settings
-     (i.e. mm / bf).  If you need different settings for different types of
-     searches (i.e. Title vs. Author), you can also configure individual
-     settings in the searchspecs.yaml file.
+  <!-- the following two handlers will be used for eligible dismax searches defined
+     in searchspecs.yaml. The edismax handler will be used most of the time, unless
+     a specific configuration tells VuFind to use traditional dismax instead. You
+     can use these handler definitions to set global Dismax settings (e.g. mm / bf).
+     If you need different settings for different types of searches (e.g. Title vs.
+     Author), you can also configure individual settings in the searchspecs.yaml
+     file.
   -->
   <requestHandler name="dismax" class="solr.SearchHandler">
     <lst name="defaults">
@@ -382,6 +385,21 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
+    </lst>
+    <arr name="last-components">
+      <str>spellcheck</str>
+    </arr>
+  </requestHandler>
+
+  <requestHandler name="edismax" class="solr.SearchHandler">
+    <lst name="defaults">
+     <str name="defType">edismax</str>
+     <!-- str name="fl">a*,b*,c*,d*,e*,first_indexed,format,fullrecord,g*,h*,i*,l*,o*,p*,r*,s*,t*,u*,*_date*,*_isn*,*_str*,*_txt*</str -->
+     <str name="echoParams">explicit</str>
+     <str name="spellcheck.extendedResults">true</str>
+     <str name="spellcheck.onlyMorePopular">true</str>
+     <str name="spellcheck.count">20</str>
+     <str name="lowercaseOperators">false</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -408,7 +426,7 @@
     </lst>
   </requestHandler>
 
-  <requestHandler name="/browse" class="au.gov.nla.solr.handler.BrowseRequestHandler">
+  <requestHandler name="/browse" class="org.vufind.solr.handler.BrowseRequestHandler">
     <str name="authIndexPath">${solr.solr.home:./solr}/authority/index</str>
     <str name="bibIndexPath">${solr.solr.home:./solr}/biblio/index</str>
 
@@ -569,7 +587,6 @@
        </lst>
        -->
   </requestHandler>
-  <requestHandler name="/update/json" class="solr.JsonUpdateRequestHandler"/>
 
   <!-- Field Analysis Request Handler
 
