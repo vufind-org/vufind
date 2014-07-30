@@ -1,0 +1,17 @@
+<? $columnIndex = 0; ?>
+<? $span = floor(24/$columns); ?>
+<? $sectionCount = count($this->combinedResults); ?>
+<? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+  <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { continue; } ?>
+  <? if ($columnIndex < $columns): ?>
+    <div class="span-<?=$span ?> combined-list">
+  <? endif; ?>
+    <div id="combined_<?=$this->escapeHtmlAttr($searchClassId)?>">
+      <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
+      <?=$this->render('combined/results-' . $templateSuffix . '.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
+    </div>
+  <? ++$columnIndex ?>
+  <? if($columnIndex < $columns || $columnIndex == $sectionCount): ?>
+    </div>
+  <? endif; ?>
+<? endforeach; ?>
