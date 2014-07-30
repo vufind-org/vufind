@@ -38,7 +38,6 @@ module Jekyll
                      ].join(' ')
 
           puts 'Compiling LESS: ' + command
-          puts src_root
 
           `#{command}`
 
@@ -47,7 +46,7 @@ module Jekyll
                      less_path,
                      less_path.gsub(less_ext, '.css').gsub(src_root, dest_root+'/..')
                      ].join(' ')
-          puts 'Compiling LESS: ' + command
+          puts '                    Compiling LESS: ' + command
 
           `#{command}`
 
