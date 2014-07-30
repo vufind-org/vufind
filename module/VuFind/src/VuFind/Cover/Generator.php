@@ -64,6 +64,7 @@ class Generator
     {
         $this->themeTools = $themeTools;
         $default = array(
+            'mode'         => 'grid',
             'authorFont'   => 'DroidSerif-Bold.ttf',
             'fontSize'     => 7,
             'lightness'    => 220,
@@ -434,7 +435,7 @@ class Generator
      * @return void
      */
     protected function drawText($im, $text, $x, $y,
-        $font, $fontSize, $mcolor, $scolor, $align = null
+        $font, $fontSize, $mcolor, $scolor=false, $align=null
     ) {
         $txtWidth = $this->textWidth(
             $text,
@@ -460,10 +461,12 @@ class Generator
         }
 
         // Generate 5 lines of text, 4 offset in a border color
-        imagettftext($im, $fontSize, 0, $x,   $y+1, $scolor, $font, $text);
-        imagettftext($im, $fontSize, 0, $x,   $y-1, $scolor, $font, $text);
-        imagettftext($im, $fontSize, 0, $x+1, $y,   $scolor, $font, $text);
-        imagettftext($im, $fontSize, 0, $x-1, $y,   $scolor, $font, $text);
+        if ($scolor) {
+            imagettftext($im, $fontSize, 0, $x,   $y+1, $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x,   $y-1, $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x+1, $y,   $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x-1, $y,   $scolor, $font, $text);
+        }
         // 1 centered in main color
         imagettftext($im, $fontSize, 0, $x,   $y,   $mcolor, $font, $text);
     }
