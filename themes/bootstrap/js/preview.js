@@ -33,7 +33,7 @@ function applyPreviewUrl($link, url) {
 
     // Update associated record thumbnail, if any:
     $link.parents('.result,.record')
-        .find('.title').attr('href', url);
+        .find('.cover').attr('href', url);
 }
 
 function processBookInfo(booksInfo, previewClass) {
