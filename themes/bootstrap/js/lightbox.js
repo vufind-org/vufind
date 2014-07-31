@@ -194,7 +194,7 @@ var Lightbox = {
     if(alert.length > 0 && html.length > 1) {
       $(alert).html(message);
     } else if($('#modal .modal-body').html() == vufindString.loading+"..."
-    || (html.length == 1 && $(html).hasClass('alert-error'))) {) {
+    || (html.length == 1 && $(html).hasClass('alert-error'))) {
       $('#modal .modal-body').html('<div class="alert alert-error">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-error">'+message+'</div>');
