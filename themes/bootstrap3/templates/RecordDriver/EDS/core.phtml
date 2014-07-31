@@ -11,10 +11,10 @@
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <div class="col-sm-3">
     <? if ($thumb): ?>
-        <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
     <? else: ?>
       <div class="clearfix">
-        <span class="summcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
+        <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
       </div>
     <? endif; ?>
     <? if ($pubType): ?>
