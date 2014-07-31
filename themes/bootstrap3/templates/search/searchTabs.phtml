@@ -1,0 +1,10 @@
+<? $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType); ?>
+<? if (count($searchTabs) > 0): ?>
+  <ul class="nav nav-tabs">
+    <? foreach ($searchTabs as $tab): ?>
+      <li<?=$tab['selected'] ? ' class="active"' : ''?>>
+        <a <?=$tab['selected'] ? '' : 'href="' . $this->escapeHtmlAttr($tab['url']) . '"' ?>><?=$this->transEsc($tab['label']); ?></a>
+      </li>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>
