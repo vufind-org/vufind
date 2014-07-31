@@ -191,25 +191,29 @@ class PAIA extends DAIA
         for ($i = 0; $i < $holds; $i++) {
             if ($loans_response['doc'][$i]['status'] == '3') {
                 // TODO: set renewable dynamically (not yet supported by PAIA)
-                $renewable = false;
+                $renewable = true;
                 $renew_details = $loans_response['doc'][$i]['item'];
-                if ($loans_response['doc'][$i]['cancancel'] == 1) {
+/*                if ($loans_response['doc'][$i]['cancancel'] == 1) {
                     $renewable = true;
                     $renew_details = $loans_response['doc'][$i]['item'];
-                }
+                } */
                 // get PPN from PICA catalog since it is not part of PAIA
                 $ppn = $this->_getPpnByBarcode($loans_response['doc'][$i]['label']);
+                if ($loans_response['doc'][$i]['status'] == '4') {
+                    $message = "hold_available";
+                }
 
                 $transList[] = array(
-                    'duedate'        => $loans_response['doc'][$i]['duedate'],
                     'id'             => $ppn ? $ppn : $loans_response['doc'][$i]['item'],
+                    'duedate'        => $loans_response['doc'][$i]['endtime'],
                     'barcode'        => $loans_response['doc'][$i]['item'],
                     'renew'          => $loans_response['doc'][$i]['renewals'],
-                    'renewLimit'     => null,
+                    'renewLimit'     => "1",
                     'request'        => $loans_response['doc'][$i]['queue'],
                     'volume'         => null,
                     'publication_year' => null,
                     'renewable'      => $renewable,
+                    'renew_details'  => $renew_details,
                     'message'        => $loans_response['doc'][$i]['label'],             
                     'title'          => $loans_response['doc'][$i]['about'],
                     'item_id'        => $loans_response['doc'][$i]['item'],
@@ -250,16 +254,19 @@ class PAIA extends DAIA
         else {
             $elements = $array_response['doc'];
             foreach ($elements as $element) {
-                if ($element['status'] == '3') {
-                    $details[] = array('success' => true, 'new_date' => $element['duedate'], 'new_time' => '23:59:59', 'item_id' => 0, 'sysMessage' => 'Successfully renewed');
+                $item_id = $element['item'];
+                if (array_key_exists('error', $element)) {
+                    $details[$item_id] = array('success' => false, 'sysMessage' => $element['error']);
+                } 
+                elseif ($element['status'] == '3') {
+                    $details[$item_id] = array('success' => true, 'new_date' => $element['endtime'], 'item_id' => 0, 'sysMessage' => 'Successfully renewed');
                 }
                 else {
-                    $details[] = array('success' => false, 'new_date' => $element['duedate'], 'new_time' => '23:59:59', 'item_id' => 0, 'sysMessage' => 'Request rejected');
+                    $details[$item_id] = array('success' => false, 'new_date' => $element['endtime'],  'item_id' => 0, 'sysMessage' => 'Request rejected');
                 }
             }
         }
         $returnArray = array('blocks' => false, 'details' => $details);
-
         return $returnArray;
     }
 
@@ -295,11 +302,12 @@ class PAIA extends DAIA
             $count = 0;
             $elements = $array_response['doc'];
             foreach ($elements as $element) {
+                $item_id = $element['item'];
                 if ($element['error']) {
-                    $details[] = array('success' => false, 'status' => $element['error'], 'sysMessage' => 'Cancel request rejected');
+                    $details[$item_id] = array('success' => false, 'status' => $element['error'], 'sysMessage' => 'Cancel request rejected');
                 }
                 else {
-                    $details[] = array('success' => true, 'status' => 'Success', 'sysMessage' => 'Successfully cancelled');
+                    $details[$item_id] = array('success' => true, 'status' => 'Success', 'sysMessage' => 'Successfully cancelled');
                     $count++;
                 }
             }
@@ -377,14 +385,16 @@ class PAIA extends DAIA
                 if ($loans_response['doc'][$i]['cancancel'] == 1) {
                     $cancel_details = $loans_response['doc'][$i]['item'];
                 }
-          
+                // As long as PAIA-Server does not set cancancel, always populate $cancel_details
+                $cancel_details = $loans_response['doc'][$i]['item'];
+
                 $transList[] = array(
                     'type'           => $loans_response['doc'][$i]['status'],
                     'id'             => $ppn ? $ppn : $loans_response['doc'][$i]['item'],
                     'location'       => $loans_response['doc'][$i]['storage'],
                     'reqnum'         => null,
-                    'expire'         => $loans_response['doc'][$i]['duedate'],
-                    'create'         => $loans_response['doc'][$i]['create'],
+                    'expire'         => isset($loans_response['doc'][$i]['endtime']) ? $loans_response['doc'][$i]['endtime'] : "",
+                    'create'         => $loans_response['doc'][$i]['starttime'],
                     'position'       => null,
                     'available'      => null,
                     'item_id'        => $loans_response['doc'][$i]['item'],
@@ -515,7 +525,7 @@ class PAIA extends DAIA
         $loans_response = json_decode($json_response, true);
 
         // if the login auth token is invalid, renew it (this is possible unless the session is expired)
-        if ($loans_response['error'] && $loans_response['code'] == '401') {
+        if (isset($loans_response['error']) && $loans_response['code'] == '401') {
             $sessionuser = $_SESSION['picauser'];
             $this->_paiaLogin($sessionuser->username, $sessionuser->cat_password);
 
@@ -566,7 +576,7 @@ class PAIA extends DAIA
         $doc->load($searchUrl);
         // get Availability information from DAIA
         $itemlist = $doc->getElementsByTagName('SHORTTITLE');
-        if (count($itemlist->item(0)->attributes) > 0) {
+        if (isset($itemlist->item(0)->attributes) && count($itemlist->item(0)->attributes) > 0) {
             $ppn = $itemlist->item(0)->attributes->getNamedItem('PPN')->nodeValue;
         } else {
             return false;
@@ -650,7 +660,7 @@ class PAIA extends DAIA
         $user_response = json_decode($json_response, true);
 
         // if the login auth token is invalid, renew it (this is possible unless the session is expired)
-        if ($user_response['error'] && $user_response['code'] == '401') {
+        if (isset($user_response['error']) && $user_response['code'] == '401') {
             $this->_paiaLogin($sessionuser->username, $sessionuser->cat_password);
 
             $pure_response = $this->_getit('/core/'.$data, $_SESSION['paiaToken']);
@@ -668,7 +678,7 @@ class PAIA extends DAIA
         $user['id'] = $patron;
         $user['firstname'] = $firstname;
         $user['lastname'] = $lastname;
-        $user['email'] = $user_response['email'];
+        $user['email'] = isset($user_response['email']) ? $user_response['email'] : "";
         $user['major'] = null;
         $user['college'] = null;
 

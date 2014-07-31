@@ -61,11 +61,11 @@ class DAIA extends AbstractBase
      */
     public function init()
     {
-        if (!isset($this->config['Global']['baseUrl'])) {
-            throw new ILSException('Global/baseUrl configuration needs to be set.');
+        if (!isset($this->config['DAIA']['baseUrl'])) {
+            throw new ILSException('DAIA/baseUrl configuration needs to be set.');
         }
 
-        $this->baseURL = $this->config['Global']['baseUrl'];
+        $this->baseURL = $this->config['DAIA']['baseUrl'];
     }
 
     /**
@@ -200,7 +200,7 @@ class DAIA extends AbstractBase
                     'barcode' => 1,
                     'status' => '',
                     'id' => $id,
-                    'itemid' => '',
+                    'item_id' => '',
                     'recallhref' => '',
                     'location' => '',
                     'location.id' => '',
@@ -208,7 +208,7 @@ class DAIA extends AbstractBase
                     'label' => '',
                     'notes' => array()
                 );
-                $result['itemid'] = $itemlist->item($c)->attributes
+                $result['item_id'] = $itemlist->item($c)->attributes
                     ->getNamedItem('id')->nodeValue;
                 if ($itemlist->item($c)->attributes->getNamedItem('href') !== null) {
                     $result['recallhref'] = $itemlist->item($c)->attributes
