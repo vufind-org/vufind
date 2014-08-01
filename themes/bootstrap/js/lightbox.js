@@ -93,15 +93,15 @@ var Lightbox = {
     if(typeof headline !== "undefined") {
       var h2 = html.match(/<h2>([^<]*)<\/h2>/);
       if(h2) {
-        header.find('.modal-title').html(h2[1]);
+        header.find('h3').html(h2[1]);
       } else {
         var pLead = html.match(/<p class="lead[^>]*>([^<]*)<\/p>/);
         if(pLead) {
-          header.find('.modal-title').html(pLead[1]);
+          header.find('h3').html(pLead[1]);
         }
       }
     } else {
-      header.find('.modal-title').html(headline);
+      header.find('h3').html(headline);
     }
     if(header.find('h3').html().length == 0) {
       header.css('border-bottom-width', '0');
