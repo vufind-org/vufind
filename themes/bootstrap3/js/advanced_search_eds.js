@@ -14,12 +14,12 @@ function addSearch(group, term, field, op)
   // Build the new search
   var inputIndex = $('#group'+group+' input').length;
   var inputID = group+'_'+$('#group'+group+' input').length;
-  var newSearch ='<div class="search" id="search'+inputID+'"><div class="col-sm-3">';
+  var newSearch ='<div class="search row" id="search'+inputID+'"><div class="col-sm-3">';
   if (typeof groupSearches[group] == "undefined") {
     groupSearches[group] = 0;
-    newSearch += '<input type="hidden" name="op' + group + '[]" value="AND"/><label for="search_lookfor' + group + '_' + groupSearches[group] + '"><span class="help-block">' + searchLabel + ':</span></label>';
+    newSearch += '<input type="hidden" name="op' + group + '[]" value="AND" class="form-control"/><label for="search_lookfor' + group + '_' + groupSearches[group] + '" class="help-block">' + searchLabel + ':</label>';
   } else {
-    newSearch += '<select id="search_op' + group + '_' + groupSearches[group] + '" name="op' + group + '[]" class="span9">';
+    newSearch += '<select id="search_op' + group + '_' + groupSearches[group] + '" name="op' + group + '[]" class="col-sm-9 form-control">';
     for(var i=0, len= booleanSearchOperators.length; i < len; i++) {
       var searchOp = booleanSearchOperators[i];
       var sel = '';
@@ -30,9 +30,9 @@ function addSearch(group, term, field, op)
     }
     newSearch += '</select>';
   }
-  newSearch += '</div><div class="col-sm-9"><input class="col-sm-7" id="search_lookfor'+inputID+'" type="text" name="lookfor'+group+'[]" value="'+term+'">'
-    + '<span class="help-inline">'+searchFieldLabel+'</span> '
-    + '<select class="col-sm-4" id="search_type'+inputID+'" name="type'+group+'[]">';
+  newSearch += '</div><div class="col-sm-9"><div class="col-sm-6"><input class="form-control"" id="search_lookfor'+inputID+'" type="text" name="lookfor'+group+'[]" value="'+term+'"></div>'
+    + '<span class="col-sm-1 help-block">'+searchFieldLabel+'</span> '
+    + '<div class="col-sm-4"><select class="form-control" id="search_type'+inputID+'" name="type'+group+'[]">';
   for (var key in searchFields) {
     newSearch += '<option value="' + key + '"';
     if (key == field) {
@@ -40,7 +40,7 @@ function addSearch(group, term, field, op)
     }
     newSearch += ">" + searchFields[key] + "</option>";
   }
-  newSearch += '</select> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="help-block delete">&times;</a></div>';
+  newSearch += '</select></div> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="col-sm-1 help-block delete">&times;</a></div>';
 
   // Insert it
   $("#group" + group + "Holder").before(newSearch);
@@ -76,8 +76,7 @@ function addGroup(firstTerm, firstField, join)
 
   var newGroup = '<div id="group'+nextGroup+'" class="group well clearfix">'
     + '<input type="hidden" name="bool'+nextGroup+'[]" value="AND"/>'
-    + '<div class="span11"><div id="group'+nextGroup+'Holder" class="span9 offset3"><i class="icon-plus-sign"></i> <a href="#" onClick="addSearch('+nextGroup+')">'+addSearchString+'</a></div></div>'
-    + '<div class="span1"><a href="#" onClick="deleteGroup('+nextGroup+')" class="close hide" title="'+deleteSearchGroupString+'">&times;</a></div></div>';
+    + '<div id="group'+nextGroup+'Holder"><i class="col-sm-offset-3 fa fa-plus-circle"></i> <a href="#" onClick="addSearch('+nextGroup+')">'+addSearchString+'</a></div>';
 
   $('#groupPlaceHolder').before(newGroup);
   addSearch(nextGroup, firstTerm, firstField);
