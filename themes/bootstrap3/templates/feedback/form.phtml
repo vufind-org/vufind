@@ -1,9 +1,9 @@
-<div id="contact_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+<div id="contact_form" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="formModalTitle" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h3 id="modalTitle" class="modal-title"><?=$this->transEsc("Send us your feedback!")?></h3>
+        <h3 id="formModalTitle" class="modal-title"><?=$this->transEsc("Send us your feedback!")?></h3>
       </div>
       <div class="modal-body">
         <form class="form-horizontal" method="post" action="<?=$this->url('feedback-email')?>">
