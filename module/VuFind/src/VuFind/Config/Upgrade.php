@@ -348,7 +348,12 @@ class Upgrade
 
         // If target file already exists, back it up:
         $outfile = $this->newDir . '/' . $filename;
-        copy($outfile, $outfile . '.bak.' . time());
+        $bakfile = $outfile . '.bak.' . time();
+        if (!copy($outfile, $bakfile)) {
+            throw new FileAccessException(
+                "Error: Could not copy {$outfile} to {$bakfile}."
+            );
+        }
 
         $writer = new ConfigWriter(
             $outfile, $this->newConfigs[$filename], $this->comments[$filename]
