@@ -532,6 +532,14 @@ class Upgrade
             );
         }
 
+        // Upgrade Google Options:
+        if (isset($newConfig['Content']['GoogleOptions'])
+            && !is_array($newConfig['Content']['GoogleOptions'])
+        ) {
+            $newConfig['Content']['GoogleOptions']
+                = array('link' => $newConfig['Content']['GoogleOptions']);
+        }
+
         // Disable unused, obsolete setting:
         unset($newConfig['Index']['local']);
 
