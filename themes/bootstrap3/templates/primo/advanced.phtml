@@ -11,10 +11,16 @@
     // Set up saved search details:
     if (isset($this->saved) && is_object($this->saved)) {
         $searchDetails = $this->saved->getParams()->getQuery();
-        $groups = $searchDetails->getQueries();
+        if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+            // Not an advanced query -- ignore it.
+            $searchDetails = $groups = false;
+        } else {
+            $groups = $searchDetails->getQueries();
+        }
+        $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
         $searchFilters = $this->saved->getParams()->getFilterList();
     } else {
-        $searchDetails = $searchFilters = $groups = false;
+        $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
     }
 ?>
 <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
@@ -33,7 +39,7 @@
       <? for ($i = 0; $i < $numGroups; $i++): ?>
         <input type="hidden" name="bool<?=$i?>[]" value="AND" />
         <div class="group well clearfix" id="group<?=$i?>">
-          <div class="col-sm-2 text-right" id="group<?=$i?>SearchHolder"><?=$this->transEsc("adv_search_label")?>:</div>
+          <div class="col-sm-2" id="group<?=$i?>SearchHolder"><label><?=$this->transEsc("adv_search_label")?>:</label></div>
           <div class="col-sm-10">
             <?
               if (isset($groups[$i])) {
@@ -49,17 +55,23 @@
             <? for ($j = 0; $j < $numRows; $j++): ?>
               <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
               <div class="row">
-                <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="col-sm-3">
-                <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
-                <? endforeach; ?>
-                </select>
-                <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="col-sm-3">
-                  <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
-                    <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                <div class="col-sm-3">
+                  <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control">
+                  <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                    <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                   <? endforeach; ?>
-                </select>
-                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="col-sm-6"/>
+                  </select>
+                </div>
+                <div class="col-sm-3">
+                  <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control">
+                    <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
+                      <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                    <? endforeach; ?>
+                  </select>
+                </div>
+                <div class="col-sm-6">
+                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control"/>
+                </div>
               </div>
             <? endfor; ?>
           </div>
@@ -74,20 +86,24 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
+    <? if ($hasDefaultsApplied): ?>
+      <input type="hidden" name="dfApplied" value="1" />
+    <? endif ?>
     <? if (!empty($searchFilters)): ?>
-      <div class="filterList">
-        <h3><?=$this->transEsc("adv_search_filters")?><br/><span>(<?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" onclick="filterAll(this, 'advSearchForm');" />)</span></h3>
-        <? foreach ($searchFilters as $field => $data): ?>
-          <div>
-            <h4><?=$this->transEsc($field)?></h4>
-            <ul>
-              <? foreach ($data as $value): ?>
-                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></li>
-              <? endforeach; ?>
-            </ul>
-          </div>
-        <? endforeach; ?>
-      </div>
+      <h4><?=$this->transEsc("adv_search_filters")?></h4>
+      <ul class="list-group">
+        <li class="list-group-item"><label class="checkbox"><?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" class="checkbox-select-all" /></label></li>
+      </ul>
+      <? foreach ($searchFilters as $field => $data): ?>
+        <div>
+          <ul class="list-group">
+            <li class="list-group-item title"><?=$this->transEsc($field)?></li>
+            <? foreach ($data as $value): ?>
+              <li class="list-group-item"><label class="checkbox"><input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></label></li>
+            <? endforeach; ?>
+          </ul>
+        </div>
+      <? endforeach; ?>
     <? endif; ?>
   </div>
 </form>
