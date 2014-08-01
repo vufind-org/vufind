@@ -85,13 +85,14 @@
     <? endif ?>
     <? if (!empty($searchFilters)): ?>
       <div class="filterList">
-        <h3><?=$this->transEsc("adv_search_filters")?><br/><span>(<?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" onclick="filterAll(this, 'advSearchForm');" />)</span></h3>
+        <h4><?=$this->transEsc("adv_search_filters")?></h4>
+        <label class="checkbox"><?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" class="checkbox-select-all" /></label>
         <? foreach ($searchFilters as $field => $data): ?>
           <div>
             <h4><?=$this->transEsc($field)?></h4>
-            <ul>
+            <ul class="unstyled">
               <? foreach ($data as $value): ?>
-                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></li>
+                <li><label class="checkbox"><input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></label></li>
               <? endforeach; ?>
             </ul>
           </div>
