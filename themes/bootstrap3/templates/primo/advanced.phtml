@@ -92,7 +92,7 @@
     <? if (!empty($searchFilters)): ?>
       <h4><?=$this->transEsc("adv_search_filters")?></h4>
       <ul class="list-group">
-        <li><label class="checkbox"><?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" class="checkbox-select-all" /></label></li>
+        <li class="list-group-item"><label class="checkbox"><?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" class="checkbox-select-all" /></label></li>
       </ul>
       <? foreach ($searchFilters as $field => $data): ?>
         <div>
