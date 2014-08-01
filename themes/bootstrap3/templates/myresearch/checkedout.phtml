@@ -32,9 +32,9 @@
         <? endif; ?>
         <div class="col-sm-2 text-center">
           <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-            <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+            <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
           <? else: ?>
-            <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+            <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
           <? endif; ?>
         </div>
         <div class="col-sm-6">

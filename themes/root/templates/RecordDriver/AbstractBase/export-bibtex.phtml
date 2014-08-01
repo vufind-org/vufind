@@ -40,6 +40,17 @@ if (!empty($journalTitle)) {
     if (!empty($number)) {
         echo "number = $number,\n";
     }
+    $start = $this->driver->tryMethod('getContainerStartPage');
+    $end = $this->driver->tryMethod('getContainerEndPage');
+    if (!empty($start)) {
+        // use page range if possible
+        if (!empty($end)) {
+            echo "pages = $start-$end,\n";
+        } else {
+            // use only start page
+            echo "pages = $start,\n";
+        }
+    }
 }
 
 $series = $this->driver->tryMethod('getSeries');

@@ -23,10 +23,6 @@ return array(
         'active' => false,
         'compiled.less'
     ),
-    'scss' => array(
-        'active' => false,
-        'compiled.scss'
-    ),
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
         'factories' => array(

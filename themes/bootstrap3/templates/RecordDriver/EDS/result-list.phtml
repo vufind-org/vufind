@@ -8,10 +8,10 @@
   <div class="col-sm-2 left">
     <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="_record_link">
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
         </a>
     <? else: ?>
-        <span class="summcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
+        <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
         <div><?=$this->driver->getPubType()?></div>
     <? endif; ?>
   </div>

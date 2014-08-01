@@ -215,6 +215,32 @@ class Writer
     }
 
     /**
+     * support method for buildContent -- format an array into lines
+     *
+     * @param string $key   Configuration key
+     * @param array  $value Configuration value
+     *
+     * @return string       Formatted line
+     */
+    protected function buildContentArrayLines($key, $value)
+    {
+        $expectedKey = 0;
+        $content = '';
+        foreach ($value as $key2 => $subValue) {
+            // We just want to use "[]" if this is a standard array with consecutive
+            // keys; however, if we have non-numeric keys or out-of-order keys, we
+            // want to retain those values as-is.
+            $subKey = (is_int($key2) && $key2 == $expectedKey)
+                ? ''
+                : (is_int($key2) ? $key2 : "'{$key2}'");    // quote string keys
+            $content .= $this->buildContentLine("{$key}[{$subKey}]", $subValue);
+            $content .= "\n";
+            $expectedKey++;
+        }
+        return $content;
+    }
+
+    /**
      * write an ini file, adapted from
      * http://php.net/manual/function.parse-ini-file.php
      *
@@ -244,12 +270,7 @@ class Writer
                     $settingComments = array();
                 }
                 if (is_array($elem2)) {
-                    for ($i = 0; $i < count($elem2); $i++) {
-                        $content .= $this->buildContentLine(
-                            $key2 . "[]", $elem2[$i]
-                        );
-                        $content .= "\n";
-                    }
+                    $content .= $this->buildContentArrayLines($key2, $elem2);
                 } else {
                     $content .= $this->buildContentLine($key2, $elem2);
                 }
@@ -259,8 +280,9 @@ class Writer
                 $content .= "\n";
             }
         }
-
-        $content .= $comments['after'];
+        if (isset($comments['after'])) {
+            $content .= $comments['after'];
+        }
         return $content;
     }
 }

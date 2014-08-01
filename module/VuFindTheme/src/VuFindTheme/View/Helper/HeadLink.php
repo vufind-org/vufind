@@ -122,34 +122,4 @@ class HeadLink extends \Zend\View\Helper\HeadLink
             );
         }
     }
-
-    /**
-     * Compile a scss file to css and add to css folder
-     *
-     * @param string $file path to scss file
-     *
-     * @return void
-     */
-    public function addScssStylesheet($file)
-    {
-        $themeParents = array_keys($this->themeInfo->getThemeInfo());
-        $currentTheme = $themeParents[0];
-        $home = APPLICATION_PATH . "/themes/$currentTheme/";
-        list($fileName, ) = explode('.', $file);
-        $outputFile = $home . 'css/scss/' . $fileName . '.css';
-        $urlHelper = $this->getView()->plugin('url');
-
-        $scss = new \scssc();
-        $paths = array();
-        foreach ($themeParents as $theme) {
-            $paths[] = APPLICATION_PATH . '/themes/' . $theme . '/scss/';
-        }
-        $scss->setImportPaths($paths);
-        $scss->setFormatter('scss_formatter_compressed');
-        $css = $scss->compile('@import "' . $file . '"');
-        file_put_contents($outputFile, $css);
-        $this->prependStylesheet(
-            $urlHelper('home') . "themes/{$currentTheme}/css/scss/{$fileName}.css"
-        );
-    }
 }
