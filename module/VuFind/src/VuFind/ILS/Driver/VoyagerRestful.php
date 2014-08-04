@@ -2139,6 +2139,7 @@ EOT;
                         'institution_id' => (string)$institution->attributes()->id,
                         'institution_name' => (string)$loan->dbName,
                         'institution_dbkey' => (string)$loan->dbKey,
+                        'borrowingLocation' => (string)$loan->dbName
                     );
                 }
             }
