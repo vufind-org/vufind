@@ -436,6 +436,9 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function updatePassword($request)
     {
+        if (($authMethod = $request->getPost()->get('auth_method')) != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
         $user = $this->getAuth()->updatePassword($request);
         $this->updateSession($user);
         return $user;
