@@ -168,6 +168,16 @@ class Manager
     }
 
     /**
+     * Get the names of all available caches.
+     *
+     * @return array
+     */
+    public function getCacheList()
+    {
+        return array_keys($this->cacheSettings);
+    }
+
+    /**
      * Check if there have been problems creating directories.
      *
      * @return bool
