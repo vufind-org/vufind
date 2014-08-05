@@ -88,11 +88,10 @@ class Manager
         // Get base cache directory.
         $cacheBase = $this->getCacheDir();
 
-        // Set up basic object cache:
-        $this->createFileCache('object', $cacheBase . 'objects');
-
-        // Set up language cache:
-        $this->createFileCache('language', $cacheBase . 'languages');
+        // Set up standard file-based caches:
+        foreach (array('cover', 'language', 'object') as $cache) {
+            $this->createFileCache($cache, $cacheBase . $cache . 's');
+        }
 
         // Set up search specs cache based on config settings:
         $searchCacheType = isset($searchConfig->Cache->type)
