@@ -1363,7 +1363,7 @@ class Voyager extends AbstractBase
             }
         }
 
-        return array(
+        $transaction = array(
             'id' => $sqlRow['BIB_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
             'duedate' => $dueDate,
@@ -1374,9 +1374,14 @@ class Voyager extends AbstractBase
             'title' => empty($sqlRow['TITLE_BRIEF'])
                 ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
             'renew' => $sqlRow['RENEWAL_COUNT'],
-            'renewLimit' => $sqlRow['RENEWAL_LIMIT'],
-            'borrowingLocation' => utf8_encode($sqlRow['BORROWING_LOCATION'])
+            'renewLimit' => $sqlRow['RENEWAL_LIMIT']
         );
+        if ($this->config['Loans']['display_borrowing_location']) {
+            $transaction['borrowingLocation']
+                = utf8_encode($sqlRow['BORROWING_LOCATION']);
+        }
+
+        return $transaction;
     }
 
     /**
