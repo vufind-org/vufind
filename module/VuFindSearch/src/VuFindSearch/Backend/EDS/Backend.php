@@ -270,7 +270,7 @@ class Backend extends AbstractBackend
         try {
             $authenticationToken = $this->getAuthenticationToken();
             // check to see if the profile is overriden
-            $overrideProfile =  $params->get('profile');
+            $overrideProfile = (null !== $params) ? $params->get('profile') : null;
             if (isset($overrideProfile)) {
                 $this->profile = $overrideProfile;
             }
@@ -288,16 +288,26 @@ class Backend extends AbstractBackend
                 $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
             );
         } catch (\EbscoEdsApiException $e) {
-            if ($e->getApiErrorCode() == 104) {
+            // if the auth or session token was invalid, try once more
+            switch ($e->getApiErrorCode()) {
+            case 104:
+            case 108:
+            case 109:
                 try {
-                    $authenticationToken = $this->getAuthenticationToken(true);
+                    // For error 104, retry auth token; for 108/9, retry sess token:
+                    if ($e->getApiErrorCode() == 104) {
+                        $authenticationToken = $this->getAuthenticationToken(true);
+                    } else {
+                        $sessionToken = $this->getSessionToken(true);
+                    }
                     $response = $this->client->retrieve(
                         $an, $dbId,  $authenticationToken, $sessionToken, $hlTerms
                     );
                 } catch(Exception $e) {
                     throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
-            } else {
+                break;
+            default:
                 throw $e;
             }
         }
