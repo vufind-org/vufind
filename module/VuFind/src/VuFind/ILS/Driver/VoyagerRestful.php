@@ -2126,7 +2126,7 @@ EOT;
                         $dueTime = false;
                     }
 
-                    $transactions[] = array(
+                    $transaction = array(
                         // This is bogus, but we need something..
                         'id' => (string)$institution->attributes()->id . '_' .
                                 (string)$loan->itemId,
@@ -2138,8 +2138,10 @@ EOT;
                         'renewable' => (string)$loan->attributes()->canRenew == 'Y',
                         'institution_id' => (string)$institution->attributes()->id,
                         'institution_name' => (string)$loan->dbName,
-                        'institution_dbkey' => (string)$loan->dbKey,
+                        'institution_dbkey' => (string)$loan->dbKey
                     );
+
+                    $transactions[] = $transaction;
                 }
             }
         }

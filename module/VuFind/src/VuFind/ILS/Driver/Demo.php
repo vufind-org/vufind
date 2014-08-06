@@ -794,7 +794,8 @@ class Demo extends AbstractBase
                         'title'   => "ILL Loan Title $i",
                         'institution_id' => 'ill_institution',
                         'institution_name' => 'ILL Library',
-                        'institution_dbkey' => 'ill_institution'
+                        'institution_dbkey' => 'ill_institution',
+                        'borrowingLocation' => 'ILL Service Desk'
                     );
                 } else {
                     $transList[] = $this->getRandomItemIdentifier() + array(
@@ -805,7 +806,8 @@ class Demo extends AbstractBase
                         'renewLimit' => $renewLimit,
                         'request' => $req,
                         'item_id' => $i,
-                        'renewable' => $renew < $renewLimit
+                        'renewable' => $renew < $renewLimit,
+                        'borrowingLocation' => $this->getFakeLoc()
                     );
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();

@@ -61,18 +61,23 @@
             <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
             <br/>
           <? endif; ?>
-          <? if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
+          <? if (!empty($ilsDetails['volume'])): ?>
             <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
             <br />
           <? endif; ?>
 
-          <? if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
+          <? if (!empty($ilsDetails['publication_year'])): ?>
             <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
             <br />
           <? endif; ?>
 
-          <? if (isset($ilsDetails['institution_name']) && !empty($ilsDetails['institution_name'])): ?>
+          <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
             <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name'])?></strong>
+            <br />
+          <? endif; ?>
+
+          <? if (!empty($ilsDetails['borrowingLocation'])): ?>
+            <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], array(), $ilsDetails['borrowingLocation'])?>
             <br />
           <? endif; ?>
 
