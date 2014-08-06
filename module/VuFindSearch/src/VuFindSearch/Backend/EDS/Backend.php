@@ -469,22 +469,18 @@ class Backend extends AbstractBackend
      */
     public function getSessionToken($isInvalid = false)
     {
-        $sessionToken = '';
-        if (!$isInvalid && !empty($this->session->sessionID)) {
-            // check to see if the user has logged in/out between the creation
-            // of this session token and now
-            $sessionGuest = $this->session->sessionGuest;
-            $currentGuest = $this->isGuest();
-
-            if ($sessionGuest == $currentGuest) {
-                return $this->session->sessionID;
-            }
+        // check to see if the user has logged in/out between the creation
+        // of this session token and now
+        if (!$isInvalid && !empty($this->session->sessionID)
+            && $this->session->sessionGuest == $this->isGuest()
+        ) {
+            return $this->session->sessionID;
         }
 
-        $sessionToken = $this->createEBSCOSession();
         // When creating a new session, also call the INFO method to pull the
         // available search criteria for this profile
-        $this->createSearchCriteria($sessionToken);
+        $sessionToken = $this->createEBSCOSession();
+        $this->session->info = $this->getInfo($sessionToken);
 
         return $sessionToken;
     }
@@ -496,13 +492,13 @@ class Backend extends AbstractBackend
      */
     protected function createEBSCOSession()
     {
-        $guest = $this->isGuest();
         // if there is no profile passed, restore the default from the config file
-        $profile = (null == $this->profile) ? $this->defaultProfile : $this->profile;
-        $session = $this->createSession($guest, $profile);
-        $this->session->sessionID = $session;
-        $this->session->profileID = $profile;
-        $this->session->sessionGuest = $guest;
+        $this->session->profileID = (null == $this->profile)
+            ? $this->defaultProfile : $this->profile;
+        $this->session->sessionGuest = $this->isGuest();
+        $this->session->sessionID = $this->createSession(
+            $this->session->sessionGuest, $this->session->profileID
+        );
         return $this->session->sessionID;
     }
 
@@ -604,22 +600,6 @@ class Backend extends AbstractBackend
         return $response;
 
     }
-
-    /**
-     * Obtain available search criteria from the info method and store it in the
-     * session container
-     *
-     * @param string $sessionToken Session token to use to call the INFO method.
-     *
-     * @return array
-    */
-    protected function createSearchCriteria($sessionToken)
-    {
-        $info = $this->getInfo($sessionToken);
-        $this->session->info = $info;
-        return $this->session->info;
-    }
-
 
     /**
      * Set the VuFind Authentication Manager
