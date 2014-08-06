@@ -269,7 +269,7 @@ class Backend extends AbstractBackend
     {
         try {
             $authenticationToken = $this->getAuthenticationToken();
-            //check to see if the profile is overriden
+            // check to see if the profile is overriden
             $overrideProfile =  $params->get('profile');
             if (isset($overrideProfile)) {
                 $this->profile = $overrideProfile;
@@ -281,29 +281,21 @@ class Backend extends AbstractBackend
                     'Retrieval id is not in the correct format.'
                 );
             }
-            $dbId = $parts[0];
-            $an  = $parts[1];
-            $highlightTerms = null;
-            if (null != $params) {
-                $highlightTerms = $params->get('highlightterms');
-            }
+            list($dbId, $an) = $parts;
+            $hlTerms = (null != $params)
+                ? $params->get('highlightterms') : null;
             $response = $this->client->retrieve(
-                $an, $dbId, $authenticationToken, $sessionToken, $highlightTerms
+                $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
             );
         } catch (\EbscoEdsApiException $e) {
             if ($e->getApiErrorCode() == 104) {
                 try {
                     $authenticationToken = $this->getAuthenticationToken(true);
                     $response = $this->client->retrieve(
-                        $an, $dbId,  $authenticationToken,
-                        $sessionToken, $highlightTerms
+                        $an, $dbId,  $authenticationToken, $sessionToken, $hlTerms
                     );
                 } catch(Exception $e) {
-                    throw new BackendException(
-                        $e->getMessage(),
-                        $e->getCode(),
-                        $e
-                    );
+                    throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
             } else {
                 throw $e;
