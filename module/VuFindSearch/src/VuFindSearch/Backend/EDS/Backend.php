@@ -113,7 +113,7 @@ class Backend extends AbstractBackend
      *
      * @var string
      */
-    protected $orgid = null;
+    protected $orgId = null;
 
     /**
      * Vufind Authentication manager
