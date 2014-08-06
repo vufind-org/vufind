@@ -48,6 +48,38 @@ use InvalidArgumentException;
 class BackendTest extends \VuFindTest\Unit\TestCase
 {
     /**
+     * Test retrieving a record.
+     *
+     * @return void
+     */
+    public function testRetrieve()
+    {
+        $conn = $this->getConnectorMock(array('retrieve'));
+        $conn->expects($this->once())
+            ->method('retrieve')
+            ->will($this->returnValue($this->loadResponse('retrieve')));
+
+        $back = $this->getBackend(
+            $conn, $this->getRCFactory(), null, null, array(),
+            array('getAuthenticationToken', 'getSessionToken')
+        );
+        $back->expects($this->any())
+            ->method('getAuthenticationToken')
+            ->will($this->returnValue('auth1234'));
+        $back->expects($this->any())
+            ->method('getSessionToken')
+            ->will($this->returnValue('sess1234'));
+        $back->setIdentifier('test');
+
+        $coll = $back->retrieve('bwh,201407212251PR.NEWS.USPR.MM73898');
+        $this->assertCount(1, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('bwh,201407212251PR.NEWS.USPR.MM73898', $rec->getUniqueID());
+    }
+
+    /**
      * Test setting a query builder.
      *
      * @return void
@@ -117,8 +149,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * @param \Zend\Cache\Storage\Adapter\AbstractAdapter             $cache     Object cache adapter
      * @param \Zend\Session\Container                                 $container Session container
      * @param array                                                   $settings  Additional settings
+     * @param array                                                   $mock      Methods to mock (or null for a real object)
      */
-    protected function getBackend($connector, $factory = null, $cache = null, $container = null, $settings = array())
+    protected function getBackend($connector, $factory = null, $cache = null, $container = null, $settings = array(), $mock = null)
     {
         if (null === $factory) {
             $factory = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
@@ -130,6 +163,27 @@ class BackendTest extends \VuFindTest\Unit\TestCase
             // Using a mock here causes an error for some reason -- investigate later.
             $container = new \Zend\Session\Container('EBSCO');
         }
-        return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
+        if (null === $mock) {
+            return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
+        } else {
+            $params = array($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
+            return $this->getMock('VuFindSearch\Backend\EDS\Backend', $mock, $params);
+        }
     }
+
+    /**
+     * Build a real record collection factory
+     *
+     * @return \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory
+     */
+    protected function getRCFactory()
+    {
+        $callback = function ($data) {
+            $driver = new \VuFind\RecordDriver\EDS();
+            $driver->setRawData($data);
+            return $driver;
+        };
+        return new \VuFindSearch\Backend\EDS\Response\RecordCollectionFactory($callback);
+    }
+
 }
