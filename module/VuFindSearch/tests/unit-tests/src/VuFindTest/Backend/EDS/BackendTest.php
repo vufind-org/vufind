@@ -80,6 +80,43 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test performing a search.
+     *
+     * @return void
+     */
+    public function testSearch()
+    {
+        $conn = $this->getConnectorMock(array('search'));
+        $conn->expects($this->once())
+            ->method('search')
+            ->will($this->returnValue($this->loadResponse('search')));
+
+        $back = $this->getBackend(
+            $conn, $this->getRCFactory(), null, null, array(),
+            array('getAuthenticationToken', 'getSessionToken')
+        );
+        $back->expects($this->any())
+            ->method('getAuthenticationToken')
+            ->will($this->returnValue('auth1234'));
+        $back->expects($this->any())
+            ->method('getSessionToken')
+            ->will($this->returnValue('sess1234'));
+        $back->setIdentifier('test');
+
+        $coll = $back->search(new Query('foobar'), 0, 3);
+        $this->assertCount(3, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('bwh,201407212251PR.NEWS.USPR.MM73898', $rec->getUniqueID());
+        $recs = $coll->getRecords();
+        $this->assertEquals('test', $recs[1]->getSourceIdentifier());
+        $this->assertEquals('bwh,201407220007PR.NEWS.USPR.MM73937', $recs[1]->getUniqueID());
+        $this->assertEquals('test', $recs[2]->getSourceIdentifier());
+        $this->assertEquals('bwh,201305180751PR.NEWS.USPR.HS16615', $recs[2]->getUniqueID());
+    }
+
+    /**
      * Test setting a query builder.
      *
      * @return void
