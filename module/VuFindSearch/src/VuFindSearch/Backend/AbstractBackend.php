@@ -32,7 +32,7 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use VuFindSearch\Backend\BackendInterface;
 
-use Zend\Log\LoggerInterface;
+use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
 
 /**
  * Abstract backend.
@@ -43,7 +43,7 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-abstract class AbstractBackend implements BackendInterface
+abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
 {
     /**
      * Record collection factory.
