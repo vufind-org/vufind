@@ -599,7 +599,7 @@ class Backend extends AbstractBackend
                 try {
                     $authenticationToken = $this->getAuthenticationToken(true);
                     $response = $this->client
-                        ->info($searchModel, $authenticationToken, $sessionToken);
+                        ->info($authenticationToken, $sessionToken);
                 } catch(Exception $e) {
                     throw new BackendException(
                         $e->getMessage(),
