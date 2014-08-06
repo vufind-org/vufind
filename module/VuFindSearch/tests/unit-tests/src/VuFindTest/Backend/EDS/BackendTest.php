@@ -114,13 +114,22 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      *
      * @param \VuFindSearch\Backend\EDS\Zend2                         $connector Connector
      * @param \VuFindSearch\Response\RecordCollectionFactoryInterface $factory   Record collection factory
+     * @param \Zend\Cache\Storage\Adapter\AbstractAdapter             $cache     Object cache adapter
+     * @param \Zend\Session\Container                                 $container Session container
      * @param array                                                   $settings  Additional settings
      */
-    protected function getBackend($connector, $factory = null, $settings = array())
+    protected function getBackend($connector, $factory = null, $cache = null, $container = null, $settings = array())
     {
         if (null === $factory) {
             $factory = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         }
-        return new Backend($connector, $factory, $settings);
+        if (null === $cache) {
+            $cache = $this->getMock('Zend\Cache\Storage\Adapter\Filesystem');
+        }
+        if (null === $container) {
+            // Using a mock here causes an error for some reason -- investigate later.
+            $container = new \Zend\Session\Container('EBSCO');
+        }
+        return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
     }
 }

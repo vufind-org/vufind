@@ -44,7 +44,9 @@ use Zend\Log\LoggerInterface;
 use VuFindSearch\Backend\EDS\Response\RecordCollection;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Zend\Config\Config;
+use Zend\Session\Container as SessionContainer;
 
 /**
  *  EDS API Backend
@@ -55,7 +57,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface
+class Backend implements BackendInterface, \Zend\Log\LoggerAwareInterface
 {
     /**
      * Client user to make the actually requests to the EdsApi
@@ -69,7 +71,7 @@ class Backend implements BackendInterface
      *
      * @var identifier
      */
-    protected $identifier;
+    protected $identifier = null;
 
     /**
      * Query builder
@@ -107,11 +109,19 @@ class Backend implements BackendInterface
     protected $password = null;
 
     /**
-     * Profile for EBSCO EDS API account
+     * Profile for EBSCO EDS API account (may be overridden)
      *
      * @var string
      */
     protected $profile = null;
+
+    /**
+     * Default profile for EBSCO EDS API account (taken from initial config and
+     * never changed)
+     *
+     * @var string
+     */
+    protected $defaultProfile = null;
 
     /**
      * Whether or not to use IP Authentication for communication with the EDS API
@@ -128,13 +138,6 @@ class Backend implements BackendInterface
     protected $orgid = null;
 
     /**
-     * Superior service manager.
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
-    /**
      * Vufind Authentication manager
      *
      * @var \VuFind\Auth\Manager
@@ -142,23 +145,57 @@ class Backend implements BackendInterface
     protected $authManager = null;
 
     /**
+     * Object cache (for storing authentication tokens)
+     *
+     * @var CacheAdapter
+     */
+    protected $cache;
+
+    /**
+     * Session container
+     *
+     * @var SessionContainer
+     */
+    protected $session;
+
+    /**
      * Constructor.
      *
      * @param ApiClient                        $client  EdsApi client to use
      * @param RecordCollectionFactoryInterface $factory Record collection factory
-     * @param array                            $account Account details
+     * @param CacheAdapter                     $cache   Object cache
+     * @param SessionContainer                 $session Session container
+     * @param Config                           $config  Object representing EDS.ini
      */
     public function __construct(ApiClient $client,
-        RecordCollectionFactoryInterface $factory, array $account
+        RecordCollectionFactoryInterface $factory, CacheAdapter $cache,
+        SessionContainer $session, Config $config = null
     ) {
-        $this->setRecordCollectionFactory($factory);
+        // Save dependencies:
         $this->client = $client;
-        $this->identifier   = null;
-        $this->userName = isset($account['username']) ? $account['username'] : null;
-        $this->password = isset($account['password']) ? $account['password'] : null;
-        $this->ipAuth = isset($account['ipauth']) ? $account['ipauth'] : null;
-        $this->profile = isset($account['profile']) ? $account['profile'] : null;
-        $this->orgId = isset($account['orgid']) ? $account['orgid'] : null;
+        $this->setRecordCollectionFactory($factory);
+        $this->cache = $cache;
+        $this->session = $session;
+
+        // Extract key values from configuration:
+        if (isset($config->EBSCO_Account->user_name)) {
+            $this->userName = $config->EBSCO_Account->user_name;
+        }
+        if (isset($config->EBSCO_Account->password)) {
+            $this->password = $config->EBSCO_Account->password;
+        }
+        if (isset($config->EBSCO_Account->ip_auth)) {
+            $this->ipAuth = $config->EBSCO_Account->ip_auth;
+        }
+        if (isset($config->EBSCO_Account->profile)) {
+            $this->profile = $config->EBSCO_Account->profile;
+        }
+        if (isset($config->EBSCO_Account->organization_id)) {
+            $this->orgId = $config->EBSCO_Account->organization_id;
+        }
+
+        // Save default profile value, since profile property may be overriden:
+        $this->defaultProfile = $this->profile;
     }
 
     /**
@@ -181,28 +218,6 @@ class Backend implements BackendInterface
     public function getIdentifier()
     {
         return $this->identifier;
-    }
-
-    /**
-     * Sets the superior service locator
-     *
-     * @param ServiceLocatorInterface $serviceLocator Superior service locator
-     *
-     * @return void
-     */
-    public function setServiceLocator($serviceLocator)
-    {
-        $this->serviceLocator =  $serviceLocator;
-    }
-
-    /**
-     * gets the superior service locator
-     *
-     * @return ServiceLocatorInterface Superior service locator
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
      /**
@@ -301,7 +316,6 @@ class Backend implements BackendInterface
         $this->injectSourceIdentifier($collection);
         return $collection;
     }
-
 
     /**
      * Retrieve a single document.
@@ -508,12 +522,10 @@ class Backend implements BackendInterface
         if (!empty($this->ipAuth) && true == $this->ipAuth) {
             return $token;
         }
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
-            ->getCache('object');
         if ($isInvalid) {
-            $cache->setItem('edsAuthenticationToken', null);
+            $this->cache->setItem('edsAuthenticationToken', null);
         }
-        $authTokenData = $cache->getItem('edsAuthenticationToken');
+        $authTokenData = $this->cache->getItem('edsAuthenticationToken');
         if (isset($authTokenData)) {
             $currentToken =  isset($authTokenData['token'])
                 ? $authTokenData['token'] : '';
@@ -544,11 +556,10 @@ class Backend implements BackendInterface
             $token = $results['AuthToken'];
             $timeout = $results['AuthTimeout'] + time();
             $authTokenData = array('token' => $token, 'expiration' => $timeout);
-            $cache->setItem('edsAuthenticationToken', $authTokenData);
+            $this->cache->setItem('edsAuthenticationToken', $authTokenData);
         }
         return $token;
     }
-
 
     /**
      * Print a message if debug is enabled.
@@ -559,13 +570,8 @@ class Backend implements BackendInterface
      */
     protected function debugPrint($msg)
     {
-        if ($this->logger) {
-            $this->logger->debug("$msg\n");
-        } else {
-            parent::debugPrint($msg);
-        }
+        $this->log('debug', "$msg\n");
     }
-
 
     /**
      * Obtain the session token from the Session container. If it doesn't exist,
@@ -579,15 +585,14 @@ class Backend implements BackendInterface
     public function getSessionToken($isInvalid = false)
     {
         $sessionToken = '';
-        $container = new \Zend\Session\Container('EBSCO');
-        if (!$isInvalid && !empty($container->sessionID)) {
+        if (!$isInvalid && !empty($this->session->sessionID)) {
             // check to see if the user has logged in/out between the creation
             // of this session token and now
-            $sessionGuest = $container->sessionGuest;
+            $sessionGuest = $this->session->sessionGuest;
             $currentGuest = $this->isGuest();
 
             if ($sessionGuest == $currentGuest) {
-                return $container->sessionID;
+                return $this->session->sessionID;
             }
         }
 
@@ -610,22 +615,17 @@ class Backend implements BackendInterface
         // using IP Authentication.
         // If IP Authentication is used, then don't treat them as a guest.
         $guest = ($this->isAuthenticationIP()) ? 'n' : $this->isGuest();
-        $container = new \Zend\Session\Container('EBSCO');
 
-        // if there is no profile passed, use the one set in the configuration file
+        // if there is no profile passed, restore the default from the config file
         $profile = $this->profile;
         if (null == $profile) {
-            $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
-            if (isset($config->EBSCO_Account->profile)) {
-                $profile = $config->EBSCO_Account->profile;
-            }
+            $profile = $this->defaultProfile;
         }
         $session = $this->createSession($guest, $profile);
-        $container->sessionID = $session;
-        $container->profileID = $profile;
-        $container->sessionGuest = $guest;
-        return $container->sessionID;
-
+        $this->session->sessionID = $session;
+        $this->session->profileID = $profile;
+        $this->session->sessionGuest = $guest;
+        return $this->session->sessionID;
     }
 
     /**
@@ -649,9 +649,7 @@ class Backend implements BackendInterface
      */
     protected function isAuthenticationIP()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
-        return (isset($config->EBSCO_Account->ip_auth)
-            && 'true' ==  $config->EBSCO_Account->ip_auth);
+        return 'true' == $this->ipAuth;
     }
 
     /**
@@ -743,10 +741,9 @@ class Backend implements BackendInterface
     */
     protected function createSearchCriteria($sessionToken)
     {
-        $container = new \Zend\Session\Container('EBSCO');
         $info = $this->getInfo($sessionToken);
-        $container->info = $info;
-        return $container->info;
+        $this->session->info = $info;
+        return $this->session->info;
     }
 
 
