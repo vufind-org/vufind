@@ -197,21 +197,21 @@ class Backend extends AbstractBackend
         );
 
         // check to see if there is a parameter to only process this call as a setup
-        if (true == $params->get('setuponly')) {
+        if (null !== $params && true == $params->get('setuponly')) {
             return false;
         }
 
         // create query parameters from VuFind data
         $queryString = !empty($query) ? $query->getAllTerms() : '';
-        $paramsString = implode('&', $params->request());
+        $paramsStr = implode('&', null !== $params ? $params->request() : array());
         $this->debugPrint(
             "Query: $queryString, Limit: $limit, Offset: $offset, "
-            . "Params: $paramsString"
+            . "Params: $paramsStr"
         );
 
         $baseParams = $this->getQueryBuilder()->build($query);
-        $paramsString = implode('&', $baseParams->request());
-        $this->debugPrint("BaseParams: $paramsString ");
+        $paramsStr = implode('&', $baseParams->request());
+        $this->debugPrint("BaseParams: $paramsStr ");
         if (null !== $params) {
             $baseParams->mergeWith($params);
         }
