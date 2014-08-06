@@ -404,7 +404,7 @@ class Backend extends AbstractBackend
     protected function getAuthenticationToken($isInvalid = false)
     {
         $token = null;
-        if (!empty($this->ipAuth) && true == $this->ipAuth) {
+        if ($this->ipAuth) {
             return $token;
         }
         if ($isInvalid) {
@@ -496,16 +496,9 @@ class Backend extends AbstractBackend
      */
     protected function createEBSCOSession()
     {
-        // If the user is not logged in, the treat them as a guest. Unless they are
-        // using IP Authentication.
-        // If IP Authentication is used, then don't treat them as a guest.
-        $guest = ($this->isAuthenticationIP()) ? 'n' : $this->isGuest();
-
+        $guest = $this->isGuest();
         // if there is no profile passed, restore the default from the config file
-        $profile = $this->profile;
-        if (null == $profile) {
-            $profile = $this->defaultProfile;
-        }
+        $profile = (null == $this->profile) ? $this->defaultProfile : $this->profile;
         $session = $this->createSession($guest, $profile);
         $this->session->sessionID = $session;
         $this->session->profileID = $profile;
@@ -521,20 +514,16 @@ class Backend extends AbstractBackend
      */
     protected function isGuest()
     {
+        // If the user is not logged in, then treat them as a guest. Unless they are
+        // using IP Authentication.
+        // If IP Authentication is used, then don't treat them as a guest.
+        if ($this->ipAuth) {
+            return 'n';
+        }
         if (isset($this->authManager)) {
             return $this->authManager->isLoggedIn() ? 'n' : 'y';
         }
         return 'y';
-    }
-
-     /**
-     * Is IP Authentication being used?
-     *
-     * @return bool
-     */
-    protected function isAuthenticationIP()
-    {
-        return 'true' == $this->ipAuth;
     }
 
     /**
