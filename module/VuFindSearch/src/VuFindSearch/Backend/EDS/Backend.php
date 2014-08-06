@@ -34,10 +34,9 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Response\RecordCollectionInterface;
-use VuFindSearch\Response\RecordCollectionFactoryInterface as
-    RecordCollectionFactoryInterface;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use VuFindSearch\Backend\BackendInterface as BackendInterface;
+use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 
 use Zend\Log\LoggerInterface;
@@ -57,7 +56,7 @@ use Zend\Session\Container as SessionContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface, \Zend\Log\LoggerAwareInterface
+class Backend extends AbstractBackend
 {
     /**
      * Client user to make the actually requests to the EdsApi
@@ -67,32 +66,11 @@ class Backend implements BackendInterface, \Zend\Log\LoggerAwareInterface
     protected $client;
 
     /**
-     * Backend identifier
-     *
-     * @var identifier
-     */
-    protected $identifier = null;
-
-    /**
      * Query builder
      *
      * @var QueryBuilder
      */
     protected $queryBuilder;
-
-    /**
-     * Record collection factory
-     *
-     * @var RecordCollectionFactory
-     */
-    protected $collectionFactory;
-
-    /**
-     * Logger, if any.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     /**
      * User name for EBSCO EDS API account if using UID Authentication
@@ -196,28 +174,6 @@ class Backend implements BackendInterface, \Zend\Log\LoggerAwareInterface
 
         // Save default profile value, since profile property may be overriden:
         $this->defaultProfile = $this->profile;
-    }
-
-    /**
-     * Set the backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setIdentifier($identifier)
-    {
-        $this->identifier = $identifier;
-    }
-
-    /**
-     * Return backend identifier.
-     *
-     * @return string
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
     }
 
      /**
@@ -398,19 +354,6 @@ class Backend implements BackendInterface, \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * Set the record collection factory.
-     *
-     * @param RecordCollectionFactoryInterface $factory Factory
-     *
-     * @return void
-     */
-    public function setRecordCollectionFactory(
-        RecordCollectionFactoryInterface $factory
-    ) {
-        $this->collectionFactory = $factory;
-    }
-
-    /**
      * Return the record collection factory.
      *
      * Lazy loads a generic collection factory.
@@ -453,38 +396,6 @@ class Backend implements BackendInterface, \Zend\Log\LoggerAwareInterface
     /// Internal API
 
     /**
-     * Inject source identifier in record collection and all contained records.
-     *
-     * @param ResponseInterface $response Response
-     *
-     * @return void
-     */
-    protected function injectSourceIdentifier(RecordCollectionInterface $response)
-    {
-        $response->setSourceIdentifier($this->identifier);
-        foreach ($response as $record) {
-            $record->setSourceIdentifier($this->identifier);
-        }
-        return $response;
-    }
-
-    /**
-     * Send a message to the logger.
-     *
-     * @param string $level   Log level
-     * @param string $message Log message
-     * @param array  $context Log context
-     *
-     * @return void
-     */
-    protected function log($level, $message, array $context = array())
-    {
-        if ($this->logger) {
-            $this->logger->$level($message, $context);
-        }
-    }
-
-    /**
      * Create record collection.
      *
      * @param array $records Records to process
@@ -494,18 +405,6 @@ class Backend implements BackendInterface, \Zend\Log\LoggerAwareInterface
     protected function createRecordCollection($records)
     {
         return $this->getRecordCollectionFactory()->factory($records);
-    }
-
-    /**
-     * Set the Logger.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**
