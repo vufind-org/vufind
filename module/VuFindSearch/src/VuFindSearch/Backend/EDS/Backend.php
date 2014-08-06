@@ -189,19 +189,19 @@ class Backend extends AbstractBackend
     public function search(AbstractQuery $query, $offset, $limit,
         ParamBag $params = null
     ) {
-        //process EDS API communication tokens.
+        // process EDS API communication tokens.
         $authenticationToken = $this->getAuthenticationToken();
         $sessionToken = $this->getSessionToken();
         $this->debugPrint(
             "Authentication Token: $authenticationToken, SessionToken: $sessionToken"
         );
 
-        //check to see if there is a parameter to only process this call as a setup
-        if (null != $params->get('setuponly') && true == $params->get('setuponly')) {
+        // check to see if there is a parameter to only process this call as a setup
+        if (true == $params->get('setuponly')) {
             return false;
         }
 
-        //create query parameters from VuFind data
+        // create query parameters from VuFind data
         $queryString = !empty($query) ? $query->getAllTerms() : '';
         $paramsString = implode('&', $params->request());
         $this->debugPrint(
@@ -226,47 +226,31 @@ class Backend extends AbstractBackend
             $response = $this->client
                 ->search($searchModel, $authenticationToken, $sessionToken);
         } catch (\EbscoEdsApiException $e) {
-            // if the auth token was invalid, try once more
-            if ($e->getApiErrorCode() == 104) {
+            // if the auth or session token was invalid, try once more
+            switch ($e->getApiErrorCode()) {
+            case 104:
+            case 108:
+            case 109:
                 try {
-                    $authenticationToken = $this->getAuthenticationToken(true);
+                    // For error 104, retry auth token; for 108/9, retry sess token:
+                    if ($e->getApiErrorCode() == 104) {
+                        $authenticationToken = $this->getAuthenticationToken(true);
+                    } else {
+                        $sessionToken = $this->getSessionToken(true);
+                    }
                     $response = $this->client
                         ->search($searchModel, $authenticationToken, $sessionToken);
                 } catch(Exception $e) {
-                    throw new BackendException(
-                        $e->getMessage(),
-                        $e->getCode(),
-                        $e
-                    );
-
+                    throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
-            } else if (108 == $e->getApiErrorCode()
-                || 109 == $e->getApiErrorCode()
-            ) {
-                try {
-                    $sessionToken = $this->getSessionToken(true);
-                    $response = $this->client
-                        ->search($searchModel, $authenticationToken, $sessionToken);
-                } catch(Exception $e) {
-                    throw new BackendException(
-                        $e->getMessage(),
-                        $e->getCode(),
-                        $e
-                    );
-
-                }
-            } else {
+                break;
+            default:
                 $response = array();
+                break;
             }
-
         } catch(Exception $e) {
             $this->debugPrint("Exception found: " . $e->getMessage());
-
-            throw new BackendException(
-                $e->getMessage(),
-                $e->getCode(),
-                $e
-            );
+            throw new BackendException($e->getMessage(), $e->getCode(), $e);
         }
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
