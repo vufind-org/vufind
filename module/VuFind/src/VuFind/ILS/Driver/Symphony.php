@@ -490,19 +490,19 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
 
         foreach ($callInfos as $callInfo) {
             $libraryID = $callInfo->libraryID;
-            $library = $this->translatePolicyID('LIBR', $libraryID);
 
             if ($this->libraryIsFilteredOut($libraryID)) {
                 continue;
             }
 
-            $copyNumber = 0; // ItemInfo does not include copy numbers,
-                             // so we generate them under the assumption
-                             // that items are being listed in order.
-
             if (!isset($callInfo->ItemInfo)) {
                 continue; // no items!
             }
+
+            $library = $this->translatePolicyID('LIBR', $libraryID);
+            $copyNumber = 0; // ItemInfo does not include copy numbers,
+                             // so we generate them under the assumption
+                             // that items are being listed in order.
 
             $itemInfos = is_array($callInfo->ItemInfo)
                 ? $callInfo->ItemInfo
