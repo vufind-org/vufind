@@ -90,10 +90,11 @@ class Connector
      * @param string     $apiId  Primo API ID
      * @param string     $inst   Institution code
      * @param HttpClient $client HTTP client
+     * @param int        $port   API connection port
      */
-    public function __construct($apiId, $inst, $client)
+    public function __construct($apiId, $inst, $client, $port = 1701)
     {
-        $this->host = "http://$apiId.hosted.exlibrisgroup.com:1701/"
+        $this->host = "http://$apiId.hosted.exlibrisgroup.com:{$port}/"
             . "PrimoWebServices/xservice/search/brief?";
         $this->inst = $inst;
         $this->client = $client;
