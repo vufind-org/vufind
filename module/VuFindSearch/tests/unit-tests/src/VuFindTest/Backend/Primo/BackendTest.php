@@ -128,6 +128,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $conn = $this->getConnectorMock();
         $back = new Backend($conn, $fact);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());
+        $this->assertEquals($conn, $back->getConnector());
     }
 
     /// Internal API
