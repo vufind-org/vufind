@@ -142,6 +142,9 @@ class Symphony extends AbstractBase
             'exclude' => array(),
         );
 
+        $this->config['MarcHoldings'] += array(
+        );
+
         $this->config['999Holdings'] += array(
             'entry_number' => 999,
             'mode' => 'off', // also off, failover
@@ -485,6 +488,18 @@ class Symphony extends AbstractBase
             'includeBoundTogether' => 'true',
             'includeOrderInfo' => 'true',
         );
+
+        // If the driver is configured to populate holdings_text_fields
+        // with MFHD, also request MARC holdings information from SymWS.
+        if (count(array_filter($this->config['MarcHoldings'])) > 0) {
+            $params['includeMarcHoldings'] = 'true';
+            // With neither marcEntryFilter nor marcEntryID, or with
+            // marcEntryFilter NONE, SymWS won't return MarcHoldingsInfo,
+            // and there doesn't seem to be another option for marcEntryFilter
+            // that returns just MarcHoldingsInfo without BibliographicInfo.
+            // So we filter BibliographicInfo for an unlikely entry.
+            $params['marcEntryID'] = '999';
+        }
 
         // If only one library is being exclusively included,
         // filtering can be done within Web Services.
@@ -830,6 +845,49 @@ class Symphony extends AbstractBase
     }
 
     /**
+     * Parse MarcHoldingInfo into VuFind items.
+     *
+     * @param  object  $marcHoldingsInfos  MarcHoldingInfo, from TitleInfo
+     * @param  integer $titleID            The catalog key of the title record
+     * @return array   an array (possibly empty) of VuFind items
+     */
+    protected function parseMarcHoldingsInfo($marcHoldingsInfos, $titleID) {
+        $items = array();
+        $marcHoldingsInfos = is_array($marcHoldingsInfos)
+            ? $marcHoldingsInfos
+            : array($marcHoldingsInfos);
+
+        foreach ($marcHoldingsInfos as $marcHoldingsInfo) {
+            $libraryID = $marcHoldingsInfo->holdingLibraryID;
+            if ($this->libraryIsFilteredOut($libraryID)) {
+                continue;
+            }
+
+            $marcEntryInfos = is_array($marcHoldingsInfo->MarcEntryInfo)
+                ? $marcHoldingsInfo->MarcEntryInfo
+                : array($marcHoldingsInfo->MarcEntryInfo);
+            $item = array();
+
+            foreach ($marcEntryInfos as $marcEntryInfo) {
+            	foreach ($this->config['MarcHoldings'] as $textfield => $spec) {
+                    if (in_array($marcEntryInfo->entryID, $spec)) {
+                        $item[$textfield][] = $marcEntryInfo->text;
+                    }
+                }
+            }
+
+            if (!empty($item)) {
+                $items[] = $item + array(
+                    'id' => $titleID,
+                    'location' => $this->translatePolicyID('LIBR', $libraryID),
+                );
+            }
+        }
+
+        return $items;
+    }
+
+    /**
      * Get Live Statuses
      *
      * Protected support method for retrieving a list of item statuses from symws.
@@ -895,10 +953,18 @@ class Symphony extends AbstractBase
                     $this->parseTitleOrderInfo($titleInfo->TitleOrderInfo, $ckey)
                 );
             }
+
+            /* MARC holdings records are associated with title records rather
+             * than item records, so we make pseudo-items for VuFind. */
+            if (isset($titleInfo->MarcHoldingsInfo)) {
+                $items[$ckey] = array_merge(
+                    $items[$ckey],
+                    $this->parseMarcHoldingsInfo($titleInfo->MarcHoldingsInfo, $ckey)
+                );
+            }
         }
         return $items;
     }
-
 
     /**
      * Translate a Symphony policy ID into a policy description
