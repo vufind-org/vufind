@@ -409,8 +409,8 @@ class Connector
         //   except those with namespaces
         $items = array();
 
-        $docset = $sxe->xpath('//sear:DOC');
-        if (empty($docset)) {
+        $docset = isset($namespaces['sear']) ? $sxe->xpath('//sear:DOC') : array();
+        if (empty($docset) && isset($sxe->JAGROOT->RESULT->DOCSET->DOC)) {
             $docset = $sxe->JAGROOT->RESULT->DOCSET->DOC;
         }
 
@@ -494,17 +494,15 @@ class Connector
             //    (string)$prefix->PrimoNMBib->record->display->lds50;
 
             // Get the URL, which has a separate namespace
-            $sear = $doc->children($namespaces['sear']);
-
-            $att = 'GetIt2';
-            $item['url'] = !empty($sear->LINKS->openurl) ?
-                           (string)$sear->LINKS->openurl :
-                           (string)$sear->GETIT->attributes()->$att;
+            if (isset($namespaces['sear'])) {
+                $sear = $doc->children($namespaces['sear']);
+                $item['url'] = !empty($sear->LINKS->openurl)
+                    ? (string)$sear->LINKS->openurl
+                    : (string)$sear->GETIT->attributes()->GetIt2;
+            }
 
             $item['fullrecord'] = $prefix->PrimoNMBib->record->asXml();
             $items[] = $item;
-
-            //var_dump($sear->GETIT->attributes()->$att);
         }
 
         // Set up variables with needed attribute names
@@ -520,7 +518,8 @@ class Connector
         //   because child elements have a namespace prefix
         $facets = array();
 
-        $facetSet = $sxe->xpath('//sear:FACET');
+        $facetSet = isset($namespaces['sear'])
+            ? $sxe->xpath('//sear:FACET') : array();
         if (empty($facetSet)) {
             if (!empty($sxe->JAGROOT->RESULT->FACETLIST)) {
                 $facetSet = $sxe->JAGROOT->RESULT->FACETLIST
@@ -543,11 +542,11 @@ class Connector
             }
         }
 
-        $dym_att = 'QUERY';
         $didYouMean = array();
-
-        foreach ($sxe->xpath('//sear:QUERYTRANSFORMS') as $suggestion) {
-            $didYouMean[] = (string)$suggestion->attributes()->$dym_att;
+        $suggestions = isset($namespaces['sear'])
+            ? $sxe->xpath('//sear:QUERYTRANSFORMS') : array();
+        foreach ($suggestions as $suggestion) {
+            $didYouMean[] = (string)$suggestion->attributes()->QUERY;
         }
 
         return array(
