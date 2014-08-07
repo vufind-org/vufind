@@ -114,6 +114,18 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals('bwh,201407220007PR.NEWS.USPR.MM73937', $recs[1]->getUniqueID());
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('bwh,201305180751PR.NEWS.USPR.HS16615', $recs[2]->getUniqueID());
+        $this->assertEquals(65924, $coll->getTotal());
+        $rawFacets = $coll->getRawFacets();
+        $this->assertEquals(7, count($rawFacets));
+        $this->assertEquals('SourceType', $rawFacets[0]['Id']);
+        $this->assertEquals('Source Type', $rawFacets[0]['Label']);
+        $this->assertEquals(8, count($rawFacets[0]['AvailableFacetValues']));
+        $expected = array('Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)');
+        $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
+        $facets = $coll->getFacets();
+        $this->assertEquals(count($facets), count($rawFacets));
+        $this->assertEquals(8, count($facets['SourceType']['counts']));
+        $this->assertEquals(0, $coll->getOffset());
     }
 
     /**
