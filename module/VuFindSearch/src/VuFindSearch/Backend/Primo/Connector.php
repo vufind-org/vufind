@@ -500,6 +500,8 @@ class Connector
             $item['url'] = !empty($sear->LINKS->openurl) ?
                            (string)$sear->LINKS->openurl :
                            (string)$sear->GETIT->attributes()->$att;
+
+            $item['fullrecord'] = $prefix->PrimoNMBib->record->asXml();
             $items[] = $item;
 
             //var_dump($sear->GETIT->attributes()->$att);
