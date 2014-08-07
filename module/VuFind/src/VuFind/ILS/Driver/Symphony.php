@@ -193,18 +193,30 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Return or create the session token for current session.
+     * Return a SymWS session token for given credentials.
+     *
+     * To avoid needing to repeatedly log in the same user,
+     * cache acquired session tokens by the credentials provided.
+     * If the cached session token is expired or otherwise defective,
+     * the caller can use the $reset parameter.
      *
      * @param string  $login    The login account name
      * @param string  $password The login password
-     * @param boolean $reset    If true, replace the currently cached token
+     * @param boolean $reset    If true, replace any currently cached token
      *
-     * @return string The session token for the active session
+     * @return string The session token
      */
-    protected function getSessionToken($login, $password, $reset = false)
+    protected function getSessionToken($login, $password = null, $reset = false)
     {
         static $sessionTokens = array();
 
+        // If we keyed only by $login, we might mistakenly retrieve a valid
+        // session token when provided with an invalid password.
+        // We hash the credentials to reduce the potential for
+        // incompatibilities with key limitations of whatever cache backend
+        // an administrator might elect to use for session tokens,
+        // and though more expensive, we use a secure hash because
+        // what we're hashing contains a password.
         $key = hash('sha256', "$login:$password");
 
         if (!isset($sessionTokens[$key]) || $reset) {
@@ -212,15 +224,12 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 $sessionTokens[$key] = $token;
             } else {
                 $params = array('login' => $login);
-
                 if (isset($password)) {
                     $params['password'] = $password;
                 }
 
                 $response = $this->makeRequest('security', 'loginUser', $params);
-
                 $sessionTokens[$key] = $response->sessionToken;
-
                 $_SESSION['symws']['session'] = $sessionTokens;
             }
         }
