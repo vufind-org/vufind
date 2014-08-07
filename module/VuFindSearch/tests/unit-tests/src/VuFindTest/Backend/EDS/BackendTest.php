@@ -138,9 +138,20 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         $conn = $this->getConnectorMock();
-        $back = $this->getBackend($conn, $fact);
+        $config = array(
+            'EBSCO_Account' => array(
+                'user_name' => 'un', 'password' => 'pw', 'ip_auth' => true,
+                'profile' => 'pr', 'organization_id' => 'oi'
+            )
+        );
+        $back = $this->getBackend($conn, $fact, null, null, $config);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());
         $this->assertEquals($conn, $this->getProperty($back, 'client'));
+        $this->assertEquals('un', $this->getProperty($back, 'userName'));
+        $this->assertEquals('pw', $this->getProperty($back, 'password'));
+        $this->assertEquals(true, $this->getProperty($back, 'ipAuth'));
+        $this->assertEquals('pr', $this->getProperty($back, 'profile'));
+        $this->assertEquals('oi', $this->getProperty($back, 'orgId'));
     }
 
     /// Internal API
