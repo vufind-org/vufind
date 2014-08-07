@@ -30,6 +30,7 @@ namespace VuFind\ILS\Driver;
 use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
 
 /**
  * Symphony Web Services (symws) ILS Driver
@@ -42,7 +43,8 @@ use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 
-class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
+class Symphony extends AbstractBase
+    implements ServiceLocatorAwareInterface, LoggerAwareInterface
 {
     /**
      * Cache for policy information
@@ -64,6 +66,39 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      * @var ServiceLocatorInterface
      */
     protected $serviceLocator;
+
+    /**
+     * Logger (or false for none)
+     *
+     * @var LoggerInterface|bool
+     */
+    protected $logger = false;
+
+    /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug(get_class($this) . ": $msg");
+        }
+    }
 
     /**
      * Initialize the driver.
