@@ -453,6 +453,23 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Determine if a library is excluded by LibraryFilter configuration.
+     *
+     * @param string $libraryID the ID of the library in question
+     * @return boolean true if excluded, false if not
+     */
+    protected function libraryIsFilteredOut($libraryID) {
+        $notInWhitelist = !empty($this->config['LibraryFilter']['include_only'])
+            && !in_array(
+                $libraryID, $this->config['LibraryFilter']['include_only']
+            );
+        $onBlacklist = in_array(
+            $libraryID, $this->config['LibraryFilter']['exclude']
+        );
+        return $notInWhitelist || $onBlacklist;
+    }
+
+    /**
      * Parse Call Info
      *
      * Protected support method for parsing the call info into items.
@@ -475,15 +492,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
             $libraryID = $callInfo->libraryID;
             $library = $this->translatePolicyID('LIBR', $libraryID);
 
-            $notInWhitelist = !empty($this->config['LibraryFilter']['include_only'])
-                && !in_array(
-                    $libraryID, $this->config['LibraryFilter']['include_only']
-                );
-            $onBlacklist = in_array(
-                $libraryID, $this->config['LibraryFilter']['exclude']
-            );
-
-            if ($notInWhitelist || $onBlacklist) {
+            if ($this->libraryIsFilteredOut($libraryID)) {
                 continue;
             }
 
