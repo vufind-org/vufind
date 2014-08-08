@@ -173,7 +173,9 @@ class Symphony extends AbstractBase
     /**
      * Return a SoapClient for the specified SymWS service.
      *
-     * This allows SoapClients to be shared and lazily instantiated.
+     * SoapClient instantiation fetches and parses remote files,
+     * so this method instantiates SoapClients lazily and keeps them around
+     * so that they can be reused for multiple requests.
      *
      * @param string $service The name of the SymWS service
      *
@@ -239,12 +241,12 @@ class Symphony extends AbstractBase
      * the caller can use the $reset parameter.
      *
      * @param string  $login    The login account name
-     * @param string  $password The login password
+     * @param string  $password The login password, or null for no password
      * @param boolean $reset    If true, replace any currently cached token
      *
      * @return string The session token
      */
-    protected function getSessionToken($login, $password = null, $reset = false)
+    protected function getSessionToken($login, $password, $reset = false)
     {
         static $sessionTokens = array();
 
@@ -281,21 +283,21 @@ class Symphony extends AbstractBase
      * @param string $service    the SymWS service name
      * @param string $operation  the SymWS operation name
      * @param array  $parameters the request parameters for the operation
-     * @param array  $options    An associative array of additional options,
-     *                           with the following elements:
-     *                           - 'login': (optional) login to use for
-     *                                      (re)establishing a SymWS session
-     *                           - 'password': (optional) password to use for
-     *                                         (re)establishing a SymWS session
-     *                           - 'header': SoapHeader to use, skipping
-     *                                       automatic session management
+     * @param array  $options    An associative array of additional options:
+     *                           - 'login': login to use for the operation;
+     *                                      omit for configured default
+     *                                      credentials or anonymous
+     *                           - 'password': password associated with login;
+     *                                         omit for no password
+     *                           - 'header': SoapHeader to use for the request;
+     *                                       omit to handle automatically
      *
      * @return mixed the result of the SOAP call
      */
     protected function makeRequest($service, $operation, $parameters = array(),
         $options = array()
     ) {
-        /* If a header was supplied, just use it, skipping everything else. */
+        // If provided, use the SoapHeader and skip the rest of makeRequest().
         if (isset($options['header'])) {
             return $this->getSoapClient($service)->soapCall(
                 $operation,
@@ -305,7 +307,7 @@ class Symphony extends AbstractBase
             );
         }
 
-        /* Determine what credentials to use for the SymWS session, if any.
+        /* Determine what credentials, if any, to use for the SymWS request.
          *
          * If a login and password are specified in $options, use them.
          * If not, for any operation not exempted from SymWS'
@@ -332,13 +334,8 @@ class Symphony extends AbstractBase
             $password = null;
         }
 
-        /* Attempt the request.
-         *
-         * If it turns out the SoapHeader's session has expired,
-         * get a new one and try again.
-         */
+        // Attempt the request.
         $soapClient = $this->getSoapClient($service);
-
         try {
             $header = $this->getSoapHeader($login, $password);
             $soapClient->__setSoapHeaders($header);
@@ -347,7 +344,10 @@ class Symphony extends AbstractBase
             $timeoutException = 'ns0:com.sirsidynix.symws.service.'
                 . 'exceptions.SecurityServiceException.sessionTimedOut';
             if ($e->faultcode == $timeoutException) {
+                // The SoapHeader's session has expired. Tell
+                // getSoapHeader() to have a new one established.
                 $header = $this->getSoapHeader($login, $password, true);
+                // Try the request again with the new SoapHeader.
                 $soapClient->__setSoapHeaders($header);
                 return $soapClient->$operation($parameters);
             } elseif ($operation == 'logoutUser') {
