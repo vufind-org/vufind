@@ -30,6 +30,7 @@ namespace VuFind\ILS\Driver;
 use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
 
 /**
  * Symphony Web Services (symws) ILS Driver
@@ -42,7 +43,8 @@ use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 
-class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
+class Symphony extends AbstractBase
+    implements ServiceLocatorAwareInterface, LoggerAwareInterface
 {
     /**
      * Cache for policy information
@@ -64,6 +66,39 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      * @var ServiceLocatorInterface
      */
     protected $serviceLocator;
+
+    /**
+     * Logger (or false for none)
+     *
+     * @var LoggerInterface|bool
+     */
+    protected $logger = false;
+
+    /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug(get_class($this) . ": $msg");
+        }
+    }
 
     /**
      * Initialize the driver.
@@ -105,6 +140,9 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
         $this->config['LibraryFilter'] += array(
             'include_only' => array(),
             'exclude' => array(),
+        );
+
+        $this->config['MarcHoldings'] += array(
         );
 
         $this->config['999Holdings'] += array(
@@ -193,18 +231,30 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Return or create the session token for current session.
+     * Return a SymWS session token for given credentials.
+     *
+     * To avoid needing to repeatedly log in the same user,
+     * cache acquired session tokens by the credentials provided.
+     * If the cached session token is expired or otherwise defective,
+     * the caller can use the $reset parameter.
      *
      * @param string  $login    The login account name
      * @param string  $password The login password
-     * @param boolean $reset    If true, replace the currently cached token
+     * @param boolean $reset    If true, replace any currently cached token
      *
-     * @return string The session token for the active session
+     * @return string The session token
      */
-    protected function getSessionToken($login, $password, $reset = false)
+    protected function getSessionToken($login, $password = null, $reset = false)
     {
         static $sessionTokens = array();
 
+        // If we keyed only by $login, we might mistakenly retrieve a valid
+        // session token when provided with an invalid password.
+        // We hash the credentials to reduce the potential for
+        // incompatibilities with key limitations of whatever cache backend
+        // an administrator might elect to use for session tokens,
+        // and though more expensive, we use a secure hash because
+        // what we're hashing contains a password.
         $key = hash('sha256', "$login:$password");
 
         if (!isset($sessionTokens[$key]) || $reset) {
@@ -212,15 +262,12 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 $sessionTokens[$key] = $token;
             } else {
                 $params = array('login' => $login);
-
                 if (isset($password)) {
                     $params['password'] = $password;
                 }
 
                 $response = $this->makeRequest('security', 'loginUser', $params);
-
                 $sessionTokens[$key] = $response->sessionToken;
-
                 $_SESSION['symws']['session'] = $sessionTokens;
             }
         }
@@ -442,6 +489,18 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
             'includeOrderInfo' => 'true',
         );
 
+        // If the driver is configured to populate holdings_text_fields
+        // with MFHD, also request MARC holdings information from SymWS.
+        if (count(array_filter($this->config['MarcHoldings'])) > 0) {
+            $params['includeMarcHoldings'] = 'true';
+            // With neither marcEntryFilter nor marcEntryID, or with
+            // marcEntryFilter NONE, SymWS won't return MarcHoldingsInfo,
+            // and there doesn't seem to be another option for marcEntryFilter
+            // that returns just MarcHoldingsInfo without BibliographicInfo.
+            // So we filter BibliographicInfo for an unlikely entry.
+            $params['marcEntryID'] = '999';
+        }
+
         // If only one library is being exclusively included,
         // filtering can be done within Web Services.
         if (count($this->config['LibraryFilter']['include_only']) == 1) {
@@ -450,6 +509,23 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
         }
 
         return $this->makeRequest('standard', 'lookupTitleInfo', $params);
+    }
+
+    /**
+     * Determine if a library is excluded by LibraryFilter configuration.
+     *
+     * @param string $libraryID the ID of the library in question
+     * @return boolean true if excluded, false if not
+     */
+    protected function libraryIsFilteredOut($libraryID) {
+        $notInWhitelist = !empty($this->config['LibraryFilter']['include_only'])
+            && !in_array(
+                $libraryID, $this->config['LibraryFilter']['include_only']
+            );
+        $onBlacklist = in_array(
+            $libraryID, $this->config['LibraryFilter']['exclude']
+        );
+        return $notInWhitelist || $onBlacklist;
     }
 
     /**
@@ -473,27 +549,19 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
 
         foreach ($callInfos as $callInfo) {
             $libraryID = $callInfo->libraryID;
-            $library = $this->translatePolicyID('LIBR', $libraryID);
 
-            $notInWhitelist = !empty($this->config['LibraryFilter']['include_only'])
-                && !in_array(
-                    $libraryID, $this->config['LibraryFilter']['include_only']
-                );
-            $onBlacklist = in_array(
-                $libraryID, $this->config['LibraryFilter']['exclude']
-            );
-
-            if ($notInWhitelist || $onBlacklist) {
+            if ($this->libraryIsFilteredOut($libraryID)) {
                 continue;
             }
-
-            $copyNumber = 0; // ItemInfo does not include copy numbers,
-                             // so we generate them under the assumption
-                             // that items are being listed in order.
 
             if (!isset($callInfo->ItemInfo)) {
                 continue; // no items!
             }
+
+            $library = $this->translatePolicyID('LIBR', $libraryID);
+            $copyNumber = 0; // ItemInfo does not include copy numbers,
+                             // so we generate them under the assumption
+                             // that items are being listed in order.
 
             $itemInfos = is_array($callInfo->ItemInfo)
                 ? $callInfo->ItemInfo
@@ -777,6 +845,49 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Parse MarcHoldingInfo into VuFind items.
+     *
+     * @param  object  $marcHoldingsInfos  MarcHoldingInfo, from TitleInfo
+     * @param  integer $titleID            The catalog key of the title record
+     * @return array   an array (possibly empty) of VuFind items
+     */
+    protected function parseMarcHoldingsInfo($marcHoldingsInfos, $titleID) {
+        $items = array();
+        $marcHoldingsInfos = is_array($marcHoldingsInfos)
+            ? $marcHoldingsInfos
+            : array($marcHoldingsInfos);
+
+        foreach ($marcHoldingsInfos as $marcHoldingsInfo) {
+            $libraryID = $marcHoldingsInfo->holdingLibraryID;
+            if ($this->libraryIsFilteredOut($libraryID)) {
+                continue;
+            }
+
+            $marcEntryInfos = is_array($marcHoldingsInfo->MarcEntryInfo)
+                ? $marcHoldingsInfo->MarcEntryInfo
+                : array($marcHoldingsInfo->MarcEntryInfo);
+            $item = array();
+
+            foreach ($marcEntryInfos as $marcEntryInfo) {
+            	foreach ($this->config['MarcHoldings'] as $textfield => $spec) {
+                    if (in_array($marcEntryInfo->entryID, $spec)) {
+                        $item[$textfield][] = $marcEntryInfo->text;
+                    }
+                }
+            }
+
+            if (!empty($item)) {
+                $items[] = $item + array(
+                    'id' => $titleID,
+                    'location' => $this->translatePolicyID('LIBR', $libraryID),
+                );
+            }
+        }
+
+        return $items;
+    }
+
+    /**
      * Get Live Statuses
      *
      * Protected support method for retrieving a list of item statuses from symws.
@@ -842,10 +953,18 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                     $this->parseTitleOrderInfo($titleInfo->TitleOrderInfo, $ckey)
                 );
             }
+
+            /* MARC holdings records are associated with title records rather
+             * than item records, so we make pseudo-items for VuFind. */
+            if (isset($titleInfo->MarcHoldingsInfo)) {
+                $items[$ckey] = array_merge(
+                    $items[$ckey],
+                    $this->parseMarcHoldingsInfo($titleInfo->MarcHoldingsInfo, $ckey)
+                );
+            }
         }
         return $items;
     }
-
 
     /**
      * Translate a Symphony policy ID into a policy description
