@@ -43,10 +43,9 @@ class Solr extends AbstractBase
     /**
      * Connector class to Solr
      *
-     * @var array
+     * @var \VuFindSearch\Backend\Solr\Connector
      */
     protected $solr;
-    protected $sm;
 
     /**
      * Constructor

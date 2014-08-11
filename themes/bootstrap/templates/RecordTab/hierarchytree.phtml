@@ -15,7 +15,7 @@
   $this->jsTranslations()->addStrings(
     array('showTree' => 'hierarchy_show_tree', 'hideTree' => 'hierarchy_hide_tree')
   );
-  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'jsTree/jquery.jstree.js');
+  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'jsTree/jstree.min.js');
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'jsTree/hierarchyTree.js');
   echo $this->inlineScript();
 ?>

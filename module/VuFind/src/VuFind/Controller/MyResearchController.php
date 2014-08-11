@@ -67,56 +67,14 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Store a referer (if appropriate) to keep post-login redirect pointing
-     * to an appropriate location. This is used when the user clicks the
-     * log in link from an arbitrary page or when a password is mistyped;
-     * separate logic is used for storing followup information when VuFind
-     * forces the user to log in from another context.
+     * Maintaining this method for backwards compatibility;
+     * logic moved to parent and method re-named
      *
      * @return void
      */
     protected function storeRefererForPostLoginRedirect()
     {
-        // Get the referer -- if it's empty, there's nothing to store!
-        $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (empty($referer)) {
-            return;
-        }
-        $refererNorm = $this->normalizeUrlForComparison($referer);
-
-        // If the referer lives outside of VuFind, don't store it! We only
-        // want internal post-login redirects.
-        $baseUrl = $this->getServerUrl('home');
-        $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
-        if (0 !== strpos($refererNorm, $baseUrlNorm)) {
-            return;
-        }
-
-        // If the referer is the MyResearch/Home action, it probably means
-        // that the user is repeatedly mistyping their password. We should
-        // ignore this and instead rely on any previously stored referer.
-        $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
-        $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
-        if ($mrhuNorm === $refererNorm) {
-            return;
-        }
-
-        // If we got this far, we want to store the referer:
-        $this->followup()->store(array(), $referer);
-    }
-
-    /**
-     * Normalize the referer URL so that inconsistencies in protocol and trailing
-     * slashes do not break comparisons.
-     *
-     * @param string $url URL to normalize
-     *
-     * @return string
-     */
-    protected function normalizeUrlForComparison($url)
-    {
-        $parts = explode('://', $url, 2);
-        return trim(end($parts), '/');
+        $this->setFollowupUrlToReferer();
     }
 
     /**
@@ -148,16 +106,13 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
-            $this->storeRefererForPostLoginRedirect();
+            $this->setFollowupUrlToReferer();
             return $this->forwardTo('MyResearch', 'Login');
         }
-
-        // Logged in?  Forward user to followup action (if set and not in lightbox)
+        // Logged in?  Forward user to followup action
         // or default action (if no followup provided):
-        $followup = $this->followup()->retrieve();
-        if (isset($followup->url) && !$this->inLightbox()) {
-            $url = $followup->url;
-            unset($followup->url);
+        if ($url = $this->getFollowupUrl()) {
+            $this->clearFollowupUrl();
             return $this->redirect()->toUrl($url);
         }
 
@@ -179,6 +134,10 @@ class MyResearchController extends AbstractBase
      */
     public function accountAction()
     {
+        // If the user is already logged in, don't let them create an account:
+        if ($this->getAuthManager()->isLoggedIn()) {
+            return $this->redirect()->toRoute('myresearch-home');
+        }
         // if the current auth class proxies others, we'll get the proxied
         //   auth method as a querystring parameter.
         $method = trim($this->params()->fromQuery('auth_method'));
@@ -191,9 +150,9 @@ class MyResearchController extends AbstractBase
         // We may have come in from a lightbox.  In this case, a prior module
         // will not have set the followup information.  We should grab the referer
         // so the user doesn't get lost.
-        $followup = $this->followup()->retrieve();
-        if (!isset($followup->url)) {
-            $followup->url = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        // i.e. if there's already a followup url, keep it; otherwise set one.
+        if (!$this->getFollowupUrl()) {
+            $this->setFollowupUrlToReferer();
         }
 
         // Make view
@@ -260,11 +219,8 @@ class MyResearchController extends AbstractBase
      */
     public function userloginAction()
     {
-        $followup = $this->followup()->retrieve();
-        if (isset($followup->url)) {
-            unset($followup->url);
-        }
-        $this->storeRefererForPostLoginRedirect();
+        $this->clearFollowupUrl();
+        $this->setFollowupUrlToReferer();
         if ($si = $this->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }
@@ -1147,7 +1103,8 @@ class MyResearchController extends AbstractBase
     public function recoverAction()
     {
         // Make sure we're configured to do this
-        if (!$this->getAuthManager()->supportsRecovery()) {
+        $method = trim($this->params()->fromQuery('auth_method'));
+        if (!$this->getAuthManager()->supportsRecovery($method)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_disabled');
             return $this->redirect()->toRoute('myresearch-home');
@@ -1170,7 +1127,7 @@ class MyResearchController extends AbstractBase
         // If we have a submitted form
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             if ($user) {
-                $this->sendRecoveryEmail($user, $this->getConfig());
+                $this->sendRecoveryEmail($user, $this->getConfig(), $method);
             } else {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_user_not_found');
@@ -1184,10 +1141,11 @@ class MyResearchController extends AbstractBase
      *
      * @param \VuFind\Db\Row\User $user   User object we're recovering
      * @param \VuFind\Config      $config Configuration object
+     * @param string              $method Active authentication method
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendRecoveryEmail($user, $config)
+    protected function sendRecoveryEmail($user, $config, $method)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1216,7 +1174,7 @@ class MyResearchController extends AbstractBase
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verify')
                                 . '?hash='
-                                . $user->verify_hash
+                                . $user->verify_hash . '&auth_method=' . $method
                         )
                     );
                     $this->getServiceLocator()->get('VuFind\Mailer')->send(
@@ -1260,6 +1218,7 @@ class MyResearchController extends AbstractBase
                 // If the hash is valid, forward user to create new password
                 if (null != $user) {
                     $view = $this->createViewModel();
+                    $view->auth_method = $this->params()->fromQuery('auth_method');
                     $view->hash = $hash;
                     $view->username = $user->username;
                     $view->useRecaptcha

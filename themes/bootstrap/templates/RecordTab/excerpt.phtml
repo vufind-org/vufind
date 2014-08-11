@@ -3,8 +3,7 @@
     $this->headTitle($this->translate('Excerpt') . ': ' . $this->driver->getBreadcrumb());
 
     // Grab excerpt data:
-    $isbn = $this->driver->getCleanISBN();
-    $excerpts = empty($isbn) ? array() : $this->excerpt($isbn);
+    $excerpts = $this->tab->getContent();
 
     // Activate Syndetics Plus if necessary:
     if ($this->syndeticsPlus()->isActive()) {

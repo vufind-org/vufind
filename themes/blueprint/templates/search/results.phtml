@@ -51,9 +51,9 @@
     <div class="floatleft">
       <? if ($recordTotal > 0): ?>
         <?=$this->transEsc("Showing")?>
-        <strong><?=$this->results->getStartRecord()?></strong> - <strong><?=$this->results->getEndRecord()?></strong>
+        <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
         <? if (!isset($this->skipTotalCount)): ?>
-          <?=$this->transEsc('of')?> <strong><?=$recordTotal?></strong>
+          <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
         <? endif; ?>
         <? if (isset($this->overrideSearchHeading)): ?>
           <?=$this->overrideSearchHeading?>
@@ -61,7 +61,7 @@
           <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
         <? endif; ?>
         <? if ($qtime = $this->results->getQuerySpeed()): ?>
-          <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
+          <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
         <? endif; ?>
         <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
       <? else: ?>
@@ -109,7 +109,7 @@
     <div class="searchtools">
       <strong><?=$this->transEsc('Search Tools')?>:</strong>
       <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>" class="feed"><?=$this->transEsc('Get RSS Feed')?></a>
-      <a href="<?=$this->url('search-email')?>" class="mailSearch mail" id="mailSearch<?=$this->escapeHtml($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
+      <a href="<?=$this->url('search-email')?>" class="mailSearch mail" id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
       <? if (is_numeric($this->results->getSearchId())): ?>
         <? if ($this->results->isSavedSearch()): ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>" class="delete"><?=$this->transEsc('save_search_remove')?></a>

@@ -42,7 +42,18 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
  */
 class Evergreen extends AbstractBase
 {
+    /**
+     * Database connection
+     *
+     * @var PDO
+     */
     protected $db;
+
+    /**
+     * Database name
+     *
+     * @var string
+     */
     protected $dbName;
 
      /**

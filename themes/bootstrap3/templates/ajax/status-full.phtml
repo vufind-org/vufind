@@ -1,0 +1,26 @@
+<table class="table table-condensed">
+  <tr>
+    <th><?=$this->transEsc('Location')?></th>
+    <th><?=$this->transEsc('Call Number')?></th>
+    <th><?=$this->transEsc('Status')?></th>
+  </tr>
+  <? $i = 0; foreach ($this->statusItems as $item): ?>
+    <? if (++$i == 5) break; // Show no more than 5 items ?>
+    <tr>
+      <td><?=$this->escapeHtml($item['location'])?></td>
+      <td><?=$this->escapeHtml($item['callnumber'])?></td>
+      <td>
+        <? if (isset($item['use_unknown_message']) && $item['use_unknown_message']): ?>
+          <span><?=$this->transEsc("status_unknown_message")?></span>
+        <? elseif ($item['availability']): ?>
+          <span class="text-success"><?=($item['reserve'] == 'Y') ? $this->transEsc("On Reserve") : $this->transEsc("Available")?></span>
+        <? else: ?>
+          <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
+        <? endif; ?>
+      </td>
+    </tr>
+  <? endforeach; ?>
+<? if (count($this->statusItems) > 5): ?>
+  <tr><td colspan="3"><a href="<?=$this->url('record', array('id' => $this->statusItems[0]['id']))?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more')?> ...</a></td></tr>
+<? endif; ?>
+</table>

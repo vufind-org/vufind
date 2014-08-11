@@ -1,12 +1,18 @@
 // functions to get rights codes for previews
 function getHathiOptions() {
-    return $('[class*="hathiPreviewDiv"]').attr("class").split('__')[1].split(',');
+    return $('[class*="hathiPreviewSpan"]').attr("class").split('__')[1].split(',');
 }
 function getGoogleOptions() {
-    return $('[class*="googlePreviewDiv"]').attr("class").split('__')[1].split(',');
+    var opts_temp = $('[class*="googlePreviewSpan"]').attr("class").split('__')[1].split(';');
+    var options = {};
+    for (key in opts_temp) {
+        var arr = opts_temp[key].split(':');
+        options[arr[0]] = arr[1].split(',');
+    }
+    return options;
 }
 function getOLOptions() {
-    return $('[class*="olPreviewDiv"]').attr("class").split('__')[1].split(',');
+    return $('[class*="olPreviewSpan"]').attr("class").split('__')[1].split(',');
 }
 
 function getHTPreviews(skeys) {
@@ -33,14 +39,10 @@ function applyPreviewUrl($link, url) {
 
     // Update associated record thumbnail, if any:
     $link.parents('.result,.record')
-        .find('img.img-polaroid')
-        .parents('a').attr('href', url);
+        .find('.recordcover').parents('a').attr('href', url);
 }
 
-function processBookInfo(booksInfo, previewClass) {
-    // assign the correct rights string depending on source
-    var viewOptions = (previewClass == 'previewGBS')
-        ? getGoogleOptions() : getOLOptions();
+function processBookInfo(booksInfo, previewClass, viewOptions) {
     for (var bibkey in booksInfo) {
         var bookInfo = booksInfo[bibkey];
         if (bookInfo) {
@@ -54,11 +56,27 @@ function processBookInfo(booksInfo, previewClass) {
 }
 
 function processGBSBookInfo(booksInfo) {
-    processBookInfo(booksInfo, 'previewGBS');
+    var viewOptions = getGoogleOptions();
+    if (viewOptions['link'] && viewOptions['link'].length > 0) {
+        processBookInfo(booksInfo, 'previewGBS', viewOptions['link']);
+    }
+    if (viewOptions['tab'] && viewOptions['tab'].length > 0) {
+        // check for "embeddable: true" in bookinfo
+        for (var bibkey in booksInfo) {
+            var bookInfo = booksInfo[bibkey];
+            if (bookInfo) {
+                if (viewOptions['tab'].indexOf(bookInfo.preview)>= 0
+                && (bookInfo.embeddable)) {
+                    // make tab visible
+                    $('ul.recordTabs li.hidden a#Preview').parent().removeClass('hidden');
+                }
+            }
+        }
+    }
 }
 
 function processOLBookInfo(booksInfo) {
-    processBookInfo(booksInfo, 'previewOL');
+    processBookInfo(booksInfo, 'previewOL', getOLOptions());
 }
 
 function processHTBookInfo(booksInfo) {
@@ -116,17 +134,21 @@ function setIndexOf() {
     };
 }
 
-function getBookPreviews() {
+function getBibKeyString() {
     var skeys = '';
     $('.previewBibkeys').each(function(){
         skeys += $(this).attr('class');
     });
-    skeys = skeys.replace(/previewBibkeys/g, '').replace(/^\s+|\s+$/g, '');
+    return skeys.replace(/previewBibkeys/g, '').replace(/^\s+|\s+$/g, '');
+}
+
+function getBookPreviews() {
+    var skeys = getBibKeyString();
     var bibkeys = skeys.split(/\s+/);
     var script;
 
     // fetch Google preview if enabled
-    if ($('.previewGBS').length > 0) {
+    if ($('[class*="googlePreviewSpan"]').length > 0) {
         // checks if query string might break URI limit - if not, run as normal
         if (bibkeys.length <= 150){
             script = 'https://encrypted.google.com/books?jscmd=viewapi&bibkeys='
@@ -151,14 +173,14 @@ function getBookPreviews() {
     }
 
     // fetch OpenLibrary preview if enabled
-    if ($('.previewOL').length > 0) {
+    if ($('[class*="olPreviewSpan"]').length > 0) {
         script = 'http://openlibrary.org/api/books?bibkeys='
             + bibkeys.join(',') + '&callback=processOLBookInfo';
         $.getScript(script);
     }
 
     // fetch HathiTrust preview if enabled
-    if ($('.previewHT').length > 0) {
+    if ($('[class*="hathiPreviewSpan"]').length > 0) {
         getHTPreviews(skeys);
     }
 }

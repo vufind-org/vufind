@@ -43,7 +43,18 @@ namespace VuFind\Recommend;
  */
 class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
 {
+    /**
+     * Raw configuration string
+     *
+     * @var string
+     */
     protected $rawParams;
+
+    /**
+     * Processed configuration string
+     *
+     * @var array
+     */
     protected $processedParams;
 
     /**

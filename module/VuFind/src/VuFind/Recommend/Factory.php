@@ -113,6 +113,25 @@ class Factory
     }
 
     /**
+     * Factory for DPLA Terms module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return DPLATerms
+     */
+    public static function getDPLATerms(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (!isset($config->DPLA->apiKey)) {
+            throw new \Exception('DPLA API key missing from configuration.');
+        }
+        return new DPLATerms(
+            $config->DPLA->apiKey,
+            $sm->getServiceLocator()->get('VuFind\Http')->createClient()
+        );
+    }
+
+    /**
      * Factory for EuropeanaResults module.
      *
      * @param ServiceManager $sm Service manager.
@@ -266,6 +285,20 @@ class Factory
     public static function getTopFacets(ServiceManager $sm)
     {
         return new TopFacets(
+            $sm->getServiceLocator()->get('VuFind\Config')
+        );
+    }
+
+    /**
+     * Factory for VisualFacets module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return VisualFacets
+     */
+    public static function getVisualFacets(ServiceManager $sm)
+    {
+        return new VisualFacets(
             $sm->getServiceLocator()->get('VuFind\Config')
         );
     }

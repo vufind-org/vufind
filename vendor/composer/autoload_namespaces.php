@@ -14,4 +14,5 @@ return array(
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'SerialsSolutions' => array($vendorDir . '/serialssolutions/summon'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
+    'Less' => array($vendorDir . '/oyejorge/less.php/lib'),
 );

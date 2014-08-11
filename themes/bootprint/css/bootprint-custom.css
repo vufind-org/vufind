@@ -177,6 +177,8 @@ select, .btn:not(.btn-link){vertical-align:top}
 .group .search {margin:1px 0}
 .checkboxFilter {border:1px solid #CCC;display:inline-table;margin-bottom:10px;padding:10px;width:auto}
 .checkboxFilter label {display:table}
+.sidebar .checkboxFilter {margin-left:8px;padding:0;width:95.5%;}
+.sidebar .checkboxFilter .checkbox {margin:6px}
 
 /* -- MY RESEARCH -- */
 .bulkActionForm .btn-link {padding:1px 2px}

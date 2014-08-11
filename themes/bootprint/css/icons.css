@@ -49,7 +49,8 @@ i.icon-trash,
 i.icon-tree,
 i.icon-tree-muted,
 i.icon-usd,
-i.icon-user {
+i.icon-user,
+i.icon-visual {
   background-position:center top;
   background-repeat:no-repeat;
   background-size:16px 16px;
@@ -129,7 +130,8 @@ i.icon-user {
 .small i.icon-tree,
 .small i.icon-tree-muted,
 .small i.icon-usd,
-.small i.icon-user {
+.small i.icon-user,
+.small i.icon-visual {
   background-size:13px 13px;
   height:13px;
   width:13px;
@@ -182,3 +184,4 @@ i.icon-tree {background:url('../images/icons/treeCurrent.png')}
 i.icon-tree-muted {background:url('../images/icons/treeMuted.png')}
 i.icon-usd {background:url('../images/icons/money_dollar.png')}
 i.icon-user {background:url('../images/icons/user.png')}
+i.icon-visual {background:url('../images/view_visual.png')}

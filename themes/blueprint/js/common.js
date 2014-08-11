@@ -323,6 +323,12 @@ $(document).ready(function(){
         return false;
     });
 
+    // attach click event to the visualization help links
+    $('a.visualizationHelp').click(function(){
+        window.open(path + '/Help/Home?topic=visualization', 'Help', 'width=625, height=510');
+        return false;
+    });
+
     // assign click event to "email search" links
     $('a.mailSearch').click(function() {
         var id = this.id.substr('mailSearch'.length);

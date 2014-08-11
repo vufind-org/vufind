@@ -436,6 +436,9 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function updatePassword($request)
     {
+        if (($authMethod = $request->getPost()->get('auth_method')) != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
         $user = $this->getAuth()->updatePassword($request);
         $this->updateSession($user);
         return $user;
@@ -463,7 +466,12 @@ class Manager implements ServiceLocatorAwareInterface
             // Pass password security exceptions through unmodified
             throw $e;
         } catch (\Exception $e) {
-            // Catch other exceptions and treat them as technical difficulties
+            // Catch other exceptions, log verbosely, and treat them as technical
+            // difficulties
+            error_log(
+                "Exception in " . get_class($this) . "::login: " . $e->getMessage()
+            );
+            error_log($e);
             throw new AuthException('authentication_error_technical');
         }
 

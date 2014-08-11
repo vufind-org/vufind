@@ -22,12 +22,12 @@
     <div class="floatleft">
       <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
         <?=$this->transEsc("Showing")?>
-        <strong><?=$this->results->getStartRecord()?></strong> - <strong><?=$this->results->getEndRecord()?></strong>
-        <?=$this->transEsc('of')?> <strong><?=$this->escapeHtml($recordTotal)?></strong>
+        <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
         <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($reservesLookfor)?>'</strong>,
       <? endif; ?>
       <? if ($qtime = $this->results->getQuerySpeed()): ?>
-        <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
+        <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
       <? endif; ?>
     </div>
   
@@ -62,7 +62,7 @@
         <td class="department"><a href="<?=$url?>"><?=$this->escapeHtml($record->getDepartment())?></a></td>
         <td class="course"><a href="<?=$url?>"><?=$this->escapeHtml($record->getCourse())?></a></td>
         <td class="instructor"><a href="<?=$url?>"><?=$this->escapeHtml($record->getInstructor())?></a></td>
-        <td class="items"><?=$this->escapeHtml($record->getItemCount())?></td>
+        <td class="items"><?=$this->localizedNumber($record->getItemCount())?></td>
       </tr>
     <? endforeach; ?>
     </table>

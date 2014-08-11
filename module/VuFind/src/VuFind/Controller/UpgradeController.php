@@ -29,6 +29,7 @@ namespace VuFind\Controller;
 use ArrayObject, VuFind\Config\Locator as ConfigLocator,
     VuFind\Cookie\Container as CookieContainer,
     VuFind\Exception\RecordMissing as RecordMissingException,
+    Zend\Mvc\MvcEvent,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -88,6 +89,38 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * preDispatch -- block access when appropriate.
+     *
+     * @param MvcEvent $e Event object
+     *
+     * @return void
+     */
+    public function preDispatch(MvcEvent $e)
+    {
+        // If auto-configuration is disabled, prevent any other action from being
+        // accessed:
+        $config = $this->getConfig();
+        if (!isset($config->System->autoConfigure)
+            || !$config->System->autoConfigure
+        ) {
+            $routeMatch = $e->getRouteMatch();
+            $routeMatch->setParam('action', 'disabled');
+        }
+    }
+
+    /**
+     * Register the default events for this controller
+     *
+     * @return void
+     */
+    protected function attachDefaultListeners()
+    {
+        parent::attachDefaultListeners();
+        $events = $this->getEventManager();
+        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
+    }
+
+    /**
      * Support method -- given a directory, extract a version number from the
      * build.xml file within that directory.
      *
@@ -103,6 +136,18 @@ class UpgradeController extends AbstractBase
         }
         $parts = $xml->xpath('/project/property[@name="version"]/@value');
         return (string)$parts[0];
+    }
+
+    /**
+     * Display disabled message.
+     *
+     * @return mixed
+     */
+    public function disabledAction()
+    {
+        $view = $this->createViewModel();
+        $view->setTemplate('install/disabled');
+        return $view;
     }
 
     /**

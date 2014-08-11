@@ -203,6 +203,18 @@
     </tr>
   <? endif; ?>
 
+  <? $publicationPlaces = $this->driver->getHierarchicalPlaceNames(); if (!empty($publicationPlaces)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Publication_Place')?>: </th>
+      <td>
+        <? foreach ($publicationPlaces as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
   <? $authorNotes = empty($isbn) ? array() : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
     <? $contentDisplayed = true; ?>
     <tr valign="top">

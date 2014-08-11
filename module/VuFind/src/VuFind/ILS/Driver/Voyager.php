@@ -834,18 +834,21 @@ class Voyager extends AbstractBase
                "and LINE_ITEM.BIB_ID = :id " .
                "order by LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ISSUE_ID DESC";
         try {
-            $data = array();
             $sqlStmt = $this->executeSQL($sql, array(':id' => $id));
-            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $data[] = array(
-                    'issue' => $row['ENUMCHRON'],
-                    'holdings_id' => $row['MFHD_ID']
-                );
-            }
-            return $data;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
+        $raw = $processed = array();
+        // Collect raw data:
+        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+            $raw[] = $row['MFHD_ID'] . '||' . $row['ENUMCHRON'];
+        }
+        // Deduplicate data and format it:
+        foreach (array_unique($raw) as $current) {
+            list($holdings_id, $issue) = explode('||', $current, 2);
+            $processed[] = compact('issue', 'holdings_id');
+        }
+        return $processed;
     }
 
     /**
@@ -1283,7 +1286,8 @@ class Voyager extends AbstractBase
             "BIB_TEXT.TITLE_BRIEF",
             "BIB_TEXT.TITLE",
             "CIRC_TRANSACTIONS.RENEWAL_COUNT",
-            "CIRC_POLICY_MATRIX.RENEWAL_COUNT as RENEWAL_LIMIT"
+            "CIRC_POLICY_MATRIX.RENEWAL_COUNT as RENEWAL_LIMIT",
+            "LOCATION.LOCATION_DISPLAY_NAME as BORROWING_LOCATION"
         );
 
         // From
@@ -1292,7 +1296,8 @@ class Voyager extends AbstractBase
             $this->dbName.".BIB_ITEM",
             $this->dbName.".MFHD_ITEM",
             $this->dbName.".BIB_TEXT",
-            $this->dbName.".CIRC_POLICY_MATRIX"
+            $this->dbName.".CIRC_POLICY_MATRIX",
+            $this->dbName.".LOCATION"
         );
 
         // Where
@@ -1302,7 +1307,8 @@ class Voyager extends AbstractBase
             "CIRC_TRANSACTIONS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
             "BIB_TEXT.BIB_ID = BIB_ITEM.BIB_ID",
             "CIRC_TRANSACTIONS.CIRC_POLICY_MATRIX_ID = " .
-            "CIRC_POLICY_MATRIX.CIRC_POLICY_MATRIX_ID"
+            "CIRC_POLICY_MATRIX.CIRC_POLICY_MATRIX_ID",
+            "CIRC_TRANSACTIONS.CHARGE_LOCATION = LOCATION.LOCATION_ID"
         );
 
         // Order
@@ -1357,7 +1363,7 @@ class Voyager extends AbstractBase
             }
         }
 
-        return array(
+        $transaction = array(
             'id' => $sqlRow['BIB_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
             'duedate' => $dueDate,
@@ -1370,6 +1376,14 @@ class Voyager extends AbstractBase
             'renew' => $sqlRow['RENEWAL_COUNT'],
             'renewLimit' => $sqlRow['RENEWAL_LIMIT']
         );
+        if (isset($this->config['Loans']['display_borrowing_location'])
+            && $this->config['Loans']['display_borrowing_location']
+        ) {
+            $transaction['borrowingLocation']
+                = utf8_encode($sqlRow['BORROWING_LOCATION']);
+        }
+
+        return $transaction;
     }
 
     /**

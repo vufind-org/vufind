@@ -21,7 +21,7 @@
     <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
       <div class="resultscroller">
         <? if ($this->scrollData['previousRecord']): ?><a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>">&laquo; <?=$this->transEsc('Prev')?></a><? endif; ?>
-        #<?=$this->escapeHtml($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->escapeHtml($this->scrollData['resultTotal'])?>
+        #<?=$this->localizedNumber($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->localizedNumber($this->scrollData['resultTotal'])?>
         <? if ($this->scrollData['nextRecord']): ?><a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>"><?=$this->transEsc('Next')?> &raquo;</a><? endif; ?>
       </div>
     <? endif; ?>
@@ -39,8 +39,11 @@
              $this->layout()->breadcrumbs .= '<span>&gt;</span><em>' . $this->transEsc($desc) . '</em>';
              $activeTabObj = $obj;
          }
+        $tab_classes = array();
+        if ($isCurrent) $tab_classes[] = 'active';
+        if (!$obj->isVisible()) $tab_classes[] = 'hidden';
       ?>
-      <li<?=$isCurrent ? ' class="active"' : ''?>>
+      <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
         <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
       </li>
       <? endforeach; ?>

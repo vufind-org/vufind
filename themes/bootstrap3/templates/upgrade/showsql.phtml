@@ -1,0 +1,23 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Upgrade VuFind'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="'.$this->url('upgrade-home').'">'.$this->transEsc('Upgrade').'</a></li> <li class="active">' . $this->transEsc('Upgrade VuFind') . '</li>';
+
+    // Set up styles:
+    $this->headstyle()->appendStyle(
+        ".pre {\n"
+        . "  white-space:pre-wrap; width:90%; overflow-y:visible; padding:8px; margin:1em 2em; background:#EEE; border:1px dashed #CCC;\n"
+        . "}\n"
+    );
+?>
+<h2><?=$this->transEsc('Upgrade VuFind')?></h2>
+<?=$this->flashmessages()?>
+<p>These SQL statements can be used to manually upgrade your database:</p>
+
+<textarea class="pre" rows="20"><?=trim($this->sql) ?></textarea>
+
+<form method="post" action="<?=$this->url('upgrade-showsql')?>">
+  <input class="btn btn-default" type="submit" name="continue" value="Next" />
+</form>

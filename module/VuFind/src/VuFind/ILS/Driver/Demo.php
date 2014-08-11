@@ -257,6 +257,25 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Generate an associative array containing some sort of ID (for cover
+     * generation).
+     *
+     * @return array
+     */
+    protected function getRandomItemIdentifier()
+    {
+        switch (rand(1, 4)) {
+        case 1:
+            return array('isbn' => '1558612742');
+        case 2:
+            return array('oclc' => '55114477');
+        case 3:
+            return array('issn' => '1133-0686');
+        }
+        return array('upc' => '733961100525');
+    }
+
+    /**
      * Generate a list of holds, storage retrieval requests or ILL requests.
      *
      * @param string $requestType Request type (Holds, StorageRetrievalRequests or
@@ -287,7 +306,8 @@ class Demo extends AbstractBase
                 "item_id" => $i,
                 "reqnum" => $i
             );
-
+            // Inject a random identifier of some sort:
+            $currentItem += $this->getRandomItemIdentifier();
             if ($i == 2 || rand()%5 == 1) {
                 // Mimic an ILL request
                 $currentItem["id"] = "ill_request_$i";
@@ -761,7 +781,7 @@ class Demo extends AbstractBase
 
                 if ($i == 2 || rand()%5 == 1) {
                     // Mimic an ILL loan
-                    $transList[] = array(
+                    $transList[] = $this->getRandomItemIdentifier() + array(
                         'duedate' => $due_date,
                         'dueStatus' => $dueStatus,
                         'barcode' => sprintf("%08d", rand()%50000),
@@ -774,10 +794,11 @@ class Demo extends AbstractBase
                         'title'   => "ILL Loan Title $i",
                         'institution_id' => 'ill_institution',
                         'institution_name' => 'ILL Library',
-                        'institution_dbkey' => 'ill_institution'
+                        'institution_dbkey' => 'ill_institution',
+                        'borrowingLocation' => 'ILL Service Desk'
                     );
                 } else {
-                    $transList[] = array(
+                    $transList[] = $this->getRandomItemIdentifier() + array(
                         'duedate' => $due_date,
                         'dueStatus' => $dueStatus,
                         'barcode' => sprintf("%08d", rand()%50000),
@@ -785,7 +806,8 @@ class Demo extends AbstractBase
                         'renewLimit' => $renewLimit,
                         'request' => $req,
                         'item_id' => $i,
-                        'renewable' => $renew < $renewLimit
+                        'renewable' => $renew < $renewLimit,
+                        'borrowingLocation' => $this->getFakeLoc()
                     );
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();

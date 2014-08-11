@@ -654,6 +654,32 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get hierarchical place names (MARC field 752)
+     *
+     * returns an array of formatted hierarchical place names, consisting of all
+     * alpha-subfields, concatenated for display
+     *
+     * @return array
+     */
+    public function getHierarchicalPlaceNames()
+    {
+        $placeNames = array();
+        if ($fields = $this->marcRecord->getFields('752')) {
+            foreach ($fields as $field) {
+                $subfields = $field->getSubfields();
+                $current = array();
+                foreach ($subfields as $subfield) {
+                    if (!is_numeric($subfield->getCode())) {
+                        $current[] = $subfield->getData();
+                    }
+                }
+                $placeNames[] = implode(' -- ', $current);
+            }
+        }
+        return $placeNames;
+    }
+
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *

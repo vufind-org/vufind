@@ -75,9 +75,9 @@ class Factory
      */
     public static function getAuthorNotes(ServiceManager $sm)
     {
-        return new AuthorNotes(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+            ->get('authornotes');
+        return new ContentLoader($loader);
     }
 
     /**
@@ -127,20 +127,6 @@ class Factory
     {
         return new DisplayLanguageOption(
             $sm->getServiceLocator()->get('VuFind\Translator')
-        );
-    }
-
-    /**
-     * Construct the Excerpt helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Excerpt
-     */
-    public static function getExcerpt(ServiceManager $sm)
-    {
-        return new Excerpt(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
 
@@ -197,7 +183,9 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $key = isset($config->GoogleAnalytics->apiKey)
             ? $config->GoogleAnalytics->apiKey : false;
-        return new GoogleAnalytics($key);
+        $universal = isset($config->GoogleAnalytics->universal)
+            ? $config->GoogleAnalytics->universal : false;
+        return new GoogleAnalytics($key, $universal);
     }
 
     /**
@@ -212,6 +200,21 @@ class Factory
         return new GetLastSearchLink(
             $sm->getServiceLocator()->get('VuFind\Search\Memory')
         );
+    }
+
+    /**
+     * Construct the HelpText helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HelpText
+     */
+    public static function getHelpText(ServiceManager $sm)
+    {
+        $lang = $sm->getServiceLocator()->has('VuFind\Translator')
+            ? $sm->getServiceLocator()->get('VuFind\Translator')->getLocale()
+            : 'en';
+        return new HelpText($sm->get('context'), $lang);
     }
 
     /**
@@ -349,20 +352,6 @@ class Factory
     {
         return new Related(
             $sm->getServiceLocator()->get('VuFind\RelatedPluginManager')
-        );
-    }
-
-    /**
-     * Construct the Reviews helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Reviews
-     */
-    public static function getReviews(ServiceManager $sm)
-    {
-        return new Reviews(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
 

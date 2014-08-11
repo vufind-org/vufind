@@ -531,4 +531,87 @@ class AbstractBase extends AbstractActionController
         $tagSetting = isset($config->Social->tags) ? $config->Social->tags : true;
         return $tagSetting && $tagSetting !== 'disabled';
     }
+
+    /**
+     * Store a referer (if appropriate) to keep post-login redirect pointing
+     * to an appropriate location. This is used when the user clicks the
+     * log in link from an arbitrary page or when a password is mistyped;
+     * separate logic is used for storing followup information when VuFind
+     * forces the user to log in from another context.
+     *
+     * @return void
+     */
+    protected function setFollowupUrlToReferer()
+    {
+        // Get the referer -- if it's empty, there's nothing to store!
+        $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        if (empty($referer)) {
+            return;
+        }
+        $refererNorm = $this->normalizeUrlForComparison($referer);
+
+        // If the referer lives outside of VuFind, don't store it! We only
+        // want internal post-login redirects.
+        $baseUrl = $this->getServerUrl('home');
+        $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
+        if (0 !== strpos($refererNorm, $baseUrlNorm)) {
+            return;
+        }
+
+        // If the referer is the MyResearch/Home action, it probably means
+        // that the user is repeatedly mistyping their password. We should
+        // ignore this and instead rely on any previously stored referer.
+        $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
+        $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
+        if ($mrhuNorm === $refererNorm) {
+            return;
+        }
+
+        // If we got this far, we want to store the referer:
+        $this->followup()->store(array(), $referer);
+    }
+
+    /**
+     * Normalize the referer URL so that inconsistencies in protocol and trailing
+     * slashes do not break comparisons.
+     *
+     * @param string $url URL to normalize
+     *
+     * @return string
+     */
+    protected function normalizeUrlForComparison($url)
+    {
+        $parts = explode('://', $url, 2);
+        return trim(end($parts), '/');
+    }
+
+    /**
+     * Retrieve a referer to keep post-login redirect pointing
+     * to an appropriate location.
+     * Unset the followup before returning.
+     *
+     * @return string
+     */
+    protected function getFollowupUrl()
+    {
+        $followup = $this->followup()->retrieve();
+        // followups aren't used in lightboxes.
+        if (isset($followup->url) && !$this->inLightbox()) {
+            return $followup->url;
+        }
+        return '';
+    }
+
+    /**
+     * Sometimes we need to unset the followup to trigger default behaviors
+     *
+     * @return void
+     */
+    protected function clearFollowupUrl()
+    {
+        $followup = $this->followup()->retrieve();
+        if (isset($followup->url)) {
+            unset($followup->url);
+        }
+    }
 }

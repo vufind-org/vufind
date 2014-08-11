@@ -135,6 +135,31 @@ class SearchRequestModel
         $this->setParameters($parameters);
     }
 
+    /**
+     * Format a date limiter
+     *
+     * @param string $filter Filter value
+     *
+     * @return string
+     */
+    protected function formatDateLimiter($filter)
+    {
+        // PublicationDate:[xxxx TO xxxx]
+        $dates = substr($filter, 17);
+        $dates = substr($dates, 0, strlen($dates)-1);
+        $parts = explode(' TO ', $dates, 2);
+        if (count($parts) == 2) {
+            $start = trim($parts[0]);
+            $end = trim($parts[1]);
+        }
+        if ('*' == $start || null == $start) {
+            $start = '0000';
+        }
+        if ('*' == $end || null == $end) {
+            $end = date('Y') + 1;
+        }
+        return "DT1:$start-01/$end-12";
+    }
 
     /**
      * Set properties from parameters
@@ -157,21 +182,7 @@ class SearchRequestModel
                     } else if (substr($filter, 0, 11) == 'SEARCHMODE:') {
                         $this->searchMode = substr($filter, 11, null);
                     } else if (substr($filter, 0, 15) == 'PublicationDate') {
-                        // PublicationDate:[xxxx TO xxxx]
-                        $dates = substr($filter, 17);
-                        $dates = substr($dates, 0, strlen($dates)-1);
-                        $parts = explode(' TO ', $dates, 2);
-                        if (count($parts) == 2) {
-                            $start = trim($parts[0]);
-                            $end = trim($parts[1]);
-                        }
-                        if ('*' == $start || null == $start) {
-                            $start = '0000';
-                        }
-                        if ('*' == $end || null == $end) {
-                            $end = $end = date('Y');
-                        }
-                        $this->addLimiter("DT1:$start-01/$end-12");
+                        $this->addLimiter($this->formatDateLimiter($filter));
                     } else {
                         $this->addFilter("$cnt,$filter");
                         $cnt++;
@@ -185,7 +196,6 @@ class SearchRequestModel
             }
         }
     }
-
 
     /**
      * Converts properties to a querystring to send to the EdsAPI
@@ -246,7 +256,6 @@ class SearchRequestModel
             $highlightVal = $this->highlight ? 'y' : 'n';
             $qs .= 'highlight='.$highlightVal.'&';
         }
-
 
         if (isset($this->actions) && 0 < sizeof($this->actions)) {
             for ($x=0; $x<sizeof($this->actions); $x++) {
@@ -312,10 +321,8 @@ class SearchRequestModel
             $qs['pagenumber'] = $this->pageNumber;
         }
 
-        if (isset($this->highlight)) {
-            $highlightVal = $this->highlight ? 'y' : 'n';
-            $qs['highlight']= $highlightVal;
-        }
+        $highlightVal = isset($this->highlight) && $this->highlight ? 'y' : 'n';
+        $qs['highlight']= $highlightVal;
 
         return $qs;
     }
@@ -339,7 +346,7 @@ class SearchRequestModel
     /**
      * Determines whether or not a querystring parameter is indexed
      *
-     * @param unknown $value parameter key to check
+     * @param string $value parameter key to check
      *
      * @return bool
      */
@@ -399,7 +406,6 @@ class SearchRequestModel
         $this->limiters[] = $limiter;
     }
 
-
     /**
      * Add a new expander
      *
@@ -423,7 +429,6 @@ class SearchRequestModel
     {
         $this->facetFilters[] = $facetFilter;
     }
-
 
     /**
      * Escape characters that may be present in the parameter syntax

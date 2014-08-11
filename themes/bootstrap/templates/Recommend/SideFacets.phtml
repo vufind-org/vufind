@@ -3,16 +3,22 @@
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <? endif; ?>
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
-  <? foreach ($checkboxFilters as $current): ?>
-    <div class="checkboxFilter<?=($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hide' : ''?>">
-      <label class="checkbox">
-        <input type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>"
-        <?=$current['selected'] ? 'checked="checked"' : ''?> id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"
-        onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])?>';" />
-        <?=$this->transEsc($current['desc'])?>
-      </label>
-    </div>
-  <? endforeach; ?>
+<?
+  $html = '';
+  $shown = 0;
+  foreach ($checkboxFilters as $current) {
+    $html .= '<label class="checkbox';
+    if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
+      $html .= ' hide';
+    } else {
+      $shown ++;
+    }
+    $html .= '"><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
+      '. ($current['selected'] ? 'checked="checked"' : '') .' id="'.$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])).'"
+      onclick="document.location.href=\''.($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).'</label>';
+  }
+?>
+  <div class="checkboxFilter<?if($shown == 0):?> hide<? endif; ?>"><?=$html ?></div>
 <? endif; ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
@@ -21,7 +27,7 @@
     <li class="nav-header"><?=$this->transEsc('Remove Filters')?></li>
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>
-        <? 
+        <?
           $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
           if ($index !== false) {
               unset($collapsedFacets[$index]); // Open if we have a match
@@ -125,9 +131,9 @@ JS;
           <li class="facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
             <span class="pull-right small">
               <? if ($allowExclude): ?>
-                <?=number_format($thisFacet['count'])?><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="icon-remove"></i></a>
+                <?=$this->localizedNumber($thisFacet['count'])?><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="icon-remove"></i></a>
               <? else: ?>
-                <?=number_format($thisFacet['count'])?>
+                <?=$this->localizedNumber($thisFacet['count'])?>
               <? endif; ?>
             </span>
             <a class="main" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">

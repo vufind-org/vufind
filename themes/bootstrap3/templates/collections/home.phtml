@@ -1,0 +1,65 @@
+<?
+  $this->headTitle($this->translate('Collection Browse'));
+  $this->layout()->breadcrumbs = '<a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a>';
+  $filterList = array();
+  $filterString = '';
+  foreach (isset($filters['Other']) ? $filters['Other'] : array() as $filter) {
+    $filter['urlPart'] = $filter['field'] . ':' . $filter['value'];
+    $filterList[] = $filter;
+    $filterString .= '&' . urlencode('filter[]') .  '=' . urlencode($filter['urlPart']);
+  }
+?>
+
+<? /* LOAD THE LINK INFORMATION INTO $pageLinks, similar to smarty's {capture} */ ?>
+<? ob_start(); ?>
+  <form class="form-inline" method="GET" action="<?=$this->url('collections-home')?>">
+    <ul class="pager">
+      <? if (isset($prevpage)): ?>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+      <? else: ?>
+        <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
+      <? endif; ?>
+      <? if (isset($nextpage)): ?>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->transEsc('Next')?> &raquo;</a></li>
+      <? else: ?>
+        <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
+      <? endif; ?>
+      <input type="submit" class="btn btn-default" value="<?=$this->transEsc('Jump to')?>" />
+      <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" />
+    </ul>
+  </form>
+<? $pageLinks = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
+
+<h2><?=$this->transEsc('Collection Browse')?></h2>
+
+<? if (!empty($filterList)): ?>
+  <strong><?=$this->transEsc('Remove Filters')?></strong>
+  <ul class="filters">
+  <? foreach ($filterList as $filter): ?>
+    <li>
+      <?
+        $removalUrl = $this->url('collections-home') . '?from=' . urlencode($from);
+        foreach ($filterList as $current) {
+          if ($current['urlPart'] != $filter['urlPart']) {
+            $removalUrl .= '&' . urlencode('filter[]') .  '=' . urlencode($current['urlPart']);
+          }
+        }
+      ?>
+      <a href="<?=$this->escapeHtmlAttr($removalUrl)?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="Delete"/></a>
+      <a href="<?=$this->escapeHtmlAttr($removalUrl)?>"><?=$this->escapeHtml($filter['displayText'])?></a>
+    </li>
+  <? endforeach; ?>
+  </ul>
+<? endif; ?>
+
+<ul class="pagination">
+  <? foreach ($letters as $letter): ?>
+    <li<? if($letter === $from): ?> class="active"<?endif?>><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->escapeHtml($letter)?></a></li>
+  <? endforeach; ?>
+</ul>
+<?=$pageLinks ?>
+<div class="clearfix">
+  <?=$this->render('collections/list.phtml')?>
+</div><br/>
+<?=$pageLinks ?>

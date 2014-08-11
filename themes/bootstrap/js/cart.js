@@ -1,4 +1,4 @@
-/*global Cookies, deparam, path, vufindString, Lightbox, updatePageForLogin */
+/*global Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -143,7 +143,9 @@ function registerUpdateCart($form) {
         $('#'+elId).data('popover').options.content = vufindString.bulk_noitems_advice;
       }
       $('#'+elId).popover('toggle');
-      clearTimeout(cartNotificationTimeout);
+      if (cartNotificationTimeout !== false) {
+          clearTimeout(cartNotificationTimeout);
+      }
       cartNotificationTimeout = setTimeout(function() {
         $('#'+elId).popover('hide');
       }, 5000);
@@ -195,36 +197,31 @@ $(document).ready(function() {
     var $form = $('form[name="bulkActionForm"]');
     registerUpdateCart($form);
   }
+  $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
 
   // Setup lightbox behavior
   // Cart lightbox
   $('#cartItems').click(function() {
     return Lightbox.get('Cart','Cart');
   });
-  $("#updateCart,#bottom_updateCart").popover({content:'error', html:true, trigger:'manual'});
-  // Overwrite new account form to return to cart
-  Lightbox.addFormCallback('accountForm', function() {
-    updatePageForLogin();
-    var params = deparam(Lightbox.openingURL);
+  // Overwrite
+  Lightbox.addFormCallback('accountForm', function(html) {
     updatePageForLogin();
     if (lastCartSubmit !== false) {
       cartSubmit(lastCartSubmit);
       lastCartSubmit = false;
-    } else if (params['subaction'] != 'Login') {
-      Lightbox.getByUrl(Lightbox.openingURL);
-      Lightbox.openingURL = false;
     } else {
-      Lightbox.close();
+      newAccountHandler(html);
     }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
     cartSubmit($(evt.target));
     return false;
   });
-  Lightbox.addFormCallback('bulkEmail', function() {
+  Lightbox.addFormCallback('bulkEmail', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('bulkSave', function() {
+  Lightbox.addFormCallback('bulkSave', function(html) {
     // After we close the lightbox, redirect to list view
     Lightbox.addCloseAction(function() {
       document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];

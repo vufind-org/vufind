@@ -212,6 +212,66 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test Google preview setting upgrade
+     *
+     * @return void
+     */
+    public function testGooglePreviewUpgrade()
+    {
+        $upgrader = $this->getUpgrader('googlepreview');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'noview,full', $results['config.ini']['Content']['GoogleOptions']['link']
+        );
+    }
+
+    /**
+     * Test Google-related warnings.
+     *
+     * @return void
+     */
+    public function testGoogleWarnings()
+    {
+        $upgrader = $this->getUpgrader('googlewarnings');
+        $upgrader->run();
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'The [GoogleSearch] section of config.ini is no '
+                . 'longer supported due to changes in Google APIs.',
+                $warnings
+            )
+        );
+        $this->assertTrue(
+            in_array(
+                'The [GoogleAnalytics] universal setting is off. See config.ini '
+                . 'for important information on how to upgrade your Analytics.',
+                $warnings
+            )
+        );
+    }
+
+    /**
+     * Test WorldCat-related warnings.
+     *
+     * @return void
+     */
+    public function testWorldCatWarnings()
+    {
+        $upgrader = $this->getUpgrader('worldcatwarnings');
+        $upgrader->run();
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'The [WorldCat] LimitCodes setting never had any effect and has been'
+                . ' removed.',
+                $warnings
+            )
+        );
+    }
+
+    /**
      * Test "meaningful line" detection in SolrMarc properties files.
      *
      * @return void

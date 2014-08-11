@@ -42,26 +42,102 @@ use VuFind\I18n\Translator\TranslatorAwareInterface,
  */
 abstract class Options implements TranslatorAwareInterface
 {
-    // Available sort options
+    /**
+     * Available sort options
+     *
+     * @var array
+     */
     protected $sortOptions = array();
+
+    /**
+     * Overall default sort option
+     *
+     * @var string
+     */
     protected $defaultSort = 'relevance';
+
+    /**
+     * Handler-specific defaults
+     *
+     * @var array
+     */
     protected $defaultSortByHandler = array();
+
+    /**
+     * RSS-specific sort option
+     *
+     * @var string
+     */
     protected $rssSort = null;
 
-    // Search options for the user
+    /**
+     * Default search handler
+     *
+     * @var string
+     */
     protected $defaultHandler = null;
+
+    /**
+     * Advanced search handlers
+     *
+     * @var array
+     */
     protected $advancedHandlers = array();
+
+    /**
+     * Basic search handlers
+     *
+     * @var array
+     */
     protected $basicHandlers = array();
+
+    /**
+     * Special advanced facet settings
+     *
+     * @var string
+     */
     protected $specialAdvancedFacets = '';
+
+    /**
+     * Should we retain filters by default?
+     *
+     * @var bool
+     */
     protected $retainFiltersByDefault = true;
+
+    /**
+     * Default filters to apply to new searches
+     *
+     * @var array
+     */
     protected $defaultFilters = array();
 
-    // Available limit options
+    /**
+     * Default limit option
+     *
+     * @var int
+     */
     protected $defaultLimit = 20;
+
+    /**
+     * Available limit options
+     *
+     * @var array
+     */
     protected $limitOptions = array();
 
-    // Available view options
+    /**
+     * Default view option
+     *
+     * @var string
+     */
     protected $defaultView = 'list';
+
+    /**
+     * Available view options
+     *
+     * @var array
+     */
     protected $viewOptions = array();
 
     /**
@@ -78,9 +154,25 @@ abstract class Options implements TranslatorAwareInterface
      */
     protected $spellcheck = true;
 
-    // Shard settings
+    /**
+     * Available shards
+     *
+     * @var array
+     */
     protected $shards = array();
+
+    /**
+     * Default selected shards
+     *
+     * @var array
+     */
     protected $defaultSelectedShards = array();
+
+    /**
+     * Should we present shard checkboxes to the user?
+     *
+     * @var bool
+     */
     protected $visibleShardCheckboxes = false;
 
     /**

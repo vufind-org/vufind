@@ -46,8 +46,8 @@
   <? elseif ($recordTotal > 0): ?>
     <div class="pull-right">
       <?=$this->transEsc("Showing")?>
-      <strong><?=$this->escapeHtml($this->results->getStartRecord())?></strong> - <strong><?=$this->escapeHtml($this->results->getEndRecord())?></strong>
-      <?=$this->transEsc('of')?> <strong><?=number_format($recordTotal)?></strong>
+      <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
+      <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
     </div>
     <h2><?=$this->transEsc("Your Favorites")?></h2>
   <? endif; ?>

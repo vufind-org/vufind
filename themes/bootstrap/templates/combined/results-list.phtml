@@ -24,9 +24,9 @@
   <div class="pull-left help-block">
     <? if ($recordTotal > 0): ?>
       <?=$this->transEsc("Showing")?>
-      <strong><?=$results->getStartRecord()?></strong> - <strong><?=$results->getEndRecord()?></strong>
+      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
       <? if (!isset($view->skipTotalCount)): ?>
-        <?=$this->transEsc('of')?> <strong><?=number_format($recordTotal)?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
       <? endif; ?>
       <? if (isset($view->overrideSearchHeading)): ?>
         <?=$view->overrideSearchHeading?>
@@ -34,7 +34,7 @@
         <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
       <? endif; ?>
       <? if ($qtime = $results->getQuerySpeed()): ?>
-        <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
+        <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
       <? endif; ?>
       <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $results, $this); ?>
     <? else: ?>

@@ -23,6 +23,9 @@
         )
     );
 
+    // Create shortcut to combined results (since $this->results may get overwritten in processing below):
+    $combinedResults = $this->results;
+
     // Set up breadcrumbs:
     if (isset($this->overrideTitle)) {
         $this->layout()->breadcrumbs = '<em>' . $this->escapeHtml($this->overrideTitle) . '</em>';
@@ -34,20 +37,28 @@
     // Load Javascript dependencies into header:
     $this->headScript()->appendFile("check_item_statuses.js");
     $this->headScript()->appendFile("check_save_statuses.js");
+    // Style
+    $this->headLink()->appendStylesheet('combined.css');
 ?>
 <div>
-  <?=$this->flashmessages()?>
-  <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
-    <div class="combinedResult" id="combined_<?=$this->escapeHtml($searchClassId)?>">
-      <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
-        <?=$this->render('combined/results-ajax.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
-      <? else: ?>
-        <?=$this->render('combined/results-list.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
-      <? endif; ?>
+  <? $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
+    <div>
+      <? foreach ($recs as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
     </div>
-  <? endforeach; ?>
+  <? endif; ?>
+  <?=$this->flashmessages()?>
+  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', array('searchClassId' => $searchClassId, 'combinedResults' => $this->combinedResults))?>
 </div>
 <? /* End Main Listing */ ?>
 
 <div class="clear"></div>
 
+<? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
+  <div>
+    <? foreach ($recs as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+  </div>
+<? endif; ?>

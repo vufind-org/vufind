@@ -247,6 +247,51 @@ $config = array(
                     'tagautocomplete' => 'Tag',
                 ),
             ),
+            'content' => array(
+                'factories' => array(
+                    'authornotes' => 'VuFind\Content\Factory::getAuthorNotes',
+                    'excerpts' => 'VuFind\Content\Factory::getExcerpts',
+                    'reviews' => 'VuFind\Content\Factory::getReviews',
+                ),
+            ),
+            'content_authornotes' => array(
+                'factories' => array(
+                    'syndetics' => 'VuFind\Content\AuthorNotes\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\AuthorNotes\Factory::getSyndeticsPlus',
+                ),
+            ),
+            'content_excerpts' => array(
+                'factories' => array(
+                    'syndetics' => 'VuFind\Content\Excerpts\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\Excerpts\Factory::getSyndeticsPlus',
+                ),
+            ),
+            'content_covers' => array(
+                'factories' => array(
+                    'amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
+                    'booksite' => 'VuFind\Content\Covers\Factory::getBooksite',
+                    'contentcafe' => 'VuFind\Content\Covers\Factory::getContentCafe',
+                    'syndetics' => 'VuFind\Content\Covers\Factory::getSyndetics',
+                ),
+                'invokables' => array(
+                    'google' => 'VuFind\Content\Covers\Google',
+                    'librarything' => 'VuFind\Content\Covers\LibraryThing',
+                    'openlibrary' => 'VuFind\Content\Covers\OpenLibrary',
+                    'summon' => 'VuFind\Content\Covers\Summon',
+                ),
+            ),
+            'content_reviews' => array(
+                'factories' => array(
+                    'amazon' => 'VuFind\Content\Reviews\Factory::getAmazon',
+                    'amazoneditorial' => 'VuFind\Content\Reviews\Factory::getAmazonEditorial',
+                    'booksite' => 'VuFind\Content\Reviews\Factory::getBooksite',
+                    'syndetics' => 'VuFind\Content\Reviews\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\Reviews\Factory::getSyndeticsPlus',
+                ),
+                'invokables' => array(
+                    'guardian' => 'VuFind\Content\Reviews\Guardian',
+                ),
+            ),
             'db_table' => array(
                 'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
                 'factories' => array(
@@ -323,6 +368,7 @@ $config = array(
                     'authorityrecommend' => 'VuFind\Recommend\Factory::getAuthorityRecommend',
                     'catalogresults' => 'VuFind\Recommend\Factory::getCatalogResults',
                     'collectionsidefacets' => 'VuFind\Recommend\Factory::getCollectionSideFacets',
+                    'dplaterms' => 'VuFind\Recommend\Factory::getDPLATerms',
                     'europeanaresults' => 'VuFind\Recommend\Factory::getEuropeanaResults',
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
                     'favoritefacets' => 'VuFind\Recommend\Factory::getFavoriteFacets',
@@ -334,6 +380,7 @@ $config = array(
                     'summontopics' => 'VuFind\Recommend\Factory::getSummonTopics',
                     'switchquery' => 'VuFind\Recommend\Factory::getSwitchQuery',
                     'topfacets' => 'VuFind\Recommend\Factory::getTopFacets',
+                    'visualfacets' => 'VuFind\Recommend\Factory::getVisualFacets',
                     'webresults' => 'VuFind\Recommend\Factory::getWebResults',
                     'worldcatidentities' => 'VuFind\Recommend\Factory::getWorldCatIdentities',
                     'worldcatterms' => 'VuFind\Recommend\Factory::getWorldCatTerms',
@@ -380,6 +427,7 @@ $config = array(
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
                     'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
+                    'preview' => 'VuFind\RecordTab\Factory::getPreview',
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
@@ -500,6 +548,7 @@ $config = array(
                     'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
                     'Details' => 'StaffViewArray',
                 ),
                 'defaultTab' => null,
@@ -515,6 +564,7 @@ $config = array(
                     'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
                     'Details' => 'StaffViewArray',
                 ),
                 'defaultTab' => null,
@@ -530,6 +580,7 @@ $config = array(
                     'Holdings' => 'HoldingsILS', 'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewArray',
                 ),
@@ -540,6 +591,7 @@ $config = array(
                     'Holdings' => 'HoldingsILS', 'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewMARC',
                 ),
@@ -550,6 +602,7 @@ $config = array(
                     'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
                     'Details' => 'StaffViewArray',
                 ),
                 'defaultTab' => null,
@@ -583,7 +636,7 @@ $recordRoutes = array(
 // URLs are hard-coded to specific actions; this array lists those actions.
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
-    'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest',
+    'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest', 'AjaxTab',
     'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest', 'PDF',
 );
 

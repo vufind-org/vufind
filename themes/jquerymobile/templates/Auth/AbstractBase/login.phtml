@@ -16,7 +16,7 @@
     <a rel="external" data-role="button" class="new_account" href="<?=$this->url('myresearch-account')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
   <? endif; ?>
   <? if ($account->supportsRecovery()): ?>
-    <a rel="external" data-role="button" class="recover_password" href="<?=$this->url('myresearch-recover')?>"><?=$this->transEsc('Forgot Password')?></a>
+    <a rel="external" data-role="button" class="recover_password" href="<?=$this->url('myresearch-recover')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
   <? endif; ?>
 <? else: ?>
   <a rel="external" data-role="button" href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>

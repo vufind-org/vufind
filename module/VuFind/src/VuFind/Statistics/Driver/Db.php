@@ -55,6 +55,13 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      */
     public function write($data, $userData)
     {
+        // Unset the coded-in datestamp, since the database will auto-generate
+        // it internally with greater accuracy.
+        unset($userData['datestamp']);
+
+        // Make sure the browser version is a legal length.
+        $userData['browserVersion'] = substr($userData['browserVersion'], 0, 8);
+
         $this->getTable('UserStatsFields')->save($data, $userData);
     }
 

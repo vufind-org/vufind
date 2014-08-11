@@ -95,10 +95,20 @@ class CombinedController extends AbstractSearch
         $headers->addHeaderLine('Content-type', 'text/html');
         $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
         $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
-        $html = $this->getViewRenderer()->render(
-            'combined/results-list.phtml',
-            array('searchClassId' => $searchClassId, 'currentSearch' => $settings)
-        );
+
+        // Should we suppress content due to emptiness?
+        if (isset($settings['hide_if_empty']) && $settings['hide_if_empty']
+            && $settings['view']->results->getResultTotal() == 0
+        ) {
+            $html = '';
+        } else {
+            $html = $this->getViewRenderer()->render(
+                'combined/results-list.phtml',
+                array(
+                    'searchClassId' => $searchClassId, 'currentSearch' => $settings
+                )
+            );
+        }
         $response->setContent($html);
         return $response;
     }
@@ -113,6 +123,7 @@ class CombinedController extends AbstractSearch
         // Set up current request context:
         $results = $this->getResultsManager()->get('Combined');
         $params = $results->getParams();
+        $params->recommendationsEnabled(true);
         $params->initFromRequest(
             new Parameters(
                 $this->getRequest()->getQuery()->toArray()
@@ -133,6 +144,10 @@ class CombinedController extends AbstractSearch
             ->toArray();
         $supportsCart = false;
         foreach ($config as $current => $settings) {
+            // Special case -- ignore recommendation config:
+            if ($current == 'Layout' || $current == 'RecommendationModules') {
+                continue;
+            }
             $this->adjustQueryForSettings($settings);
             $currentOptions = $options->get($current);
             if ($currentOptions->supportsCart()) {
@@ -153,12 +168,29 @@ class CombinedController extends AbstractSearch
             }
         }
 
+        // Run the search to obtain recommendations:
+        $results->performAndProcessSearch();
+
+        $columns = isset($config['Layout']['columns'])
+        && intval($config['Layout']['columns']) <= count($combinedResults)
+            ? intval($config['Layout']['columns'])
+            : count($combinedResults);
+        $placement = isset($config['Layout']['stack_placement'])
+            ? $config['Layout']['stack_placement']
+            : 'distributed';
+        if (!in_array($placement, array('distributed', 'left', 'right'))) {
+            $placement = 'distributed';
+        }
+
         // Build view model:
         return $this->createViewModel(
             array(
-                'results' => $results,
-                'params' => $params,
+                'columns' => $columns,
                 'combinedResults' => $combinedResults,
+                'config' => $config,
+                'params' => $params,
+                'placement' => $placement,
+                'results' => $results,
                 'supportsCart' => $supportsCart,
             )
         );
@@ -210,5 +242,8 @@ class CombinedController extends AbstractSearch
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
         $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
+
+        // Disable recommendations:
+        $query->noRecommend = 1;
     }
 }

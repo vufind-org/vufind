@@ -7,7 +7,7 @@
         . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span> </li>'
         . '<li class="active">' . $this->transEsc('request_place_text') . '</li>';
 ?>
-<h2><?=$this->transEsc('request_place_text')?></h2>
+<p class="lead"><?=$this->transEsc('request_place_text')?></p>
 <? if ($this->helpText): ?>
 <p class="helptext"><?=$this->helpText?></p>
 <? endif; ?>

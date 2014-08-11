@@ -73,7 +73,7 @@
               <dd class="facet<?=$thisFacet['operator'] ?> applied"<? if($thisFacet['operator'] == 'OR'): ?> href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>"<? endif ?>><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></dd>
             <? else: ?>
               <dd>
-                <a class="facet<?=$thisFacet['operator'] ?>" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->escapeHtml($thisFacet['count'])?>)
+                <a class="facet<?=$thisFacet['operator'] ?>" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->localizedNumber($thisFacet['count'])?>)
                 <? if ($allowExclude): ?>
                   <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><img src="<?=$this->imageLink('fugue/cross-small.png')?>" alt="Delete"/></a>
                 <? endif; ?>

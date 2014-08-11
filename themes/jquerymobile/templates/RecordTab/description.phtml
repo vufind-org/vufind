@@ -171,6 +171,16 @@
     </dd>
   <? endif; ?>
 
+  <? $publicationPlaces = $this->driver->getHierarchicalPlaceNames(); if (!empty($publicationPlaces)): ?>
+    <? $contentDisplayed = true; ?>
+    <dt><?=$this->transEsc('Publication_Place')?>: </dt>
+    <dd>
+      <? foreach ($publicationPlaces as $field): ?>
+         <p><?=$this->escapeHtml($field)?></p>
+      <? endforeach; ?>
+    </dd>
+    <? endif; ?>
+
   <? if (!isset($contentDisplayed) || !$contentDisplayed): // Avoid errors if there were no rows above ?>
     <dd><p><?=$this->transEsc('no_description')?></p></dd>
   <? endif; ?>

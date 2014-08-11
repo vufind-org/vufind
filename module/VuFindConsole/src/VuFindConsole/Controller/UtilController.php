@@ -457,6 +457,19 @@ class UtilController extends AbstractBase
     }
 
     /**
+     * Compile CSS files from LESS.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function cssbuilderAction()
+    {
+        $argv = $this->consoleOpts->getRemainingArgs();
+        $compiler = new \VuFindTheme\LessCompiler();
+        $compiler->compile($argv);
+        return $this->getSuccessResponse();
+    }
+
+    /**
      * Abstract delete method.
      *
      * @param string $table         Table to operate on.

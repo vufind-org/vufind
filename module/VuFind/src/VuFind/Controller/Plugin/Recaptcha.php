@@ -123,11 +123,15 @@ class Recaptcha extends AbstractPlugin
         $recaptchaResponse = $this->getController()->params()
             ->fromPost('recaptcha_response_field', 'manual_challenge');
         if (!empty($recaptchaChallenge)) {
-            $result = $this->recaptcha->verify(
-                $recaptchaChallenge,
-                $recaptchaResponse
-            );
-            $captchaPassed = $result->isValid();
+            try {
+                $result = $this->recaptcha->verify(
+                    $recaptchaChallenge,
+                    $recaptchaResponse
+                );
+            } catch (\ZendService\ReCaptcha\Exception $e) {
+                $result = false;
+            }
+            $captchaPassed = $result && $result->isValid();
             if (!$captchaPassed) {
                 if ($this->errorMode == 'flash') {
                     $this->getController()->flashMessenger()->setNamespace('error')

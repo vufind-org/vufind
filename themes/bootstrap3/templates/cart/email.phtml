@@ -1,0 +1,66 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('email_selected_favorites'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+    . '<li><a href="' .$this->url('cart-home'). '">' .$this->transEsc('Cart'). '</a></li> '
+    . '<li class="active">' . $this->transEsc('email_selected_favorites') . '</li>';
+?>
+<?=$this->flashmessages()?>
+<form class="form-horizontal" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
+  <? foreach ($this->records as $current): ?>
+    <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+  <? endforeach; ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label"><?=$this->transEsc('Title')?></label>
+    <div class="col-sm-9">
+    <? if(count($this->records) > 1): ?>
+        <button type="button" class="btn hidden" data-toggle="collapse" data-target="#itemhide">
+          <?=count($this->records).' '.$this->transEsc('items') ?>
+        </button>
+        <div id="itemhide" class="collapse in">
+          <ul>
+            <? foreach ($this->records as $current): ?>
+              <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+            <? endforeach; ?>
+          </ul>
+        </div>
+    <? else: ?>
+      <span class="uneditable-input"><?=$this->records[0]->getBreadcrumb() ?></span>
+    <? endif; ?>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
+    <div class="col-sm-9">
+      <input id="email_to" type="email" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" class="form-control" oninvalid="$('#modal .fa-spinner').remove()"/>
+    </div>
+  </div>
+  <? if (!$this->disableFrom): ?>
+    <div class="form-group">
+      <label class="col-sm-3 control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
+      <div class="col-sm-9">
+        <input id="email_from" type="email" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="form-control" oninvalid="$('#modal .fa-spinner').remove()"/>
+      </div>
+    </div>
+  <? endif; ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
+    <div class="col-sm-9">
+      <textarea id="email_message" name="message" rows="3" cols="40" class="form-control"><?=isset($this->message) ? $this->message : ''?></textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-9 col-sm-offset-3">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
+    </div>
+  </div>
+</form>
+<?
+  $script = <<<JS
+    $('button.btn.hidden').removeClass('hidden');
+    $('.collapse.in').removeClass('in');
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
