@@ -227,7 +227,7 @@ var Lightbox = {
           } catch(error) {
             Lightbox.changeContent('<p class="alert alert-danger">'+d.responseText+'</p>');
           }
-        } else {
+        } else if(d.status > 0) {
           Lightbox.changeContent('<p class="alert alert-danger">'+d.statusText+' ('+d.status+')</p>');
         }
         console.log(e,d); // Error reporting

@@ -90,10 +90,11 @@ class Connector
      * @param string     $apiId  Primo API ID
      * @param string     $inst   Institution code
      * @param HttpClient $client HTTP client
+     * @param int        $port   API connection port
      */
-    public function __construct($apiId, $inst, $client)
+    public function __construct($apiId, $inst, $client, $port = 1701)
     {
-        $this->host = "http://$apiId.hosted.exlibrisgroup.com:1701/"
+        $this->host = "http://$apiId.hosted.exlibrisgroup.com:{$port}/"
             . "PrimoWebServices/xservice/search/brief?";
         $this->inst = $inst;
         $this->client = $client;
@@ -409,8 +410,8 @@ class Connector
         //   except those with namespaces
         $items = array();
 
-        $docset = $sxe->xpath('//sear:DOC');
-        if (empty($docset)) {
+        $docset = isset($namespaces['sear']) ? $sxe->xpath('//sear:DOC') : array();
+        if (empty($docset) && isset($sxe->JAGROOT->RESULT->DOCSET->DOC)) {
             $docset = $sxe->JAGROOT->RESULT->DOCSET->DOC;
         }
 
@@ -494,15 +495,15 @@ class Connector
             //    (string)$prefix->PrimoNMBib->record->display->lds50;
 
             // Get the URL, which has a separate namespace
-            $sear = $doc->children($namespaces['sear']);
+            if (isset($namespaces['sear'])) {
+                $sear = $doc->children($namespaces['sear']);
+                $item['url'] = !empty($sear->LINKS->openurl)
+                    ? (string)$sear->LINKS->openurl
+                    : (string)$sear->GETIT->attributes()->GetIt2;
+            }
 
-            $att = 'GetIt2';
-            $item['url'] = !empty($sear->LINKS->openurl) ?
-                           (string)$sear->LINKS->openurl :
-                           (string)$sear->GETIT->attributes()->$att;
+            $item['fullrecord'] = $prefix->PrimoNMBib->record->asXml();
             $items[] = $item;
-
-            //var_dump($sear->GETIT->attributes()->$att);
         }
 
         // Set up variables with needed attribute names
@@ -518,7 +519,8 @@ class Connector
         //   because child elements have a namespace prefix
         $facets = array();
 
-        $facetSet = $sxe->xpath('//sear:FACET');
+        $facetSet = isset($namespaces['sear'])
+            ? $sxe->xpath('//sear:FACET') : array();
         if (empty($facetSet)) {
             if (!empty($sxe->JAGROOT->RESULT->FACETLIST)) {
                 $facetSet = $sxe->JAGROOT->RESULT->FACETLIST
@@ -541,11 +543,11 @@ class Connector
             }
         }
 
-        $dym_att = 'QUERY';
         $didYouMean = array();
-
-        foreach ($sxe->xpath('//sear:QUERYTRANSFORMS') as $suggestion) {
-            $didYouMean[] = (string)$suggestion->attributes()->$dym_att;
+        $suggestions = isset($namespaces['sear'])
+            ? $sxe->xpath('//sear:QUERYTRANSFORMS') : array();
+        foreach ($suggestions as $suggestion) {
+            $didYouMean[] = (string)$suggestion->attributes()->QUERY;
         }
 
         return array(

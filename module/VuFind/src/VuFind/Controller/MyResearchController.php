@@ -1127,7 +1127,7 @@ class MyResearchController extends AbstractBase
         // If we have a submitted form
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             if ($user) {
-                $this->sendRecoveryEmail($user, $this->getConfig());
+                $this->sendRecoveryEmail($user, $this->getConfig(), $method);
             } else {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_user_not_found');
@@ -1141,10 +1141,11 @@ class MyResearchController extends AbstractBase
      *
      * @param \VuFind\Db\Row\User $user   User object we're recovering
      * @param \VuFind\Config      $config Configuration object
+     * @param string              $method Active authentication method
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendRecoveryEmail($user, $config)
+    protected function sendRecoveryEmail($user, $config, $method)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1173,7 +1174,7 @@ class MyResearchController extends AbstractBase
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verify')
                                 . '?hash='
-                                . $user->verify_hash
+                                . $user->verify_hash . '&auth_method=' . $method
                         )
                     );
                     $this->getServiceLocator()->get('VuFind\Mailer')->send(
@@ -1217,6 +1218,7 @@ class MyResearchController extends AbstractBase
                 // If the hash is valid, forward user to create new password
                 if (null != $user) {
                     $view = $this->createViewModel();
+                    $view->auth_method = $this->params()->fromQuery('auth_method');
                     $view->hash = $hash;
                     $view->username = $user->username;
                     $view->useRecaptcha
