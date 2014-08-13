@@ -104,6 +104,8 @@ $config = array(
             'qrcode' => 'VuFind\Controller\QRCodeController',
             'pazpar2' => 'VuFind\Controller\Pazpar2Controller',
             'records' => 'VuFind\Controller\RecordsController',
+            'rdsindex' => 'VuFind\Controller\RDSIndexController',
+            'rdsindexrecord' => 'VuFind\Controller\RDSIndexrecordController',
             'search' => 'VuFind\Controller\SearchController',
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
@@ -683,6 +685,12 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
+                    'solrrdsindex' => function ($sm) {
+                        return new \VuFind\RecordDriver\RDSIndex(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('RDSIndex')
+                        );
+                    },
                     'solrdefault' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrDefault(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
@@ -854,6 +862,7 @@ $config = array(
             'search_backend' => array(
                 'factories' => array(
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
+		    'RDSIndex' => 'VuFind\Search\Factory\RDSIndexBackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
@@ -957,6 +966,12 @@ $config = array(
                  ),
                 'defaultTab' => null,
             ),
+            'VuFind\RecordDriver\RDSIndex' => array(
+                'tabs' => array (
+                    'Details' => 'StaffViewMARC',
+                 ),
+                'defaultTab' => null,
+            ),
             'VuFind\RecordDriver\SolrAuth' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
@@ -1010,6 +1025,7 @@ $recordRoutes = array(
     'record' => 'Record',
     'collection' => 'Collection',
     'missingrecord' => 'MissingRecord',
+    'rdsindexrecord' => 'RDSIndexrecord',
     'solrauthrecord' => 'Authority',
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
@@ -1044,6 +1060,7 @@ $staticRoutes = array(
     'MyResearch/SaveSearch',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
+    'RDSIndex/Advanced', 'RDSIndex/Home', 'RDSIndex/Search',
     'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',
     'Search/NewItem', 'Search/OpenSearch', 'Search/Reserves', 'Search/Results',
     'Search/Suggest',
