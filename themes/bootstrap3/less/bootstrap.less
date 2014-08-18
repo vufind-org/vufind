@@ -161,6 +161,13 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     cursor:pointer;
     &.collapsed {
       border-radius:@border-radius-base;
+      &:after {
+        content:'\25BC';
+      }
+    }
+    &:after {
+      content:'\25B2';
+      float:right;
     }
   }
   .collapse,.collapsing {
