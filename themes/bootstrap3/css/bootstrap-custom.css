@@ -129,12 +129,19 @@ label.list-group-item {
   }
 }
 
-.sidebar .title.collapsed {
+.sidebar .title {
   cursor: pointer;
 }
+.sidebar .title:before {
+  content:'\25B2';
+  float:right;
+}
 
-.sidebar .title.collapsed.collapsed {
+.sidebar .title.collapsed {
   border-radius: 4px;
+}
+.sidebar .title.collapsed:before {
+  content:'\25BC';
 }
 
 .sidebar .collapse .list-group-item,.sidebar .collapsing .list-group-item {
