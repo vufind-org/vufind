@@ -145,7 +145,7 @@ class CombinedController extends AbstractSearch
         $supportsCart = false;
         foreach ($config as $current => $settings) {
             // Special case -- ignore recommendation config:
-            if ($current == 'RecommendationModules') {
+            if ($current == 'Layout' || $current == 'RecommendationModules') {
                 continue;
             }
             $this->adjustQueryForSettings($settings);
@@ -171,12 +171,26 @@ class CombinedController extends AbstractSearch
         // Run the search to obtain recommendations:
         $results->performAndProcessSearch();
 
+        $columns = isset($config['Layout']['columns'])
+        && intval($config['Layout']['columns']) <= count($combinedResults)
+            ? intval($config['Layout']['columns'])
+            : count($combinedResults);
+        $placement = isset($config['Layout']['stack_placement'])
+            ? $config['Layout']['stack_placement']
+            : 'distributed';
+        if (!in_array($placement, array('distributed', 'left', 'right'))) {
+            $placement = 'distributed';
+        }
+
         // Build view model:
         return $this->createViewModel(
             array(
-                'results' => $results,
-                'params' => $params,
+                'columns' => $columns,
                 'combinedResults' => $combinedResults,
+                'config' => $config,
+                'params' => $params,
+                'placement' => $placement,
+                'results' => $results,
                 'supportsCart' => $supportsCart,
             )
         );

@@ -199,4 +199,36 @@ class Factory
             || ($cfg->Social->comments && $cfg->Social->comments !== 'disabled');
         return new UserComments($enabled);
     }
+
+    /**
+     * Factory for Preview tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Preview
+     */
+    public static function getPreview(ServiceManager $sm)
+    {
+        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        // currently only active if config [content] [previews] contains google
+        // and googleoptions[tab] is not empty.
+        $active = false;
+        if (isset($cfg->Content->previews)) {
+            $content_previews = explode(
+                ',', strtolower(str_replace(' ', '', $cfg->Content->previews))
+            );
+            if (in_array('google', $content_previews)
+                && isset($cfg->Content->GoogleOptions)
+            ) {
+                $g_options = $cfg->Content->GoogleOptions;
+                if (isset($g_options->tab)) {
+                    $tabs = explode(',', $g_options->tab);
+                    if (count($tabs) > 0) {
+                        $active = true;
+                    }
+                }
+            }
+        }
+        return new Preview($active);
+    }
 }

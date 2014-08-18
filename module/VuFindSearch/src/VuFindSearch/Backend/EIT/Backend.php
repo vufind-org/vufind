@@ -36,9 +36,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use VuFindSearch\Backend\BackendInterface;
-
-use Zend\Log\LoggerInterface;
+use VuFindSearch\Backend\AbstractBackend;
 
 /**
  * EIT backend.
@@ -49,35 +47,14 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface
+class Backend extends AbstractBackend
 {
-    /**
-     * Record collection factory.
-     *
-     * @var RecordCollectionFactoryInterface
-     */
-    protected $collectionFactory;
-
-    /**
-     * Logger, if any.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
-
     /**
      * Connector.
      *
      * @var Connector
      */
     protected $connector;
-
-    /**
-     * Backend identifier.
-     *
-     * @var string
-     */
-    protected $identifier;
 
     /**
      * Query builder.
@@ -99,34 +76,6 @@ class Backend implements BackendInterface
     ) {
         $this->setRecordCollectionFactory($factory);
         $this->connector    = $connector;
-        $this->identifier   = null;
-    }
-
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
-
-    /**
-     * Set the backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setIdentifier($identifier)
-    {
-        $this->identifier = $identifier;
     }
 
     /**
@@ -144,7 +93,7 @@ class Backend implements BackendInterface
     ) {
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params, $offset, $limit);
-        $this->debug(print_r($response, true));
+        $this->log('debug', print_r($response, true));
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
@@ -164,18 +113,6 @@ class Backend implements BackendInterface
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
-    }
-
-    /**
-     * Set the Logger.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -208,29 +145,6 @@ class Backend implements BackendInterface
     }
 
     /**
-     * Return backend identifier.
-     *
-     * @return string
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
-    }
-
-    /**
-     * Set the record collection factory.
-     *
-     * @param RecordCollectionFactoryInterface $factory Factory
-     *
-     * @return void
-     */
-    public function setRecordCollectionFactory(
-        RecordCollectionFactoryInterface $factory
-    ) {
-        $this->collectionFactory = $factory;
-    }
-
-    /**
      * Return the record collection factory.
      *
      * Lazy loads a generic collection factory.
@@ -253,38 +167,6 @@ class Backend implements BackendInterface
     }
 
     /// Internal API
-
-    /**
-     * Inject source identifier in record collection and all contained records.
-     *
-     * @param ResponseInterface $response Response
-     *
-     * @return void
-     */
-    protected function injectSourceIdentifier(RecordCollectionInterface $response)
-    {
-        $response->setSourceIdentifier($this->identifier);
-        foreach ($response as $record) {
-            $record->setSourceIdentifier($this->identifier);
-        }
-        return $response;
-    }
-
-    /**
-     * Send a message to the logger.
-     *
-     * @param string $level   Log level
-     * @param string $message Log message
-     * @param array  $context Log context
-     *
-     * @return void
-     */
-    protected function log($level, $message, array $context = array())
-    {
-        if ($this->logger) {
-            $this->logger->$level($message, $context);
-        }
-    }
 
     /**
      * Create record collection.

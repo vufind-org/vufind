@@ -139,9 +139,6 @@ header {
   }
   .searchbox {
     display:block !important;
-    .nav-tabs {
-      padding:0 6px;
-    }
     .tab-content {
       border:0;
       .navbar-text {
@@ -166,7 +163,7 @@ header {
     margin-bottom:2px;
   }
 }
-#searchForm_lookfor {
+#searchForm_lookfor,#searchForm_type {
   border-color:@brand-primary;
 }
 [name=searchForm] {
@@ -184,6 +181,7 @@ header {
   }
   .nav-tabs {
     border-bottom:0;
+    padding:0 6px;
     li {
       a {
         margin-bottom:-1px;
@@ -237,6 +235,10 @@ footer {
 .bulkActionButtons {margin-bottom:6px}
 .left {text-align:center}
 .result {
+  .label {
+    display:inline-block;
+    margin-bottom:4px;
+  }
   .savedLists {
     margin:0 0 4px 0;
     padding:4px 0 4px 6px;

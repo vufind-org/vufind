@@ -11,10 +11,10 @@
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <div class="col-sm-3">
     <? if ($thumb): ?>
-        <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
     <? else: ?>
       <div class="clearfix">
-        <span class="summcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
+        <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
       </div>
     <? endif; ?>
     <? if ($pubType): ?>
@@ -25,7 +25,7 @@
       <? $pLink = $this->driver->getPLink();
           if($pLink): ?>
         <span>
-          <a href="<?=$pLink?>">
+          <a href="<?=$this->escapeHtmlAttr($pLink)?>">
             <?=$this->transEsc('View in EDS')?>
           </a>
         </span><br />
@@ -54,7 +54,7 @@
               $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
               $name = isset($customLink['Name']) ? $customLink['Name'] : '';?>
           <span>
-            <a href="<?=$url?>" target="_blank" title="<?=$mot?>" class="custom-link">
+            <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
               <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
             </a>
           </span><br />

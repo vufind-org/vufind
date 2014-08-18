@@ -1,0 +1,4 @@
+.main {padding:0;}
+.main .combined-list {margin:0 2px;}
+.main .combined-list .result [class^=span-] {width:100%;}
+.main .combined-list .result .summcover {display:block;margin:0 auto;}

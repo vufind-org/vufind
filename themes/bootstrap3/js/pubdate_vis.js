@@ -45,7 +45,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
         if (val['data'] == undefined || val['data'].length == 0) {
           return;
         }
-        $("#datevis" + key + "xWrapper").show();
+        $("#datevis" + key + "xWrapper").removeClass('hidden');
 
         // plot graph
         var placeholder = $("#datevis" + key + "x");

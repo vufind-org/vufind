@@ -111,7 +111,6 @@ $(document).ready(function()
   // Code for the search button
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
   recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
-  var parentElement = hierarchySettings.lightboxMode ? '#modal .modal-body' : '#hierarchyTree';
   var context = $("#hierarchyTree").find(".hiddenContext")[0].value;
 
   $("#hierarchyTree")
@@ -133,10 +132,17 @@ $(document).ready(function()
       });
 
       // Scroll to the current record
-      if (hierarchySettings.lightboxMode) {
-        var offsetTop = $(parentElement).offset().top;
-        $(parentElement).animate({
-          scrollTop: $('.jstree-clicked').offset().top - offsetTop + $(parentElement).scrollTop() - 50
+      if ($('#hierarchyTree').parents('#modal').length > 0) {
+        var hTree = $('#hierarchyTree');
+        var offsetTop = hTree.offset().top;
+        var maxHeight = Math.max($(window).height() - offsetTop - 50, 200);
+        hTree.css('max-height', maxHeight + 'px').css('overflow', 'auto');
+        hTree.animate({
+          scrollTop: $('.jstree-clicked').offset().top - offsetTop + hTree.scrollTop() - 50
+        }, 1500);
+      } else {
+        $('html,body').animate({
+          scrollTop: $('.jstree-clicked').offset().top - 50
         }, 1500);
       }
     })

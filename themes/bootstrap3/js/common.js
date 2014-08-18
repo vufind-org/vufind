@@ -385,7 +385,30 @@ $(document).ready(function() {
     Lightbox.close();
     checkSaveStatuses();
   });
+  Lightbox.addFormHandler('feedback', function(evt) {
+    $form = $(evt.target);
+    // Grabs hidden inputs
+    var formSuccess     = $form.find("input#formSuccess").val();
+    var feedbackFailure = $form.find("input#feedbackFailure").val();
+    var feedbackSuccess = $form.find("input#feedbackSuccess").val();
+    // validate and process form here
+    var name  = $form.find("input#name").val();
+    var email = $form.find("input#email").val();
+    var comments = $form.find("textarea#comments").val();
+    if (name.length == 0 || comments.length == 0) {
+      Lightbox.displayError(feedbackFailure);
+    } else {
+      Lightbox.get('Feedback', 'Email', {}, {'name':name,'email':email,'comments':comments}, function() {
+        Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
+      });
+    }
+    return false;
+  });
 
+  // Feedback
+  $('#feedbackLink').click(function() {
+    return Lightbox.get('Feedback', 'Home');
+  });
   // Help links
   $('.help-link').click(function() {
     var split = this.href.split('=');
