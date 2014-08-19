@@ -576,7 +576,7 @@ class AjaxController extends AbstractBase
         $password = pack('H*', $this->params()->fromPost('password'));
 
         // Decrypt Password
-        $password = \VuFind\Crypt\RC4::encrypt($salt, $password);
+        $password = base64_decode(\VuFind\Crypt\RC4::encrypt($salt, $password));
 
         // Update the request with the decrypted password:
         $this->getRequest()->getPost()->set('password', $password);
