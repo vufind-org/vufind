@@ -9,10 +9,9 @@ $config = array(
             'util' => 'VuFindConsole\Controller\UtilController',
         ),
     ),
-    'service_manager' => array(
-        'allow_override' => true,
-        'invokables' => array(
-            'Router' => 'VuFindConsole\Mvc\Router\ConsoleRouter',
+    'console' => array(
+        'router'  => array(
+          'router_class'  => 'VuFindConsole\Mvc\Router\ConsoleRouter',
         ),
     ),
     'view_manager' => array(

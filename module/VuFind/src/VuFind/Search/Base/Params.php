@@ -1001,7 +1001,7 @@ class Params implements ServiceLocatorAwareInterface
     public function getFacetLabel($field)
     {
         return isset($this->facetConfig[$field])
-            ? $this->facetConfig[$field] : "Other";
+            ? $this->facetConfig[$field] : 'unrecognized_facet_label';
     }
 
     /**
