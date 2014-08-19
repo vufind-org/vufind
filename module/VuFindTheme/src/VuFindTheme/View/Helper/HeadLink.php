@@ -89,8 +89,9 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         $relPath = 'less/' . $file;
         $urlHelper = $this->getView()->plugin('url');
         $currentTheme = $this->themeInfo->findContainingTheme($relPath);
-        $home = APPLICATION_PATH . "/themes/$currentTheme/";
-        $cssDirectory = $urlHelper('home') . "themes/$currentTheme/css/less/";
+        $helperHome = $urlHelper('home');
+        $home = APPLICATION_PATH . '/themes/' . $currentTheme . '/';
+        $cssDirectory = $helperHome . 'themes/' . $currentTheme . '/css/less/';
 
         try {
             $less_files = array(
@@ -101,7 +102,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
             $directories = array();
             foreach ($themeParents as $theme) {
                 $directories[APPLICATION_PATH . '/themes/' . $theme . '/less/']
-                    = $cssDirectory;
+                    = $helperHome . 'themes/' . $theme . '/css/less/';
             }
             $css_file_name = \Less_Cache::Get(
                 $less_files,
