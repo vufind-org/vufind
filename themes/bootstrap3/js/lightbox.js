@@ -11,39 +11,12 @@ var Lightbox = {
   openingURL: false,
   shown: false,      // Is the lightbox deployed?
   XHR: false,        // Used for current in-progress XHR lightbox request
-  openStack: [],     // Array of functions to be called after changeContent or the lightbox event 'shown'
-  closeStack: [],    // Array of functions to be called after the lightbox event 'hidden'
   formHandlers: [],  // Full custom handlers for forms; by name
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
 
   /**********************************/
   /* ======    INTERFACE     ====== */
   /**********************************/
-  /**
-   * Register custom open event handlers
-   *
-   * Think of this as the $(document).ready() of the Lightbox
-   * There's actually an alias right below it.
-   *
-   * If your template has inline JS, $(document).ready() will not fire in the lightbox
-   * because it already fired before you opened the lightbox and won't fire again.
-   *
-   * You can use $.isReady to determine if ready() has already been called
-   * so you can trigger your function immediately in the inline JS.
-   */
-  addOpenAction: function(func) {
-    this.openStack.push(func);
-  },
-  // Alias for addOpenAction
-  ready: function(func) {
-    this.openStack.push(func);
-  },
-  /**
-   * Register custom close event handlers
-   */
-  addCloseAction: function(func) {
-    this.closeStack.push(func);
-  },
   /**
    * For when you want to handle that form all by yourself
    *
@@ -90,9 +63,10 @@ var Lightbox = {
    * Hide the header if it's empty to make more
    * room for content and avoid double headers.
    */
-  changeContent: function(html, headline) {
+  titleSet: false,
+  changeContent: function(html) {
     var header = $('#modal .modal-header');
-    if(typeof headline === "undefined") {
+    if(!Lightbox.titleSet) {
       var h2 = html.match(/<h2>([^<]*)<\/h2>/);
       if(h2) {
         header.find('.modal-title').html(h2[1]);
@@ -102,8 +76,7 @@ var Lightbox = {
           header.find('.modal-title').html(pLead[1]);
         }
       }
-    } else {
-      header.find('.modal-title').html(headline);
+      Lightbox.titleSet = false;
     }
     if(header.find('.modal-title').html().length == 0) {
       header.css('border-bottom-width', '0');
@@ -111,7 +84,8 @@ var Lightbox = {
       header.css('border-bottom-width', '1px');
     }
     $('#modal .modal-body').html(html).modal({'show':true,'backdrop':false});
-    Lightbox.openActions();
+
+    Lightbox.dispatch('Lightbox.ready');
   },
 
   /**
@@ -120,6 +94,12 @@ var Lightbox = {
   close: function(evt) {
     $('#modal').modal('hide'); // This event calls closeActions
   },
+  dispatch: function(str) {
+    var evt = document.createEvent("Event");
+    evt.initEvent(str, true, false);
+    document.dispatchEvent(evt);
+    console.log(str);
+  },
   /**
    * This function is attached to the lightbox close event,
    * so it always runs when the lightbox is closed.
@@ -127,26 +107,13 @@ var Lightbox = {
   closeActions: function() {
     Lightbox.shown = false;
     Lightbox.openingURL = false;
-    // Clean out stack
-    while(Lightbox.closeStack.length > 0) {
-      var f = Lightbox.closeStack.pop();
-      f();
-    }
     if(this.XHR) { this.XHR.abort(); }
     // Reset content so we start fresh when we open a lightbox
     $('#modal').removeData('modal');
     $('#modal').find('.modal-title').html('');
     $('#modal').find('.modal-body').html(vufindString.loading + "...");
-  },
-  /**
-   * Call all the functions we need for when the modal loads
-   *
-   * Called by the 'shown' event and at the end of changeContent
-   */
-  openActions: function() {
-    for(var i=0;i<Lightbox.openStack.length;i++) {
-      Lightbox.openStack[i]();
-    }
+
+    Lightbox.dispatch('Lightbox.close');
   },
   /**
    * This function changes the content of the lightbox to a message with a close button
@@ -240,7 +207,7 @@ var Lightbox = {
     }
     this.lastURL = url;
     this.lastPOST = post;
-    //this.openActions();
+
     return false;
   },
   /**
@@ -389,12 +356,8 @@ var Lightbox = {
  */
 $(document).ready(function() {
   // Add handlers to the forms
-  Lightbox.addOpenAction(Lightbox.registerForms);
-  /**
-   * Hook into the Bootstrap close event
-   *
-   * Yes, the secret's out, our beloved Lightbox is a modal
-   */
+  document.addEventListener('Lightbox.ready', Lightbox.registerForms, false);
+  // Hook into the Bootstrap close event
   $('#modal').on('hidden.bs.modal', Lightbox.closeActions);
   /**
    * If a link with the class .modal-link triggers the lightbox,
@@ -406,5 +369,7 @@ $(document).ready(function() {
       title = $(this).html();
     }
     $('#modal .modal-title').html(title);
+    Lightbox.titleSet = true;
   });
+  Lightbox.dispatch('Lightbox.init');
 });

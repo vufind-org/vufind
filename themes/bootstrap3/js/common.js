@@ -368,7 +368,7 @@ $(document).ready(function() {
   /******************************
    * LIGHTBOX DEFAULT BEHAVIOUR *
    ******************************/
-  Lightbox.addOpenAction(registerLightboxEvents);
+  document.addEventListener('Lightbox.ready', registerLightboxEvents, false);
   Lightbox.addFormCallback('newList', Lightbox.changeContent);
   Lightbox.addFormHandler('loginForm', function(evt) {
     ajaxLogin(evt.target);
