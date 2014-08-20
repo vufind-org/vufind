@@ -123,13 +123,17 @@ class Converter
                 'warning_count' => 0, 'error_count' => 0, 'errors' => array()
             );
             try {
-                $date = new DateTime($dateString);
+                $date = new DateTime(
+                    $dateString, new \DateTimeZone($this->timezone)
+                );
             } catch (\Exception $e) {
                 $getErrors['error_count']++;
                 $getErrors['errors'][] = $e->getMessage();
             }
         } else {
-            $date = DateTime::createFromFormat($inputFormat, $dateString);
+            $date = DateTime::createFromFormat(
+                $inputFormat, $dateString, new \DateTimeZone($this->timezone)
+            );
             $getErrors = DateTime::getLastErrors();
         }
 
