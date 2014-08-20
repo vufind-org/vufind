@@ -9,7 +9,7 @@
       ?><p class="warning"><?=$this->transEsc('Sorry, but the help you requested is unavailable in your language.') ?></p><?
       echo $en;
     } catch (Exception $e) {
-      $this->layout->setLayout('layout');
+      $this->layout()->setTemplate('layout/layout');
       throw new Exception('Unknown Help Page');
     }
   }
