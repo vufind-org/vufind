@@ -1,3 +1,4 @@
+<? $this->controller = 'test'; ?>
 <? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
   <div class="bulkActionButtons hidden-print">
     <label class="checkbox">
@@ -5,5 +6,13 @@
         | <?=$this->transEsc('with_selected')?>:
     </label>
     <input id="<?=$this->idPrefix?>updateCart" type="submit" class="btn btn-default" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <input class="btn btn-default" type="submit" name="saveCart" title="<?=$this->transEsc('bookbag_save_selected')?>" value="<?=$this->transEsc('Save')?>"/>
+    <? endif; ?>
+    <input class="btn btn-default" type="submit" name="email" title="<?=$this->transEsc('bookbag_email_selected')?>" value="<?=$this->transEsc('Email')?>"/>
+    <? $exportOptions = $this->export()->getBulkOptions(); if (count($exportOptions) > 0): ?>
+      <input class="btn btn-default" type="submit" name="export" title="<?=$this->transEsc('bookbag_export_selected')?>" value="<?=$this->transEsc('Export')?>"/>
+    <? endif; ?>
+    <input class="btn btn-default" type="submit" name="print" title="<?=$this->transEsc('bookbag_print_selected')?>" value="<?=$this->transEsc('Print')?>"/>
   </div>
 <? endif; ?>
