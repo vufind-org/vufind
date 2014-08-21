@@ -116,6 +116,7 @@ class Symphony extends AbstractBase
             'WebServices' => array(),
             'PolicyCache' => array(),
             'LibraryFilter' => array(),
+            'MarcHoldings' => array(),
             '999Holdings' => array(),
             'Behaviors' => array(),
         );
@@ -140,9 +141,6 @@ class Symphony extends AbstractBase
         $this->config['LibraryFilter'] += array(
             'include_only' => array(),
             'exclude' => array(),
-        );
-
-        $this->config['MarcHoldings'] += array(
         );
 
         $this->config['999Holdings'] += array(
