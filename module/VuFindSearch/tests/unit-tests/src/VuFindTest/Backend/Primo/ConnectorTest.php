@@ -72,6 +72,37 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test that an empty query causes an error.
+     *
+     * @return void
+     */
+    public function testEmptyQueryError()
+    {
+        $conn = $this->createConnector();
+        $terms = array();
+        $result = $conn->query('dummyinst', $terms);
+        $this->assertEquals(0, $result['recordCount']);
+        $this->assertEquals('Primo API does not accept a null query', $result['error']);
+    }
+
+    /**
+     * Test a healthy call to query.
+     *
+     * @return void
+     */
+    public function testQuery()
+    {
+        $conn = $this->createConnector('search-http');
+        $terms = array(
+            array('index' => 'Title', 'lookfor' => 'test'),
+            array('index' => 'Author', 'lookfor' => 'test'),
+        );
+        $result = $conn->query('dummyinst', $terms);
+        $this->assertEquals(1245, $result['recordCount']);
+        $this->assertEquals('Abstract Test', $result['documents'][0]['title']);
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file
