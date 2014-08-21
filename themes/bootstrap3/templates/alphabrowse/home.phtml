@@ -26,13 +26,13 @@
   <div>
     <form class="form-inline" method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
       <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
-      <select id="alphaBrowseForm_source" name="source">
+      <select id="alphaBrowseForm_source" name="source" class="form-control">
         <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
           <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
         <? endforeach; ?>
       </select>
       <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
-      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>"/>
+      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="form-control"/>
       <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Browse') ?>"/>
     </form>
   </div>
