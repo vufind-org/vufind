@@ -99,9 +99,9 @@
     <img id="preview" src="<?=isset($this->medium) ? $this->medium : '' ?>">
   </div>
   <div class="tab-pane text-center" id="zoom">
-    <a href="#" class="btn btn-default" onClick="Zoomy.turnLeft()">Turn Left</a>
-    <a href="#" class="btn btn-default" onClick="Zoomy.zoom(0,1)">[1:1]</a>
-    <a href="#" class="btn btn-default" onClick="Zoomy.turnRight()">Turn Right</a>
+    <a class="btn btn-default" onClick="Zoomy.turnLeft()">Turn Left</a>
+    <a class="btn btn-default" onClick="Zoomy.zoom(0,1)">[1:1]</a>
+    <a class="btn btn-default" onClick="Zoomy.turnRight()">Turn Right</a>
     <canvas id="zoomy"></canvas>
   </div>
   <div class="tab-pane text-center" id="master">
