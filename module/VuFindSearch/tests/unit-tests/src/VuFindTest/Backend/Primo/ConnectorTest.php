@@ -103,6 +103,24 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test a query response with non-standard namespacing.
+     *
+     * @return void
+     */
+    public function testDifferentlyNamespacedQuery()
+    {
+        $conn = $this->createConnector('swansea-search-http');
+        $terms = array(
+            array('index' => 'Title', 'lookfor' => 'dummy query'),
+        );
+        $result = $conn->query('dummyinst', $terms, array('returnErr' => false));
+        $this->assertEquals(1, $result['recordCount']);
+        $this->assertEquals('Lord', $result['documents'][0]['title']);
+        $this->assertEquals(array(), $result['didYouMean']);
+        $this->assertEquals(array('eng' => 1), $result['facets']['lang']);
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file

@@ -401,6 +401,11 @@ class Connector
         //$firsthit = $sxe->xpath('//@FIRSTHIT');
         //$lasthit = $sxe->xpath('//@LASTHIT');
 
+        // Register the 'sear' namespace at the top level to avoid problems:
+        $sxe->registerXPathNamespace(
+            'sear', 'http://www.exlibrisgroup.com/xsd/jaguar/search'
+        );
+
         // Get the available namespaces. The Primo API uses multiple namespaces.
         // Will be used to navigate the DOM for elements that have namespaces
         $namespaces = $sxe->getNameSpaces(true);
@@ -410,7 +415,7 @@ class Connector
         //   except those with namespaces
         $items = array();
 
-        $docset = isset($namespaces['sear']) ? $sxe->xpath('//sear:DOC') : array();
+        $docset = $sxe->xpath('//sear:DOC');
         if (empty($docset) && isset($sxe->JAGROOT->RESULT->DOCSET->DOC)) {
             $docset = $sxe->JAGROOT->RESULT->DOCSET->DOC;
         }
@@ -495,12 +500,10 @@ class Connector
             //    (string)$prefix->PrimoNMBib->record->display->lds50;
 
             // Get the URL, which has a separate namespace
-            if (isset($namespaces['sear'])) {
-                $sear = $doc->children($namespaces['sear']);
-                $item['url'] = !empty($sear->LINKS->openurl)
-                    ? (string)$sear->LINKS->openurl
-                    : (string)$sear->GETIT->attributes()->GetIt2;
-            }
+            $sear = $doc->children($namespaces['sear']);
+            $item['url'] = !empty($sear->LINKS->openurl)
+                ? (string)$sear->LINKS->openurl
+                : (string)$sear->GETIT->attributes()->GetIt2;
 
             $item['fullrecord'] = $prefix->PrimoNMBib->record->asXml();
             $items[] = $item;
@@ -519,8 +522,7 @@ class Connector
         //   because child elements have a namespace prefix
         $facets = array();
 
-        $facetSet = isset($namespaces['sear'])
-            ? $sxe->xpath('//sear:FACET') : array();
+        $facetSet = $sxe->xpath('//sear:FACET');
         if (empty($facetSet)) {
             if (!empty($sxe->JAGROOT->RESULT->FACETLIST)) {
                 $facetSet = $sxe->JAGROOT->RESULT->FACETLIST
@@ -544,8 +546,7 @@ class Connector
         }
 
         $didYouMean = array();
-        $suggestions = isset($namespaces['sear'])
-            ? $sxe->xpath('//sear:QUERYTRANSFORMS') : array();
+        $suggestions = $sxe->xpath('//sear:QUERYTRANSFORMS');
         foreach ($suggestions as $suggestion) {
             $didYouMean[] = (string)$suggestion->attributes()->QUERY;
         }
