@@ -59,6 +59,19 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test a healthy call to getRecord.
+     *
+     * @return void
+     */
+    public function testGetRecord()
+    {
+        $conn = $this->createConnector('record-http');
+        $result = $conn->getRecord('crossref10.2202/2151-7509.1009');
+        $this->assertEquals(1, $result['recordCount']);
+        $this->assertEquals('Abstract Test', $result['documents'][0]['title']);
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file
