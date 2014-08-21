@@ -156,11 +156,7 @@ function resizeAccordions(offset) {
 function toggleSideNav() {
   $('#side-nav').toggle();
   var opener = $('#view .nav-tabs li.opener a');
-  if(opener.is(":visible")) {
-    opener.hide();
-  } else {
-    opener.css('display','inherit');
-  }
+  opener.toggleClass('hidden');
   $('#view').toggleClass('col-md-9').toggleClass('col-md-12');
 }
 // Ready? Let's go
