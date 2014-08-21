@@ -117,7 +117,7 @@ class Connector
      * $this->client and returns the parsed response
      *
      * @param string $institution Institution
-     * @param string $terms       Associative array:
+     * @param array  $terms       Associative array:
      *     index       string: primo index to search (default "any")
      *     lookfor     string: actual search terms
      * @param array  $params      Associative array of optional arguments:
@@ -186,7 +186,7 @@ class Connector
      * Support method for query() -- perform inner search logic
      *
      * @param string $institution Institution
-     * @param string $terms       Associative array:
+     * @param array  $terms       Associative array:
      *     index       string: primo index to search (default "any")
      *     lookfor     string: actual search terms
      * @param array  $args        Associative array of optional arguments:
