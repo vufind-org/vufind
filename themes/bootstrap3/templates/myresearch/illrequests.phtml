@@ -13,7 +13,7 @@
   <?=$this->flashmessages()?>
 
   <? if (!empty($this->recordList)): ?>
-    <? if (true || $this->cancelForm): ?>
+    <? if ($this->cancelForm): ?>
       <form name="cancelForm" class="inline" action="" method="post" id="cancelILLRequest">
         <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
         <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
