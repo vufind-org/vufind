@@ -98,7 +98,6 @@ var Lightbox = {
     var evt = document.createEvent("Event");
     evt.initEvent(str, true, false);
     document.dispatchEvent(evt);
-    console.log(str);
   },
   /**
    * This function is attached to the lightbox close event,
