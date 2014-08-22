@@ -13,6 +13,10 @@ var Zoomy = {
     this.canvas.addEventListener('mousedown', function(e) {
       Zoomy.mouseDown = true;
     }, false);
+    this.canvas.addEventListener('mousewheel', function(e) {
+      e.preventDefault();
+      Zoomy.zoom(e);
+    }, false);
     this.canvas.addEventListener('wheel', function(e) {
       e.preventDefault();
       Zoomy.zoom(e);
@@ -135,7 +139,9 @@ var Zoomy = {
   },
   zoom: function(event, zoom) {
     if (typeof zoom === "undefined") {
-      var delta = event.deltaY/Math.abs(event.deltaY);
+      var delta = typeof event.deltaY === "undefined"
+        ? event.detail/Math.abs(event.detail)
+        : event.deltaY/Math.abs(event.deltaY);
       this.image.zoom *= 1-(delta/12);
     } else {
       this.image.zoom = zoom;
@@ -146,7 +152,10 @@ var Zoomy = {
 
     var mousex = this.width/2;
     var mousey = this.height/2;
-    if (typeof event.layerX !== "undefined") {
+    if (typeof event.offsetX !== "undefined") {
+      mousex = event.offsetX;
+      mousey = event.offsetY;
+    } else if (typeof event.layerX !== "undefined") {
       mousex = event.layerX;
       mousey = event.layerY;
     }
