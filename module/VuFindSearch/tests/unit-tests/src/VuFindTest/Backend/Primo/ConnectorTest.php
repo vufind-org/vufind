@@ -121,6 +121,23 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test a query response that contains an error message but has a successful HTTP
+     * status.
+     *
+     * @return void
+     * @expectedException        \Exception
+     * @expectedExceptionMessage Unauthorized access
+     */
+    public function testErrorInSuccessfulResponse()
+    {
+        $conn = $this->createConnector('error-with-success-http');
+        $terms = array(
+            array('index' => 'Title', 'lookfor' => 'dummy query'),
+        );
+        $result = $conn->query('dummyinst', $terms, array('returnErr' => false));
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file

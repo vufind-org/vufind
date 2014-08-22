@@ -396,7 +396,17 @@ class Connector
 
         // some useful data about these results
         $totalhitsarray = $sxe->xpath("//@TOTALHITS");
-        $totalhits = (int)$totalhitsarray[0];
+
+        // if totalhits is missing but we have a message, this is an error
+        // situation.
+        if (!isset($totalhitsarray[0])) {
+            $messages = $sxe->xpath("//@MESSAGE");
+            $message = isset($messages[0])
+                ? (string)$messages[0] : "TOTALHITS attribute missing.";
+            throw new \Exception($message);
+        } else {
+            $totalhits = (int)$totalhitsarray[0];
+        }
         // TODO: would these be useful?
         //$firsthit = $sxe->xpath('//@FIRSTHIT');
         //$lasthit = $sxe->xpath('//@LASTHIT');
