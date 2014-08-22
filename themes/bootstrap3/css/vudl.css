@@ -19,6 +19,12 @@
 
 .page-grid {text-align:center}
 
+.panel .panel-heading a,
+.panel .panel-heading a i.fa,
+.nav-tabs .static.opener a {
+  cursor:pointer;
+}
+
 #view #preview {max-width:100%}
 .front {position:absolute;left:10%;top:150px;width:80%;z-index:5}
 
