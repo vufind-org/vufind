@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\EIT;
 
 use VuFindSearch\Backend\EIT\Backend;
+use VuFindSearch\Backend\EIT\QueryBuilder;
 use VuFindSearch\Backend\EIT\Response\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
@@ -54,10 +55,21 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testSetQueryBuilder()
     {
-        $qb = new \VuFindSearch\Backend\EIT\QueryBuilder();
+        $qb = new QueryBuilder();
         $back = new Backend($this->getConnectorMock(), $this->getRCFactory());
         $back->setQueryBuilder($qb);
         $this->assertEquals($qb, $back->getQueryBuilder());
+    }
+
+    /**
+     * Test generation of a default query builder.
+     *
+     * @return void
+     */
+    public function testDefaultQueryBuilder()
+    {
+        $back = new Backend($this->getConnectorMock(), $this->getRCFactory());
+        $this->assertTrue($back->getQueryBuilder() instanceof QueryBuilder);
     }
 
     /**
