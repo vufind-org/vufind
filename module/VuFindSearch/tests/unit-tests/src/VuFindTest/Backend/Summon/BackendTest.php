@@ -85,6 +85,39 @@ class BackendTest extends TestCase
     }
 
     /**
+     * Test retrieving multiple records.
+     *
+     * @return void
+     */
+    public function testRetrieveBatch()
+    {
+        $conn = $this->getConnectorMock(array('query'));
+        $expected1 = new SummonQuery(null, array('idsToFetch' => range(1, 50), 'pageNumber' => 1, 'pageSize' => 50));
+        $conn->expects($this->at(0))
+            ->method('query')
+            ->with($this->equalTo($expected1))
+            ->will($this->returnValue($this->loadResponse('retrieve1')));
+        $expected2 = new SummonQuery(null, array('idsToFetch' => range(51, 60), 'pageNumber' => 1, 'pageSize' => 50));
+        $conn->expects($this->at(1))
+            ->method('query')
+            ->with($this->equalTo($expected2))
+            ->will($this->returnValue($this->loadResponse('retrieve2')));
+
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $coll = $back->retrieveBatch(range(1, 60)); // not using real IDs here
+        $this->assertCount(60, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('FETCH-gale_primary_3281657083', $rec->ID[0]);
+        $recs = $coll->getRecords();
+        $rec  = $recs[59];
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('FETCH-proquest_dll_1469780613', $rec->ID[0]);
+    }
+
+    /**
      * Test retrieve exception handling.
      *
      * @return void
