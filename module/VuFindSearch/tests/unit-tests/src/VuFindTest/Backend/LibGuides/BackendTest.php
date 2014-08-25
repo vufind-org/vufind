@@ -129,6 +129,73 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals($conn, $back->getConnector());
     }
 
+    /**
+     * Test construction of default record collection factory.
+     *
+     * @return void
+     */
+    public function testDefaultRecordCollectionFactory()
+    {
+        $back = new Backend($this->getConnector());
+        $this->assertTrue($back->getRecordCollectionFactory() instanceof RecordCollectionFactory);
+    }
+
+    /**
+     * Test search exception handling.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     */
+    public function testSearchWrapsLibGuidesException()
+    {
+        $conn = $this->getConnectorMock(array('query'));
+        $conn->expects($this->once())
+             ->method('query')
+             ->will($this->throwException(new \Exception()));
+        $back = new Backend($conn);
+        $back->search(new Query(), 1, 1);
+    }
+
+    /**
+     * Test merged param bag.
+     *
+     * @return void
+     */
+    public function testMergedParamBag()
+    {
+        $myParams = new ParamBag(array('foo' => 'bar'));
+        $expectedParams = array('foo' => 'bar', 'search' => 'baz');
+        $conn = $this->getConnectorMock(array('query'));
+        $conn->expects($this->once())
+             ->method('query')
+             ->with($this->equalTo($expectedParams), $this->equalTo(0), $this->equalTo(10))
+             ->will($this->returnValue(array('recordCount' => 0, 'documents' => array())));
+        $back = new Backend($conn);
+        $back->search(new Query('baz'), 0, 10, $myParams);
+    }
+
+    /**
+     * Test default search failover.
+     *
+     * @return void
+     */
+    public function testSearchFallback()
+    {
+        $conn = $this->getConnectorMock(array('query'));
+        $expectedParams0 = array('search' => 'baz');
+        $conn->expects($this->at(0))
+             ->method('query')
+             ->with($this->equalTo($expectedParams0), $this->equalTo(0), $this->equalTo(10))
+             ->will($this->returnValue(array('recordCount' => 0, 'documents' => array())));
+        $expectedParams1 = array('search' => 'fallback');
+        $conn->expects($this->at(1))
+             ->method('query')
+             ->with($this->equalTo($expectedParams1), $this->equalTo(0), $this->equalTo(10))
+             ->will($this->returnValue(array('recordCount' => 0, 'documents' => array())));
+        $back = new Backend($conn, null, 'fallback');
+        $back->search(new Query('baz'), 0, 10);
+    }
+
     /// Internal API
 
     /**
@@ -165,6 +232,22 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $client = new HttpClient();
         $client->setAdapter($adapter);
         return new Connector('fakeid', $client);
+    }
+
+    /**
+     * Return connector mock.
+     *
+     * @param array $mock Functions to mock
+     *
+     * @return array
+     */
+    protected function getConnectorMock(array $mock = array())
+    {
+        $client = $this->getMock('Zend\Http\Client');
+        return $this->getMock(
+            'VuFindSearch\Backend\LibGuides\Connector', $mock,
+            array('fakeid', $client)
+        );
     }
 
     /**
