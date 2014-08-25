@@ -294,6 +294,10 @@ class AbstractSearch extends AbstractBase
             return $response;
         }
 
+        // Search toolbar
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $view->showBulkOptions = $config->Site->showBulkOptions;
+
         return $view;
     }
 
