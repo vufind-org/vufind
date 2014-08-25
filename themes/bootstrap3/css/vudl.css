@@ -38,3 +38,8 @@ div.xml.collapsed > div { display:none;margin-left:2px }
 .fa.file-msexcel:before {content: "\f1c3";}
 .fa.file-msword:before {content: "\f1c2";}
 .fa.file-pdf:before {content: "\f1c1";}
+
+.siblings-form .trail {
+  display:inline-block;
+  vertical-align:bottom;
+}
