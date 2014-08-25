@@ -157,7 +157,7 @@ function toggleSideNav() {
   $('#side-nav').toggle();
   var opener = $('#view .nav-tabs li.opener a');
   opener.toggleClass('hidden');
-  $('#view').toggleClass('col-md-9').toggleClass('col-md-12');
+  $('#view').toggleClass('col-sm-9').toggleClass('col-sm-12');
 }
 // Ready? Let's go
 $(document).ready(function() {
