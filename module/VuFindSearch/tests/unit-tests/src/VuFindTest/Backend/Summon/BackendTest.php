@@ -29,9 +29,11 @@
 
 namespace VuFindSearch\Backend\Summon;
 
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
 use SerialsSolutions_Summon_Exception as SummonException;
+use SerialsSolutions_Summon_Query as SummonQuery;
 
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -148,6 +150,51 @@ class BackendTest extends TestCase
              ->will($this->throwException(new SummonException()));
         $back = new Backend($conn, $fact);
         $back->search(new Query(), 1, 1);
+    }
+
+    /**
+     * Test merged param bag.
+     *
+     * @return void
+     */
+    public function testMergedParamBag()
+    {
+        $myParams = new ParamBag(array('maxTopics' => 32));
+        $expectedParams = new SummonQuery('boo:(baz)', array('pageSize' => 10, 'pageNumber' => 1.0, 'maxTopics' => 32));
+        $conn = $this->getConnectorMock(array('query'));
+        $conn->expects($this->once())
+             ->method('query')
+             ->with($this->equalTo($expectedParams))
+             ->will($this->returnValue(array('recordCount' => 0, 'documents' => array())));
+        $back = new Backend($conn);
+        $back->search(new Query('baz', 'boo'), 0, 10, $myParams);
+    }
+
+    /**
+     * Test setting a custom record collection factory.
+     *
+     * @return void
+     */
+    public function testConstructorSetters()
+    {
+        $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
+        $conn = $this->getConnectorMock();
+        $back = new Backend($conn, $fact);
+        $this->assertEquals($fact, $back->getRecordCollectionFactory());
+        $this->assertEquals($conn, $back->getConnector());
+    }
+
+    /**
+     * Test setting a query builder.
+     *
+     * @return void
+     */
+    public function testSetQueryBuilder()
+    {
+        $qb = new QueryBuilder();
+        $back = new Backend($this->getConnectorMock());
+        $back->setQueryBuilder($qb);
+        $this->assertEquals($qb, $back->getQueryBuilder());
     }
 
     /// Internal API
