@@ -403,7 +403,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getConsortialHolding($id, array $patron, array $ids)
+    public function getConsortialHolding($id, array $patron = null, array $ids = null)
     {
         $aggregate_id = $id;
         
@@ -461,7 +461,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getHolding($id, array $patron = null, array $ids = null)
     {
-        if ($ids == null) {
+        if (! $this->consortium) {
             // Translate $id into consortial (035$a) format, e.g., "123" -> "(Agency) 123"
             $sourceRecord = '';
             foreach ($this->agency as $_agency => $_dummy) {
