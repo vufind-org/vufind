@@ -574,16 +574,4 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             ? $this->translator->translate($msg) : $msg;
     }
 
-    /**
-     * Is this a consortium?
-     *
-     * @return bool
-     */
-    public function isConsortium()
-    {
-        $isConsortium
-            = isset($this->mainConfig->Catalog->consortium)
-            ? $this->mainConfig->Catalog->consortium : false;
-        return $isConsortium;
-    }
 }
