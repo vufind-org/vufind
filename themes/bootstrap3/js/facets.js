@@ -27,7 +27,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle)
         html += '<i class="fa fa-square-o"></i>';  
       }
     } else if (this.applied) {
-      html += '<i class="icon-ok pull-right"></i>';  
+      html += '<i class="fa fa-check pull-right"></i>';  
     }
     html += ' ' + this.text;
     html += '</span>';

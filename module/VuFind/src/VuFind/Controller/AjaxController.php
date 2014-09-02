@@ -1521,13 +1521,14 @@ class AjaxController extends AbstractBase
     protected function getFacetDataAjax()
     {
         $this->writeSession();  // avoid session write timing bug
-        $results = $this->getResultsManager()->get('Solr');
-        $params = $results->getParams();
-        $params->recommendationsEnabled(true);
-        $params->initFromRequest($this->getRequest()->getQuery());
 
         $facet = $this->params()->fromQuery('facetName');
         $sort = $this->params()->fromQuery('facetSort');
+
+        $results = $this->getResultsManager()->get('Solr');
+        $params = $results->getParams();
+        $params->addFacet($facet);
+        $params->initFromRequest($this->getRequest()->getQuery());
 
         $facets = $results->getFullFieldFacets(array($facet), false);
         if (empty($facets[$facet]['data']['list'])) {
@@ -1537,74 +1538,92 @@ class AjaxController extends AbstractBase
         $facetList = $facets[$facet]['data']['list'];
 
         if (!empty($sort)) {
-            // Parse level from each facet value so that the sort function
-            // can run faster
-            foreach ($facetList as &$facetItem) {
-                list($facetItem['level']) = explode('/', $facetItem['value'], 2);
-            }
-            // Avoid problems having the reference set further below
-            unset($facetItem);
-            $sortFunc = null;
-            if ($sort == 'top') {
-                $sortFunc = function($a, $b) {
-                    if ($a['level'] == 0 && $b['level'] == 0) {
-                        return strcasecmp($a['displayText'], $b['displayText']);
-                    }
-                    return $a['level'] == $b['level']
-                        ? $b['count'] - $a['count']
-                        : $b['level'] - $a['level'];
-                };
-            } else {
-                $sortFunc = function($a, $b) {
-                    return $a['level'] == $b['level']
-                        ? strcasecmp($a['displayText'], $b['displayText'])
-                        : $b['level'] - $a['level'];
-                };
-            }
-            uasort($facetList, $sortFunc);
+            $this->sortFacetList($facetList, $sort == 'top');
         }
 
-        // First build associative arrays of currently active filters
+        return $this->output(
+            $this->buildFacetArray(
+                $facet, $facetList, $params->getFilterList(), $results->getUrlQuery()
+            ),
+            self::STATUS_OK
+        );
+    }
+
+    /**
+     * Helper method for building hierarchical facets:
+     * Sort a facet list according to the given sort order
+     *
+     * @param array &$facetList Facet list returned from Solr
+     * @param bool  $topLevel   Whether to sort only top level
+     *
+     * @return void
+     */
+    protected function sortFacetList(&$facetList, $topLevel)
+    {
+        // Parse level from each facet value so that the sort function
+        // can run faster
+        foreach ($facetList as &$facetItem) {
+            list($facetItem['level']) = explode('/', $facetItem['value'], 2);
+        }
+        // Avoid problems having the reference set further below
+        unset($facetItem);
+        $sortFunc = null;
+        if ($topLevel) {
+            $sortFunc = function($a, $b) {
+                if ($a['level'] == 0 && $b['level'] == 0) {
+                    return strcasecmp($a['displayText'], $b['displayText']);
+                }
+                return $a['level'] == $b['level']
+                    ? $b['count'] - $a['count']
+                    : $b['level'] - $a['level'];
+            };
+        } else {
+            $sortFunc = function($a, $b) {
+                return $a['level'] == $b['level']
+                    ? strcasecmp($a['displayText'], $b['displayText'])
+                    : $b['level'] - $a['level'];
+            };
+        }
+        uasort($facetList, $sortFunc);
+    }
+
+    /**
+     * Helper method for building hierarchical facets:
+     * Convert facet list to a hierarchical array
+     *
+     * @param string    $facet            Facet name
+     * @param array     $facetList        Facet list
+     * @param array     $activeFilterList Array of active filters
+     * @param UrlHelper $urlHelper        Query URL helper for building facet URLs
+     *
+     * @return array Facet hierarchy
+     */
+    protected function buildFacetArray(
+        $facet, $facetList, $activeFilterList, $urlHelper
+    ) {
+        // First build associative arrays of currently active filters and
+        // their parents
         $filterKeys = array();
         $parentFilterKeys = array();
-        $filterList = $params->getFilterList();
-        foreach ($filterList as $filters) {
-            foreach ($filters as $filterItem) {
-                if ($filterItem['field'] == $facet) {
-                    $filterKeys[$filterItem['value']] = true;
-                    list($filterLevel, $filterValue)
-                        = explode('/', $filterItem['value'], 2);
-                    for (; $filterLevel > 0; $filterLevel--) {
-                        $parentKey = ($filterLevel - 1) . '/' . implode(
-                            '/',
-                            array_slice(
-                                explode('/', $filterValue),
-                                0,
-                                $filterLevel
-                            )
-                        ) . '/';
-                        $parentFilterKeys[$parentKey] = true;
-                    }
-                }
-            }
-        }
+        $this->buildFilterKeyArrays(
+            $facet, $activeFilterList, $filterKeys, $parentFilterKeys
+        );
 
-        // Create a keyed array of facets
+        // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = array();
-        $query = $results->getUrlQuery();
-        $paramArray = $query->getParamArray();
+        $paramArray = $urlHelper->getParamArray();
         foreach ($facetList as $item) {
             $href = '';
             if (isset($filterKeys[$item['value']])) {
-                $href = $query->removeFacet(
+                $href = $urlHelper->removeFacet(
                     $facet, $item['value'], true, $item['operator'], $paramArray
                 );
             } else {
-                $href = $query->addFacet(
+                $href = $urlHelper->addFacet(
                     $facet, $item['value'], $item['operator'], $paramArray
                 );
             }
-            $exclude = $query->addFacet(
+            $exclude = $urlHelper->addFacet(
                 $facet, $item['value'], 'NOT', $paramArray
             );
 
@@ -1638,7 +1657,7 @@ class AjaxController extends AbstractBase
         }
 
         // Convert the keyed array to a hierarchical array
-        $facetList = array();
+        $result = array();
         foreach ($keyedList as $key => &$item) {
             list($level, $value) = explode('/', $key, 2);
             if ($level > 0) {
@@ -1652,11 +1671,49 @@ class AjaxController extends AbstractBase
                 ) . '/';
                 $keyedList[$parentId]['children'][] = &$item;
             } else {
-                $facetList[] = &$item;
+                $result[] = &$item;
             }
         }
 
-        return $this->output($facetList, self::STATUS_OK);
+        return $result;
+    }
+
+    /**
+     * Helper method for building hierarchical facets:
+     * Create two keyed arrays of currently active filter for quick lookup:
+     * - filterKeys: currently active filters
+     * - parentFilterKeys: all the parents of currently active filters
+     *
+     * @param string $facet             Facet name
+     * @param array  $filterList        Active filters
+     * @param array  &$filterKeys       Resulting array of active filters
+     * @param array  &$parentFilterKeys Resulting array of active filter parents
+     *
+     * @return void
+     */
+    protected function buildFilterKeyArrays(
+        $facet, $filterList, &$filterKeys, &$parentFilterKeys
+    ) {
+        foreach ($filterList as $filters) {
+            foreach ($filters as $filterItem) {
+                if ($filterItem['field'] == $facet) {
+                    $filterKeys[$filterItem['value']] = true;
+                    list($filterLevel, $filterValue)
+                        = explode('/', $filterItem['value'], 2);
+                    for (; $filterLevel > 0; $filterLevel--) {
+                        $parentKey = ($filterLevel - 1) . '/' . implode(
+                            '/',
+                            array_slice(
+                                explode('/', $filterValue),
+                                0,
+                                $filterLevel
+                            )
+                        ) . '/';
+                        $parentFilterKeys[$parentKey] = true;
+                    }
+                }
+            }
+        }
     }
 
     /**
