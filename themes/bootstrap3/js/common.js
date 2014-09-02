@@ -203,8 +203,9 @@ function ajaxLogin(form) {
         // get the user entered password
         var password = form.password.value;
 
-        // encrypt the password with the salt
-        password = rc4Encrypt(salt, password);
+        // base-64 encode the password (to allow support for Unicode)
+        // and then encrypt the password with the salt
+        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
 
         // hex encode the encrypted password
         password = hexEncode(password);
@@ -385,7 +386,30 @@ $(document).ready(function() {
     Lightbox.close();
     checkSaveStatuses();
   });
+  Lightbox.addFormHandler('feedback', function(evt) {
+    $form = $(evt.target);
+    // Grabs hidden inputs
+    var formSuccess     = $form.find("input#formSuccess").val();
+    var feedbackFailure = $form.find("input#feedbackFailure").val();
+    var feedbackSuccess = $form.find("input#feedbackSuccess").val();
+    // validate and process form here
+    var name  = $form.find("input#name").val();
+    var email = $form.find("input#email").val();
+    var comments = $form.find("textarea#comments").val();
+    if (name.length == 0 || comments.length == 0) {
+      Lightbox.displayError(feedbackFailure);
+    } else {
+      Lightbox.get('Feedback', 'Email', {}, {'name':name,'email':email,'comments':comments}, function() {
+        Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
+      });
+    }
+    return false;
+  });
 
+  // Feedback
+  $('#feedbackLink').click(function() {
+    return Lightbox.get('Feedback', 'Home');
+  });
   // Help links
   $('.help-link').click(function() {
     var split = this.href.split('=');

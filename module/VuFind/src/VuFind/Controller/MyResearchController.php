@@ -113,7 +113,12 @@ class MyResearchController extends AbstractBase
         // or default action (if no followup provided):
         if ($url = $this->getFollowupUrl()) {
             $this->clearFollowupUrl();
-            return $this->redirect()->toUrl($url);
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if ($this->params()->fromQuery('redirect', true)) {
+                return $this->redirect()->toUrl($url);
+            }
         }
 
         $config = $this->getConfig();
@@ -243,8 +248,14 @@ class MyResearchController extends AbstractBase
                 $logoutTarget = $this->getServerUrl('home');
             }
 
-            // clear querystring parameters
-            $logoutTarget = preg_replace('/\?.*/', '', $logoutTarget);
+            // If there is an auth_method parameter in the query, we should strip
+            // it out. Otherwise, the user may get stuck in an infinite loop of
+            // logging out and getting logged back in when using environment-based
+            // authentication methods like Shibboleth.
+            $logoutTarget = preg_replace(
+                '/([?&])auth_method=[^&]*&?/', '$1', $logoutTarget
+            );
+            $logoutTarget = rtrim($logoutTarget, '?');
         }
 
         return $this->redirect()
@@ -1127,7 +1138,7 @@ class MyResearchController extends AbstractBase
         // If we have a submitted form
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             if ($user) {
-                $this->sendRecoveryEmail($user, $this->getConfig());
+                $this->sendRecoveryEmail($user, $this->getConfig(), $method);
             } else {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_user_not_found');
@@ -1141,10 +1152,11 @@ class MyResearchController extends AbstractBase
      *
      * @param \VuFind\Db\Row\User $user   User object we're recovering
      * @param \VuFind\Config      $config Configuration object
+     * @param string              $method Active authentication method
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendRecoveryEmail($user, $config)
+    protected function sendRecoveryEmail($user, $config, $method)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1173,7 +1185,7 @@ class MyResearchController extends AbstractBase
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verify')
                                 . '?hash='
-                                . $user->verify_hash
+                                . $user->verify_hash . '&auth_method=' . $method
                         )
                     );
                     $this->getServiceLocator()->get('VuFind\Mailer')->send(
@@ -1217,6 +1229,7 @@ class MyResearchController extends AbstractBase
                 // If the hash is valid, forward user to create new password
                 if (null != $user) {
                     $view = $this->createViewModel();
+                    $view->auth_method = $this->params()->fromQuery('auth_method');
                     $view->hash = $hash;
                     $view->username = $user->username;
                     $view->useRecaptcha

@@ -2,11 +2,11 @@
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
   <div class="col-sm-2 col-xs-3 left">
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img class="recordcover" src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
       <? else: ?>
-        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+        <img class="recordcover" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
       <? endif; ?>
     </a>
   </div>

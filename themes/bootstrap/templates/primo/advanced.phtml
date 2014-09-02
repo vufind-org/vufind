@@ -11,10 +11,16 @@
     // Set up saved search details:
     if (isset($this->saved) && is_object($this->saved)) {
         $searchDetails = $this->saved->getParams()->getQuery();
-        $groups = $searchDetails->getQueries();
+        if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+            // Not an advanced query -- ignore it.
+            $searchDetails = $groups = false;
+        } else {
+            $groups = $searchDetails->getQueries();
+        }
+        $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
         $searchFilters = $this->saved->getParams()->getFilterList();
     } else {
-        $searchDetails = $searchFilters = $groups = false;
+        $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
     }
 ?>
 <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
@@ -74,15 +80,19 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
+    <? if ($hasDefaultsApplied): ?>
+      <input type="hidden" name="dfApplied" value="1" />
+    <? endif ?>
     <? if (!empty($searchFilters)): ?>
       <div class="filterList">
-        <h3><?=$this->transEsc("adv_search_filters")?><br/><span>(<?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" onclick="filterAll(this, 'advSearchForm');" />)</span></h3>
+        <h4><?=$this->transEsc("adv_search_filters")?></h4>
+        <label class="checkbox"><?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" class="checkbox-select-all" /></label>
         <? foreach ($searchFilters as $field => $data): ?>
           <div>
             <h4><?=$this->transEsc($field)?></h4>
-            <ul>
+            <ul class="unstyled">
               <? foreach ($data as $value): ?>
-                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></li>
+                <li><label class="checkbox"><input type="checkbox" class="checkbox-select-item" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></label></li>
               <? endforeach; ?>
             </ul>
           </div>

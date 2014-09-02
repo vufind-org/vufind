@@ -152,7 +152,7 @@ var Lightbox = {
    * This function changes the content of the lightbox to a message with a close button
    */
   confirm: function(message) {
-    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
   },
   /**
    * Regexes a piece of html to find an error alert
@@ -164,7 +164,7 @@ var Lightbox = {
     var fi = html.indexOf('<div class="alert alert-danger">');
     if(fi > -1) {
       var li = html.indexOf('</div>', fi+31);
-      Lightbox.displayError(html.substring(fi+31, li));
+      Lightbox.displayError(html.substring(fi+31, li).replace(/^[\s\>\<]+|[\s\>\<]+$/g, ''));
     } else {
       success(html);
     }
@@ -174,10 +174,15 @@ var Lightbox = {
    */
   displayError: function(message) {
     var alert = $('#modal .modal-body .alert');
-    if(alert.length > 0) {
+    var html = $.parseHTML($('#modal .modal-body').html());
+    // Page with alert already present
+    if(alert.length > 0 && html.length > 1) {
       $(alert).html(message);
-    } else if($('#modal .modal-body').html() == vufindString.loading+"...") {
-      $('#modal .modal-body').html('<div class="alert alert-danger">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    // Empty or alert only, change to message with button
+    } else if($('#modal .modal-body').html() == vufindString.loading+"..."
+    || (html.length == 1 && $(html).hasClass('alert-danger'))) {
+      Lightbox.changeContent('<div class="alert alert-danger">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    // Page without alert
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-danger">'+message+'</div>');
     }
@@ -222,7 +227,7 @@ var Lightbox = {
           } catch(error) {
             Lightbox.changeContent('<p class="alert alert-danger">'+d.responseText+'</p>');
           }
-        } else {
+        } else if(d.status > 0) {
           Lightbox.changeContent('<p class="alert alert-danger">'+d.statusText+' ('+d.status+')</p>');
         }
         console.log(e,d); // Error reporting

@@ -162,6 +162,13 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     cursor:pointer;
     &.collapsed {
       border-radius:@border-radius-base;
+      &:after {
+        content:'\25BC';
+      }
+    }
+    &:after {
+      content:'\25B2';
+      float:right;
     }
   }
   .collapse,.collapsing {
@@ -173,6 +180,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         border-bottom-right-radius:@border-radius-base;
       }
     }
+  }
+  #side-collapse-publishDate .list-group-item {
+    border-bottom-left-radius:@border-radius-base;
+    border-bottom-right-radius:@border-radius-base;
   }
 }
 .list-group-item, .badge {

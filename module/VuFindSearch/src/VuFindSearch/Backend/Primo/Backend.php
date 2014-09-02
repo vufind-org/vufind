@@ -80,7 +80,6 @@ class Backend extends AbstractBackend
             $this->setRecordCollectionFactory($factory);
         }
         $this->connector    = $connector;
-        $this->identifier   = null;
     }
 
     /**

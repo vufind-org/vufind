@@ -33,6 +33,7 @@ use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\Query;
 
 use Zend\Http\Response;
 use PHPUnit_Framework_TestCase;
@@ -250,6 +251,30 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testRefineAlphaBrowseExceptionWithNonBrowseString()
     {
         $this->runRefineExceptionCall('not a browse error');
+    }
+
+    /**
+     * Test random method
+     *
+     * @return void
+     */
+    public function testRandom()
+    {
+        // Test that random sort parameter is added:
+        $params = $this->getMock('VuFindSearch\ParamBag', array('set'));
+        $params->expects($this->once())->method('set')
+            ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
+
+        // Test that random proxies search; stub out injectResponseWriter() to prevent it
+        // from injecting unwanted extra parameters into $params:
+        $back = $this->getMock(
+            'VuFindSearch\Backend\Solr\Backend', array('search', 'injectResponseWriter'),
+            array($this->getConnectorMock())
+        );
+        $back->expects($this->once())->method('injectResponseWriter');
+        $back->expects($this->once())->method('search')
+            ->will($this->returnValue('dummy'));
+        $this->assertEquals('dummy', $back->random(new Query('foo'), 1, $params));
     }
 
     /// Internal API

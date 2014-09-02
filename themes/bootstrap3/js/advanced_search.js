@@ -11,7 +11,7 @@ function addSearch(group, term, field)
   // Build the new search
   var inputIndex = $('#group'+group+' input').length;
   var inputID = group+'_'+$('#group'+group+' input').length;
-  var newSearch = '<div class="search" id="search'+inputID+'"><div class="form-group row"><div class="col-md-7"><input id="search_lookfor'+inputID+'" class="form-control" type="text" name="lookfor'+group+'[]" value="'+term+'"/></div>'
+  var newSearch = '<div class="search" id="search'+inputID+'"><div class="row"><div class="col-md-7"><input id="search_lookfor'+inputID+'" class="form-control" type="text" name="lookfor'+group+'[]" value="'+term+'"/></div>'
     + '<div class="col-md-4"><select id="search_type'+inputID+'" name="type'+group+'[]" class="form-control">';
   for (var key in searchFields) {
     newSearch += '<option value="' + key + '"';
@@ -53,7 +53,7 @@ function addGroup(firstTerm, firstField, join)
   if (join       == undefined) {join       = '';}
 
   var newGroup = '<div id="group'+nextGroup+'" class="group well clearfix">'
-    + '<div class="col-md-9"><div class="row"><div class="col-md-3"><label>'+searchLabel+':</label></div>'
+    + '<div class="col-md-9"><div class="row"><div class="col-md-3"><label class="help-block">'+searchLabel+':</label></div>'
     + '<div class="col-md-9"><i id="group'+nextGroup+'Holder" class="fa fa-plus-circle"></i> <a href="#" onClick="addSearch('+nextGroup+')">'+addSearchString+'</a></div></div></div>'
     + '<div class="col-md-3">'
     + '<label for="search_bool'+nextGroup+'">'+searchMatch+':&nbsp;</label>'

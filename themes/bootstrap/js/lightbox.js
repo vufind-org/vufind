@@ -93,15 +93,15 @@ var Lightbox = {
     if(typeof headline !== "undefined") {
       var h2 = html.match(/<h2>([^<]*)<\/h2>/);
       if(h2) {
-        header.find('.modal-title').html(h2[1]);
+        header.find('h3').html(h2[1]);
       } else {
         var pLead = html.match(/<p class="lead[^>]*>([^<]*)<\/p>/);
         if(pLead) {
-          header.find('.modal-title').html(pLead[1]);
+          header.find('h3').html(pLead[1]);
         }
       }
     } else {
-      header.find('.modal-title').html(headline);
+      header.find('h3').html(headline);
     }
     if(header.find('h3').html().length == 0) {
       header.css('border-bottom-width', '0');
@@ -189,9 +189,12 @@ var Lightbox = {
    */
   displayError: function(message) {
     var alert = $('#modal .modal-body .alert');
-    if (alert.length > 0) {
+    var html = $.parseHTML($('#modal .modal-body').html());
+    // Page with alert already present
+    if(alert.length > 0 && html.length > 1) {
       $(alert).html(message);
-    } else if($('#modal .modal-body').html() == vufindString.loading+"...") {
+    } else if($('#modal .modal-body').html() == vufindString.loading+"..."
+    || (html.length == 1 && $(html).hasClass('alert-error'))) {
       $('#modal .modal-body').html('<div class="alert alert-error">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-error">'+message+'</div>');

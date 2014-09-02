@@ -172,9 +172,9 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         $this->apiManager = $manager;
         $this->themeTools = $theme;
         $this->client = $client;
-        $this->baseDir = rtrim(
-            is_null($baseDir) ? sys_get_temp_dir() : $baseDir, '\\/'
-        );
+        $this->baseDir = (null === $baseDir)
+            ? rtrim(sys_get_temp_dir(), '\\/') . '/covers'
+            : rtrim($baseDir, '\\/');
     }
 
     /**
@@ -211,7 +211,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     public function getImage()
     {
         // No image loaded?  Use "unavailable" as default:
-        if (is_null($this->image)) {
+        if (null === $this->image) {
             $this->loadUnavailable();
         }
         return $this->image;
@@ -225,7 +225,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     public function getContentType()
     {
         // No content type loaded?  Use "unavailable" as default:
-        if (is_null($this->contentType)) {
+        if (null === $this->contentType) {
             $this->loadUnavailable();
         }
         return $this->contentType;
@@ -406,7 +406,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     protected function getCachePath($size, $id, $extension = 'jpg')
     {
-        $base = $this->baseDir . '/covers';
+        $base = $this->baseDir;
         if (!is_dir($base)) {
             mkdir($base);
         }

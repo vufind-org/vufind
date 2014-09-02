@@ -54,7 +54,9 @@
         </select>
       </div>
     </div>
-    <i id="groupPlaceHolder" class="fa fa-plus-circle"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
+    <span id="groupPlaceHolder">
+      <i class="fa fa-plus-circle"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
+    </span>
     <input class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>">
     <? if (isset($this->extraAdvancedControls)): ?>
       <?=$this->extraAdvancedControls ?>

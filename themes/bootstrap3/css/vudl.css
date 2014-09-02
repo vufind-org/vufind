@@ -19,6 +19,12 @@
 
 .page-grid {text-align:center}
 
+.panel .panel-heading a,
+.panel .panel-heading a i.fa,
+.nav-tabs .static.opener a {
+  cursor:pointer;
+}
+
 #view #preview {max-width:100%}
 .front {position:absolute;left:10%;top:150px;width:80%;z-index:5}
 
@@ -32,3 +38,8 @@ div.xml.collapsed > div { display:none;margin-left:2px }
 .fa.file-msexcel:before {content: "\f1c3";}
 .fa.file-msword:before {content: "\f1c2";}
 .fa.file-pdf:before {content: "\f1c1";}
+
+.siblings-form .trail {
+  display:inline-block;
+  vertical-align:bottom;
+}

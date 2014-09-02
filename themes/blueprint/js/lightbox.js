@@ -104,8 +104,9 @@ function registerAjaxLogin() {
                     // get the user entered password
                     var password = form.password.value;
 
-                    // encrypt the password with the salt
-                    password = rc4Encrypt(salt, password);
+                    // base-64 encode the password (to allow support for Unicode)
+                    // and then encrypt the password with the salt
+                    password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
 
                     // hex encode the encrypted password
                     password = hexEncode(password);

@@ -112,9 +112,11 @@ class PrimoBackendFactory implements FactoryInterface
      */
     protected function createConnector()
     {
-        // Load credentials:
+        // Load credentials and port number:
         $id = isset($this->primoConfig->General->apiId)
             ? $this->primoConfig->General->apiId : null;
+        $port = isset($this->primoConfig->General->port)
+            ? $this->primoConfig->General->port : 1701;
 
         // Build HTTP client:
         $client = $this->serviceLocator->get('VuFind\Http')->createClient();
@@ -122,7 +124,7 @@ class PrimoBackendFactory implements FactoryInterface
             ? $this->primoConfig->General->timeout : 30;
         $client->setOptions(array('timeout' => $timeout));
 
-        $connector = new Connector($id, $this->getInstCode(), $client);
+        $connector = new Connector($id, $this->getInstCode(), $client, $port);
         $connector->setLogger($this->logger);
         return $connector;
     }

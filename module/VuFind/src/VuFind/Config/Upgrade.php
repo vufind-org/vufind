@@ -348,7 +348,12 @@ class Upgrade
 
         // If target file already exists, back it up:
         $outfile = $this->newDir . '/' . $filename;
-        copy($outfile, $outfile . '.bak.' . time());
+        $bakfile = $outfile . '.bak.' . time();
+        if (!copy($outfile, $bakfile)) {
+            throw new FileAccessException(
+                "Error: Could not copy {$outfile} to {$bakfile}."
+            );
+        }
 
         $writer = new ConfigWriter(
             $outfile, $this->newConfigs[$filename], $this->comments[$filename]
@@ -530,6 +535,14 @@ class Upgrade
                 'The [WorldCat] LimitCodes setting never had any effect and has been'
                 . ' removed.'
             );
+        }
+
+        // Upgrade Google Options:
+        if (isset($newConfig['Content']['GoogleOptions'])
+            && !is_array($newConfig['Content']['GoogleOptions'])
+        ) {
+            $newConfig['Content']['GoogleOptions']
+                = array('link' => $newConfig['Content']['GoogleOptions']);
         }
 
         // Disable unused, obsolete setting:

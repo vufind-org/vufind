@@ -38,6 +38,7 @@ if (file_exists('vendor/autoload.php')) {
     $loader->add('VuFindTest', __DIR__ . '/../src');
     $loader->add('VuFind', __DIR__ . '/../src');
     $loader->add('VuFindConsole', __DIR__ . '/../../VuFindConsole/src');
+    $loader->add('VuFindDevTools', __DIR__ . '/../../VuFindDevTools/src');
     $loader->add('VuFindHttp', __DIR__ . '/../../VuFindHttp/src');
     $loader->add('VuFindSearch', __DIR__ . '/../../VuFindSearch/src');
     $loader->add('VuFindTheme', __DIR__ . '/../../VuFindTheme/src');
