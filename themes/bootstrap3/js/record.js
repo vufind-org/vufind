@@ -115,7 +115,7 @@ function registerAjaxCommentRecord() {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
-          Lightbox.addCloseAction(function() {
+          document.addEventListener('Lightbox.close', function() {
             $.ajax({
               type: 'POST',
               url:  url,
@@ -126,7 +126,7 @@ function registerAjaxCommentRecord() {
                 $(form).find('textarea[name="comment"]').val('');
               }
             });
-          });
+          }, false);
           return Lightbox.get('Record', 'AddComment', data, data);
         } else {
           $('#modal').find('.modal-body').html(response.data+'!');
@@ -228,7 +228,7 @@ $(document).ready(function(){
   $('#tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
-    Lightbox.addCloseAction(function() {
+    document.addEventListener('Lightbox.close', function() {
       var recordId = $('#record_id').val();
       var recordSource = $('.hiddenSource').val();
 
@@ -253,7 +253,7 @@ $(document).ready(function(){
           }
         });
       }
-    });
+    }, false);
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
   // Form handlers

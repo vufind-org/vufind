@@ -234,9 +234,9 @@ $(document).ready(function() {
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
     // After we close the lightbox, redirect to list view
-    Lightbox.addCloseAction(function() {
+    document.addEventListener('Lightbox.close', function() {
       document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
-    });
+    }, false);
     Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormHandler('exportForm', function(evt) {

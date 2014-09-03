@@ -169,7 +169,8 @@ function updatePageForLogin() {
     if(e.value == 'Summon') {
       summon = true;
       // If summon, queue reload for when we close
-      Lightbox.addCloseAction(function(){document.location.reload(true);});
+      // No need to removeEventListener, since we're reloading all JS
+      document.addEventListener('Lightbox.close', function(){document.location.reload(true);}, false);
     }
   });
 
