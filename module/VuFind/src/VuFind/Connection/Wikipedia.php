@@ -110,7 +110,7 @@ class Wikipedia implements TranslatorAwareInterface
      */
     public function setLanguage($lang)
     {
-        $this->lang = $lang;
+        $this->lang = substr($lang, 0, 2); // strip off regional suffixes
     }
 
     /**
@@ -172,7 +172,8 @@ class Wikipedia implements TranslatorAwareInterface
         $imageName = $imageCaption = null;
 
         // Get rid of the last pair of braces and split
-        $infobox = explode("\n|", substr($infoboxStr, 2, -2));
+        $infobox = explode("\n|", preg_replace('/^\s+|/m', '', substr($infoboxStr, 2, -2)));
+
         // Look through every row of the infobox
         foreach ($infobox as $row) {
             $data  = explode("=", $row);
@@ -185,11 +186,16 @@ class Wikipedia implements TranslatorAwareInterface
             case "image":
             case "image:":
             case "image_name":
+            case "imagem":
+            case 'imagen':
+            case 'immagine':
                 $imageName = str_replace(' ', '_', $value);
                 break;
             case "caption":
             case "img_capt":
             case "image_caption":
+            case "legenda":
+            case 'textoimagen':
                 $imageCaption = $value;
                 break;
             default:
@@ -213,11 +219,17 @@ class Wikipedia implements TranslatorAwareInterface
         // We are looking for the infobox inside "{{...}}"
         //   It may contain nested blocks too, thus the recursion
         preg_match_all('/\{([^{}]++|(?R))*\}/s', $body['*'], $matches);
+
         foreach ($matches[1] as $m) {
-            // If this is the Infobox
-            if (substr($m, 0, 8) == "{Infobox") {
-                // Keep the string for later, we need the body block that follows it
-                return "{".$m."}";
+            // Check if this is the Infobox; name may vary by language
+            $infoboxTags = array(
+                'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia'
+            );
+            foreach ($infoboxTags as $tag) {
+                if (substr($m, 0, strlen($tag) + 1) == '{' . $tag) {
+                    // We found an infobox!!
+                    return "{".$m."}";
+                }
             }
         }
 
@@ -234,10 +246,16 @@ class Wikipedia implements TranslatorAwareInterface
     protected function extractImageFromBody($body)
     {
         $imageName = $imageCaption = null;
-        $pattern = '/(\x5b\x5b)Image:([^\x5d]*)(\x5d\x5d)/U';
+        // The tag marking image files will vary depending on API language:
+        $tags = array(
+            'Archivo', 'Bestand', 'Datei', 'Ficheiro', 'Fichier', 'File', 'Image'
+        );
+        $pattern = '/(\x5b\x5b)('
+            . implode('|', $tags)
+            . '):([^\x5d]*\.jpg[^\x5d]*)(\x5d\x5d)/U';
         preg_match_all($pattern, $body['*'], $matches);
-        if (isset($matches[2][0])) {
-            $parts = explode('|', $matches[2][0]);
+        if (isset($matches[3][0])) {
+            $parts = explode('|', $matches[3][0]);
             $imageName = str_replace(' ', '_', $parts[0]);
             if (count($parts) > 1) {
                 $imageCaption = strip_tags(
