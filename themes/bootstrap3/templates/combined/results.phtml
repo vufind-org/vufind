@@ -49,9 +49,7 @@
       <? endforeach; ?>
     </div>
   <? endif; ?>
-  <? if ($this->supportsCart && $this->cart()->isActive()): ?>
-    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
-  <? endif; ?>
+  <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
   <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', array('searchClassId' => $searchClassId, 'combinedResults' => $this->combinedResults))?>
   <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
     <div>

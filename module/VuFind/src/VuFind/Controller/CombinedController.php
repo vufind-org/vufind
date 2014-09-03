@@ -182,6 +182,9 @@ class CombinedController extends AbstractSearch
             $placement = 'distributed';
         }
 
+        // Get default config for showBulkOptions
+        $settings = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+
         // Build view model:
         return $this->createViewModel(
             array(
@@ -192,6 +195,7 @@ class CombinedController extends AbstractSearch
                 'placement' => $placement,
                 'results' => $results,
                 'supportsCart' => $supportsCart,
+                'showBulkOptions' => $settings['Site']['showBulkOptions']
             )
         );
     }
