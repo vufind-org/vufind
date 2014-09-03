@@ -100,7 +100,8 @@ function buildJSONNodes(xml)
         'recordid': id.text()
       },
       'a_attr': {
-        'href': name.attr('href')
+        'href': name.attr('href'),
+        'title': name.text()
       },
       'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
       children: buildJSONNodes(this)
