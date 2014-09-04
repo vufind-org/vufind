@@ -58,7 +58,7 @@ class LessCompiler
      *
      * @var bool
      */
-    protected $verbose = '/zzzz_basepath_zzzz/';
+    protected $verbose;
 
     /**
      * Constructor
