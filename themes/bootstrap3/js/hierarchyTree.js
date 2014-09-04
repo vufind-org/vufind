@@ -77,7 +77,7 @@ function doTreeSearch()
             tree._open_to(id);
           }
           for(i=data.results.length;i--;) {
-            id = htmlEncodeId(data.results[i]);
+            var id = htmlEncodeId(data.results[i]);
             $('#hierarchyTree').find('#'+id).addClass('jstree-search');
           }
           changeNoResultLabel(false);
