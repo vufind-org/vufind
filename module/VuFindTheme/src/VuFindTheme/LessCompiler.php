@@ -62,6 +62,8 @@ class LessCompiler
 
     /**
      * Constructor
+     *
+     * @param bool $verbose Display messages while compiling?
      */
     public function __construct($verbose = false)
     {
@@ -71,6 +73,10 @@ class LessCompiler
 
     /**
      * Set base path
+     *
+     * @param string $path Path to set
+     *
+     * @return void
      */
     public function setBasePath($path)
     {
