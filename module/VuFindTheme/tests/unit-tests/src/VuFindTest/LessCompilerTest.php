@@ -57,12 +57,11 @@ class LessCompilerTest extends Unit\TestCase
     {
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';
-
+        // Create directory structure, recursively
         mkdir($testDest . 'themes/parent/css/',  0777, true);
         mkdir($testDest . 'themes/parent/less/', 0777, true);
         mkdir($testDest . 'themes/child/css/',   0777, true);
         mkdir($testDest . 'themes/child/less/',  0777, true);
-
         file_put_contents(
             $testDest . 'themes/parent/theme.config.php',
             '<?php return array("extends"=>false, "less"=>array("compiled.less"));'
@@ -101,7 +100,7 @@ class LessCompilerTest extends Unit\TestCase
     {
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';
-
+        // Delete directory structure
         unlink($testDest . 'themes/child/less/compiled.less');
         unlink($testDest . 'themes/child/theme.config.php');
         unlink($testDest . 'themes/parent/less/compiled.less');
