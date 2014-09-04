@@ -54,11 +54,27 @@ class LessCompiler
     protected $fakePath = '/zzzz_basepath_zzzz/';
 
     /**
+     * Console log?
+     *
+     * @var bool
+     */
+    protected $verbose = '/zzzz_basepath_zzzz/';
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($verbose = false)
     {
         $this->basePath = realpath(__DIR__ . '/../../../../');
+        $this->verbose = $verbose;
+    }
+
+    /**
+     * Set base path
+     */
+    public function setBasePath($path)
+    {
+        $this->basePath = $path;
     }
 
     /**
@@ -90,10 +106,14 @@ class LessCompiler
     {
         $lessFiles = $this->getAllLessFiles($theme);
         if (empty($lessFiles)) {
-            Console::writeLine("No LESS in " . $theme);
+            if ($this->verbose) {
+                Console::writeLine("No LESS in " . $theme);
+            }
             return;
         }
-        Console::writeLine("Processing " . $theme);
+        if ($this->verbose) {
+            Console::writeLine("Processing " . $theme);
+        }
         foreach ($lessFiles as $less) {
             if (is_string($less)) {
                 $this->compileFile($theme, $less);
@@ -139,7 +159,9 @@ class LessCompiler
         list($fileName, ) = explode('.', $less);
         $finalFile = $finalOutDir . $fileName . '.css';
 
-        Console::writeLine("\tcompiling '" . $less .  "' into '" . $finalFile . "'");
+        if ($this->verbose) {
+            Console::writeLine("\tcompiling '" . $less .  "' into '" . $finalFile . "'");
+        }
         $start = microtime(true);
 
         $directories = array();
@@ -150,9 +172,11 @@ class LessCompiler
         }
         $lessDir = $this->basePath . '/themes/' . $theme . '/less/';
         if (!file_exists($lessDir . $less)) {
-            Console::writeLine(
-                "\t\t" . $lessDir . $less . ' does not exist; skipping.'
-            );
+            if ($this->verbose) {
+                Console::writeLine(
+                    "\t\t" . $lessDir . $less . ' does not exist; skipping.'
+                );
+            }
             return;
         }
         $outDir = sys_get_temp_dir();
@@ -171,7 +195,9 @@ class LessCompiler
         }
         file_put_contents($finalFile, $this->makeRelative($css, $less));
 
-        Console::writeLine("\t\t" . (microtime(true)-$start) . ' sec');
+        if ($this->verbose) {
+            Console::writeLine("\t\t" . (microtime(true)-$start) . ' sec');
+        }
     }
 
     /**
