@@ -112,14 +112,11 @@ class LessCompiler
     {
         $lessFiles = $this->getAllLessFiles($theme);
         if (empty($lessFiles)) {
-            if ($this->verbose) {
-                Console::writeLine("No LESS in " . $theme);
-            }
+            $this->logMessage("No LESS in " . $theme);
             return;
         }
-        if ($this->verbose) {
-            Console::writeLine("Processing " . $theme);
-        }
+        $this->logMessage("Processing " . $theme);
+        $this->logMessage("Processing " . $theme);
         foreach ($lessFiles as $less) {
             if (is_string($less)) {
                 $this->compileFile($theme, $less);
@@ -165,9 +162,7 @@ class LessCompiler
         list($fileName, ) = explode('.', $less);
         $finalFile = $finalOutDir . $fileName . '.css';
 
-        if ($this->verbose) {
-            Console::writeLine("\tcompiling '" . $less .  "' into '" . $finalFile . "'");
-        }
+        $this->logMessage("\tcompiling '" . $less .  "' into '" . $finalFile . "'");
         $start = microtime(true);
 
         $directories = array();
@@ -178,11 +173,7 @@ class LessCompiler
         }
         $lessDir = $this->basePath . '/themes/' . $theme . '/less/';
         if (!file_exists($lessDir . $less)) {
-            if ($this->verbose) {
-                Console::writeLine(
-                    "\t\t" . $lessDir . $less . ' does not exist; skipping.'
-                );
-            }
+            $this->logMessage("\t\t" . $lessDir . $less . ' does not exist; skipping.');
             return;
         }
         $outDir = sys_get_temp_dir();
@@ -201,9 +192,7 @@ class LessCompiler
         }
         file_put_contents($finalFile, $this->makeRelative($css, $less));
 
-        if ($this->verbose) {
-            Console::writeLine("\t\t" . (microtime(true)-$start) . ' sec');
-        }
+        $this->logMessage("\t\t" . (microtime(true)-$start) . ' sec');
     }
 
     /**
@@ -248,5 +237,18 @@ class LessCompiler
         }
         closedir($dir);
         return $list;
+    }
+
+    /**
+     * Log a message to the console
+     *
+     * @param string $str message string
+     *
+     * @return void
+     */
+    protected function logMessage($str) {
+        if ($this->verbose) {
+            Console::writeLine($str);
+        }
     }
 }
