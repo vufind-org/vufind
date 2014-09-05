@@ -58,10 +58,19 @@ class LessCompilerTest extends Unit\TestCase
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';
         // Create directory structure, recursively
-        mkdir($testDest . 'themes/parent/css/',  0777, true);
-        mkdir($testDest . 'themes/parent/less/', 0777, true);
-        mkdir($testDest . 'themes/child/css/',   0777, true);
-        mkdir($testDest . 'themes/child/less/',  0777, true);
+        mkdir($testDest . 'themes/child/less',  0777, true);
+        mkdir($testDest . 'themes/empty',  0777, true);
+        mkdir($testDest . 'themes/missing',  0777, true);
+        mkdir($testDest . 'themes/parent/css',  0777, true);
+        mkdir($testDest . 'themes/parent/less', 0777, true);
+        file_put_contents(
+            $testDest . 'themes/empty/theme.config.php',
+            '<?php return array("extends"=>false);'
+        );
+        file_put_contents(
+            $testDest . 'themes/missing/theme.config.php',
+            '<?php return array("extends"=>false, "less"=>array("compiled.less"));'
+        );
         file_put_contents(
             $testDest . 'themes/parent/theme.config.php',
             '<?php return array("extends"=>false, "less"=>array("compiled.less"));'
@@ -76,7 +85,7 @@ class LessCompilerTest extends Unit\TestCase
         );
         file_put_contents(
             $testDest . 'themes/parent/less/parent.less',
-            'body { color:#00D; a { color:#F00; } }'
+            'body { background:url("../fake.png");color:#00D; a { color:#F00; } }'
         );
         file_put_contents(
             $testDest . 'themes/child/less/compiled.less',
@@ -124,7 +133,7 @@ class LessCompilerTest extends Unit\TestCase
         unlink($this->testDest . 'themes/child/css/compiled.css');
     }
 
-    public function testEmptyCompile()
+    public function testAllCompile()
     {
         $this->compiler->compile(array());
         $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
