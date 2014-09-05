@@ -68,12 +68,8 @@ class LessCompilerTest extends Unit\TestCase
             '<?php return array("extends"=>false);'
         );
         file_put_contents(
-            $testDest . 'themes/missing/theme.config.php',
-            '<?php return array("extends"=>false, "less"=>array("compiled.less"));'
-        );
-        file_put_contents(
             $testDest . 'themes/parent/theme.config.php',
-            '<?php return array("extends"=>false, "less"=>array("compiled.less"));'
+            '<?php return array("extends"=>false, "less"=>array("compiled.less", "../rel_missing.less"));'
         );
         file_put_contents(
             $testDest . 'themes/child/theme.config.php',
