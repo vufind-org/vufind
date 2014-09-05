@@ -60,20 +60,19 @@ class LessCompilerTest extends Unit\TestCase
         // Create directory structure, recursively
         mkdir($testDest . 'themes/child/less',  0777, true);
         mkdir($testDest . 'themes/empty',  0777, true);
-        mkdir($testDest . 'themes/missing',  0777, true);
         mkdir($testDest . 'themes/parent/css',  0777, true);
-        mkdir($testDest . 'themes/parent/less', 0777, true);
+        mkdir($testDest . 'themes/parent/less/relative', 0777, true);
         file_put_contents(
             $testDest . 'themes/empty/theme.config.php',
             '<?php return array("extends"=>false);'
         );
         file_put_contents(
             $testDest . 'themes/parent/theme.config.php',
-            '<?php return array("extends"=>false, "less"=>array("compiled.less", "../rel_missing.less"));'
+            '<?php return array("extends"=>false, "less"=>array("compiled.less", "relative/relative.less"));'
         );
         file_put_contents(
             $testDest . 'themes/child/theme.config.php',
-            '<?php return array("extends"=>"parent", "less"=>array("compiled.less"));'
+            '<?php return array("extends"=>"parent", "less"=>array("compiled.less", "missing.less"));'
         );
         file_put_contents(
             $testDest . 'themes/parent/less/compiled.less',
@@ -82,6 +81,10 @@ class LessCompilerTest extends Unit\TestCase
         file_put_contents(
             $testDest . 'themes/parent/less/parent.less',
             'body { background:url("../fake.png");color:#00D; a { color:#F00; } }'
+        );
+        file_put_contents(
+            $testDest . 'themes/parent/less/relative/relative.less',
+            'div {background:#EEE}'
         );
         file_put_contents(
             $testDest . 'themes/child/less/compiled.less',
@@ -108,13 +111,18 @@ class LessCompilerTest extends Unit\TestCase
         // Delete directory structure
         unlink($testDest . 'themes/child/less/compiled.less');
         unlink($testDest . 'themes/child/theme.config.php');
+        unlink($testDest . 'themes/empty/theme.config.php');
+        unlink($testDest . 'themes/parent/less/relative/relative.less');
         unlink($testDest . 'themes/parent/less/compiled.less');
         unlink($testDest . 'themes/parent/less/parent.less');
         unlink($testDest . 'themes/parent/theme.config.php');
         rmdir($testDest . 'themes/child/css');
         rmdir($testDest . 'themes/child/less');
         rmdir($testDest . 'themes/child');
+        rmdir($testDest . 'themes/empty');
+        rmdir($testDest . 'themes/parent/less/relative');
         rmdir($testDest . 'themes/parent/less');
+        rmdir($testDest . 'themes/parent/css/relative');
         rmdir($testDest . 'themes/parent/css');
         rmdir($testDest . 'themes/parent');
         rmdir($testDest . 'themes');
@@ -134,7 +142,9 @@ class LessCompilerTest extends Unit\TestCase
         $this->compiler->compile(array());
         $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
         $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
+        $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/relative/relative.css'));
         unlink($this->testDest . 'themes/child/css/compiled.css');
         unlink($this->testDest . 'themes/parent/css/compiled.css');
+        unlink($this->testDest . 'themes/parent/css/relative/relative.css');
     }
 }
