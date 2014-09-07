@@ -643,6 +643,10 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
 
         $image = $result->getBody();
+        
+        if ('' == $image) {
+            return false;
+        }
 
         // Figure out file paths -- $tempFile will be used to store the
         // image for analysis.  $finalFile will be used for long-term storage if
