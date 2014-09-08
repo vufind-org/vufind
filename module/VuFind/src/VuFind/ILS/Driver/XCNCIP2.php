@@ -355,6 +355,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getStatuses($idList)
     {
         $status = array();
+
+        if ($this->consortium) {
+            return $status; // (empty) TODO: add support for consortial statuses. 
+        }
+
         $resumption = null;
         do {
             $request = $this->getStatusRequest($idList, $resumption);
