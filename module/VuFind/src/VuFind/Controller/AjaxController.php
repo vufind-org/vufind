@@ -1527,7 +1527,7 @@ class AjaxController extends AbstractBase
 
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
-        $params->addFacet($facet);
+        $params->initBasicFacets();
         $params->initFromRequest($this->getRequest()->getQuery());
 
         $facets = $results->getFullFieldFacets(array($facet), false);
