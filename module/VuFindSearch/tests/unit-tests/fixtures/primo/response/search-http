@@ -1,0 +1,305 @@
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/xml;charset=UTF-8
+Transfer-Encoding: chunked
+Date: Thu, 21 Aug 2014 12:14:18 GMT
+Connection: close
+
+2000
+<sear:SEGMENTS xmlns:sear="http://www.exlibrisgroup.com/xsd/jaguar/search"><sear:JAGROOT>
+    <sear:RESULT>
+      <sear:QUERYTRANSFORMS/>
+      <sear:FACETLIST ACCURATE_COUNTERS="true">
+        <sear:FACET NAME="creator" COUNT="20">
+          <sear:FACET_VALUES KEY="OFFICE OF THE SECRETARY OF DEFENSE WASHINGTON DC DEVELOPMENTAL TEST AND EVALUATION" VALUE="3"/>
+          <sear:FACET_VALUES KEY="Ring, Johannes" VALUE="1"/>
+          <sear:FACET_VALUES KEY="DEFENSE INFORMATION SYSTEMS AGENCY FORT HUACHUCA AZ JOINT INTEROPERABILITY TEST COMMAND" VALUE="4"/>
+          <sear:FACET_VALUES KEY="Vieluf, Dieter" VALUE="1"/>
+          <sear:FACET_VALUES KEY="ABERDEEN TEST CENTER MD" VALUE="13"/>
+          <sear:FACET_VALUES KEY="AIR FORCE TEST CENTER EDWARDS AFB CA" VALUE="4"/>
+          <sear:FACET_VALUES KEY="Holman, Charlie" VALUE="2"/>
+          <sear:FACET_VALUES KEY="OFFICE OF THE SECRETARY OF DEFENSE WASHINGTON DC OPERATIONAL TEST AND EVALUATION" VALUE="14"/>
+          <sear:FACET_VALUES KEY="ARMY COLD REGIONS TEST CENTER FORT GREELY AK" VALUE="8"/>
+          <sear:FACET_VALUES KEY="Marcos Vinícius Palma Alves" VALUE="2"/>
+          <sear:FACET_VALUES KEY="Krysta, Monika" VALUE="3"/>
+          <sear:FACET_VALUES KEY="Nilson Lemos De Menezes" VALUE="2"/>
+          <sear:FACET_VALUES KEY="OFFICE OF THE UNDER SECRETARY OF DEFENSE WASHINGTON DC TEST RESOURCE MANAGEMENT CENTER" VALUE="5"/>
+          <sear:FACET_VALUES KEY="Becker, Andreas" VALUE="3"/>
+          <sear:FACET_VALUES KEY="Brachet, Nicolas" VALUE="2"/>
+          <sear:FACET_VALUES KEY="Test, Test" VALUE="5"/>
+          <sear:FACET_VALUES KEY="McQueary, Charles E" VALUE="2"/>
+          <sear:FACET_VALUES KEY="Moran, Seth" VALUE="2"/>
+          <sear:FACET_VALUES KEY="AIR FORCE FLIGHT TEST CENTER EDWARDS AFB CA" VALUE="61"/>
+          <sear:FACET_VALUES KEY="ARMY TEST AND EVALUATION COMMAND ALEXANDRIA VA" VALUE="7"/>
+        </sear:FACET>
+        <sear:FACET NAME="lang" COUNT="3">
+          <sear:FACET_VALUES KEY="chi" VALUE="1"/>
+          <sear:FACET_VALUES KEY="jpn" VALUE="7"/>
+          <sear:FACET_VALUES KEY="eng" VALUE="141"/>
+        </sear:FACET>
+        <sear:FACET NAME="rtype" COUNT="8">
+          <sear:FACET_VALUES KEY="books" VALUE="6"/>
+          <sear:FACET_VALUES KEY="reviews" VALUE="1"/>
+          <sear:FACET_VALUES KEY="articles" VALUE="98"/>
+          <sear:FACET_VALUES KEY="technical_reports" VALUE="745"/>
+          <sear:FACET_VALUES KEY="Dissertations" VALUE="1"/>
+          <sear:FACET_VALUES KEY="text_resources" VALUE="309"/>
+          <sear:FACET_VALUES KEY="conference_proceedings" VALUE="22"/>
+          <sear:FACET_VALUES KEY="newspaper_articles" VALUE="65"/>
+        </sear:FACET>
+        <sear:FACET NAME="topic" COUNT="20">
+          <sear:FACET_VALUES KEY="DECISION MAKING" VALUE="13"/>
+          <sear:FACET_VALUES KEY="ACQUISITION" VALUE="43"/>
+          <sear:FACET_VALUES KEY="DEFENSE SYSTEMS" VALUE="33"/>
+          <sear:FACET_VALUES KEY="INTEROPERABILITY" VALUE="16"/>
+          <sear:FACET_VALUES KEY="Test Facilities, Equipment and Methods" VALUE="174"/>
+          <sear:FACET_VALUES KEY="TEST AND EVALUATION" VALUE="394"/>
+          <sear:FACET_VALUES KEY="DEPARTMENT OF DEFENSE" VALUE="93"/>
+          <sear:FACET_VALUES KEY="MISSIONS" VALUE="17"/>
+          <sear:FACET_VALUES KEY="TEST METHODS" VALUE="167"/>
+          <sear:FACET_VALUES KEY="FLIGHT TESTING" VALUE="214"/>
+          <sear:FACET_VALUES KEY="Administration and Management" VALUE="52"/>
+          <sear:FACET_VALUES KEY="INSTRUMENTATION" VALUE="59"/>
+          <sear:FACET_VALUES KEY="WEAPON SYSTEMS" VALUE="39"/>
+          <sear:FACET_VALUES KEY="TEST FACILITIES" VALUE="74"/>
+          <sear:FACET_VALUES KEY="REPRINTS" VALUE="23"/>
+          <sear:FACET_VALUES KEY="OPERATIONAL EFFECTIVENESS" VALUE="78"/>
+          <sear:FACET_VALUES KEY="Logistics, Military Facilities and Supplies" VALUE="79"/>
+          <sear:FACET_VALUES KEY="MILITARY REQUIREMENTS" VALUE="111"/>
+          <sear:FACET_VALUES KEY="Military Operations, Strategy and Tactics" VALUE="38"/>
+          <sear:FACET_VALUES KEY="PLANNING" VALUE="46"/>
+        </sear:FACET>
+        <sear:FACET NAME="tlevel" COUNT="2">
+          <sear:FACET_VALUES KEY="online_resources" VALUE="624"/>
+          <sear:FACET_VALUES KEY="peer_reviewed" VALUE="7"/>
+        </sear:FACET>
+        <sear:FACET NAME="pfilter" COUNT="6">
+          <sear:FACET_VALUES KEY="books" VALUE="314"/>
+          <sear:FACET_VALUES KEY="reviews" VALUE="1"/>
+          <sear:FACET_VALUES KEY="articles" VALUE="99"/>
+          <sear:FACET_VALUES KEY="Dissertations" VALUE="1"/>
+          <sear:FACET_VALUES KEY="conference_proceedings" VALUE="22"/>
+          <sear:FACET_VALUES KEY="newspaper_articles" VALUE="65"/>
+        </sear:FACET>
+        <sear:FACET NAME="creationdate" COUNT="63">
+          <sear:FACET_VALUES KEY="2008" VALUE="41"/>
+          <sear:FACET_VALUES KEY="2009" VALUE="30"/>
+          <sear:FACET_VALUES KEY="2006" VALUE="16"/>
+          <sear:FACET_VALUES KEY="2007" VALUE="33"/>
+          <sear:FACET_VALUES KEY="2004" VALUE="17"/>
+          <sear:FACET_VALUES KEY="2005" VALUE="39"/>
+          <sear:FACET_VALUES KEY="2002" VALUE="8"/>
+          <sear:FACET_VALUES KEY="2003" VALUE="7"/>
+          <sear:FACET_VALUES KEY="1970" VALUE="36"/>
+          <sear:FACET_VALUES KEY="1971" VALUE="16"/>
+          <sear:FACET_VALUES KEY="1972" VALUE="22"/>
+          <sear:FACET_VALUES KEY="1973" VALUE="19"/>
+          <sear:FACET_VALUES KEY="1974" VALUE="33"/>
+          <sear:FACET_VALUES KEY="1975" VALUE="21"/>
+          <sear:FACET_VALUES KEY="1976" VALUE="18"/>
+          <sear:FACET_VALUES KEY="1977" VALUE="15"/>
+          <sear:FACET_VALUES KEY="2012" VALUE="11"/>
+          <sear:FACET_VALUES KEY="2011" VALUE="11"/>
+          <sear:FACET_VALUES KEY="1978" VALUE="9"/>
+          <sear:FACET_VALUES KEY="2010" VALUE="19"/>
+          <sear:FACET_VALUES KEY="1979" VALUE="9"/>
+          <sear:FACET_VALUES KEY="2013" VALUE="9"/>
+          <sear:FACET_VALUES KEY="2014" VALUE="1"/>
+          <sear:FACET_VALUES KEY="1990" VALUE="21"/>
+          <sear:FACET_VALUES KEY="1982" VALUE="14"/>
+          <sear:FACET_VALUES KEY="1983" VALUE="15"/>
+          <sear:FACET_VALUES KEY="1980" VALUE="14"/>
+          <sear:FACET_VALUES KEY="1981" VALUE="19"/>
+          <sear:FACET_VALUES KEY="1986" VALUE="8"/>
+          <sear:FACET_VALUES KEY="1987" VALUE="10"/>
+          <sear:FACET_VALUES KEY="1984" VALUE="11"/>
+          <sear:FACET_VALUES KEY="1985" VALUE="5"/>
+          <sear:FACET_VALUES KEY="1988" VALUE="5"/>
+          <sear:FACET_VALUES KEY="1989" VALUE="12"/>
+          <sear:FACET_VALUES KEY="1959" VALUE="3"/>
+          <sear:FACET_VALUES KEY="1958" VALUE="1"/>
+          <sear:FACET_VALUES KEY="1957" VALUE="2"/>
+          <sear:FACET_VALUES KEY="1956" VALUE="3"/>
+          <sear:FACET_VALUES KEY="1955" VALUE="2"/>
+          <sear:FACET_VALUES KEY="1954" VALUE="1"/>
+          <sear:FACET_VALUES KEY="1952" VALUE="1"/>
+          <sear:FACET_VALUES KEY="1950" VALUE="1"/>
+          <sear:FACET_VALUES KEY="1995" VALUE="4"/>
+          <sear:FACET_VALUES KEY="1996" VALUE="11"/>
+          <sear:FACET_VALUES KEY="1997" VALUE="9"/>
+          <sear:FACET_VALUES KEY="1998" VALUE="21"/>
+          <sear:FACET_VALUES KEY="1991" VALUE="10"/>
+          <sear:FACET_VALUES KEY="1992" VALUE="57"/>
+          <sear:FACET_VALUES KEY="1993" VALUE="89"/>
+          <sear:FACET_VALUES KEY="1994" VALUE="99"/>
+          <sear:FACET_VALUES KEY="1999" VALUE="29"/>
+          <sear:FACET_VALUES KEY="1967" VALUE="24"/>
+          <sear:FACET_VALUES KEY="1966" VALUE="36"/>
+          <sear:FACET_VALUES KEY="1969" VALUE="67"/>
+          <sear:FACET_VALUES KEY="1968" VALUE="59"/>
+          <sear:FACET_VALUES KEY="1963" VALUE="30"/>
+          <sear:FACET_VALUES KEY="1962" VALUE="19"/>
+          <sear:FACET_VALUES KEY="1965" VALUE="20"/>
+          <sear:FACET_VALUES KEY="1964" VALUE="25"/>
+          <sear:FACET_VALUES KEY="1961" VALUE="30"/>
+          <sear:FACET_VALUES KEY="1960" VALUE="3"/>
+          <sear:FACET_VALUES KEY="2001" VALUE="11"/>
+          <sear:FACET_VALUES KEY="2000" VALUE="4"/>
+        </sear:FACET>
+        <sear:FACET NAME="d
+2000
+omain" COUNT="9">
+          <sear:FACET_VALUES KEY="Berkeley Electronic Press (CrossRef)" VALUE="1"/>
+          <sear:FACET_VALUES KEY="MEDLINE (NLM)" VALUE="1"/>
+          <sear:FACET_VALUES KEY="Directory of Open Access Journals (DOAJ)" VALUE="2"/>
+          <sear:FACET_VALUES KEY="ERIC (U.S. Dept. of Education)" VALUE="36"/>
+          <sear:FACET_VALUES KEY="SciVerse ScienceDirect (Elsevier)" VALUE="5"/>
+          <sear:FACET_VALUES KEY="OneFile (GALE)" VALUE="99"/>
+          <sear:FACET_VALUES KEY="DTIC Technical Reports (U.S. Defense Technical Information Center)" VALUE="1066"/>
+          <sear:FACET_VALUES KEY="GeoRef" VALUE="15"/>
+          <sear:FACET_VALUES KEY="Informa (CrossRef)" VALUE="1"/>
+        </sear:FACET>
+        <sear:FACET NAME="jtitle" COUNT="17">
+          <sear:FACET_VALUES KEY="Journal of Central South University of Technology" VALUE="1"/>
+          <sear:FACET_VALUES KEY="Geophysical Research Abstracts" VALUE="2"/>
+          <sear:FACET_VALUES KEY="Semina : Ciências Agrárias" VALUE="1"/>
+          <sear:FACET_VALUES KEY="Network World" VALUE="8"/>
+          <sear:FACET_VALUES KEY="Michigan Lawyers Weekly" VALUE="2"/>
+          <sear:FACET_VALUES KEY="Colorado Springs Business Journal (CO)" VALUE="3"/>
+          <sear:FACET_VALUES KEY="The New York Times" VALUE="2"/>
+          <sear:FACET_VALUES KEY="Trailer/Body Builders (Online Exclusive)" VALUE="1"/>
+          <sear:FACET_VALUES KEY="Zoosystematics And Evolution" VALUE="1"/>
+          <sear:FACET_VALUES KEY="Doboku Gakkai Ronbunshuu E" VALUE="2"/>
+          <sear:FACET_VALUES KEY="Seismological Research Letters" VALUE="3"/>
+          <sear:FACET_VALUES KEY="Asia Africa Intelligence Wire" VALUE="43"/>
+          <sear:FACET_VALUES KEY="Semina:Ciencias Agrarias" VALUE="1"/>
+          <sear:FACET_VALUES KEY="International Journal Of Testing" VALUE="1"/>
+          <sear:FACET_VALUES KEY="Journal of the American Academy of Dermatology" VALUE="1"/>
+          <sear:FACET_VALUES KEY="American School &amp; University (Online Exclusive)" VALUE="1"/>
+          <sear:FACET_VALUES KEY="Saint Paul Pioneer Press (St. Paul, MN)" VALUE="7"/>
+        </sear:FACET>
+      </sear:FACETLIST>
+      <sear:DOCSET HIT_TIME="16" TOTALHITS="1245" FIRSTHIT="1" LASTHIT="1" TOTAL_TIME="935">
+        <sear:DOC ID="393082004" RANK="0.06474116" NO="1" SEARCH_ENGINE="PrimoCentralThirdNode" SEARCH_ENGINE_TYPE="Primo Central Search Engine" LOCAL="false">
+          <PrimoNMBib xmlns="http://www.exlibrisgroup.com/xsd/primo/primo_nm_bib">
+            <record>
+              <control>
+                <sourcerecordid>10.2202/2151-7509.1009</sourcerecordid>
+                <sourceid>crossref</sourceid>
+                <recordid>TN_crossref10.2202/2151-7509.1009</recordid>
+                <sourceformat>XML</sourceformat>
+                <sourcesystem>Other</sourcesystem>
+              </control>
+              <display>
+                <type>article</type>
+                <title>Abstract Test</title>
+                <creator>Test, Test</creator>
+                <ispartof>Statistics, Politics, and Policy, 2010, Vol.1(1)</ispartof>
+                <identifier>&lt;b>E-ISSN:&lt;/b> 2151-7509 ; &lt;b>DOI:&lt;/b> http://dx.doi.org/10.2202/2151-7509.1009</identifier>
+                <language>eng</language>
+                <source>Berkeley Electronic Press (via CrossRef)</source>
+                <lds40>20100101</lds40>
+                <lds42>20100101</lds42>
+                <lds44>2010</lds44>
+                <lds45>20100602</lds45>
+              </display>
+              <links>
+                <openurl>$$Topenurl_article</openurl>
+                <openurlfulltext>$$Topenurlfull_article</openurlfulltext>
+                <addlink>$$Uhttps://exlibris-pub.s3.amazonaws.com/aboutCrossref.html$$DView CrossRef copyright notice</addlink>
+              </links>
+              <search>
+                <creatorcontrib>test, test</creatorcontrib>
+                <title>Abstract Test</title>
+                <general>English</general>
+                <general>10.2202/2151-7509.1009</general>
+                <sourceid>crossref</sourceid>
+                <recordid>crossref10.2202/2151-7509.1009</recordid>
+                <issn>2151-7509</issn>
+                <issn>21517509</issn>
+                <rsrctype>article</rsrctype>
+                <creationdate>2010</creationdate>
+                <addtitle>Statistics, Politics, and Policy</addtitle>
+                <searchscope>crossref_bep</searchscope>
+                <searchscope>CrossRef</searchscope>
+                <searchscope>Crossref</searchscope>
+                <searchscope>crossref</searchscope>
+                <scope>crossref_bep</scope>
+                <scope>CrossRef</scope>
+                <scope>Crossref</scope>
+                <scope>crossref</scope>
+              </search>
+              <sort>
+                <title>Abstract Test</title>
+                <author>Test, Test</author>
+                <creationdate>20100101</creationdate>
+              </sort>
+              <facets>
+                <frbrgroupid>913808301187942230</frbrgroupid>
+                <frbrtype>6</frbrtype>
+                <language>eng</language>
+                <creationdate>2010</creationdate>
+                <collection>Berkeley Electronic Press (CrossRef)</collection>
+                <prefilter>articles</prefilter>
+                <rsrctype>articles</rsrctype>
+                <creatorcontrib>Test, Test</creatorcontrib>
+                <jtitle>Statistics, Politics, And Policy</jtitle>
+              </facets>
+              <frbr>
+                <t>2</t>
+                <k1>2010</k1>
+                <k2>21517509</k2>
+                <k3>10.2202/2151-7509.1009</k3>
+                <k4>1</k4>
+                <k5>1</k5>
+                <k7>statistics politics policy</k7>
+                <k8>abstract test</k8>
+                <k9>abstracttest</k9>
+                <k15>testtest</k15>
+                <k16>testtest</k16>
+              </frbr>
+              <delivery>
+                <delcategory>Remote Search Resource</delcategory>
+                <fulltext>no_fulltext</fulltext>
+              </delivery>
+              <ranking>
+                <booster1>1</booster1>
+                <booster2>1</booster2>
+                <pcg_type>aggregator_crossref</pcg_type>
+              </ranking>
+              <addata>
+                <aulast>test</aulast>
+                <aufirst>test</aufirst>
+                <au>Test, Test</au>
+                <atitle>Abstract Test</atitle>
+                <jtitle>Statistics, Politics, and Policy</jtitle>
+                <date>20100101</date>
+                <risdate>20100101</risdate>
+                <volume>1</volume>
+                <issue>1</issue>
+                <issn>2151-7509</issn>
+                <eissn>2151-7509</eissn>
+                <genre>article</genre>
+                <ristype>JOUR</ristype>
+                <doi>10.2202/2151-7509.1009</doi>
+              </addata>
+            </record>
+          </PrimoNMBib>
+        <sear:GETIT deliveryCategory="Remote Search Resource" GetIt1="http://trixie.brynmawr.edu:9003/swarth?ctx_ver=Z39.88-2004&amp;ctx_enc=info:ofi/enc:UTF-8&amp;ctx_tim=2014-08-21T08%3A14%3A18IST&amp;url_ver=Z39.88-2004&amp;url_ctx_fmt=infofi/fmt:kev:mtx:ctx&amp;rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&amp;rft_val_fmt=info:ofi/fmt:kev:mtx:&amp;rft.genre=article&amp;rft.atitle=Abstract%20Test&amp;rft.jtitle=Statistics%2C%20Politics%2C%20and%20Policy&amp;rft.btitle=&amp;rft.aulast=test&amp;rft.auinit=&amp;rft.auinit1=&amp;rft.auinitm=&amp;rft.ausuffix=&amp;rft.au=Test%2C%20Test&amp;rft.aucorp=&amp;rft.date=20100101&amp;rft.volume=1&amp;rft.issue=1&amp;rft.part=&amp;rft.quarter=&amp;rft.ssn=&amp;rft.spage=&amp;rft.epage=&amp;rft.pages=&amp;rft.artnum=&amp;rft.issn=2151-7509&amp;rft.eissn=2151-7509&amp;rft.isbn=&amp;rft.sici=&amp;rft.coden=&amp;rft_id=info:doi/10.2202/2151-7509.1009&amp;rft.object_id=&amp;rft.eisbn=&amp;rft_dat=&lt;crossref>10.2202/2151-7509.1009&lt;/crossref>&lt;grp_id>913808301187942230&lt;/grp_id>&lt;oa>&lt;/oa>&amp;rft_id=info:oai/&amp;req.language=" GetIt2=""/><sear:LINKS><sear:openurl><![CDATA[http://trixie.
+883
+brynmawr.edu:9003/swarth?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2014-08-21T08%3A14%3A18IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Abstract%20Test&rft.jtitle=Statistics%2C%20Politics%2C%20and%20Policy&rft.btitle=&rft.aulast=test&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Test%2C%20Test&rft.aucorp=&rft.date=20100101&rft.volume=1&rft.issue=1&rft.part=&rft.quarter=&rft.ssn=&rft.spage=&rft.epage=&rft.pages=&rft.artnum=&rft.issn=2151-7509&rft.eissn=2151-7509&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.2202/2151-7509.1009&rft.object_id=&rft.eisbn=&rft_dat=<crossref>10.2202/2151-7509.1009</crossref><grp_id>913808301187942230</grp_id><oa></oa>&rft_id=info:oai/&req.language=]]></sear:openurl><sear:thumbnail/><sear:openurlfulltext><![CDATA[http://trixie.brynmawr.edu:9003/swarth?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2014-08-21T08%3A14%3A18IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Abstract%20Test&rft.jtitle=Statistics%2C%20Politics%2C%20and%20Policy&rft.btitle=&rft.aulast=test&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Test%2C%20Test&rft.aucorp=&rft.date=20100101&rft.volume=1&rft.issue=1&rft.part=&rft.quarter=&rft.ssn=&rft.spage=&rft.epage=&rft.pages=&rft.artnum=&rft.issn=2151-7509&rft.eissn=2151-7509&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.2202/2151-7509.1009&rft.object_id=&svc_val_fmt=info:ofi/fmt:kev:mtx:sch_svc&svc.fulltext=yes&rft.eisbn=&rft_dat=<crossref>10.2202/2151-7509.1009</crossref><grp_id>913808301187942230</grp_id><oa></oa>&rft_id=info:oai/&req.language=]]></sear:openurlfulltext><sear:addlink>https://exlibris-pub.s3.amazonaws.com/aboutCrossref.html</sear:addlink></sear:LINKS></sear:DOC>
+        
+        
+        
+        
+        
+        
+        
+        
+        
+      </sear:DOCSET>
+    </sear:RESULT>
+    <sear:searchToken>0</sear:searchToken>
+  </sear:JAGROOT></sear:SEGMENTS>
+0
+

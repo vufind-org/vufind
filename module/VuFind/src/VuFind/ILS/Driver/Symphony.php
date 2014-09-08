@@ -116,6 +116,7 @@ class Symphony extends AbstractBase
             'WebServices' => array(),
             'PolicyCache' => array(),
             'LibraryFilter' => array(),
+            'MarcHoldings' => array(),
             '999Holdings' => array(),
             'Behaviors' => array(),
         );
@@ -140,9 +141,6 @@ class Symphony extends AbstractBase
         $this->config['LibraryFilter'] += array(
             'include_only' => array(),
             'exclude' => array(),
-        );
-
-        $this->config['MarcHoldings'] += array(
         );
 
         $this->config['999Holdings'] += array(
@@ -211,9 +209,9 @@ class Symphony extends AbstractBase
     /**
      * Return a SoapHeader for the specified login and password.
      *
-     * @param mixed   $login    The login account name if logging in, otherwise null
-     * @param mixed   $password The login password if logging in, otherwise null
-     * @param boolean $reset    Whether or not the session token should be reset
+     * @param mixed $login    The login account name if logging in, otherwise null
+     * @param mixed $password The login password if logging in, otherwise null
+     * @param bool  $reset    Whether or not the session token should be reset
      *
      * @return object The SoapHeader object
      */
@@ -240,9 +238,9 @@ class Symphony extends AbstractBase
      * If the cached session token is expired or otherwise defective,
      * the caller can use the $reset parameter.
      *
-     * @param string  $login    The login account name
-     * @param string  $password The login password, or null for no password
-     * @param boolean $reset    If true, replace any currently cached token
+     * @param string $login    The login account name
+     * @param string $password The login password, or null for no password
+     * @param bool   $reset    If true, replace any currently cached token
      *
      * @return string The session token
      */
@@ -515,9 +513,11 @@ class Symphony extends AbstractBase
      * Determine if a library is excluded by LibraryFilter configuration.
      *
      * @param string $libraryID the ID of the library in question
-     * @return boolean true if excluded, false if not
+     *
+     * @return bool             true if excluded, false if not
      */
-    protected function libraryIsFilteredOut($libraryID) {
+    protected function libraryIsFilteredOut($libraryID)
+    {
         $notInWhitelist = !empty($this->config['LibraryFilter']['include_only'])
             && !in_array(
                 $libraryID, $this->config['LibraryFilter']['include_only']
@@ -533,10 +533,10 @@ class Symphony extends AbstractBase
      *
      * Protected support method for parsing the call info into items.
      *
-     * @param object  $callInfos   The call info of the title
-     * @param integer $titleID     The catalog key of the title in the catalog
-     * @param boolean $is_holdable Whether or not the title is holdable
-     * @param integer $bound_in    The ID of the parent title
+     * @param object $callInfos   The call info of the title
+     * @param int    $titleID     The catalog key of the title in the catalog
+     * @param bool   $is_holdable Whether or not the title is holdable
+     * @param int    $bound_in    The ID of the parent title
      *
      * @return array An array of items, an empty array otherwise
      */
@@ -715,8 +715,8 @@ class Symphony extends AbstractBase
      *
      * Protected support method for parsing bound with link information.
      *
-     * @param object  $boundwithLinkInfos The boundwithLinkInfos object of the title
-     * @param integer $ckey               The catalog key of the title in the catalog
+     * @param object $boundwithLinkInfos The boundwithLinkInfos object of the title
+     * @param int    $ckey               The catalog key of the title in the catalog
      *
      * @return array An array of parseCallInfo() return values on success,
      * an empty array otherwise.
@@ -775,8 +775,8 @@ class Symphony extends AbstractBase
      *
      * Protected support method for parsing order info.
      *
-     * @param object  $titleOrderInfos The titleOrderInfo object of the title
-     * @param integer $titleID         The ID of the title in the catalog
+     * @param object $titleOrderInfos The titleOrderInfo object of the title
+     * @param int    $titleID         The ID of the title in the catalog
      *
      * @return array An array of items that are on order, an empty array otherwise.
      */
@@ -847,11 +847,13 @@ class Symphony extends AbstractBase
     /**
      * Parse MarcHoldingInfo into VuFind items.
      *
-     * @param  object  $marcHoldingsInfos  MarcHoldingInfo, from TitleInfo
-     * @param  integer $titleID            The catalog key of the title record
-     * @return array   an array (possibly empty) of VuFind items
+     * @param object $marcHoldingsInfos MarcHoldingInfo, from TitleInfo
+     * @param int    $titleID           The catalog key of the title record
+     *
+     * @return array  an array (possibly empty) of VuFind items
      */
-    protected function parseMarcHoldingsInfo($marcHoldingsInfos, $titleID) {
+    protected function parseMarcHoldingsInfo($marcHoldingsInfos, $titleID)
+    {
         $items = array();
         $marcHoldingsInfos = is_array($marcHoldingsInfos)
             ? $marcHoldingsInfos
@@ -869,7 +871,7 @@ class Symphony extends AbstractBase
             $item = array();
 
             foreach ($marcEntryInfos as $marcEntryInfo) {
-            	foreach ($this->config['MarcHoldings'] as $textfield => $spec) {
+                foreach ($this->config['MarcHoldings'] as $textfield => $spec) {
                     if (in_array($marcEntryInfo->entryID, $spec)) {
                         $item[$textfield][] = $marcEntryInfo->text;
                     }

@@ -20,7 +20,7 @@
     <label class="col-sm-3 control-label"><?=$this->transEsc('Title')?></label>
     <div class="col-sm-9">
     <? if(count($this->records) > 1): ?>
-      <button type="button" class="btn hidden" data-toggle="collapse" data-target="#itemhide">
+      <button type="button" class="btn btn-default hidden" data-toggle="collapse" data-target="#itemhide">
         <?=count($this->records).' '.$this->transEsc('items') ?>
       </button>
       <div id="itemhide" class="collapse in">

@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Date;
-use DateTime, VuFind\Exception\Date as DateException;
+use DateTime, DateTimeZone, VuFind\Exception\Date as DateException;
 
 /**
  * Date/time conversion functionality.
@@ -58,7 +58,7 @@ class Converter
     /**
      * Time zone to use for conversions
      *
-     * @var string
+     * @var DateTimeZone
      */
     protected $timezone;
 
@@ -81,8 +81,9 @@ class Converter
             ? $config->Site->displayTimeFormat : "H:i";
 
         // Set time zone
-        $this->timezone = isset($config->Site->timezone)
+        $zone = isset($config->Site->timezone)
             ? $config->Site->timezone : 'America/New_York';
+        $this->timezone = new DateTimeZone($zone);
     }
 
     /**
@@ -123,18 +124,20 @@ class Converter
                 'warning_count' => 0, 'error_count' => 0, 'errors' => array()
             );
             try {
-                $date = new DateTime($dateString);
+                $date = new DateTime($dateString, $this->timezone);
             } catch (\Exception $e) {
                 $getErrors['error_count']++;
                 $getErrors['errors'][] = $e->getMessage();
             }
         } else {
-            $date = DateTime::createFromFormat($inputFormat, $dateString);
+            $date = DateTime::createFromFormat(
+                $inputFormat, $dateString, $this->timezone
+            );
             $getErrors = DateTime::getLastErrors();
         }
 
         if (isset($date) && $date instanceof DateTime) {
-            $date->setTimeZone(new \DateTimeZone($this->timezone));
+            $date->setTimeZone($this->timezone);
         }
 
         if ($getErrors['warning_count'] == 0
