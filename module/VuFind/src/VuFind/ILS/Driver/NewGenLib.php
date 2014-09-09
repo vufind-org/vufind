@@ -88,7 +88,7 @@ class NewGenLib extends AbstractBase
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($RecordID, $patron = false)
+    public function getHolding($RecordID, array $patron = null)
     {
         $holding = $this->getItemStatus($RecordID);
         for ($i = 0; $i < count($holding); $i++) {

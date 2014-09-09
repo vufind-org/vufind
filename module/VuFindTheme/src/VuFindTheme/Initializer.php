@@ -327,6 +327,14 @@ class Initializer
             $resources->setGenerator($this->config->generator);
         }
 
+        $lessActive = false;
+        // Find LESS activity
+        foreach ($themes as $key=>$currentThemeInfo) {
+            if (isset($currentThemeInfo['less']['active'])) {
+                $lessActive = $currentThemeInfo['less']['active'];
+            }
+        }
+
         // Apply the loaded theme settings in reverse for proper inheritance:
         foreach ($themes as $key=>$currentThemeInfo) {
             if (isset($currentThemeInfo['helpers'])) {
@@ -337,6 +345,9 @@ class Initializer
             $templatePathStack[] = $this->tools->getBaseDir() . "/$key/templates";
 
             // Add CSS and JS dependencies:
+            if ($lessActive && isset($currentThemeInfo['less'])) {
+                $resources->addLessCss($currentThemeInfo['less']);
+            }
             if (isset($currentThemeInfo['css'])) {
                 $resources->addCss($currentThemeInfo['css']);
             }

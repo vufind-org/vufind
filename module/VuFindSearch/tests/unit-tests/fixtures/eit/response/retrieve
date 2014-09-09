@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<searchResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Hits xmlns="http://epnet.com/webservices/SearchService/Response/2007/07/">1</Hits>
+  <Statistics xmlns="http://epnet.com/webservices/SearchService/Response/2007/07/">
+    <Statistic>
+      <Database>ahl</Database>
+      <Hits>1</Hits>
+    </Statistic>
+  </Statistics>
+  <SearchResults xmlns="http://epnet.com/webservices/SearchService/Response/2007/07/">
+    <records xmlns="">
+      <rec recordID="1">
+        <pdfLink />
+        <plink>http://search.ebscohost.com/login.aspx?direct=true&amp;db=ahl&amp;AN=90238824&amp;site=ehost-live</plink>
+        <header shortDbName="ahl" uiTerm="90238824" longDbName="America: History &amp; Life" uiTag="AN">
+          <controlInfo>
+            <bkinfo />
+            <jinfo>
+              <jid type="issn">01614681</jid>
+              <jid type="mid">TCR</jid>
+              <jtl>Teachers College Record</jtl>
+              <issn>01614681</issn>
+              <maglogo>Y</maglogo>
+            </jinfo>
+            <pubinfo>
+              <dt year="2013" month="09" day="01">Sep2013</dt>
+              <vid>115</vid>
+              <iid>9</iid>
+              <pub>Teachers College Record</pub>
+            </pubinfo>
+            <artinfo>
+              <ui>90238824</ui>
+              <ppf>1</ppf>
+              <ppct>10</ppct>
+              <formats />
+              <tig>
+                <atl>fake1</atl>
+              </tig>
+              <aug>
+                <au>person, fake</au>
+                <affil>fake place</affil>
+              </aug>
+              <su>subj1</su>
+              <su>subj2</su>
+              <su>subj3</su>
+              <sug>
+                <subj type="unclass">subj1</subj>
+                <subj type="unclass">subj2</subj>
+                <subj type="unclass">subj3</subj>
+              </sug>
+              <ab>Fake abstract.</ab>
+              <pubtype>Academic Journal</pubtype>
+              <doctype>Case Study</doctype>
+              <src>R</src>
+            </artinfo>
+            <language code="eng">English</language>
+            <refInfo>
+              <hasReferences count="15" shortDbName="epref" bQuery="RA%20%2290238824%22" />
+            </refInfo>
+            <copyright flag="Y">
+              <dt year="2013" />
+            </copyright>
+            <holdings islocal="N" />
+          </controlInfo>
+        </header>
+      </rec>
+    </records>
+  </SearchResults>
+</searchResponse>

@@ -313,6 +313,15 @@ class Results extends \VuFind\Search\Base\Results
         // Don't waste time on spellcheck:
         $params->getOptions()->spellcheckEnabled(false);
 
+        // Don't fetch any records:
+        $params->setLimit(0);
+
+        // Disable highlighting:
+        $params->getOptions()->disableHighlighting();
+
+        // Disable sort:
+        $params->setSort('', true);
+
         // Do search
         $result = $clone->getFacetList();
 
@@ -324,5 +333,26 @@ class Results extends \VuFind\Search\Base\Results
 
         // Send back data:
         return $result;
+    }
+
+    /**
+     * Returns data on pivot facets for the last search
+     *
+     * @return ArrayObject        Flare-formatted object
+     */
+    public function getPivotFacetList()
+    {
+        // Make sure we have processed the search before proceeding:
+        if (null === $this->responseFacets) {
+            $this->performAndProcessSearch();
+        }
+
+        // Start building the flare object:
+        $flare = new \stdClass();
+        $flare->name = "flare";
+        $flare->total = $this->resultTotal;
+        $visualFacets = $this->responseFacets->getPivotFacets();
+        $flare->children = $visualFacets;
+        return $flare;
     }
 }

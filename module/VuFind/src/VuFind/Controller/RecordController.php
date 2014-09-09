@@ -136,11 +136,10 @@ class RecordController extends AbstractRecord
         if (!is_null($this->params()->fromPost('placeHold'))) {
             // If the form contained a pickup location or request group, make sure
             // they are valid:
-            if (!$this->holds()->validateRequestGroupInput(
-                    $gatheredDetails['requestGroupId'],
-                    $extraHoldFields,
-                    $requestGroups)
-            ) {
+            $valid = $this->holds()->validateRequestGroupInput(
+                $gatheredDetails, $extraHoldFields, $requestGroups
+            );
+            if (!$valid) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('hold_invalid_request_group');
             } elseif (!$this->holds()->validatePickUpInput(
@@ -217,7 +216,9 @@ class RecordController extends AbstractRecord
                 'defaultRequiredDate' => $defaultRequired,
                 'requestGroups' => $requestGroups,
                 'defaultRequestGroup' => $defaultRequestGroup,
-                'requestGroupNeeded' => $requestGroupNeeded
+                'requestGroupNeeded' => $requestGroupNeeded,
+                'helpText' => isset($checkHolds['helpText'])
+                    ? $checkHolds['helpText'] : null
             )
         );
     }
@@ -323,7 +324,8 @@ class RecordController extends AbstractRecord
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => $checkRequests['helpText']
+                'helpText' => isset($checkRequests['helpText'])
+                    ? $checkRequests['helpText'] : null
             )
         );
     }
@@ -433,7 +435,8 @@ class RecordController extends AbstractRecord
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => $checkRequests['helpText']
+                'helpText' => isset($checkRequests['helpText'])
+                    ? $checkRequests['helpText'] : null
             )
         );
     }

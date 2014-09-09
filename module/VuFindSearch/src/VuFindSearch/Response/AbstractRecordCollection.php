@@ -82,6 +82,16 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
+     * Shuffles records.
+     *
+     * @return bool
+     */
+    public function shuffle()
+    {
+        return shuffle($this->records);
+    }
+
+    /**
      * Return first record in response.
      *
      * @return RecordInterface|null
@@ -135,6 +145,22 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
         if (!in_array($record, $this->records, true)) {
             $this->records[$this->pointer] = $record;
             $this->next();
+        }
+    }
+
+    /**
+     * Replace a record in the collection.
+     *
+     * @param RecordInterface $record      Record to be replaced
+     * @param RecordInterface $replacement Replacement record
+     *
+     * @return void
+     */
+    public function replace(RecordInterface $record, RecordInterface $replacement)
+    {
+        $key = array_search($record, $this->records, true);
+        if ($key !== false) {
+            $this->records[$key] = $replacement;
         }
     }
 

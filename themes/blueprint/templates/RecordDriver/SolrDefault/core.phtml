@@ -146,7 +146,7 @@
           <? $i = 0; foreach ($field as $subfield): ?>
             <?=($i++ == 0) ? '' : ' &gt; '?>
             <? $subject = trim($subject . ' ' . $subfield); ?>
-            <a title="<?=$this->escapeHtml($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" class="subjectHeading"><?=$this->escapeHtml($subfield)?></a>
+            <a title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" class="subjectHeading"><?=$this->escapeHtml($subfield)?></a>
           <? endforeach; ?>
         </div>
         <? endforeach; ?>
@@ -164,7 +164,7 @@
       <th><?=$this->transEsc('Online Access')?>: </th>
       <td>
         <? foreach ($urls as $current): ?>
-          <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+          <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
         <? endforeach; ?>
         <? if ($openUrl): ?>
           <?=$this->openUrl($openUrl)?><br/>
@@ -175,12 +175,19 @@
 
     <? $recordLinks = $this->driver->getAllRecordLinks(); if (!empty($recordLinks)): ?>
       <tr valign="top">
-        <th><?=$this->transEsc('Related Items')?></th>
+        <th><?=$this->transEsc('Related Items')?>:</th>
         <td>
           <? foreach ($recordLinks as $recordLink): ?>
             <?=$this->transEsc($recordLink['title'])?>:
             <a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a><br />
           <? endforeach; ?>
+          <? /* if we have record links, display relevant explanatory notes */
+            $related = $this->driver->getRelationshipNotes();
+            if (!empty($related)): ?>
+              <? foreach ($related as $field): ?>
+                <?=$this->escapeHtml($field)?><br/>
+              <? endforeach; ?>
+          <? endif; ?>
         </td>
       </tr>
     <? endif; ?>
@@ -192,22 +199,24 @@
     </tr>
     <? endif; ?>
 
-    <? $tagList = $this->driver->getTags(); ?>
-    <tr valign="top">
-      <th><?=$this->transEsc('Tags')?>: </th>
-      <td>
-        <span style="float:right;">
-          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
-        </span>
-        <div id="tagList">
-          <? if (count($tagList) > 0): ?>
-            <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a> (<?=$this->escapeHtml($tag->cnt)?>)<? endforeach; ?>
-          <? else: ?>
-            <?=$this->transEsc('No Tags')?>, <?=$this->transEsc('Be the first to tag this record')?>!
-          <? endif; ?>
-        </div>
-      </td>
-    </tr>
+    <? if ($this->usertags()->getMode() !== 'disabled'): ?>
+      <? $tagList = $this->driver->getTags(); ?>
+      <tr valign="top">
+        <th><?=$this->transEsc('Tags')?>: </th>
+        <td>
+          <span style="float:right;">
+            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
+          </span>
+          <div id="tagList">
+            <? if (count($tagList) > 0): ?>
+              <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a> (<?=$this->escapeHtml($tag->cnt)?>)<? endforeach; ?>
+            <? else: ?>
+              <?=$this->transEsc('No Tags')?>, <?=$this->transEsc('Be the first to tag this record')?>!
+            <? endif; ?>
+          </div>
+        </td>
+      </tr>
+    <? endif; ?>
   </table>
   <?/* End Main Details */?>
 </div>
@@ -216,8 +225,8 @@
   <? /* Display thumbnail if appropriate: */ ?>
   <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
   <? if ($mediumThumb): ?>
-    <? if ($largeThumb): ?><a href="<?=$this->escapeHtml($largeThumb)?>"><? endif; ?>
-      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtml($mediumThumb);?>"/>
+    <? if ($largeThumb): ?><a href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
+      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
     <? if ($largeThumb): ?></a><? endif; ?>
   <? else: ?>
     <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
@@ -226,14 +235,20 @@
   <? /* Display qrcode if appropriate: */ ?>
   <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
   <? if($QRCode): ?>
-    <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtml($QRCode);?>"/>
+    <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
   <? endif; ?>
 
-  <? /* Display the lists that this record is saved to */ ?>
-  <div class="savedLists info hide" id="savedLists">
-    <strong><?=$this->transEsc("Saved in")?>:</strong>
-  </div>
+  <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <? /* Display the lists that this record is saved to */ ?>
+    <div class="savedLists info hide" id="savedLists">
+      <strong><?=$this->transEsc("Saved in")?>:</strong>
+    </div>
+  <? endif; ?>
 
+    <? // if you have a preview tab but want to move or remove the preview link
+       // from this area of the record view, this can be split into
+       // getPreviewData() (should stay here) and
+       // getPreviewLink() (can go in your desired tab) ?>
   <?=$this->record($this->driver)->getPreviews()?>
 </div>
 

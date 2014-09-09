@@ -1,0 +1,39 @@
+<? $searchObject = $this->recommend->getResults(); $results = $searchObject->getResults(); if (!empty($results)): ?>
+  <h4><?=$this->transEsc('Summon Results')?></h4>
+  <ul class="list-group">
+    <? foreach ($results as $driver): ?>
+      <li class="list-group-item">
+        <span>
+          <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
+          <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
+            <?
+              $summHighlightedTitle = $driver->getHighlightedTitle();
+              $summTitle = $driver->getTitle();
+              if (!empty($summHighlightedTitle)) {
+                  echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+              } else if (!empty($summTitle)) {
+                  echo $this->escapeHtml($this->truncate($summTitle, 180));
+              } else {
+                  echo $this->transEsc('Title not available');
+              }
+            ?>
+          </a>
+          <? $summAuthor = $driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+          <span class="small">
+            <?=$this->transEsc('by')?>
+            <a href="<?=$this->record($driver)->getLink('author', $summAuthor)?>">
+              <?
+                $summHighlightedAuthor = $driver->getHighlightedAuthor();
+                echo !empty($summHighlightedAuthor)
+                    ? $this->highlight($summHighlightedAuthor)
+                    : $this->escapeHtml($summAuthor);
+              ?>
+            </a>
+          </span>
+          <? endif; ?>
+        </span>
+      </li>
+    <? endforeach; ?>
+    <a class="list-group-item" href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?>...</a>
+  </ul>
+<? endif ?>

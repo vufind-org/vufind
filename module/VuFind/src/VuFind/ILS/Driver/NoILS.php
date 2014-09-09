@@ -187,7 +187,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $useHoldings = isset($this->config['settings']['useHoldings'])
             ? $this->config['settings']['useHoldings'] : 'none';

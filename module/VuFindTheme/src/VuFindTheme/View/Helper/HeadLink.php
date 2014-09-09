@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFindTheme\View\Helper;
+use VuFindTheme\ThemeInfo;
 
 /**
  * Head link view helper (extended for VuFind's theme system)
@@ -41,16 +42,16 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     /**
      * Theme information service
      *
-     * @var \VuFindTheme\ThemeInfo
+     * @var ThemeInfo
      */
     protected $themeInfo;
 
     /**
      * Constructor
      *
-     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
+     * @param ThemeInfo $themeInfo Theme information service
      */
-    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
+    public function __construct(ThemeInfo $themeInfo)
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
@@ -59,7 +60,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     /**
      * Create HTML link element from data item
      *
-     * @param stdClass $item data item
+     * @param \stdClass $item data item
      *
      * @return string
      */
@@ -67,13 +68,64 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     {
         // Normalize href to account for themes, then call the parent class:
         $relPath = 'css/' . $item->href;
-        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
+        $details = $this->themeInfo
+            ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
 
-        if (!empty($currentTheme)) {
+        if (!empty($details)) {
             $urlHelper = $this->getView()->plugin('url');
-            $item->href = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+            $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
+            $url .= strstr($url, '?') ? '&_=' : '?_=';
+            $url .= filemtime($details['path']);
+            $item->href = $url;
         }
 
         return parent::itemToString($item);
+    }
+
+    /**
+     * Compile a less file to css and add to css folder
+     *
+     * @param string $file path to less file
+     *
+     * @return void
+     */
+    public function addLessStylesheet($file)
+    {
+        $relPath = 'less/' . $file;
+        $urlHelper = $this->getView()->plugin('url');
+        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
+        $helperHome = $urlHelper('home');
+        $home = APPLICATION_PATH . '/themes/' . $currentTheme . '/';
+        $cssDirectory = $helperHome . 'themes/' . $currentTheme . '/css/less/';
+
+        try {
+            $less_files = array(
+                APPLICATION_PATH . '/themes/' . $currentTheme . '/' . $relPath
+                    => $cssDirectory
+            );
+            $themeParents = array_keys($this->themeInfo->getThemeInfo());
+            $directories = array();
+            foreach ($themeParents as $theme) {
+                $directories[APPLICATION_PATH . '/themes/' . $theme . '/less/']
+                    = $helperHome . 'themes/' . $theme . '/css/less/';
+            }
+            $css_file_name = \Less_Cache::Get(
+                $less_files,
+                array(
+                    'cache_dir' => $home . 'css/less/',
+                    'cache_method' => false,
+                    'compress' => true,
+                    'import_dirs' => $directories,
+                    'output' => str_replace('.less', '.css', $file)
+                )
+            );
+            $this->prependStylesheet($cssDirectory . $css_file_name);
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            list($fileName, ) = explode('.', $file);
+            $this->prependStylesheet(
+                $urlHelper('home') . "themes/{$currentTheme}/css/{$fileName}.css"
+            );
+        }
     }
 }

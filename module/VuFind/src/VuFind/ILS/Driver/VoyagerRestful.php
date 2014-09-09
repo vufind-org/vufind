@@ -148,6 +148,20 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected $cookies = false;
 
     /**
+     * Whether recalls are enabled
+     *
+     * @var bool
+     */
+    protected $recallsEnabled;
+
+    /**
+     * Whether item holds are enabled
+     *
+     * @var bool
+     */
+    protected $itemHoldsEnabled;
+
+    /**
      * Whether request groups are enabled
      *
      * @var bool
@@ -182,6 +196,21 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @var bool
      */
     protected $checkItemsNotAvailable;
+
+    /**
+     * Whether to check that the user doesn't already have the record on loan when
+     * placing a hold or recall request
+     *
+     * @var bool
+     */
+    protected $checkLoans;
+
+    /**
+     * Item locations exluded from item availability check.
+     *
+     * @var string
+     */
+    protected $excludedItemLocations;
 
     /**
      * Constructor
@@ -246,9 +275,20 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             = isset($this->config['CallSlips']['callSlipCheckLimit'])
             ? $this->config['CallSlips']['callSlipCheckLimit'] : "15";
 
+        $this->recallsEnabled
+            = isset($this->config['Holds']['enableRecalls'])
+            ? $this->config['Holds']['enableRecalls'] : true;
+
+        $this->itemHoldsEnabled
+            = isset($this->config['Holds']['enableItemHolds'])
+            ? $this->config['Holds']['enableItemHolds'] : true;
+
         $this->requestGroupsEnabled
-            = isset($this->config['Holds']['enableRequestGroups'])
-            ? $this->config['Holds']['enableRequestGroups'] : false;
+            = isset($this->config['Holds']['extraHoldFields'])
+            && in_array(
+                'requestGroup',
+                explode(':', $this->config['Holds']['extraHoldFields'])
+            );
         $this->defaultRequestGroup
             = isset($this->config['Holds']['defaultRequestGroup'])
             ? $this->config['Holds']['defaultRequestGroup'] : false;
@@ -265,7 +305,13 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $this->checkItemsNotAvailable
             = isset($this->config['Holds']['checkItemsNotAvailable'])
             ? $this->config['Holds']['checkItemsNotAvailable'] : false;
-
+        $this->checkLoans
+            = isset($this->config['Holds']['checkLoans'])
+            ? $this->config['Holds']['checkLoans'] : false;
+        $this->excludedItemLocations
+            = isset($this->config['Holds']['excludedItemLocations'])
+            ? str_replace(':', ',', $this->config['Holds']['excludedItemLocations'])
+            : '';
 
         // Establish a namespace in the session for persisting cached data
         $this->session = new SessionContainer('VoyagerRestful_' . $this->dbName);
@@ -285,18 +331,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             $functionConfig = $this->config[$function];
         } else {
             $functionConfig = false;
-        }
-
-        // Make sure request group selection is displayed if request groups are
-        // enabled
-        if ($function == 'Holds' && $this->requestGroupsEnabled
-            && strpos($functionConfig['extraHoldFields'], 'requestGroup') === false
-        ) {
-            if (!empty($functionConfig['extraHoldFields'])) {
-                $functionConfig['extraHoldFields'] .= ':requestGroup';
-            } else {
-                $functionConfig['extraHoldFields'] = 'requestGroup';
-            }
         }
 
         return $functionConfig;
@@ -383,15 +417,20 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function isBorrowable($itemTypeID)
     {
-        $is_borrowable = true;
+        if (isset($this->config['Holds']['borrowable'])) {
+            $borrowable = explode(':', $this->config['Holds']['borrowable']);
+            if (!in_array($itemTypeID, $borrowable)) {
+                return false;
+            }
+        }
         if (isset($this->config['Holds']['non_borrowable'])) {
-            $non_borrow = explode(":", $this->config['Holds']['non_borrowable']);
-            if (in_array($itemTypeID, $non_borrow)) {
-                $is_borrowable = false;
+            $nonBorrowable = explode(':', $this->config['Holds']['non_borrowable']);
+            if (in_array($itemTypeID, $nonBorrowable)) {
+                return false;
             }
         }
 
-        return $is_borrowable;
+        return true;
     }
 
     /**
@@ -480,7 +519,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         foreach ($holding as $i => $row) {
             $is_borrowable = isset($row['_fullRow']['ITEM_TYPE_ID'])
                 ? $this->isBorrowable($row['_fullRow']['ITEM_TYPE_ID']) : false;
-            $is_holdable = $this->isHoldable($row['_fullRow']['STATUS_ARRAY']);
+            $is_holdable = $this->itemHoldsEnabled
+                && $this->isHoldable($row['_fullRow']['STATUS_ARRAY']);
             $isStorageRetrievalRequestAllowed
                 = isset($this->config['StorageRetrievalRequests'])
                 && $this->isStorageRetrievalRequestAllowed($row);
@@ -826,7 +866,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             // First get hold information for the list of items Voyager
             // thinks are holdable
             $request = $this->determineHoldType($patron['id'], $bibId);
-            if ($request != 'hold' && $result != 'recall') {
+            if ($request != 'hold' && $request != 'recall') {
                 return false;
             }
 
@@ -1050,6 +1090,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
         // Attach XML if necessary
         if ($xml !== false) {
+            $client->setEncType('text/xml');
             $client->setRawBody($xml);
         }
 
@@ -1149,43 +1190,39 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected function checkAccountBlocks($patronId)
     {
         $cacheId = "blocks_$patronId";
-        $data = $this->getCachedData($cacheId);
-        if (!is_null($data)) {
-            return $data;
-        }
+        $blockReason = $this->getCachedData($cacheId);
+        if (null === $blockReason) {
+            // Build Hierarchy
+            $hierarchy = array(
+                "patron" =>  $patronId,
+                "patronStatus" => "blocks"
+            );
 
-        $blockReason = false;
+            // Add Required Params
+            $params = array(
+                "patron_homedb" => $this->ws_patronHomeUbId,
+                "view" => "full"
+            );
 
-        // Build Hierarchy
-        $hierarchy = array(
-            "patron" =>  $patronId,
-            "patronStatus" => "blocks"
-        );
+            $blockReason = array();
 
-        // Add Required Params
-        $params = array(
-            "patron_homedb" => $this->ws_patronHomeUbId,
-            "view" => "full"
-        );
+            $blocks = $this->makeRequest($hierarchy, $params);
+            if ($blocks) {
+                $node = "reply-text";
+                $reply = (string)$blocks->$node;
 
-        $blockReason = array();
-
-        $blocks = $this->makeRequest($hierarchy, $params);
-        if ($blocks) {
-            $node = "reply-text";
-            $reply = (string)$blocks->$node;
-
-            // Valid Response
-            if ($reply == "ok" && isset($blocks->blocks)) {
-                foreach ($blocks->blocks->institution->borrowingBlock
-                    as $borrowBlock
-                ) {
-                    $blockReason[] = (string)$borrowBlock->blockReason;
+                // Valid Response
+                if ($reply == "ok" && isset($blocks->blocks)) {
+                    foreach ($blocks->blocks->institution->borrowingBlock
+                        as $borrowBlock
+                    ) {
+                        $blockReason[] = (string)$borrowBlock->blockReason;
+                    }
                 }
             }
+            $this->putCachedData($cacheId, $blockReason);
         }
-        $this->putCachedData($cacheId, $blockReason);
-        return $blockReason;
+        return empty($blockReason) ? false : $blockReason;
     }
 
     /**
@@ -1264,7 +1301,7 @@ EOT;
                 array('AuthenticatePatronService' => false), array(), 'POST', $xml
             );
             if ($response === false) {
-                throw new ILSException('renew_error_system');
+                throw new ILSException('renew_error');
             }
 
             $xml = <<<EOT
@@ -1288,7 +1325,7 @@ EOT;
                 array('RenewService' => false), array(), 'POST', $xml
             );
             if ($response === false) {
-                throw new ILSException('renew_error_system');
+                throw new ILSException('renew_error');
             }
 
             // Process
@@ -1300,7 +1337,9 @@ EOT;
             // The service doesn't actually return messages (in Voyager 8.1),
             // but maybe in the future...
             foreach ($response->xpath('//ser:message') as $message) {
-                if ($message->attributes()->type == 'system') {
+                if ($message->attributes()->type == 'system'
+                    || $message->attributes()->type == 'error'
+                ) {
                     return false;
                 }
             }
@@ -1447,7 +1486,8 @@ EOT;
         // Build request
         $xml =  <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+<ser:serviceParameters
+  xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
   <ser:parameters>
     <ser:parameter key="bibDbCode">
       <ser:value>LOCAL</ser:value>
@@ -1474,20 +1514,27 @@ EOT;
         }
         $xml .= <<<EOT
   </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId" patronId="$patronId">
+  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
+    patronId="$patronId">
     <ser:authFactor type="B">$barcode</ser:authFactor>
   </ser:patronIdentifier>
 </ser:serviceParameters>
 EOT;
 
-        $response = $this->makeRequest(array('SendPatronRequestService' => false), array(), 'POST', $xml);
+        $response = $this->makeRequest(
+            array('SendPatronRequestService' => false), array(), 'POST', $xml
+        );
 
         if ($response === false) {
             return $this->holdError('hold_error_system');
         }
         // Process
-        $response->registerXPathNamespace('ser', 'http://www.endinfosys.com/Voyager/serviceParameters');
-        $response->registerXPathNamespace('req', 'http://www.endinfosys.com/Voyager/requests');
+        $response->registerXPathNamespace(
+            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+        );
+        $response->registerXPathNamespace(
+            'req', 'http://www.endinfosys.com/Voyager/requests'
+        );
         foreach ($response->xpath('//ser:message') as $message) {
             if ($message->attributes()->type == 'success') {
                 return array(
@@ -1517,21 +1564,26 @@ EOT;
      */
     protected function determineHoldType($patronId, $bibId, $itemId = false)
     {
+        if ($itemId && !$this->itemHoldsEnabled) {
+            return false;
+        }
+
         // Check for account Blocks
         if ($this->checkAccountBlocks($patronId)) {
             return "block";
         }
 
         // Check Recalls First
-        $recall = $this->checkItemRequests($patronId, "recall", $bibId, $itemId);
-        if ($recall) {
-            return "recall";
-        } else {
-            // Check Holds
-            $hold = $this->checkItemRequests($patronId, "hold", $bibId, $itemId);
-            if ($hold) {
-                return "hold";
+        if ($this->recallsEnabled) {
+            $recall = $this->checkItemRequests($patronId, "recall", $bibId, $itemId);
+            if ($recall) {
+                return "recall";
             }
+        }
+        // Check Holds
+        $hold = $this->checkItemRequests($patronId, "hold", $bibId, $itemId);
+        if ($hold) {
+            return "hold";
         }
         return false;
     }
@@ -1551,6 +1603,201 @@ EOT;
                     "success" => false,
                     "sysMessage" => $msg
         );
+    }
+
+    /**
+     * Check whether the given patron has the given bib record on loan.
+     *
+     * @param integer $patronId Patron ID
+     * @param integer $bibId    BIB ID
+     *
+     * @return boolean
+     */
+    protected function isRecordOnLoan($patronId, $bibId)
+    {
+        $sqlExpressions = array(
+            'count(cta.ITEM_ID) CNT'
+        );
+
+        $sqlFrom = array(
+            "$this->dbName.BIB_ITEM bi",
+            "$this->dbName.CIRC_TRANSACTIONS cta"
+        );
+
+        $sqlWhere = array(
+            'cta.PATRON_ID=:patronId',
+            'bi.BIB_ID=:bibId',
+            'bi.ITEM_ID=cta.ITEM_ID'
+        );
+
+        if ($this->requestGroupsEnabled) {
+            $sqlFrom[] = "$this->dbName.REQUEST_GROUP_LOCATION rgl";
+            $sqlFrom[] = "$this->dbName.MFHD_ITEM mi";
+            $sqlFrom[] = "$this->dbName.MFHD_MASTER mm";
+
+            $sqlWhere[] = 'mi.ITEM_ID=cta.ITEM_ID';
+            $sqlWhere[] = 'mm.MFHD_ID=mi.MFHD_ID';
+            $sqlWhere[] = 'rgl.LOCATION_ID=mm.LOCATION_ID';
+        }
+
+        $sqlBind = array('patronId' => $patronId, 'bibId' => $bibId);
+
+        $sqlArray = array(
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'where' => $sqlWhere,
+            'bind' => $sqlBind
+        );
+
+        $sql = $this->buildSqlFromArray($sqlArray);
+
+        try {
+            $sqlStmt = $this->db->prepare($sql['string']);
+            $this->debugSQL(__FUNCTION__, $sql['string'], $sql['bind']);
+            $sqlStmt->execute($sql['bind']);
+            $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
+            return $sqlRow['CNT'] > 0;
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+    }
+
+    /**
+     * Check whether items exist for the given BIB ID
+     *
+     * @param integer $bibId          BIB ID
+     * @param integer $requestGroupId Request group ID or null
+     *
+     * @return boolean;
+     */
+    protected function itemsExist($bibId, $requestGroupId)
+    {
+        $sqlExpressions = array(
+            'count(i.ITEM_ID) CNT'
+        );
+
+        $sqlFrom = array(
+            "$this->dbName.BIB_ITEM bi",
+            "$this->dbName.ITEM i",
+            "$this->dbName.MFHD_ITEM mi",
+            "$this->dbName.MFHD_MASTER mm"
+        );
+
+        $sqlWhere = array(
+            'bi.BIB_ID=:bibId',
+            'i.ITEM_ID=bi.ITEM_ID',
+            'mi.ITEM_ID=i.ITEM_ID',
+            'mm.MFHD_ID=mi.MFHD_ID'
+        );
+
+        if ($this->excludedItemLocations) {
+            $sqlWhere[] = 'mm.LOCATION_ID not in (' . $this->excludedItemLocations .
+                ')';
+        }
+
+        $sqlBind = array('bibId' => $bibId);
+
+        if ($this->requestGroupsEnabled && isset($requestGroupId)) {
+            $sqlFrom[] = "$this->dbName.REQUEST_GROUP_LOCATION rgl";
+
+            $sqlWhere[] = 'rgl.LOCATION_ID=mm.LOCATION_ID';
+            $sqlWhere[] = 'rgl.GROUP_ID=:requestGroupId';
+
+            $sqlBind['requestGroupId'] = $requestGroupId;
+        }
+
+        $sqlArray = array(
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'where' => $sqlWhere,
+            'bind' => $sqlBind
+        );
+
+        $sql = $this->buildSqlFromArray($sqlArray);
+        try {
+            $sqlStmt = $this->db->prepare($sql['string']);
+            $this->debugSQL(__FUNCTION__, $sql['string'], $sql['bind']);
+            $sqlStmt->execute($sql['bind']);
+            $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
+            return $sqlRow['CNT'] > 0;
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+    }
+
+    /**
+     * Check whether there are items available for loan for the given BIB ID
+     *
+     * @param integer $bibId          BIB ID
+     * @param integer $requestGroupId Request group ID or null
+     *
+     * @return boolean;
+     */
+    protected function itemsAvailable($bibId, $requestGroupId)
+    {
+        // Build inner query first
+        $sqlExpressions = array(
+            'i.ITEM_ID',
+            'max(ist.ITEM_STATUS) as STATUS'
+        );
+
+        $sqlFrom = array(
+            "$this->dbName.ITEM_STATUS ist",
+            "$this->dbName.BIB_ITEM bi",
+            "$this->dbName.ITEM i",
+            "$this->dbName.MFHD_ITEM mi",
+            "$this->dbName.MFHD_MASTER mm"
+        );
+
+        $sqlWhere = array(
+            'bi.BIB_ID=:bibId',
+            'i.ITEM_ID=bi.ITEM_ID',
+            'ist.ITEM_ID=i.ITEM_ID',
+            'mi.ITEM_ID=i.ITEM_ID',
+            'mm.MFHD_ID=mi.MFHD_ID'
+        );
+
+        if ($this->excludedItemLocations) {
+            $sqlWhere[] = 'mm.LOCATION_ID not in (' . $this->excludedItemLocations .
+                ')';
+        }
+
+        $sqlGroup = array(
+            'i.ITEM_ID'
+        );
+
+        $sqlBind = array('bibId' => $bibId);
+
+        if ($this->requestGroupsEnabled && isset($requestGroupId)) {
+            $sqlFrom[] = "$this->dbName.REQUEST_GROUP_LOCATION rgl";
+
+            $sqlWhere[] = 'rgl.LOCATION_ID=mm.LOCATION_ID';
+            $sqlWhere[] = 'rgl.GROUP_ID=:requestGroupId';
+
+            $sqlBind['requestGroupId'] = $requestGroupId;
+        }
+
+        $sqlArray = array(
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'where' => $sqlWhere,
+            'group' => $sqlGroup,
+            'bind' => $sqlBind
+        );
+
+        $sql = $this->buildSqlFromArray($sqlArray);
+        $outersql = "select count(avail.item_id) CNT from (${sql['string']}) avail" .
+            ' where avail.STATUS=1'; // 1 = not charged
+
+        try {
+            $sqlStmt = $this->db->prepare($outersql);
+            $this->debugLogSQL(__FUNCTION__, $outersql, $sql['bind']);
+            $sqlStmt->execute($sql['bind']);
+            $sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC);
+            return $sqlRow['CNT'] > 0;
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
     }
 
     /**
@@ -1620,10 +1867,49 @@ EOT;
         }
 
         if ($this->requestGroupsEnabled && !$itemId
-            && (!isset($holdDetails['requestGroupId'])
-                || $holdDetails['requestGroupId'] === '')
+            && empty($holdDetails['requestGroupId'])
         ) {
             return $this->holdError('hold_invalid_request_group');
+        }
+
+            // Optional check that the bib has items
+        if ($this->checkItemsExist) {
+            $exist = $this->itemsExist(
+                $bibId,
+                isset($holdDetails['requestGroupId'])
+                ? $holdDetails['requestGroupId'] : null
+            );
+            if (!$exist) {
+                return $this->holdError('hold_no_items');
+            }
+        }
+
+        // Optional check that the bib has no available items
+        if ($this->checkItemsNotAvailable) {
+            $disabledGroups = array();
+            $key = 'disableAvailabilityCheckForRequestGroups';
+            if (isset($this->config['Holds'][$key])) {
+                $disabledGroups = explode(':', $this->config['Holds'][$key]);
+            }
+            if (!isset($holdDetails['requestGroupId'])
+                || !in_array($holdDetails['requestGroupId'], $disabledGroups)
+            ) {
+                $available = $this->itemsAvailable(
+                    $bibId,
+                    isset($holdDetails['requestGroupId'])
+                    ? $holdDetails['requestGroupId'] : null
+                );
+                if ($available) {
+                    return $this->holdError('hold_items_available');
+                }
+            }
+        }
+
+        // Optional check that the patron doesn't already have the bib on loan
+        if ($this->checkLoans) {
+            if ($this->isRecordOnLoan($patron['id'], $bibId)) {
+                return $this->holdError('hold_record_already_on_loan');
+            }
         }
 
         // Build Request Data
@@ -1795,7 +2081,7 @@ EOT;
         if (isset($results->loans->institution)) {
             foreach ($results->loans->institution as $institution) {
                 foreach ($institution->loan as $loan) {
-                    if ((string)$institution->attributes()->id == 'LOCAL') {
+                    if ($this->isLocalInst((string)$institution->attributes()->id)) {
                         // Take only renewability for local loans, other information
                         // we have already
                         $renewable = (string)$loan->attributes()->canRenew == 'Y';
@@ -1900,7 +2186,7 @@ EOT;
         if (isset($results->holds->institution)) {
             foreach ($results->holds->institution as $institution) {
                 // Only take remote holds
-                if ($institution == 'LOCAL') {
+                if ($this->isLocalInst($institution)) {
                     continue;
                 }
 
@@ -1976,7 +2262,7 @@ EOT;
         $requests = array();
         if (isset($results->callslips->institution)) {
             foreach ($results->callslips->institution as $institution) {
-                if ((string)$institution->attributes()->id == 'LOCAL') {
+                if ($this->isLocalInst((string)$institution->attributes()->id)) {
                     // Ignore local callslips, we have them already
                     continue;
                 }
@@ -2827,5 +3113,21 @@ EOT;
             . '|' . $details['type']
             . '|' . $details['reqnum'];
         return $details;
+    }
+
+    /**
+     * Support method: is this institution code a local one?
+     *
+     * @param string $institution Institution code
+     *
+     * @return bool
+     */
+    protected function isLocalInst($institution)
+    {
+        // In some versions of Voyager, this will be 'LOCAL' while
+        // in others, it may be something like '1@LOCAL' -- for now,
+        // let's try checking the last 5 characters. If other options
+        // exist in the wild, we can make this method more sophisticated.
+        return substr($institution, -5) == 'LOCAL';
     }
 }

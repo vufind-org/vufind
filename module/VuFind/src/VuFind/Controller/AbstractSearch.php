@@ -112,6 +112,17 @@ class AbstractSearch extends AbstractBase
             $view->saved = $this->restoreAdvancedSearch($searchId);
         }
 
+        // If we have default filters, set them up as a fake "saved" search
+        // to properly populate special controls on the advanced screen.
+        if (!$view->saved && count($view->options->getDefaultFilters()) > 0) {
+            $view->saved = $this->getServiceLocator()
+                ->get('VuFind\SearchResultsPluginManager')
+                ->get($this->searchClassId);
+            $view->saved->getParams()->initFromRequest(
+                new \Zend\StdLib\Parameters(array())
+            );
+        }
+
         return $view;
     }
 
@@ -199,7 +210,10 @@ class AbstractSearch extends AbstractBase
 
         $results = $this->getResultsManager()->get($this->searchClassId);
         $params = $results->getParams();
-        $params->recommendationsEnabled(true);
+
+        // Enable recommendations unless explicitly told to disable them:
+        $noRecommend = $this->params()->fromQuery('noRecommend', false);
+        $params->recommendationsEnabled(!$noRecommend);
 
         // Send both GET and POST variables to search class:
         $params->initFromRequest(
@@ -369,47 +383,223 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get the current settings for the date range facet, if it is set:
+     * Get the current settings for the specified range facet, if it is set:
      *
+     * @param array  $fields      Fields to check
+     * @param string $type        Type of range to include in return value
      * @param object $savedSearch Saved search object (false if none)
-     * @param string $config      Name of config file
      *
      * @return array
      */
-    protected function getDateRangeSettings($savedSearch = false, $config = 'facets')
+    protected function getRangeSettings($fields, $type, $savedSearch = false)
     {
         $parts = array();
 
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+        foreach ($fields as $field) {
+            // Default to blank strings:
+            $from = $to = '';
 
-        if (isset($config->SpecialFacets->dateRange)) {
-            foreach ($config->SpecialFacets->dateRange as $field) {
-                // Default to blank strings:
-                $from = $to = '';
-
-                // Check to see if there is an existing range in the search object:
-                if ($savedSearch) {
-                    $filters = $savedSearch->getParams()->getFilters();
-                    if (isset($filters[$field])) {
-                        foreach ($filters[$field] as $current) {
-                            if ($range = SolrUtils::parseRange($current)) {
-                                $from = $range['from'] == '*' ? '' : $range['from'];
-                                $to = $range['to'] == '*' ? '' : $range['to'];
-                                $savedSearch->getParams()
-                                    ->removeFilter($field . ':' . $current);
-                                break;
-                            }
+            // Check to see if there is an existing range in the search object:
+            if ($savedSearch) {
+                $filters = $savedSearch->getParams()->getFilters();
+                if (isset($filters[$field])) {
+                    foreach ($filters[$field] as $current) {
+                        if ($range = SolrUtils::parseRange($current)) {
+                            $from = $range['from'] == '*' ? '' : $range['from'];
+                            $to = $range['to'] == '*' ? '' : $range['to'];
+                            $savedSearch->getParams()
+                                ->removeFilter($field . ':' . $current);
+                            break;
                         }
                     }
                 }
-
-                // Send back the settings:
-                $parts[] = array(
-                    'field' => $field,
-                    'values' => array($from, $to)
-                );
             }
+
+            // Send back the settings:
+            $parts[] = array(
+                'field' => $field,
+                'type' => $type,
+                'values' => array($from, $to)
+            );
         }
+
         return $parts;
+    }
+
+    /**
+     * Get the current settings for the date range facets, if set:
+     *
+     * @param object $savedSearch Saved search object (false if none)
+     * @param string $config      Name of config file
+     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * fields will be returned)
+     *
+     * @return array
+     */
+    protected function getDateRangeSettings($savedSearch = false, $config = 'facets',
+        $filter = array()
+    ) {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+
+        $fields = isset($config->SpecialFacets->dateRange)
+            ? $config->SpecialFacets->dateRange->toArray()
+            : array();
+
+        if (!empty($filter)) {
+            $fields = array_intersect($fields, $filter);
+        }
+
+        return $this->getRangeSettings($fields, 'date', $savedSearch);
+    }
+
+    /**
+     * Get the current settings for the generic range facets, if set:
+     *
+     * @param object $savedSearch Saved search object (false if none)
+     * @param string $config      Name of config file
+     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * fields will be returned)
+     *
+     * @return array
+     */
+    protected function getGenericRangeSettings($savedSearch = false,
+        $config = 'facets', $filter = array()
+    ) {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+
+        $fields = isset($config->SpecialFacets->genericRange)
+            ? $config->SpecialFacets->genericRange->toArray()
+            : array();
+
+        if (!empty($filter)) {
+            $fields = array_intersect($fields, $filter);
+        }
+
+        return $this->getRangeSettings($fields, 'generic', $savedSearch);
+    }
+
+    /**
+     * Get the current settings for the numeric range facets, if set:
+     *
+     * @param object $savedSearch Saved search object (false if none)
+     * @param string $config      Name of config file
+     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * fields will be returned)
+     *
+     * @return array
+     */
+    protected function getNumericRangeSettings($savedSearch = false,
+        $config = 'facets', $filter = array()
+    ) {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+
+        $fields = isset($config->SpecialFacets->numericRange)
+            ? $config->SpecialFacets->numericRange->toArray()
+            : array();
+
+        if (!empty($filter)) {
+            $fields = array_intersect($fields, $filter);
+        }
+
+        return $this->getRangeSettings($fields, 'numeric', $savedSearch);
+    }
+
+    /**
+     * Get all active range facets:
+     *
+     * @param array  $specialFacets Special facet setting (in parsed format)
+     * @param object $savedSearch   Saved search object (false if none)
+     * @param string $config        Name of config file
+     *
+     * @return array
+     */
+    protected function getAllRangeSettings($specialFacets, $savedSearch = false,
+        $config = 'facets'
+    ) {
+        $result = array();
+        if (isset($specialFacets['daterange'])) {
+            $dates = $this->getDateRangeSettings(
+                $savedSearch, $config, $specialFacets['daterange']
+            );
+            $result = array_merge($result, $dates);
+        }
+        if (isset($specialFacets['genericrange'])) {
+            $generic = $this->getGenericRangeSettings(
+                $savedSearch, $config, $specialFacets['genericrange']
+            );
+            $result = array_merge($result, $generic);
+        }
+        if (isset($specialFacets['numericrange'])) {
+            $numeric = $this->getNumericRangeSettings(
+                $savedSearch, $config, $specialFacets['numericrange']
+            );
+            $result = array_merge($result, $numeric);
+        }
+        return $result;
+    }
+
+    /**
+     * Parse the "special facets" setting.
+     *
+     * @param string $specialFacets Unparsed string
+     *
+     * @return array
+     */
+    protected function parseSpecialFacetsSetting($specialFacets)
+    {
+        // Parse the special facets into a more useful format:
+        $parsed = array();
+        foreach (explode(',', $specialFacets) as $current) {
+            $parts = explode(':', $current);
+            $key = array_shift($parts);
+            $parsed[$key] = $parts;
+        }
+        return $parsed;
+    }
+
+    /**
+     * Process the checkbox setting from special facets.
+     *
+     * @param array  $params      Parameters to the checkbox setting
+     * @param object $savedSearch Saved search object (false if none)
+     *
+     * @return array
+     */
+    protected function processAdvancedCheckboxes($params, $savedSearch = false)
+    {
+        // Set defaults for missing parameters:
+        $config = isset($params[0]) ? $params[0] : 'facets';
+        $section = isset($params[1]) ? $params[1] : 'CheckboxFacets';
+
+        // Load config file:
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+
+        // Process checkbox settings in config:
+        if (substr($section, 0, 1) == '~') {        // reverse flag
+            $section = substr($section, 1);
+            $flipCheckboxes = true;
+        }
+        $checkboxFacets = ($section && isset($config->$section))
+            ? $config->$section->toArray() : array();
+        if (isset($flipCheckboxes) && $flipCheckboxes) {
+            $checkboxFacets = array_flip($checkboxFacets);
+        }
+
+        // Reformat for convenience:
+        $formatted = array();
+        foreach ($checkboxFacets as $filter => $desc) {
+            $current = compact("desc", "filter");
+            $current['selected']
+                = $savedSearch && $savedSearch->getParams()->hasFilter($filter);
+            // We don't want to double-display checkboxes on advanced search, so
+            // if they are checked, we should remove them from the object to
+            // prevent display in the "other filters" area.
+            if ($current['selected']) {
+                $savedSearch->getParams()->removeFilter($filter);
+            }
+            $formatted[] = $current;
+        }
+
+        return $formatted;
     }
 }

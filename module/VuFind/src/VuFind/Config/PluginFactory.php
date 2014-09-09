@@ -42,7 +42,7 @@ use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
 class PluginFactory implements AbstractFactoryInterface
 {
     /**
-     * .ini reader
+     * INI file reader
      *
      * @var IniReader
      */

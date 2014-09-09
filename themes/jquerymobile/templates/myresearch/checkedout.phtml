@@ -47,15 +47,20 @@
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=$this->record($resource)->getFormatList()?>
             <? endif; ?>
-            
+
+            <? if (!empty($ilsDetails['borrowingLocation'])): ?>
+              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], array(), $ilsDetails['borrowingLocation'])?>
+              <br />
+            <? endif; ?>
+
             <? if (isset($ilsDetails['renew'])): ?>
               <strong><?=$this->transEsc('Renewed')?>:</strong> <?=$this->transEsc($ilsDetails['renew'])?>
               <? if (isset($ilsDetails['renewLimit'])): ?>
                 / <?=$this->transEsc($ilsDetails['renewLimit'])?>
               <? endif; ?>
               <br />
-            <? endif; ?>            
-            
+            <? endif; ?>
+
             <? $showStatus = true; ?>
 
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
@@ -91,8 +96,8 @@
                   <fieldset data-type="horizontal" data-role="controlgroup">
                     <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
                     <label for="checkbox_<?=$safeId?>"><?=$this->transEsc("Select this record")?></label>
-                    <input type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" class="checkbox" style="margin-left: 0" id="checkbox_<?=$safeId?>" />
-                    <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" />
+                    <input type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" class="checkbox" style="margin-left: 0" id="checkbox_<?=$safeId?>" />
+                    <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
                   </fieldset>
                 </div>
             <? endif; ?>

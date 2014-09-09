@@ -1,0 +1,47 @@
+<?
+  $this->headLink()->appendStylesheet('EDS.css');
+  $accessLevel = $this->driver->getAccessLevel();
+  $restrictedView = empty($accessLevel) ? false : true;
+?>
+<a rel="external" href="<?=$this->recordLink()->getUrl($this->driver)?>">
+  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+    <? $items =  $this->driver->getItems();
+    if (isset($items) && !empty($items)) :
+      foreach ($items as $item):
+        if (!empty($item)): ?>
+          <? if('Ti' == $item['Group']): ?>
+            <h3 class="ui-li-heading"><?=$item['Data']?></h3>
+          <? else: ?>
+            <p class="ui-li-desc"><strong><?=$this->transEsc($item['Label'])?></strong>: <?=$item['Data']?></p>
+          <? endif; ?>
+        <? endif;
+      endforeach;
+    elseif ($restrictedView): ?>
+      <a class="login" href="<?=$this->url('myresearch-home')?>">
+        <strong><?=$this->transEsc('Login for full access')?></strong>
+      </a><br/>
+    <? endif; ?>
+    <div style="padding-left:1em">
+      <? $customLinks = $this->driver->getCustomLinks();
+      if (!empty($customLinks)): ?>
+        <? foreach ($customLinks as $customLink): ?>
+          <? $url  = isset($customLink['Url'])  ? $customLink['Url']  : '';
+             $mot  = isset($customLink['MouseOverText']) ? $customLink['MouseOverText'] : '';
+             $icon = isset($customLink['Icon']) ? $customLink['Icon'] : '';
+             $name = isset($customLink['Name']) ? $customLink['Name'] : '';?>
+            <p class="ui-li-desc"><? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?></p>
+        <? endforeach; ?>
+      <? endif; ?>
+
+      <? if ($this->driver->hasHTMLFullTextAvailable()): ?>
+        <p class="ui-li-desc"><?=$this->transEsc('HTML Full Text')?></p>
+        &nbsp; &nbsp;
+      <? endif; ?>
+
+      <? if ($this->driver->hasPdfAvailable()): ?>
+        <p class="ui-li-desc"><?=$this->transEsc('PDF Full Text')?></p>
+      <? endif; ?>
+    </div>
+  </div>
+</a>

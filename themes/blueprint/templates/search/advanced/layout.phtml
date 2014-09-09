@@ -11,19 +11,32 @@
     // Set up saved search details:
     if (isset($this->saved) && is_object($this->saved)) {
         $searchDetails = $this->saved->getParams()->getQuery();
-        $groups = $searchDetails->getQueries();
+        if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+            // Not an advanced query -- ignore it.
+            $searchDetails = $groups = false;
+        } else {
+            $groups = $searchDetails->getQueries();
+        }
+        $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
         $searchFilters = $this->saved->getParams()->getFilterList();
     } else {
-        $searchDetails = $searchFilters = $groups = false;
+        $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
     }
 
     // Set up Javascript:
     // Step 1: Define our search arrays so they are usuable in the javascript
     $this->headScript()->appendScript($this->render('search/advanced/globals.phtml'));
     // Step 2: Call the javascript to make use of the above
-    $this->headScript()->appendFile('advanced_search.js');
+    $this->headScript()->appendFile(
+        isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js'
+    );
     // Step 3: Build the page
-    $this->headScript()->appendScript($this->partial('search/advanced/build_page.phtml', array('searchDetails' => $searchDetails)));
+    $this->headScript()->appendScript(
+        $this->partial(
+            isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
+            array('searchDetails' => $searchDetails)
+        )
+    );
 ?>
 <form method="get" action="<?=$this->url($this->options->getSearchAction())?>" id="advSearchForm" name="searchForm" class="search">
   <div class="<?=$this->layoutClass('mainbody')?>">
@@ -61,7 +74,7 @@
                   <?
                     $options = array('AND', 'OR', 'NOT');
                     foreach ($options as $option) {
-                        echo '<option value="' . $this->escapeHtml($option) . '"';
+                        echo '<option value="' . $this->escapeHtmlAttr($option) . '"';
                         if ($groups && isset($groups[$i])) {
                             $operator = $groups[$i]->isNegated() ? 'NOT' : $groups[$i]->getOperator();
                             if ($operator == $option) {
@@ -93,13 +106,13 @@
                   <label <?=($j > 0)?'class="offscreen" ':''?>for="search_lookfor<?=$i?>_<?=$j?>"><?=$this->transEsc("adv_search_label")?>:</label>&nbsp;
                 </div>
                 <div class="terms">
-                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtml($currRow->getString()):''?>" size="50" name="lookfor<?=$i?>[]"/>
+                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="50" name="lookfor<?=$i?>[]"/>
                 </div>
                 <div class="field">
                   <label for="search_type<?=$i?>_<?=$j?>"><?=$this->transEsc("in")?></label>
                   <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]">
                   <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                    <option value="<?=$this->escapeHtml($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                    <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                   <? endforeach; ?>
                   </select>
                 </div>
@@ -117,7 +130,7 @@
       <br/><br/>
 
       <? $lastSort = $this->options->getLastSort(); if (!empty($lastSort)): ?>
-        <input type="hidden" name="sort" value="<?=$this->escapeHtml($lastSort)?>" />
+        <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
       <? endif; ?>
       <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
       <? if (isset($this->extraAdvancedControls)): ?>
@@ -128,6 +141,9 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
+    <? if ($hasDefaultsApplied): ?>
+      <input type="hidden" name="dfApplied" value="1" />
+    <? endif ?>
     <? if (!empty($searchFilters)): ?>
       <div class="filterList">
         <h3><?=$this->transEsc("adv_search_filters")?><br/><span>(<?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" onclick="filterAll(this, 'advSearchForm');" />)</span></h3>
@@ -136,7 +152,7 @@
             <h4><?=$this->transEsc($field)?></h4>
             <ul>
               <? foreach ($data as $value): ?>
-                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtml($value['field'])?>:"<?=$this->escapeHtml($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></li>
+                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></li>
               <? endforeach; ?>
             </ul>
           </div>

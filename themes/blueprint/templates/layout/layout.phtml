@@ -26,7 +26,7 @@
     <?
         // Set global path for Javascript code:
         $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
-        
+
         $this->jsTranslations()->addStrings(
           array(
             'loading'=>'Loading'
@@ -59,19 +59,22 @@
             $this->headScript()->appendFile("jquery.tabSlideOut.v2.0.js");
             $this->headScript()->appendFile("feedback.js");
         }
-        
+
         // Session keep-alive
         if ($this->KeepAlive()) {
             $this->headScript()->appendScript('var keepAliveInterval = '
                 . $this->KeepAlive());
             $this->headScript()->appendFile("keep_alive.js");
         }
+        if ($this->recaptcha()->active()) {
+            $this->headScript()->appendFile("recaptcha_ajax.js");
+        }
     ?>
     <?=$this->headScript()?>
   </head>
   <body>
     <? if ($mobileViewLink = $this->mobileUrl()): // display 'return to mobile' link when applicable ?>
-      <div class="mobileViewLink"><a href="<?=$this->escapeHtml($mobileViewLink)?>"><?=$this->transEsc("mobile_link")?></a></div>
+      <div class="mobileViewLink"><a href="<?=$this->escapeHtmlAttr($mobileViewLink)?>"><?=$this->transEsc("mobile_link")?></a></div>
     <? endif; ?>
     <div class="container">
       <div class="header">

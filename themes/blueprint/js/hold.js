@@ -1,3 +1,4 @@
+/*global path */
 function setUpHoldRequestForm(recordId) {
   $('#requestGroupId').change(function() {
     var $emptyOption = $("#pickUpLocation option[value='']");

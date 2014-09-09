@@ -1,0 +1,77 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') .'">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix Database') . '</li>';
+?>
+<h2><?=$this->transEsc('auto_configure_title')?></h2>
+
+<?=$this->flashmessages()?>
+
+<p>To create a new database for VuFind, please fill in this form:</p>
+
+<form class="form-horizontal" action="" method="post">
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="dbname">Select database type:</label>
+    <div class="col-sm-9">
+      <select name="driver" class="form-control">
+        <option value="mysql">MySQL</option>
+        <option <? if ($driver == 'pgsql'): ?>selected="selected" <? endif; ?>value="pgsql">PostgreSQL</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="dbname">New database name:</label>
+    <div class="col-sm-9">
+      <input type="text" name="dbname" value="<?=$this->escapeHtmlAttr($this->dbname)?>" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="dbuser">New database user:</label>
+    <div class="col-sm-9">
+      <input type="text" name="dbuser" value="<?=$this->escapeHtmlAttr($this->dbuser)?>" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="dbpass">New user password:</label>
+    <div class="col-sm-9">
+      <input type="password" name="dbpass" value="" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="dbpassconfirm">Confirm new user password:</label>
+    <div class="col-sm-9">
+      <input type="password" name="dbpassconfirm" value="" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="dbhost">MySQL Host:</label>
+    <div class="col-sm-9">
+      <input type="text" name="dbhost" value="<?=$this->escapeHtmlAttr($this->dbhost)?>" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="dbrootuser">MySQL Root User:</label>
+    <div class="col-sm-9">
+      <input type="text" name="dbrootuser" value="<?=$this->escapeHtmlAttr($this->dbrootuser)?>" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="dbrootpass">MySQL Root Password:</label>
+    <div class="col-sm-9">
+      <input type="password" name="dbrootpass" value="" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-9 col-sm-offset-3">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" />
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="printsql">If you don't have the credentials or you wish to print the SQL out :</label>
+    <div class="col-sm-9">
+      <p class="form-control-static">Click here to <input class="btn btn-default" type="submit" name="printsql" value="Skip"/> credentials.</p>
+    </div>
+  </div>
+</form>

@@ -30,7 +30,7 @@
         <div class="ui-block-b">
           <select id="searchForm_type" name="type0[]" data-mini="true">
             <? foreach ($options->getBasicHandlers() as $searchVal => $searchDesc): ?>
-              <option value="<?=$this->escapeHtml($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
+              <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
             <? endforeach; ?>
           </select>
         </div>
@@ -50,10 +50,10 @@
       <?
         /* Load hidden limit preference from Session */
         if (!empty($lastLimit)) {
-          echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';
+          echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
         }
         if (!empty($lastSort)) {
-          echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
+          echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
         }
       ?>
     </form>

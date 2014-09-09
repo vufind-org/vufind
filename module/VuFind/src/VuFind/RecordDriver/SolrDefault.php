@@ -325,6 +325,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get just the first listed UPC Number (or false if none available).
+     *
+     * @return mixed
+     */
+    public function getCleanUPC()
+    {
+        $nums = $this->getUPC();
+        return empty($nums) ? false : $nums[0];
+    }
+
+    /**
      * Get the main corporate author (if any) for the record.
      *
      * @return string
@@ -611,7 +622,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the OCLC number of the record.
+     * Get the OCLC number(s) of the record.
      *
      * @return array
      */
@@ -912,6 +923,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get human readable publication dates for display purposes (may not be suitable
+     * for computer processing -- use getPublicationDates() for that).
+     *
+     * @return array
+     */
+    public function getHumanReadablePublicationDates()
+    {
+        return $this->getPublicationDates();
+    }
+
+    /**
      * Get an array of publication detail lines combining information from
      * getPublicationDates(), getPublishers() and getPlacesOfPublication().
      *
@@ -921,7 +943,7 @@ class SolrDefault extends AbstractBase
     {
         $places = $this->getPlacesOfPublication();
         $names = $this->getPublishers();
-        $dates = $this->getPublicationDates();
+        $dates = $this->getHumanReadablePublicationDates();
 
         $i = 0;
         $retval = array();
@@ -1114,6 +1136,9 @@ class SolrDefault extends AbstractBase
      */
     public function getThumbnail($size = 'small')
     {
+        if (isset($this->fields['thumbnail']) && $this->fields['thumbnail']) {
+            return $this->fields['thumbnail'];
+        }
         $arr = array(
             'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
             'callnumber' => $this->getCallNumber(),
@@ -1125,6 +1150,21 @@ class SolrDefault extends AbstractBase
         }
         if ($issn = $this->getCleanISSN()) {
             $arr['issn'] = $issn;
+        }
+        if ($oclc = $this->getCleanOCLCNum()) {
+            $arr['oclc'] = $oclc;
+        }
+        if ($upc = $this->getCleanUPC()) {
+            $arr['upc'] = $upc;
+        }
+        // If an ILS driver has injected extra details, check for IDs in there
+        // to fill gaps:
+        if ($ilsDetails = $this->getExtraDetail('ils_details')) {
+            foreach (array('isbn', 'issn', 'oclc', 'upc') as $key) {
+                if (!isset($arr[$key]) && isset($ilsDetails[$key])) {
+                    $arr[$key] = $ilsDetails[$key];
+                }
+            }
         }
         return $arr;
     }
@@ -1172,6 +1212,28 @@ class SolrDefault extends AbstractBase
     {
         return isset($this->fields['contents'])
             ? $this->fields['contents'] : array();
+    }
+
+    /**
+     * Get hierarchical place names
+     *
+     * @return array
+     */
+    public function getHierarchicalPlaceNames()
+    {
+        // Not currently stored in the Solr index
+        return array();
+    }
+
+    /**
+     * Get the UPC number(s) of the record.
+     *
+     * @return array
+     */
+    public function getUPC()
+    {
+        return isset($this->fields['upc_str_mv']) ?
+            $this->fields['upc_str_mv'] : array();
     }
 
     /**
@@ -1361,6 +1423,29 @@ class SolrDefault extends AbstractBase
         return $retVal;
     }
 
+     /**
+     * Get the titles of this item within parent collections.  Returns an array
+     * of parent ID => sequence number.
+     *
+     * @return Array
+     */
+    public function getTitlesInHierarchy()
+    {
+        $retVal = array();
+        if (isset($this->fields['title_in_hierarchy'])
+            && is_array($this->fields['title_in_hierarchy'])
+        ) {
+            $titles = $this->fields['title_in_hierarchy'];
+            $parentIDs = $this->fields['hierarchy_parent_id'];
+            if (count($titles) === count($parentIDs)) {
+                foreach ($parentIDs as $key => $val) {
+                    $retVal[$val] = $titles[$key];
+                }
+            }
+        }
+        return $retVal;
+    }
+
     /**
      * Get a list of hierarchy trees containing this record.
      *
@@ -1505,7 +1590,7 @@ class SolrDefault extends AbstractBase
      */
     protected function getSupportedCitationFormats()
     {
-        return array('APA', 'MLA');
+        return array('APA', 'Chicago', 'MLA');
     }
 
     /**
@@ -1651,13 +1736,13 @@ class SolrDefault extends AbstractBase
 
     /**
      * Get information on records deduplicated with this one
-     * 
+     *
      * @return array Array keyed by source id containing record id
      */
     public function getDedupData()
     {
         return isset($this->fields['dedup_data'])
             ? $this->fields['dedup_data']
-            : array(); 
+            : array();
     }
 }

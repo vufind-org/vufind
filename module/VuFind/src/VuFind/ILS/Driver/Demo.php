@@ -228,11 +228,12 @@ class Demo extends AbstractBase
      *
      * @return array
      */
-    protected function getRandomHolding($id, $number, $patron)
+    protected function getRandomHolding($id, $number, array $patron = null)
     {
         $status = $this->getFakeStatus();
         return array(
             'id'           => $id,
+            'item_id'      => $number,
             'number'       => $number,
             'barcode'      => sprintf("%08d", rand()%50000),
             'availability' => $status == 'Available',
@@ -243,6 +244,7 @@ class Demo extends AbstractBase
             'duedate'      => '',
             'is_holdable'  => true,
             'addLink'      => $patron ? rand()%10 == 0 ? 'block' : true : false,
+            'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => $patron
                 ? rand()%10 == 0 ? 'block' : 'check'
@@ -252,6 +254,25 @@ class Demo extends AbstractBase
                 ? rand()%10 == 0 ? 'block' : 'check'
                 : false
         );
+    }
+
+    /**
+     * Generate an associative array containing some sort of ID (for cover
+     * generation).
+     *
+     * @return array
+     */
+    protected function getRandomItemIdentifier()
+    {
+        switch (rand(1, 4)) {
+        case 1:
+            return array('isbn' => '1558612742');
+        case 2:
+            return array('oclc' => '55114477');
+        case 3:
+            return array('issn' => '1133-0686');
+        }
+        return array('upc' => '733961100525');
     }
 
     /**
@@ -285,7 +306,8 @@ class Demo extends AbstractBase
                 "item_id" => $i,
                 "reqnum" => $i
             );
-
+            // Inject a random identifier of some sort:
+            $currentItem += $this->getRandomItemIdentifier();
             if ($i == 2 || rand()%5 == 1) {
                 // Mimic an ILL request
                 $currentItem["id"] = "ill_request_$i";
@@ -341,13 +363,29 @@ class Demo extends AbstractBase
      * This is responsible for retrieving the status information of a certain
      * record.
      *
+     * @param string $id The record id to retrieve the holdings for
+     *
+     * @return mixed     On success, an associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber.
+     */
+    public function getStatus($id)
+    {
+        return $this->getSimulatedStatus($id);
+    }
+
+    /**
+     * Get Simulated Status (support method for getStatus/getHolding)
+     *
+     * This is responsible for retrieving the status information of a certain
+     * record.
+     *
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id, $patron = false)
+    public function getSimulatedStatus($id, array $patron = null)
     {
         $id = $id.""; // make it a string for consistency
         // How many items are there?
@@ -481,10 +519,10 @@ class Demo extends AbstractBase
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         // Get basic status info:
-        $status = $this->getStatus($id, $patron);
+        $status = $this->getSimulatedStatus($id, $patron);
 
         // Add notes and summary:
         foreach (array_keys($status) as $i) {
@@ -743,7 +781,7 @@ class Demo extends AbstractBase
 
                 if ($i == 2 || rand()%5 == 1) {
                     // Mimic an ILL loan
-                    $transList[] = array(
+                    $transList[] = $this->getRandomItemIdentifier() + array(
                         'duedate' => $due_date,
                         'dueStatus' => $dueStatus,
                         'barcode' => sprintf("%08d", rand()%50000),
@@ -756,10 +794,11 @@ class Demo extends AbstractBase
                         'title'   => "ILL Loan Title $i",
                         'institution_id' => 'ill_institution',
                         'institution_name' => 'ILL Library',
-                        'institution_dbkey' => 'ill_institution'
+                        'institution_dbkey' => 'ill_institution',
+                        'borrowingLocation' => 'ILL Service Desk'
                     );
                 } else {
-                    $transList[] = array(
+                    $transList[] = $this->getRandomItemIdentifier() + array(
                         'duedate' => $due_date,
                         'dueStatus' => $dueStatus,
                         'barcode' => sprintf("%08d", rand()%50000),
@@ -767,7 +806,8 @@ class Demo extends AbstractBase
                         'renewLimit' => $renewLimit,
                         'request' => $req,
                         'item_id' => $i,
-                        'renewable' => $renew < $renewLimit
+                        'renewable' => $renew < $renewLimit,
+                        'borrowingLocation' => $this->getFakeLoc()
                     );
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();
@@ -825,6 +865,7 @@ class Demo extends AbstractBase
      * placeHold, minus the patron data.
      *
      * @return int
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {
@@ -863,8 +904,8 @@ class Demo extends AbstractBase
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the request group options
-     * or may be ignored.
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return false|string      The default request group for the patron.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -1311,7 +1352,9 @@ class Demo extends AbstractBase
 
         $requestGroup = '';
         foreach ($this->getRequestGroups(null, null) as $group) {
-            if ($group['id'] == $holdDetails['requestGroupId']) {
+            if (isset($holdDetails['requestGroupId'])
+                && $group['id'] == $holdDetails['requestGroupId']
+            ) {
                 $requestGroup = $group['name'];
                 break;
             }
@@ -1591,8 +1634,7 @@ class Demo extends AbstractBase
      * @param string $pickupLib Pickup library ID
      * @param array  $patron    Patron
      *
-     * @return boo|array False if request not allowed, or an array of
-     * locations.
+     * @return bool|array False if request not allowed, or an array of locations.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
@@ -1697,7 +1739,7 @@ class Demo extends AbstractBase
     {
         if ($function == 'Holds') {
             return array(
-                'HMACKeys' => 'id',
+                'HMACKeys' => 'id:item_id:level',
                 'extraHoldFields' =>
                     'comments:requestGroup:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => 'driver:0:2:0',

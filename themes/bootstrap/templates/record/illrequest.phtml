@@ -7,7 +7,11 @@
         . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span> </li>'
         . '<li class="active">' . $this->transEsc('ill_request_place_text') . '</li>';
 ?>
-<p class="lead"><?=$this->transEsc('ill_request_place_text')?></p>
+<h2><?=$this->transEsc('ill_request_place_text')?></h2>
+<? if ($this->helpText): ?>
+<p class="helptext"><?=$this->helpText?></p>
+<? endif; ?>
+
 <?=$this->flashmessages()?>
 <div id="ILLRequestForm" class="storage-retrieval-request-form">
   <form action="" name="placeILLRequest" class="form-horizontal" method="post">
@@ -18,7 +22,7 @@
         <div class="controls">
           <select id="itemId" name="gatheredDetails[itemId]">
           <? foreach ($this->items as $item): ?>
-            <option value="<?=$this->escapeHtml($item['id'])?>"<?=($this->gatheredDetails['itemId'] == $item['id']) ? ' selected="selected"' : ''?>>
+            <option value="<?=$this->escapeHtmlAttr($item['id'])?>"<?=($this->gatheredDetails['itemId'] == $item['id']) ? ' selected="selected"' : ''?>>
               <?=$this->escapeHtml($item['name'])?>
             </option>
          <? endforeach; ?>
@@ -26,7 +30,7 @@
         </div>
       </div>
     <? endif; ?>
-    
+
     <? if (in_array("pickUpLibrary", $this->extraFields)): ?>
       <div class="control-group">
       <? if (count($this->pickupLibraries) > 1): ?>
@@ -41,7 +45,7 @@
         <div class="controls">
           <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]">
           <? foreach ($this->pickupLibraries as $lib): ?>
-            <option value="<?=$this->escapeHtml($lib['id'])?>"<?=(($selected === false && isset($lib['isDefault']) && $lib['isDefault']) || $selected === $lib['id']) ? ' selected="selected"' : ''?>>
+            <option value="<?=$this->escapeHtmlAttr($lib['id'])?>"<?=(($selected === false && isset($lib['isDefault']) && $lib['isDefault']) || $selected === $lib['id']) ? ' selected="selected"' : ''?>>
               <?=$this->transEsc('library_' . $lib['name'], null, $lib['name'])?>
             </option>
           <? endforeach; ?>
@@ -60,7 +64,7 @@
         </div>
       </div>
     <? endif; ?>
-  
+
     <? if (in_array("pickUpLocation", $this->extraFields)): ?>
       <? if (count($this->pickup) > 1): ?>
         <div class="control-group">
@@ -77,7 +81,7 @@
           <div class="controls">
             <select name="gatheredDetails[pickUpLocation]">
             <? foreach ($this->pickup as $lib): ?>
-              <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+              <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
                 <?=$this->escapeHtml($lib['locationDisplay'])?>
               </option>
             <? endforeach; ?>
@@ -85,7 +89,7 @@
           </div>
         </div>
       <? else: ?>
-        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtml($this->defaultPickup)?>" />
+        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
       <? endif; ?>
     <? endif; ?>
 
@@ -93,7 +97,7 @@
       <div class="control-group">
         <label class="control-label"><?=$this->transEsc("hold_required_by")?>:</label>
         <div class="controls">
-          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtml($this->gatheredDetails['requiredBy']) : $this->escapeHtml($this->defaultRequiredDate)?>" size="8" />
+          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" />
           (<?=$this->dateTime()->getDisplayDateFormat()?>)
         </div>
       </div>

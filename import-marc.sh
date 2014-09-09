@@ -49,7 +49,10 @@ fi
 # -XX:+UseParallelGC
 # -XX:+AggressiveOpts
 ##################################################
-INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0'
+if [ -z "$INDEX_OPTIONS" ]
+then
+  INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0'
+fi
 
 
 ##################################################

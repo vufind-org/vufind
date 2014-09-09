@@ -40,19 +40,19 @@
       <hr/>
       <? $iteration++; ?>
       <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-      <div id="record<?=$this->escapeHtml($resource->getUniqueId()) ?>" class="row-fluid">
+      <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row-fluid">
         <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
           <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
-          <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" />
+          <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
           <div class="pull-left">
-            <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
+            <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
           </div>
         <? endif; ?>
         <div class="span2 text-center">
           <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-            <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+            <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
           <? else: ?>
-            <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+            <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
           <? endif; ?>
         </div>
         <div class="span9">
@@ -75,20 +75,6 @@
             <?=$this->transEsc('by')?>:
             <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
           <? endif; ?>
-          <? /* TODO: tags
-          {if $resource.tags}
-            <?=$this->transEsc('Your Tags')?>:
-            {foreach from=$resource.tags item=tag name=tagLoop}
-              <a href="{$url}/Search/Results?tag={$tag->tag|escape:"url"}">{$tag->tag|escape}</a>{if !$smarty.foreach.tagLoop.last},{/if}
-            {/foreach}
-            <br/>
-          {/if}
-           */ ?>
-          <? /* TODO: notes
-          {if $resource.notes}
-            <?=$this->transEsc('Notes')?>: {$resource.notes|escape}<br/>
-          {/if}
-           */ ?>
 
           <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
             <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
@@ -151,7 +137,7 @@
             <div class="text-success"><?=$this->transEsc("storage_retrieval_request_canceled") . (is_string($ilsDetails['canceled']) ? ': ' . $ilsDetails['canceled'] : '') ?></div>
           <? endif; ?>
           <? if (isset($ilsDetails['cancel_link'])): ?>
-            <p><a href="<?=$this->escapeHtml($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("storage_retrieval_request_cancel") ?></a></p>
+            <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("storage_retrieval_request_cancel") ?></a></p>
           <? endif; ?>
 
         </div>

@@ -54,15 +54,20 @@ class SearchController extends AbstractSearch
         $view->facetList = $this->processAdvancedFacets(
             $this->getAdvancedFacets()->getFacetList(), $view->saved
         );
-        $specialFacets = $view->options->getSpecialAdvancedFacets();
-        if (stristr($specialFacets, 'illustrated')) {
+        $specialFacets = $this->parseSpecialFacetsSetting(
+            $view->options->getSpecialAdvancedFacets()
+        );
+        if (isset($specialFacets['illustrated'])) {
             $view->illustratedLimit
                 = $this->getIllustrationSettings($view->saved);
         }
-        if (stristr($specialFacets, 'daterange')) {
-            $view->ranges
-                = $this->getDateRangeSettings($view->saved);
+        if (isset($specialFacets['checkboxes'])) {
+            $view->checkboxFacets = $this->processAdvancedCheckboxes(
+                $specialFacets['checkboxes'], $view->saved
+            );
         }
+        $view->ranges = $this->getAllRangeSettings($specialFacets, $view->saved);
+
         return $view;
     }
 
@@ -103,7 +108,7 @@ class SearchController extends AbstractSearch
         }
 
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:

@@ -1,0 +1,21 @@
+<? $worldCatTerms = $this->recommend->getTerms(); if (!empty($worldCatTerms)): ?>
+<h4><?=$this->transEsc('Subject Recommendations')?></h4>
+<div class="row">
+  <? $i = 0; foreach ($worldCatTerms as $type => $section): ?>
+    <? $moreClass = 'WCTerms'.$this->escapeHtml($type).' hidden'; ?>
+    <div class="col-sm-<?=floor(12/count($worldCatTerms)) ?>">
+      <dl>
+        <dt><?=$this->transEsc('wcterms_' . $type)?></dt>
+        <? $j = 0; foreach ($section as $subj): ?>
+          <? if (++$j == 4): ?>
+            <dd id="moreWCTerms<?=$this->escapeHtml($type)?>"><a href="#" onclick="moreFacets('WCTerms<?=$this->escapeHtml($type)?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
+          <? endif; ?>
+          <dd<? if($j >= 4): ?> class="<?=$moreClass ?>"<? endif ?>>&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escapeHtml($subj)?></a></dd>
+        <? endforeach; ?>
+        <? if ($j > 3): ?><dd class="<?=$moreClass ?>"><a href="#" onclick="lessFacets('WCTerms<?=$this->escapeHtml($type)?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>
+      </dl>
+    </div>
+  <? endforeach; ?>
+  <div class="clearfix"></div>
+</div>
+<? endif; ?>

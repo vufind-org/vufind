@@ -1,0 +1,29 @@
+<h2><?=$this->transEsc("Send us your feedback!")?></h2>
+<form class="form-horizontal" name="feedback" method="post" action="<?=$this->url('feedback-email')?>">
+  <input type="hidden" id="formSuccess" value="<?=$this->transEsc("Form Submitted!")?>"/>
+  <input type="hidden" id="feedbackSuccess" value="<?=$this->transEsc("Thank you for your feedback.")?>"/>
+  <input type="hidden" id="feedbackFailure" value="<?=$this->transEsc("An error has occurred")?>"/>
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="name"><?=$this->transEsc("feedback_name")?></label>
+    <div class="col-sm-10">
+      <input type="text" id="name" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="email"><?=$this->transEsc("Email")?></label>
+    <div class="col-sm-10">
+      <input type="email" id="email" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="comments"><?=$this->transEsc("Comments")?></label>
+    <div class="col-sm-10">
+      <textarea id="comments" class="form-control"></textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-10 col-sm-offset-2">
+      <input type="submit" class="btn btn-primary" value="<?=$this->transEsc("Send")?>" />
+    </div>
+  </div>
+</form>

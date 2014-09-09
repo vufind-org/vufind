@@ -68,6 +68,13 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetSort = null;
 
     /**
+     * Fields for visual faceting
+     *
+     * @var string
+     */
+    protected $pivotFacets = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -477,7 +484,35 @@ class Params extends \VuFind\Search\Base\Params
             $backendParams->add('hl', 'false');
         }
 
+        // Pivot facets for visual results
+
+        if ($pf = $this->getPivotFacets()) {
+            $backendParams->add('facet.pivot', $pf);
+        }
+
         return $backendParams;
+    }
+
+    /**
+     * Set pivot facet fields to use for visual results
+     *
+     * @param string $facets A comma-separated list of fields
+     *
+     * @return void
+     */
+    public function setPivotFacets($facets)
+    {
+        $this->pivotFacets = $facets;
+    }
+
+    /**
+     * Get pivot facet information for visual facets
+     *
+     * @return string
+     */
+    public function getPivotFacets()
+    {
+        return $this->pivotFacets;
     }
 
     /**
@@ -497,8 +532,18 @@ class Params extends \VuFind\Search\Base\Params
         );
 
         // Convert range queries to a language-non-specific format:
+        $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
+            // Simple case: [X TO Y]
             $filter['displayText'] = $matches[1] . '-' . $matches[2];
+        } else if (preg_match($caseInsensitiveRegex, $value, $matches)) {
+            // Case insensitive case: [x TO y] OR [X TO Y]; convert
+            // only if values in both ranges match up!
+            if (strtolower($matches[3]) == strtolower($matches[1])
+                && strtolower($matches[4]) == strtolower($matches[2])
+            ) {
+                $filter['displayText'] = $matches[1] . '-' . $matches[2];
+            }
         }
 
         return $filter;

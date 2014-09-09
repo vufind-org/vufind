@@ -26,11 +26,11 @@ li a.hidden {display:none}
 .sidebar .nav-list li.applied input[type="checkbox"] { margin-top:7px }
 .sidebar .nav-list li .icon-ok { margin-top:3px }
 .sidebar .nav-list li .icon-remove { margin-left:3px }
-.sidebar .small { color:#333;margin-top:9px;line-height:85% }
+.sidebar .small { color:#333;line-height:85% }
+.sidebar a .small { margin-top:6px }
 .sidebar a.small,.sidebar .small a { color:#08C }
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
-.tab-container { border:1px solid #DDD;border-top:0;border-radius:0 0 4px 4px;margin-top:-20px;padding:8px 12px;position:relative }
 div.xml { display:block;font:10pt Courier;text-align:left;padding-left:1em }
 div.xml.collapsed > div { display:none;margin-left:2px }
 .xmlt { cursor:pointer;margin-left:-16px }
@@ -60,6 +60,10 @@ div.xml.collapsed > div { display:none;margin-left:2px }
     width:auto;
   }
   .result .right {float:right}
+  .grid[id^=result] {
+    float:left;
+    width:25%;
+  }
 }
 @media (max-width: 600px) {
   .result .left,.result .middle,.result .right {
@@ -70,4 +74,9 @@ div.xml.collapsed > div { display:none;margin-left:2px }
   .result .middle {
     width:75%;
   }
+}
+#gbsViewer {
+  margin:25px 0px 50px 25px;
+  width: 90%;
+  height: 600px;
 }

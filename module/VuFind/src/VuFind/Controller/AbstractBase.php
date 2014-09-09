@@ -101,6 +101,7 @@ class AbstractBase extends AbstractActionController
             if ($user && isset($config->Mail->user_email_in_from)
                 && $config->Mail->user_email_in_from
             ) {
+                $view->userEmailInFrom = true;
                 $view->from = $user->email;
             } else if (isset($config->Mail->default_from)
                 && $config->Mail->default_from
@@ -227,6 +228,54 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Support method for forceLogin() -- convert a lightbox URL to a non-lightbox
+     * URL.
+     *
+     * @param string $url URL to convert
+     *
+     * @return string
+     */
+    protected function delightboxURL($url)
+    {
+        // If this isn't a lightbox URL, we don't want to mess with it!
+        $parts = parse_url($url);
+        parse_str($parts['query'], $query);
+        if (false === strpos($parts['path'], '/AJAX/JSON')) {
+            return $url;
+        }
+
+        // Build the route name:
+        $routeName = strtolower($query['submodule']) . '-'
+            . strtolower($query['subaction']);
+
+        // Eliminate lightbox-specific parameters that might confuse the router:
+        unset($query['method'], $query['subaction'], $query['submodule']);
+
+        // Get a preliminary URL that we'll need to analyze in order to build
+        // the final URL:
+        $url = $this->url()->fromRoute($routeName, $query);
+
+        // Using the URL generated above, figure out which parameters are route
+        // params and which are GET params:
+        $request = new \Zend\Http\Request();
+        $request->setUri($url);
+        $router = $this->getEvent()->getRouter();
+        $matched = $router->match($request)->getParams();
+        $getParams = $routeParams = array();
+        foreach ($query as $current => $val) {
+            if (isset($matched[$current])) {
+                $routeParams[$current] = $val;
+            } else {
+                $getParams[$current] = $val;
+            }
+        }
+
+        // Now build the final URL:
+        return $this->url()
+            ->fromRoute($routeName, $routeParams, array('query' => $getParams));
+    }
+
+    /**
      * Redirect the user to the login screen.
      *
      * @param string $msg     Flash message to display on login screen
@@ -246,6 +295,17 @@ class AbstractBase extends AbstractActionController
         // lightbox (since lightboxes use a different followup mechanism).
         if (!$this->inLightbox()) {
             $this->followup()->store($extras);
+        } else {
+            // If we're in a lightbox and using an authentication method
+            // with a session initiator, the user will be redirected outside
+            // of VuFind and then redirected back. Thus, we need to store a
+            // followup URL to avoid losing context, but we don't want to
+            // store the AJAX request URL that populated the lightbox. The
+            // delightboxURL() routine will remap the URL appropriately.
+            // We can set this whether or not there's a session initiator
+            // because it will be cleared when needed.
+            $url = $this->delightboxURL($this->getServerUrl());
+            $this->followup()->store($extras, $url);
         }
         if (!empty($msg)) {
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
@@ -407,6 +467,24 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Check to see if a form was submitted from its post value
+     * Also validate the Captcha, if it's activated
+     *
+     * @param string  $submitElement Name of the post field of the submit button
+     * @param boolean $useRecaptcha  Are we using captcha in this situation?
+     *
+     * @return boolean
+     */
+    protected function formWasSubmitted($submitElement = 'submit',
+        $useRecaptcha = false
+    ) {
+        // Fail if the expected submission element was missing from the POST:
+        // Form was submitted; if CAPTCHA is expected, validate it now.
+        return $this->params()->fromPost($submitElement, false)
+            && (!$useRecaptcha || $this->recaptcha()->validate());
+    }
+
+    /**
      * Confirm an action.
      *
      * @param string       $title     Title of confirm dialog
@@ -455,5 +533,112 @@ class AbstractBase extends AbstractActionController
     public function getSearchMemory()
     {
         return $this->getServiceLocator()->get('VuFind\Search\Memory');
+    }
+
+    /**
+     * Are lists enabled?
+     *
+     * @return bool
+     */
+    protected function listsEnabled()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $tagSetting = isset($config->Social->lists) ? $config->Social->lists : true;
+        return $tagSetting && $tagSetting !== 'disabled';
+    }
+
+    /**
+     * Are tags enabled?
+     *
+     * @return bool
+     */
+    protected function tagsEnabled()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $tagSetting = isset($config->Social->tags) ? $config->Social->tags : true;
+        return $tagSetting && $tagSetting !== 'disabled';
+    }
+
+    /**
+     * Store a referer (if appropriate) to keep post-login redirect pointing
+     * to an appropriate location. This is used when the user clicks the
+     * log in link from an arbitrary page or when a password is mistyped;
+     * separate logic is used for storing followup information when VuFind
+     * forces the user to log in from another context.
+     *
+     * @return void
+     */
+    protected function setFollowupUrlToReferer()
+    {
+        // Get the referer -- if it's empty, there's nothing to store!
+        $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        if (empty($referer)) {
+            return;
+        }
+        $refererNorm = $this->normalizeUrlForComparison($referer);
+
+        // If the referer lives outside of VuFind, don't store it! We only
+        // want internal post-login redirects.
+        $baseUrl = $this->getServerUrl('home');
+        $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
+        if (0 !== strpos($refererNorm, $baseUrlNorm)) {
+            return;
+        }
+
+        // If the referer is the MyResearch/Home action, it probably means
+        // that the user is repeatedly mistyping their password. We should
+        // ignore this and instead rely on any previously stored referer.
+        $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
+        $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
+        if ($mrhuNorm === $refererNorm) {
+            return;
+        }
+
+        // If we got this far, we want to store the referer:
+        $this->followup()->store(array(), $referer);
+    }
+
+    /**
+     * Normalize the referer URL so that inconsistencies in protocol and trailing
+     * slashes do not break comparisons.
+     *
+     * @param string $url URL to normalize
+     *
+     * @return string
+     */
+    protected function normalizeUrlForComparison($url)
+    {
+        $parts = explode('://', $url, 2);
+        return trim(end($parts), '/');
+    }
+
+    /**
+     * Retrieve a referer to keep post-login redirect pointing
+     * to an appropriate location.
+     * Unset the followup before returning.
+     *
+     * @return string
+     */
+    protected function getFollowupUrl()
+    {
+        $followup = $this->followup()->retrieve();
+        // followups aren't used in lightboxes.
+        if (isset($followup->url) && !$this->inLightbox()) {
+            return $followup->url;
+        }
+        return '';
+    }
+
+    /**
+     * Sometimes we need to unset the followup to trigger default behaviors
+     *
+     * @return void
+     */
+    protected function clearFollowupUrl()
+    {
+        $followup = $this->followup()->retrieve();
+        if (isset($followup->url)) {
+            unset($followup->url);
+        }
     }
 }

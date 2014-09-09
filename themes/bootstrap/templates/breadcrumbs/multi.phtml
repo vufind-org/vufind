@@ -5,7 +5,7 @@
   <ul class="dropdown-menu" role="menu">
     <? foreach ($this->layout()->breadcrumbs as $trail): ?>
       <ul class="inline" style="margin:0 .5em;white-space:nowrap">
-      <? foreach (array_reverse($trail) as $id=>$title): ?>
+      <? foreach ($trail as $id=>$title): ?>
         <li><span class="muted">&gt;</span> <a href="<?=$this->url('vudl-record', array('id'=>$id))?>"><?=$title ?></a></li>
       <? endforeach; ?>
       </ul>

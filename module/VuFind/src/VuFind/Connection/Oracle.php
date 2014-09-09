@@ -38,13 +38,39 @@ namespace VuFind\Connection;
  */
 class Oracle
 {
-    // Database Handle
+    /**
+     * Database Handle
+     *
+     * @var resource
+     */
     protected $dbHandle;
 
-    // Error information
+    /**
+     * Error information - message
+     *
+     * @var string
+     */
     protected $lastError;
+
+    /**
+     * Error information - type
+     *
+     * @var string
+     */
     protected $lastErrorType;
+
+    /**
+     * Error information - bind params
+     *
+     * @var array
+     */
     protected $lastErrorFields;
+
+    /**
+     * Error information - SQL attempted
+     *
+     * @var string
+     */
     protected $lastSql;
 
     /**

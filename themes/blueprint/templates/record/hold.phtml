@@ -10,6 +10,10 @@
         $this->recordLink()->getBreadcrumb($this->driver) . '<span>&gt;</span><em>' . $this->transEsc('request_place_text') . '</em>';
 ?>
 <h2><?=$this->transEsc('request_place_text')?></h2>
+<? if ($this->helpText): ?>
+<p class="helptext"><?=$this->helpText?></p>
+<? endif; ?>
+
 <?=$this->flashmessages()?>
 <div class="hold-form">
 
@@ -46,7 +50,7 @@
           </option>
         <? endif; ?>
         <? foreach ($this->requestGroups as $group): ?>
-          <option value="<?=$this->escapeHtml($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
+          <option value="<?=$this->escapeHtmlAttr($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
             <?=$this->escapeHtml($group['name'])?>
           </option>
         <? endforeach; ?>
@@ -69,10 +73,12 @@
         <span id="pickUpLocationLabel"><strong><?=$this->transEsc("pick_up_location")?>:
           <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
         </strong></span>
-        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtml($selected)?>">
+        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>">
+          <? if ($selected === false): ?>
           <option value="" selected="selected">
             <?=$this->transEsc('select_pickup_location')?>
           </option>
+          <? endif; ?>
         </select>
       <? elseif (count($this->pickup) > 1): ?>
         <strong><?=$this->transEsc("pick_up_location")?>:</strong><br/>
@@ -83,13 +89,13 @@
           </option>
         <? endif; ?>
         <? foreach ($this->pickup as $lib): ?>
-          <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+          <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
             <?=$this->escapeHtml($lib['locationDisplay'])?>
           </option>
         <? endforeach; ?>
         </select>
       <? else: ?>
-        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtml($this->defaultPickup)?>" />
+        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
       <? endif; ?>
       </div>
     <? endif; ?>

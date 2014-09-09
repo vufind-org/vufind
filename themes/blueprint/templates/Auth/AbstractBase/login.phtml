@@ -15,6 +15,9 @@
   <? if ($account->supportsCreation()): ?>
     <a class="new_account" href="<?=$this->url('myresearch-account')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
   <? endif; ?>
+  <? if ($account->supportsRecovery()): ?>
+    <a class="forgot_password" href="<?=$this->url('myresearch-recover')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
+  <? endif; ?>
 <? else: ?>
-  <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+  <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
 <? endif; ?>

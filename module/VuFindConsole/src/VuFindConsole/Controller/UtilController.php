@@ -445,6 +445,9 @@ class UtilController extends AbstractBase
             ->get('VuFind\SearchResultsPluginManager')->get('Solr')
             ->getFullFieldFacets(array('hierarchy_top_id'));
         foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
+            if (empty($hierarchy['value'])) {
+                continue;
+            }
             Console::writeLine("Building tree for {$hierarchy['value']}...");
             $driver = $recordLoader->load($hierarchy['value']);
             if ($driver->getHierarchyType()) {
@@ -453,6 +456,19 @@ class UtilController extends AbstractBase
                     ->getXML($hierarchy['value'], array('refresh' => true));
             }
         }
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Compile CSS files from LESS.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function cssbuilderAction()
+    {
+        $argv = $this->consoleOpts->getRemainingArgs();
+        $compiler = new \VuFindTheme\LessCompiler(true);
+        $compiler->compile($argv);
         return $this->getSuccessResponse();
     }
 

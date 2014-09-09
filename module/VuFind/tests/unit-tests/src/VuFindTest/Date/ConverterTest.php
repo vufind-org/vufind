@@ -50,6 +50,26 @@ class ConverterTest extends \VuFindTest\Unit\TestCase
      */
     public function testDates()
     {
+        // Get current default time zone
+        $real_zone = date_default_timezone_get();
+
+        // Try all the tests in different time zones to ensure consistency:
+        foreach (array('America/New_York', 'Europe/Helsinki') as $zone) {
+            date_default_timezone_set($zone);
+            $this->runTests();
+        }
+
+        // Restore original time zone
+        date_default_timezone_set($real_zone);
+    }
+
+    /**
+     * Support method for testDates()
+     *
+     * @return void
+     */
+    protected function runTests()
+    {
         // Build an object to test with (using empty configuration to ensure default
         // settings):
         $date = new Converter(new Config(array()));
@@ -57,6 +77,16 @@ class ConverterTest extends \VuFindTest\Unit\TestCase
         // Try some conversions:
         $this->assertEquals(
             '11-29-1973', $date->convertToDisplayDate('U', 123456879)
+        );
+        $this->assertEquals(
+            '11-29-1973', $date->convertToDisplayDate('U', 123456879.1234)
+        );
+        $this->assertEquals(
+            '11-29-1973--16:34',
+            $date->convertToDisplayDateAndTime('U', 123456879, '--')
+        );
+        $this->assertEquals(
+            '16:34 11-29-1973', $date->convertToDisplayTimeAndDate('U', 123456879)
         );
         $this->assertEquals(
             '11-29-1973', $date->convertToDisplayDate('m-d-y', '11-29-73')

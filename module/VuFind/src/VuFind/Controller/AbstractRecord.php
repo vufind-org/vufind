@@ -176,6 +176,11 @@ class AbstractRecord extends AbstractBase
      */
     public function addtagAction()
     {
+        // Make sure tags are enabled:
+        if (!$this->tagsEnabled()) {
+            throw new \Exception('Tags disabled');
+        }
+
         // Force login:
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
@@ -185,7 +190,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Save tags, if any:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             $tags = $this->params()->fromPost('tag');
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
@@ -224,6 +229,7 @@ class AbstractRecord extends AbstractBase
     public function ajaxtabAction()
     {
         $this->loadRecord();
+        $this->layout()->setTemplate('layout/lightbox');
         return $this->showTab(
             $this->params()->fromPost('tab', $this->getDefaultTab()), true
         );
@@ -252,14 +258,9 @@ class AbstractRecord extends AbstractBase
         $this->flashMessenger()->setNamespace('info')
             ->addMessage('bulk_save_success');
 
-        // Grab the followup namespace so we know where to send the user next:
-        $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
-        $url = isset($followup->url) ? (string)$followup->url : false;
-        if (!empty($url)) {
-            // Clear followup URL in session -- we're done with it now:
-            unset($followup->url);
-
-            // Redirect!
+        // redirect to followup url saved in saveAction
+        if ($url = $this->getFollowupUrl()) {
+            $this->clearFollowupUrl();
             return $this->redirect()->toUrl($url);
         }
 
@@ -275,8 +276,13 @@ class AbstractRecord extends AbstractBase
      */
     public function saveAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             return $this->processSave();
         }
 
@@ -289,13 +295,15 @@ class AbstractRecord extends AbstractBase
         // ProcessSave action (to get back to where we came from after saving).
         // We shouldn't save follow-up information if it points to the Save
         // screen or the "create list" screen, as this causes confusing workflows;
-        // in these cases, we will simply default to pushing the user to record view.
-        $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
+        // in these cases, we will simply push the user to record view
+        // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         if (substr($referer, -5) != '/Save'
             && stripos($referer, 'MyResearch/EditList/NEW') === false
         ) {
-            $followup->url = $referer;
+            $this->setFollowupUrlToReferer();
+        } else {
+            $this->clearFollowupUrl();
         }
 
         // Retrieve the record driver:
@@ -354,15 +362,26 @@ class AbstractRecord extends AbstractBase
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 
-        // Process form submission:
+        // Create view
         $view = $this->createEmailViewModel();
-        if ($this->params()->fromPost('submit')) {
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Process form submission:
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
+                if ($this->params()->fromPost('ccself')
+                    && $view->from != $view->to
+                ) {
+                    $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                        $view->from, $view->from, $view->message, $driver,
+                        $this->getViewRenderer()
+                    );
+                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();
@@ -392,9 +411,10 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
-
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('sms');
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');
             $view->provider = $this->params()->fromPost('provider');

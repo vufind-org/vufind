@@ -164,25 +164,28 @@ class Ezb implements DriverInterface
 
         // ignore all other parameters
         foreach ($parsed as $key => $value) {
-            if ($key == 'rfr_id') {
-                $newKey = 'sid';
-            } else if ($key == 'rft.date') {
-                $newKey = 'date';
-            } else if ($key == 'rft.issn') {
-                $newKey = 'issn';
-            } else if ($key == 'rft.volume') {
-                $newKey = 'volume';
-            } else if ($key == 'rft.issue') {
-                $newKey = 'issue';
-            } else if ($key == 'rft.spage') {
-                $newKey = 'spage';
-            } else if ($key == 'rft.pages') {
-                $newKey = 'pages';
-            } else {
-                $newKey = false;
-            }
-            if ($newKey !== false) {
-                $downgraded[] = "$newKey=$value";
+            // exclude empty parameters
+            if (isset($value) && $value !== '') {
+                if ($key == 'rfr_id') {
+                    $newKey = 'sid';
+                } else if ($key == 'rft.date') {
+                    $newKey = 'date';
+                } else if ($key == 'rft.issn') {
+                    $newKey = 'issn';
+                } else if ($key == 'rft.volume') {
+                    $newKey = 'volume';
+                } else if ($key == 'rft.issue') {
+                    $newKey = 'issue';
+                } else if ($key == 'rft.spage') {
+                    $newKey = 'spage';
+                } else if ($key == 'rft.pages') {
+                    $newKey = 'pages';
+                } else {
+                    $newKey = false;
+                }
+                if ($newKey !== false) {
+                    $downgraded[] = "$newKey=$value";
+                }
             }
         }
 
@@ -218,6 +221,13 @@ class Ezb implements DriverInterface
             $urlXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
                 "Result[@state={$state}]/AccessURL";
             $record['href'] = $xpath->query($urlXP, $result)->item($i)->nodeValue;
+            // Service type needs to be hard-coded for calling code to properly
+            // categorize links. The commented out code below picks a more appropiate
+            // value but won't work for now -- retained for future reference.
+            //$service_typeXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/"
+            //    . "Result[@state={$state}]/AccessLevel";
+            //$record['service_type']
+            //    = $xpath->query($service_typeXP, $result)->item($i)->nodeValue;
             $record['service_type'] = 'getFullTxt';
             array_push($records, $record);
             $i++;
@@ -246,6 +256,13 @@ class Ezb implements DriverInterface
             $record['title'] = $coverage;
             $urlXP = "/OpenURLResponseXML/Full/PrintData/References/Reference/URL";
             $record['href'] = $xpath->query($urlXP, $result)->item($i)->nodeValue;
+            // Service type needs to be hard-coded for calling code to properly
+            // categorize links. The commented out code below picks a more appropiate
+            // value but won't work for now -- retained for future reference.
+            //$service_typeXP = "/OpenURLResponseXML/Full/PrintData/References"
+            //    . "/Reference/Label";
+            //$record['service_type']
+            //    = $xpath->query($service_typeXP, $result)->item($i)->nodeValue;
             $record['service_type'] = 'getHolding';
             array_push($records, $record);
             $i++;

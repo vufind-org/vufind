@@ -222,6 +222,9 @@ class UrlQueryHelper
                 $params['shard'] = $shards;
             }
         }
+        if ($this->params->hasDefaultsApplied()) {
+            $params['dfApplied'] = 1;
+        }
 
         return $params;
     }

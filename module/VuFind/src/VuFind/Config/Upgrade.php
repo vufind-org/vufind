@@ -348,7 +348,12 @@ class Upgrade
 
         // If target file already exists, back it up:
         $outfile = $this->newDir . '/' . $filename;
-        copy($outfile, $outfile . '.bak.' . time());
+        $bakfile = $outfile . '.bak.' . time();
+        if (!copy($outfile, $bakfile)) {
+            throw new FileAccessException(
+                "Error: Could not copy {$outfile} to {$bakfile}."
+            );
+        }
 
         $writer = new ConfigWriter(
             $outfile, $this->newConfigs[$filename], $this->comments[$filename]
@@ -512,6 +517,33 @@ class Upgrade
                 . 'longer supported due to changes in Google APIs.'
             );
         }
+        if (isset($newConfig['GoogleAnalytics']['apiKey'])) {
+            if (!isset($newConfig['GoogleAnalytics']['universal'])
+                || !$newConfig['GoogleAnalytics']['universal']
+            ) {
+                $this->addWarning(
+                    'The [GoogleAnalytics] universal setting is off. See config.ini '
+                    . 'for important information on how to upgrade your Analytics.'
+                );
+            }
+        }
+
+        // Warn the user about deprecated WorldCat setting:
+        if (isset($newConfig['WorldCat']['LimitCodes'])) {
+            unset($newConfig['WorldCat']['LimitCodes']);
+            $this->addWarning(
+                'The [WorldCat] LimitCodes setting never had any effect and has been'
+                . ' removed.'
+            );
+        }
+
+        // Upgrade Google Options:
+        if (isset($newConfig['Content']['GoogleOptions'])
+            && !is_array($newConfig['Content']['GoogleOptions'])
+        ) {
+            $newConfig['Content']['GoogleOptions']
+                = array('link' => $newConfig['Content']['GoogleOptions']);
+        }
 
         // Disable unused, obsolete setting:
         unset($newConfig['Index']['local']);
@@ -559,6 +591,14 @@ class Upgrade
             && $newConfig['Site']['generator'] == 'VuFind ' . $this->from
         ) {
             $newConfig['Site']['generator'] = 'VuFind ' . $this->to;
+        }
+
+        // Update Syndetics config:
+        if (isset($newConfig['Syndetics']['url'])) {
+            $newConfig['Syndetics']['use_ssl']
+                = (strpos($newConfig['Syndetics']['url'], 'https://') === false)
+                ? '' : 1;
+            unset($newConfig['Syndetics']['url']);
         }
 
         // Deal with shard settings (which may have to be moved to another file):
@@ -743,6 +783,17 @@ class Upgrade
             'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
         );
         $this->applyOldSettings('Summon.ini', $groups);
+
+        // Turn on advanced checkbox facets if we're upgrading from a version
+        // prior to 2.3.
+        if ((float)$this->from < 2.3) {
+            $cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings'];
+            if (!isset($cfg['special_facets']) || empty($cfg['special_facets'])) {
+                $cfg['special_facets'] = 'checkboxes:Summon';
+            } else if (false === strpos('checkboxes', $cfg['special_facets'])) {
+                $cfg['special_facets'] .= ',checkboxes:Summon';
+            }
+        }
 
         // save the file
         $this->saveModifiedConfig('Summon.ini');

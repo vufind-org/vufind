@@ -23,19 +23,19 @@
     <? $i = 0; foreach ($this->transactions as $resource): ?>
       <hr/>
       <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-      <div id="record<?=$this->escapeHtml($resource->getUniqueId())?>" class="row-fluid">
+      <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row-fluid">
         <? if ($this->renewForm): ?>
           <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
             <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-            <input class="pull-left" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
-            <input class="pull-left" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" />
+            <input class="pull-left" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
+            <input class="pull-left" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
           <? endif; ?>
         <? endif; ?>
         <div class="span2 text-center">
           <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-            <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+            <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
           <? else: ?>
-            <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+            <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
           <? endif; ?>
         </div>
         <div class="span9">
@@ -58,36 +58,27 @@
             <?=$this->transEsc('by')?>:
             <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
           <? endif; ?>
-          <? /* TODO: tags
-          {if $resource.tags}
-            <?=$this->transEsc('Your Tags')?>:
-            {foreach from=$resource.tags item=tag name=tagLoop}
-              <a href="{$url}/Search/Results?tag={$tag->tag|escape:"url"}">{$tag->tag|escape}</a>{if !$smarty.foreach.tagLoop.last},{/if}
-            {/foreach}
-            <br/>
-          {/if}
-           */ ?>
-          <? /* TODO: notes
-          {if $resource.notes}
-            <?=$this->transEsc('Notes')?>: {$resource.notes|escape}<br/>
-          {/if}
-           */ ?>
           <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
             <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
             <br/>
           <? endif; ?>
-          <? if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
+          <? if (!empty($ilsDetails['volume'])): ?>
             <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
             <br />
           <? endif; ?>
 
-          <? if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
+          <? if (!empty($ilsDetails['publication_year'])): ?>
             <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
             <br />
           <? endif; ?>
 
-          <? if (isset($ilsDetails['institution_name']) && !empty($ilsDetails['institution_name'])): ?>
+          <? if (!empty($ilsDetails['institution_name']) && (empty($ilsDetails['borrowingLocation']) || $ilsDetails['institution_name'] != $ilsDetails['borrowingLocation'])): ?>
             <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name'])?></strong>
+            <br />
+          <? endif; ?>
+
+          <? if (!empty($ilsDetails['borrowingLocation'])): ?>
+            <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], array(), $ilsDetails['borrowingLocation'])?>
             <br />
           <? endif; ?>
 
@@ -97,8 +88,8 @@
               / <?=$this->transEsc($ilsDetails['renewLimit'])?>
             <? endif; ?>
             <br />
-          <? endif; ?>            
-          
+          <? endif; ?>
+
           <? $showStatus = true; ?>
 
           <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
@@ -126,7 +117,7 @@
             <div class="alert alert-info"><?=$this->transEsc($ilsDetails['message'])?></div>
           <? endif; ?>
           <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_link'])): ?>
-            <a href="<?=$this->escapeHtml($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
+            <a href="<?=$this->escapeHtmlAttr($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
           <? endif; ?>
         </div>
       </div>

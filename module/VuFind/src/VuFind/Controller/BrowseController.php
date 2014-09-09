@@ -121,9 +121,10 @@ class BrowseController extends AbstractBase
         $browseOptions = array();
 
         // First option: tags -- is it enabled in config.ini?  If no setting is
-        // found, assume it is active.
-        if (!isset($this->config->Browse->tag)
-            || $this->config->Browse->tag == true
+        // found, assume it is active. Note that this setting is disabled if tags
+        // are universally turned off.
+        if ((!isset($this->config->Browse->tag) || $this->config->Browse->tag)
+            && $this->tagsEnabled()
         ) {
             $browseOptions[] = $this->buildBrowseOption('Tag', 'Tag');
             $view->tagEnabled = true;
@@ -280,6 +281,10 @@ class BrowseController extends AbstractBase
      */
     public function tagAction()
     {
+        if (!$this->tagsEnabled()) {
+            throw new \Exception('Tags disabled.');
+        }
+
         $this->setCurrentAction('Tag');
         $view = $this->createViewModel();
 
@@ -367,8 +372,10 @@ class BrowseController extends AbstractBase
         list($view->filter, $hundredsList) = $this->getSecondaryList('dewey');
         $categoryList = array();
         foreach ($hundredsList as $dewey) {
-            $categoryList[$dewey['value']] = $dewey['displayText']
-                . ' (' . $dewey['count'] . ')';
+            $categoryList[$dewey['value']] = array(
+                'text' => $dewey['displayText'],
+                'count' => $dewey['count']
+            );
         }
         $view->categoryList = $categoryList;
         if ($this->params()->fromQuery('findby')) {

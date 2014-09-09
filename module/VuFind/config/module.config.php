@@ -76,17 +76,24 @@ $config = array(
             'combined' => 'VuFind\Controller\CombinedController',
             'confirm' => 'VuFind\Controller\ConfirmController',
             'cover' => 'VuFind\Controller\CoverController',
+            'eds' => 'VuFind\Controller\EdsController',
+            'edsrecord' => 'VuFind\Controller\EdsrecordController',
+            'eit' => 'VuFind\Controller\EITController',
+            'eitrecord' => '\VuFind\Controller\EITrecordController',
             'error' => 'VuFind\Controller\ErrorController',
             'feedback' => 'VuFind\Controller\FeedbackController',
             'help' => 'VuFind\Controller\HelpController',
             'hierarchy' => 'VuFind\Controller\HierarchyController',
             'index' => 'VuFind\Controller\IndexController',
             'install' => 'VuFind\Controller\InstallController',
+            'libguides' => 'VuFind\Controller\LibGuidesController',
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
-            'qrcode' => 'VuFind\Controller\QRCodeController',
             'pazpar2' => 'VuFind\Controller\Pazpar2Controller',
+            'primo' => 'VuFind\Controller\PrimoController',
+            'primorecord' => 'VuFind\Controller\PrimorecordController',
+            'qrcode' => 'VuFind\Controller\QRCodeController',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
             'summon' => 'VuFind\Controller\SummonController',
@@ -103,6 +110,7 @@ $config = array(
             'holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
             'newitems' => 'VuFind\Controller\Plugin\Factory::getNewItems',
             'ILLRequests' => 'VuFind\Controller\Plugin\Factory::getILLRequests',
+            'recaptcha' => 'VuFind\Controller\Plugin\Factory::getRecaptcha',
             'reserves' => 'VuFind\Controller\Plugin\Factory::getReserves',
             'storageRetrievalRequests' => 'VuFind\Controller\Plugin\Factory::getStorageRetrievalRequests',
         ),
@@ -132,6 +140,7 @@ $config = array(
             'VuFind\ILSTitleHoldLogic' => 'VuFind\Service\Factory::getILSTitleHoldLogic',
             'VuFind\Logger' => 'VuFind\Service\Factory::getLogger',
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
+            'VuFind\Recaptcha' => 'VuFind\Service\Factory::getRecaptcha',
             'VuFind\RecordLoader' => 'VuFind\Service\Factory::getRecordLoader',
             'VuFind\RecordRouter' => 'VuFind\Service\Factory::getRecordRouter',
             'VuFind\RecordStats' => 'VuFind\Service\Factory::getRecordStats',
@@ -238,6 +247,51 @@ $config = array(
                     'tagautocomplete' => 'Tag',
                 ),
             ),
+            'content' => array(
+                'factories' => array(
+                    'authornotes' => 'VuFind\Content\Factory::getAuthorNotes',
+                    'excerpts' => 'VuFind\Content\Factory::getExcerpts',
+                    'reviews' => 'VuFind\Content\Factory::getReviews',
+                ),
+            ),
+            'content_authornotes' => array(
+                'factories' => array(
+                    'syndetics' => 'VuFind\Content\AuthorNotes\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\AuthorNotes\Factory::getSyndeticsPlus',
+                ),
+            ),
+            'content_excerpts' => array(
+                'factories' => array(
+                    'syndetics' => 'VuFind\Content\Excerpts\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\Excerpts\Factory::getSyndeticsPlus',
+                ),
+            ),
+            'content_covers' => array(
+                'factories' => array(
+                    'amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
+                    'booksite' => 'VuFind\Content\Covers\Factory::getBooksite',
+                    'contentcafe' => 'VuFind\Content\Covers\Factory::getContentCafe',
+                    'syndetics' => 'VuFind\Content\Covers\Factory::getSyndetics',
+                ),
+                'invokables' => array(
+                    'google' => 'VuFind\Content\Covers\Google',
+                    'librarything' => 'VuFind\Content\Covers\LibraryThing',
+                    'openlibrary' => 'VuFind\Content\Covers\OpenLibrary',
+                    'summon' => 'VuFind\Content\Covers\Summon',
+                ),
+            ),
+            'content_reviews' => array(
+                'factories' => array(
+                    'amazon' => 'VuFind\Content\Reviews\Factory::getAmazon',
+                    'amazoneditorial' => 'VuFind\Content\Reviews\Factory::getAmazonEditorial',
+                    'booksite' => 'VuFind\Content\Reviews\Factory::getBooksite',
+                    'syndetics' => 'VuFind\Content\Reviews\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\Reviews\Factory::getSyndeticsPlus',
+                ),
+                'invokables' => array(
+                    'guardian' => 'VuFind\Content\Reviews\Guardian',
+                ),
+            ),
             'db_table' => array(
                 'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
                 'factories' => array(
@@ -274,6 +328,7 @@ $config = array(
             'hierarchy_treerenderer' => array(
                 'invokables' => array(
                     'jstree' => 'VuFind\Hierarchy\TreeRenderer\JSTree',
+                    'fancytree' => 'VuFind\Hierarchy\TreeRenderer\FancyTree',
                 )
             ),
             'ils_driver' => array(
@@ -313,16 +368,19 @@ $config = array(
                     'authorityrecommend' => 'VuFind\Recommend\Factory::getAuthorityRecommend',
                     'catalogresults' => 'VuFind\Recommend\Factory::getCatalogResults',
                     'collectionsidefacets' => 'VuFind\Recommend\Factory::getCollectionSideFacets',
+                    'dplaterms' => 'VuFind\Recommend\Factory::getDPLATerms',
                     'europeanaresults' => 'VuFind\Recommend\Factory::getEuropeanaResults',
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
                     'favoritefacets' => 'VuFind\Recommend\Factory::getFavoriteFacets',
                     'sidefacets' => 'VuFind\Recommend\Factory::getSideFacets',
+                    'randomrecommend' => 'VuFind\Recommend\Factory::getRandomRecommend',
                     'summonbestbets' => 'VuFind\Recommend\Factory::getSummonBestBets',
                     'summondatabases' => 'VuFind\Recommend\Factory::getSummonDatabases',
                     'summonresults' => 'VuFind\Recommend\Factory::getSummonResults',
                     'summontopics' => 'VuFind\Recommend\Factory::getSummonTopics',
                     'switchquery' => 'VuFind\Recommend\Factory::getSwitchQuery',
                     'topfacets' => 'VuFind\Recommend\Factory::getTopFacets',
+                    'visualfacets' => 'VuFind\Recommend\Factory::getVisualFacets',
                     'webresults' => 'VuFind\Recommend\Factory::getWebResults',
                     'worldcatidentities' => 'VuFind\Recommend\Factory::getWorldCatIdentities',
                     'worldcatterms' => 'VuFind\Recommend\Factory::getWorldCatTerms',
@@ -343,9 +401,13 @@ $config = array(
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
                 'factories' => array(
+                    'eds' => 'VuFind\RecordDriver\Factory::getEDS',
+                    'eit' => 'VuFind\RecordDriver\Factory::getEIT',
+                    'libguides' => 'VuFind\RecordDriver\Factory::getLibGuides',
                     'missing' => 'VuFind\RecordDriver\Factory::getMissing',
-                    'solrauth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
                     'pazpar2' => 'VuFind\RecordDriver\Factory::getPazpar2',
+                    'primo' => 'VuFind\RecordDriver\Factory::getPrimo',
+                    'solrauth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
                     'solrdefault' => 'VuFind\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'VuFind\RecordDriver\Factory::getSolrMarc',
                     'solrreserves' => 'VuFind\RecordDriver\Factory::getSolrReserves',
@@ -364,6 +426,8 @@ $config = array(
                     'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
+                    'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
+                    'preview' => 'VuFind\RecordTab\Factory::getPreview',
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
@@ -371,7 +435,6 @@ $config = array(
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
-                    'usercomments' => 'VuFind\RecordTab\UserComments',
                 ),
             ),
             'related' => array(
@@ -396,7 +459,11 @@ $config = array(
             ),
             'search_backend' => array(
                 'factories' => array(
+                    'EDS' => 'VuFind\Search\Factory\EdsBackendFactory',
+                    'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
+                    'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
+                    'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
@@ -417,6 +484,9 @@ $config = array(
             ),
             'search_options' => array(
                 'abstract_factories' => array('VuFind\Search\Options\PluginFactory'),
+                'factories' => array(
+                    'eds' => 'VuFind\Search\Options\Factory::getEDS',
+                ),
             ),
             'search_params' => array(
                 'abstract_factories' => array('VuFind\Search\Params\PluginFactory'),
@@ -473,10 +543,30 @@ $config = array(
         // parent class.  The defaultTab setting may be used to specify the default
         // active tab; if null, the value from the relevant .ini file will be used.
         'recorddriver_tabs' => array(
+            'VuFind\RecordDriver\EDS' => array(
+                'tabs' => array(
+                    'Description' => 'Description',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
+                    'Details' => 'StaffViewArray',
+                ),
+                'defaultTab' => null,
+            ),
             'VuFind\RecordDriver\Pazpar2' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
                  ),
+                'defaultTab' => null,
+            ),
+            'VuFind\RecordDriver\Primo' => array(
+                'tabs' => array(
+                    'Description' => 'Description',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
+                    'Details' => 'StaffViewArray',
+                ),
                 'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrAuth' => array(
@@ -490,6 +580,7 @@ $config = array(
                     'Holdings' => 'HoldingsILS', 'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewArray',
                 ),
@@ -500,6 +591,7 @@ $config = array(
                     'Holdings' => 'HoldingsILS', 'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewMARC',
                 ),
@@ -510,6 +602,7 @@ $config = array(
                     'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
                     'Details' => 'StaffViewArray',
                 ),
                 'defaultTab' => null,
@@ -531,7 +624,10 @@ $config = array(
 $recordRoutes = array(
     'record' => 'Record',
     'collection' => 'Collection',
+    'edsrecord' => 'EdsRecord',
+    'eitrecord' => 'EITRecord',
     'missingrecord' => 'MissingRecord',
+    'primorecord' => 'PrimoRecord',
     'solrauthrecord' => 'Authority',
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
@@ -540,8 +636,8 @@ $recordRoutes = array(
 // URLs are hard-coded to specific actions; this array lists those actions.
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
-    'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest',
-    'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest'
+    'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest', 'AjaxTab',
+    'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest', 'PDF',
 );
 
 // Define list-related routes -- route name => MyResearch action
@@ -556,19 +652,25 @@ $staticRoutes = array(
     'Cart/doExport', 'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Save', 'Collections/ByTitle', 'Collections/Home',
     'Combined/Home', 'Combined/Results', 'Combined/SearchBox', 'Confirm/Confirm',
-    'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable',
-    'Feedback/Email', 'Feedback/Home', 'Help/Home',
+    'Cover/Show', 'Cover/Unavailable',
+    'EDS/Advanced', 'EDS/Home', 'EDS/Search',
+    'EIT/Advanced', 'EIT/Home', 'EIT/Search',
+    'Error/Unavailable', 'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/Home',
     'Install/PerformSecurityFix', 'Install/ShowSQL',
-    'MyResearch/Account', 'MyResearch/CheckedOut', 'MyResearch/Delete',
-    'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
-    'MyResearch/Favorites', 'MyResearch/Fines',
+    'LibGuides/Home', 'LibGuides/Results',
+    'MyResearch/Account', 'MyResearch/ChangePassword', 'MyResearch/CheckedOut',
+    'MyResearch/Delete', 'MyResearch/DeleteList', 'MyResearch/Edit',
+    'MyResearch/Email', 'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home',
-    'MyResearch/ILLRequests',
-    'MyResearch/Logout', 'MyResearch/Profile',
-    'MyResearch/SaveSearch', 'MyResearch/StorageRetrievalRequests',
+    'MyResearch/ILLRequests', 'MyResearch/Logout',
+    'MyResearch/NewPassword', 'MyResearch/Profile',
+    'MyResearch/Recover', 'MyResearch/SaveSearch',
+    'MyResearch/StorageRetrievalRequests', 'MyResearch/UserLogin',
+    'MyResearch/Verify',
+    'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
     'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',

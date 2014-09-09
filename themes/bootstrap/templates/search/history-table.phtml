@@ -8,7 +8,7 @@
   </tr>
   <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
     <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
-      <td><?=$this->escapeHtml(date("g:ia, jS M y", $info->getStartTime()))?></td>
+      <td><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime("U", $info->getStartTime()))?></td>
       <td>
         <a href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>"><?
           $desc = $info->getParams()->getDisplayQuery();
@@ -23,7 +23,7 @@
           <? endforeach; ?>
         <? endforeach; ?>
       </td>
-      <td><?=$this->escapeHtml(number_format($info->getResultTotal()))?></td>
+      <td><?=$this->localizedNumber($info->getResultTotal())?></td>
       <td>
         <? if ($this->showSaved): ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="icon-remove"></i> <?=$this->transEsc("history_delete_link")?></a>

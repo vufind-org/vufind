@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Date;
-use DateTime, VuFind\Exception\Date as DateException;
+use DateTime, DateTimeZone, VuFind\Exception\Date as DateException;
 
 /**
  * Date/time conversion functionality.
@@ -56,6 +56,13 @@ class Converter
     protected $displayTimeFormat;
 
     /**
+     * Time zone to use for conversions
+     *
+     * @var DateTimeZone
+     */
+    protected $timezone;
+
+    /**
      * Constructor
      *
      * @param \Zend\Config\Config $config Configuration to use (set to null to use
@@ -65,13 +72,18 @@ class Converter
     {
         // Set Display Date Format
         $this->displayDateFormat
-            = (isset($config->Site->displayDateFormat))
+            = isset($config->Site->displayDateFormat)
             ? $config->Site->displayDateFormat : "m-d-Y";
 
         // Set Display Date Format
         $this->displayTimeFormat
-            = (isset($config->Site->displayTimeFormat))
+            = isset($config->Site->displayTimeFormat)
             ? $config->Site->displayTimeFormat : "H:i";
+
+        // Set time zone
+        $zone = isset($config->Site->timezone)
+            ? $config->Site->timezone : 'America/New_York';
+        $this->timezone = new DateTimeZone($zone);
     }
 
     /**
@@ -82,15 +94,15 @@ class Converter
      * @param string $dateString   The date string
      *
      * @throws DateException
-     * @return string               A re-formated time string
+     * @return string               A re-formatted time string
      */
     public function convert($inputFormat, $outputFormat, $dateString)
     {
         $errors = "Date/time problem: Details: ";
 
-        // For compatibility with PHP 5.2.x, we have to restrict the input formats
-        // to a fixed list...  but we'll check to see if we have access to PHP 5.3.x
-        // before failing if we encounter an input format that isn't whitelisted.
+        // These are date formats that we definitely know how to handle, and some
+        // benefit from special processing. However, items not found in this list
+        // will still be attempted in a generic fashion before giving up.
         $validFormats = array(
             "m-d-Y", "m-d-y", "m/d/Y", "m/d/y", "U", "m-d-y H:i", "Y-m-d",
             "Y-m-d H:i"
@@ -98,8 +110,10 @@ class Converter
         $isValid = in_array($inputFormat, $validFormats);
         if ($isValid) {
             if ($inputFormat == 'U') {
-                // Special case for Unix timestamps:
-                $dateString = '@' . $dateString;
+                // Special case for Unix timestamps (including workaround for
+                // floating point numbers):
+                $dateString = '@'
+                    . (is_float($dateString) ? intval($dateString) : $dateString);
             } else {
                 // Strip leading zeroes from date string and normalize date separator
                 // to slashes:
@@ -110,19 +124,20 @@ class Converter
                 'warning_count' => 0, 'error_count' => 0, 'errors' => array()
             );
             try {
-                $date = new DateTime($dateString);
+                $date = new DateTime($dateString, $this->timezone);
             } catch (\Exception $e) {
                 $getErrors['error_count']++;
                 $getErrors['errors'][] = $e->getMessage();
             }
         } else {
-            if (!method_exists('DateTime', 'createFromFormat')) {
-                throw new DateException(
-                    "Date format {$inputFormat} requires PHP 5.3 or higher."
-                );
-            }
-            $date = DateTime::createFromFormat($inputFormat, $dateString);
+            $date = DateTime::createFromFormat(
+                $inputFormat, $dateString, $this->timezone
+            );
             $getErrors = DateTime::getLastErrors();
+        }
+
+        if (isset($date) && $date instanceof DateTime) {
+            $date->setTimeZone($this->timezone);
         }
 
         if ($getErrors['warning_count'] == 0
@@ -152,7 +167,7 @@ class Converter
      * @param string $dateString   The date string
      *
      * @throws DateException
-     * @return string               A re-formated date string
+     * @return string               A re-formatted date string
      */
 
     public function convertToDisplayDate($createFormat, $dateString)
@@ -168,9 +183,8 @@ class Converter
      * @param string $displayDate  The display formatted date string
      *
      * @throws DateException
-     * @return string               A re-formated date string
+     * @return string               A re-formatted date string
      */
-
     public function convertFromDisplayDate($outputFormat, $displayDate)
     {
         return $this->convert(
@@ -186,11 +200,44 @@ class Converter
      * @param string $timeString   The time string
      *
      * @throws DateException
-     * @return string               A re-formated time string
+     * @return string               A re-formatted time string
      */
-
     public function convertToDisplayTime($createFormat, $timeString)
     {
         return $this->convert($createFormat, $this->displayTimeFormat, $timeString);
+    }
+
+    /**
+     * Public method for getting a date prepended to a time.
+     *
+     * @param string $createFormat The format of the time string to be changed
+     * @param string $timeString   The time string
+     * @param string $separator    String between time/date
+     *
+     * @throws DateException
+     * @return string               A re-formatted time string
+     */
+    public function convertToDisplayDateAndTime($createFormat, $timeString,
+        $separator = ' '
+    ) {
+        return $this->convertToDisplayDate($createFormat, $timeString)
+            . $separator . $this->convertToDisplayTime($createFormat, $timeString);
+    }
+
+    /**
+     * Public method for getting a time prepended to a date.
+     *
+     * @param string $createFormat The format of the time string to be changed
+     * @param string $timeString   The time string
+     * @param string $separator    String between time/date
+     *
+     * @throws DateException
+     * @return string               A re-formatted time string
+     */
+    public function convertToDisplayTimeAndDate($createFormat, $timeString,
+        $separator = ' '
+    ) {
+        return $this->convertToDisplayTime($createFormat, $timeString)
+            . $separator . $this->convertToDisplayDate($createFormat, $timeString);
     }
 }

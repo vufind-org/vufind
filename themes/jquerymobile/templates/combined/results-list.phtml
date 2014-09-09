@@ -4,7 +4,12 @@
   $params = $results->getParams();
   $lookfor = $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
+
+  // More link should use default limit, not custom limit:
+  $limit = $params->getLimit();
+  $params->setLimit($params->getOptions()->getDefaultLimit());
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
+  $params->setLimit($limit);
 ?>
 <h2><?=$this->transEsc($currentSearch['label'])?></h2>
 <? if (isset($currentSearch['sublabel'])): ?>
@@ -26,6 +31,6 @@
   <? endforeach; ?>
 <? else: ?>
   <div data-role="controlgroup">
-    <a class="combinedButton" href="<?=$moreUrl?>" data-role="button" rel="external"><?=$this->transEsc("Search Results") . ' (' . $recordTotal . ')' ?></a>
+    <a class="combinedButton" href="<?=$moreUrl?>" data-role="button" rel="external"><?=$this->transEsc("Search Results") . ' (' . $this->localizedNumber($recordTotal) . ')' ?></a>
   </div>
 <? endif; ?>

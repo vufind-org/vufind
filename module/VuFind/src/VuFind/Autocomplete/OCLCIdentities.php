@@ -41,6 +41,11 @@ namespace VuFind\Autocomplete;
  */
 class OCLCIdentities implements AutocompleteInterface
 {
+    /**
+     * AutoSuggest base URL
+     *
+     * @var string
+     */
     protected $url = 'http://worldcat.org/identities/AutoSuggest';
 
     /**

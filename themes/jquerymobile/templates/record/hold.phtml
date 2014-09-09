@@ -9,6 +9,9 @@
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <h2><?=$this->transEsc('request_place_text')?></h2>
+    <? if ($this->helpText): ?>
+    <p class="helptext"><?=$this->helpText?></p>
+    <? endif; ?>
     <?=$this->flashmessages()?>
     <div class="hold-form">
 
@@ -45,7 +48,7 @@
               </option>
             <? endif; ?>
             <? foreach ($this->requestGroups as $group): ?>
-              <option value="<?=$this->escapeHtml($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
+              <option value="<?=$this->escapeHtmlAttr($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
                 <?=$this->transEsc('location_' . $group['name'], array(), $group['name'])?>
               </option>
             <? endforeach; ?>
@@ -54,26 +57,28 @@
         <? endif; ?>
 
         <? if (in_array("pickUpLocation", $this->extraHoldFields)): ?>
-          <div>
+          <?
+            if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
+                $selected = $this->gatheredDetails['pickUpLocation'];
+            } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
+                $selected = $this->homeLibrary;
+            } else {
+                $selected = $this->defaultPickup;
+            }
+          ?>
           <? if ($this->requestGroupNeeded): ?>
+          <div>
             <span id="pickUpLocationLabel"><strong><?=$this->transEsc("pick_up_location")?>:
               <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
             </strong></span>
-            <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtml($selected)?>">
+            <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>">
+              <? if ($selected === false): ?>
               <option value="" selected="selected">
                 <?=$this->transEsc('select_pickup_location')?>
               </option>
+              <? endif; ?>
             </select>
           <? elseif (count($this->pickup) > 1): ?>
-            <?
-              if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
-                  $selected = $this->gatheredDetails['pickUpLocation'];
-              } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
-                  $selected = $this->homeLibrary;
-              } else {
-                  $selected = $this->defaultPickup;
-              }
-            ?>
             <strong><?=$this->transEsc("pick_up_location")?>:</strong><br/>
             <select name="gatheredDetails[pickUpLocation]">
             <? if ($selected === false): ?>
@@ -82,13 +87,13 @@
               </option>
             <? endif; ?>
             <? foreach ($this->pickup as $lib): ?>
-              <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+              <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
                 <?=$this->escapeHtml($lib['locationDisplay'])?>
               </option>
             <? endforeach; ?>
             </select>
           <? else: ?>
-            <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtml($this->defaultPickup)?>" />
+            <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
           <? endif; ?>
           </div>
         <? endif; ?>

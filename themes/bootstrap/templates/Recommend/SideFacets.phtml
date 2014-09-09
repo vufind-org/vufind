@@ -3,25 +3,31 @@
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <? endif; ?>
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
-  <? foreach ($checkboxFilters as $current): ?>
-    <div class="checkboxFilter<?=($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hide' : ''?>">
-      <label class="checkbox">
-        <input type="checkbox" name="filter[]" value="<?=$this->escapeHtml($current['filter'])?>"
-        <?=$current['selected'] ? 'checked="checked"' : ''?> id="<?=$this->escapeHtml(str_replace(' ', '', $current['desc']))?>"
-        onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])?>';" />
-        <?=$this->transEsc($current['desc'])?>
-      </label>
-    </div>
-  <? endforeach; ?>
+<?
+  $html = '';
+  $shown = 0;
+  foreach ($checkboxFilters as $current) {
+    $html .= '<label class="checkbox';
+    if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
+      $html .= ' hide';
+    } else {
+      $shown ++;
+    }
+    $html .= '"><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
+      '. ($current['selected'] ? 'checked="checked"' : '') .' id="'.$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])).'"
+      onclick="document.location.href=\''.($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).'</label>';
+  }
+?>
+  <div class="checkboxFilter<?if($shown == 0):?> hide<? endif; ?>"><?=$html ?></div>
 <? endif; ?>
-<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
-<? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); if (!empty($filterList)): ?>
+<? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
+<? $filterList = $this->recommend->getVisibleFilters($extraFilters); if (!empty($filterList)): ?>
   <ul class="nav nav-list">
     <li class="nav-header"><?=$this->transEsc('Remove Filters')?></li>
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>
-        <? 
+        <?
           $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
           if ($index !== false) {
               unset($collapsedFacets[$index]); // Open if we have a match
@@ -43,59 +49,63 @@
   </ul>
 <? endif; ?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
-<? $sideFacetSet = $this->recommend->getFacetSet(); $dateFacets = $this->recommend->getDateFacets(); ?>
+<? $sideFacetSet = $this->recommend->getFacetSet(); $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <ul class="nav nav-list collapsed <? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>">
-      <? if (isset($dateFacets[$title])): ?>
+      <? if (isset($rangeFacets[$title])): ?>
         <li class="nav-header"><?=$this->transEsc($cluster['label'])?></li>
         <li>
-          <form class="form-inline text-center" action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
+          <form class="form-inline text-center" action="" name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">
             <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
-            <input type="hidden" name="daterange[]" value="<?=$this->escapeHtml($title)?>"/>
+            <input type="hidden" name="<?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>range[]" value="<?=$this->escapeHtmlAttr($title)?>"/>
             <div class="row-fluid">
-              <label class="span6" for="<?=$this->escapeHtml($title)?>from">
+              <label class="span6" for="<?=$this->escapeHtmlAttr($title)?>from">
                 <?=$this->transEsc('date_from')?>:<br/>
-                <input type="text" maxlength="4" class="span12" name="<?=$this->escapeHtml($title)?>from" id="<?=$this->escapeHtml($title)?>from" value="<?=isset($dateFacets[$title][0])?$dateFacets[$title][0]:''?>" />
+                <input type="text" maxlength="4" class="span12" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" value="<?=isset($rangeFacets[$title]['values'][0])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][0]):''?>" />
               </label>
-              <label class="span6" for="<?=$this->escapeHtml($title)?>to">
+              <label class="span6" for="<?=$this->escapeHtmlAttr($title)?>to">
                 <?=$this->transEsc('date_to')?>:<br/>
-                <input type="text" maxlength="4" class="span12" name="<?=$this->escapeHtml($title)?>to" id="<?=$this->escapeHtml($title)?>to" value="<?=isset($dateFacets[$title][1])?$dateFacets[$title][1]:''?>" />
+                <input type="text" maxlength="4" class="span12" name="<?=$this->escapeHtmlAttr($title)?>to" id="<?=$this->escapeHtmlAttr($title)?>to" value="<?=isset($rangeFacets[$title]['values'][1])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][1]):''?>" />
               </label>
             </div>
-            <div class="row-fluid"><input type="text" class="span10 hidden" id="<?=$this->escapeHtml($title)?>dateSlider"/></div>
+            <? if ($rangeFacets[$title]['type'] == 'date'): ?>
+              <div class="row-fluid"><input type="text" class="span10 hidden" id="<?=$this->escapeHtmlAttr($title)?><?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>Slider"/></div>
+            <? endif; ?>
             <input class="btn" type="submit" value="<?=$this->transEsc('Set')?>"/>
           </form>
         </li>
-        <? $this->headScript()->appendFile('bootstrap-slider.js'); ?>
-        <?
-          $min = !empty($dateFacets[$title][0]) ? min($dateFacets[$title][0], 1400) : 1400;
-          $future = date('Y', time()+31536000);
-          $max = !empty($dateFacets[$title][1]) ? max($future, $dateFacets[$title][1]) : $future;
-          $low  = !empty($dateFacets[$title][0]) ? $dateFacets[$title][0] : $min;
-          $high = !empty($dateFacets[$title][1]) ? $dateFacets[$title][1] : $max;
-          $script = <<<JS
-          $(document).ready(function() {
-            var fillTexts = function() {
-              var v = {$this->escapeHtml($title)}dateSlider.getValue();
-              $('#{$this->escapeHtml($title)}from').val(v[0]);
-              $('#{$this->escapeHtml($title)}to').val(v[1]);
-            };
-            var {$this->escapeHtml($title)}dateSlider = $('#{$this->escapeHtml($title)}dateSlider')
-              .slider({
-                 'min':{$min},
-                 'max':{$max},
-                 'handle':"square",
-                 'tooltip':"hide",
-                 'value':[{$low},{$high}]
-              })
-              .on('slide', fillTexts)
-              .data('slider');
-          });
+        <? if ($rangeFacets[$title]['type'] == 'date'): ?>
+          <? $this->headScript()->appendFile('bootstrap-slider.js'); ?>
+          <?
+            $min = !empty($rangeFacets[$title][0]) ? min($rangeFacets[$title][0], 1400) : 1400;
+            $future = date('Y', time()+31536000);
+            $max = !empty($rangeFacets[$title][1]) ? max($future, $rangeFacets[$title][1]) : $future;
+            $low  = !empty($rangeFacets[$title][0]) ? $rangeFacets[$title][0] : $min;
+            $high = !empty($rangeFacets[$title][1]) ? $rangeFacets[$title][1] : $max;
+            $script = <<<JS
+$(document).ready(function() {
+  var fillTexts = function() {
+    var v = {$this->escapeHtml($title)}dateSlider.getValue();
+    $('#{$this->escapeHtml($title)}from').val(v[0]);
+    $('#{$this->escapeHtml($title)}to').val(v[1]);
+  };
+  var {$this->escapeHtml($title)}dateSlider = $('#{$this->escapeHtml($title)}dateSlider')
+    .slider({
+       'min':{$min},
+       'max':{$max},
+       'handle':"square",
+       'tooltip':"hide",
+       'value':[{$low},{$high}]
+    })
+    .on('slide', fillTexts)
+    .data('slider');
+});
 JS;
-        ?>
-        <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+          ?>
+          <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+        <? endif; ?>
       <? else: ?>
         <li class="nav-header"><?=$this->transEsc($cluster['label'])?></li>
         <? foreach ($cluster['list'] as $i=>$thisFacet): ?>
@@ -104,9 +114,9 @@ JS;
               $thisFacet['displayText'] = "-";
             }
           ?>
-          <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtml($title).' hidden'; ?>
+          <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
         <? if ($i == 6): ?>
-          <li id="more-narrowGroupHidden-<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
+          <li id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>"><a href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
         <? endif; ?>
         <? if ($thisFacet['isApplied']): ?>
           <li class="<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?><? endif ?>">
@@ -121,9 +131,9 @@ JS;
           <li class="facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
             <span class="pull-right small">
               <? if ($allowExclude): ?>
-                <?=number_format($thisFacet['count'])?><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="icon-remove"></i></a>
+                <?=$this->localizedNumber($thisFacet['count'])?><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="icon-remove"></i></a>
               <? else: ?>
-                <?=number_format($thisFacet['count'])?>
+                <?=$this->localizedNumber($thisFacet['count'])?>
               <? endif; ?>
             </span>
             <a class="main" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">

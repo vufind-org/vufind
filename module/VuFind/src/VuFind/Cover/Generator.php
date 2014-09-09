@@ -64,6 +64,7 @@ class Generator
     {
         $this->themeTools = $themeTools;
         $default = array(
+            'mode'         => 'grid',
             'authorFont'   => 'DroidSerif-Bold.ttf',
             'fontSize'     => 7,
             'lightness'    => 220,
@@ -83,7 +84,7 @@ class Generator
         $default['titleFont']  = $this->fontPath($default['titleFont']);
         $this->settings = (object) $default;
     }
-    
+
     /**
      * Generates a dynamic cover image from elements of the book
      *
@@ -95,20 +96,104 @@ class Generator
      */
     public function generate($title, $author, $callnumber = null)
     {
-        // Set up common variables
+        if ($this->settings->mode == 'solid') {
+            return $this->generateSolid($title, $author, $callnumber);
+        } else {
+            return $this->generateGrid($title, $author, $callnumber);
+        }
+    }
+
+    /**
+     * Generates a solid color background, ala Google
+     *
+     * @param string $title      Title of the book
+     * @param string $author     Author of the book
+     * @param string $callnumber Callnumber of the book
+     *
+     * @return string contents of image file
+     */
+    protected function generateSolid($title, $author, $callnumber)
+    {
         $half = $this->settings->size/2;
-        $box  = $this->settings->size/8;
-                
         // Create image
-        $im = imagecreate($this->settings->size, $this->settings->size)
-            or die("Cannot Initialize new GD image stream");
+        if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
+            throw new \Exception("Cannot Initialize new GD image stream");
+        }
         // this->white backdrop
         $this->white = imagecolorallocate($im, 255, 255, 255);
         // this->black
         $this->black = imagecolorallocate($im, 0, 0, 0);
-        
+
         // Generate seed from callnumber, title back up
-        $seed = $this->createSeed($title, $author, $callnumber);
+        $seed = $this->createSeed($title, $callnumber);
+        // Number to color, hsb to control saturation and lightness
+        $color = $this->makeHSBColor(
+            $im,
+            $seed%256,
+            $this->settings->saturation,
+            $this->settings->lightness
+        );
+
+        // Fill solid color
+        imagefilledrectangle(
+            $im,
+            0,
+            0,
+            $this->settings->size,
+            $this->settings->size,
+            $color
+        );
+
+        $this->drawText(
+            $im,
+            strtoupper($title[0]),
+            $half,
+            $half+28,
+            $this->settings->titleFont,
+            60,
+            $this->white,
+            false,
+            'center'
+        );
+
+        // Output png CHECK THE PARAM
+        ob_start();
+        imagepng($im);
+        $img = ob_get_contents();
+        ob_end_clean();
+
+        // Clear memory
+        imagedestroy($im);
+        // GTFO
+        return $img;
+    }
+
+    /**
+     * Generates a grid of colors as primary feature
+     *
+     * @param string $title      Title of the book
+     * @param string $author     Author of the book
+     * @param string $callnumber Callnumber of the book
+     *
+     * @return string contents of image file
+     */
+    protected function generateGrid($title, $author, $callnumber)
+    {
+        // Set up common variables
+        $half = $this->settings->size/2;
+        $box  = $this->settings->size/8;
+
+        // Create image
+        if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
+            throw new \Exception("Cannot Initialize new GD image stream");
+        }
+        // this->white backdrop
+        $this->white = imagecolorallocate($im, 255, 255, 255);
+        // this->black
+        $this->black = imagecolorallocate($im, 0, 0, 0);
+
+        // Generate seed from callnumber, title back up
+        $seed = $this->createSeed($title, $callnumber);
         // Number to color, hsb to control saturation and lightness
         $grid_color = $this->makeHSBColor(
             $im,
@@ -119,7 +204,7 @@ class Generator
         // Render the grid
         $pattern = $this->createPattern($seed);
         $this->render($pattern, $im, $grid_color, $half, $box);
-        
+
         if (null !== $title) {
             $this->drawTitle($im, $title, $box);
         }
@@ -137,17 +222,16 @@ class Generator
         // GTFO
         return $img;
     }
-    
+
     /**
      * Generates a dynamic cover image from elements of the book
      *
      * @param string $title      Title of the book
-     * @param string $author     Author of the book
      * @param string $callnumber Callnumber of the book
      *
      * @return integer unique number for this record
      */
-    protected function createSeed($title, $author, $callnumber)
+    protected function createSeed($title, $callnumber)
     {
         // Turn callnumber into number
         if (null == $callnumber) {
@@ -164,7 +248,7 @@ class Generator
             return ceil(rand(pow(2, 4), pow(2, 32)));
         }
     }
-    
+
     /**
      * Turn number into pattern
      *
@@ -193,7 +277,7 @@ class Generator
         }
         return $bc;
     }
-    
+
     /**
      * Render title in wrapped, black text with white border
      *
@@ -263,7 +347,7 @@ class Generator
             );
         }
     }
-    
+
     /**
      * Render author at bottom in wrapped, white text with black border
      *
@@ -295,7 +379,7 @@ class Generator
         $this->drawText(
             $im,
             $author,
-            3,
+            5,
             $this->settings->size-3,
             $this->settings->authorFont,
             $fontSize,
@@ -304,7 +388,7 @@ class Generator
             $alignment
         );
     }
-    
+
     /**
      * Find font in the theme folder
      *
@@ -319,7 +403,7 @@ class Generator
         $fileMatch = $this->themeTools->findContainingTheme($filenames, true);
         return empty($fileMatch) ? false : $fileMatch;
     }
-    
+
     /**
      * Returns the width a string would render to
      *
@@ -334,7 +418,7 @@ class Generator
         $p = imagettfbbox($size, 0, $font, $text);
         return $p[2]-$p[0]-4;
     }
-    
+
     /**
      * Simulate outlined text
      *
@@ -351,7 +435,7 @@ class Generator
      * @return void
      */
     protected function drawText($im, $text, $x, $y,
-        $font, $fontSize, $mcolor, $scolor, $align = null
+        $font, $fontSize, $mcolor, $scolor=false, $align=null
     ) {
         $txtWidth = $this->textWidth(
             $text,
@@ -375,16 +459,18 @@ class Generator
             $txtWidth = $p[2]-$p[0]-4;
             $x = $this->settings->size-$txtWidth-$x;
         }
-        
+
         // Generate 5 lines of text, 4 offset in a border color
-        imagettftext($im, $fontSize, 0, $x,   $y+1, $scolor, $font, $text);
-        imagettftext($im, $fontSize, 0, $x,   $y-1, $scolor, $font, $text);
-        imagettftext($im, $fontSize, 0, $x+1, $y,   $scolor, $font, $text);
-        imagettftext($im, $fontSize, 0, $x-1, $y,   $scolor, $font, $text);
+        if ($scolor) {
+            imagettftext($im, $fontSize, 0, $x,   $y+1, $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x,   $y-1, $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x+1, $y,   $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x-1, $y,   $scolor, $font, $text);
+        }
         // 1 centered in main color
         imagettftext($im, $fontSize, 0, $x,   $y,   $mcolor, $font, $text);
     }
-    
+
     /**
      * Convert 16 long binary string to 8x8 color grid
      * Reflects vertically and horizontally
@@ -418,7 +504,7 @@ class Generator
         }
         //imagefilledrectangle($im,0,$size-11,$size-1,$size,$color);
     }
-    
+
     /**
      * Using HSB allows us to control the contrast while allowing randomness
      *
@@ -455,6 +541,5 @@ class Generator
         default:
             return imagecolorallocate($im, $v, $p, $q);
         }
-        return imagecolorallocate($im, $R, $G, $B);
     }
 }

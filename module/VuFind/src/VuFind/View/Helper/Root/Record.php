@@ -234,16 +234,72 @@ class Record extends AbstractHelper
     }
 
     /**
-     * Render previews of the item if configured.
+     * Render previews (data and link) of the item if configured.
      *
      * @return string
      */
     public function getPreviews()
     {
+        return $this->getPreviewData() . $this->getPreviewLink();
+    }
+
+    /**
+     * Render data needed to get previews.
+     *
+     * @return string
+     */
+    public function getPreviewData()
+    {
         return $this->renderTemplate(
-            'preview.phtml',
+            'previewdata.phtml',
             array('driver' => $this->driver, 'config' => $this->config)
         );
+    }
+
+    /**
+     * Render links to previews of the item if configured.
+     *
+     * @return string
+     */
+    public function getPreviewLink()
+    {
+        return $this->renderTemplate(
+            'previewlink.phtml',
+            array('driver' => $this->driver, 'config' => $this->config)
+        );
+    }
+
+    /**
+     * collects ISBN, LCCN, and OCLC numbers to use in calling preview APIs
+     *
+     * @return array
+     */
+    public function getPreviewIds()
+    {
+        // Extract identifiers from record driver if it supports appropriate methods:
+        $isbn = is_callable(array($this->driver, 'getCleanISBN'))
+            ? $this->driver->getCleanISBN() : '';
+        $lccn = is_callable(array($this->driver, 'getLCCN'))
+            ? $this->driver->getLCCN() : '';
+        $oclc = is_callable(array($this->driver, 'getOCLC'))
+            ? $this->driver->getOCLC() : array();
+
+        // Turn identifiers into class names to communicate with jQuery logic:
+        $idClasses = array();
+        if (!empty($isbn)) {
+            $idClasses[] = 'ISBN' . $isbn;
+        }
+        if (!empty($lccn)) {
+            $idClasses[] = 'LCCN' . $lccn;
+        }
+        if (!empty($oclc)) {
+            foreach ($oclc as $oclcNum) {
+                if (!empty($oclcNum)) {
+                    $idClasses[] = 'OCLC' . $oclcNum;
+                }
+            }
+        }
+        return $idClasses;
     }
 
     /**

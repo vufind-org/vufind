@@ -74,6 +74,15 @@ class SwitchQuery implements RecommendInterface
     protected $skipChecks = array();
 
     /**
+     * Names of transforms to apply. These should correspond
+     * with transform method names -- e.g. to apply the transform found in the
+     * transformTruncateChar() method, you would put 'truncatechar' into this array.
+     *
+     * @var array
+     */
+    protected $transforms = array();
+
+    /**
      * Constructor
      *
      * @param BackendManager $backendManager Search backend plugin manager
@@ -101,6 +110,8 @@ class SwitchQuery implements RecommendInterface
         };
         $this->skipChecks = !empty($params[1])
             ? array_map($callback, explode(',', $params[1])) : array();
+        $this->transforms = !empty($params[2])
+            ? explode(',', $params[2]) : array();
     }
 
     /**
@@ -158,6 +169,20 @@ class SwitchQuery implements RecommendInterface
                     $result = $this->$method($query);
                     if ($result) {
                         $this->suggestions['switchquery_' . $currentCheck] = $result;
+                    }
+                }
+            }
+        }
+
+        // Perform all transforms (based on naming convention):
+        $methods = get_class_methods($this);
+        foreach ($methods as $method) {
+            if (substr($method, 0, 9) == 'transform') {
+                $currTrans = strtolower(substr($method, 9));
+                if (in_array($currTrans, $this->transforms)) {
+                    $result = $this->$method($query);
+                    if ($result) {
+                        $this->suggestions['switchquery_' . $currTrans] = $result;
                     }
                 }
             }
@@ -251,6 +276,23 @@ class SwitchQuery implements RecommendInterface
         }
         $query = trim($query, ' ?');
         return (substr($query, -1) != '*') ? $query . '*' : false;
+    }
+
+    /**
+     * Broaden search by truncating one character (e.g. call number)
+     *
+     * @param string $query Query to transform
+     *
+     * @return string|bool
+     */
+    protected function transformTruncatechar($query)
+    {
+        // Don't truncate phrases:
+        if (substr($query, -1) == '"') {
+            return false;
+        }
+        $query = trim($query);
+        return (strlen($query) > 1) ? substr($query, 0, -1) : false;
     }
 
     /**

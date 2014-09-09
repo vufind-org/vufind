@@ -23,7 +23,7 @@
     <? else: ?>
       <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
     <? endif; ?>
-    #<?=$this->escapeHtml($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . number_format($this->escapeHtml($this->scrollData['resultTotal'])) . ' ' . $this->transEsc('results') ?>
+    #<?=$this->localizedNumber($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->localizedNumber($this->scrollData['resultTotal']) . ' ' . $this->transEsc('results') ?>
     <? if ($this->scrollData['nextRecord']): ?>
       <li>
         <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>"><?=$this->transEsc('Next')?> &raquo;</a>
@@ -37,9 +37,9 @@
 <?=$this->record($this->driver)->getToolbar()?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <div class="record recordId source<?=$this->escapeHtml($this->driver->getResourceSource())?>" id="record">
-    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
-    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+  <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
     <?=$this->record($this->driver)->getCoreMetadata()?>
   </div>
@@ -55,8 +55,11 @@
           $this->layout()->breadcrumbs .= '<li class="active"><span class="divider">&gt;</span>' . $this->transEsc($desc) . '</li>';
           $activeTabObj = $obj;
         }
+        $tab_classes = array();
+        if ($isCurrent) $tab_classes[] = 'active';
+        if (!$obj->isVisible()) $tab_classes[] = 'hidden';
       ?>
-      <li<?=$isCurrent ? ' class="active"' : ''?>>
+      <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
         <a id="<?=$tab ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
       </li>
       <? endforeach; ?>
@@ -67,7 +70,7 @@
     <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
   </div>
 
-  <span class="Z3988" title="<?=$this->escapeHtml($this->driver->getOpenURL())?>"></span>
+  <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

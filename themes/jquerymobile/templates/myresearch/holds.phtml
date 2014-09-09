@@ -58,7 +58,7 @@
 
             <? if (!empty($ilsDetails['requestGroup'])): ?>
               <p>
-                <strong><?=$this->transEsc('hold_request_group') ?>:</strong>
+                <strong><?=$this->transEsc('hold_requested_group') ?>:</strong>
                 <?=$this->transEsc('location_' . $ilsDetails['requestGroup'], array(), $ilsDetails['requestGroup'])?>
               </p>
             <? endif; ?>
@@ -112,8 +112,8 @@
               <fieldset data-type="horizontal" data-role="controlgroup">
                 <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
                 <label for="checkbox_<?=$safeId?>"><?=$this->transEsc("Select this record")?></label>
-                <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" />
-                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" class="checkbox" style="margin-left:0;" id="checkbox_<?=$safeId?>" />
+                <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
+                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" class="checkbox" style="margin-left:0;" id="checkbox_<?=$safeId?>" />
               </fieldset>
             </div>
           <? endif; ?>

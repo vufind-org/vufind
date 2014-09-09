@@ -45,6 +45,8 @@ function filterAll(element, formId) {
     }
     $("#" + formId + " :input[type='checkbox'][name='filter[]']")
         .attr('checked', element.checked);
+    $("#" + formId + " :input[type='checkbox'][name='dfApplied']")
+        .attr('checked', element.checked);
 }
 
 function extractParams(str) {
@@ -318,6 +320,12 @@ $(document).ready(function(){
     // attach click event to the advanced search help links
     $('a.advsearchHelp').click(function(){
         window.open(path + '/Help/Home?topic=advsearch', 'Help', 'width=625, height=510');
+        return false;
+    });
+
+    // attach click event to the visualization help links
+    $('a.visualizationHelp').click(function(){
+        window.open(path + '/Help/Home?topic=visualization', 'Help', 'width=625, height=510');
         return false;
     });
 

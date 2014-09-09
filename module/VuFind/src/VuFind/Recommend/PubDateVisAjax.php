@@ -40,10 +40,32 @@ namespace VuFind\Recommend;
  */
 class PubDateVisAjax implements RecommendInterface
 {
+    /**
+     * Raw settings string
+     *
+     * @var string
+     */
     protected $settings;
-    protected $results;
-    protected $facets;
+
+    /**
+     * Search results object
+     *
+     * @var \VuFind\Search\Base\Results
+     */
+    protected $searchObject;
+
+    /**
+     * Should we allow zooming? (String of "true" or "false")
+     *
+     * @var string
+     */
     protected $zooming;
+
+    /**
+     * Facet fields to use
+     *
+     * @var array
+     */
     protected $dateFacets = array();
 
     /**

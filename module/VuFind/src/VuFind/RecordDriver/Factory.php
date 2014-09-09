@@ -40,6 +40,47 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for EDS record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return EDS
+     */
+    public static function getEDS(ServiceManager $sm)
+    {
+        $eds = $sm->getServiceLocator()->get('VuFind\Config')->get('EDS');
+        return new EDS(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $eds, $eds
+        );
+    }
+
+    /**
+     * Factory for EIT record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return EIT
+     */
+    public static function getEIT(ServiceManager $sm)
+    {
+        return new EIT(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('EIT')
+        );
+    }
+
+    /**
+     * Factory for LibGuides record driver.
+     *
+     * @return LibGuides
+     */
+    public static function getLibGuides()
+    {
+        return new LibGuides();
+    }
+
+    /**
      * Factory for Missing record driver.
      *
      * @param ServiceManager $sm Service manager.
@@ -54,22 +95,6 @@ class Factory
     }
 
     /**
-     * Factory for SolrAuth record driver.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return SolrAuth
-     */
-    public static function getSolrAuth(ServiceManager $sm)
-    {
-        return new SolrAuth(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-            null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
-        );
-    }
-
-    /**
      * Factory for Pazpar2 record driver.
      *
      * @param ServiceManager $sm Service manager.
@@ -79,6 +104,39 @@ class Factory
     public static function getPazpar2(ServiceManager $sm)
     {
         return new Pazpar2(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            null,
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+        );
+    }
+
+    /**
+     * Factory for Primo record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Primo
+     */
+    public static function getPrimo(ServiceManager $sm)
+    {
+        $primo = $sm->getServiceLocator()->get('VuFind\Config')->get('Primo');
+        $driver = new Primo(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $primo, $primo
+        );
+        return $driver;
+    }
+
+    /**
+     * Factory for SolrAuth record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SolrAuth
+     */
+    public static function getSolrAuth(ServiceManager $sm)
+    {
+        return new SolrAuth(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')

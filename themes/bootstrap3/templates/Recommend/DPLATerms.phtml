@@ -1,0 +1,18 @@
+<? $results = $this->recommend->getResults(); ?>
+<? if(!empty($results)): ?>
+  <ul class="list-group" id="side-panel-dpla">
+    <li class="list-group-item title<? if($this->recommend->isCollapsed()): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-dpla">
+      DPLA
+    </li>
+    <div id="side-collapse-dpla" class="collapse<? if(!$this->recommend->isCollapsed()): ?> in<? endif ?>">
+    <? foreach($results as $item): ?>
+      <li class="list-group-item">
+        <a href="<?=$item['link'] ?>" target="new"><?=$this->escapeHtml($item['title']) ?></a><br/>
+        <? if(!empty($item['desc'])): ?>
+          <span class="desc" title="<?=$item['desc'] ?>"><?=$this->escapeHtml($this->truncate($item['desc'], 50)) ?></span><br/>
+        <? endif; ?>
+        (<span class="from"><?=$this->transEsc('Provider') ?>: <?=$this->escapeHtml($item['provider']) ?></span>)
+      </li>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>

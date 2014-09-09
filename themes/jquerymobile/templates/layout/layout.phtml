@@ -1,5 +1,5 @@
 <?=$this->doctype('HTML5')?>
-<html>
+<html lang="<?=$this->layout()->userLang?>">
   <head>
     <meta charset="utf-8"/>
     <meta name="format-detection" content="telephone=no"/>
@@ -18,6 +18,9 @@
             $this->headScript()->appendScript('var keepAliveInterval = '
                 . $this->KeepAlive());
             $this->headScript()->appendFile("keep_alive.js");
+        }
+        if ($this->recaptcha()->active()) {
+            $this->headScript()->appendFile("recaptcha_ajax.js");
         }
     ?>
     <?=$this->headScript()?>

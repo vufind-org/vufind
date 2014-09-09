@@ -15,17 +15,17 @@
   <form class="form-inline" method="GET" action="<?=$this->url('collections-home')?>">    
     <ul class="pager">
       <? if (isset($prevpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtml($filterString)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
       <? else: ?>
         <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
       <? endif; ?>
       <? if (isset($nextpage)): ?>
-        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtml($filterString)?>"><?=$this->transEsc('Next')?> &raquo;</a></li>
+        <li><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->transEsc('Next')?> &raquo;</a></li>
       <? else: ?>
         <li class="disabled"><a href="#"><?=$this->transEsc('Next')?> &raquo;</a></li>
       <? endif; ?>
       <input type="submit" class="btn" value="<?=$this->transEsc('Jump to')?>" />
-      <input type="text" name="from" value="<?=$this->escapeHtml($from)?>" />
+      <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" />
     </ul>
   </form>
 <? $pageLinks = ob_get_contents(); ?>
@@ -46,8 +46,8 @@
           }
         }
       ?>
-      <a href="<?=$this->escapeHtml($removalUrl)?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="Delete"/></a>
-      <a href="<?=$this->escapeHtml($removalUrl)?>"><?=$this->escapeHtml($filter['displayText'])?></a>
+      <a href="<?=$this->escapeHtmlAttr($removalUrl)?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="Delete"/></a>
+      <a href="<?=$this->escapeHtmlAttr($removalUrl)?>"><?=$this->escapeHtml($filter['displayText'])?></a>
     </li>
   <? endforeach; ?>
   </ul>
@@ -56,7 +56,7 @@
 <div class="pagination pagination-centered pagination-small">
   <ul>
   <? foreach ($letters as $letter): ?>
-    <li<? if($letter === $from): ?> class="active"<?endif?>><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtml($filterString)?>"><?=$this->escapeHtml($letter)?></a></li>
+    <li<? if($letter === $from): ?> class="active"<?endif?>><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->escapeHtml($letter)?></a></li>
   <? endforeach; ?>
   </ul>
 </div>

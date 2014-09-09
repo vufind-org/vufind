@@ -36,25 +36,8 @@ namespace VuFind\RecordTab;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
-class Excerpt extends AbstractBase
+class Excerpt extends AbstractContent
 {
-    /**
-     * Is this module enabled in the configuration?
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
-     * Constructor
-     *
-     * @param bool $enabled Is this module enabled in the configuration?
-     */
-    public function __construct($enabled = true)
-    {
-        $this->enabled = $enabled;
-    }
-
     /**
      * Get the on-screen description for this tab.
      *
@@ -63,19 +46,5 @@ class Excerpt extends AbstractBase
     public function getDescription()
     {
         return 'Excerpt';
-    }
-
-    /**
-     * Is this tab active?
-     *
-     * @return bool
-     */
-    public function isActive()
-    {
-        if (!$this->enabled) {
-            return false;
-        }
-        $isbns = $this->getRecordDriver()->tryMethod('getISBNs');
-        return !empty($isbns);
     }
 }

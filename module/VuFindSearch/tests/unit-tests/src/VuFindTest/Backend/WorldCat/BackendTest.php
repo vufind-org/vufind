@@ -155,7 +155,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $client = $this->getMock('Zend\Http\Client');
         return $this->getMock(
             'VuFindSearch\Backend\WorldCat\Connector',
-            $mock, array('fake', '', $client)
+            $mock, array('fake', $client)
         );
     }
 }

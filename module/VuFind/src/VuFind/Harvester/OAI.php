@@ -564,7 +564,8 @@ class OAI
         // there is probably a cleaner way to do this, but this simple method avoids
         // the complexity of dealing with namespaces in SimpleXML:
         $xml = trim($record->metadata->asXML());
-        $xml = preg_replace('/(^<metadata>)|(<\/metadata>$)/m', '', $xml);
+        preg_match('/^<metadata([^\>]*)>/', $xml, $extractedNs);
+        $xml = preg_replace('/(^<metadata[^\>]*>)|(<\/metadata>$)/m', '', $xml);
 
         // If we are supposed to inject any values, do so now inside the first
         // tag of the file:
@@ -607,9 +608,39 @@ class OAI
         if (!empty($insert)) {
             $xml = preg_replace('/>/', '>' . $insert, $xml, 1);
         }
+        $xml = $this->fixNamespaces(
+            $xml, $record->getDocNamespaces(),
+            isset($extractedNs[1]) ? $extractedNs[1] : ''
+        );
 
         // Save our XML:
         file_put_contents($this->getFilename($id, 'xml'), trim($xml));
+    }
+
+    /**
+     * Support method for saveRecord() -- fix namespaces in the top tag of the XML
+     * document to compensate for bugs in the SimpleXML library.
+     *
+     * @param string $xml  XML document to clean up
+     * @param array  $ns   Namespaces to check
+     * @param string $attr Attributes extracted from the <metadata> tag
+     *
+     * @return string
+     */
+    protected function fixNamespaces($xml, $ns, $attr = '')
+    {
+        foreach ($ns as $key => $val) {
+            if (!empty($key)
+                && strstr($xml, $key . ':') && !strstr($xml, 'xmlns:' . $key)
+                && !strstr($attr, 'xmlns:' . $key)
+            ) {
+                $attr .= ' xmlns:' . $key . '="' . $val . '"';
+            }
+        }
+        if (!empty($attr)) {
+            $xml = preg_replace('/>/', $attr . '>', $xml, 1);
+        }
+        return $xml;
     }
 
     /**
@@ -668,7 +699,7 @@ class OAI
     }
 
     /**
-     * Extract the ID from a record object (support method for _processRecords()).
+     * Extract the ID from a record object (support method for processRecords()).
      *
      * @param object $record SimpleXML record.
      *

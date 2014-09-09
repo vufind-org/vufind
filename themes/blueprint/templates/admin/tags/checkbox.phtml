@@ -1,3 +1,3 @@
 <label for="<?=$this->prefix?>checkbox_<?=$this->tag['id']?>" class="offscreen"><?=$this->transEsc('Select this tag')?></label>
-<input id="<?=$this->prefix?>checkbox_<?=$this->tag['id']?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtml($this->tag['id'])?>" class="checkbox_ui"/>
-<input type="hidden" name="idsAll[]" value="<?=$this->escapeHtml($this->tag['id'])?>" />
+<input id="<?=$this->prefix?>checkbox_<?=$this->tag['id']?>" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->tag['id'])?>" class="checkbox_ui"/>
+<input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->tag['id'])?>" />

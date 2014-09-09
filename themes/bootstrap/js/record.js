@@ -116,7 +116,6 @@ function registerAjaxCommentRecord() {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
-          data['loggingin'] = true;
           Lightbox.addCloseAction(function() {
             $.ajax({
               type: 'POST',
@@ -161,15 +160,14 @@ $(document).ready(function(){
   });
   // Place a Hold
   // Place a Storage Hold
+  // Place an ILL Request
   $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
     var parts = $(this).attr('href').split('?');
     parts = parts[0].split('/');
     var params = deparam($(this).attr('href'));
     params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', parts[parts.length-1], params, {}, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
-    });
+    return Lightbox.get('Record', parts[parts.length-1], params);
   });
   // Save lightbox
   $('#save-record').click(function() {
