@@ -274,6 +274,7 @@ class Solr extends AbstractBase
             }
             // Get info on our record
             $parents = $data->response->docs[0];
+            var_dump($this->getRootId());
             if ($current != $this->getRootId()) {
                 foreach ($parents->hierarchy_parent_id as $i=>$cid) {
                     array_push($queue, $cid);

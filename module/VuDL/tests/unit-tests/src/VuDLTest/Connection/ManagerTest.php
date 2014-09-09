@@ -43,6 +43,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     {
         return new \VuDL\Connection\Manager(array('First', 'Second'), new FakeServiceLocator());
     }
+
     public function testManager()
     {
         $subject = $this->getTestSubject();
