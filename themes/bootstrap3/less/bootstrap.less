@@ -159,7 +159,8 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   }
 }
 
-/* --- Sidebar rounded corners --- */
+/* --- Sidebar --- */
+/* Sidebar rounded corners */
 .sidebar {
   & .title {
     cursor:pointer;
@@ -189,10 +190,13 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     border-bottom-right-radius:@border-radius-base;
   }
 }
-.list-group-item.active, .badge {
+.list-group-item, .badge {
   i.fa {
     cursor:inherit;
   }
+}
+.sidebar .facet a {
+  text-decoration: none;
 }
 
 /* --- Slider accessibility --- */
@@ -257,4 +261,53 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 #viz-instructions {
   padding-top:600px;
+}
+
+/* --- Hierarchical facets --- */
+/* jsTree arrows */
+.sidebar .jstree-ocl:before {
+  font-family: 'FontAwesome';
+  float: left;
+  speak: none;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration:
+  inherit;
+  cursor: pointer;
+  padding: 0;
+  width: 10px;
+  margin-left: -10px;
+}
+.sidebar .jstree-default .jstree-open > .jstree-ocl:before {
+  content: "\f0d7";
+}
+.sidebar .jstree-default .jstree-closed > .jstree-ocl:before {
+  content: "\f0da";
+}
+.sidebar .jstree-default .jstree-leaf > .jstree-ocl:before {
+  content: " ";
+}
+/* facet list styling */
+li.jstree-facet ul {
+  padding-left: 20px;
+}
+.jstree-facet li span.main {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 1px; /* Fix Firefox cutting the checkboxes */
+}
+li.jstree-facet, li.jstree-node {
+  list-style: none;
+}
+.jstree-facet .jstree-container-ul {
+  padding: 0;
+}
+.jstree-facet .jstree-container-ul > li.active, .jstree-facet .jstree-container-ul > li.active a.jstree-anchor {
+  background-color: #265680;
+  color: #fff;
+}
+li.jstree-facet .badge {
+  cursor: text;
 }
