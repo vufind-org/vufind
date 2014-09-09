@@ -104,6 +104,7 @@ publisher           = adv_search_publisher
 Series              = adv_search_series
 year                = adv_search_year
 toc                 = adv_search_toc
+publication_place_txt_mv = adv_search_publication_place
 
 ; This section defines the sort options available on standard search results.
 ; Values on the left of the equal sign are either the reserved term "relevance"

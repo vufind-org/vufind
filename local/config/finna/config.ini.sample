@@ -1079,7 +1079,6 @@ url = https://piwik.finna.fi/
 ip = true
 ; Authorization-providing authentication methods defined in Authentication section or MultiAuth
 authentication_methods[] = Shibboleth
-authentication_methods[] = LDAP
 
 ; Normalization preview allows one to display an external record
 ; as it would be displayed in VuFind. This requires a backend,

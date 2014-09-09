@@ -13,13 +13,18 @@ format             = Format
 ;hierarchy_top_title   = Collections
 author2Str         = Author
 language           = Language
-main_date_str      = "Main Year"
+original_lng_str_mv = original_work_language
+subtitle_lng_str_mv = subtitle_language
+main_date_str      = "Year"
+search_sdaterange_mv = "Main Year"
 genre_facet        = Genre
 era_facet          = Era
 geographic_facet   = Region
 ;publishDate        = "adv_search_year"  ; share year string w/advanced search page
 topic_facet        = Topic
 hierarchy_parent_title = component_part_is_part_of
+first_indexed      = "New Items in Index"
+category_str_mv    = Category
 
 ; Facets that will appear at the top of search results when the TopFacets
 ; recommendations module is used.  See the [TopRecommendations] section of
@@ -38,6 +43,7 @@ dateRangeVis = search_sdaterange_mv:main_date_str
 hierarchical[] = building
 hierarchical[] = format
 hierarchical[] = sector_str_mv
+hierarchical[] = category_str_mv
 ; Any fields listed below will be open on default:
 default[] = format
 
@@ -68,7 +74,7 @@ top_cols = 3
 ; to false or omit to disable ORed facets.
 ;orFacets = *
 ; Do we want any facets to be collapsed by default?
-;collapsedFacets = *
+collapsedFacets = sector_str_mv,building
 
 ; The author home screen has different facets
 [Author]
@@ -125,6 +131,10 @@ translated_facets[] = format
 translated_facets[] = language
 translated_facets[] = genre_facet
 translated_facets[] = sector_str_mv
+translated_facets[] = first_indexed
+translated_facets[] = original_lng_str_mv
+translated_facets[] = subtitle_lng_str_mv
+translated_facets[] = category_str_mv
 
 ; Prefix to be used in facet translation to avoid mixing facet strings with other
 ; translated content

@@ -1,0 +1,4 @@
+[Parent_Config]
+relative_path = "../finna/searches.ini"
+
+; Add any overrides below
