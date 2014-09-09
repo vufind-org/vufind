@@ -30,10 +30,12 @@
       </ul>
       <div class="tab-content clearfix">
     <? endif; ?>
-    <p class="navbar-text"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?>"</strong></p>
-    <a class="navbar-text" href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a>
-    <a class="navbar-text" href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Start a new Advanced Search")?></a>
-    <a class="navbar-text" href="<?=$this->url($searchHome)?>"><?=$this->transEsc("Start a new Basic Search")?></a>
+    <p><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?>"</strong></p>
+    <p class="adv_search_links">
+      <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a>
+      <a href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Start a new Advanced Search")?></a>
+      <a href="<?=$this->url($searchHome)?>"><?=$this->transEsc("Start a new Basic Search")?></a>
+    </p>
     <? if (count($searchTabs) > 0): ?>
       </div>
     <? endif; ?>
