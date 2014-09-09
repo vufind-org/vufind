@@ -2,10 +2,10 @@
 
 /**
  * Finna Module Configuration
- * 
+ *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland 2013.
+ * Copyright (C) The National Library of Finland 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,24 +31,43 @@
 namespace Finna\Module\Configuration;
 
 $config = array(
+    'router' => array(
+        'routes' => array(
+            'content' => array(
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'options' => array(
+                    'route'    => '/Content/[:page]',
+                    'constraints' => array(
+                        'page'     => '[a-zA-Z][a-zA-Z0-9_-]+',
+                    ),
+                    'defaults' => array(
+                        'controller' => 'Content',
+                        'action'     => 'Content',
+                    )
+                ),
+            ),
+        )
+    ),
     'controllers' => array(
         'invokables' => array(
+            'content' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController'
         ),
     ),
-/*    'service_manager' => array(
+    'service_manager' => array(
         'allow_override' => true,
         'factories' => array(
-            'VuFind\ILSConnection' => function ($sm) {
+            'VuFind\Translator' => 'Finna\Service\Factory::getTranslator',
+            /*'VuFind\ILSConnection' => function ($sm) {
                 $catalog = new \Finna\ILS\Connection(
                     $sm->get('VuFind\Config')->get('config')->Catalog,
                     $sm->get('VuFind\ILSDriverPluginManager'),
                     $sm->get('VuFind\Config')
                 );
                 return $catalog->setHoldConfig($sm->get('VuFind\ILSHoldSettings'));
-            }
+            }*/
         )
-    ),*/
+    ),
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
     'vufind' => array(
