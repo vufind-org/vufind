@@ -144,6 +144,7 @@ JS;
                 data-facet="<?=$this->escapeHtml($title)?>"
                 data-path="<?=$this->currentPath()?>"
                 data-exclude="<?=$allowExclude?>"
+                data-operator="<?=$this->recommend->getFacetOperator($title)?>"
                 data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
                 data-sort="<?=isset($hierarchicalFacetSortOptions[$title]) ? $hierarchicalFacetSortOptions[$title] : ''?>">
           </li>
@@ -161,7 +162,7 @@ JS;
           <? endif; ?>
           <? if ($thisFacet['isApplied']): ?>
             <a class="list-group-item active<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?><? endif ?>">
-              <? if($thisFacet['operator'] == 'OR'): ?>
+              <? if ($thisFacet['operator'] == 'OR'): ?>
                 <i class="fa fa-check-square-o"></i>
               <? else: ?>
                 <span class="pull-right"><i class="fa fa-check"></i></span>

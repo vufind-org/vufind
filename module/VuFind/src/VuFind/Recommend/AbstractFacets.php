@@ -108,6 +108,18 @@ abstract class AbstractFacets implements RecommendInterface
     }
 
     /**
+     * Get the facet boolean operator
+     *
+     * @param string $field Field name
+     *
+     * @return string 'AND' or 'OR'
+     */
+    public function getFacetOperator($field)
+    {
+        return in_array($field, $this->orFacets) ? 'OR' : 'AND';
+    }
+
+    /**
      * Get results stored in the object.
      *
      * @return \VuFind\Search\Base\Results

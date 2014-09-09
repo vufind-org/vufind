@@ -1543,10 +1543,11 @@ class AjaxController extends AbstractBase
 
         $facet = $this->params()->fromQuery('facetName');
         $sort = $this->params()->fromQuery('facetSort');
+        $operator = $this->params()->fromQuery('facetOperator');
 
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
-        $params->initBasicFacets();
+        $params->addFacet($facet, null, $operator === 'OR');
         $params->initFromRequest($this->getRequest()->getQuery());
 
         $facets = $results->getFullFieldFacets(array($facet), false);

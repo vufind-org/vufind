@@ -59,6 +59,7 @@ function initFacetTree(treeNode)
   treeNode.data('loaded', true);
   
   var facet = treeNode.data('facet');
+  var operator = treeNode.data('operator');
   var currentPath = treeNode.data('path');
   var allowExclude = treeNode.data('exclude');
   var excludeTitle = treeNode.data('exclude-title');
@@ -72,6 +73,7 @@ function initFacetTree(treeNode)
       method: "getFacetData",
       facetName: facet,
       facetSort: sort,
+      facetOperator: operator, 
       action: action
     },
     function(response, textStatus) {
