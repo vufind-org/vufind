@@ -55,6 +55,7 @@ class CoverController extends \VuFind\Controller\CoverController
         if (!$this->loader) {
             $this->loader = new Loader(
                 $this->getConfig(),
+                $this->getServiceLocator()->get('VuFind\ContentCoversPluginManager'),
                 $this->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
                 $this->getServiceLocator()->get('VuFind\Http')->createClient(),
                 $this->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir()

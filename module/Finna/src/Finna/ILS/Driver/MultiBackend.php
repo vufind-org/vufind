@@ -106,7 +106,15 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      */
     public function getStatus($id)
     {
-        return $this->getHolding($id);
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $status = $driver->getStatus($this->getLocalId($id));
+            if ($status) {
+                return $this->addIdPrefixes($status, $source);
+            }
+        }
+        return array();
     }
 
     /**
@@ -123,7 +131,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     {
         $items = array();
         foreach ($ids as $id) {
-            $items[] = $this->getHolding($id);
+            $items[] = $this->getStatus($id);
         }
         return $items;
     }
@@ -141,14 +149,14 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
      * number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
             $holdings = $driver->getHolding(
                 $this->getLocalId($id),
-                $patron ? $this->stripIdPrefixes($patron, $source) : false
+                $this->stripIdPrefixes($patron, $source)
             );
             if ($holdings) {
                 return $this->addIdPrefixes($holdings, $source);
@@ -196,7 +204,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        $driver = $this->getDriver($this->config['General']['defaultDriver']);
+        $driver = $this->getDriver($this->defaultDriver);
         if ($driver) {
             return $driver->getNewItems($page, $limit, $daysOld, $fundId);
         }
@@ -216,7 +224,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      */
     public function findReserves($course, $inst, $dept)
     {
-        $driver = $this->getDriver($this->config['General']['defaultDriver']);
+        $driver = $this->getDriver($this->defaultDriver);
         if ($driver) {
             return $driver->findReserves($course, $inst, $dept);
         }
@@ -385,10 +393,9 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
         $driver = $this->getDriver($source);
         if ($driver) {
             $holds = $driver->getMyHolds($this->stripIdPrefixes($user, $source));
-            $holds = $this->addIdPrefixes(
+            return $this->addIdPrefixes(
                 $holds, $source, array('id', 'item_id', 'cat_username')
             );
-            return $holds;
         }
         throw new ILSException('No suitable backend driver found');
     }
