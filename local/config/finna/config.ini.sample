@@ -23,7 +23,7 @@ email           = finna-posti@helsinki.fi
 title           = "Finna"
 ; This is the default theme for non-mobile devices (or all devices if mobile_theme
 ; is disabled below)
-theme           = bootstrap
+theme           = bootstrap3
 ; Uncomment the following line to use a different default theme for mobile devices
 ;mobile_theme    = jquerymobile
 ; This is a comma-separated list of themes that may be accessed via the ?ui GET
