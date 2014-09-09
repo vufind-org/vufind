@@ -1,6 +1,6 @@
 ; Inherit main configuration
 [Parent_Config]
-relative_path = ../finna/config.ini
+relative_path = ../finna/facets.ini
 override_full_sections = "Results,ResultsTop,SpecialFacets,CheckboxFacets,Results_Settings,Author,Advanced,Advanced_Settings,HomePage,HomePage_Settings,"
 
 ; Add any overrides below

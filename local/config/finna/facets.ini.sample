@@ -57,6 +57,7 @@ default[] = format
 ; Leave the section empty if you do not need checkbox facets.
 [CheckboxFacets]
 ;edition:1st* = "First Edition"     ; Contrived hypothetical example
+online_boolean:1 = "Limit to online materials"
 
 ; These settings affect the way the [Results] facets are displayed
 ; If using facets at the top of search results you have more room for text.
@@ -74,7 +75,7 @@ top_cols = 3
 ; to false or omit to disable ORed facets.
 ;orFacets = *
 ; Do we want any facets to be collapsed by default?
-collapsedFacets = sector_str_mv,building
+collapsedFacets = sector_str_mv,author
 
 ; The author home screen has different facets
 [Author]
