@@ -39,11 +39,6 @@ category_str_mv    = Category
 dateRange[] = publishDate
 dateVis[] = main_date_str
 dateRangeVis = search_sdaterange_mv:main_date_str
-; Any fields listed below will be treated as hierarchical rather than plain facets:
-hierarchical[] = building
-hierarchical[] = format
-hierarchical[] = sector_str_mv
-hierarchical[] = category_str_mv
 ; Any fields listed below will be open on default:
 default[] = format
 
@@ -69,13 +64,15 @@ top_cols = 3
 ; Should we show "exclude" links for some or all of the facets? Set to * for
 ; all facets, use a comma-separated list to show for some of the facets, set
 ; to false or omit to disable "exclude" links
-;exclude = *
+exclude = *
 ; Should we OR together facets rather than ANDing them? Set to * for
 ; all facets, use a comma-separated list to apply to some of the facets, set
 ; to false or omit to disable ORed facets.
-;orFacets = *
+orFacets = *
 ; Do we want any facets to be collapsed by default?
 collapsedFacets = sector_str_mv,author
+; Any fields listed below will be treated as hierarchical rather than plain facets:
+hierarchicalFacets = building,format,sector_str_mv,category_str_mv
 
 ; The author home screen has different facets
 [Author]
