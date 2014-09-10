@@ -41,16 +41,10 @@ class SolrTest extends \VuFindTest\Unit\TestCase
 
     public function testAllWithMock()
     {
-        $fakeConfig = (object) array(
-            'General'=>(object) array('root_id'=>'ROOT'),
-            'Details'=>new FakeConfig(array('author,author2'=>'Author','series'=>'Series'))
-        );
-        var_dump($fakeConfig->Details->toArray());
-
         $subject = new \VuDL\Connection\Solr(
             (object) array(
                 'General'=>(object) array('root_id'=>'ROOT'),
-                'Details'=>(object) array('author,author2'=>'Author','series'=>'Series')
+                'Details'=>new FakeConfig(array('author,author2'=>'Author','series'=>'Series'))
             ),
             new FakeBackend(
                 array(
@@ -74,9 +68,14 @@ class SolrTest extends \VuFindTest\Unit\TestCase
                     '{"response":{"numFound":1,"docs":[{"id":"ID1"},{"id":"ID2"}]}}',
 
                     '{"response":{"numFound":0}}',
-                    '{"response":{"numFound":1,"docs":[{"hierarchy_parent_id":["id2"],"hierarchy_parent_title":["title2"]}]}}',
-                    '{"response":{"numFound":1,"docs":[{"hierarchy_parent_id":["id1"],"hierarchy_parent_title":["title1"]}]}}',
-                    '{"response":{"numFound":1,"docs":[{"hierarchy_parent_id":[]}]}}',
+                    '{"response":{"numFound":1,"docs":[{"hierarchy_parent_id":["id2","id4"],"hierarchy_parent_title":["title2","title4"]}]}}',
+                    '{"response":{"numFound":1,"docs":[{"hierarchy_parent_id":["id3"],"hierarchy_parent_title":["title3"]}]}}',
+                    '{"response":{"numFound":1,"docs":[{"hierarchy_parent_id":["ROOT"],"hierarchy_parent_title":["ROOT"]}]}}',
+                    '{"response":{"numFound":1,"docs":[{"hierarchy_parent_id":["ROOT"],"hierarchy_parent_title":["ROOT"]}]}}',
+
+                    '{"response":{"numFound":0,"docs":[0]}}',
+                    '{"response":{"numFound":1,"docs":[{"license.mdRef":["vuABC"]}]}}',
+                    '{"response":{"numFound":1,"docs":[{"license.mdRef":["vuABC"]}]}}'
                 )
             )
         );
@@ -87,7 +86,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(null, $subject->getDetails('id', false));
         // Test for exception later
         $this->assertEquals(array("author"=>"1,2"), $subject->getDetails('id', false));
-        $this->assertEquals(array("author"=>array("1", "2")), $subject->getDetails('id', true));
+        $this->assertEquals(array(array("title"=>"Author","value"=>"1,2")), $subject->getDetails('id', true));
 
         $this->assertEquals(null, $subject->getLabel('id'));
         $this->assertEquals("LABEL", $subject->getLabel('id'));
@@ -102,102 +101,13 @@ class SolrTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(array("ID1", "ID2"), $subject->getOrderedMembers('id', array('fake_filter')));
 
         $this->assertEquals(null, $subject->getParentList('id1'));
-        $this->assertEquals(array(array('id1'=>'title1','id2'=>'title2')), $subject->getParentList('id1'));
-        $this->assertEquals(array(array('id1'=>'title1','id2'=>'title2')), $subject->getParentList('id1')); // Cache test
-    }
+        $this->assertEquals(array(array('id4'=>'title4'), array('id3'=>'title3','id2'=>'title2')), $subject->getParentList('id1'));
+        // Cache test
+        $this->assertEquals(array(array('id4'=>'title4'), array('id3'=>'title3','id2'=>'title2')), $subject->getParentList('id1'));
 
-    /**
-     * Returns an array of classes for this object
-     *
-     * @param string $id record id
-     *
-     * @return array
-     */
-    protected function getClassesTest($id)
-    {
-    }
-
-    /**
-     * Get details from Solr
-     *
-     * @param string  $id     ID to look up
-     * @param boolean $format Run result through formatDetails?
-     *
-     * @return array
-     * @throws \Exception
-     */
-    protected function getDetailsTest($id, $format)
-    {
-    }
-
-    /**
-     * Get an item's label
-     *
-     * @param string $id Record's id
-     *
-     * @return string
-     */
-    protected function getLabelTest($id)
-    {
-    }
-
-    /**
-     * Tuple call to return and parse a list of members...
-     *
-     * @param string $root ...for this id
-     *
-     * @return array of members in order
-     */
-    protected function getMemberListTest($root)
-    {
-    }
-
-    /**
-     * Get the last modified date from Solr
-     *
-     * @param string $id ID to look up
-     *
-     * @return array
-     * @throws \Exception
-     */
-    protected function getModDateTest($id)
-    {
-    }
-
-    /**
-     * Returns file contents of the structmap, our most common call
-     *
-     * @param string $id         record id
-     * @param array  $extra_sort extra fields to sort on
-     *
-     * @return string $id
-     */
-    protected function getOrderedMembersTest($id, $extra_sort = array())
-    {
-    }
-
-    /**
-     * Tuple call to return and parse a list of parents...
-     *
-     * @param string $id ...for this id
-     *
-     * @return array of parents in order from top-down
-     */
-    protected function getParentListTest($id)
-    {
-    }
-
-    /**
-     * Get copyright URL and compare it to special cases from VuDL.ini
-     *
-     * @param array $id          record id
-     * @param array $setLicenses ids are strings to match urls to,
-     *  the values are abbreviations. Parsed in details.phtml later.
-     *
-     * @return array
-     */
-    protected function getCopyrightTest($id, $setLicenses)
-    {
+        $this->assertEquals(null, $subject->getCopyright('id', array()));
+        $this->assertEquals(array("vuABC", "WTFPL"), $subject->getCopyright('id', array('A'=>'WTFPL')));
+        $this->assertEquals(array("vuABC", false), $subject->getCopyright('id', array('X'=>'WTFPL')));
     }
 }
 
@@ -233,7 +143,6 @@ class FakeSolr
 
     public function search()
     {
-        var_dump($this->returnList[$this->callNumber]);
         return $this->returnList[$this->callNumber++];
     }
 }
@@ -255,7 +164,7 @@ class FakeConfig
         $this->value = $v;
     }
 
-    public function toString()
+    public function toArray()
     {
         return $this->value;
     }
