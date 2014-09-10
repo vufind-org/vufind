@@ -38,6 +38,27 @@ namespace VuDLTest;
  */
 class SolrTest extends \VuFindTest\Unit\TestCase
 {
+    public function testMissingDetails()
+    {
+        $subject = new \VuDL\Connection\Solr(
+            (object) array('General'=>(object) array('page_length'=>8)),
+            new FakeBackend(array('{"response":{"docs":[{"author":"1,2"}]}}'))
+        );
+
+        $this->assertEquals(8, $subject->getPageLength());
+
+        try {
+            $subject->getDetails('id', true);
+        } catch(\Exception $e) {
+            $this->assertEquals(
+                'Missing [Details] in VuDL.ini',
+                $e->getMessage()
+            );
+            return;
+        }
+
+        $this->fail('Exception not thrown for empty VuDL.ini details');
+    }
 
     public function testAllWithMock()
     {
@@ -52,8 +73,8 @@ class SolrTest extends \VuFindTest\Unit\TestCase
                     '{"response":{"numFound":1,"docs":[{"modeltype_str_mv":["123456789012CLASS_ONE","123456789012CLASS_TWO"]}]}}',
 
                     false,
-                    '{"response":{"docs":[{"author":"1,2"}]}}',
-                    '{"response":{"docs":[{"author":"1,2"}]}}',
+                    '{"response":{"docs":[{"author":"1,2","series":["S1","S2"]}]}}',
+                    '{"response":{"docs":[{"author":"1,2","series":["S1","S2"]}]}}',
 
                     '{"response":{"numFound":0}}',
                     '{"response":{"numFound":1,"docs":[{"dc_title_str":"LABEL"}]}}',
@@ -85,8 +106,8 @@ class SolrTest extends \VuFindTest\Unit\TestCase
 
         $this->assertEquals(null, $subject->getDetails('id', false));
         // Test for exception later
-        $this->assertEquals(array("author"=>"1,2"), $subject->getDetails('id', false));
-        $this->assertEquals(array(array("title"=>"Author","value"=>"1,2")), $subject->getDetails('id', true));
+        $this->assertEquals(array("author"=>"1,2","series"=>array("S1","S2")), $subject->getDetails('id', false));
+        $this->assertEquals(array(array("title"=>"Author","value"=>"1,2"),"series"=>array("title"=>"Series","value"=>array("S1","S2"))), $subject->getDetails('id', true));
 
         $this->assertEquals(null, $subject->getLabel('id'));
         $this->assertEquals("LABEL", $subject->getLabel('id'));
@@ -108,6 +129,8 @@ class SolrTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(null, $subject->getCopyright('id', array()));
         $this->assertEquals(array("vuABC", "WTFPL"), $subject->getCopyright('id', array('A'=>'WTFPL')));
         $this->assertEquals(array("vuABC", false), $subject->getCopyright('id', array('X'=>'WTFPL')));
+
+        $this->assertEquals(16, $subject->getPageLength());
     }
 }
 
