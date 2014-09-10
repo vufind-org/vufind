@@ -41,16 +41,25 @@ class SolrTest extends \VuFindTest\Unit\TestCase
 
     public function testAllWithMock()
     {
+        $fakeConfig = (object) array(
+            'General'=>(object) array('root_id'=>'ROOT'),
+            'Details'=>new FakeConfig(array('author,author2'=>'Author','series'=>'Series'))
+        );
+        var_dump($fakeConfig->Details->toArray());
+
         $subject = new \VuDL\Connection\Solr(
-            $this->getServiceManager()->get('VuFind\Config')->get('config'),
+            (object) array(
+                'General'=>(object) array('root_id'=>'ROOT'),
+                'Details'=>(object) array('author,author2'=>'Author','series'=>'Series')
+            ),
             new FakeBackend(
                 array(
                     '{"response":{"numFound":0}}',
                     '{"response":{"numFound":1,"docs":[{"modeltype_str_mv":["123456789012CLASS_ONE","123456789012CLASS_TWO"]}]}}',
 
                     false,
-                    //'{"response":{"docs":[{"author":"1,2"}]}}',
-                    //'{"response":{"docs":[{"author":"1,2"}]}}',
+                    '{"response":{"docs":[{"author":"1,2"}]}}',
+                    '{"response":{"docs":[{"author":"1,2"}]}}',
 
                     '{"response":{"numFound":0}}',
                     '{"response":{"numFound":1,"docs":[{"dc_title_str":"LABEL"}]}}',
@@ -77,9 +86,8 @@ class SolrTest extends \VuFindTest\Unit\TestCase
 
         $this->assertEquals(null, $subject->getDetails('id', false));
         // Test for exception later
-        //$this->assertEquals(array("author"=>"1,2"), $subject->getDetails('id', false));
-        //var_dump($subject->getDetails('id', true));
-        //$this->assertEquals(array("author"=>array("1", "2")), $subject->getDetails('id', true));
+        $this->assertEquals(array("author"=>"1,2"), $subject->getDetails('id', false));
+        $this->assertEquals(array("author"=>array("1", "2")), $subject->getDetails('id', true));
 
         $this->assertEquals(null, $subject->getLabel('id'));
         $this->assertEquals("LABEL", $subject->getLabel('id'));
@@ -235,5 +243,20 @@ class FakeMap
     public function __call($method, $args)
     {
         return new \ArrayObject();
+    }
+}
+
+class FakeConfig
+{
+    protected $value;
+
+    public function __construct($v)
+    {
+        $this->value = $v;
+    }
+
+    public function toString()
+    {
+        return $this->value;
     }
 }
