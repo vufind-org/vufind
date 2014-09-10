@@ -105,7 +105,6 @@ class SolrTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(array("CLASS_ONE", "CLASS_TWO"), $subject->getClasses('id'));
 
         $this->assertEquals(null, $subject->getDetails('id', false));
-        // Test for exception later
         $this->assertEquals(array("author"=>array("A1","A2"),"series"=>"S1"), $subject->getDetails('id', false));
         $this->assertEquals(array(
             "author"=>array("title"=>"Author", "value"=>array("A1","A2")),
