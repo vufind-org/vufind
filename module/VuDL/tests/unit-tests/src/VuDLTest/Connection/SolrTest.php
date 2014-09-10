@@ -1,6 +1,6 @@
 <?php
 /**
- * VuDL Solr Manager Test Class
+ * VuDL Solr Test Class
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace VuDLTest;
 
 /**
- * VuDL Solr Manager Test Class
+ * VuDL Solr Test Class
  *
  * @category VuFind2
  * @package  Tests
@@ -65,7 +65,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
         $subject = new \VuDL\Connection\Solr(
             (object) array(
                 'General'=>(object) array('root_id'=>'ROOT'),
-                'Details'=>new FakeConfig(array('author,author2'=>'Author','series'=>'Series'))
+                'Details'=>new FakeConfig(array('author,author2'=>'Author','series'=>'Series','bacon,eggs'=>'Yum','unused'=>':('))
             ),
             new FakeBackend(
                 array(
@@ -73,8 +73,8 @@ class SolrTest extends \VuFindTest\Unit\TestCase
                     '{"response":{"numFound":1,"docs":[{"modeltype_str_mv":["123456789012CLASS_ONE","123456789012CLASS_TWO"]}]}}',
 
                     false,
-                    '{"response":{"docs":[{"author":"1,2","series":["S1","S2"]}]}}',
-                    '{"response":{"docs":[{"author":"1,2","series":["S1","S2"]}]}}',
+                    '{"response":{"docs":[{"author":["A1","A2"],"series":"S1"}]}}',
+                    '{"response":{"docs":[{"author":["A1","A2"],"series":"S1","bacon":"MORE"}]}}',
 
                     '{"response":{"numFound":0}}',
                     '{"response":{"numFound":1,"docs":[{"dc_title_str":"LABEL"}]}}',
@@ -106,8 +106,12 @@ class SolrTest extends \VuFindTest\Unit\TestCase
 
         $this->assertEquals(null, $subject->getDetails('id', false));
         // Test for exception later
-        $this->assertEquals(array("author"=>"1,2","series"=>array("S1","S2")), $subject->getDetails('id', false));
-        $this->assertEquals(array(array("title"=>"Author","value"=>"1,2"),"series"=>array("title"=>"Series","value"=>array("S1","S2"))), $subject->getDetails('id', true));
+        $this->assertEquals(array("author"=>array("A1","A2"),"series"=>"S1"), $subject->getDetails('id', false));
+        $this->assertEquals(array(
+            "author"=>array("title"=>"Author", "value"=>array("A1","A2")),
+            "bacon"=>array("title"=>"Yum", "value"=>array("MORE")),
+            "series"=>array("title"=>"Series", "value"=>"S1"),
+        ), $subject->getDetails('id', true));
 
         $this->assertEquals(null, $subject->getLabel('id'));
         $this->assertEquals("LABEL", $subject->getLabel('id'));
