@@ -1,4 +1,4 @@
-/*global addSearchString, searchFields, searchFieldLabel, searchLabel, searchMatch */
+/*global addSearchString, deleteSearchGroupString, searchFields, searchJoins, searchLabel, searchMatch */
 
 var nextGroup = 0;
 

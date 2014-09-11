@@ -169,7 +169,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     /// Internal API
 
     /**
-     * Load a WorldCat response as fixture.
+     * Load a response as fixture.
      *
      * @param string $fixture Fixture file
      *

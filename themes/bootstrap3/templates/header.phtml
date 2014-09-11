@@ -26,7 +26,7 @@
       <? endif; ?>
       <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
         <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
-          <a href="<?=$this->url('myresearch-home')?>" class="modal-link" title="<?=$this->transEsc("Your Account")?>"><i class="fa fa-home"></i> <?=$this->transEsc("Your Account")?></a>
+          <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" class="modal-link" title="<?=$this->transEsc("Your Account")?>"><i class="fa fa-home"></i> <?=$this->transEsc("Your Account")?></a>
         </li>
         <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
           <a href="<?=$this->url('myresearch-logout')?>" class="modal-link" title="<?=$this->transEsc("Log Out")?>"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>

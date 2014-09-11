@@ -52,15 +52,13 @@
       $viewRecord = !empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical';
     ?>
     <a href="<?=$url ?>" class="list-group-item clearfix<? if ($this->query == $secondary['value'].'' || $this->query == $secondary['value'].'*'): ?> active<? endif; ?>">
-      <?=$this->escapeHtml($secondary['displayText']) ?>
-      <? if ($this->findby == 'alphabetical'): ?>
-        <span class="pull-right"><i class="fa fa-angle-right"></i></span>
-      <? else: ?>
-        <span class="badge"><?=$this->localizedNumber($secondary['count']) ?></span>
+      <?=$this->escapeHtml($secondary['displayText']) ?> <i class="fa fa-angle-right"></i>
+      <? if ($this->findby != 'alphabetical'): ?>
+        <span class="badge"><?=number_format($secondary['count']) ?></span>
       <? endif; ?>
     </a>
     <? if($viewRecord): ?>
-      <a class="list-group-item view-record" href="<?=$SEARCH_BASE ?>?lookfor=<? if ($this->filter): ?>&filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+','&filter[]=', urlencode($secondary['value'])) ?><? endif; ?>&filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]"><?=$this->transEsc('View Records') ?> <i class="fa fa-angle-right"></i></a>
+      <a class="list-group-item view-record" href="<?=$SEARCH_BASE ?>?lookfor=<? if ($this->filter): ?>&filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+','&filter[]=', urlencode($secondary['value'])) ?><? endif; ?>&filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]"><?=$this->transEsc('View Records') ?></a>
     <? endif; ?>
   <? endforeach; ?>
   </ul>

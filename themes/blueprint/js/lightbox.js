@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, Recaptcha, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, vufindString*/
+/*global btoa, checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, Recaptcha, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, unescape, vufindString*/
 
 // keep a handle to the current opened dialog so we can access it later
 var __dialogHandle = {dialog: null, processFollowup:false, followupModule: null, followupAction: null, recordId: null, postParams: null};

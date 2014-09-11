@@ -51,22 +51,28 @@
 <form class="form-horizontal text-center siblings-form" action="<?=$this->url('vudl-sibling') ?>" method="get">
   <input type="hidden" name="id" value="<?=$this->layout()->vudlID ?>"/>
   <button class="btn btn-default" type="submit" name="prev_x" value="1" title="<?=$this->transEsc('Prev Item in Collection')?>">&larr; <?=$this->transEsc('Prev Item')?></button>
-  <? $uniqueParents = array(); ?>
+  <? $parents = array(); ?>
+  <? $parentKeys = array(); ?>
   <? foreach($this->parents as $trail): ?>
-    <? if(!in_array(key($trail), $uniqueParents)): ?>
-      <? $uniqueParents[] = key($trail); ?>
+    <? if(is_array($trail)): ?>
+      <? end($trail); ?>
+    <? endif; ?>
+    <? if(!in_array(key($trail), $parentKeys)): ?>
+      <? $uniqueParents[] = array(
+        'id'    => key($trail),
+        'title' => current($trail)
+      ); ?>
+      <? $parentKeys[] = key($trail); ?>
     <? endif; ?>
   <? endforeach; ?>
   <? if(count($uniqueParents) > 1): ?>
-    <select name="trail" id="trail">
-      <? foreach($this->parents as $trail): ?>
-        <? if(in_array(key($trail), $uniqueParents)): ?>
-          <option value="<?=key($trail) ?>"><?=current($trail) ?></option>
-        <? endif; ?>
+    <select class="form-control trail" name="trail">
+      <? foreach($uniqueParents as $trail): ?>
+        <option value="<?=$trail['id'] ?>"><?=$trail['title'] ?></option>
       <? endforeach; ?>
     </select>
   <? else: ?>
-    <input type="hidden" name="trail" value="<?=current(array_keys($this->parents[0]))?>"/>
+    <input type="hidden" name="trail" value="<?=$uniqueParents[0]['id'] ?>"/>
   <? endif; ?>
   <button class="btn btn-default" type="submit" name="next_x" value="1" title="<?=$this->transEsc('Next Item in Collection')?>"><?=$this->transEsc('Next Item')?> &rarr;</button>
 </form>

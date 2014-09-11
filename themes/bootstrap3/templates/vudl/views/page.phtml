@@ -43,7 +43,7 @@
       $('.loading-bar').removeClass('hidden');
       var sidenav = document.getElementById('side-nav');
       $('#zoomy').css('width', '100%');
-      $('#zoomy').css('height', sidenav.offsetTop + sidenav.offsetHeight - $('#zoomy').offset().top);
+      $('#zoomy').css('height', vudlAccordionHeight);
       Zoomy.init(document.getElementById('zoomy'));
       Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hidden'); });
     });
@@ -63,7 +63,7 @@
 <? if($this->counts[0] > 1): ?>
   <div class="row btn-group visible-xs">
     <a href="javascript:prevPage()" class="btn btn-default">Prev Page</a>
-    <a href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>" class="btn grid-btn"><i class="fa fa-th"></i></a>
+    <a href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>" class="btn btn-default grid-btn"><i class="fa fa-th"></i></a>
     <a href="javascript:nextPage()" class="btn btn-default">Next Page</a>
   </div>
 <? endif; ?>
@@ -99,9 +99,9 @@
     <img id="preview" src="<?=isset($this->medium) ? $this->medium : '' ?>">
   </div>
   <div class="tab-pane text-center" id="zoom">
-    <a href="#" class="btn btn-default" onClick="Zoomy.turnLeft()">Turn Left</a>
-    <a href="#" class="btn btn-default" onClick="Zoomy.zoom(0,1)">[1:1]</a>
-    <a href="#" class="btn btn-default" onClick="Zoomy.turnRight()">Turn Right</a>
+    <a class="btn btn-default" onClick="Zoomy.turnLeft()">Turn Left</a>
+    <a class="btn btn-default" onClick="Zoomy.zoom(0,1)">[1:1]</a>
+    <a class="btn btn-default" onClick="Zoomy.turnRight()">Turn Right</a>
     <canvas id="zoomy"></canvas>
   </div>
   <div class="tab-pane text-center" id="master">

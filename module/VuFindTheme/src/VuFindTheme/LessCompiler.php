@@ -54,11 +54,33 @@ class LessCompiler
     protected $fakePath = '/zzzz_basepath_zzzz/';
 
     /**
-     * Constructor
+     * Console log?
+     *
+     * @var bool
      */
-    public function __construct()
+    protected $verbose;
+
+    /**
+     * Constructor
+     *
+     * @param bool $verbose Display messages while compiling?
+     */
+    public function __construct($verbose = false)
     {
         $this->basePath = realpath(__DIR__ . '/../../../../');
+        $this->verbose = $verbose;
+    }
+
+    /**
+     * Set base path
+     *
+     * @param string $path Path to set
+     *
+     * @return void
+     */
+    public function setBasePath($path)
+    {
+        $this->basePath = $path;
     }
 
     /**
@@ -90,10 +112,11 @@ class LessCompiler
     {
         $lessFiles = $this->getAllLessFiles($theme);
         if (empty($lessFiles)) {
-            Console::writeLine("No LESS in " . $theme);
+            $this->logMessage("No LESS in " . $theme);
             return;
         }
-        Console::writeLine("Processing " . $theme);
+        $this->logMessage("Processing " . $theme);
+        $this->logMessage("Processing " . $theme);
         foreach ($lessFiles as $less) {
             if (is_string($less)) {
                 $this->compileFile($theme, $less);
@@ -139,7 +162,7 @@ class LessCompiler
         list($fileName, ) = explode('.', $less);
         $finalFile = $finalOutDir . $fileName . '.css';
 
-        Console::writeLine("\tcompiling '" . $less .  "' into '" . $finalFile . "'");
+        $this->logMessage("\tcompiling '" . $less .  "' into '" . $finalFile . "'");
         $start = microtime(true);
 
         $directories = array();
@@ -150,7 +173,7 @@ class LessCompiler
         }
         $lessDir = $this->basePath . '/themes/' . $theme . '/less/';
         if (!file_exists($lessDir . $less)) {
-            Console::writeLine(
+            $this->logMessage(
                 "\t\t" . $lessDir . $less . ' does not exist; skipping.'
             );
             return;
@@ -171,7 +194,7 @@ class LessCompiler
         }
         file_put_contents($finalFile, $this->makeRelative($css, $less));
 
-        Console::writeLine("\t\t" . (microtime(true)-$start) . ' sec');
+        $this->logMessage("\t\t" . (microtime(true)-$start) . ' sec');
     }
 
     /**
@@ -216,5 +239,19 @@ class LessCompiler
         }
         closedir($dir);
         return $list;
+    }
+
+    /**
+     * Log a message to the console
+     *
+     * @param string $str message string
+     *
+     * @return void
+     */
+    protected function logMessage($str)
+    {
+        if ($this->verbose) {
+            Console::writeLine($str);
+        }
     }
 }
