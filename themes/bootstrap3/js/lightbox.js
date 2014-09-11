@@ -90,9 +90,10 @@ var Lightbox = {
    * Hide the header if it's empty to make more
    * room for content and avoid double headers.
    */
-  changeContent: function(html, headline) {
+  titleSet: false,
+  changeContent: function(html) {
     var header = $('#modal .modal-header');
-    if(typeof headline === "undefined") {
+    if(!Lightbox.titleSet) {
       var h2 = html.match(/<h2>([^<]*)<\/h2>/);
       if(h2) {
         header.find('.modal-title').html(h2[1]);
@@ -102,8 +103,7 @@ var Lightbox = {
           header.find('.modal-title').html(pLead[1]);
         }
       }
-    } else {
-      header.find('.modal-title').html(headline);
+      Lightbox.titleSet = false;
     }
     if(header.find('.modal-title').html().length == 0) {
       header.css('border-bottom-width', '0');
@@ -406,5 +406,6 @@ $(document).ready(function() {
       title = $(this).html();
     }
     $('#modal .modal-title').html(title);
+    Lightbox.titleSet = true;
   });
 });
