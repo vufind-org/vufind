@@ -59,10 +59,13 @@ class Factory
             // A second override directory for institutional overrides
             LOCAL_OVERRIDE_DIR . '/language_overrides',
         );
+        $fallbackLocales = $config->Site->language == 'en'
+            ? 'en'
+            : array($config->Site->language, 'en');
         $translator->getPluginManager()->setService(
             'extendedini',
             new \VuFind\I18n\Translator\Loader\ExtendedIni(
-                $pathStack, $config->Site->language
+                $pathStack, $fallbackLocales
             )
         );
 
