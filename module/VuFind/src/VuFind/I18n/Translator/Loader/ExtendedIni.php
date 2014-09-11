@@ -49,11 +49,11 @@ class ExtendedIni implements FileLoaderInterface
     protected $pathStack;
 
     /**
-     * Fallback locale to use for language strings missing from selected file.
+     * Fallback locales to use for language strings missing from selected file.
      *
-     * @var string
+     * @var string[]
      */
-    protected $fallbackLocale;
+    protected $fallbackLocales;
 
     /**
      * List of files loaded during the current run -- avoids infinite loops and
@@ -66,15 +66,18 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Constructor
      *
-     * @param array  $pathStack      List of directories to search for language
-     * files.
-     * @param string $fallbackLocale Fallback locale to use for language strings
-     * missing from selected file.
+     * @param array           $pathStack       List of directories to search for
+     * language files.
+     * @param string|string[] $fallbackLocales Fallback locale(s) to use for language
+     * strings missing from selected file.
      */
-    public function __construct($pathStack = array(), $fallbackLocale = null)
+    public function __construct($pathStack = array(), $fallbackLocales = null)
     {
         $this->pathStack = $pathStack;
-        $this->fallbackLocale = $fallbackLocale;
+        $this->fallbackLocales = $fallbackLocales;
+        if (!empty($this->fallbackLocales) && !is_array($this->fallbackLocales)) {
+            $this->fallbackLocales = array($this->fallbackLocales);
+        }
     }
 
     /**
@@ -96,10 +99,12 @@ class ExtendedIni implements FileLoaderInterface
         $data = $this->loadLanguageFile($locale . '.ini');
 
         // Load fallback data, if any:
-        if (!empty($this->fallbackLocale)) {
-            $newData = $this->loadLanguageFile($this->fallbackLocale . '.ini');
-            $newData->merge($data);
-            $data = $newData;
+        if (!empty($this->fallbackLocales)) {
+            foreach ($this->fallbackLocales as $fallbackLocale) {
+                $newData = $this->loadLanguageFile($fallbackLocale . '.ini');
+                $newData->merge($data);
+                $data = $newData;
+            }
         }
 
         return $data;
