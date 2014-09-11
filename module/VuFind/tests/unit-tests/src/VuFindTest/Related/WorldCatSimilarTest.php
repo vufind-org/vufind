@@ -47,8 +47,8 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
     public function testGetResults()
     {
         $driver = $this->getMock(
-            'VuFind\RecordDriver\SolrDefault',
-            array('tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle')
+            'VuFind\RecordDriver\WorldCat',
+            array('tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle', 'getUniqueId', 'getResourceSource')
         );
         $driver->expects($this->once())
             ->method('tryMethod')
@@ -63,8 +63,14 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
         $driver->expects($this->once())
             ->method('getTitle')
             ->will($this->returnValue('faketitle'));
+        $driver->expects($this->once())
+            ->method('getUniqueId')
+            ->will($this->returnValue('fakeid'));
+        $driver->expects($this->once())
+            ->method('getResourceSource')
+            ->will($this->returnValue('WorldCat'));
         $service = $this->getMock('VuFindSearch\Service', array('search'));
-        $expectedQuery = new Query('(srw.dd any "fakedc" or srw.au all "fakepa" or srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or srw.ti any "faketitle")');
+        $expectedQuery = new Query('(srw.dd any "fakedc" or srw.au all "fakepa" or srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or srw.ti any "faketitle") not srw.no all "fakeid"');
         $response = $this->getMock('VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection', array('getRecords'), array(array('offset' => 0, 'total' => 0)));
         $response->expects($this->once())
             ->method('getRecords')
