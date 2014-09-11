@@ -31,8 +31,12 @@
   }
 
   // Disable cart if appropriate:
-  if (!$this->params->getOptions()->supportsCart()) {
-    $this->hideCartControls = true;
+  if ($this->params->getOptions()->supportsCart() && $this->cart()->isActive()) {
+    $this->showCartControls = true;
+  }
+  // Disable bulk options if appropriate:
+  if ($this->params->getOptions()->supportsCart() && $this->showBulkOptions) {
+    $this->showBulkOptions = true;
   }
 
   // Load Javascript dependencies into header:

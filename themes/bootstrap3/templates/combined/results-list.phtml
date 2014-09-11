@@ -67,8 +67,13 @@
     $viewType = in_array('list', array_keys($params->getViewList()))
       ? 'list' : $params->getView();
     $viewParams = array('results' => $results, 'params' => $params);
-    if (!$params->getOptions()->supportsCart()) {
-      $viewParams['hideCartControls'] = true;
+    // Disable cart if appropriate:
+    if ($this->params->getOptions()->supportsCart() && $this->cart()->isActive()) {
+      $viewParams['showCartControls'] = true;
+    }
+    // Disable bulk options if appropriate:
+    if ($this->params->getOptions()->supportsCart() && $this->showBulkOptions) {
+      $viewParams['showBulkOptions'] = true;
     }
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
