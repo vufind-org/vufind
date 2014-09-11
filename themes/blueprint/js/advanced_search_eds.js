@@ -23,19 +23,21 @@ function addSearch(group, term, field, op)
         newSearch += '<label for="search_lookfor' + group + '_' + groupSearches[group] + '">' + searchLabel + ':</label>&nbsp;';
     }
 
-    newSearch +='<select id="search_op' + group + '_' + groupSearches[group] + '" name="op' + group + '[]"'
-    if (groupSearches[group] == 0) 
-    	newSearch += 'class="hide" ';
+    newSearch +='<select id="search_op' + group + '_' + groupSearches[group] + '" name="op' + group + '[]"';
+    if (groupSearches[group] == 0) {
+      newSearch += 'class="hide" ';
+    }
     newSearch += ">'";
-    for(var i in booleanSearchOperators){
-    	var searchOp = booleanSearchOperators[i];
-    	var sel = '';
-    	if(op == searchOp)
-    		sel = ' selected=selected ';
-    	newSearch += '<option value="' + searchOp + '" ' + sel + ">" + searchOp +"</option>";
+    for(var i in booleanSearchOperators) {
+      var searchOp = booleanSearchOperators[i];
+      var sel = '';
+      if(op == searchOp) {
+        sel = ' selected=selected ';
+      }
+      newSearch += '<option value="' + searchOp + '" ' + sel + ">" + searchOp +"</option>";
     }
     newSearch += '</select>';
-    
+
     newSearch += '</div>';  //end label/op dropdown
     // Terms
     newSearch += '<div class="terms"><input type="text" id="search_lookfor' + group + '_' + groupSearches[group] + '" name="lookfor' + group + '[]" size="50" value="' + jsEntityEncode(term) + '"/></div>';

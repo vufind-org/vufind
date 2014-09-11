@@ -131,6 +131,56 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals($conn, $back->getConnector());
     }
 
+    /**
+     * Test search exception handling.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     */
+    public function testSearchWrapsPrimoException()
+    {
+        $conn = $this->getConnectorMock(array('query'));
+        $conn->expects($this->once())
+             ->method('query')
+             ->will($this->throwException(new \Exception()));
+        $back = new Backend($conn);
+        $back->search(new Query(), 1, 1);
+    }
+
+    /**
+     * Test retrieve exception handling.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     */
+    public function testRetrieveWrapsPrimoException()
+    {
+        $conn = $this->getConnectorMock(array('getRecord'));
+        $conn->expects($this->once())
+             ->method('getRecord')
+             ->will($this->throwException(new \Exception()));
+        $back = new Backend($conn);
+        $back->retrieve('1234');
+    }
+
+    /**
+     * Test merged param bag.
+     *
+     * @return void
+     */
+    public function testMergedParamBag()
+    {
+        $myParams = new ParamBag(array('foo' => 'bar'));
+        $expectedParams = array('foo' => 'bar', 'limit' => 10, 'pageNumber' => 1.0, 'query' => array(array('index' => null, 'lookfor' => 'baz')));
+        $conn = $this->getConnectorMock(array('query'));
+        $conn->expects($this->once())
+             ->method('query')
+             ->with($this->equalTo('inst-id'), $this->equalTo($expectedParams['query']), $this->equalTo($expectedParams))
+             ->will($this->returnValue(array('recordCount' => 0, 'documents' => array())));
+        $back = new Backend($conn);
+        $back->search(new Query('baz'), 0, 10, $myParams);
+    }
+
     /// Internal API
 
     /**

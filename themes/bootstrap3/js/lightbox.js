@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, path, vufindString */
+/*global checkSaveStatuses, console, deparam, path, Recaptcha, vufindString */
 
 var Lightbox = {
   /**
@@ -164,7 +164,7 @@ var Lightbox = {
     var fi = html.indexOf('<div class="alert alert-danger">');
     if(fi > -1) {
       var li = html.indexOf('</div>', fi+31);
-      Lightbox.displayError(html.substring(fi+31, li).replace(/^[\s\>\<]+|[\s\>\<]+$/g, ''));
+      Lightbox.displayError(html.substring(fi+31, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
     } else {
       success(html);
     }

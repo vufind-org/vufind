@@ -1,4 +1,4 @@
-/*global deparam, extractClassParams, htmlEncode, Lightbox, path, vufindString */
+/*global deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -201,7 +201,7 @@ $(document).ready(function(){
       ajaxLoadTab(tabid);
     }
     return false;
-  })
+  });
 
   /* --- LIGHTBOX --- */
   // Cite lightbox

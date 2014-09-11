@@ -67,6 +67,9 @@ class ThemeInfo
      */
     protected $allThemeInfo = null;
 
+    // Constant for use with findContainingTheme:
+    const RETURN_ALL_DETAILS = 'all';
+
     /**
      * Constructor
      *
@@ -161,12 +164,13 @@ class ThemeInfo
      *
      * @param string|array $relativePath Relative path (or array of paths) to
      * search within themes
-     * @param bool         $returnFile   If true, return full file path instead
-     * of theme name
+     * @param string|bool  $returnType   If boolean true, return full file path;
+     * if boolean false, return containing theme name; if self::RETURN_ALL_DETAILS,
+     * return an array containing both values (keyed with 'path' and 'theme').
      *
      * @return string
      */
-    public function findContainingTheme($relativePath, $returnFile = false)
+    public function findContainingTheme($relativePath, $returnType = false)
     {
         $basePath = $this->getBaseDir();
         $allPaths = is_array($relativePath)
@@ -179,7 +183,13 @@ class ThemeInfo
             foreach ($allPaths as $currentPath) {
                 $file = "$basePath/$currentTheme/$currentPath";
                 if (file_exists($file)) {
-                    return $returnFile ? $file : $currentTheme;
+                    if (true === $returnType) {
+                        return $file;
+                    } else if (self::RETURN_ALL_DETAILS === $returnType) {
+                        return array('path' => $file, 'theme' => $currentTheme);
+                    }
+                    // Default return type:
+                    return $currentTheme;
                 }
             }
             $currentTheme = $allThemeInfo[$currentTheme]['extends'];

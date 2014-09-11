@@ -1,3 +1,5 @@
+/*global getBibKeyString, google */
+
 // we don't need to wait for dom ready since lang is in the dom root
 var lang = document.documentElement.getAttribute('lang');
 google.load("books", "0", {"language":lang});

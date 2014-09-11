@@ -120,6 +120,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     text-align:right;
   }
 }
+#hierarchyTreeHolder {
+  border-right:1px solid @gray-lighter;
+  overflow-x:hidden;
+}
 
 /* --- Search --- */
 .bulkActionButtons {
@@ -179,6 +183,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         border-bottom-right-radius:@border-radius-base;
       }
     }
+  }
+  #side-collapse-publishDate .list-group-item {
+    border-bottom-left-radius:@border-radius-base;
+    border-bottom-right-radius:@border-radius-base;
   }
 }
 .list-group-item.active, .badge {

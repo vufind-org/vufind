@@ -433,10 +433,13 @@ class Factory
             APPLICATION_PATH  . '/languages',
             LOCAL_OVERRIDE_DIR . '/languages'
         );
+        $fallbackLocales = $config->Site->language == 'en'
+            ? 'en'
+            : array($config->Site->language, 'en');
         $translator->getPluginManager()->setService(
             'extendedini',
             new \VuFind\I18n\Translator\Loader\ExtendedIni(
-                $pathStack, $config->Site->language
+                $pathStack, $fallbackLocales
             )
         );
 

@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, vufindString */
+/*global ajaxLoadTab, Bloodhound, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -10,7 +10,9 @@ function htmlEncode(value){
 }
 function extractClassParams(str) {
   str = $(str).attr('class');
-  if (typeof str === "undefined") return [];
+  if (typeof str === "undefined") {
+    return [];
+  }
   var params = {};
   var classes = str.split(/\s+/);
   for(var i = 0; i < classes.length; i++) {
@@ -22,7 +24,7 @@ function extractClassParams(str) {
   return params;
 }
 function jqEscape(myid) {
-  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~]/g, "\\$&");
+  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
 }
 function html_entity_decode(string, quote_style)
 {
@@ -320,7 +322,7 @@ $(document).ready(function() {
   $('.autocomplete').typeahead(
     {
       highlight: true,
-      minLength: 3,
+      minLength: 3
     }, {
       displayKey:'val',
       source: autocompleteEngine.ttAdapter()
@@ -387,7 +389,7 @@ $(document).ready(function() {
     checkSaveStatuses();
   });
   Lightbox.addFormHandler('feedback', function(evt) {
-    $form = $(evt.target);
+    var $form = $(evt.target);
     // Grabs hidden inputs
     var formSuccess     = $form.find("input#formSuccess").val();
     var feedbackFailure = $form.find("input#feedbackFailure").val();

@@ -237,15 +237,42 @@ class AbstractBase extends AbstractActionController
      */
     protected function delightboxURL($url)
     {
+        // If this isn't a lightbox URL, we don't want to mess with it!
         $parts = parse_url($url);
         parse_str($parts['query'], $query);
         if (false === strpos($parts['path'], '/AJAX/JSON')) {
             return $url;
         }
-        $controller = strtolower($query['submodule']);
-        $action     = strtolower($query['subaction']);
+
+        // Build the route name:
+        $routeName = strtolower($query['submodule']) . '-'
+            . strtolower($query['subaction']);
+
+        // Eliminate lightbox-specific parameters that might confuse the router:
         unset($query['method'], $query['subaction'], $query['submodule']);
-        return $this->url()->fromRoute($controller.'-'.$action, $query);
+
+        // Get a preliminary URL that we'll need to analyze in order to build
+        // the final URL:
+        $url = $this->url()->fromRoute($routeName, $query);
+
+        // Using the URL generated above, figure out which parameters are route
+        // params and which are GET params:
+        $request = new \Zend\Http\Request();
+        $request->setUri($url);
+        $router = $this->getEvent()->getRouter();
+        $matched = $router->match($request)->getParams();
+        $getParams = $routeParams = array();
+        foreach ($query as $current => $val) {
+            if (isset($matched[$current])) {
+                $routeParams[$current] = $val;
+            } else {
+                $getParams[$current] = $val;
+            }
+        }
+
+        // Now build the final URL:
+        return $this->url()
+            ->fromRoute($routeName, $routeParams, array('query' => $getParams));
     }
 
     /**

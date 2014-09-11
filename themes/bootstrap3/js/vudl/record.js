@@ -127,8 +127,9 @@ function scrollAdjust() {
   $('#collapse1').scrollTop($('#'+topScrollItem).offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop());
 }
 // Accordion size
+var vudlAccordionHeight
 function resizeAccordions(offset) {
-  var accordionHeight = window.innerHeight // Window height
+  vudlAccordionHeight = window.innerHeight // Window height
     // Add scroll distance
     + Math.min($('#side-nav').position().top, document.body.scrollTop)
     // Minus the top of the accordion
@@ -139,29 +140,16 @@ function resizeAccordions(offset) {
     - ($('#side-nav .accordion-heading').length*vudlSettings.accordion.headerHeight);
   // All accordions
   $('#side-nav .panel-collapse').css({
-    'max-height':accordionHeight,
+    'max-height':vudlAccordionHeight,
     'overflow-y':'auto'
   });
-  $('.zoomy-container').css('height',
-    window.innerHeight // Window height
-    // Add scroll distance
-    + Math.min($('#side-nav').position().top, document.body.scrollTop)
-    // Minus the top of the accordion
-    - $('#side-nav').position().top
-    // Minus the target distance from the bottom
-    - vudlSettings.accordion.bottom
-  );
 }
 // Toggle side menu
 function toggleSideNav() {
   $('#side-nav').toggle();
   var opener = $('#view .nav-tabs li.opener a');
-  if(opener.is(":visible")) {
-    opener.hide();
-  } else {
-    opener.css('display','inherit');
-  }
-  $('#view').toggleClass('col-md-9').toggleClass('col-md-12');
+  opener.toggleClass('hidden');
+  $('#view').toggleClass('col-sm-9').toggleClass('col-sm-12');
 }
 // Ready? Let's go
 $(document).ready(function() {
