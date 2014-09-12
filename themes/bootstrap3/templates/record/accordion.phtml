@@ -22,11 +22,11 @@
     <?=$this->record($this->driver)->getCoreMetadata()?>
 -->
   </div>
-<div class="panel-group" id="accordion">
+<div class="panel-group" id="accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#title-collapse">
+        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#title-collapse">
 Title
         </a>
       </h4>
@@ -41,7 +41,7 @@ Title
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#tools-collapse">
+        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#tools-collapse">
 Tools
         </a>
       </h4>
@@ -56,7 +56,7 @@ Tools
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#similar-collapse">
+        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#similar-collapse">
 Similar
         </a>
       </h4>
