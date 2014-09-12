@@ -679,6 +679,22 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Get record for integrated list view.
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getRecordDetailsAjax()
+    {
+	 $driver = $this->getRecordLoader()->load(
+            $this->params()->fromQuery('id'),
+            $this->params()->fromQuery('source', 'VuFind')
+        );
+        $html = $this->getViewRenderer()
+            ->render('record/accordion.phtml', array('driver' => $driver));
+        return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
      * Get map data on search results and output in JSON
      *
      * @param array $fields Solr fields to retrieve data from

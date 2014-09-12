@@ -1,4 +1,19 @@
-<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
+    <div class="col-xs-11 middle" style="padding-top: 5px">
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull">
+      <?
+        $summHighlightedTitle = $this->driver->getHighlightedTitle();
+        $summTitle = $this->driver->getTitle();
+        if (!empty($summHighlightedTitle)) {
+          echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+        } else if (!empty($summTitle)) {
+          echo $this->escapeHtml($this->truncate($summTitle, 180));
+        } else {
+          echo $this->transEsc('Title not available');
+        }
+      ?>
+      </a>
+    </div>
+<div id="short_<?=urlencode($this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
   <div class="col-sm-2 col-xs-3 left">
@@ -11,6 +26,7 @@
     </a>
   </div>
   <div class="col-sm-7 col-xs-6 middle">
+<!--
     <div>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
       <?
@@ -26,6 +42,7 @@
       ?>
       </a>
     </div>
+-->
 
     <div>
       <? if($this->driver->isCollection()): ?>
@@ -189,3 +206,4 @@
 
   <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
 </div>
+<div type="hidden" id="long_<?=urlencode($this->driver->getUniqueID())?>" class="col-xs-11"></div>

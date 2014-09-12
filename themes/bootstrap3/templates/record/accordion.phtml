@@ -1,0 +1,134 @@
+<?
+  // Set up standard record scripts:
+  $this->headScript()->appendFile("record.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+  // Activate Syndetics Plus if necessary:
+  if ($this->syndeticsPlus()->isActive()) {
+    echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+  }
+  // Add RDF header link if applicable:
+  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+    $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+  }
+?>
+
+<div>
+  <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+    <?=$this->flashmessages()?>
+<!--
+    <?=$this->record($this->driver)->getCoreMetadata()?>
+-->
+  </div>
+<div class="panel-group" id="accordion">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#title-collapse">
+Title
+        </a>
+      </h4>
+    </div>
+    <div id="title-collapse" class="panel-collapse collapse in">
+      <div class="panel-body">
+    <?=$this->record($this->driver)->getCoreMetadata()?>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#tools-collapse">
+Tools
+        </a>
+      </h4>
+    </div>
+    <div id="tools-collapse" class="panel-collapse collapse">
+      <div class="panel-body">
+	<?=$this->record($this->driver)->getToolbar()?>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#similar-collapse">
+Similar
+        </a>
+      </h4>
+    </div>
+    <div id="similar-collapse" class="panel-collapse collapse">
+      <div class="panel-body">
+  <? foreach ($this->related()->getList($this->driver) as $current): ?>
+    <?=$this->related()->render($current)?>
+  <? endforeach; ?>
+      </div>
+    </div>
+  </div>
+
+
+
+  <? if (count($this->tabs) > 0): ?>
+      <? foreach ($this->tabs as $tab => $obj): ?>
+<? // add current tab to breadcrumbs if applicable:
+        $desc = $obj->getDescription();
+        $isCurrent = (strtolower($this->activeTab) == strtolower($tab));
+
+      ?>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion" href="#<?=(strtolower($tab))?>-collapse">
+<?=$this->transEsc($desc)?>
+        </a>
+      </h4>
+    </div>
+    <div id="<?=(strtolower($tab))?>-collapse" class="panel-collapse collapse">
+      <div class="panel-body">
+         <?=$this->record($this->driver)->getTab($obj) ?>
+      </div>
+    </div>
+  </div>
+      <? endforeach; ?>
+  <? endif; ?>
+</div>
+
+  <? if (count($this->tabs) > 0): ?>
+    <a name="tabnav"></a>
+    <ul class="recordTabs nav nav-tabs">
+      <? foreach ($this->tabs as $tab => $obj): ?>
+      <? // add current tab to breadcrumbs if applicable:
+        $desc = $obj->getDescription();
+        $isCurrent = (strtolower($this->activeTab) == strtolower($tab));
+        if ($isCurrent) {
+          $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
+          $activeTabObj = $obj;
+        }
+      ?>
+      <li<?=$isCurrent ? ' class="active"' : ''?>>
+        <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+      </li>
+      <? endforeach; ?>
+    </ul>
+  <? endif; ?>
+
+  <div class="tab-content" id="record-tabs">
+    <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
+      <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+    </div>
+  </div>
+
+  <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
+</div>
+<!--
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <? foreach ($this->related()->getList($this->driver) as $current): ?>
+    <?=$this->related()->render($current)?>
+  <? endforeach; ?>
+</div>
+-->
