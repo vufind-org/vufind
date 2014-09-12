@@ -175,10 +175,9 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
                 $isbn = preg_replace(
                     '/[^0-9xX]/', '', isset($line->isbn[0]) ? $line->isbn[0] : ''
                 );
-                if (strlen($isbn) < 10) {
-                    continue;
+                if (strlen($isbn) >= 10) {
+                    $isbns[] = $isbn;
                 }
-                $isbns[] = $isbn;
             }
         }
         return $isbns;
