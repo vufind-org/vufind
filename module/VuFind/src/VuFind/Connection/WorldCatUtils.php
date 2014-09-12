@@ -470,7 +470,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
             "&sortKeys=recordcount";
 
         // Get the API response:
-        $data = @file_get_contents($url);
+        $data = $this->retrieve($url);
 
         // Extract plain MARCXML from the WorldCat response:
         $marcxml = XSLTProcessor::process('wcterms-marcxml.xsl', $data);
