@@ -62,6 +62,8 @@ class WikipediaTest extends \PHPUnit_Framework_TestCase
     /**
      * Load HTTP client w/ fixture
      *
+     * @param string $fixture Fixture name
+     *
      * @return HttpClient
      */
     protected function getClient($fixture)
