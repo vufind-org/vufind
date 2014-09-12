@@ -467,7 +467,7 @@ class UtilController extends AbstractBase
     public function cssbuilderAction()
     {
         $argv = $this->consoleOpts->getRemainingArgs();
-        $compiler = new \VuFindTheme\LessCompiler();
+        $compiler = new \VuFindTheme\LessCompiler(true);
         $compiler->compile($argv);
         return $this->getSuccessResponse();
     }

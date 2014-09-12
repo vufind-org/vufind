@@ -172,7 +172,9 @@ class Wikipedia implements TranslatorAwareInterface
         $imageName = $imageCaption = null;
 
         // Get rid of the last pair of braces and split
-        $infobox = explode("\n|", preg_replace('/^\s+|/m', '', substr($infoboxStr, 2, -2)));
+        $infobox = explode(
+            "\n|", preg_replace('/^\s+|/m', '', substr($infoboxStr, 2, -2))
+        );
 
         // Look through every row of the infobox
         foreach ($infobox as $row) {
