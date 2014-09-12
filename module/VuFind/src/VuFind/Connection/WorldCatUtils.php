@@ -396,7 +396,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
             "&recordPacking=xml" .
             "&recordXPath=" .
             "&sortKeys=holdingscount";
-        $xml = @file_get_contents($url);
+        $xml = $this->retrieve($url);
 
         // Translate XML to object:
         $data = simplexml_load_string($xml);
