@@ -13,8 +13,8 @@
 ?>
 
 <div>
-  <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record">
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+  <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
 
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
@@ -26,12 +26,12 @@
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#title-collapse">
+        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#title-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 Title
         </a>
       </h4>
     </div>
-    <div id="title-collapse" class="panel-collapse collapse in">
+    <div id="title-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse in">
       <div class="panel-body">
     <?=$this->record($this->driver)->getCoreMetadata()?>
       </div>
@@ -41,12 +41,12 @@ Title
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#tools-collapse">
+        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#tools-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 Tools
         </a>
       </h4>
     </div>
-    <div id="tools-collapse" class="panel-collapse collapse">
+    <div id="tools-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
       <div class="panel-body">
 	<?=$this->record($this->driver)->getToolbar()?>
       </div>
@@ -56,12 +56,12 @@ Tools
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#similar-collapse">
-Similar
+        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#similar-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+<?=$this->transEsc("Similar Items")?>
         </a>
       </h4>
     </div>
-    <div id="similar-collapse" class="panel-collapse collapse">
+    <div id="similar-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
       <div class="panel-body">
   <? foreach ($this->related()->getList($this->driver) as $current): ?>
     <?=$this->related()->render($current)?>
@@ -88,7 +88,7 @@ Similar
         </a>
       </h4>
     </div>
-    <div id="<?=(strtolower($tab))?>-collapse" class="panel-collapse collapse">
+    <div id="<?=(strtolower($tab))?>-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
       <div class="panel-body">
          <?=$this->record($this->driver)->getTab($obj) ?>
       </div>
@@ -117,7 +117,7 @@ Similar
     </ul>
   <? endif; ?>
 
-  <div class="tab-content" id="record-tabs">
+  <div class="tab-content" id="record-tabs_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
     <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
       <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
     </div>
