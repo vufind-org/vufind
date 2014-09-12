@@ -56,13 +56,32 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     protected $worldCatId;
 
     /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $client;
+
+    /**
+     * Should we silently ignore HTTP failures?
+     *
+     * @var bool
+     */
+    protected $silent;
+
+    /**
      * Constructor
      *
-     * @param string $worldCatId WorldCat ID
+     * @param string            $worldCatId WorldCat ID
+     * @param \Zend\Http\Client $client     HTTP client
+     * @param bool              $silent     Should we silently ignore HTTP failures?
      */
-    public function __construct($worldCatId)
-    {
+    public function __construct($worldCatId, \Zend\Http\Client $client,
+        $silent = true
+    ) {
         $this->worldCatId = $worldCatId;
+        $this->client = $client;
+        $this->silent = $silent;
     }
 
     /**
@@ -92,6 +111,30 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Retrieve data over HTTP.
+     *
+     * @param string $url URL to access.
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function retrieve($url)
+    {
+        try {
+            $response = $this->client->setUri($url)->setMethod('GET')->send();
+            if ($response->isSuccess()) {
+                return $response->getBody();
+            }
+            throw new \Exception('HTTP error');
+        } catch (\Exception $e) {
+            if (!$this->silent) {
+                throw $e;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get the WorldCat ID from the config file.
      *
      * @return string
@@ -113,29 +156,31 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         // Build URL
         $url = 'http://xisbn.worldcat.org/webservices/xid/isbn/' .
                 urlencode(is_array($isbn) ? $isbn[0] : $isbn) .
-               '?method=getEditions&format=csv';
+               '?method=getEditions&format=json';
         if ($wcId = $this->getWorldCatId()) {
             $url .= '&ai=' . urlencode($wcId);
         }
 
         // Print Debug code
         $this->debug("XISBN: $url");
+        $response = json_decode($this->retrieve($url));
 
         // Fetch results
         $isbns = array();
-        if ($fp = @fopen($url, "r")) {
-            while (($data = fgetcsv($fp, 1000, ",")) !== false) {
+        if (isset($response->list)) {
+            foreach ($response->list as $line) {
                 // Filter out non-ISBN characters and validate the length of
                 // whatever is left behind; this will prevent us from treating
                 // error messages like "invalidId" or "overlimit" as ISBNs.
-                $isbn = preg_replace('/[^0-9xX]/', '', $data[0]);
+                $isbn = preg_replace(
+                    '/[^0-9xX]/', '', isset($line->isbn[0]) ? $line->isbn[0] : ''
+                );
                 if (strlen($isbn) < 10) {
                     continue;
                 }
                 $isbns[] = $isbn;
             }
         }
-
         return $isbns;
     }
 
@@ -151,30 +196,33 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         // Build URL
         $url = 'http://xisbn.worldcat.org/webservices/xid/oclcnum/' .
                 urlencode(is_array($oclc) ? $oclc[0] : $oclc) .
-               '?method=getEditions&format=csv';
+               '?method=getEditions&format=json';
         if ($wcId = $this->getWorldCatId()) {
             $url .= '&ai=' . urlencode($wcId);
         }
 
         // Print Debug code
         $this->debug("XOCLCNUM: $url");
+        $response = json_decode($this->retrieve($url));
 
         // Fetch results
         $results = array();
-        if ($fp = @fopen($url, "r")) {
-            while (($data = fgetcsv($fp, 1000, ",")) !== false) {
-                // Filter out non-numeric characters and validate the length of
-                // whatever is left behind; this will prevent us from treating
-                // error messages like "invalidId" or "overlimit" as ISBNs.
-                $current = preg_replace('/[^0-9]/', '', $data[0]);
-                if (empty($current)) {
-                    continue;
+        if (isset($response->list)) {
+            foreach ($response->list as $line) {
+                $values = isset($line->oclcnum) ? $line->oclcnum : array();
+                foreach ($values as $data) {
+                    // Filter out non-numeric characters and validate the length of
+                    // whatever is left behind; this will prevent us from treating
+                    // error messages like "invalidId" or "overlimit" as ISBNs.
+                    $current = preg_replace('/[^0-9]/', '', $data);
+                    if (!empty($current)) {
+                        $results[] = $current;
+                    }
                 }
-                $results[] = $current;
             }
         }
 
-        return $results;
+        return array_unique($results);
     }
 
     /**
@@ -200,7 +248,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
 
         // Fetch results
         $issns = array();
-        $xml = @file_get_contents($url);
+        $xml = $this->retrieve($url);
         if (!empty($xml)) {
             $data = simplexml_load_string($xml);
             if (!empty($data) && isset($data->group->issn)
