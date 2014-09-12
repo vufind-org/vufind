@@ -127,5 +127,3 @@ abstract class AbstractBase implements \Zend\Log\LoggerAwareInterface
      */
     abstract public function supports($id);
 }
-
-?>
