@@ -685,12 +685,24 @@ class AjaxController extends AbstractBase
      */
     protected function getRecordDetailsAjax()
     {
-	 $driver = $this->getRecordLoader()->load(
+        $driver = $this->getRecordLoader()->load(
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')
         );
+        $request = $this->getRequest();
+        $cfg = $this->getServiceLocator()->get('Config');
+        $allTabs = $this->getServiceLocator()
+            ->get('VuFind\RecordTabPluginManager')
+            ->getTabsForRecord(
+                $driver,
+                $cfg['vufind']['recorddriver_tabs'],
+                $request
+            );
         $html = $this->getViewRenderer()
-            ->render('record/accordion.phtml', array('driver' => $driver));
+            ->render(
+                'record/accordion.phtml',
+                array('driver' => $driver, 'tabs' => $allTabs)
+            );
         return $this->output($html, self::STATUS_OK);
     }
 

@@ -25,8 +25,8 @@ $(document).ready(function() {
         				longNode.html(response.data);
 					longNode.addClass("ajaxItem");
 					longNode.removeClass("hidden");
-					//console.debug(response.data);
                                                                                                                                           }
+					console.debug(response.data);
 		}
          });
 	return false;

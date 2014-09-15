@@ -11,14 +11,14 @@
     $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
   }
 
-  function idEncode($op) {
+  function escapeJSAttr($op) {
     return preg_replace("/\W/", "_", $op);
   }
 ?>
 
 <div>
   <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=idEncode($this->driver->getUniqueId())?>" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=escapeJSAttr($this->driver->getUniqueId())?>" />
 
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
@@ -26,105 +26,73 @@
     <?=$this->record($this->driver)->getCoreMetadata()?>
 -->
   </div>
-<div class="panel-group" id="accordion_<?=idEncode($this->driver->getUniqueId())?>">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=idEncode($this->driver->getUniqueId())?>" href="#title-collapse_<?=idEncode($this->driver->getUniqueId())?>">
-Title
-        </a>
-      </h4>
-    </div>
-    <div id="title-collapse_<?=idEncode($this->driver->getUniqueId())?>" class="panel-collapse collapse in">
-      <div class="panel-body">
-    <?=$this->record($this->driver)->getCoreMetadata()?>
+  <div class="panel-group" id="accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+            <?=$this->translate('information') ?>
+          </a>
+        </h4>
+      </div>
+      <div id="title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse in">
+        <div class="panel-body">
+      <?=$this->record($this->driver)->getCoreMetadata()?>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=idEncode($this->driver->getUniqueId())?>" href="#tools-collapse_<?=idEncode($this->driver->getUniqueId())?>">
-Tools
-        </a>
-      </h4>
-    </div>
-    <div id="tools-collapse_<?=idEncode($this->driver->getUniqueId())?>" class="panel-collapse collapse">
-      <div class="panel-body">
-	<?=$this->record($this->driver)->getToolbar()?>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+  Tools
+          </a>
+        </h4>
+      </div>
+      <div id="tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+        <div class="panel-body">
+    <?=$this->record($this->driver)->getToolbar()?>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=idEncode($this->driver->getUniqueId())?>" href="#similar-collapse_<?=idEncode($this->driver->getUniqueId())?>">
-<?=$this->transEsc("Similar Items")?>
-        </a>
-      </h4>
-    </div>
-    <div id="similar-collapse_<?=idEncode($this->driver->getUniqueId())?>" class="panel-collapse collapse">
-      <div class="panel-body">
-  <? foreach ($this->related()->getList($this->driver) as $current): ?>
-    <?=$this->related()->render($current)?>
-  <? endforeach; ?>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#similar-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+  <?=$this->transEsc("Similar Items")?>
+          </a>
+        </h4>
+      </div>
+      <div id="similar-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+        <div class="panel-body">
+    <? foreach ($this->related()->getList($this->driver) as $current): ?>
+      <?=$this->related()->render($current)?>
+    <? endforeach; ?>
+        </div>
       </div>
     </div>
-  </div>
 
-
-
-  <? if (count($this->tabs) > 0): ?>
+    <? if (count($this->tabs) > 0): ?>
       <? foreach ($this->tabs as $tab => $obj): ?>
-<? // add current tab to breadcrumbs if applicable:
-        $desc = $obj->getDescription();
-        $isCurrent = (strtolower($this->activeTab) == strtolower($tab));
-
-      ?>
-
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#<?=(strtolower($tab))?>-collapse">
-<?=$this->transEsc($desc)?>
-        </a>
-      </h4>
-    </div>
-    <div id="<?=(strtolower($tab))?>-collapse_<?=idEncode($this->driver->getUniqueId())?>" class="panel-collapse collapse">
-      <div class="panel-body">
-         <?=$this->record($this->driver)->getTab($obj) ?>
-      </div>
-    </div>
-  </div>
+        <? if ($tab == 'HierarchyTree') continue; ?>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">
+              <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+                <?=$this->transEsc($tab)?>
+              </a>
+            </h4>
+          </div>
+          <div id="<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+            <div class="panel-body">
+              <?=$this->record($this->driver)->getTab($obj) ?>
+            </div>
+          </div>
+        </div>
       <? endforeach; ?>
-  <? endif; ?>
-</div>
-
-  <? if (count($this->tabs) > 0): ?>
-    <a name="tabnav"></a>
-    <ul class="recordTabs nav nav-tabs">
-      <? foreach ($this->tabs as $tab => $obj): ?>
-      <? // add current tab to breadcrumbs if applicable:
-        $desc = $obj->getDescription();
-        $isCurrent = (strtolower($this->activeTab) == strtolower($tab));
-        if ($isCurrent) {
-          $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
-          $activeTabObj = $obj;
-        }
-      ?>
-      <li<?=$isCurrent ? ' class="active"' : ''?>>
-        <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
-      </li>
-      <? endforeach; ?>
-    </ul>
-  <? endif; ?>
-
-  <div class="tab-content" id="record-tabs_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
-    <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
-      <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-    </div>
+    <? endif; ?>
   </div>
 
   <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
