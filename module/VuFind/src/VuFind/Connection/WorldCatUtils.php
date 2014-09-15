@@ -56,6 +56,20 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     protected $worldCatId;
 
     /**
+     * WorldCat ID
+     *
+     * @var string
+     */
+    protected $worldCatToken;
+
+    /**
+     * WorldCat ID
+     *
+     * @var string
+     */
+    protected $worldCatSecret;
+
+    /**
      * HTTP client
      *
      * @var \Zend\Http\Client
@@ -77,9 +91,11 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
      * @param bool              $silent     Should we silently ignore HTTP failures?
      */
     public function __construct($worldCatId, \Zend\Http\Client $client,
-        $silent = true
+        $worldCatToken, $worldCatSecret, $silent = true
     ) {
         $this->worldCatId = $worldCatId;
+        $this->worldCatToken = $worldCatToken;
+        $this->worldCatSecret = $worldCatSecret;
         $this->client = $client;
         $this->silent = $silent;
     }
@@ -145,6 +161,26 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Get the WorldCat ID from the config file.
+     *
+     * @return string
+     */
+    protected function getWorldCatToken()
+    {
+        return $this->worldCatToken;
+    }
+
+    /**
+     * Get the WorldCat ID from the config file.
+     *
+     * @return string
+     */
+    protected function getWorldCatSecret()
+    {
+        return $this->worldCatSecret;
+    }
+
+    /**
      * Retrieve results from the index using the XISBN service.
      *
      * @param string $isbn ISBN of main record
@@ -155,11 +191,17 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     {
         // Build URL
         $url = 'http://xisbn.worldcat.org/webservices/xid/isbn/' .
-                urlencode(is_array($isbn) ? $isbn[0] : $isbn) .
-               '?method=getEditions&format=json';
+                urlencode(is_array($isbn) ? $isbn[0] : $isbn);
+        $querystr = '?method=getEditions&format=json';
         if ($wcId = $this->getWorldCatId()) {
-            $url .= '&ai=' . urlencode($wcId);
+            $querystr .= '&ai=' . urlencode($wcId);
+        } else if ($wcToken = $this->getWorldCatToken()
+            && $wcSecret = $this->getWorldCatSecret())
+        {
+            $hash = md5($url . '|' . $_SERVER['REMOTE_ADDR'] . '|' . $wcSecret);
+            $querystr .= '&token=' . $wcToken . '&hash=' . $hash;
         }
+        $url .= $querystr;
 
         // Print Debug code
         $this->debug("XISBN: $url");

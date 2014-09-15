@@ -475,6 +475,10 @@ class Factory
         $wcId = isset($config->WorldCat->id)
             ? $config->WorldCat->id : false;
         $client = $sm->get('VuFind\Http')->createClient();
-        return new \VuFind\Connection\WorldCatUtils($wcId, $client);
+        $wcToken = isset($config->WorldCat->token)
+            ? $config->WorldCat->token : false;
+        $wcSecret = isset($config->WorldCat->secret)
+            ? $config->WorldCat->secret : false;
+        return new \VuFind\Connection\WorldCatUtils($wcId, $client, $wcToken, $wcSecret);
     }
 }
