@@ -7,7 +7,6 @@ var Lightbox = {
    * to replicate empty target behaviour by submitting to the current "page".
    */
   lastURL: false,
-  lastPOST: false,
   openingURL: false,
   shown: false,      // Is the lightbox deployed?
   XHR: false,        // Used for current in-progress XHR lightbox request
@@ -205,7 +204,6 @@ var Lightbox = {
       this.openingURL = url;
     }
     this.lastURL = url;
-    this.lastPOST = post;
 
     return false;
   },
