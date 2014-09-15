@@ -522,14 +522,18 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * Display the default "cover unavailable" graphic and terminate execution.
+     * Display the default "cover unavailable" graphic.
      *
      * @return void
      */
     protected function loadDefaultFailImage()
     {
         $this->contentType = 'image/gif';
-        $this->image = file_get_contents($this->searchTheme('images/noCover2.gif'));
+        $file = $this->searchTheme('images/noCover2.gif');
+        if (!file_exists($file)) {
+            throw new \Exception('Could not load default fail image.');
+        }
+        $this->image = file_get_contents($file);
     }
 
     /**
