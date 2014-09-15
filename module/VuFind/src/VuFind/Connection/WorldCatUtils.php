@@ -198,7 +198,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         } else if ($wcToken = $this->getWorldCatToken()
             && $wcSecret = $this->getWorldCatSecret())
         {
-            $hash = md5($url . '|' . $_SERVER['REMOTE_ADDR'] . '|' . $wcSecret);
+            $hash = md5($url . '|' . $_SERVER['SERVER_ADDR'] . '|' . $wcSecret);
             $querystr .= '&token=' . $wcToken . '&hash=' . $hash;
         }
         $url .= $querystr;
