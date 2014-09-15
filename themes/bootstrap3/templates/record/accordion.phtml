@@ -10,11 +10,15 @@
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
     $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
   }
+
+  function idEncode($op) {
+    return preg_replace("/\W/", "_", $op);
+  }
 ?>
 
 <div>
   <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=idEncode($this->driver->getUniqueId())?>" />
 
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
@@ -22,16 +26,16 @@
     <?=$this->record($this->driver)->getCoreMetadata()?>
 -->
   </div>
-<div class="panel-group" id="accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+<div class="panel-group" id="accordion_<?=idEncode($this->driver->getUniqueId())?>">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#title-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+        <a data-toggle="collapse" data-parent="#accordion_<?=idEncode($this->driver->getUniqueId())?>" href="#title-collapse_<?=idEncode($this->driver->getUniqueId())?>">
 Title
         </a>
       </h4>
     </div>
-    <div id="title-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse in">
+    <div id="title-collapse_<?=idEncode($this->driver->getUniqueId())?>" class="panel-collapse collapse in">
       <div class="panel-body">
     <?=$this->record($this->driver)->getCoreMetadata()?>
       </div>
@@ -41,12 +45,12 @@ Title
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#tools-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+        <a data-toggle="collapse" data-parent="#accordion_<?=idEncode($this->driver->getUniqueId())?>" href="#tools-collapse_<?=idEncode($this->driver->getUniqueId())?>">
 Tools
         </a>
       </h4>
     </div>
-    <div id="tools-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+    <div id="tools-collapse_<?=idEncode($this->driver->getUniqueId())?>" class="panel-collapse collapse">
       <div class="panel-body">
 	<?=$this->record($this->driver)->getToolbar()?>
       </div>
@@ -56,7 +60,7 @@ Tools
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#similar-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+        <a data-toggle="collapse" data-parent="#accordion_<?=idEncode($this->driver->getUniqueId())?>" href="#similar-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 <?=$this->transEsc("Similar Items")?>
         </a>
       </h4>
