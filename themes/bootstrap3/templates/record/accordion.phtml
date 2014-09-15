@@ -60,12 +60,12 @@ Tools
   <div class="panel panel-default">
     <div class="panel-heading">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=idEncode($this->driver->getUniqueId())?>" href="#similar-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+        <a data-toggle="collapse" data-parent="#accordion_<?=idEncode($this->driver->getUniqueId())?>" href="#similar-collapse_<?=idEncode($this->driver->getUniqueId())?>">
 <?=$this->transEsc("Similar Items")?>
         </a>
       </h4>
     </div>
-    <div id="similar-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+    <div id="similar-collapse_<?=idEncode($this->driver->getUniqueId())?>" class="panel-collapse collapse">
       <div class="panel-body">
   <? foreach ($this->related()->getList($this->driver) as $current): ?>
     <?=$this->related()->render($current)?>
@@ -92,7 +92,7 @@ Tools
         </a>
       </h4>
     </div>
-    <div id="<?=(strtolower($tab))?>-collapse_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+    <div id="<?=(strtolower($tab))?>-collapse_<?=idEncode($this->driver->getUniqueId())?>" class="panel-collapse collapse">
       <div class="panel-body">
          <?=$this->record($this->driver)->getTab($obj) ?>
       </div>
