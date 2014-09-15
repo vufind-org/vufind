@@ -26,74 +26,74 @@
     <?=$this->record($this->driver)->getCoreMetadata()?>
 -->
   </div>
-  <div class="panel-group" id="accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-            <?=$this->translate('information') ?>
-          </a>
-        </h4>
-      </div>
-      <div id="title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse in">
-        <div class="panel-body">
-      <?=$this->record($this->driver)->getCoreMetadata()?>
-        </div>
+<div class="panel-group" id="accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+          <?=$this->translate('information') ?>
+        </a>
+      </h4>
+    </div>
+    <div id="title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse in">
+      <div class="panel-body">
+    <?=$this->record($this->driver)->getCoreMetadata()?>
       </div>
     </div>
-
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-  Tools
-          </a>
-        </h4>
-      </div>
-      <div id="tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
-        <div class="panel-body">
-    <?=$this->record($this->driver)->getToolbar()?>
-        </div>
-      </div>
-    </div>
-
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#similar-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-  <?=$this->transEsc("Similar Items")?>
-          </a>
-        </h4>
-      </div>
-      <div id="similar-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
-        <div class="panel-body">
-    <? foreach ($this->related()->getList($this->driver) as $current): ?>
-      <?=$this->related()->render($current)?>
-    <? endforeach; ?>
-        </div>
-      </div>
-    </div>
-
-    <? if (count($this->tabs) > 0): ?>
-      <? foreach ($this->tabs as $tab => $obj): ?>
-        <? if ($tab == 'HierarchyTree') continue; ?>
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h4 class="panel-title">
-              <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-                <?=$this->transEsc($tab)?>
-              </a>
-            </h4>
-          </div>
-          <div id="<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
-            <div class="panel-body">
-              <?=$this->record($this->driver)->getTab($obj) ?>
-            </div>
-          </div>
-        </div>
-      <? endforeach; ?>
-    <? endif; ?>
   </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+Tools
+        </a>
+      </h4>
+    </div>
+    <div id="tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+      <div class="panel-body">
+  <?=$this->record($this->driver)->getToolbar()?>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#similar-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+<?=$this->transEsc("Similar Items")?>
+        </a>
+      </h4>
+    </div>
+    <div id="similar-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+      <div class="panel-body">
+  <? foreach ($this->related()->getList($this->driver) as $current): ?>
+    <?=$this->related()->render($current)?>
+  <? endforeach; ?>
+      </div>
+    </div>
+  </div>
+
+  <? if (count($this->tabs) > 0): ?>
+    <? foreach ($this->tabs as $tab => $obj): ?>
+      <? if ($tab == 'HierarchyTree') continue; ?>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+              <?=$this->transEsc($tab)?>
+            </a>
+          </h4>
+        </div>
+        <div id="<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+          <div class="panel-body">
+            <?=$this->record($this->driver)->getTab($obj) ?>
+          </div>
+        </div>
+      </div>
+    <? endforeach; ?>
+  <? endif; ?>
+</div>
 
   <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
 </div>
