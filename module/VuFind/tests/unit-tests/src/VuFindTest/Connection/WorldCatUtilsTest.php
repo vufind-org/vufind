@@ -87,6 +87,20 @@ class WorldCatUtilsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test related identities
+     *
+     * @return void
+     */
+    public function testGetRelatedIdentities()
+    {
+        $client = $this->getClient('identities');
+        $ids = $client->getRelatedIdentities('Clemens, Samuel');
+        $this->assertEquals(9, count($ids));
+        $this->assertEquals(34, count($ids['Twain, Mark, 1835-1910']));
+        $this->assertTrue(in_array('Conjoined twins', $ids['Twain, Mark, 1835-1910']));
+    }
+
+    /**
      * Test related terminology
      *
      * @return void

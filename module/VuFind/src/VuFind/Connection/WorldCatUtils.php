@@ -324,9 +324,10 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         if (empty($first) && empty($last)) {
             return false;
         } else if (empty($last)) {
-            return "local.Name=\"{$first}\"";
+            return "local.PersonalName=\"{$first}\"";
         } else {
-            return "local.Name=\"{$last}\" and local.Name=\"{$first}\"";
+            return "local.PersonalName=\"{$last}\" "
+                . "and local.PersonalName=\"{$first}\"";
         }
     }
 
