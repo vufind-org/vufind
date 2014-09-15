@@ -70,6 +70,20 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test that requesting an image causes default data to load.
+     * (same as above test, but with assertions in different order to
+     * force appropriate loading).
+     *
+     * @return void
+     */
+    public function testDefaultLoadingForImage()
+    {
+        $loader = $this->getLoader();
+        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertEquals('image/gif', $loader->getContentType());
+    }
+
+    /**
      * Get a loader object to test.
      *
      * @param array                                $config  Configuration
