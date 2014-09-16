@@ -478,20 +478,20 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     public function loadUnavailable()
     {
-        // Get "no cover" image from config.ini:
-        $noCoverImage = isset($this->config->Content->noCoverAvailableImage)
-            ? $this->searchTheme($this->config->Content->noCoverAvailableImage)
-            : null;
-
         // No setting -- use default, and don't log anything:
-        if (empty($noCoverImage)) {
-            // log?
+        if (!isset($this->config->Content->noCoverAvailableImage)) {
             return $this->loadDefaultFailImage();
         }
 
-        // If file defined but does not exist, log error and display default:
-        if (!file_exists($noCoverImage) || !is_readable($noCoverImage)) {
-            $this->debug("Cannot access file: '$noCoverImage'");
+        // Setting found -- get "no cover" image from config.ini:
+        $configuredImage = $this->config->Content->noCoverAvailableImage;
+        $noCoverImage = $this->searchTheme($configuredImage);
+
+        // If file is blank/inaccessible, log error and display default:
+        if (empty($noCoverImage) || !file_exists($noCoverImage)
+            || !is_readable($noCoverImage)
+        ) {
+            $this->debug("Cannot access '{$configuredImage}'");
             return $this->loadDefaultFailImage();
         }
 

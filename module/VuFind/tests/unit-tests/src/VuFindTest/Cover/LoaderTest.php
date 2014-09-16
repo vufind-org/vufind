@@ -43,6 +43,13 @@ use Zend\Http\Client\Adapter\Test as TestAdapter;
 class LoaderTest extends \VuFindTest\Unit\TestCase
 {
     /**
+     * Theme to use for testing purposes.
+     *
+     * @var string
+     */
+    protected $testTheme = 'bootstrap3';
+
+    /**
      * Test that failure to load even the baseline image causes an exception.
      *
      * @return void
@@ -84,6 +91,41 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test missing user-specified fail image
+     *
+     * @return void
+     */
+    public function testMissingUserSpecifiedFailImage()
+    {
+        $badfile = 'not/a/real/file/at.all';
+        $cfg = array('Content' => array('noCoverAvailableImage' => $badfile));
+        $loader = $this->getLoader($cfg, null, null, null, array('debug'));
+
+        // We expect the loader to complain about the bad filename and load the default image:
+        $loader->expects($this->once())->method('debug')->with($this->equalTo("Cannot access '$badfile'"));
+        $loader->loadUnavailable();
+        $this->assertEquals('368', strlen($loader->getImage()));
+    }
+
+    /**
+     * Test illegal file extension
+     *
+     * @return void
+     */
+    public function testFailImageIllegalExtension()
+    {
+        $badfile = 'templates/layout/layout.phtml';
+        $cfg = array('Content' => array('noCoverAvailableImage' => $badfile));
+        $loader = $this->getLoader($cfg, null, null, null, array('debug'));
+
+        // We expect the loader to complain about the bad filename and load the default image:
+        $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/' . $this->testTheme . '/' . $badfile . "'";
+        $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
+        $loader->loadUnavailable();
+        $this->assertEquals('368', strlen($loader->getImage()));
+    }
+
+    /**
      * Get a loader object to test.
      *
      * @param array                                $config  Configuration
@@ -101,7 +143,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $manager = $this->getMock('VuFind\Content\Covers\PluginManager');
         }
         if (null === $theme) {
-            $theme = new ThemeInfo(__DIR__ . '/../../../../../../../themes', 'blueprint');
+            $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
         if (null === $client) {
             $adapter = new TestAdapter();
@@ -112,5 +154,15 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             return $this->getMock('VuFind\Cover\Loader', $mock, array($config, $manager, $theme, $client));
         }
         return new Loader($config, $manager, $theme, $client);
+    }
+
+    /**
+     * Get the theme directory.
+     *
+     * @return string
+     */
+    protected function getThemeDir()
+    {
+        return realpath(__DIR__ . '/../../../../../../../themes');
     }
 }
