@@ -158,6 +158,56 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
     }
 
+
+    /**
+     * Given a chunk of the availability response, extract the values needed
+     * by VuFind for getStatuses().
+     *
+     * @param $current Current LUIS holding chunk.
+     * @param string $aggregate_id Parent bib Id of this holding
+     *
+     * @return array of status information for this holding
+     */
+    protected function getStatusForChunk($current)
+    {
+        $status = $current->xpath(
+                'ns1:ItemOptionalFields/ns1:CirculationStatus'
+        );
+        $status = empty($status) ? '' : (string)$status[0];
+        
+        $itemId = $current->xpath(
+
+                'ns1:ItemId/ns1:ItemIdentifierValue'
+        );
+        $item_id = (string)$itemId[0];
+        
+        // Get both holdings and item level call numbers; we'll pick the most
+        // specific available value below.
+        $holdCallNo = $current->xpath('ns1:CallNumber');
+        $holdCallNo = (string)$holdCallNo[0];
+        $itemCallNo = $current->xpath(
+         
+                'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
+        );
+        $itemCallNo = (string)$itemCallNo[0];
+        
+        $location = $current->xpath(
+               
+                'ns1:ItemOptionalFields/ns1:Location/ns1:LocationName/' .
+                'ns1:LocationNameInstance/ns1:LocationNameValue'
+        );
+        $location = (string)$location[0];
+        
+        return array(
+                //'id' => ...
+                'status' => $status,
+                'location' => $location,
+                'callnumber' => empty($itemCallNo) ? $holdCallNo : $itemCallNo,
+                'availability' => ($status == "Not Charged"),
+                'reserve' => 'N',       // not supported
+        );  
+    }
+
     /**
      * Given a chunk of the availability response, extract the values needed
      * by VuFind.
@@ -177,28 +227,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         
         // Extract details from the XML:
         $status = $current->xpath(
-            'ns1:ItemInformation/' .
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
         $status = empty($status) ? '' : (string)$status[0];
 
-        if (empty($bib_id)) {
-           $bib_id = $current->xpath(
-               'ns1:BibliographicId/ns1:BibliographicRecordId/' .
-               'ns1:BibliographicRecordIdentifier'
-           );
-           $bib_id = (string)$bib_id[0];
-        }
+        $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
 
-        $itemId = $current->xpath(
-            'ns1:ItemInformation/' .
-            'ns1:ItemId/ns1:ItemIdentifierValue'
-        );
-
-        $itemAgencyId = $current->xpath(
-            'ns1:ItemInformation/' .
-            'ns1:ItemId/ns1:AgencyId'
-        );
+        $itemAgencyId = $current->xpath('ns1:ItemId/ns1:AgencyId');
 
         // Pick out the permanent location (TODO: better smarts for dealing with
         // temporary locations and multi-level location names):
@@ -214,41 +249,43 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 //             }
 //         }
 
-        $tmp = $current->xpath('//ns1:LocationNameValue');
+        $tmp = $current->xpath('ns1:ItemOptionalFields/ns1:Location/' .
+            'ns1:LocationName/ns1:LocationNameInstance/ns1:LocationNameValue'
+        );
         $location = (string)$tmp[0];
 
-        // Get both holdings and item level call numbers; we'll pick the most
-        // specific available value below.
-        $holdCallNo = $current->xpath('ns1:CallNumber');
-        $holdCallNo = (string)$holdCallNo[0];
         $itemCallNo = $current->xpath(
-            'ns1:ItemInformation/' .
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
         );
-        
         $itemCallNo = (string)$itemCallNo[0];
+        
+        $volume = $current->xpath(
+            'ns1:ItemOptionalFields/ns1:ItemDescription/' . 
+            'ns1:HoldingsInformation/ns1:UnstructuredHoldingsData'
+        );
+        $volume = (string)$volume[0];
 
         if ($status === "Not Charged") {
             $holdType = "hold";
         } else {
             $holdType = "recall";
         }
-        
-        $item_id = (string)$itemId[0];
+
         // Build return array:
         return array(
             'id' => empty($aggregate_id) ? (empty($bib_id) ? '' : $bib_id) : $aggregate_id,
+            'availability' => ($status == 'Not Charged'),
+            'status' => $status,
             'item_id' => (string)$itemId[0],
             'bib_id' => $bib_id,
             'item_agency_id' => (string)$itemAgencyId[0],
             'aggregate_id' => $aggregate_id,
-            'availability' => ($status == 'Not Charged'),
-            'status' => $status,
             'location' => $location,
             'reserve' => 'N',       // not supported
-            'callnumber' => empty($itemCallNo) ? $holdCallNo : $itemCallNo,
+            'callnumber' => $itemCallNo,
             'duedate' => '',        // not supported
-            'number' => $number++,
+            //'number' => $number++,
+            'number' => $volume,
             // XC NCIP does not support barcode, but we need a placeholder here
             // to display anything on the record screen:
             'barcode' => 'placeholder' . $number,
@@ -289,7 +326,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getStatusRequest($idList, $resumption = null, $agency = null)
     {
-        if (is_null($agency)) $agency = $this->agency[0];
+        //if (is_null($agency)) $agency = $this->agency[0];
+        if (is_null($agency)) $agency = array_keys($this->agency)[0];
 
         // Build a list of the types of information we want to retrieve:
         $desiredParts = array(
@@ -365,22 +403,43 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $request = $this->getStatusRequest($idList, $resumption);
             $response = $this->sendRequest($request);
             $avail = $response->xpath(
-                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/ns1:HoldingsSet'
+                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation'
             );
 
             // Build the array of statuses:
             foreach ($avail as $current) {
-                // Get data on the current chunk of data:
-                $chunk = $this->getHoldingsForChunk($current);
+                $bib_id = $current->xpath(
+                        'ns1:BibliographicId/ns1:BibliographicRecordId/' .
+                        'ns1:BibliographicRecordIdentifier'
+                );
+                $bib_id = (string)$bib_id[0];
+                
+                $holdings = $current->xpath('ns1:HoldingsSet');
+                
+                foreach ($holdings as $current) {
 
-                // Each bibliographic ID has its own key in the $status array; make
-                // sure we initialize new arrays when necessary and then add the
-                // current chunk to the right place:
-                $id = $chunk['id'];
-                if (!isset($status[$id])) {
-                    $status[$id] = array();
+                    $holdCallNo = $current->xpath('ns1:CallNumber');
+                    $holdCallNo = (string)$holdCallNo[0];
+                    
+                    $items = $current->xpath('ns1:ItemInformation');
+                    
+                    foreach ($items as $item) {
+
+                        // Get data on the current chunk of data:
+                        $chunk = $this->getStatusForChunk($item);
+        
+                        $chunk['callnumber'] = empty($chunk['callnumber']) ? $holdCallNo : $chunk['callnumber'];
+                        
+                        // Each bibliographic ID has its own key in the $status array; make
+                        // sure we initialize new arrays when necessary and then add the
+                        // current chunk to the right place:
+                        $chunk['id'] = $bib_id;
+                        if (!isset($status[$id])) {
+                            $status[$id] = array();
+                        }
+                        $status[$id][] = $chunk;
+                    }
                 }
-                $status[$id][] = $chunk;
             }
 
             // Check for resumption token:
@@ -391,7 +450,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         } while (!empty($resumption));
         return $status;
     }
-
+    
     /**
      * Get Consortial Holding
      *
@@ -423,26 +482,33 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 }
             }
         }
-
+        
         $holdings = array();
         foreach ($item_agency_id as $_agency => $_id) {
             $request = $this->getStatusRequest(array($_id), null, $_agency);
             $response = $this->sendRequest($request);
 
-            $avail = $response->xpath(
-                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/ns1:HoldingsSet'
-            );
-
             $bib_id = $response->xpath(
-                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/' .
-                'ns1:BibliographicId/ns1:BibliographicRecordId/' .
-                'ns1:BibliographicRecordIdentifier'
+                    'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/' .
+                    'ns1:BibliographicId/ns1:BibliographicRecordId/' .
+                    'ns1:BibliographicRecordIdentifier'
             );
+            
+            $holdingSets = $response->xpath('//ns1:HoldingsSet');
+            
+            foreach ($holdingSets as $holding) {
+                $holdCallNo = $holding->xpath('ns1:CallNumber');
+                $holdCallNo = (string)$holdCallNo[0];
+                $avail = $holding->xpath('ns1:ItemInformation');
 
-            // Build the array of holdings:
-            foreach ($avail as $current) {
-                $holdings[] = $this->getHoldingsForChunk($current, $aggregate_id, (string)$bib_id[0]);
+                // Build the array of holdings:
+                foreach ($avail as $current) {
+                    $chunk = $this->getHoldingsForChunk($current, $aggregate_id, (string)$bib_id[0]);
+                    $chunk['callnumber'] = empty($chunk['callnumber']) ? $holdCallNo : $chunk['callnumber'];
+                    $holdings[] = $chunk;
+                }
             }
+
         }
 
         return $holdings;
