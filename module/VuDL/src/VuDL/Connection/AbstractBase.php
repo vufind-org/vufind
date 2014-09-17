@@ -156,7 +156,6 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 }
             } else {
                 $value = array();
-                $field = false;
                 foreach ($keys as $k) {
                     if (isset($record[$k])) {
                         if (is_array($record[$k])) {
@@ -168,7 +167,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 }
                 $details[$field] = array(
                     'title' => $title,
-                    'value' => $record[$keys[0]]
+                    'value' => $value
                 );
             }
         }

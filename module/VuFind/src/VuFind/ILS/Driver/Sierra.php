@@ -675,5 +675,3 @@ class Sierra extends AbstractBase
         }
     }
 }
-
-?>

@@ -36,12 +36,15 @@ if (file_exists('vendor/autoload.php')) {
     $loader = new Composer\Autoload\ClassLoader();
     $loader->add('VuFindTest', __DIR__ . '/unit-tests/src');
     $loader->add('VuFindTest', __DIR__ . '/../src');
-    $loader->add('VuFind', __DIR__ . '/../src');
-    $loader->add('VuFindConsole', __DIR__ . '/../../VuFindConsole/src');
-    $loader->add('VuFindDevTools', __DIR__ . '/../../VuFindDevTools/src');
-    $loader->add('VuFindHttp', __DIR__ . '/../../VuFindHttp/src');
-    $loader->add('VuFindSearch', __DIR__ . '/../../VuFindSearch/src');
-    $loader->add('VuFindTheme', __DIR__ . '/../../VuFindTheme/src');
+    // Dynamically discover all module src directories:
+    $modules = opendir(__DIR__ . '/../..');
+    while ($mod = readdir($modules)) {
+        $mod = trim($mod, '.'); // ignore . and ..
+        $dir = empty($mod) ? false : realpath(__DIR__ . "/../../{$mod}/src");
+        if (!empty($dir) && is_dir($dir . '/' . $mod)) {
+            $loader->add($mod, $dir);
+        }
+    }
     $loader->register();
 }
 

@@ -478,20 +478,20 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     public function loadUnavailable()
     {
-        // Get "no cover" image from config.ini:
-        $noCoverImage = isset($this->config->Content->noCoverAvailableImage)
-            ? $this->searchTheme($this->config->Content->noCoverAvailableImage)
-            : null;
-
         // No setting -- use default, and don't log anything:
-        if (empty($noCoverImage)) {
-            // log?
+        if (!isset($this->config->Content->noCoverAvailableImage)) {
             return $this->loadDefaultFailImage();
         }
 
-        // If file defined but does not exist, log error and display default:
-        if (!file_exists($noCoverImage) || !is_readable($noCoverImage)) {
-            $this->debug("Cannot access file: '$noCoverImage'");
+        // Setting found -- get "no cover" image from config.ini:
+        $configuredImage = $this->config->Content->noCoverAvailableImage;
+        $noCoverImage = $this->searchTheme($configuredImage);
+
+        // If file is blank/inaccessible, log error and display default:
+        if (empty($noCoverImage) || !file_exists($noCoverImage)
+            || !is_readable($noCoverImage)
+        ) {
+            $this->debug("Cannot access '{$configuredImage}'");
             return $this->loadDefaultFailImage();
         }
 
@@ -522,14 +522,18 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * Display the default "cover unavailable" graphic and terminate execution.
+     * Display the default "cover unavailable" graphic.
      *
      * @return void
      */
     protected function loadDefaultFailImage()
     {
         $this->contentType = 'image/gif';
-        $this->image = file_get_contents($this->searchTheme('images/noCover2.gif'));
+        $file = $this->searchTheme('images/noCover2.gif');
+        if (!file_exists($file)) {
+            throw new \Exception('Could not load default fail image.');
+        }
+        $this->image = file_get_contents($file);
     }
 
     /**
@@ -643,6 +647,10 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
 
         $image = $result->getBody();
+        
+        if ('' == $image) {
+            return false;
+        }
 
         // Figure out file paths -- $tempFile will be used to store the
         // image for analysis.  $finalFile will be used for long-term storage if

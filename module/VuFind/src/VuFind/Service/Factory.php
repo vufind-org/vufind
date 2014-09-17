@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -433,10 +434,13 @@ class Factory
             APPLICATION_PATH  . '/languages',
             LOCAL_OVERRIDE_DIR . '/languages'
         );
+        $fallbackLocales = $config->Site->language == 'en'
+            ? 'en'
+            : array($config->Site->language, 'en');
         $translator->getPluginManager()->setService(
             'extendedini',
             new \VuFind\I18n\Translator\Loader\ExtendedIni(
-                $pathStack, $config->Site->language
+                $pathStack, $fallbackLocales
             )
         );
 
@@ -470,6 +474,7 @@ class Factory
         $config = $sm->get('VuFind\Config')->get('config');
         $wcId = isset($config->WorldCat->id)
             ? $config->WorldCat->id : false;
-        return new \VuFind\Connection\WorldCatUtils($wcId);
+        $client = $sm->get('VuFind\Http')->createClient();
+        return new \VuFind\Connection\WorldCatUtils($wcId, $client);
     }
 }
