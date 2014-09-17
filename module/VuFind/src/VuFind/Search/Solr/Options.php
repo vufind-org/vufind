@@ -46,6 +46,13 @@ class Options extends \VuFind\Search\Base\Options
     protected $hiddenFilters = array();
 
     /**
+     * Hierarchical facets
+     *
+     * @var array
+     */
+    protected $hierarchicalFacets = '';
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -133,6 +140,10 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($facetSettings->Advanced_Settings->special_facets)) {
             $this->specialAdvancedFacets
                 = $facetSettings->Advanced_Settings->special_facets;
+        }
+        if (isset($facetSettings->Results_Settings->hierarchicalFacets)) {
+            $this->hierarchicalFacets
+                = $facetSettings->Results_Settings->hierarchicalFacets;
         }
 
         // Load Spelling preferences
@@ -229,4 +240,15 @@ class Options extends \VuFind\Search\Base\Options
     {
         return 'search-advanced';
     }
+
+    /**
+     * Get an array of hierarchical facets.
+     *
+     * @return array
+     */
+    public function getHierarchicalFacets()
+    {
+        return $this->hierarchicalFacets;
+    }
+
 }

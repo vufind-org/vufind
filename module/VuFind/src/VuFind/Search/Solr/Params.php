@@ -531,6 +531,7 @@ class Params extends \VuFind\Search\Base\Params
             $field, $value, $operator, $translate
         );
 
+        $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
         // Convert range queries to a language-non-specific format:
         $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
@@ -544,6 +545,14 @@ class Params extends \VuFind\Search\Base\Params
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
             }
+        } else if (($hierarchicalFacets == '*'
+            || in_array(
+                $field, explode(',', $this->getOptions()->getHierarchicalFacets())
+            ))
+            && preg_match('/^\d+\/(.*)\/$/', $filter['displayText'], $matches)
+        ) {
+            // Display hierarchical facet levels nicely
+            $filter['displayText'] = $matches[1];
         }
 
         return $filter;

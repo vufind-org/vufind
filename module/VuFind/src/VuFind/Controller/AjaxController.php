@@ -1649,15 +1649,9 @@ class AjaxController extends AbstractBase
 
             $displayText = $item['displayText'];
             if ($displayText == $item['value']) {
-                // Strip leading level indicator and any trailing slash
-                $parts = explode('/', rtrim($displayText, '/'));
-                $displayText = implode(
-                    '/',
-                    array_slice(
-                        $parts,
-                        1
-                    )
-                );
+                // Only show the current level part
+                $parts = explode('/', $displayText);
+                $displayText = $parts[$parts[0] + 1];
             }
 
             $facetItem = array(
