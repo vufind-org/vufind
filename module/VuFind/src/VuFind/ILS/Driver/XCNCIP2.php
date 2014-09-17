@@ -161,10 +161,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
     /**
      * Given a chunk of the availability response, extract the values needed
-     * by VuFind for getStatuses().
+     * by VuFind.
      *
      * @param $current Current LUIS holding chunk.
-     * @param string $aggregate_id Parent bib Id of this holding
      *
      * @return array of status information for this holding
      */
@@ -181,18 +180,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $item_id = (string)$itemId[0];
         
-        // Get both holdings and item level call numbers; we'll pick the most
-        // specific available value below.
-        $holdCallNo = $current->xpath('ns1:CallNumber');
-        $holdCallNo = (string)$holdCallNo[0];
         $itemCallNo = $current->xpath(
          
                 'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
         );
         $itemCallNo = (string)$itemCallNo[0];
         
-        $location = $current->xpath(
-               
+        $location = $current->xpath(    
                 'ns1:ItemOptionalFields/ns1:Location/ns1:LocationName/' .
                 'ns1:LocationNameInstance/ns1:LocationNameValue'
         );
@@ -202,7 +196,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 //'id' => ...
                 'status' => $status,
                 'location' => $location,
-                'callnumber' => empty($itemCallNo) ? $holdCallNo : $itemCallNo,
+                'callnumber' => $itemCallNo,
                 'availability' => ($status == "Not Charged"),
                 'reserve' => 'N',       // not supported
         );  
@@ -326,8 +320,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getStatusRequest($idList, $resumption = null, $agency = null)
     {
+        // cedelis:
         //if (is_null($agency)) $agency = $this->agency[0];
-        if (is_null($agency)) $agency = array_keys($this->agency)[0];
+        
+        // pzurek:
+        //if (is_null($agency)) $agency = array_keys($this->agency)[0];
+        // The above does not work on older versions of php
+        $keys = array_keys($this->agency);
+        if (is_null($agency)) $agency = $keys[0];
 
         // Build a list of the types of information we want to retrieve:
         $desiredParts = array(
@@ -437,7 +437,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                         if (!isset($status[$id])) {
                             $status[$id] = array();
                         }
-                        $status[$id][] = $chunk;
+                        $status[$bib_id][] = $chunk;
                     }
                 }
             }
@@ -504,7 +504,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 // Build the array of holdings:
                 foreach ($avail as $current) {
                     $chunk = $this->getHoldingsForChunk($current, $aggregate_id, (string)$bib_id[0]);
-                    $chunk['callnumber'] = empty($chunk['callnumber']) ? $holdCallNo : $chunk['callnumber'];
+                    $chunk['callnumber'] = empty($chunk['callnumber']) ? 
+                        $holdCallNo : $chunk['callnumber'];
                     $holdings[] = $chunk;
                 }
             }
@@ -687,7 +688,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $fines = array();
         $balance = 0;
         foreach ($list as $current) {
-            //pzurek
+
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
              
             $tmp = $current->xpath(
