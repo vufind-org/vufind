@@ -44,6 +44,7 @@ class Options extends \VuFind\Search\Base\Options
      * @var array
      */
     protected $hiddenFilters = array();
+    protected $listviewOption = "full";
 
     /**
      * Constructor
@@ -120,6 +121,12 @@ class Options extends \VuFind\Search\Base\Options
         } else {
             $this->viewOptions = array('list' => 'List');
         }
+	// Load list view for result (full or tab)
+	if (isset($searchSettings->List->view)) {
+		$this->listviewOption = $searchSettings->List->view;
+	} else {
+		$this->listviewOption = 'full';
+	}
 
         // Load facet preferences
         $facetSettings = $configLoader->get($this->facetsIni);
@@ -206,6 +213,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getHiddenFilters()
     {
         return $this->hiddenFilters;
+    }
+
+    /**
+     * Get a string of the listviewOption (full or tab).
+     *
+     * @return strin 
+     */
+    public function getListViewOption()
+    {
+    	return $this->listviewOption;
     }
 
     /**

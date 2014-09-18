@@ -1,3 +1,4 @@
+<? if ($this->params->getOptions()->getListViewOption()!="full"): ?>    
     <div class="col-xs-11 middle" style="padding-top: 5px">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull">
       <?
@@ -13,6 +14,7 @@
       ?>
       </a>
     </div>
+<? endif; ?>
 <div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
@@ -26,7 +28,7 @@
     </a>
   </div>
   <div class="col-sm-7 col-xs-6 middle">
-<!--
+<? if ($this->params->getOptions()->getListViewOption()=="full"): ?>
     <div>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
       <?
@@ -42,7 +44,7 @@
       ?>
       </a>
     </div>
--->
+<? endif; ?>
 
     <div>
       <? if($this->driver->isCollection()): ?>
