@@ -700,7 +700,7 @@ class AjaxController extends AbstractBase
             );
         $html = $this->getViewRenderer()
             ->render(
-                'record/accordion.phtml',
+                "record/".$this->params()->fromQuery('type').".phtml",
                 array('driver' => $driver, 'tabs' => $allTabs)
             );
         return $this->output($html, self::STATUS_OK);

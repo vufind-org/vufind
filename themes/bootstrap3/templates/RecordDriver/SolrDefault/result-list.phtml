@@ -1,6 +1,6 @@
 <? if ($this->params->getOptions()->getListViewOption()!="full"): ?>    
     <div class="col-xs-11 middle" style="padding-top: 5px">
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull">
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption()?>">
       <?
         $summHighlightedTitle = $this->driver->getHighlightedTitle();
         $summTitle = $this->driver->getTitle();

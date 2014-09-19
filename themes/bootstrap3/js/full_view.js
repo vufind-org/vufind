@@ -1,42 +1,30 @@
 /*global path*/
 
 $(document).ready(function() {
-  $('.getFull').click(function() {
+  $('.getFull').click(function(type) {
 	var div_id = $(this).parent().parent().find(".hiddenId")[0].value;
-  var div_html_id = div_id.replace(/\W/g, "_");
-
+  	var div_html_id = div_id.replace(/\W/g, "_");
+	var viewType = $(this).attr("data-view");
 	var shortNode = jQuery('#short_'+div_html_id);
 	var mainNode = shortNode.parent();
         var longNode = jQuery('#long_'+div_html_id);
 	if ( !longNode.is(":visible") ) {
-	console.debug("unsichtbar");
-
-	console.debug(div_id);
-	console.debug(div_html_id);
-         var url = path + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id});
+         var url = path + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType});
          $.ajax({
                 dataType: 'json',
                 url: url,
                 success: function(response) {
                         if (response.status == 'OK') {
-					shortNode.addClass("hidden");
-					//$('#id_'+div_id).addClass("col-xs-11");
-
-        				longNode.html(response.data);
-					longNode.addClass("ajaxItem");
-					longNode.removeClass("hidden");
-                                                                                                                                          }
-					console.debug(response.data);
+				shortNode.addClass("hidden");
+        			longNode.html(response.data);
+				longNode.addClass("ajaxItem");
+				longNode.removeClass("hidden");
+			}
 		}
          });
-	return false;
 	} else {
-        console.debug("sichtbar");
 		longNode.addClass("hidden");
-
-   shortNode.removeClass("hidden");
-	return false;
-
+   		shortNode.removeClass("hidden");
 	}
 	return false;
   });
