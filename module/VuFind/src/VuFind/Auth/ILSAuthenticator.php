@@ -63,8 +63,8 @@ class ILSAuthenticator
     /**
      * Constructor
      *
-     * @param Manager        $auth           Auth manager
-     * @param ILSConnection  $catalog        ILS connection
+     * @param Manager       $auth    Auth manager
+     * @param ILSConnection $catalog ILS connection
      */
     public function __construct(Manager $auth, ILSConnection $catalog)
     {

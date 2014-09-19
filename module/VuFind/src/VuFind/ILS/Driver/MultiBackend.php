@@ -127,8 +127,7 @@ class MultiBackend extends AbstractBase
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader,
         \VuFind\Auth\ILSAuthenticator $ilsAuth
-    )
-    {
+    ) {
         $this->configLoader = $configLoader;
         $this->ilsAuth = $ilsAuth;
     }

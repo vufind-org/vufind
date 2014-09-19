@@ -110,6 +110,7 @@ class Manager
      * @param Config         $config         VuFind configuration
      * @param UserTable      $userTable      User table gateway
      * @param SessionManager $sessionManager Session manager
+     * @param PluginManager  $pm             Authentication plugin manager
      */
     public function __construct(Config $config, UserTable $userTable,
         SessionManager $sessionManager, PluginManager $pm

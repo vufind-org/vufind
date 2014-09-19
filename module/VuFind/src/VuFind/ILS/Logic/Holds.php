@@ -80,9 +80,9 @@ class Holds
      * Constructor
      *
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
-     * @param ILSConnection        $ils     A catalog connection
-     * @param \VuFind\Crypt\HMAC   $hmac    HMAC generator
-     * @param \Zend\Config\Config  $config  VuFind configuration
+     * @param ILSConnection                 $ils     A catalog connection
+     * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
+     * @param \Zend\Config\Config           $config  VuFind configuration
      */
     public function __construct(\VuFind\Auth\ILSAuthenticator $ilsAuth,
         ILSConnection $ils, \VuFind\Crypt\HMAC $hmac, \Zend\Config\Config $config
