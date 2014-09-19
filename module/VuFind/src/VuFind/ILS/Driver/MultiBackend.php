@@ -106,6 +106,13 @@ class MultiBackend extends AbstractBase
     protected $configLoader;
 
     /**
+     * ILS authenticator
+     *
+     * @param \VuFind\Auth\ILSAuthenticator
+     */
+    protected $ilsAuth;
+
+    /**
      * Logger (or false for none)
      *
      * @var LoggerInterface|bool
@@ -115,11 +122,15 @@ class MultiBackend extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
+     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(\VuFind\Config\PluginManager $configLoader,
+        \VuFind\Auth\ILSAuthenticator $ilsAuth
+    )
     {
         $this->configLoader = $configLoader;
+        $this->ilsAuth = $ilsAuth;
     }
 
     /**
@@ -1109,13 +1120,9 @@ class MultiBackend extends AbstractBase
             $source = $this->getSource($id);
         }
         if (!$source) {
-            $parentLocator = $this->getServiceLocator()->getServiceLocator();
-            $account = $parentLocator->get('VuFind\AuthManager');
-            if ($account->isLoggedIn()) {
-                $patron = $account->storedCatalogLogin();
-                if ($patron && isset($patron['cat_username'])) {
-                    $source = $this->getSource($patron['cat_username'], 'login');
-                }
+            $patron = $this->ilsAuth->storedCatalogLogin();
+            if ($patron && isset($patron['cat_username'])) {
+                $source = $this->getSource($patron['cat_username'], 'login');
             }
         }
 

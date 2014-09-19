@@ -192,7 +192,7 @@ class Factory
     public static function getILSHoldLogic(ServiceManager $sm)
     {
         return new \VuFind\ILS\Logic\Holds(
-            $sm->get('VuFind\AuthManager'), $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILSAuthenticator'), $sm->get('VuFind\ILSConnection'),
             $sm->get('VuFind\HMAC'), $sm->get('VuFind\Config')->get('config')
         );
     }
@@ -221,7 +221,7 @@ class Factory
     public static function getILSTitleHoldLogic(ServiceManager $sm)
     {
         return new \VuFind\ILS\Logic\TitleHolds(
-            $sm->get('VuFind\AuthManager'), $sm->get('VuFind\ILSConnection'),
+            $sm->get('VuFind\ILSAuthenticator'), $sm->get('VuFind\ILSConnection'),
             $sm->get('VuFind\HMAC'), $sm->get('VuFind\Config')->get('config')
         );
     }

@@ -134,6 +134,7 @@ $config = array(
             'VuFind\Export' => 'VuFind\Service\Factory::getExport',
             'VuFind\Http' => 'VuFind\Service\Factory::getHttp',
             'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC',
+            'VuFind\ILSAuthenticator' => 'VuFind\Auth\Factory::getILSAuthenticator',
             'VuFind\ILSConnection' => 'VuFind\Service\Factory::getILSConnection',
             'VuFind\ILSHoldLogic' => 'VuFind\Service\Factory::getILSHoldLogic',
             'VuFind\ILSHoldSettings' => 'VuFind\Service\Factory::getILSHoldSettings',

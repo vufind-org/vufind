@@ -27,10 +27,8 @@
  */
 namespace VuFind\Auth;
 use VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
-    VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException,
-    VuFind\ILS\Connection as ILSConnection,
-    Zend\Config\Config,
-    Zend\Session\SessionManager;
+    VuFind\Exception\Auth as AuthException, VuFind\ILS\Connection as ILSConnection,
+    Zend\Config\Config, Zend\Session\SessionManager;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -79,20 +77,6 @@ class Manager
     protected $session;
 
     /**
-     * ILS connector (null if unavailable)
-     *
-     * @var ILSConnection
-     */
-    protected $catalog;
-
-    /**
-     * ILS account information (false if uninitialized)
-     *
-     * @var array|bool
-     */
-    protected $ilsAccount = false;
-
-    /**
      * Gateway to user table in database
      *
      * @var UserTable
@@ -126,17 +110,14 @@ class Manager
      * @param Config         $config         VuFind configuration
      * @param UserTable      $userTable      User table gateway
      * @param SessionManager $sessionManager Session manager
-     * @param ILSConnection  $catalog        ILS connection (null if unavailable)
      */
     public function __construct(Config $config, UserTable $userTable,
-        SessionManager $sessionManager, PluginManager $pm,
-        ILSConnection $catalog = null
+        SessionManager $sessionManager, PluginManager $pm
     ) {
         $this->config = $config;
         $this->userTable = $userTable;
         $this->sessionManager = $sessionManager;
         $this->pluginManager = $pm;
-        $this->catalog = $catalog;
         $this->session = new \Zend\Session\Container('Account');
     }
 
@@ -318,16 +299,10 @@ class Manager
      */
     public function loginEnabled()
     {
-        if (isset($this->config->Authentication->hideLogin)
-            && $this->config->Authentication->hideLogin
-        ) {
-            return false;
-        }
-        // If we can't connect to the catalog, assume that no special
-        // ILS-related login settings exist -- this prevents ILS errors
-        // from triggering an exception early in initialization before
-        // VuFind is ready to display error messages.
-        return (null === $this->catalog) ? true : !$this->catalog->loginIsHidden();
+        // Assume login is enabled unless explicitly turned off:
+        return isset($this->config->Authentication->hideLogin)
+            ? !$this->config->Authentication->hideLogin
+            : true;
     }
 
     /**
@@ -345,9 +320,6 @@ class Manager
         // Perform authentication-specific cleanup and modify redirect URL if
         // necessary.
         $url = $this->getAuth()->logout($url);
-
-        // Clear out cached ILS connection.
-        $this->ilsAccount = false;
 
         // Clear out the cached user object and session entry.
         $this->currentUser = false;
@@ -492,79 +464,6 @@ class Manager
         // Store the user in the session and send it back to the caller:
         $this->updateSession($user);
         return $user;
-    }
-
-    /**
-     * Log the current user into the catalog using stored credentials; if this
-     * fails, clear the user's stored credentials so they can enter new, corrected
-     * ones.
-     *
-     * Returns associative array of patron data on success, false on failure.
-     *
-     * @return array|bool
-     */
-    public function storedCatalogLogin()
-    {
-        // Do we have a previously cached ILS account?
-        if (is_array($this->ilsAccount)) {
-            return $this->ilsAccount;
-        }
-
-        // Fail if no username is found, but allow a missing password (not every ILS
-        // requires a password to connect).
-        if (null !== $this->catalog
-            && ($user = $this->isLoggedIn())
-            && isset($user->cat_username) && !empty($user->cat_username)
-        ) {
-            try {
-                $patron = $this->catalog->patronLogin(
-                    $user->cat_username, $user->getCatPassword()
-                );
-            } catch (ILSException $e) {
-                $patron = null;
-            }
-            if (empty($patron)) {
-                // Problem logging in -- clear user credentials so they can be
-                // prompted again; perhaps their password has changed in the
-                // system!
-                $user->clearCredentials();
-            } else {
-                $this->ilsAccount = $patron;    // cache for future use
-                return $patron;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Attempt to log in the user to the ILS, and save credentials if it works.
-     *
-     * @param string $username Catalog username
-     * @param string $password Catalog password
-     *
-     * Returns associative array of patron data on success, false on failure.
-     *
-     * @return array|bool
-     */
-    public function newCatalogLogin($username, $password)
-    {
-        try {
-            $result = ($this->catalog === null)
-                ? false : $this->catalog->patronLogin($username, $password);
-        } catch (ILSException $e) {
-            return false;
-        }
-        if ($result) {
-            $user = $this->isLoggedIn();
-            if ($user) {
-                $user->saveCredentials($username, $password);
-                $this->updateSession($user);
-                $this->ilsAccount = $result;    // cache for future use
-            }
-            return $result;
-        }
-        return false;
     }
 
     /**
