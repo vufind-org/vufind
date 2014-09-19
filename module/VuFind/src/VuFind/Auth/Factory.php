@@ -61,7 +61,16 @@ class Factory
      */
     public static function getManager(ServiceManager $sm)
     {
-        return new Manager($sm->get('VuFind\Config')->get('config'));
+        $config = $sm->get('VuFind\Config')->get('config');
+        $userTable = $sm->get('VuFind\DbTablePluginManager')->get('user');
+        $sessionManager = $sm->get('VuFind\SessionManager');
+        $pm = $sm->get('VuFind\AuthPluginManager');
+        try {
+            $catalog = $sm->get('VuFind\ILSConnection');
+        } catch (\Exception $e) {
+            $catalog = null;
+        }
+        return new Manager($config, $userTable, $sessionManager, $pm, $catalog);
     }
 
     /**

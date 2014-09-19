@@ -26,9 +26,11 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
+    VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException,
+    VuFind\ILS\Connection as ILSConnection,
+    Zend\Config\Config,
+    Zend\Session\SessionManager;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -39,7 +41,7 @@ use VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Manager implements ServiceLocatorAwareInterface
+class Manager
 {
     /**
      * Authentication module (false if uninitialized)
@@ -65,7 +67,7 @@ class Manager implements ServiceLocatorAwareInterface
     /**
      * VuFind configuration
      *
-     * @var \Zend\Config\Config
+     * @var Config
      */
     protected $config;
 
@@ -77,6 +79,13 @@ class Manager implements ServiceLocatorAwareInterface
     protected $session;
 
     /**
+     * ILS connector (null if unavailable)
+     *
+     * @var ILSConnection
+     */
+    protected $catalog;
+
+    /**
      * ILS account information (false if uninitialized)
      *
      * @var array|bool
@@ -84,38 +93,51 @@ class Manager implements ServiceLocatorAwareInterface
     protected $ilsAccount = false;
 
     /**
+     * Gateway to user table in database
+     *
+     * @var UserTable
+     */
+    protected $userTable;
+
+    /**
+     * Session manager
+     *
+     * @var SessionManager
+     */
+    protected $sessionManager;
+
+    /**
+     * Authentication plugin manager
+     *
+     * @var PluginManager
+     */
+    protected $pluginManager;
+
+    /**
      * Cache for current logged in user object
      *
-     * @var \VuFind\Db\Row\User
+     * @var UserRow
      */
     protected $currentUser = false;
 
     /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
-    /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param Config         $config         VuFind configuration
+     * @param UserTable      $userTable      User table gateway
+     * @param SessionManager $sessionManager Session manager
+     * @param ILSConnection  $catalog        ILS connection (null if unavailable)
      */
-    public function __construct(\Zend\Config\Config $config)
-    {
+    public function __construct(Config $config, UserTable $userTable,
+        SessionManager $sessionManager, PluginManager $pm,
+        ILSConnection $catalog = null
+    ) {
         $this->config = $config;
+        $this->userTable = $userTable;
+        $this->sessionManager = $sessionManager;
+        $this->pluginManager = $pm;
+        $this->catalog = $catalog;
         $this->session = new \Zend\Session\Container('Account');
-    }
-
-    /**
-     * Get the ILS connection.
-     *
-     * @return \VuFind\ILS\Connection
-     */
-    protected function getILS()
-    {
-        return $this->getServiceLocator()->get('VuFind\ILSConnection');
     }
 
     /**
@@ -147,8 +169,7 @@ class Manager implements ServiceLocatorAwareInterface
      */
     protected function makeAuth($method)
     {
-        $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
-        $auth = $manager->get($method);
+        $auth = $this->pluginManager->get($method);
         $auth->setConfig($this->config);
         return $auth;
     }
@@ -302,16 +323,11 @@ class Manager implements ServiceLocatorAwareInterface
         ) {
             return false;
         }
-        try {
-            $catalog = $this->getILS();
-        } catch (\Exception $e) {
-            // If we can't connect to the catalog, assume that no special
-            // ILS-related login settings exist -- this prevents ILS errors
-            // from triggering an exception early in initialization before
-            // VuFind is ready to display error messages.
-            return true;
-        }
-        return !$catalog->loginIsHidden();
+        // If we can't connect to the catalog, assume that no special
+        // ILS-related login settings exist -- this prevents ILS errors
+        // from triggering an exception early in initialization before
+        // VuFind is ready to display error messages.
+        return (null === $this->catalog) ? true : !$this->catalog->loginIsHidden();
     }
 
     /**
@@ -340,7 +356,7 @@ class Manager implements ServiceLocatorAwareInterface
 
         // Destroy the session for good measure, if requested.
         if ($destroy) {
-            $this->getServiceLocator()->get('VuFind\SessionManager')->destroy();
+            $this->sessionManager->destroy();
         } else {
             // If we don't want to destroy the session, we still need to empty it.
             // There should be a way to do this through Zend\Session, but there
@@ -364,16 +380,14 @@ class Manager implements ServiceLocatorAwareInterface
     /**
      * Checks whether the user is logged in.
      *
-     * @return \VuFind\Db\Row\User|bool Object if user is logged in, false
-     * otherwise.
+     * @return UserRow|bool Object if user is logged in, false otherwise.
      */
     public function isLoggedIn()
     {
         // If user object is not in cache, but user ID is in session,
         // load the object from the database:
         if (!$this->currentUser && isset($this->session->userId)) {
-            $results = $this->getServiceLocator()
-                ->get('VuFind\DbTablePluginManager')->get('user')
+            $results = $this->userTable
                 ->select(array('id' => $this->session->userId));
             $this->currentUser = count($results) < 1
                 ? false : $results->current();
@@ -398,7 +412,7 @@ class Manager implements ServiceLocatorAwareInterface
     /**
      * Updates the user information in the session.
      *
-     * @param \VuFind\Db\Row\User $user User object to store in the session
+     * @param UserRow $user User object to store in the session
      *
      * @return void
      */
@@ -416,7 +430,7 @@ class Manager implements ServiceLocatorAwareInterface
      * new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return UserRow New user row.
      */
     public function create($request)
     {
@@ -432,7 +446,7 @@ class Manager implements ServiceLocatorAwareInterface
      * new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return UserRow New user row.
      */
     public function updatePassword($request)
     {
@@ -452,7 +466,7 @@ class Manager implements ServiceLocatorAwareInterface
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserRow Object representing logged-in user.
      */
     public function login($request)
     {
@@ -496,18 +510,14 @@ class Manager implements ServiceLocatorAwareInterface
             return $this->ilsAccount;
         }
 
-        try {
-            $catalog = $this->getILS();
-        } catch (ILSException $e) {
-            return false;
-        }
-        $user = $this->isLoggedIn();
-
         // Fail if no username is found, but allow a missing password (not every ILS
         // requires a password to connect).
-        if ($user && isset($user->cat_username) && !empty($user->cat_username)) {
+        if (null !== $this->catalog
+            && ($user = $this->isLoggedIn())
+            && isset($user->cat_username) && !empty($user->cat_username)
+        ) {
             try {
-                $patron = $catalog->patronLogin(
+                $patron = $this->catalog->patronLogin(
                     $user->cat_username, $user->getCatPassword()
                 );
             } catch (ILSException $e) {
@@ -540,8 +550,8 @@ class Manager implements ServiceLocatorAwareInterface
     public function newCatalogLogin($username, $password)
     {
         try {
-            $catalog = $this->getILS();
-            $result = $catalog->patronLogin($username, $password);
+            $result = ($this->catalog === null)
+                ? false : $this->catalog->patronLogin($username, $password);
         } catch (ILSException $e) {
             return false;
         }
@@ -555,29 +565,6 @@ class Manager implements ServiceLocatorAwareInterface
             return $result;
         }
         return false;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Manager
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**
