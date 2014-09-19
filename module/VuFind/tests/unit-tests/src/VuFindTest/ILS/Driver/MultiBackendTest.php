@@ -48,7 +48,9 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
 
         $this->setExpectedException('VuFind\Exception\ILS');
-        $test = new MultiBackend(new \VuFind\Config\PluginManager());
+        $test = new MultiBackend(
+            new \VuFind\Config\PluginManager(), $this->getMockILSAuthenticator()
+        );
         $test->init();
     }
 
@@ -84,7 +86,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             ->will(
                 $this->throwException(new \Zend\Config\Exception\RuntimeException())
             );
-        $driver = new MultiBackend($mockPM);
+        $driver = new MultiBackend($mockPM, $this->getMockILSAuthenticator());
         $driver->setConfig(array('Drivers' => array()));
         $driver->init();
         $val = $this->callMethod($driver, 'getDriverConfig', array('bad'));
@@ -650,10 +652,24 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getDriver()
     {
-        $driver = new MultiBackend($this->getPluginManager());
+        $driver = new MultiBackend(
+            $this->getPluginManager(), $this->getMockILSAuthenticator()
+        );
         $driver->setConfig(array('Drivers' => array()));
         $driver->init();
         return $driver;
+    }
+
+    /**
+     * Get a mock ILS authenticator
+     *
+     * @return \VuFind\Auth\ILSAuthenticator
+     */
+    protected function getMockILSAuthenticator()
+    {
+        return $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
