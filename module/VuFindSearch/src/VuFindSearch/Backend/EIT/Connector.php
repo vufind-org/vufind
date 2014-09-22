@@ -149,8 +149,6 @@ class Connector
         $params->set('pwd', $this->pwd);
         $response = $this->call('GET', $params->getArrayCopy(), false);
         $xml = simplexml_load_string($response);
-        $docs = isset($xml->SearchResults->records)
-            ? $xml->SearchResults->record : array();
         $finalDocs = array();
         foreach ($xml->SearchResults->records->rec as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());
@@ -173,7 +171,7 @@ class Connector
     public function checkForHttpError($result)
     {
         if (!$result->isSuccess()) {
-            throw HttpErrorException::createFromResponse($response);
+            throw HttpErrorException::createFromResponse($result);
         }
     }
 
@@ -242,8 +240,6 @@ class Connector
         $this->client->resetParameters();
         $response = $this->call('GET', $params->getArrayCopy(), false);
         $xml = simplexml_load_string($response);
-        $docs = isset($xml->SearchResults->records)
-            ? $xml->SearchResults->record : array();
         $finalDocs = array();
         foreach ($xml->SearchResults->records->rec as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());

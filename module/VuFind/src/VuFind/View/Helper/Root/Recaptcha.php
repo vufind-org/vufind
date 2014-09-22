@@ -104,8 +104,6 @@ class Recaptcha extends AbstractHelper
             $errorPart = '&error=' . urlencode($params['error']);
         }
 
-        $reCaptchaOptions = '';
-
         $options = $this->recaptcha->getOptions();
         if (!empty($options)) {
             $encoded = \Zend\Json\Json::encode($options);
