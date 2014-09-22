@@ -140,7 +140,8 @@ class Factory
         return new SolrAuth(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
         );
     }
 
@@ -156,7 +157,8 @@ class Factory
         return new SolrDefault(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
         );
     }
 
@@ -172,7 +174,8 @@ class Factory
         $driver = new SolrMarc(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
         );
         $driver->attachILS(
             $sm->getServiceLocator()->get('VuFind\ILSConnection'),
@@ -194,7 +197,8 @@ class Factory
         return new SolrReserves(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
         );
     }
 
@@ -211,7 +215,7 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('website'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('website')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
         );
     }
 

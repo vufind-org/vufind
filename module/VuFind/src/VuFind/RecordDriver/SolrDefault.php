@@ -105,6 +105,13 @@ class SolrDefault extends AbstractBase
     protected $hierarchyDriver = null;
 
     /**
+     * Hierarchical facets
+     *
+     * @var string
+     */
+    protected $hierarchicalFacets = '';
+
+    /**
      * Highlighting details
      *
      * @var array
@@ -119,9 +126,10 @@ class SolrDefault extends AbstractBase
      * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
      * @param \Zend\Config\Config $searchSettings Search-specific configuration file
+     * @param \Zend\Config\Config $facetSettings  Facet-specific configuration file
      */
     public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null
+        $searchSettings = null, $facetSettings = null
     ) {
         // Turn on highlighting/snippets as needed:
         $this->highlight = !isset($searchSettings->General->highlighting)
@@ -136,6 +144,10 @@ class SolrDefault extends AbstractBase
             foreach ($searchSettings->Snippet_Captions as $key => $value) {
                 $this->snippetCaptions[$key] = $value;
             }
+        }
+        if (isset($facetSettings->Results_Settings->hierarchicalFacets)) {
+            $this->hierarchicalFacets
+                = $facetSettings->Results_Settings->hierarchicalFacets;
         }
         parent::__construct($mainConfig, $recordConfig);
     }
@@ -418,7 +430,24 @@ class SolrDefault extends AbstractBase
      */
     public function getFormats()
     {
-        return isset($this->fields['format']) ? $this->fields['format'] : array();
+        if (empty($this->fields['format'])) {
+            return array();
+        }
+
+        if ($this->hierarchicalFacets == '*'
+            || in_array('format', explode(',', $this->hierarchicalFacets))
+        ) {
+            $results = array();
+            foreach ($this->fields['format'] as $format) {
+                // Only show the current level part
+                $parts = explode('/', $format);
+                $results[] = $parts[$parts[0] + 1];
+            }
+            // Only display unique values for e.g. hierarchy of Book -> Book
+            return array_unique($results);
+        }
+
+        return $this->fields['format'];
     }
 
     /**
