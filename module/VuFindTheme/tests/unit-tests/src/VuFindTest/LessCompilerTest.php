@@ -98,7 +98,7 @@ class LessCompilerTest extends Unit\TestCase
         $perms = fileperms($temp);
         $this->testDest = $temp . '/vufind_less_comp_test/';
         if (!($perms & 0x0002)) {
-            $markTestSkipped('No write permissions in system temporary file');
+            $this->markTestSkipped('No write permissions in system temporary file');
         }
         $this->compiler = new LessCompiler();
         $this->compiler->setBasePath($temp . '/vufind_less_comp_test');
