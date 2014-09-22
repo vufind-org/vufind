@@ -147,7 +147,7 @@ class Connector
         $params->set('numrec', $limit);
         $params->set('prof', $this->prof);
         $params->set('pwd', $this->pwd);
-        $response = $this->call('POST', $params->getArrayCopy(), false);
+        $response = $this->call('GET', $params->getArrayCopy(), false);
         $xml = simplexml_load_string($response);
         $docs = isset($xml->SearchResults->records)
             ? $xml->SearchResults->record : array();
@@ -216,7 +216,7 @@ class Connector
         // Send Request
         $this->client->resetParameters();
         $this->client->setUri($this->base . '?' . $queryString . $dblist);
-        $result = $this->client->send();
+        $result = $this->client->setMethod($method)->send();
         $body = $result->getBody();
         $xml = simplexml_load_string($body);
         $this->debug(print_r($xml, true));
@@ -240,7 +240,7 @@ class Connector
         $params->set('pwd', $this->pwd);
         $params->set('query', $query);
         $this->client->resetParameters();
-        $response = $this->call('POST', $params->getArrayCopy(), false);
+        $response = $this->call('GET', $params->getArrayCopy(), false);
         $xml = simplexml_load_string($response);
         $docs = isset($xml->SearchResults->records)
             ? $xml->SearchResults->record : array();
