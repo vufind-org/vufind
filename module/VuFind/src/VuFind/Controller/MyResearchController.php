@@ -224,6 +224,10 @@ class MyResearchController extends AbstractBase
      */
     public function userloginAction()
     {
+        // Don't log in if already logged in!
+        if ($this->getAuthManager()->isLoggedIn()) {
+            return $this->redirect()->toRoute('home');
+        }
         $this->clearFollowupUrl();
         $this->setFollowupUrlToReferer();
         if ($si = $this->getSessionInitiator()) {
