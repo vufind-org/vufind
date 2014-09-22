@@ -51,6 +51,7 @@
         "jasig/phpcas": "*",
         "johnwohlers/sip2": "dev-master",
         "mobileesp/mdetect": "dev-master",
+        "ocramius/proxy-manager": "*",
         "oyejorge/less.php": "*",
         "pear-pear.php.net/file_marc": "*",
         "pear-pear.php.net/pear": "*",

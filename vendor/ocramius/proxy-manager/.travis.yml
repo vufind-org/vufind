@@ -1,0 +1,23 @@
+language: php
+
+php:
+  - 5.3.3
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - hhvm
+
+before_script:
+  - composer self-update
+  - composer update --prefer-source; composer install --dev --prefer-source;
+
+script:
+  - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml --exclude-group Performance
+  - ./vendor/bin/phpunit ./tests/language-feature-scripts/
+  - php -n ./vendor/bin/phpunit --group=Performance
+  - ./vendor/bin/phpcs --standard=PSR2 ./src/ ./tests/
+
+matrix:
+  allow_failures:
+    - php: hhvm

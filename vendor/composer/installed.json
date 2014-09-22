@@ -838,5 +838,71 @@
             "source": "https://github.com/zendframework/ZendService_ReCaptcha/tree/release-2.0.1",
             "issues": "https://github.com/zendframework/ZendService_ReCaptcha/issues"
         }
+    },
+    {
+        "name": "ocramius/proxy-manager",
+        "version": "0.5.1",
+        "version_normalized": "0.5.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Ocramius/ProxyManager.git",
+            "reference": "eaaf10f9a24ffd79a3e388809f6d61f229e261bd"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/eaaf10f9a24ffd79a3e388809f6d61f229e261bd",
+            "reference": "eaaf10f9a24ffd79a3e388809f6d61f229e261bd",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "zendframework/zend-code": ">2.2.5,<3.0"
+        },
+        "require-dev": {
+            "ext-phar": "*",
+            "phpunit/phpunit": "~3.7",
+            "squizlabs/php_codesniffer": "1.5.*"
+        },
+        "suggest": {
+            "ocramius/generated-hydrator": "To have very fast object to array to object conversion for ghost objects",
+            "zendframework/zend-json": "To have the JsonRpc adapter (Remote Object feature)",
+            "zendframework/zend-soap": "To have the Soap adapter (Remote Object feature)",
+            "zendframework/zend-stdlib": "To use the hydrator proxy",
+            "zendframework/zend-xmlrpc": "To have the XmlRpc adapter (Remote Object feature)"
+        },
+        "time": "2014-03-12 14:00:19",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "0.6.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ProxyManager\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Marco Pivetta",
+                "email": "ocramius@gmail.com",
+                "homepage": "http://ocramius.github.com/",
+                "role": "Developer"
+            }
+        ],
+        "description": "A library providing utilities to generate, instantiate and generally operate with Object Proxies",
+        "homepage": "https://github.com/Ocramius/ProxyManager",
+        "keywords": [
+            "aop",
+            "lazy loading",
+            "proxy",
+            "proxy pattern",
+            "service proxies"
+        ]
     }
 ]

@@ -61,9 +61,22 @@ class Factory
      */
     public static function getILSAuthenticator(ServiceManager $sm)
     {
-        $auth = $sm->get('VuFind\AuthManager');
-        $catalog = $sm->get('VuFind\ILSConnection');
-        return new ILSAuthenticator($auth, $catalog);
+        // Construct the ILS authenticator as a lazy loading value holder so that
+        // the object is not instantiated until it is called. This helps break a
+        // potential circular dependency with the MultiBackend driver as well as
+        // saving on initialization costs in cases where the authenticator is not
+        // actually utilized.
+        $callback = function (& $wrapped, $proxy) use ($sm) {
+            // Generate wrapped object:
+            $auth = $sm->get('VuFind\AuthManager');
+            $catalog = $sm->get('VuFind\ILSConnection');
+            $wrapped = new ILSAuthenticator($auth, $catalog);
+
+            // Indicate that initialization is complete to avoid reinitialization:
+            $proxy->setProxyInitializer(null);
+        };
+        $factory = new \ProxyManager\Factory\LazyLoadingValueHolderFactory();
+        return $factory->createProxy('VuFind\Auth\ILSAuthenticator', $callback);
     }
 
     /**
