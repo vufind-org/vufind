@@ -4,7 +4,7 @@
 <? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
 <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
   <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" data-ajax="false">
-    <input type="hidden" name="auth_method" value="<?=$this->auth()->getActiveAuthMethod()?>" />
+    <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>" />
     <div data-role="fieldcontain">
       <?=$this->auth()->getLoginFields()?>
     </div>
@@ -13,10 +13,10 @@
     </div>
   </form>
   <? if ($account->supportsCreation()): ?>
-    <a rel="external" data-role="button" class="new_account" href="<?=$this->url('myresearch-account')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+    <a rel="external" data-role="button" class="new_account" href="<?=$this->url('myresearch-account')?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
   <? endif; ?>
   <? if ($account->supportsRecovery()): ?>
-    <a rel="external" data-role="button" class="recover_password" href="<?=$this->url('myresearch-recover')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
+    <a rel="external" data-role="button" class="recover_password" href="<?=$this->url('myresearch-recover')?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
   <? endif; ?>
 <? else: ?>
   <a rel="external" data-role="button" href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>

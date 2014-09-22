@@ -213,19 +213,15 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Does the class allow for authentication from more than one strategy?
-     * If so return an array that lists the classes for the strategies allowed.
+     * Return an array of authentication options allowed by this class.
      *
-     * @return array | bool
+     * @return array
      */
-    public function getClasses()
+    public function getSelectableAuthOptions()
     {
-        $classes = array();
-        foreach ($this->strategies as $strategy) {
-            $classes[] = get_class($this->manager->get($strategy));
-        }
-        return $classes;
+        return $this->strategies;
     }
+
     /**
      * Perform cleanup at logout time.
      *

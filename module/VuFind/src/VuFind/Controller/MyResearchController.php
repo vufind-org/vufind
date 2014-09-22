@@ -143,12 +143,10 @@ class MyResearchController extends AbstractBase
         if ($this->getAuthManager()->isLoggedIn()) {
             return $this->redirect()->toRoute('myresearch-home');
         }
-        // if the current auth class proxies others, we'll get the proxied
-        //   auth method as a querystring parameter.
-        $method = trim($this->params()->fromQuery('auth_method'));
         // If authentication mechanism does not support account creation, send
         // the user away!
-        if (!$this->getAuthManager()->supportsCreation($method)) {
+        $this->setUpAuthenticationFromRequest();
+        if (!$this->getAuthManager()->supportsCreation()) {
             return $this->forwardTo('MyResearch', 'Home');
         }
 
@@ -1118,8 +1116,8 @@ class MyResearchController extends AbstractBase
     public function recoverAction()
     {
         // Make sure we're configured to do this
-        $method = trim($this->params()->fromQuery('auth_method'));
-        if (!$this->getAuthManager()->supportsRecovery($method)) {
+        $this->setUpAuthenticationFromRequest();
+        if (!$this->getAuthManager()->supportsRecovery()) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_disabled');
             return $this->redirect()->toRoute('myresearch-home');
@@ -1142,7 +1140,7 @@ class MyResearchController extends AbstractBase
         // If we have a submitted form
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             if ($user) {
-                $this->sendRecoveryEmail($user, $this->getConfig(), $method);
+                $this->sendRecoveryEmail($user, $this->getConfig());
             } else {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_user_not_found');
@@ -1156,11 +1154,10 @@ class MyResearchController extends AbstractBase
      *
      * @param \VuFind\Db\Row\User $user   User object we're recovering
      * @param \VuFind\Config      $config Configuration object
-     * @param string              $method Active authentication method
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendRecoveryEmail($user, $config, $method)
+    protected function sendRecoveryEmail($user, $config)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1182,6 +1179,7 @@ class MyResearchController extends AbstractBase
                     $user->updateHash();
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
+                    $method = $this->getAuthManager()->getAuthMethod();
                     // Custom template for emails (text-only)
                     $message = $renderer->render(
                         'Email/recover-password.phtml',
@@ -1232,8 +1230,10 @@ class MyResearchController extends AbstractBase
                 $user = $table->getByVerifyHash($hash);
                 // If the hash is valid, forward user to create new password
                 if (null != $user) {
+                    $this->setUpAuthenticationFromRequest();
                     $view = $this->createViewModel();
-                    $view->auth_method = $this->params()->fromQuery('auth_method');
+                    $view->auth_method
+                        = $this->getAuthManager()->getAuthMethod();
                     $view->hash = $hash;
                     $view->username = $user->username;
                     $view->useRecaptcha
@@ -1367,5 +1367,18 @@ class MyResearchController extends AbstractBase
     protected function getHashAge($hash)
     {
         return intval(substr($hash, -10));
+    }
+
+    /**
+     * Configure the authentication manager to use a user-specified method.
+     *
+     * @return void
+     */
+    protected function setUpAuthenticationFromRequest()
+    {
+        $method = trim($this->params()->fromQuery('auth_method'));
+        if (!empty($method)) {
+            $this->getAuthManager()->setAuthMethod($method);
+        }
     }
 }
