@@ -91,7 +91,10 @@ class ChoiceAuth extends AbstractBase
      */
     public function __construct() 
     {
+        // Set up session container and load cached strategy (if found):
         $this->session = new \Zend\Session\Container('ChoiceAuth');
+        $this->strategy = isset($this->session->auth_method)
+            ? $this->session->auth_method : false;
     }
 
     /**
@@ -144,46 +147,23 @@ class ChoiceAuth extends AbstractBase
     {
         $this->username = trim($request->getPost()->get('username'));
         $this->password = trim($request->getPost()->get('password'));
-        $this->strategy = trim($request->getPost()->get('auth_method'));
 
+        // Set new strategy; fall back to old one if there is a problem:
+        $defaultStrategy = $this->strategy;
+        $this->strategy = trim($request->getPost()->get('auth_method'));
         if ($this->strategy == '') {
-            if (isset($this->session->auth_method)) {
-                $this->strategy = $this->session->auth_method;
-            } else {
+            $this->strategy = $defaultStrategy;
+            if (empty($this->strategy)) {
                 throw new AuthException('authentication_error_technical');
             }
         }
 
         // Do the actual authentication work:
-        return $this->authUser($request);
-    }
-
-    /**
-     * Do the actual work of authenticating the user (supports 
-     * authenticate()).
-     *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
-     *
-     * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
-     */
-    protected function authUser($request)
-    {
-        try {
-            $user = $this->proxyAuthMethod('authenticate', func_get_args());
-            if ($user) {
-                $this->session->auth_method = $this->strategy;
-            }
-        } catch (AuthException $exception) {
-            throw $exception;
+        $user = $this->proxyAuthMethod('authenticate', func_get_args());
+        if ($user) {
+            $this->session->auth_method = $this->strategy;
         }
-
-        if (isset($user)) {
-            return $user;
-        } else {
-            throw new AuthException('authentication_error_technical');
-        }
+        return $user;
     }
 
     /**
@@ -232,14 +212,15 @@ class ChoiceAuth extends AbstractBase
      */
     public function logout($url)
     {
-        // clear user's login choice
+        // clear user's login choice, if necessary:
         if (isset($this->session->auth_method)) {
-            $this->strategy = $this->session->auth_method;
             unset($this->session->auth_method);
-            return $this->proxyAuthMethod('logout', func_get_args());
         }
-        // No special cleanup or URL modification needed by default.
-        return $url;
+
+        // If we have a selected strategy, proxy the appropriate class; otherwise,
+        // perform default behavior of returning unmodified URL:
+        return $this->strategy
+            ? $this->proxyAuthMethod('logout', func_get_args()) : $url;
     }
 
     /**
@@ -253,12 +234,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function getSessionInitiator($target)
     {
-        if (isset($this->session->auth_method)) {
-            // if user has chosen and logged in; use that auth's method
-            $this->strategy = $this->session->auth_method;
-            return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
-        }
-        return false;
+        return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
     }
 
     /**
@@ -273,6 +249,11 @@ class ChoiceAuth extends AbstractBase
      */
     protected function proxyAuthMethod($method, $params)
     {
+        // If no strategy is found, we can't do anything -- return false.
+        if (!$this->strategy) {
+            return false;
+        }
+
         $manager = $this->getPluginManager();
         $authenticator = $manager->get($this->strategy);
         $authenticator->setConfig($this->getConfig());
