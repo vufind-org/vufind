@@ -1,5 +1,12 @@
 /*global path*/
 
+function showhideTabs(id) {
+     $('#record-tabs .tab-pane.active').removeClass('active');
+      $('#'+id).addClass('active');
+      $('#'+id).tab('show');
+}
+
+
 $(document).ready(function() {
   $('.getFull').click(function(type) {
 	var div_id = $(this).parent().parent().find(".hiddenId")[0].value;

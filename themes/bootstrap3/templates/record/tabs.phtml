@@ -25,8 +25,8 @@
 
     <a name="tabnav"></a>
     <ul class="recordTabs nav nav-tabs">
-	<li>
-	<a id="<?=$this->translate('information') ?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#tabnav">
+	<li class="active">
+	<a id="<?=$this->translate('information') ?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("information_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' href="#information-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 	<?=$this->translate('information') ?>
         </a>
 	</li>
@@ -35,22 +35,22 @@
         $desc = $obj->getDescription();
       ?>
       <li>
-        <a id="<?=strtolower($tab)?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
+        <a id="<?=strtolower($tab)?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("<?=strtolower($tab)?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' href="#<?=strtolower($tab)?>-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
       </li>
       <? endforeach; ?>
         <li class="hidden">
-        <a id="tools_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+        <a id="tools_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("tools_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' href="#tools-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 Tools
         </a>
         </li>
-        <li class="active">
-        <a id="similar_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#tabnav">
+        <li>
+        <a id="similar_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("similar_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' href="#similar-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 <?=$this->transEsc("Similar Items")?>
         </a>
         </li>
     </ul>
   <div class="tab-content">
-    <div class="tab-pane" id="information-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+    <div class="tab-pane active" id="information-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 <?=$this->record($this->driver)->getCoreMetadata()?>	
     </div>
        <? foreach ($this->tabs as $tab => $obj): ?>
@@ -61,7 +61,7 @@ Tools
     <div class="tab-pane" id="tools-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
   <?=$this->record($this->driver)->getToolbar()?>
     </div>
-      <div class="tab-pane active" id="similar-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+      <div class="tab-pane" id="similar-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
   <? foreach ($this->related()->getList($this->driver) as $current): ?>
     <?=$this->related()->render($current)?>
   <? endforeach; ?>
