@@ -588,7 +588,7 @@ class AbstractSearch extends AbstractBase
         // Reformat for convenience:
         $formatted = array();
         foreach ($checkboxFacets as $filter => $desc) {
-            $current = compact("desc", "filter");
+            $current = compact('desc', 'filter');
             $current['selected']
                 = $savedSearch && $savedSearch->getParams()->hasFilter($filter);
             // We don't want to double-display checkboxes on advanced search, so
