@@ -15,15 +15,58 @@
     return preg_replace("/\W/", "_", $op);
   }
 ?>
-
-<div>
-  <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+<div style="padding: 5px">
+  <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="tabs_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=escapeJSAttr($this->driver->getUniqueId())?>" />
 
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
-   <?=$this->record($this->driver)->getCoreMetadata()?>
-  </div>
+<!--   <?=$this->record($this->driver)->getCoreMetadata()?> -->
 
+    <a name="tabnav"></a>
+    <ul class="recordTabs nav nav-tabs">
+	<li>
+	<a id="<?=$this->translate('information') ?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#tabnav">
+	<?=$this->translate('information') ?>
+        </a>
+	</li>
+	<? foreach ($this->tabs as $tab => $obj): ?>
+      <? 
+        $desc = $obj->getDescription();
+      ?>
+      <li>
+        <a id="<?=strtolower($tab)?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
+      </li>
+      <? endforeach; ?>
+        <li class="hidden">
+        <a id="tools_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+Tools
+        </a>
+        </li>
+        <li class="active">
+        <a id="similar_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" href="#tabnav">
+<?=$this->transEsc("Similar Items")?>
+        </a>
+        </li>
+    </ul>
+  <div class="tab-content">
+    <div class="tab-pane" id="information-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+<?=$this->record($this->driver)->getCoreMetadata()?>	
+    </div>
+       <? foreach ($this->tabs as $tab => $obj): ?>
+     <div class="tab-pane" id="<?=strtolower($tab)?>-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+      <?=$this->record($this->driver)->getTab($obj)?>
+	</div>
+     <? endforeach; ?>
+    <div class="tab-pane" id="tools-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+  <?=$this->record($this->driver)->getToolbar()?>
+    </div>
+      <div class="tab-pane active" id="similar-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+  <? foreach ($this->related()->getList($this->driver) as $current): ?>
+    <?=$this->related()->render($current)?>
+  <? endforeach; ?>
+      </div>
+  </div>
+</div>
   <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
 </div>
