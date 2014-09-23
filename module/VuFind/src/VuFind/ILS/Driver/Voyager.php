@@ -1445,9 +1445,6 @@ class Voyager extends AbstractBase
      */
     protected function getFineSQL($patron)
     {
-        // Modifier
-        $sqlSelectModifier = "distinct";
-
         // Expressions
         $sqlExpressions = array(
             "FINE_FEE_TYPE.FINE_FEE_DESC",
@@ -1478,7 +1475,6 @@ class Voyager extends AbstractBase
         $sqlBind = array(':id' => $patron['id']);
 
         $sqlArray = array(
-            'modifier' => $sqlSelectModifier,
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
