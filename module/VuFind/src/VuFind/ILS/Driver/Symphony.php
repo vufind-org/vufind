@@ -1425,7 +1425,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
             }
 
             if ($holdDetails['id'] != null) {
-                $options['titleID'] = $holdDetails['id'];
+                $options['titleKey'] = $holdDetails['id'];
             }
 
             if ($holdDetails['pickUpLocation'] != null) {
