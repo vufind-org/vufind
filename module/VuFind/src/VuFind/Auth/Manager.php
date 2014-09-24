@@ -414,8 +414,7 @@ class Manager
      */
     public function updatePassword($request)
     {
-        $authMethod = $request->getPost()->get('auth_method');
-        $user = $this->getAuth($authMethod)->updatePassword($request);
+        $user = $this->getAuth()->updatePassword($request);
         $this->updateSession($user);
         return $user;
     }

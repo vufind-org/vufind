@@ -249,6 +249,10 @@ class ChoiceAuth extends AbstractBase
      */
     public function updatePassword($request)
     {
+        // When a user is recovering a forgotten password, there may be an
+        // auth method included in the request since we haven't set an active
+        // strategy yet -- thus we should check for it.
+        $this->setStrategyFromRequest($request);
         return $this->proxyAuthMethod('updatePassword', func_get_args());
     }
 
