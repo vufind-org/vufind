@@ -136,6 +136,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         try {
             $client = $this->httpService
                 ->createClient($this->url);
+            // Set timeout value
+            $timeout = isset($this->config['Catalog']['http_timeout'])
+            ? $this->config['Catalog']['http_timeout'] : 30;
+            $client->setOptions(array('timeout' => $timeout));
             $client->setRawBody($xml);
             $client->setEncType('application/xml; "charset=utf-8"');
             $result = $client->setMethod('POST')->send();
@@ -424,11 +428,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     $items = $current->xpath('ns1:ItemInformation');
                     
                     foreach ($items as $item) {
-
                         // Get data on the current chunk of data:
                         $chunk = $this->getStatusForChunk($item);
         
-                        $chunk['callnumber'] = empty($chunk['callnumber']) ? $holdCallNo : $chunk['callnumber'];
+                        $chunk['callnumber'] = empty($chunk['callnumber']) ? 
+                            $holdCallNo : $chunk['callnumber'];
                         
                         // Each bibliographic ID has its own key in the $status array; make
                         // sure we initialize new arrays when necessary and then add the
