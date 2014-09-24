@@ -25,7 +25,7 @@
     <a name="tabnav"></a>
     <ul class="recordTabs nav nav-tabs">
 	<li class="active">
-	<a id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxLoadTab("information_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toogle="tab" data-target="#information-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+	<a id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxLoadTab("information_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toggle="tab" data-target="#information_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
 	<?=$this->translate('information') ?>
         </a>
 	</li>
@@ -34,33 +34,31 @@
         $desc = $obj->getDescription();
       ?>
       <li>
-        <a id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxLoadTab("<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toolge="tab" data-target="#<?=strtolower($tab)?>-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
+        <a id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxLoadTab("<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toolge="tab" data-target="#<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab"><?=$this->transEsc($desc)?></a>
       </li>
       <? endforeach; ?>
         <li class="hidden">
-        <a id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxLoadTab("tools_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toogle="tab" data-target="#tools-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+        <a id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxLoadTab("tools_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toggle="tab" data-target="#tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
 Tools
         </a>
         </li>
         <li>
-        <a id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxLoadTab("similar_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toogle="tab" data-target="#similar-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+        <a id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxLoadTab("similar_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toggle="tab" data-target="#similar_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
 <?=$this->transEsc("Similar Items")?>
         </a>
         </li>
     </ul>
   <div class="tab-content">
-    <div class="tab-pane active" id="information-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+    <div class="tab-pane active" id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
 <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>
-       <? foreach ($this->tabs as $tab => $obj): ?>
-     <div class="tab-pane" id="<?=strtolower($tab)?>-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-      <?=$this->record($this->driver)->getTab($obj)?>
-	</div>
-     <? endforeach; ?>
-    <div class="tab-pane" id="tools-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+    <? foreach ($this->tabs as $tab => $obj): ?>
+      <div class="tab-pane" id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab"></div>
+    <? endforeach; ?>
+    <div class="tab-pane" id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
   <?=$this->record($this->driver)->getToolbar()?>
     </div>
-      <div class="tab-pane" id="similar-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+      <div class="tab-pane" id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
   <? foreach ($this->related()->getList($this->driver) as $current): ?>
     <?=$this->related()->render($current)?>
   <? endforeach; ?>

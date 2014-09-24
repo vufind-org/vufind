@@ -1,27 +1,29 @@
 /*global path, registerTabEvents*/
 
-function showhideTabs(id) {
-  $('#record-tabs .tab-pane.active').removeClass('active');
-  $('#'+id).addClass('active');
-  $('#'+id).tab('show');
-}
-
 function ajaxLoadTab(tabid) {
   var id = $('#'+tabid).parent().parent().parent().find(".hiddenId")[0].value;
-  $.ajax({
-    url: path + '/Record/'+id+'/AjaxTab',
-    type: 'POST',
-    data: {tab: tabid},
-    success: function(data) {
-      $('#record-tabs .tab-pane.active').removeClass('active');
-      $('#'+tabid+'-tab').html(data).addClass('active');
-      $('#'+tabid).tab('show');
-      registerTabEvents();
-      if(typeof syn_get_widget === "function") {
-        syn_get_widget();
+  console.log(tabid);
+  var tab = tabid.split('_');
+  tab = tab[0];
+  if($('#'+tabid+'-tab').is(':empty')) {
+    $.ajax({
+      url: path + '/Record/'+id+'/AjaxTab',
+      type: 'POST',
+      data: {tab: tab},
+      success: function(data) {
+        $('#'+tabid).parent().parent().find('#record-tabs .tab-pane.active').removeClass('active');
+        $('#'+tabid+'-tab').html(data).addClass('active');
+        $('#'+tabid).tab('show');
+        if(typeof syn_get_widget === "function") {
+          syn_get_widget();
+        }
       }
-    }
-  });
+    });
+  } else {
+    $('#'+tabid).parent().parent().find('#record-tabs .tab-pane.active').removeClass('active');
+    $('#'+tabid+'-tab').addClass('active');
+    $('#'+tabid).tab('show');
+  }
 }
 
 $(document).ready(function() {
