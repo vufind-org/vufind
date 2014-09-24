@@ -28,9 +28,9 @@
   </div>
 <div class="panel-group" id="accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>">
   <div class="panel panel-default">
-    <div class="panel-heading">
+    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#title-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+        <a class="accordion-toogle">
           <?=$this->translate('information') ?>
         </a>
       </h4>
@@ -43,9 +43,9 @@
   </div>
 
   <div class="panel panel-default">
-    <div class="panel-heading">
+    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#tools-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+        <a class="accordion-toogle">
 Tools
         </a>
       </h4>
@@ -58,9 +58,9 @@ Tools
   </div>
 
   <div class="panel panel-default">
-    <div class="panel-heading">
+    <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#similar-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#similar-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+        <a class="accordion-toogle">
 <?=$this->transEsc("Similar Items")?>
         </a>
       </h4>
@@ -78,9 +78,9 @@ Tools
     <? foreach ($this->tabs as $tab => $obj): ?>
       <? if ($tab == 'HierarchyTree') continue; ?>
       <div class="panel panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
           <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" href="#<?=(strtolower($tab))?>-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+            <a class="accordion-toogle">
               <?=$this->transEsc($tab)?>
             </a>
           </h4>
