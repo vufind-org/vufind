@@ -13,9 +13,10 @@
         }
       ?>
       </a>
-    </div>
-<? endif; ?>
+<div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
+<? else: ?>
 <div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
+<? endif; ?>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
   <div class="col-sm-2 col-xs-3 left">
@@ -208,4 +209,7 @@
 
   <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
 </div>
-<div id="long_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="col-xs-11 hidden"></div>
+<? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
+<div id="long_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"></div>
+</div>
+<?endif?>
