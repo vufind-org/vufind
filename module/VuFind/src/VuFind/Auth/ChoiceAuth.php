@@ -203,6 +203,17 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * If an authentication strategy has been selected, return the active option.
+     * If not, return false.
+     *
+     * @return bool|string
+     */
+    public function getSelectedAuthOption()
+    {
+        return $this->strategy;
+    }
+
+    /**
      * Perform cleanup at logout time.
      *
      * @param string $url URL to redirect user to after logging out.
@@ -235,6 +246,30 @@ class ChoiceAuth extends AbstractBase
     public function getSessionInitiator($target)
     {
         return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
+    }
+
+    /**
+     * Does this authentication method support password changing
+     *
+     * @return bool
+     */
+    public function supportsPasswordChange()
+    {
+        return $this->proxyAuthMethod('supportsPasswordChange', func_get_args());
+    }
+
+    /**
+     * Update a user's password from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     */
+    public function updatePassword($request)
+    {
+        return $this->proxyAuthMethod('updatePassword', func_get_args());
     }
 
     /**

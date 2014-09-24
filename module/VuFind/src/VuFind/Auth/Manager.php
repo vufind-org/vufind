@@ -209,13 +209,23 @@ class Manager
     }
 
     /**
-     * Get the name of the current authentication class.
+     * In VuFind, views are tied to the name of the active authentication class.
+     * This method returns that name so that an appropriate template can be
+     * selected. It supports authentication methods that proxy other authentication
+     * methods (see ChoiceAuth for an example).
      *
      * @return string
      */
-    public function getAuthClass()
+    public function getAuthClassForTemplateRendering()
     {
-        return get_class($this->getAuth());
+        $auth = $this->getAuth();
+        if (is_callable(array($auth, 'getSelectedAuthOption'))) {
+            $selected = $auth->getSelectedAuthOption();
+            if ($selected) {
+                $auth = $this->getAuth($selected);
+            }
+        }
+        return get_class($auth);
     }
 
     /**

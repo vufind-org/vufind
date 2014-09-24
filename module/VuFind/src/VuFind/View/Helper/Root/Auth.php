@@ -73,7 +73,7 @@ class Auth extends \Zend\View\Helper\AbstractHelper
         // Get the current auth module's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // template.
-        $className = $this->getManager()->getAuthClass();
+        $className = $this->getManager()->getAuthClassForTemplateRendering();
         $topClassName = $className; // for error message
         while (true) {
             // Guess the template name for the current class:
