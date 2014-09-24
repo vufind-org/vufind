@@ -1,4 +1,4 @@
-/*global deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, vufindString */
+/*global deparam, extractClassParams, htmlEncode, Lightbox, path, registerTabEvents, syn_get_widget, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -140,26 +140,6 @@ function registerAjaxCommentRecord() {
   });
   // Delete links
   $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
-}
-
-function registerTabEvents() {
-
-  // register the record comment form to be submitted via AJAX
-  registerAjaxCommentRecord();
-
-  setUpCheckRequest();
-
-  // Place a Hold
-  // Place a Storage Hold
-  // Place an ILL Request
-  $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
-    var parts = $(this).attr('href').split('?');
-    parts = parts[0].split('/');
-    var params = deparam($(this).attr('href'));
-    params.id = parts[parts.length-2];
-    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', parts[parts.length-1], params);
-  });
 }
 
 function ajaxLoadTab(tabid) {
