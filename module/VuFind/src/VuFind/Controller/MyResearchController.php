@@ -145,8 +145,8 @@ class MyResearchController extends AbstractBase
         }
         // If authentication mechanism does not support account creation, send
         // the user away!
-        $this->setUpAuthenticationFromRequest();
-        if (!$this->getAuthManager()->supportsCreation()) {
+        $method = trim($this->params()->fromQuery('auth_method'));
+        if (!$this->getAuthManager()->supportsCreation($method)) {
             return $this->forwardTo('MyResearch', 'Home');
         }
 
@@ -173,6 +173,12 @@ class MyResearchController extends AbstractBase
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
             }
+        } else {
+            // If we are not processing a submission, we need to simply display
+            // an empty form. In case ChoiceAuth is being used, we may need to
+            // override the active authentication method based on request
+            // parameters to ensure display of the appropriate template.
+            $this->setUpAuthenticationFromRequest();
         }
         return $view;
     }

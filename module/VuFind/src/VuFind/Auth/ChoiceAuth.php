@@ -31,7 +31,7 @@ use VuFind\Exception\Auth as AuthException;
 /**
  * ChoiceAuth Authentication plugin
  *
- * This module enables a user to choose between two authentication methods. 
+ * This module enables a user to choose between two authentication methods.
  * choices are presented side-by-side and one is manually selected.
  *
  * See config.ini for more details
@@ -51,7 +51,7 @@ class ChoiceAuth extends AbstractBase
      */
     protected $strategies = array();
 
-    /** 
+    /**
      * Auth strategy selected by user
      *
      * @var string
@@ -89,7 +89,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Constructor
      */
-    public function __construct() 
+    public function __construct()
     {
         // Set up session container and load cached strategy (if found):
         $this->session = new \Zend\Session\Container('ChoiceAuth');
@@ -143,23 +143,33 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
-    public function authenticate($request) 
+    public function authenticate($request)
     {
         $this->username = trim($request->getPost()->get('username'));
         $this->password = trim($request->getPost()->get('password'));
-
-        // Set new strategy; fall back to old one if there is a problem:
-        $defaultStrategy = $this->strategy;
-        $this->strategy = trim($request->getPost()->get('auth_method'));
-        if ($this->strategy == '') {
-            $this->strategy = $defaultStrategy;
-            if (empty($this->strategy)) {
-                throw new AuthException('authentication_error_technical');
-            }
-        }
+        $this->setStrategyFromRequest($request);
 
         // Do the actual authentication work:
         $user = $this->proxyAuthMethod('authenticate', func_get_args());
+        if ($user) {
+            $this->session->auth_method = $this->strategy;
+        }
+        return $user;
+    }
+
+    /**
+     * Create a new user account from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     */
+    public function create($request)
+    {
+        $this->setStrategyFromRequest($request);
+        $user = $this->proxyAuthMethod('create', func_get_args());
         if ($user) {
             $this->session->auth_method = $this->strategy;
         }
@@ -298,4 +308,27 @@ class ChoiceAuth extends AbstractBase
         return call_user_func_array(array($authenticator, $method), $params);
     }
 
+    /**
+     * Set the active strategy based on the auth_method value in the request,
+     * if found.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object to check.
+     *
+     * @return void
+     */
+    protected function setStrategyFromRequest($request)
+    {
+        // Set new strategy; fall back to old one if there is a problem:
+        $defaultStrategy = $this->strategy;
+        $this->strategy = trim($request->getPost()->get('auth_method'));
+        if (null === $this->strategy) {
+            $this->strategy = trim($request->getQuery()->get('auth_method'));
+        }
+        if ($this->strategy == '') {
+            $this->strategy = $defaultStrategy;
+            if (empty($this->strategy)) {
+                throw new AuthException('authentication_error_technical');
+            }
+        }
+    }
 }
