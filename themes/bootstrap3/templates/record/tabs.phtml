@@ -26,7 +26,7 @@
     <a name="tabnav"></a>
     <ul class="recordTabs nav nav-tabs">
 	<li class="active">
-	<a id="information_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("information_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' href="#information-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+	<a id="information_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("information_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' data-toogle="tab" data-target="#information-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 	<?=$this->translate('information') ?>
         </a>
 	</li>
@@ -35,16 +35,16 @@
         $desc = $obj->getDescription();
       ?>
       <li>
-        <a id="<?=strtolower($tab)?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("<?=strtolower($tab)?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' href="#<?=strtolower($tab)?>-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
+        <a id="<?=strtolower($tab)?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("<?=strtolower($tab)?>_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' data-toolge="tab" data-target="#<?=strtolower($tab)?>-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
       </li>
       <? endforeach; ?>
         <li class="hidden">
-        <a id="tools_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("tools_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' href="#tools-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+        <a id="tools_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("tools_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' data-toogle="tab" data-target="#tools-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 Tools
         </a>
         </li>
         <li>
-        <a id="similar_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("similar_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' href="#similar-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
+        <a id="similar_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" onclick='showhideTabs("similar_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>")' data-toogle="tab" data-target="#similar-tab_<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
 <?=$this->transEsc("Similar Items")?>
         </a>
         </li>
