@@ -84,18 +84,12 @@ class MyResearchController extends AbstractBase
      */
     public function homeAction()
     {
-        // if the current auth class proxies others, we'll get the proxied
-        //   auth method as a querystring or post parameter.
-        //   Force to post.
-        if ($method = trim($this->params()->fromQuery('auth_method'))) {
-            $this->getRequest()->getPost()->set('auth_method', $method);
-        }
-
         // Process login request, if necessary (either because a form has been
         // submitted or because we're using an external login provider):
         if ($this->params()->fromPost('processLogin')
             || $this->getSessionInitiator()
             || $this->params()->fromPost('auth_method')
+            || $this->params()->fromQuery('auth_method')
         ) {
             try {
                 $this->getAuthManager()->login($this->getRequest());
