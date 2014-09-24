@@ -27,6 +27,7 @@
  */
 namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
+use Zend\Http\PhpEnvironment\Request;
 
 /**
  * ChoiceAuth Authentication plugin
@@ -57,20 +58,6 @@ class ChoiceAuth extends AbstractBase
      * @var string
      */
     protected $strategy;
-
-    /**
-     * Username input
-     *
-     * @var string
-     */
-    protected $username;
-
-    /**
-     * Password input
-     *
-     * @var string
-     */
-    protected $password;
 
     /**
      * Plugin manager for obtaining other authentication objects
@@ -137,43 +124,27 @@ class ChoiceAuth extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
     public function authenticate($request)
     {
-        $this->username = trim($request->getPost()->get('username'));
-        $this->password = trim($request->getPost()->get('password'));
-        $this->setStrategyFromRequest($request);
-
-        // Do the actual authentication work:
-        $user = $this->proxyAuthMethod('authenticate', func_get_args());
-        if ($user) {
-            $this->session->auth_method = $this->strategy;
-        }
-        return $user;
+        return $this->proxyUserLoad($request, 'authenticate', func_get_args());
     }
 
     /**
      * Create a new user account from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * new account details.
+     * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User New user row.
      */
     public function create($request)
     {
-        $this->setStrategyFromRequest($request);
-        $user = $this->proxyAuthMethod('create', func_get_args());
-        if ($user) {
-            $this->session->auth_method = $this->strategy;
-        }
-        return $user;
+        return $this->proxyUserLoad($request, 'create', func_get_args());
     }
 
     /**
@@ -271,8 +242,7 @@ class ChoiceAuth extends AbstractBase
     /**
      * Update a user's password from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * new account details.
+     * @param Request $request Request object containing password change details.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User New user row.
@@ -309,10 +279,37 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Proxy auth method that checks the request for an active method and then
+     * loads a User object from the database (e.g. authenticate or create).
+     *
+     * @param Request $request Request object to check.
+     * @param string  $method the method to proxy
+     * @param array   $params array of params to pass
+     *
+     * @throws AuthException
+     * @return mixed
+     */
+    protected function proxyUserLoad($request, $method, $params)
+    {
+        $this->setStrategyFromRequest($request);
+        try {
+            $user = $this->proxyAuthMethod($method, $params);
+            if (!$user) {
+                throw new AuthException('Unexpected return value');
+            }
+        } catch (AuthException $e) {
+            $this->strategy = false;
+            throw $e;
+        }
+        $this->session->auth_method = $this->strategy;
+        return $user;
+    }
+
+    /**
      * Set the active strategy based on the auth_method value in the request,
      * if found.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object to check.
+     * @param Request $request Request object to check.
      *
      * @return void
      */
