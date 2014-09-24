@@ -287,8 +287,8 @@ class ChoiceAuth extends AbstractBase
      * loads a User object from the database (e.g. authenticate or create).
      *
      * @param Request $request Request object to check.
-     * @param string  $method the method to proxy
-     * @param array   $params array of params to pass
+     * @param string  $method  the method to proxy
+     * @param array   $params  array of params to pass
      *
      * @throws AuthException
      * @return mixed
