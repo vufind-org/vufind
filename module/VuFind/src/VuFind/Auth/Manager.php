@@ -56,6 +56,13 @@ class Manager
     protected $activeAuth;
 
     /**
+     * Whitelist of values allowed to be set into $activeAuth
+     *
+     * @var array
+     */
+    protected $legalAuthOptions;
+
+    /**
      * VuFind configuration
      *
      * @var Config
@@ -108,13 +115,21 @@ class Manager
     public function __construct(Config $config, UserTable $userTable,
         SessionManager $sessionManager, PluginManager $pm
     ) {
+        // Store dependencies:
         $this->config = $config;
-        $this->activeAuth = isset($config->Authentication->method)
-            ? $config->Authentication->method : null;
         $this->userTable = $userTable;
         $this->sessionManager = $sessionManager;
         $this->pluginManager = $pm;
+
+        // Set up session:
         $this->session = new \Zend\Session\Container('Account');
+
+        // Initialize active authentication setting (defaulting to Database
+        // if no setting passed in):
+        $method = isset($config->Authentication->method)
+            ? $config->Authentication->method : 'Database';
+        $this->legalAuthOptions = array($method);
+        $this->setAuthMethod($method);
     }
 
     /**
@@ -464,6 +479,18 @@ class Manager
      */
     public function setAuthMethod($method)
     {
+        // If an illegal option was passed in, block it now:
+        if (!in_array($method, $this->legalAuthOptions)) {
+            throw new \Exception("Illegal authentication method: $method");
+        }
+
+        // Change the setting:
         $this->activeAuth = $method;
+
+        // If this method supports switching to a different method, add those
+        // options to the whitelist:
+        $this->legalAuthOptions = array_unique(
+            array_merge($this->legalAuthOptions, $this->getSelectableAuthOptions())
+        );
     }
 }
