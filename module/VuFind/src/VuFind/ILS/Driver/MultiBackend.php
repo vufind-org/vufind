@@ -903,11 +903,10 @@ class MultiBackend extends AbstractBase
      * CancelStorageRetrievalRequests function.
      *
      * @param array $details An array of item data
-     * @param array $patron  Patron from patronLogin
      *
      * @return string Data for use in a form field
      */
-    public function getCancelStorageRetrievalRequestDetails($details, $patron)
+    public function getCancelStorageRetrievalRequestDetails($details)
     {
         $source = $this->getSource($details['id']);
         $driver = $this->getDriver($source);
