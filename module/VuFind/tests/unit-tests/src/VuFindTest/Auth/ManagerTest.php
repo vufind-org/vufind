@@ -79,6 +79,17 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $config = array('Authentication' => array('method' => 'ChoiceAuth'));
         $manager = $this->getManager($config);
         $this->assertEquals(array('Database', 'Shibboleth'), $manager->getSelectableAuthOptions());
+
+        // Advanced case -- ChoiceAuth's getSelectableAuthOptions returns false.
+        $pm = $this->getMockPluginManager();
+        $mockChoice = $this->getMockBuilder('VuFind\Auth\ChoiceAuth')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(false));
+        $pm->setService('ChoiceAuth2', $mockChoice);
+        $config = array('Authentication' => array('method' => 'ChoiceAuth2'));
+        $manager = $this->getManager($config, null, null, $pm);
+        $this->assertEquals(array('ChoiceAuth2'), $manager->getSelectableAuthOptions());
     }
 
     /**
@@ -362,7 +373,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testUnanticipatedException()
     {
-        $e = new \Exception('What happened here?');
+        $e = new \Exception('It is normal to see this in the error log during testing...');
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
@@ -411,6 +422,24 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test the persistence of a user account in the session.
+     *
+     * @return void
+     */
+    public function testUserLoginFromSession()
+    {
+        $table = $this->getMockUserTable();
+        $user = $this->getMockUser();
+        $userArray = new \ArrayObject();
+        $userArray->append($user);
+        $table->expects($this->once())->method('select')->with($this->equalTo(array('id' => 'foo')))->will($this->returnValue($userArray->getIterator()));
+        $manager = $this->getManager(array(), $table);
+        $session = $this->getProperty($manager, 'session');
+        $session->userId = 'foo';
+        $this->assertEquals($user, $manager->isLoggedIn());
+    }
+
+    /**
      * Get a manager object to test with.
      *
      * @param array          $config         Configuration
@@ -424,9 +453,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     {
         $config = new Config($config);
         if (null === $userTable) {
-            $userTable = $this->getMockBuilder('VuFind\Db\Table\User')
-                ->disableOriginalConstructor()
-                ->getMock();
+            $userTable = $this->getMockUserTable();
         }
         if (null === $sessionManager) {
             $sessionManager = $this->getMockSessionManager();
@@ -435,6 +462,18 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
             $pm = $this->getMockPluginManager();
         }
         return new Manager($config, $userTable, $sessionManager, $pm);
+    }
+
+    /**
+     * Get a mock user table.
+     *
+     * @return UserTable
+     */
+    protected function getMockUserTable()
+    {
+        return $this->getMockBuilder('VuFind\Db\Table\User')
+                ->disableOriginalConstructor()
+                ->getMock();
     }
 
     /**
