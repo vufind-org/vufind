@@ -300,6 +300,78 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test successful login
+     *
+     * @return void
+     */
+    public function testSuccessfulLogin()
+    {
+        $user = $this->getMockUser();
+        $request = $this->getMockRequest();
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('authenticate')->with($request)->will($this->returnValue($user));
+        $manager = $this->getManager(array(), null, null, $pm);
+        $this->assertFalse($manager->isLoggedIn());
+        $this->assertEquals($user, $manager->login($request));
+        $this->assertEquals($user, $manager->isLoggedIn());
+    }
+
+    /**
+     * Test unsuccessful login (\VuFind\Exception\PasswordSecurity)
+     *
+     * @return void
+     * @expectedException \VuFind\Exception\PasswordSecurity
+     * @expectedExceptionMessage Boom
+     */
+    public function testPasswordSecurityException()
+    {
+        $e = new \VuFind\Exception\PasswordSecurity('Boom');
+        $request = $this->getMockRequest();
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
+        $manager = $this->getManager(array(), null, null, $pm);
+        $manager->login($request);
+    }
+
+    /**
+     * Test unsuccessful login (\VuFind\Exception\Auth)
+     *
+     * @return void
+     * @expectedException \VuFind\Exception\Auth
+     * @expectedExceptionMessage Blam
+     */
+    public function testAuthException()
+    {
+        $e = new \VuFind\Exception\Auth('Blam');
+        $request = $this->getMockRequest();
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
+        $manager = $this->getManager(array(), null, null, $pm);
+        $manager->login($request);
+    }
+
+    /**
+     * Test that unexpected exceptions get mapped to technical errors.
+     *
+     * @return void
+     * @expectedException \VuFind\Exception\Auth
+     * @expectedExceptionMessage authentication_error_technical
+     */
+    public function testUnanticipatedException()
+    {
+        $e = new \Exception('What happened here?');
+        $request = $this->getMockRequest();
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
+        $manager = $this->getManager(array(), null, null, $pm);
+        $manager->login($request);
+    }
+
+    /**
      * Test update password
      *
      * @return void
