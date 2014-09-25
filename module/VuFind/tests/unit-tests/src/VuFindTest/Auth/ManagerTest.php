@@ -26,7 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\Manager, VuFind\Auth\PluginManager, VuFind\Db\Table\User as UserTable,
+use VuFind\Auth\Manager, VuFind\Auth\PluginManager,
+    VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
     Zend\Config\Config, Zend\Session\SessionManager;
 
 /**
@@ -270,6 +271,74 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test userHasLoggedOut
+     *
+     * @return void
+     */
+    public function testUserHasLoggedOut()
+    {
+        // this won't be true in the context of a test class due to lack of cookies
+        $this->assertFalse($this->getManager()->userHasLoggedOut());
+    }
+
+    /**
+     * Test create
+     *
+     * @return void
+     */
+    public function testCreate()
+    {
+        $user = $this->getMockUser();
+        $request = $this->getMockRequest();
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('create')->with($request)->will($this->returnValue($user));
+        $manager = $this->getManager(array(), null, null, $pm);
+        $this->assertFalse($manager->isLoggedIn());
+        $this->assertEquals($user, $manager->create($request));
+        $this->assertEquals($user, $manager->isLoggedIn());
+    }
+
+    /**
+     * Test update password
+     *
+     * @return void
+     */
+    public function testUpdatePassword()
+    {
+        $user = $this->getMockUser();
+        $request = $this->getMockRequest();
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('updatePassword')->with($request)->will($this->returnValue($user));
+        $manager = $this->getManager(array(), null, null, $pm);
+        $this->assertEquals($user, $manager->updatePassword($request));
+        $this->assertEquals($user, $manager->isLoggedIn());
+    }
+
+    /**
+     * Test checkForExpiredCredentials
+     *
+     * @return void
+     */
+    public function testCheckForExpiredCredentials()
+    {
+        // Simple case -- none found:
+        $this->assertFalse($this->getManager()->checkForExpiredCredentials());
+
+        // Complex case -- found (we'll simulate creating a user to set up the environment):
+        $user = $this->getMockUser();
+        $request = $this->getMockRequest();
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('create')->with($request)->will($this->returnValue($user));
+        $db->expects($this->once())->method('isExpired')->will($this->returnValue(true));
+        $manager = $this->getManager(array(), null, null, $pm);
+        $manager->create($request);
+        $this->assertTrue($manager->checkForExpiredCredentials());
+    }
+
+    /**
      * Get a manager object to test with.
      *
      * @param array          $config         Configuration
@@ -334,5 +403,29 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm->setService('MultiILS', $mockMulti);
         $pm->setService('Shibboleth', $mockShib);
         return $pm;
+    }
+
+    /**
+     * Get a mock user object
+     *
+     * @return UserRow
+     */
+    protected function getMockUser()
+    {
+        return $this->getMockBuilder('VuFind\Db\Row\User')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * Get a mock request object
+     *
+     * @return \Zend\Http\PhpEnvironment\Request
+     */
+    protected function getMockRequest()
+    {
+        return $this->getMockBuilder('Zend\Http\PhpEnvironment\Request')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }
