@@ -119,6 +119,79 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test supportsCreation
+     *
+     * @return void
+     */
+    public function testSupportsCreation()
+    {
+        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('supportsCreation')->will($this->returnValue(true));
+        $shib = $pm->get('Shibboleth');
+        $shib->expects($this->once())->method('supportsCreation')->will($this->returnValue(false));
+        $manager = $this->getManager($config, null, null, $pm);
+        $this->assertTrue($manager->supportsCreation('Database'));
+        $this->assertFalse($manager->supportsCreation('Shibboleth'));
+    }
+
+    /**
+     * Test supportsRecovery
+     *
+     * @return void
+     */
+    public function testSupportsRecovery()
+    {
+        // Most common case -- no:
+        $this->assertFalse($this->getManager()->supportsRecovery());
+
+        // Less common case -- yes:
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('supportsPasswordChange')->will($this->returnValue(true));
+        $config = array('Authentication' => array('recover_password' => true));
+        $this->assertTrue($this->getManager($config, null, null, $pm)->supportsRecovery());
+    }
+
+    /**
+     * Test supportsPasswordChange
+     *
+     * @return void
+     */
+    public function testSupportsPasswordChange()
+    {
+        // Most common case -- no:
+        $this->assertFalse($this->getManager()->supportsPasswordChange());
+
+        // Less common case -- yes:
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('supportsPasswordChange')->will($this->returnValue(true));
+        $config = array('Authentication' => array('change_password' => true));
+        $this->assertTrue($this->getManager($config, null, null, $pm)->supportsPasswordChange());
+    }
+
+    /**
+     * Test getAuthClassForTemplateRendering
+     *
+     * @return void
+     */
+    public function testGetAuthClassForTemplateRendering()
+    {
+        // Simple default case:
+        $pm = $this->getMockPluginManager();
+        $this->assertEquals(get_class($pm->get('Database')), $this->getManager()->getAuthClassForTemplateRendering());
+
+        // Complex case involving proxied authenticator in ChoiceAuth:
+        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $choice = $pm->get('ChoiceAuth');
+        $choice->expects($this->once())->method('getSelectedAuthOption')->will($this->returnValue('Shibboleth'));
+        $manager = $this->getManager($config, null, null, $pm);
+        $this->assertEquals(get_class($pm->get('Shibboleth')), $manager->getAuthClassForTemplateRendering());
+    }
+
+    /**
      * Get a manager object to test with.
      *
      * @param array          $config         Configuration
