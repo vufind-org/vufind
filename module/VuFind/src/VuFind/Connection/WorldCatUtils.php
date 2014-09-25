@@ -193,13 +193,13 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         $url = 'http://xisbn.worldcat.org/webservices/xid/isbn/' .
                 urlencode(is_array($isbn) ? $isbn[0] : $isbn);
         $querystr = '?method=getEditions&format=json';
-        if ($wcId = $this->getWorldCatId()) {
-            $querystr .= '&ai=' . urlencode($wcId);
-        } else if ($wcToken = $this->getWorldCatToken()
-            && $wcSecret = $this->getWorldCatSecret())
+        if (($wcToken = $this->getWorldCatToken())
+            && ($wcSecret = $this->getWorldCatSecret()))
         {
             $hash = md5($url . '|' . $_SERVER['SERVER_ADDR'] . '|' . $wcSecret);
             $querystr .= '&token=' . $wcToken . '&hash=' . $hash;
+        } elseif ($wcId = $this->getWorldCatId()) {
+            $querystr .= '&ai=' . urlencode($wcId);
         }
         $url .= $querystr;
 
