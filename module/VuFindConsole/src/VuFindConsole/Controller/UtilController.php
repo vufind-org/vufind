@@ -29,6 +29,7 @@ namespace VuFindConsole\Controller;
 use File_MARC, File_MARCXML, VuFind\Sitemap, Zend\Console\Console;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
+use VuFindSearch\ParamBag;
 
 /**
  * This controller handles various command-line tools
@@ -440,23 +441,124 @@ class UtilController extends AbstractBase
      */
     public function createhierarchytreesAction()
     {
-        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        $hierarchies = $this->getServiceLocator()
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr')
-            ->getFullFieldFacets(array('hierarchy_top_id'));
-        foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
-            if (empty($hierarchy['value'])) {
+        $paramBag = new ParamBag(
+            array(
+                'rows' => 0,
+                'q' => '*:*',
+                'wt' => 'json',
+                'facet' => 'true',
+                'facet.field' => 'hierarchy_top_id'
+            )
+        );
+        $solr = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
+            ->get('Solr')->getConnector();
+        // Remove global filters from the Solr connector
+        $map = $solr->getMap();
+        $params = $map->getParameters('select', 'appends');
+        $map->setParameters('select', 'appends', array());
+        // Search
+        $response = $solr->search($paramBag);
+        $hierarchies = json_decode($response);
+        $topIDs = $hierarchies->facet_counts->facet_fields->hierarchy_top_id;
+        $length = 0;
+        $write_dir = realpath(__DIR__ . '/../../../../../local/cache/hierarchy');
+        for($i=0;$i<count($topIDs);$i+=2) {
+            if (empty($topIDs[$i])) {
                 continue;
             }
-            Console::writeLine("Building tree for {$hierarchy['value']}...");
-            $driver = $recordLoader->load($hierarchy['value']);
-            if ($driver->getHierarchyType()) {
-                // Only do this if the record is actually a hierarchy type record
-                $driver->getHierarchyDriver()->getTreeSource()
-                    ->getXML($hierarchy['value'], array('refresh' => true));
+            Console::writeLine(
+                "\tBuilding tree for ".$topIDs[$i].'... '.$topIDs[$i+1].' records'
+            );
+            // Recursive child tree building
+            $json = $this->createNode($topIDs[$i], $topIDs[$i+1], $solr);
+            // Get the rest of the details on the top elements
+            // Write file
+            $encoded = json_encode($json);
+            $length += strlen($encoded);
+            Console::writeLine("\t\t" . number_format(strlen($encoded)) . ' bytes');
+            file_put_contents(
+                $write_dir.'/tree_'.urlencode($topIDs[$i]).'.json',
+                $encoded
+            );
+        }
+        Console::writeLine(count($topIDs)/2 . ' files');
+        Console::writeLine(number_format($length) . ' bytes');
+
+        // Reapply the global filters
+        $map->setParameters('select', 'appends', $params->getArrayCopy());
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Tool to auto-fill hierarchy cache.
+     *
+     * @return \Zend\Console\Response
+     */
+    protected function createNode($id, $rows, $solr, $indent = 2)
+    {
+        $title = $this->getNodeTitle($id, $solr);
+        $json = array(
+            'id' => preg_replace('/\W/', '-', $id),
+            'text' => $title,
+            'li_attr' => array(
+                'recordid' => $id
+            ),
+            'a_attr' => array(
+                'href' => '%%%%VUFIND-BASE-URL%%%%/Record/' . $id,
+                'title' => $title
+            )
+        );
+        $paramBag = new ParamBag(
+            array(
+                'wt' => 'json',
+                'rows' => $rows,
+                'q' => 'hierarchy_parent_id:"'.$id.'"',
+                'fl' => 'id,title,is_hierarchy_id',
+            )
+        );
+        $response = $solr->search($paramBag);
+        $children = json_decode($response);
+        if($children->response->numFound == 0) {
+            $json['type'] = 'record';
+        } else {
+            $json['type'] = 'collection';
+            foreach($children->response->docs as $child) {
+                if (isset($child->is_hierarchy_id)) {
+                    //Console::writeLine(str_repeat("\t", $indent) . $child->id);
+                    $cjson = $this->createNode($child->id, $rows, $solr, $indent+1);
+                } else {
+                    $cjson = array(
+                        'id' => preg_replace('/\W/', '-', $child->id),
+                        'text' => $child->title,
+                        'li_attr' => array(
+                            'recordid' => $child->id
+                        ),
+                        'a_attr' => array(
+                            'href' => '%%%%VUFIND-BASE-URL%%%%/Record/' . $child->id,
+                            'title' => $child->title
+                        ),
+                        'type' => 'record'
+                    );
+                }
+                $json['children'][] = $cjson;
             }
         }
-        return $this->getSuccessResponse();
+        return $json;
+    }
+
+    protected function getNodeTitle($id, $solr) {
+        $paramBag = new ParamBag(
+            array(
+                'rows' => 1,
+                'wt' => 'json',
+                'fl' => 'title',
+                'q' => 'id:"'.$id.'"',
+            )
+        );
+        $response = $solr->search($paramBag);
+        $details = json_decode($response);
+        $details = $details->response->docs[0];
+        return $details->title;
     }
 
     /**

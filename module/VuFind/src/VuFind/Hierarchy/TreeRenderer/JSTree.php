@@ -141,6 +141,21 @@ class JSTree extends AbstractBase
     }
 
     /**
+     * Render the Hierarchy Tree
+     *
+     * @param string $context     The context from which the call has been made
+     * @param string $mode        The mode in which the tree should be generated
+     * @param string $hierarchyID The hierarchy ID of the tree to fetch (optional)
+     * @param string $recordID    The current record ID (optional)
+     *
+     * @return mixed The desired hierarchy tree output (or false on error)
+     */
+    public function getJSON($hierarchyID)
+    {
+        return $this->getDataSource()->getJSON($hierarchyID);
+    }
+
+    /**
      * transformCollectionXML
      *
      * Transforms Collection XML to Desired Format

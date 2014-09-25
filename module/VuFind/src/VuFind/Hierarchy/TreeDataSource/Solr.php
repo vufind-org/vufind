@@ -137,6 +137,61 @@ class Solr extends AbstractBase
     }
 
     /**
+     * Get JSON for the specified hierarchy ID.
+     *
+     * Build the JSON file from the Solr fields
+     *
+     * @param string $id      Hierarchy ID.
+     * @param array  $options Additional options for XML generation.  (Currently one
+     * option is supported: 'refresh' may be set to true to bypass caching).
+     *
+     * @return string
+     */
+    public function getJSON($id, $options = array())
+    {
+        $top = $this->searchService->retrieve('Solr', $id)->getRecords();
+        if (!isset($top[0])) {
+            return '';
+        }
+        $top = $top[0];
+        $cacheFile = (null !== $this->cacheDir)
+            ? $this->cacheDir . '/tree_' . urlencode($id) . '.json'
+            : false;
+
+        $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
+        $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
+
+        if ($useCache && file_exists($cacheFile)
+            && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
+        ) {
+            $this->debug("Using cached data from $cacheFile");
+            $xml = file_get_contents($cacheFile);
+        } else {
+            $starttime = microtime(true);
+            $isCollection = $top->isCollection() ? "true" : "false";
+            $xml = '<root><item id="' .
+                htmlspecialchars($id) .
+                '" isCollection="' . $isCollection . '">' .
+                '<content><name>' . htmlspecialchars($top->getTitle()) .
+                '</name></content>';
+            $count = 0;
+            $xml .= $this->getChildren($id, $count);
+            $xml .= '</item></root>';
+            if ($cacheFile) {
+                if (!file_exists($this->cacheDir)) {
+                    mkdir($this->cacheDir);
+                }
+                file_put_contents($cacheFile, $xml);
+            }
+            $this->debug(
+                "Hierarchy of $count records built in " .
+                abs(microtime(true) - $starttime)
+            );
+        }
+        return $xml;
+    }
+
+    /**
      * Get Solr Children
      *
      * @param string $parentID The starting point for the current recursion

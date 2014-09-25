@@ -161,16 +161,13 @@ $(document).ready(function()
       'core' : {
         'data' : function (obj, cb) {
           $.ajax({
-            'url': path + '/Hierarchy/GetTree',
+            'url': path + '/Hierarchy/GetTreeJSON',
             'data': {
               'hierarchyID': hierarchyID,
-              'id': recordID,
-              'context': context,
-              'mode': 'Tree'
+              'id': recordID
             },
-            'success': function(xml) {
-              var nodes = buildJSONNodes($(xml).find('root'));
-              cb.call(this, nodes);
+            'success': function(json) {
+              cb.call(this, json);
             }
           });
         },
