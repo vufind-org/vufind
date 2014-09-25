@@ -27,7 +27,7 @@
  */
 namespace VuFind\Auth;
 use VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
-    VuFind\Exception\Auth as AuthException, VuFind\ILS\Connection as ILSConnection,
+    VuFind\Exception\Auth as AuthException,
     Zend\Config\Config, Zend\Session\SessionManager;
 
 /**
