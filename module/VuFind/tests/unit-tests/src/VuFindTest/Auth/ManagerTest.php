@@ -65,6 +65,84 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test getSelectableAuthOptions
+     *
+     * @return void
+     */
+    public function testGetSelectableAuthOptions()
+    {
+        // Simple case -- default Database helper.
+        $this->assertEquals(array('Database'), $this->getManager()->getSelectableAuthOptions());
+
+        // Advanced case -- ChoiceAuth.
+        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $manager = $this->getManager($config);
+        $this->assertEquals(array('Database', 'Shibboleth'), $manager->getSelectableAuthOptions());
+    }
+
+    /**
+     * Test getLoginTargets
+     *
+     * @return void
+     */
+    public function testGetLoginTargets()
+    {
+        $pm = $this->getMockPluginManager();
+        $targets = array('a', 'b', 'c');
+        $multi = $pm->get('MultiILS');
+        $multi->expects($this->once())->method('getLoginTargets')->will($this->returnValue($targets));
+        $config = array('Authentication' => array('method' => 'MultiILS'));
+        $this->assertEquals($targets, $this->getManager($config, null, null, $pm)->getLoginTargets());
+    }
+
+    /**
+     * Test getDefaultLoginTarget
+     *
+     * @return void
+     */
+    public function testGetDefaultLoginTarget()
+    {
+        $pm = $this->getMockPluginManager();
+        $target = 'foo';
+        $multi = $pm->get('MultiILS');
+        $multi->expects($this->once())->method('getDefaultLoginTarget')->will($this->returnValue($target));
+        $config = array('Authentication' => array('method' => 'MultiILS'));
+        $this->assertEquals($target, $this->getManager($config, null, null, $pm)->getDefaultLoginTarget());
+    }
+
+    /**
+     * Test logout (with destruction)
+     *
+     * @return void
+     */
+    public function testLogoutWithDestruction()
+    {
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('logout')->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
+        $sm = $this->getMockSessionManager();
+        $sm->expects($this->once())->method('destroy');
+        $manager = $this->getManager(array(), null, $sm, $pm);
+        $this->assertEquals('http://baz', $manager->logout('http://foo/bar'));
+    }
+
+    /**
+     * Test logout (without destruction)
+     *
+     * @return void
+     */
+    public function testLogoutWithoutDestruction()
+    {
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('logout')->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
+        $sm = $this->getMockSessionManager();
+        $sm->expects($this->exactly(0))->method('destroy');
+        $manager = $this->getManager(array(), null, $sm, $pm);
+        $this->assertEquals('http://baz', $manager->logout('http://foo/bar', false));
+    }
+
+    /**
      * Test that login is enabled by default.
      *
      * @return void
@@ -210,14 +288,24 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
                 ->getMock();
         }
         if (null === $sessionManager) {
-            $sessionManager = $this->getMockBuilder('Zend\Session\SessionManager')
-                ->disableOriginalConstructor()
-                ->getMock();
+            $sessionManager = $this->getMockSessionManager();
         }
         if (null === $pm) {
             $pm = $this->getMockPluginManager();
         }
         return new Manager($config, $userTable, $sessionManager, $pm);
+    }
+
+    /**
+     * Get a mock session manager.
+     *
+     * @return SessionManager
+     */
+    protected function getMockSessionManager()
+    {
+        return $this->getMockBuilder('Zend\Session\SessionManager')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
