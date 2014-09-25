@@ -86,6 +86,39 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test security features of switching between auth options (part 1).
+     *
+     * @return void
+     */
+    public function testSwitchingSuccess()
+    {
+        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $manager = $this->getManager($config);
+        $this->assertEquals('ChoiceAuth', $manager->getAuthMethod());
+        // The default mock object in this test is configured to allow a
+        // switch from ChoiceAuth --> Database
+        $manager->setAuthMethod('Database');
+        $this->assertEquals('Database', $manager->getAuthMethod());
+    }
+
+    /**
+     * Test security features of switching between auth options (part 2).
+     *
+     * @return void
+     * @expectedException \Exception
+     * @expectedExceptionMessage Illegal authentication method: MultiILS
+     */
+    public function testSwitchingFailure()
+    {
+        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $manager = $this->getManager($config);
+        $this->assertEquals('ChoiceAuth', $manager->getAuthMethod());
+        // The default mock object in this test is NOT configured to allow a
+        // switch from ChoiceAuth --> MultiILS
+        $manager->setAuthMethod('MultiILS');
+    }
+
+    /**
      * Get a manager object to test with.
      *
      * @param array          $config         Configuration
@@ -122,10 +155,23 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     protected function getMockPluginManager()
     {
         $pm = new PluginManager();
+        $mockChoice = $this->getMockBuilder('VuFind\Auth\ChoiceAuth')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(array('Database', 'Shibboleth')));
         $mockDb = $this->getMockBuilder('VuFind\Auth\Database')
             ->disableOriginalConstructor()
             ->getMock();
+        $mockMulti = $this->getMockBuilder('VuFind\Auth\MultiILS')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $mockShib = $this->getMockBuilder('VuFind\Auth\Shibboleth')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $pm->setService('ChoiceAuth', $mockChoice);
         $pm->setService('Database', $mockDb);
+        $pm->setService('MultiILS', $mockMulti);
+        $pm->setService('Shibboleth', $mockShib);
         return $pm;
     }
 }
