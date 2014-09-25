@@ -128,8 +128,8 @@ class Manager
         // if no setting passed in):
         $method = isset($config->Authentication->method)
             ? $config->Authentication->method : 'Database';
-        $this->legalAuthOptions = array($method);
-        $this->setAuthMethod($method);
+        $this->legalAuthOptions = array($method);   // mark it as legal
+        $this->setAuthMethod($method);              // load it
     }
 
     /**
@@ -157,6 +157,10 @@ class Manager
      */
     protected function makeAuth($method)
     {
+        // If an illegal option was passed in, don't allow the object to load:
+        if (!in_array($method, $this->legalAuthOptions)) {
+            throw new \Exception("Illegal authentication method: $method");
+        }
         $auth = $this->pluginManager->get($method);
         $auth->setConfig($this->config);
         return $auth;
@@ -479,18 +483,23 @@ class Manager
      */
     public function setAuthMethod($method)
     {
-        // If an illegal option was passed in, block it now:
-        if (!in_array($method, $this->legalAuthOptions)) {
-            throw new \Exception("Illegal authentication method: $method");
-        }
-
         // Change the setting:
         $this->activeAuth = $method;
 
-        // If this method supports switching to a different method, add those
-        // options to the whitelist:
-        $this->legalAuthOptions = array_unique(
-            array_merge($this->legalAuthOptions, $this->getSelectableAuthOptions())
-        );
+        // If this method supports switching to a different method and we haven't
+        // already initialized it, add those options to the whitelist. If the object
+        // is already initialized, that means we've already gone through this step
+        // and can save ourselves the trouble.
+
+        // This code also has the side effect of validating $method, since if an
+        // invalid value was passed in, the call to getSelectableAuthOptions will
+        // throw an exception.
+        if (!isset($this->auth[$method])) {
+            $this->legalAuthOptions = array_unique(
+                array_merge(
+                    $this->legalAuthOptions, $this->getSelectableAuthOptions()
+                )
+            );
+        }
     }
 }

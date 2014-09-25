@@ -273,8 +273,10 @@ class ChoiceAuth extends AbstractBase
             return false;
         }
 
-        $manager = $this->getPluginManager();
-        $authenticator = $manager->get($this->strategy);
+        if (!in_array($this->strategy, $this->strategies)) {
+            throw new \Exception("Illegal setting: {$this->strategy}");
+        }
+        $authenticator = $this->getPluginManager()->get($this->strategy);
         $authenticator->setConfig($this->getConfig());
         if (!is_callable(array($authenticator, $method))) {
             throw new AuthException($this->strategy . "has no method $method");
