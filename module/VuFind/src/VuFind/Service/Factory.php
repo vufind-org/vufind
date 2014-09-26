@@ -101,6 +101,8 @@ class Factory
     /**
      * Construct the config manager.
      *
+     * @param ServiceManager $sm Service manager.
+     *
      * @return \VuFind\Config\PluginManager
      */
     public static function getConfig(ServiceManager $sm)
@@ -277,8 +279,9 @@ class Factory
      *
      * @return \VuFind\Hierarchy\TreeDataSource\PluginManager
      */
-    public static function getHierarchyTreeDataSourcePluginManager(ServiceManager $sm)
-    {
+    public static function getHierarchyTreeDataSourcePluginManager(
+        ServiceManager $sm
+    ) {
         return static::getGenericPluginManager($sm, 'Hierarchy\TreeDataSource');
     }
 
