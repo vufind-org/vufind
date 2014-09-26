@@ -89,6 +89,27 @@ $config = array(
             ),
         ),
     ),
+    'zfc_rbac' => array(
+        'assertion_manager' => array(
+            'factories' => array(
+                'VuFindAdmin\Assertion\HasAccessAssertion' => 'VuFindAdmin\Factory::getHasAccessAssertion',
+            ),
+        ),
+        'assertion_map' => array(
+            'admin' => 'VuFindAdmin\Assertion\HasAccessAssertion',
+        ),
+        'role_provider' => array(
+            'ZfcRbac\Role\InMemoryRoleProvider' => array(
+                'guest' => array(
+                    // guests have admin permission to allow purely IP-based validation
+                    'permissions' => array('admin'),
+                ),
+                'member' => array(
+                    'permissions' => array('admin'),
+                ),
+            ),
+        ),
+    ),
 );
 
 return $config;

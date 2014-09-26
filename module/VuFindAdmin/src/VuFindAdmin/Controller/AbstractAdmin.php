@@ -29,6 +29,8 @@ namespace VuFindAdmin\Controller;
 use VuFind\Exception\Forbidden as ForbiddenException,
     Zend\Mvc\MvcEvent,
     Zend\Stdlib\Parameters;
+use ZfcRbac\Service\AuthorizationServiceAwareInterface;
+use ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * VuFind Admin Controller Base
@@ -40,7 +42,10 @@ use VuFind\Exception\Forbidden as ForbiddenException,
  * @link     http://www.vufind.org  Main Page
  */
 class AbstractAdmin extends \VuFind\Controller\AbstractBase
+    implements AuthorizationServiceAwareInterface
 {
+    use AuthorizationServiceAwareTrait;
+
     /**
      * preDispatch -- block access when appropriate.
      *
@@ -69,34 +74,13 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
             return $redirectPlugin->toRoute('admin/disabled');
         }
 
-        // Block access by IP when IP checking is enabled:
-        if (isset($config->AdminAuth->ipRegEx)) {
-            $ipMatch = preg_match(
-                $config->AdminAuth->ipRegEx,
-                $this->getRequest()->getServer()->get('REMOTE_ADDR')
-            );
-            if (!$ipMatch) {
-                throw new ForbiddenException('Access denied.');
-            }
-        }
-
-        // Block access by username when user whitelist is enabled:
-        if (isset($config->AdminAuth->userWhitelist)) {
-            $user = $this->getUser();
-            if ($user == false) {
+        // Make sure the current user has permission to access admin:
+        if (!$this->getAuthorizationService()->isGranted('admin')) {
+            if (!$this->getUser()) {
                 $e->setResponse($this->forceLogin(null, array(), false));
                 return;
             }
-            $matchFound = false;
-            foreach ($config->AdminAuth->userWhitelist as $check) {
-                if ($check == $user->username) {
-                    $matchFound = true;
-                    break;
-                }
-            }
-            if (!$matchFound) {
-                throw new ForbiddenException('Access denied.');
-            }
+            throw new ForbiddenException('Access denied.');
         }
     }
 

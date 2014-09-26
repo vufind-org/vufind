@@ -39,7 +39,7 @@ use VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Manager
+class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
 {
     /**
      * Authentication modules
@@ -376,6 +376,16 @@ class Manager
                 ? false : $results->current();
         }
         return $this->currentUser;
+    }
+
+    /**
+     * Get the identity
+     *
+     * @return \ZfcRbac\Identity\IdentityInterface|null
+     */
+    public function getIdentity()
+    {
+        return ($user = $this->isLoggedIn()) ?: null;
     }
 
     /**

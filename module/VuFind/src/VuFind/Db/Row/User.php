@@ -43,6 +43,7 @@ use Zend\Db\Sql\Expression,
  * @link     http://vufind.org   Main Site
  */
 class User extends ServiceLocatorAwareGateway
+    implements \ZfcRbac\Identity\IdentityInterface
 {
     /**
      * Is encryption enabled?
@@ -418,5 +419,15 @@ class User extends ServiceLocatorAwareGateway
             $this->username . $this->password . $this->pass_hash . rand()
         ) . (time() % pow(10, 10));
         return $this->save();
+    }
+
+    /**
+     * Get the list of roles of this identity
+     *
+     * @return string[]|\Rbac\Role\RoleInterface[]
+     */
+    public function getRoles()
+    {
+        return array('member');
     }
 }

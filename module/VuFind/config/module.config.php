@@ -104,6 +104,9 @@ $config = array(
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
         ),
+        'initializers' => array(
+            'ZfcRbac\Initializer\AuthorizationServiceInitializer'
+        ),
     ),
     'controller_plugins' => array(
         'factories' => array(
@@ -645,6 +648,11 @@ $config = array(
                 'defaultTab' => null,
             ),
         ),
+    ),
+    // Authorization configuration:
+    'zfc_rbac' => array(
+        'identity_provider' => 'VuFind\AuthManager',
+        'guest_role' => 'guest',
     ),
 );
 
