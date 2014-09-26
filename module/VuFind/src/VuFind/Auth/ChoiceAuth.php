@@ -94,8 +94,7 @@ class ChoiceAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (!isset($this->config->ChoiceAuth)
-            || !isset($this->config->ChoiceAuth->choice_order)
+        if (!isset($this->config->ChoiceAuth->choice_order)
             || !strlen($this->config->ChoiceAuth->choice_order)
         ) {
             throw new AuthException(
@@ -117,7 +116,7 @@ class ChoiceAuth extends AbstractBase
     {
         parent::setConfig($config);
         $this->strategies = array_map(
-            'trim', explode(',', $config->ChoiceAuth->choice_order)
+            'trim', explode(',', $this->getConfig()->ChoiceAuth->choice_order)
         );
     }
 
