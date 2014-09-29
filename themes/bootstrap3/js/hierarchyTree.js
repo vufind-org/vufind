@@ -91,30 +91,6 @@ function doTreeSearch()
   }
 }
 
-function buildJSONNodes(xml)
-{
-  var jsonNode = [];
-  $(xml).children('item').each(function() {
-    var content = $(this).children('content');
-    var id = content.children("name[class='JSTreeID']");
-    var name = content.children('name[href]');
-    jsonNode.push({
-      'id': htmlEncodeId(id.text()),
-      'text': name.text(),
-      'li_attr': {
-        'recordid': id.text()
-      },
-      'a_attr': {
-        'href': name.attr('href'),
-        'title': name.text()
-      },
-      'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
-      children: buildJSONNodes(this)
-    });
-  });
-  return jsonNode;
-}
-
 $(document).ready(function()
 {
   // Code for the search button
@@ -145,7 +121,7 @@ $(document).ready(function()
       if ($('#hierarchyTree').parents('#modal').length > 0) {
         var hTree = $('#hierarchyTree');
         var offsetTop = hTree.offset().top;
-        var maxHeight = Math.max($(window).height() - offsetTop - 50, 200);
+        var maxHeight = Math.max($(window).height() - offsetTop, 200);
         hTree.css('max-height', maxHeight + 'px').css('overflow', 'auto');
         hTree.animate({
           scrollTop: $('.jstree-clicked').offset().top - offsetTop + hTree.scrollTop() - 50
@@ -166,8 +142,12 @@ $(document).ready(function()
               'hierarchyID': hierarchyID,
               'id': recordID
             },
-            'success': function(json) {
-              cb.call(this, json);
+            'success': function(json, status, request) {
+              if(request.getResponseHeader('Content-Type') == 'text/xml') {
+                buildTreeWithXml();
+              } else {
+                cb.call(this, json);
+              }
             }
           });
         },
@@ -194,3 +174,42 @@ $(document).ready(function()
     }
   });
 });
+
+function buildTreeWithXml()
+{
+  $.ajax({'url': path + '/Hierarchy/GetTree',
+    'data': {
+      'hierarchyID': hierarchyID,
+      'id': recordID,
+      'context': context,
+      'mode': 'Tree'
+    },
+    'success': function(xml) {
+      var nodes = buildJSONNodes($(xml).find('root'));
+      cb.call(this, nodes);
+    }
+  });
+}
+function buildJSONNodes(xml)
+{
+  var jsonNode = [];
+  $(xml).children('item').each(function() {
+    var content = $(this).children('content');
+    var id = content.children("name[class='JSTreeID']");
+    var name = content.children('name[href]');
+    jsonNode.push({
+      'id': htmlEncodeId(id.text()),
+      'text': name.text(),
+      'li_attr': {
+        'recordid': id.text()
+      },
+      'a_attr': {
+        'href': name.attr('href'),
+        'title': name.text()
+      },
+      'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
+      children: buildJSONNodes(this)
+    });
+  });
+  return jsonNode;
+}

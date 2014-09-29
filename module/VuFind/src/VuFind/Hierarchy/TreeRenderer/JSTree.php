@@ -132,7 +132,11 @@ class JSTree extends AbstractBase
      */
     public function render($context, $mode, $hierarchyID, $recordID = false)
     {
-        if (!empty($context) && !empty($mode)) {
+        $json = $this->getJSON($hierarchyID);
+        if (!is_null($json)) {
+            $json = json_decode($json);
+            return '<ul>' . $this->jsonToHTML($json) . '</ul>';
+        } elseif (!empty($context) && !empty($mode)) {
             return $this->transformCollectionXML(
                 $context, $mode, $hierarchyID, $recordID
             );
@@ -140,13 +144,28 @@ class JSTree extends AbstractBase
         return false;
     }
 
+    protected function jsonToHTML($op)
+    {
+        $name = strlen($op->text) > 100
+            ? substr($op->text, 0, 100) . '...'
+            : $op->text;
+        $html = '<li><a href="' . $op->a_attr->href
+            . '" title="' . $op->text . '">'
+            . $name . '</a>';
+        if (isset($op->children)) {
+            $html .= '<ul>';
+            foreach ($op->children as $child) {
+                $html .= $this->jsonToHTML($child);
+            }
+            $html .= '</ul>';
+        }
+        return $html . '</li>';
+    }
+
     /**
      * Render the Hierarchy Tree
      *
-     * @param string $context     The context from which the call has been made
-     * @param string $mode        The mode in which the tree should be generated
-     * @param string $hierarchyID The hierarchy ID of the tree to fetch (optional)
-     * @param string $recordID    The current record ID (optional)
+     * @param string $hierarchyID The hierarchy ID of the tree to fetch
      *
      * @return mixed The desired hierarchy tree output (or false on error)
      */

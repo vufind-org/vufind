@@ -546,7 +546,8 @@ class UtilController extends AbstractBase
         return $json;
     }
 
-    protected function getNodeTitle($id, $solr) {
+    protected function getNodeTitle($id, $solr)
+    {
         $paramBag = new ParamBag(
             array(
                 'rows' => 1,

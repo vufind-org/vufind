@@ -165,30 +165,9 @@ class Solr extends AbstractBase
             && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
         ) {
             $this->debug("Using cached data from $cacheFile");
-            $xml = file_get_contents($cacheFile);
-        } else {
-            $starttime = microtime(true);
-            $isCollection = $top->isCollection() ? "true" : "false";
-            $xml = '<root><item id="' .
-                htmlspecialchars($id) .
-                '" isCollection="' . $isCollection . '">' .
-                '<content><name>' . htmlspecialchars($top->getTitle()) .
-                '</name></content>';
-            $count = 0;
-            $xml .= $this->getChildren($id, $count);
-            $xml .= '</item></root>';
-            if ($cacheFile) {
-                if (!file_exists($this->cacheDir)) {
-                    mkdir($this->cacheDir);
-                }
-                file_put_contents($cacheFile, $xml);
-            }
-            $this->debug(
-                "Hierarchy of $count records built in " .
-                abs(microtime(true) - $starttime)
-            );
+            return file_get_contents($cacheFile);
         }
-        return $xml;
+        return null;
     }
 
     /**
