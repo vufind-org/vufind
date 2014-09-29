@@ -43,20 +43,12 @@ use \PHPQRCode, Zend\Log\LoggerInterface;
  */
 class Loader implements \Zend\Log\LoggerAwareInterface
 {
-
     /**
      * property to hold VuFind configuration settings
      *
      * @var \Zend\Config\Config
      */
     protected $config;
-
-    /**
-     * HTTP client
-     *
-     * @var \Zend\Http\Client
-     */
-    protected $client;
 
     /**
      * Property for storing raw qrcode data; may be null if image is unavailable
@@ -107,14 +99,10 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      *
      * @param \Zend\Config\Config    $config VuFind configuration
      * @param \VuFindTheme\ThemeInfo $theme  VuFind theme tools
-     * @param \Zend\Http\Client      $client HTTP client
      */
-    public function __construct($config, \VuFindTheme\ThemeInfo $theme,
-        \Zend\Http\Client $client
-    ) {
+    public function __construct($config, \VuFindTheme\ThemeInfo $theme) {
         $this->config = $config;
         $this->themeTools = $theme;
-        $this->client = $client;
     }
 
     /**
