@@ -113,7 +113,7 @@ class QRCodeController extends AbstractBase
         $headers->addHeaderLine(
             'Content-type', $this->getLoader()->getContentType()
         );
-        $response->setContent($this->getLoader()->getQrCode());
+        $response->setContent($this->getLoader()->getImage());
         return $response;
     }
 }
