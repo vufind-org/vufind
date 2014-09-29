@@ -72,7 +72,8 @@ class Loader extends \VuFind\ImageLoader
      * @param \Zend\Config\Config    $config VuFind configuration
      * @param \VuFindTheme\ThemeInfo $theme  VuFind theme tools
      */
-    public function __construct($config, \VuFindTheme\ThemeInfo $theme) {
+    public function __construct($config, \VuFindTheme\ThemeInfo $theme)
+    {
         $this->config = $config;
         $this->setThemeInfo($theme);
         $this->configuredFailImage
