@@ -472,13 +472,11 @@ class Factory
     public static function getWorldCatUtils(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config')->get('config');
-        $wcId = isset($config->WorldCat->id)
-            ? $config->WorldCat->id : false;
         $client = $sm->get('VuFind\Http')->createClient();
         $wcToken = isset($config->WorldCat->token)
             ? $config->WorldCat->token : false;
         $wcSecret = isset($config->WorldCat->secret)
             ? $config->WorldCat->secret : false;
-        return new \VuFind\Connection\WorldCatUtils($wcId, $client, $wcToken, $wcSecret);
+        return new \VuFind\Connection\WorldCatUtils($config, $client);
     }
 }
