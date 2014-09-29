@@ -71,6 +71,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     public function testDefaultLoadingForBlankText()
     {
         $loader = $this->getLoader();
+        $loader->loadQRCode('');
         $this->assertEquals('image/gif', $loader->getContentType());
         $this->assertEquals('483', strlen($loader->getImage()));
     }
