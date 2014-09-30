@@ -17,22 +17,23 @@
 
   $this->layout()->breadcrumbs = false;
 ?>
-<div class="searchHomeContent">
-  <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
-    <div class="alert alert-warning">
-      <h2><?=$this->transEsc('ils_offline_title')?></h2>
-      <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
-      <p><?=$this->transEsc('ils_offline_home_message')?></p>
-      <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-      <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+  <div class="searchHomeContent col-sm-12">
+    <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
+      <div class="alert alert-warning">
+        <h2><?=$this->transEsc('ils_offline_title')?></h2>
+        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+        <p><?=$this->transEsc('ils_offline_home_message')?></p>
+        <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+      </div>
+    <? endif; ?>
+    <div class="well well-lg clearfix">
+      <?=$this->render("search/searchbox.phtml")?>
     </div>
-  <? endif; ?>
-  <div class="well well-lg clearfix">
-    <?=$this->render("search/searchbox.phtml")?>
   </div>
-</div>
 
 <? $facetList = is_object($this->results) ? $this->results->getFacetList() : array(); if (isset($facetList) && is_array($facetList)): ?>
+</div> <!-- close row from layout.phtml -->
 <div class="row">
   <? foreach ($facetList as $field => $details): ?>
     <? $sortedList = $this->sortFacetList($this->results, $field, $details['list'], $basicSearch); ?>
@@ -76,5 +77,4 @@
       </div>
     </div>
   <? endforeach; ?>
-</div>
 <? endif; ?>
