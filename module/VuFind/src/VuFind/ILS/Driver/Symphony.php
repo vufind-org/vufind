@@ -1546,7 +1546,7 @@ class Symphony extends AbstractBase
             }
 
             if ($holdDetails['id'] != null) {
-                $options['titleID'] = $holdDetails['id'];
+                $options['titleKey'] = $holdDetails['id'];
             }
 
             if ($holdDetails['pickUpLocation'] != null) {

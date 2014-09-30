@@ -21,8 +21,8 @@
  */
 //the space is needed for windows include paths with trailing backslash
 // http://pear.php.net/bugs/bug.php?id=19482
-if ('/stage/local/vufind/vendor/pear-pear.php.net/PEAR ' != '@'.'include_path'.'@ ') {
-    ini_set('include_path', trim('/stage/local/vufind/vendor/pear-pear.php.net/PEAR '));
+if ('/home/dkatz/vufind3/vendor/pear-pear.php.net/PEAR ' != '@'.'include_path'.'@ ') {
+    ini_set('include_path', trim('/home/dkatz/vufind3/vendor/pear-pear.php.net/PEAR '));
     $raw = false;
 } else {
     // this is a raw, uninstalled pear, either a cvs checkout, or php distro

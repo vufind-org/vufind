@@ -297,7 +297,7 @@ class SideFacets extends AbstractFacets
         $final = array();
         foreach ($filterList as $field => $filters) {
             $current = array();
-            foreach ($filters as $i => $filter) {
+            foreach ($filters as $filter) {
                 if (!isset($filter['suppressDisplay'])
                     || !$filter['suppressDisplay']
                 ) {

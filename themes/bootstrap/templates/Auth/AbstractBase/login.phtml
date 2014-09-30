@@ -3,16 +3,16 @@
 <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
   <form method="post" class="form-horizontal" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
     <?=$this->auth()->getLoginFields()?>
-    <input type="hidden" name="auth_method" value="<?=$this->auth()->getActiveAuthMethod()?>">
+    <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
     <div class="control-group">
       <div class="controls">
         <? if ($account->supportsCreation()): ?>
-          <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+          <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
         <? endif; ?>
         <input class="btn btn-primary" type="submit" name="processLogin" value="Login">
         <? if ($account->supportsRecovery()): ?>
           <br/>
-          <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
+          <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
         <? endif; ?>
       </div>
     </div>
