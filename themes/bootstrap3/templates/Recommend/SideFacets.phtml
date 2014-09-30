@@ -125,7 +125,7 @@ JS;
             <?
             $script = <<<JS
 $(document).ready(function() {
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'));
+  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
             ?>
@@ -134,14 +134,14 @@ JS;
             <?
             $script = <<<JS
 $('#side-collapse-{$this->escapeHtmlAttr($title)}').on('show.bs.collapse', function() {
-  initFacetTree($('#facet_{$this->escapeHtml($title)}'));
+  initFacetTree($('#facet_{$this->escapeHtml($title)}'), true);
 });
 JS;
             ?>
             <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
           <? endif; ?>
           <li id="facet_<?=$this->escapeHtml($title)?>" class="jstree-facet"
-                data-facet="<?=$this->escapeHtml($title)?>"
+                data-facet="<?=$this->escapeHtmlAttr($title)?>"
                 data-path="<?=$this->currentPath()?>"
                 data-exclude="<?=$allowExclude?>"
                 data-operator="<?=$this->recommend->getFacetOperator($title)?>"

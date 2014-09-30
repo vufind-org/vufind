@@ -215,7 +215,7 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('website'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('website')
         );
     }
 

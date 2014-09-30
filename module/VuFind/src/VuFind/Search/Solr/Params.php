@@ -545,14 +545,11 @@ class Params extends \VuFind\Search\Base\Params
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
             }
-        } else if (($hierarchicalFacets == '*'
-            || in_array(
-                $field, explode(',', $this->getOptions()->getHierarchicalFacets())
-            ))
-            && preg_match('/^\d+\/(.*)\/$/', $filter['displayText'], $matches)
-        ) {
+        } else if (in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
-            $filter['displayText'] = $matches[1];
+            $filter['displayText'] = FacetHelper::formatDisplayText(
+                $filter['displayText'], true
+            );
         }
 
         return $filter;

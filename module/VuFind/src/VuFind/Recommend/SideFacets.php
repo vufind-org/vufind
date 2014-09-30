@@ -86,9 +86,9 @@ class SideFacets extends AbstractFacets
     /**
      * Hierarchical facet setting
      *
-     * @var bool|string
+     * @var array
      */
-    protected $hierarchicalFacets = false;
+    protected $hierarchicalFacets = array();
 
     /**
      * Hierarchical facet sort options
@@ -156,15 +156,15 @@ class SideFacets extends AbstractFacets
         }
 
         // Hierarchical facets:
-        if (isset($config->Results_Settings->hierarchicalFacets)) {
+        if (isset($config->SpecialFacets->hierarchical)) {
             $this->hierarchicalFacets
-                = $config->Results_Settings->hierarchicalFacets;
+                = $config->SpecialFacets->hierarchical->toArray();
         }
 
         // Hierarchical facet sort options:
-        if (isset($config->Results_Settings->hierarchicalFacetSortOptions)) {
+        if (isset($config->SpecialFacets->hierarchicalFacetSortOptions)) {
             $this->hierarchicalFacetSortOptions
-                = $config->Results_Settings->hierarchicalFacetSortOptions;
+                = $config->SpecialFacets->hierarchicalFacetSortOptions->toArray();
         }
     }
 
@@ -350,12 +350,7 @@ class SideFacets extends AbstractFacets
      */
     public function getHierarchicalFacets()
     {
-        if (empty($this->hierarchicalFacets)) {
-            return array();
-        } elseif ($this->hierarchicalFacets == '*') {
-            return array_keys($this->getFacetSet());
-        }
-        return array_map('trim', explode(',', $this->hierarchicalFacets));
+        return $this->hierarchicalFacets;
     }
 
     /**

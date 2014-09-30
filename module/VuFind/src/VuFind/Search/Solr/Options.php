@@ -50,7 +50,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var array
      */
-    protected $hierarchicalFacets = '';
+    protected $hierarchicalFacets = array();
 
     /**
      * Constructor
@@ -141,9 +141,9 @@ class Options extends \VuFind\Search\Base\Options
             $this->specialAdvancedFacets
                 = $facetSettings->Advanced_Settings->special_facets;
         }
-        if (isset($facetSettings->Results_Settings->hierarchicalFacets)) {
+        if (isset($facetSettings->SpecialFacets->hierarchical)) {
             $this->hierarchicalFacets
-                = $facetSettings->Results_Settings->hierarchicalFacets;
+                = $facetSettings->SpecialFacets->hierarchical->toArray();
         }
 
         // Load Spelling preferences

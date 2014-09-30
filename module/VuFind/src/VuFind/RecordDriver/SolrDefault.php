@@ -109,7 +109,7 @@ class SolrDefault extends AbstractBase
      *
      * @var string
      */
-    protected $hierarchicalFacets = '';
+    protected $hierarchicalFacets = array();
 
     /**
      * Highlighting details
@@ -145,9 +145,9 @@ class SolrDefault extends AbstractBase
                 $this->snippetCaptions[$key] = $value;
             }
         }
-        if (isset($facetSettings->Results_Settings->hierarchicalFacets)) {
+        if (isset($facetSettings->SpecialFacets->hierarchical)) {
             $this->hierarchicalFacets
-                = $facetSettings->Results_Settings->hierarchicalFacets;
+                = $facetSettings->SpecialFacets->hierarchical->toArray();
         }
         parent::__construct($mainConfig, $recordConfig);
     }
@@ -434,14 +434,12 @@ class SolrDefault extends AbstractBase
             return array();
         }
 
-        if ($this->hierarchicalFacets == '*'
-            || in_array('format', explode(',', $this->hierarchicalFacets))
-        ) {
+        if (in_array('format', $this->hierarchicalFacets)) {
             $results = array();
             foreach ($this->fields['format'] as $format) {
                 // Only show the current level part
-                $parts = explode('/', $format);
-                $results[] = $parts[$parts[0] + 1];
+                $results[]
+                    = \VuFind\Search\Solr\FacetHelper::formatDisplayText($format);
             }
             // Only display unique values for e.g. hierarchy of Book -> Book
             return array_unique($results);
