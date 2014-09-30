@@ -5,6 +5,14 @@ var Zoomy = {
     this.canvas  = canvas;
     this.canvas.width  = Math.floor(this.canvas.clientWidth);
     this.canvas.height = Math.floor(this.canvas.clientHeight);
+    addEventListener('resize', function() {
+      Zoomy.canvas.width  = Math.floor(Zoomy.canvas.clientWidth);
+      Zoomy.canvas.height = Math.floor(Zoomy.canvas.clientHeight);
+      Zoomy.width = Zoomy.canvas.width;
+      Zoomy.height = Zoomy.canvas.height;
+      Zoomy.rebound();
+      Zoomy.draw();
+    }, false);
     addEventListener('mousemove', Zoomy.mouseHandle, false);
     addEventListener('touchmove', Zoomy.mouseHandle, false);
     addEventListener('mouseup', function(e) {
