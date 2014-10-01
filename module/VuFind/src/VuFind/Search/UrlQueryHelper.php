@@ -272,7 +272,7 @@ class UrlQueryHelper
      *
      * @return string
      */
-    public function addFilter($filter, $paramArray)
+    public function addFilter($filter, $paramArray = null)
     {
         $params = is_null($paramArray) ? $this->getParamArray() : $paramArray;
 

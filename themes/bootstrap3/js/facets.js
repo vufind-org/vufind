@@ -1,10 +1,10 @@
-function buildFacetNodes(data, currentPath, allowExclude, excludeTitle)
+function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
   
   $(data).each(function() {
     var html = '';
-    if (!this.applied) {
+    if (!this.selected && counts) {
       html = '<span class="badge" style="float: right">' + this.count;
       if (allowExclude) {
         var excludeURL = currentPath + this.exclude;
@@ -18,39 +18,39 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle)
     var url = currentPath + this.href;
     // Just to be safe
     url.replace("'", "\\'");
-    html += '<span class="main' + (this.applied ? ' applied' : '') + '" title="' + htmlEncode(this.text) + '"'
+    html += '<span class="main' + (this.selected ? ' applied' : '') + '" title="' + htmlEncode(this.displayText) + '"'
       + ' onclick="document.location.href=\'' + url + '\'; return false;">';
     if (this.operator == 'OR') {
-      if (this.applied) {
+      if (this.selected) {
         html += '<i class="fa fa-check-square-o"></i>';  
       } else {
         html += '<i class="fa fa-square-o"></i>';  
       }
-    } else if (this.applied) {
+    } else if (this.selected) {
       html += '<i class="fa fa-check pull-right"></i>';  
     }
-    html += ' ' + this.text;
+    html += ' ' + this.displayText;
     html += '</span>';
 
     var children = null;
     if (typeof this.children !== 'undefined' && this.children.length > 0) {
-      children = buildFacetNodes(this.children, currentPath, allowExclude, excludeTitle);
+      children = buildFacetNodes(this.children, currentPath, allowExclude, excludeTitle, counts);
     }
     json.push({
       'text': html,
       'children': children,
-      'applied': this.applied,
+      'applied': this.selected,
       'state': {
         'opened': this.state.opened
       },
-      'li_attr': this.applied ? { 'class': 'active' } : {}
+      'li_attr': this.selected ? { 'class': 'active' } : {}
     });
   });
   
   return json;
 }
 
-function initFacetTree(treeNode)
+function initFacetTree(treeNode, inSidebar)
 {
   var loaded = treeNode.data('loaded');
   if (loaded) {
@@ -65,24 +65,29 @@ function initFacetTree(treeNode)
   var excludeTitle = treeNode.data('exclude-title');
   var sort = treeNode.data('sort');
   var query = window.location.href.split('?')[1];
-  var action = window.location.href.match(/.*?\/([^\/]+)\//)[1];
 
-  treeNode.prepend('<li class="list-group-item"><i class="fa fa-spinner fa-spin"></i></li>');
+  if (inSidebar) {
+    treeNode.prepend('<li class="list-group-item"><i class="fa fa-spinner fa-spin"></i></li>');
+  } else {
+    treeNode.prepend('<div><i class="fa fa-spinner fa-spin"></i><div>');  
+  }
   $.getJSON(path + '/AJAX/JSON?' + query,
     {
       method: "getFacetData",
       facetName: facet,
       facetSort: sort,
-      facetOperator: operator, 
-      action: action
+      facetOperator: operator 
     },
     function(response, textStatus) {
       if (response.status == "OK") {
-        var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle);
+        var results = buildFacetNodes(response.data, currentPath, allowExclude, excludeTitle, inSidebar);
         treeNode.find('.fa-spinner').parent().remove();
-        treeNode.on('loaded.jstree open_node.jstree', function (e, data) {
-          treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
-        }).jstree({
+        if (inSidebar) {
+          treeNode.on('loaded.jstree open_node.jstree', function (e, data) {
+            treeNode.find('ul.jstree-container-ul > li.jstree-node').addClass('list-group-item');
+          });
+        }
+        treeNode.jstree({
           'core': {
             'data': results
           }

@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Mail as MailException;
+use VuFind\Search\Solr\FacetHelper as FacetHelper;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -67,6 +68,7 @@ class SearchController extends AbstractSearch
             );
         }
         $view->ranges = $this->getAllRangeSettings($specialFacets, $view->saved);
+        $view->hierarchicalFacets = $this->getHierarchicalFacets();
 
         return $view;
     }
@@ -175,8 +177,21 @@ class SearchController extends AbstractSearch
      */
     protected function processAdvancedFacets($facetList, $searchObject = false)
     {
-        // Process the facets, assuming they came back
-        foreach ($facetList as $facet => $list) {
+        // Process the facets
+        $hierarchicalFacets = $this->getHierarchicalFacets();
+        foreach ($facetList as $facet => &$list) {
+            // Hierarchical facets: format display texts and sort facets
+            // to a flat array according to the hierarchy
+            if (in_array($facet, $hierarchicalFacets)) {
+                $tmpList = $list['list'];
+                FacetHelper::sortFacetList($tmpList, true);
+                $tmpList = FacetHelper::buildFacetArray(
+                    $facet,
+                    $tmpList
+                );
+                $list['list'] = FacetHelper::flattenFacetHierarchy($tmpList);
+            }
+
             foreach ($list['list'] as $key => $value) {
                 // Build the filter string for the URL:
                 $fullFilter = ($value['operator'] == 'OR' ? '~' : '')
@@ -188,7 +203,7 @@ class SearchController extends AbstractSearch
                 if ($searchObject
                     && $searchObject->getParams()->hasFilter($fullFilter)
                 ) {
-                    $facetList[$facet]['list'][$key]['selected'] = true;
+                    $list['list'][$key]['selected'] = true;
                     // Remove the filter from the search object -- we don't want
                     // it to show up in the "applied filters" sidebar since it
                     // will already be accounted for by being selected in the
@@ -259,7 +274,12 @@ class SearchController extends AbstractSearch
     public function homeAction()
     {
         return $this->createViewModel(
-            array('results' => $this->getHomePageFacets())
+            array(
+                'results' => $this->getHomePageFacets(),
+                'hierarchicalFacets' => $this->getHierarchicalFacets(),
+                'hierarchicalFacetSortOptions'
+                    => $this->getHierarchicalFacetSortSettings()
+            )
         );
     }
 
@@ -604,4 +624,32 @@ class SearchController extends AbstractSearch
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }
+
+    /**
+     * Get an array of hierarchical facets
+     *
+     * @return array Facets
+     */
+    protected function getHierarchicalFacets()
+    {
+        $facetConfig = $this->getConfig('facets');
+        return isset($facetConfig->SpecialFacets->hierarchical)
+            ? $facetConfig->SpecialFacets->hierarchical->toArray()
+            : array();
+    }
+
+    /**
+     * Get hierarchical facet sort settings
+     *
+     * @return array Array of sort settings keyed by facet
+     */
+    protected function getHierarchicalFacetSortSettings()
+    {
+        $facetConfig = $this->getConfig('facets');
+        return isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
+            ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
+            : array();
+    }
+
+
 }
