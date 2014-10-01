@@ -4,7 +4,7 @@
 [Results]
 sector_str_mv      = Sector
 ;institution        = Institution
-building           = Library
+building           = Organisation
 format             = Format
 
 ; Use callnumber-first for LC call numbers, dewey-hundreds for Dewey Decimal:
