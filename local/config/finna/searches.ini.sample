@@ -40,7 +40,8 @@ case_sensitive_ranges = true
 ; See the comments above those sections for details on legal settings.  You may
 ; repeat these lines to load multiple recommendations.
 default_top_recommend[] = TopFacets:ResultsTop
-default_side_recommend[] = DateRangeVisAjax:true:search_sdaterange_mv:main_date_str
+; TODO - not implemented:
+;default_side_recommend[] = DateRangeVisAjax:true:search_sdaterange_mv:main_date_str
 default_side_recommend[] = SideFacets:Results:CheckboxFacets
 default_noresults_recommend[] = SwitchType
 default_noresults_recommend[] = SwitchQuery
