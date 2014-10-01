@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -104,7 +105,10 @@ class Factory
      */
     public static function getMultiBackend(ServiceManager $sm)
     {
-        return new MultiBackend($sm->getServiceLocator()->get('VuFind\Config'));
+        return new MultiBackend(
+            $sm->getServiceLocator()->get('VuFind\Config'),
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+        );
     }
 
     /**

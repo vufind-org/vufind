@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -100,6 +101,7 @@ class Factory
      */
     protected static function getHideSetting(\Zend\Config\Config $config, $tab)
     {
+        // TODO: can we move this code out of the factory so it's more easily reused?
         $setting = isset($config->Content->hide_if_empty)
             ? $config->Content->hide_if_empty : false;
         if ($setting === true || $setting === false

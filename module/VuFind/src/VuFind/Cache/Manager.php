@@ -89,7 +89,7 @@ class Manager
         $cacheBase = $this->getCacheDir();
 
         // Set up standard file-based caches:
-        foreach (array('cover', 'language', 'object') as $cache) {
+        foreach (array('config', 'cover', 'language', 'object') as $cache) {
             $this->createFileCache($cache, $cacheBase . $cache . 's');
         }
 

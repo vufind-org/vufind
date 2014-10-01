@@ -102,6 +102,18 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
+     * Translate a string
+     *
+     * @param string $s String to translate
+     *
+     * @return string
+     */
+    public function translate($s)
+    {
+        return null === $this->translator ? $s : $this->translator->translate($s);
+    }
+
+    /**
      * Set language
      *
      * @param string $lang Language
@@ -336,7 +348,7 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Fix pronunciation guides
         $pattern[] = '/({{)pron-en\|([^}]*)(}})/Us';
-        $replacement[] = $this->getTranslator()->translate("pronounced") . " /$2/";
+        $replacement[] = $this->translate('pronounced') . " /$2/";
 
         // Fix dashes
         $pattern[] = '/{{ndash}}/';

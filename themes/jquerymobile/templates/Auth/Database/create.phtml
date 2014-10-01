@@ -10,3 +10,4 @@
 <input id="account_password" type="password" name="password" />
 <label for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
 <input id="account_password2" type="password" name="password2" />
+<input type="hidden" name="auth_method" value="<?=$this->auth()->getManager()->getAuthMethod()?>"/>

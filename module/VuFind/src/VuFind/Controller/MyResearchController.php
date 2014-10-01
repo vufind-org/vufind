@@ -84,18 +84,12 @@ class MyResearchController extends AbstractBase
      */
     public function homeAction()
     {
-        // if the current auth class proxies others, we'll get the proxied
-        //   auth method as a querystring or post parameter.
-        //   Force to post.
-        if ($method = trim($this->params()->fromQuery('auth_method'))) {
-            $this->getRequest()->getPost()->set('auth_method', $method);
-        }
-
         // Process login request, if necessary (either because a form has been
         // submitted or because we're using an external login provider):
         if ($this->params()->fromPost('processLogin')
             || $this->getSessionInitiator()
             || $this->params()->fromPost('auth_method')
+            || $this->params()->fromQuery('auth_method')
         ) {
             try {
                 $this->getAuthManager()->login($this->getRequest());
@@ -143,11 +137,9 @@ class MyResearchController extends AbstractBase
         if ($this->getAuthManager()->isLoggedIn()) {
             return $this->redirect()->toRoute('myresearch-home');
         }
-        // if the current auth class proxies others, we'll get the proxied
-        //   auth method as a querystring parameter.
-        $method = trim($this->params()->fromQuery('auth_method'));
         // If authentication mechanism does not support account creation, send
         // the user away!
+        $method = trim($this->params()->fromQuery('auth_method'));
         if (!$this->getAuthManager()->supportsCreation($method)) {
             return $this->forwardTo('MyResearch', 'Home');
         }
@@ -175,6 +167,12 @@ class MyResearchController extends AbstractBase
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
             }
+        } else {
+            // If we are not processing a submission, we need to simply display
+            // an empty form. In case ChoiceAuth is being used, we may need to
+            // override the active authentication method based on request
+            // parameters to ensure display of the appropriate template.
+            $this->setUpAuthenticationFromRequest();
         }
         return $view;
     }
@@ -224,6 +222,10 @@ class MyResearchController extends AbstractBase
      */
     public function userloginAction()
     {
+        // Don't log in if already logged in!
+        if ($this->getAuthManager()->isLoggedIn()) {
+            return $this->redirect()->toRoute('home');
+        }
         $this->clearFollowupUrl();
         $this->setFollowupUrlToReferer();
         if ($si = $this->getSessionInitiator()) {
@@ -1114,8 +1116,8 @@ class MyResearchController extends AbstractBase
     public function recoverAction()
     {
         // Make sure we're configured to do this
-        $method = trim($this->params()->fromQuery('auth_method'));
-        if (!$this->getAuthManager()->supportsRecovery($method)) {
+        $this->setUpAuthenticationFromRequest();
+        if (!$this->getAuthManager()->supportsRecovery()) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_disabled');
             return $this->redirect()->toRoute('myresearch-home');
@@ -1138,7 +1140,7 @@ class MyResearchController extends AbstractBase
         // If we have a submitted form
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             if ($user) {
-                $this->sendRecoveryEmail($user, $this->getConfig(), $method);
+                $this->sendRecoveryEmail($user, $this->getConfig());
             } else {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_user_not_found');
@@ -1152,11 +1154,10 @@ class MyResearchController extends AbstractBase
      *
      * @param \VuFind\Db\Row\User $user   User object we're recovering
      * @param \VuFind\Config      $config Configuration object
-     * @param string              $method Active authentication method
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendRecoveryEmail($user, $config, $method)
+    protected function sendRecoveryEmail($user, $config)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1178,6 +1179,7 @@ class MyResearchController extends AbstractBase
                     $user->updateHash();
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
+                    $method = $this->getAuthManager()->getAuthMethod();
                     // Custom template for emails (text-only)
                     $message = $renderer->render(
                         'Email/recover-password.phtml',
@@ -1228,8 +1230,10 @@ class MyResearchController extends AbstractBase
                 $user = $table->getByVerifyHash($hash);
                 // If the hash is valid, forward user to create new password
                 if (null != $user) {
+                    $this->setUpAuthenticationFromRequest();
                     $view = $this->createViewModel();
-                    $view->auth_method = $this->params()->fromQuery('auth_method');
+                    $view->auth_method
+                        = $this->getAuthManager()->getAuthMethod();
                     $view->hash = $hash;
                     $view->username = $user->username;
                     $view->useRecaptcha
@@ -1363,5 +1367,18 @@ class MyResearchController extends AbstractBase
     protected function getHashAge($hash)
     {
         return intval(substr($hash, -10));
+    }
+
+    /**
+     * Configure the authentication manager to use a user-specified method.
+     *
+     * @return void
+     */
+    protected function setUpAuthenticationFromRequest()
+    {
+        $method = trim($this->params()->fromQuery('auth_method'));
+        if (!empty($method)) {
+            $this->getAuthManager()->setAuthMethod($method);
+        }
     }
 }

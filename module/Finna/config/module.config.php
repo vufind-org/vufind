@@ -83,12 +83,12 @@ $config = array(
             ),
             'ils_driver' => array(
                 'factories' => array(
-                    'multibackend' => function ($sm) {
+/*                    'multibackend' => function ($sm) {
                         return new \Finna\ILS\Driver\MultiBackend(
                             $sm->getServiceLocator()->get('VuFind\Config')
                         );
                     },
-/*                    'voyager' => function ($sm) {
+                    'voyager' => function ($sm) {
                         return new \Finna\ILS\Driver\Voyager(
                             $sm->getServiceLocator()->get('VuFind\DateConverter')
                         );
