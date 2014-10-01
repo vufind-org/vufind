@@ -62,7 +62,13 @@ class FacetHelper
         if ($topLevel) {
             $sortFunc = function($a, $b) {
                 if ($a['level'] == 0 && $b['level'] == 0) {
-                    return strcasecmp($a['displayText'], $b['displayText']);
+                    $aText = $a['displayText'] == $a['value']
+                        ? self::formatDisplayText($a['displayText'])
+                        : $a['displayText'];
+                    $bText = $b['displayText'] == $b['value']
+                        ? self::formatDisplayText($b['displayText'])
+                        : $b['displayText'];
+                    return strcasecmp($aText, $bText);
                 }
                 return $a['level'] == $b['level']
                     ? $b['count'] - $a['count']
@@ -70,9 +76,16 @@ class FacetHelper
             };
         } else {
             $sortFunc = function($a, $b) {
-                return $a['level'] == $b['level']
-                    ? strcasecmp($a['displayText'], $b['displayText'])
-                    : $b['level'] - $a['level'];
+                if ($a['level'] == $b['level']) {
+                    $aText = $a['displayText'] == $a['value']
+                        ? self::formatDisplayText($a['displayText'])
+                        : $a['displayText'];
+                    $bText = $b['displayText'] == $b['value']
+                        ? self::formatDisplayText($b['displayText'])
+                        : $b['displayText'];
+                    return strcasecmp($aText, $bText);
+                }
+                return $b['level'] - $a['level'];
             };
         }
         uasort($facetList, $sortFunc);
