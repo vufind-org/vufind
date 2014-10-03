@@ -96,16 +96,16 @@ $config = array(
             ),
         ),
         'assertion_map' => array(
-            'admin' => 'VuFindAdmin\Assertion\HasAccessAssertion',
+            'access.AdminModule' => 'VuFindAdmin\Assertion\HasAccessAssertion',
         ),
         'role_provider' => array(
             'ZfcRbac\Role\InMemoryRoleProvider' => array(
                 'guest' => array(
                     // guests have admin permission to allow purely IP-based validation
-                    'permissions' => array('admin'),
+                    'permissions' => array('access.AdminModule'),
                 ),
-                'member' => array(
-                    'permissions' => array('admin'),
+                'loggedin' => array(
+                    'permissions' => array('access.AdminModule'),
                 ),
             ),
         ),

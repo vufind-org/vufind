@@ -428,6 +428,6 @@ class User extends ServiceLocatorAwareGateway
      */
     public function getRoles()
     {
-        return array('member');
+        return array('loggedin');
     }
 }

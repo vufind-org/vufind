@@ -75,7 +75,7 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
         }
 
         // Make sure the current user has permission to access admin:
-        if (!$this->getAuthorizationService()->isGranted('admin')) {
+        if (!$this->getAuthorizationService()->isGranted('access.AdminModule')) {
             if (!$this->getUser()) {
                 $e->setResponse($this->forceLogin(null, array(), false));
                 return;
