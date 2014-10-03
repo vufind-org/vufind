@@ -90,23 +90,14 @@ $config = array(
         ),
     ),
     'zfc_rbac' => array(
-        'assertion_manager' => array(
-            'factories' => array(
-                'VuFindAdmin\Assertion\HasAccessAssertion' => 'VuFindAdmin\Factory::getHasAccessAssertion',
+        'role_provider' => array(
+            'VuFind\Role\DynamicRoleProvider' => array(
+                'VuFindAdmin\Role\PermissionProvider',
             ),
         ),
-        'assertion_map' => array(
-            'access.AdminModule' => 'VuFindAdmin\Assertion\HasAccessAssertion',
-        ),
-        'role_provider' => array(
-            'ZfcRbac\Role\InMemoryRoleProvider' => array(
-                'guest' => array(
-                    // guests have admin permission to allow purely IP-based validation
-                    'permissions' => array('access.AdminModule'),
-                ),
-                'loggedin' => array(
-                    'permissions' => array('access.AdminModule'),
-                ),
+        'vufind_permission_provider_manager' => array(
+            'factories' => array(
+                'VuFindAdmin\Role\PermissionProvider' => 'VuFindAdmin\Factory::getPermissionProvider',
             ),
         ),
     ),

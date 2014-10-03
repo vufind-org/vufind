@@ -41,18 +41,21 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the Admin module's HasAccessAssertion.
+     * Construct the Admin module's permission provider.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \VuFind\Assertion\HasAccessAssertion
+     * @return VuFind\Role\PermissionProvider
      */
-    public static function getHasAccessAssertion(ServiceManager $sm)
+    public static function getPermissionProvider(ServiceManager $sm)
     {
         $rawConfig = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $config = isset($rawConfig->AdminAuth)
             ? $rawConfig->AdminAuth->toArray() : array();
+        $auth = $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService');
         $request = $sm->getServiceLocator()->get('Request');
-        return new \VuFind\Assertion\HasAccessAssertion($config, $request);
+        return new \VuFind\Role\PermissionProvider(
+            $config, ['guest', 'loggedin'], 'access.AdminModule', $auth, $request
+        );
     }
 }

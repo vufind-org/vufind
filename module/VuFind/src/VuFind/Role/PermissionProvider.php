@@ -1,6 +1,6 @@
 <?php
 /**
- * Generic access check assertion for VuFind.
+ * Generic permission provider for VuFind.
  *
  * PHP version 5
  *
@@ -25,13 +25,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Assertion;
+namespace VuFind\Role;
 use Zend\Http\PhpEnvironment\Request;
-use ZfcRbac\Assertion\AssertionInterface;
 use ZfcRbac\Service\AuthorizationService;
 
 /**
- * Generic access check assertion for VuFind.
+ * Generic permission provider for VuFind.
  *
  * @category VuFind2
  * @package  Assertions
@@ -39,7 +38,7 @@ use ZfcRbac\Service\AuthorizationService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class HasAccessAssertion implements AssertionInterface
+class PermissionProvider implements PermissionProviderInterface
 {
     /**
      * Configuration
@@ -47,6 +46,27 @@ class HasAccessAssertion implements AssertionInterface
      * @var array
      */
     protected $config;
+
+    /**
+     * Role(s) to modify
+     *
+     * @var array
+     */
+    protected $roles;
+
+    /**
+     * Permission(s) to grant
+     *
+     * @var array
+     */
+    protected $permissions;
+
+    /**
+     * Authorization object
+     *
+     * @var AuthorizationService
+     */
+    protected $auth;
 
     /**
      * Request object
@@ -58,14 +78,24 @@ class HasAccessAssertion implements AssertionInterface
     /**
      * Constructor
      *
-     * @param array   $config  Configuration array indicating which methods of access
-     * should be permitted (legal keys = ipRegEx, a regular expression for verifying
-     * IP addresses; userWhitelist, a list of legal users)
-     * @param Request $request Request object
+     * @param array                $config        Configuration array indicating
+     * which methods of access should be permitted (legal keys = ipRegEx, a
+     * regular expression for verifying IP addresses; userWhitelist, a list of
+     * legal users)
+     * @param string|array         $roles         One or more roles to attach
+     * permissions to
+     * @param string|array         $permissions   One or more permissions to grant
+     * based on the provided configuration
+     * @param AuthorizationService $authorization Authorization service
+     * @param Request              $request       Request object
      */
-    public function __construct(array $config, Request $request)
-    {
+    public function __construct(array $config, $roles, $permissions,
+        AuthorizationService $authorization, Request $request
+    ) {
         $this->config = $config;
+        $this->roles = (array)$roles;
+        $this->permissions = (array)$permissions;
+        $this->auth = $authorization;
         $this->request = $request;
     }
 
@@ -77,7 +107,7 @@ class HasAccessAssertion implements AssertionInterface
      *
      * @return bool
      */
-    public function assert(AuthorizationService $authorization, $context = null)
+    public function getPermissions()
     {
         // If an IP regex is set, check if the current IP matches.
         if (isset($this->config['ipRegEx'])) {
@@ -86,21 +116,25 @@ class HasAccessAssertion implements AssertionInterface
                 $this->request->getServer()->get('REMOTE_ADDR')
             );
             if (!$ipMatch) {
-                return false;
+                return [];
             }
         }
 
         // If a user whitelist is set, check if the user is on it.
         if (isset($this->config['userWhitelist'])) {
-            $user = $authorization->getIdentity();
+            $user = $this->auth->getIdentity();
             if (!$user
                 || !in_array($user->username, $this->config['userWhitelist'])
             ) {
-                return false;
+                return [];
             }
         }
 
         // If we got this far, there were no failed checks.
-        return true;
+        $retVal = [];
+        foreach ($this->roles as $role) {
+            $retVal[$role] = $this->permissions;
+        }
+        return $retVal;
     }
 }
