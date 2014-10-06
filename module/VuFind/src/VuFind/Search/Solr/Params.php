@@ -532,6 +532,13 @@ class Params extends \VuFind\Search\Base\Params
         );
 
         $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
+        $hierarchicalFacetSeparators
+            = $this->getOptions()->getHierarchicalFacetSeparators();
+        $facetHelper = null;
+        if (!empty($hierarchicalFacets)) {
+            $facetHelper = $this->getServiceLocator()
+                ->get('VuFind\HierarchicalFacetHelper');
+        }
         // Convert range queries to a language-non-specific format:
         $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
@@ -547,8 +554,11 @@ class Params extends \VuFind\Search\Base\Params
             }
         } else if (in_array($field, $hierarchicalFacets)) {
             // Display hierarchical facet levels nicely
-            $filter['displayText'] = FacetHelper::formatDisplayText(
-                $filter['displayText'], true
+            $separator = isset($hierarchicalFacetSeparators[$field])
+                ? $hierarchicalFacetSeparators[$field]
+                : '/';
+            $filter['displayText'] = $facetHelper->formatDisplayText(
+                $filter['displayText'], true, $separator
             );
         }
 
