@@ -49,7 +49,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     protected $logger = false;
 
     /**
-     * VuFind configuration
+     * WorldCat configuration
      *
      * @var \Zend\Config\Config
      */
@@ -79,7 +79,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Zend\Config\Config $config WorldCat configuration
      * @param \Zend\Http\Client   $client HTTP client
      * @param bool                $silent Should we silently ignore HTTP failures?
      */
@@ -87,8 +87,8 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         \Zend\Http\Client $client, $silent = true
     ) {
         $this->config = $config;
-        $this->worldCatId = isset($config->WorldCat->id)
-            ? $config->WorldCat->id : false;
+        $this->worldCatId = isset($config->id)
+            ? $config->id : false;
         $this->client = $client;
         $this->silent = $silent;
     }
@@ -164,10 +164,10 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
      * @return string
      */
     protected function buildXIdUrl($base, $tokenVar, $secretVar, $format) {
-        $token = isset($this->config->WorldCat->$tokenVar)
-            ? $this->config->WorldCat->$tokenVar : false;
-        $secret = isset($this->config->WorldCat->$secretVar)
-            ? $this->config->WorldCat->$secretVar : false;
+        $token = isset($this->config->$tokenVar)
+            ? $this->config->$tokenVar : false;
+        $secret = isset($this->config->$secretVar)
+            ? $this->config->$secretVar : false;
         $querystr = '?method=getEditions&format=' . $format;
         if ($token && $secret) {
             $hash = md5($base . '|' . $_SERVER['SERVER_ADDR'] . '|' . $secret);

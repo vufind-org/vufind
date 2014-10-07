@@ -473,10 +473,9 @@ class Factory
     {
         $config = $sm->get('VuFind\Config')->get('config');
         $client = $sm->get('VuFind\Http')->createClient();
-        $wcToken = isset($config->WorldCat->token)
-            ? $config->WorldCat->token : false;
-        $wcSecret = isset($config->WorldCat->secret)
-            ? $config->WorldCat->secret : false;
-        return new \VuFind\Connection\WorldCatUtils($config, $client);
+        return new \VuFind\Connection\WorldCatUtils(
+            isset($config->WorldCat) ? $config->WorldCat : null,
+            $client
+        );
     }
 }
