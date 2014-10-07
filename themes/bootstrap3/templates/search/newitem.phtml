@@ -12,10 +12,12 @@
       <label class="col-sm-3 control-label"><?=$this->transEsc('Range')?>:</label>
       <div class="col-sm-9">
         <? foreach ($this->ranges as $key => $range): ?>
-          <label class="radio">
-            <input type="radio" name="range" id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($range)?>"<?= ($key == 0) ? ' checked="checked"' : ''?>/>
-            <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escapeHtml($range) . ' ' . $this->transEsc('Days')?>
-          </label>
+          <div class="radio">
+            <label>
+              <input type="radio" name="range" id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($range)?>"<?= ($key == 0) ? ' checked="checked"' : ''?>/>
+              <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escapeHtml($range) . ' ' . $this->transEsc('Days')?>
+            </label>
+          </div>
         <? endforeach; ?>
       </div>
     </div>
