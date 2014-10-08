@@ -105,7 +105,10 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         $viewModel = $view->plugin('view_model');
         $children = $viewModel->getCurrent()->getChildren();
         if (isset($children[0])) {
-            $results = $children[0]->getVariable('results');
+            $template = $children[0]->getTemplate();
+            if (!strstr($template, '/home')) {
+                $results = $children[0]->getVariable('results');
+            }
             $recordDriver = $children[0]->getVariable('driver');
         }
         if ($results && is_a($results, 'VuFind\Search\Base\Results')) {
