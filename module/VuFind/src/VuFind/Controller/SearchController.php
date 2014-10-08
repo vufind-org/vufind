@@ -95,11 +95,11 @@ class SearchController extends AbstractSearch
             return $this->forceLogin(null, array('emailurl' => $view->url));
         }
 
-        // Check if we have a URL in login followup data:
-        $followup = $this->followup()->retrieve();
-        if (isset($followup->emailurl)) {
-            $view->url = $followup->emailurl;
-            unset($followup->emailurl);
+        // Check if we have a URL in login followup data -- this should override
+        // any existing referer to avoid emailing a login-related URL!
+        $followupUrl = $this->followup()->retrieveAndClear('emailurl');
+        if (!empty($followupUrl)) {
+            $view->url = $followupUrl;
         }
 
         // Fail if we can't figure out a URL to share:
