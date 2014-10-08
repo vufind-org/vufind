@@ -25,6 +25,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:installation_notes Wiki
  */
+
+require_once 'vendor/autoload.php';
+
+use Zend\Console\Getopt;
+
 define('MULTISITE_NONE', 0);
 define('MULTISITE_DIR_BASED', 1);
 define('MULTISITE_HOST_BASED', 2);
@@ -37,19 +42,66 @@ $basePath = '/vufind';
 
 echo "VuFind has been found in {$baseDir}.\n\n";
 
+try {
+   $opts = new Getopt(
+      array(
+        'use-defaults' => 'Use VuFind Defaults to Configure',
+        'overridedir=s' => "Where would you like to store your local settings? [{$baseDir}/local]",
+        'module-name=w' => 'What module name would you like to use? Use disabled, to not use',
+        'basepath=s' => 'What base path should be used in VuFind\'s URL? [/vufind]',
+        'multisite-w' => 'Specify we are going to setup a multisite. Options are: directory and host',
+        'hostname=s' => 'Specify the hostname for the VuFind Site, this is used when multisite=2',
+      ));
+
+    $opts->parse();
+} catch (Exception $e) {
+    echo $e->getUsageMessage();
+    exit;
+}
+
 // Load user settings if we are not forcing defaults:
-if (!isset($argv[1]) || !in_array('--use-defaults', $argv)) {
-    $overrideDir = getOverrideDir($overrideDir);
-    $module = getModule();
-    $basePath = getBasePath($basePath);
+if (!$opts->getOption('use-defaults') ) {
+    if ($opts->getOption('overridedir')) {
+       $overrideDir = $opts->getOption('overridedir');
+       initializeOverrideDir($overrideDir, true);
+    } else {
+       $overrideDir = getOverrideDir($overrideDir);
+    }
+printf("Tom: %s",$overrideDir);
+    if ($opts->getOption('module-name')) {
+       if($opts->getOption('module-name') !== 'disabled')
+          $module = $opts->getOption('module-name');
+    } else {
+       $module = getModule();
+    }
+
+    if ($opts->getOption('basepath')) {
+       $basePath = $opts->getOption('basepath');
+    } else {
+       $basePath = getBasePath($basePath);
+    }
 
     // We assume "single site" mode unless the --multisite switch is set:
-    if (isset($argv[1]) && in_array('--multisite', $argv)) {
-        $multisiteMode = getMultisiteMode();
+    if ($opts->getOption('multisite')) {
+
+        if ($opts->getOption('multisite') === 'directory') {
+           $multisiteMode = MULTISITE_DIR_BASED;
+        } else if($opts->getOption('multisite') === 'host') {
+           $multisiteMode = MULTISITE_HOST_BASED;
+        } else {
+           $multisiteMode = getMultisiteMode();
+        }
     }
+
     if ($multisiteMode == MULTISITE_HOST_BASED) {
-        $host = getHost();
+        if($opts->getOption('hostname')) {
+           $host = $opts->getOption('hostname');
+        }
+        else {
+           $host = getHost();
+        }
     }
+
 } else {
     // In interactive mode, we initialize the directory as part of the input
     // process; in defaults mode, we need to do it here:
