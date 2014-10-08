@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, Bloodhound, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, vufindString */
+/*global ajaxLoadTab, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -289,42 +289,36 @@ $(document).ready(function() {
     });
 
   // Search autocomplete
-  var searcher = extractClassParams('.autocomplete');
-  var autocompleteEngine = new Bloodhound({
-    name: 'search-suggestions',
-    remote: {
-      url: path + '/AJAX/JSON?q=%QUERY',
-      ajax: {
-        data: {
-          method:'getACSuggestions',
-          type:$('#searchForm_type').val(),
-          searcher:searcher['searcher']
-        },
-        dataType:'json'
-      },
-      filter: function(json) {
-        if (json.status == 'OK' && json.data.length > 0) {
-          var datums = [];
-          for (var i=0;i<json.data.length;i++) {
-            datums.push({val:json.data[i]});
-          }
-          return datums;
-        } else {
-          return [];
-        }
-      }
-    },
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('val'),
-    queryTokenizer: Bloodhound.tokenizers.whitespace
-  });
-  autocompleteEngine.initialize();
   $('.autocomplete').typeahead(
     {
       highlight: true,
       minLength: 3
     }, {
       displayKey:'val',
-      source: autocompleteEngine.ttAdapter()
+      source: function(query, cb) {
+        var searcher = extractClassParams('.autocomplete');
+        $.ajax({
+          url: path + '/AJAX/JSON',
+          data: {
+            q:query,
+            method:'getACSuggestions',
+            searcher:searcher['searcher'],
+            type:$('#searchForm_type').val(),
+          },
+          dataType:'json',
+          success: function(json) {
+            if (json.status == 'OK' && json.data.length > 0) {
+              var datums = [];
+              for (var i=0;i<json.data.length;i++) {
+                datums.push({val:json.data[i]});
+              }
+              cb(datums);
+            } else {
+              cb([]);
+            }
+          }
+        })
+      }
     }
   );
 
