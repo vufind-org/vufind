@@ -1,5 +1,5 @@
 <?
-    $url = $this->driver->getUrl();
+  $url = $this->driver->getUrl();
 ?>
 <div class="listentry col-xs-11">
   <div class="resultItemLine1">
@@ -27,7 +27,7 @@
   </div>
 
   <div class="resultItemLine3">
-    <span class="ui-li-desc"><?=$this->escapeHtml($url)?></span>
+    <?=$this->escapeHtml($url)?>
     <? $lastMod = $this->driver->getLastModified(); if (!empty($lastMod)): ?>
       <br /><?=$this->transEsc('Last Modified')?>: <?=$this->escapeHtml(trim(str_replace(array('T', 'Z'), ' ', $lastMod)))?>
     <? endif; ?>

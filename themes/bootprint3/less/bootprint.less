@@ -96,6 +96,9 @@ input[type=checkbox] {
   }
   & > p {padding:0 1em;}
 }
+.sub-breadcrumb {
+  padding:0 5px;
+}
 .tab-content {
   padding: 6px 8px;
   border: 1px solid @nav-tabs-border-color;
@@ -138,6 +141,7 @@ header {
     }
   }
   .searchbox {
+    background:linear-gradient(to bottom, #FFF, #EEE);
     display:block !important;
     .tab-content {
       border:0;
@@ -161,6 +165,7 @@ header {
     border-width:1px 0;
     font-size:12px;
     margin-bottom:2px;
+    padding:7px 20px 5px;
   }
 }
 #searchForm_lookfor,#searchForm_type {
@@ -235,6 +240,9 @@ footer {
 .bulkActionButtons {margin-bottom:6px}
 .left {text-align:center}
 .result {
+  & > .col-xs-1.checkbox {
+    width:auto;
+  }
   .label {
     display:inline-block;
     margin-bottom:4px;
@@ -243,6 +251,20 @@ footer {
     margin:0 0 4px 0;
     padding:4px 0 4px 6px;
     ul {padding-left:18px;}
+  }
+  @media (max-width:767px) {
+    .search-controls .form-inline {
+      text-align:left;
+    }
+  }
+  @media (min-width:768px) {
+    & > .col-xs-1.checkbox {
+      padding:0;
+    }
+    & > .col-xs-11 {
+      width:95%;
+      padding:0;
+    }
   }
 }
 .search-controls {
@@ -255,6 +277,7 @@ footer {
 
 /* --- Search Home --- */
 .searchHomeContent {
+  float:none;
   margin:1em auto;
   width:90%;
 }
@@ -349,3 +372,7 @@ ul.random {
 
 /* --- Browse --- */
 [id^=list].list-group .col-sm-9 {margin:0}
+
+/* --- VuDL --- */
+.container > .row > .col-xs-12 { padding:0 }
+.vudl.row { padding:4px 0 }

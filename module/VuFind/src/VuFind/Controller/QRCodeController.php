@@ -59,9 +59,7 @@ class QRCodeController extends AbstractBase
         if (!$this->loader) {
             $this->loader = new Loader(
                 $this->getConfig(),
-                $this->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
-                $this->getServiceLocator()->get('VuFind\Http')->createClient(),
-                $this->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir()
+                $this->getServiceLocator()->get('VuFindTheme\ThemeInfo')
             );
             \VuFind\ServiceManager\Initializer::initInstance(
                 $this->loader, $this->getServiceLocator()
@@ -115,7 +113,7 @@ class QRCodeController extends AbstractBase
         $headers->addHeaderLine(
             'Content-type', $this->getLoader()->getContentType()
         );
-        $response->setContent($this->getLoader()->getQrCode());
+        $response->setContent($this->getLoader()->getImage());
         return $response;
     }
 }

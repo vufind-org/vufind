@@ -195,10 +195,12 @@ var infowindow = new google.maps.InfoWindow({maxWidth: 480, minWidth: 480});
 <div id="mapWrap" onload="initialize()" style="height:479px;display:none;margin-bottom:1em" class="clearfix">
   <div id="map_canvas" style="width: 100%; height: 100%"></div>
   <div class="mapClusterToggle" id="useCluster">
-    <label for="usegmm" class="checkbox">
-      <input type="checkbox" id="usegmm" checked="true" onclick="refreshMap();"></input>
-      <?=$this->transEsc('google_map_cluster_points') ?>
-    </label>
+    <div class="checkbox">
+      <label for="usegmm">
+        <input type="checkbox" id="usegmm" checked="true" onclick="refreshMap();"></input>
+        <?=$this->transEsc('google_map_cluster_points') ?>
+      </label>
+    </div>
   </div>
 </div>
 <br/>

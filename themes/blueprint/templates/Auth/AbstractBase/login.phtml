@@ -3,7 +3,7 @@
 <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
   <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
     <?=$this->auth()->getLoginFields()?>
-    <input type="hidden" name="auth_method" value="<?=$this->auth()->getActiveAuthMethod()?>">
+    <input type="hidden" name="auth_method" value="<?=$account->getAuthMethod()?>">
     <input class="push-2 button" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>"/>
     <div class="clear"></div>
   </form>
@@ -13,10 +13,10 @@
     echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $initJs, 'SET');
   ?>
   <? if ($account->supportsCreation()): ?>
-    <a class="new_account" href="<?=$this->url('myresearch-account')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+    <a class="new_account" href="<?=$this->url('myresearch-account')?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
   <? endif; ?>
   <? if ($account->supportsRecovery()): ?>
-    <a class="forgot_password" href="<?=$this->url('myresearch-recover')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
+    <a class="forgot_password" href="<?=$this->url('myresearch-recover')?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
   <? endif; ?>
 <? else: ?>
   <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>

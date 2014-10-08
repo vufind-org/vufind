@@ -16,3 +16,4 @@
 <label class="span-3" for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
 <input id="account_password2" type="password" name="password2" size="15"
   class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'equalTo'=>'Passwords do not match', 'equalToField'=>'#account_password'))?>"/><br class="clear"/>
+<input type="hidden" name="auth_method" value="<?=$this->auth()->getManager()->getAuthMethod()?>"/>
