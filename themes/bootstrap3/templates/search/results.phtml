@@ -40,7 +40,7 @@
   $this->headScript()->appendFile("check_save_statuses.js");
 ?>
 
-<div class="row row-offcanvas row-offcanvas-right">
+<div class="<?=$this->layoutClass('offcanvas-row')?>">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>

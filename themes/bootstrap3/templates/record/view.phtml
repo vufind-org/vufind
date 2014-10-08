@@ -40,7 +40,7 @@
 
 <?=$this->record($this->driver)->getToolbar()?>
 
-<div class="row">
+<div class="<?=$this->layoutClass('offcanvas-row')?>">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />

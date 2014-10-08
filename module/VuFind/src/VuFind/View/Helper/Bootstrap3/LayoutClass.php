@@ -58,6 +58,10 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
             return $this->left
                 ? 'sidebar col-sm-3 col-sm-pull-9 hidden-print col-xs-6 sidebar-offcanvas'
                 : 'sidebar col-sm-3 hidden-print col-xs-6 sidebar-offcanvas';
+        case 'offcanvas-row':
+            return $this->left
+                ? 'row row-offcanvas row-offcanvas-left'
+                : 'row row-offcanvas row-offcanvas-right';
         }
     }
 }
