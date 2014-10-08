@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Auth as AuthException;
-use VuFind\Search\Solr\FacetHelper as FacetHelper;
 
 /**
  * This controller handles global AJAX functionality
@@ -1558,12 +1557,14 @@ class AjaxController extends AbstractBase
 
         $facetList = $facets[$facet]['data']['list'];
 
+        $facetHelper = $this->getServiceLocator()
+            ->get('VuFind\HierarchicalFacetHelper');
         if (!empty($sort)) {
-            FacetHelper::sortFacetList($facetList, $sort == 'top');
+            $facetHelper->sortFacetList($facetList, $sort == 'top');
         }
 
         return $this->output(
-            FacetHelper::buildFacetArray(
+            $facetHelper->buildFacetArray(
                 $facet, $facetList, $params->getFilterList(), $results->getUrlQuery()
             ),
             self::STATUS_OK

@@ -28,7 +28,6 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Mail as MailException;
-use VuFind\Search\Solr\FacetHelper as FacetHelper;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -179,17 +178,22 @@ class SearchController extends AbstractSearch
     {
         // Process the facets
         $hierarchicalFacets = $this->getHierarchicalFacets();
+        $facetHelper = null;
+        if (!empty($hierarchicalFacets)) {
+            $facetHelper = $this->getServiceLocator()
+                ->get('VuFind\HierarchicalFacetHelper');
+        }
         foreach ($facetList as $facet => &$list) {
             // Hierarchical facets: format display texts and sort facets
             // to a flat array according to the hierarchy
             if (in_array($facet, $hierarchicalFacets)) {
                 $tmpList = $list['list'];
-                FacetHelper::sortFacetList($tmpList, true);
-                $tmpList = FacetHelper::buildFacetArray(
+                $facetHelper->sortFacetList($tmpList, true);
+                $tmpList = $facetHelper->buildFacetArray(
                     $facet,
                     $tmpList
                 );
-                $list['list'] = FacetHelper::flattenFacetHierarchy($tmpList);
+                $list['list'] = $facetHelper->flattenFacetHierarchy($tmpList);
             }
 
             foreach ($list['list'] as $key => $value) {

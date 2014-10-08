@@ -38,7 +38,7 @@ use Zend\Mvc\Controller\AbstractActionController;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class FacetHelper
+class HierarchicalFacetHelper
 {
     /**
      * Helper method for building hierarchical facets:
@@ -49,7 +49,7 @@ class FacetHelper
      *
      * @return void
      */
-    public static function sortFacetList(&$facetList, $topLevel)
+    public function sortFacetList(&$facetList, $topLevel)
     {
         // Parse level from each facet value so that the sort function
         // can run faster
@@ -63,10 +63,10 @@ class FacetHelper
             $sortFunc = function($a, $b) {
                 if ($a['level'] == 0 && $b['level'] == 0) {
                     $aText = $a['displayText'] == $a['value']
-                        ? self::formatDisplayText($a['displayText'])
+                        ? $this->formatDisplayText($a['displayText'])
                         : $a['displayText'];
                     $bText = $b['displayText'] == $b['value']
-                        ? self::formatDisplayText($b['displayText'])
+                        ? $this->formatDisplayText($b['displayText'])
                         : $b['displayText'];
                     return strcasecmp($aText, $bText);
                 }
@@ -78,10 +78,10 @@ class FacetHelper
             $sortFunc = function($a, $b) {
                 if ($a['level'] == $b['level']) {
                     $aText = $a['displayText'] == $a['value']
-                        ? self::formatDisplayText($a['displayText'])
+                        ? $this->formatDisplayText($a['displayText'])
                         : $a['displayText'];
                     $bText = $b['displayText'] == $b['value']
-                        ? self::formatDisplayText($b['displayText'])
+                        ? $this->formatDisplayText($b['displayText'])
                         : $b['displayText'];
                     return strcasecmp($aText, $bText);
                 }
@@ -102,14 +102,14 @@ class FacetHelper
      *
      * @return array Facet hierarchy
      */
-    public static function buildFacetArray(
+    public function buildFacetArray(
         $facet, $facetList, $activeFilterList = array(), $urlHelper = false
     ) {
         // First build associative arrays of currently active filters and
         // their parents
         $filterKeys = array();
         $parentFilterKeys = array();
-        self::buildFilterKeyArrays(
+        $this->buildFilterKeyArrays(
             $facet, $activeFilterList, $filterKeys, $parentFilterKeys
         );
 
@@ -138,7 +138,7 @@ class FacetHelper
             $displayText = $item['displayText'];
             if ($displayText == $item['value']) {
                 // Only show the current level part
-                $displayText = self::formatDisplayText($displayText);
+                $displayText = $this->formatDisplayText($displayText);
             }
 
             $facetItem = array(
@@ -194,7 +194,7 @@ class FacetHelper
      *
      * @return void
      */
-    public static function buildFilterKeyArrays(
+    public function buildFilterKeyArrays(
         $facet, $filterList, &$filterKeys, &$parentFilterKeys
     ) {
         foreach ($filterList as $filters) {
@@ -226,14 +226,14 @@ class FacetHelper
      *
      * @return array Simple array of facets
      */
-    public static function flattenFacetHierarchy($facetList)
+    public function flattenFacetHierarchy($facetList)
     {
         $results = array();
         foreach ($facetList as $facetItem) {
             $results[] = $facetItem;
             if (!empty($facetItem['children'])) {
                 $results = array_merge(
-                    $results, self::flattenFacetHierarchy($facetItem['children'])
+                    $results, $this->flattenFacetHierarchy($facetItem['children'])
                 );
             }
         }
@@ -246,20 +246,21 @@ class FacetHelper
      * @param string $displayText Display text
      * @param bool   $allLevels   Whether to display all levels or only
      * the current one
+     * @param string $separator   Separator string displayed between levels
      *
      * @return string Formatted text
      */
-    public static function formatDisplayText($displayText, $allLevels = false)
-    {
-        if ($allLevels) {
-            if (preg_match('/^\d+\/(.*)\/$/', $displayText, $matches)) {
-                return $matches[1];
-            }
-        } else {
-            $parts = explode('/', $displayText);
-            if (!empty($parts) && isset($parts[$parts[0] + 1])) {
+    public function formatDisplayText(
+        $displayText, $allLevels = false, $separator = '/'
+    ) {
+        $parts = explode('/', $displayText);
+        if (count($parts) > 1 && is_numeric($parts[0])) {
+            if (!$allLevels && isset($parts[$parts[0] + 1])) {
                 return $parts[$parts[0] + 1];
             }
+            array_shift($parts);
+            array_pop($parts);
+            return implode($separator, $parts);
         }
         return $displayText;
     }

@@ -140,8 +140,7 @@ class Factory
         return new SolrAuth(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
     }
 
@@ -157,8 +156,7 @@ class Factory
         return new SolrDefault(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
     }
 
@@ -174,8 +172,7 @@ class Factory
         $driver = new SolrMarc(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
         $driver->attachILS(
             $sm->getServiceLocator()->get('VuFind\ILSConnection'),
@@ -197,8 +194,7 @@ class Factory
         return new SolrReserves(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('facets')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
     }
 
@@ -214,7 +210,6 @@ class Factory
         return new SolrWeb(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('website'),
             $sm->getServiceLocator()->get('VuFind\Config')->get('website')
         );
     }

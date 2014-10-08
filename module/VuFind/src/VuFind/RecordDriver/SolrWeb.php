@@ -46,15 +46,12 @@ class SolrWeb extends SolrDefault
      * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
      * @param \Zend\Config\Config $searchSettings Search-specific configuration file
-     * @param \Zend\Config\Config $facetSettings  Facet-specific configuration file
      */
     public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null, $facetSettings = null
+        $searchSettings = null
     ) {
         $this->preferredSnippetFields = array('description', 'fulltext');
-        parent::__construct(
-            $mainConfig, $recordConfig, $searchSettings, $facetSettings
-        );
+        parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
 
     /**

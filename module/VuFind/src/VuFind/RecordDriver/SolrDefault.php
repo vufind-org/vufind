@@ -105,13 +105,6 @@ class SolrDefault extends AbstractBase
     protected $hierarchyDriver = null;
 
     /**
-     * Hierarchical facets
-     *
-     * @var string
-     */
-    protected $hierarchicalFacets = array();
-
-    /**
      * Highlighting details
      *
      * @var array
@@ -126,10 +119,9 @@ class SolrDefault extends AbstractBase
      * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
      * (omit to use $mainConfig as $recordConfig)
      * @param \Zend\Config\Config $searchSettings Search-specific configuration file
-     * @param \Zend\Config\Config $facetSettings  Facet-specific configuration file
      */
     public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null, $facetSettings = null
+        $searchSettings = null
     ) {
         // Turn on highlighting/snippets as needed:
         $this->highlight = !isset($searchSettings->General->highlighting)
@@ -144,10 +136,6 @@ class SolrDefault extends AbstractBase
             foreach ($searchSettings->Snippet_Captions as $key => $value) {
                 $this->snippetCaptions[$key] = $value;
             }
-        }
-        if (isset($facetSettings->SpecialFacets->hierarchical)) {
-            $this->hierarchicalFacets
-                = $facetSettings->SpecialFacets->hierarchical->toArray();
         }
         parent::__construct($mainConfig, $recordConfig);
     }
@@ -430,22 +418,7 @@ class SolrDefault extends AbstractBase
      */
     public function getFormats()
     {
-        if (empty($this->fields['format'])) {
-            return array();
-        }
-
-        if (in_array('format', $this->hierarchicalFacets)) {
-            $results = array();
-            foreach ($this->fields['format'] as $format) {
-                // Only show the current level part
-                $results[]
-                    = \VuFind\Search\Solr\FacetHelper::formatDisplayText($format);
-            }
-            // Only display unique values for e.g. hierarchy of Book -> Book
-            return array_unique($results);
-        }
-
-        return $this->fields['format'];
+        return isset($this->fields['format']) ? $this->fields['format'] : array();
     }
 
     /**

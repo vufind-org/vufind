@@ -181,6 +181,7 @@ $config = array(
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\Search'         => 'VuFindSearch\Service',
             'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
+            'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper'
         ),
         'initializers' => array(
             'VuFind\ServiceManager\Initializer::initInstance',
