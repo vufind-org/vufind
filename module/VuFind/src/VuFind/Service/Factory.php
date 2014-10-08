@@ -261,19 +261,6 @@ class Factory
     }
 
     /**
-     * Construct the Search\Solr\HierarchicalFacetHelper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \VuFind\Hierarchy\Driver\PluginManager
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public static function getHierarchicalFacetHelper(ServiceManager $sm)
-    {
-        return new \VuFind\Search\Solr\HierarchicalFacetHelper();
-    }
-
-    /**
      * Construct the Hierarchy\Driver Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.

@@ -141,7 +141,6 @@ $config = array(
             'VuFind\DbAdapterFactory' => 'VuFind\Service\Factory::getDbAdapterFactory',
             'VuFind\DbTablePluginManager' => 'VuFind\Service\Factory::getDbTablePluginManager',
             'VuFind\Export' => 'VuFind\Service\Factory::getExport',
-            'VuFind\HierarchicalFacetHelper' => 'VuFind\Service\Factory::getHierarchicalFacetHelper',
             'VuFind\HierarchyDriverPluginManager' => 'VuFind\Service\Factory::getHierarchyDriverPluginManager',
             'VuFind\HierarchyTreeDataSourcePluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataSourcePluginManager',
             'VuFind\HierarchyTreeRendererPluginManager' => 'VuFind\Service\Factory::getHierarchyTreeRendererPluginManager',
@@ -182,6 +181,7 @@ $config = array(
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\Search'         => 'VuFindSearch\Service',
             'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
+            'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper'
         ),
         'initializers' => array(
             'VuFind\ServiceManager\Initializer::initInstance',
