@@ -73,7 +73,7 @@ if (!$opts->getOption('use-defaults') ) {
        $module = getModule();
     }
 
-    if ($opts->getOption('module-name')) {
+    if ($opts->getOption('basepath')) {
        $basePath = $opts->getOption('basepath');
     } else {
        $basePath = getBasePath($basePath);
