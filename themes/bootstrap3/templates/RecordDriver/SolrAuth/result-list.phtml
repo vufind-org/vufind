@@ -1,10 +1,10 @@
 <?
-    $heading = $this->driver->getTitle();
-    if (empty($heading)) {
-        $heading = $this->translate('Heading unavailable.');
-    }
-    $seeAlso = $this->driver->getSeeAlso();
-    $useFor = $this->driver->getUseFor();
+  $heading = $this->driver->getTitle();
+  if (empty($heading)) {
+    $heading = $this->translate('Heading unavailable.');
+  }
+  $seeAlso = $this->driver->getSeeAlso();
+  $useFor = $this->driver->getUseFor();
 ?>
 <div class="listentry col-xs-11">
   <div class="resultItemLine1">
@@ -29,4 +29,3 @@
     <? endif; ?>
   </div>
 </div>
-<div class="clearer"></div>
