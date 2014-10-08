@@ -255,6 +255,11 @@ function ajaxLogin(form) {
 }
 
 $(document).ready(function() {
+  // Off canvas
+  $('[data-toggle="offcanvas"]').click(function () {
+    $('.row-offcanvas').toggleClass('active')
+  });
+
   // support "jump menu" dropdown boxes
   $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
