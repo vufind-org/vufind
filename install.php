@@ -43,15 +43,16 @@ $basePath = '/vufind';
 echo "VuFind has been found in {$baseDir}.\n\n";
 
 try {
-   $opts = new Getopt(
-      array(
-        'use-defaults' => 'Use VuFind Defaults to Configure',
+    $opts = new Getopt(
+        array(
+        'use-defaults' => 'Use VuFind Defaults to Configure (ignores any other arguments passed)',
         'overridedir=s' => "Where would you like to store your local settings? [{$baseDir}/local]",
         'module-name=w' => 'What module name would you like to use? Use disabled, to not use',
         'basepath=s' => 'What base path should be used in VuFind\'s URL? [/vufind]',
         'multisite-w' => 'Specify we are going to setup a multisite. Options are: directory and host',
-        'hostname=s' => 'Specify the hostname for the VuFind Site, this is used when multisite=2',
-      ));
+        'hostname=s' => 'Specify the hostname for the VuFind Site, this is used when multisite=host',
+      )
+    );
 
     $opts->parse();
 } catch (Exception $e) {
@@ -62,43 +63,42 @@ try {
 // Load user settings if we are not forcing defaults:
 if (!$opts->getOption('use-defaults') ) {
     if ($opts->getOption('overridedir')) {
-       $overrideDir = $opts->getOption('overridedir');
-       initializeOverrideDir($overrideDir, true);
+        $overrideDir = $opts->getOption('overridedir');
+        initializeOverrideDir($overrideDir, true);
     } else {
-       $overrideDir = getOverrideDir($overrideDir);
+        $overrideDir = getOverrideDir($overrideDir);
     }
-printf("Tom: %s",$overrideDir);
     if ($opts->getOption('module-name')) {
-       if($opts->getOption('module-name') !== 'disabled')
-          $module = $opts->getOption('module-name');
+        if ($opts->getOption('module-name') !== 'disabled') {
+            $module = $opts->getOption('module-name');
+        }
     } else {
-       $module = getModule();
+        $module = getModule();
     }
 
     if ($opts->getOption('basepath')) {
-       $basePath = $opts->getOption('basepath');
+        $basePath = $opts->getOption('basepath');
     } else {
-       $basePath = getBasePath($basePath);
+        $basePath = getBasePath($basePath);
     }
 
     // We assume "single site" mode unless the --multisite switch is set:
     if ($opts->getOption('multisite')) {
 
         if ($opts->getOption('multisite') === 'directory') {
-           $multisiteMode = MULTISITE_DIR_BASED;
-        } else if($opts->getOption('multisite') === 'host') {
-           $multisiteMode = MULTISITE_HOST_BASED;
+            $multisiteMode = MULTISITE_DIR_BASED;
+        } else if ($opts->getOption('multisite') === 'host') {
+            $multisiteMode = MULTISITE_HOST_BASED;
         } else {
-           $multisiteMode = getMultisiteMode();
+            $multisiteMode = getMultisiteMode();
         }
     }
 
     if ($multisiteMode == MULTISITE_HOST_BASED) {
-        if($opts->getOption('hostname')) {
-           $host = $opts->getOption('hostname');
-        }
-        else {
-           $host = getHost();
+        if ($opts->getOption('hostname')) {
+             $host = $opts->getOption('hostname');
+        } else {
+             $host = getHost();
         }
     }
 
