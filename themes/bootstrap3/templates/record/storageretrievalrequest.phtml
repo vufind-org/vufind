@@ -18,15 +18,19 @@
     <? if (in_array("item-issue", $this->extraFields)): ?>
       <div class="form-group">
         <div class="col-sm-3 controls">
-          <label class="radio">
-            <input type="radio" id="storageRetrievalRequestItem" name="gatheredDetails[level]" value="copy"<?=!isset($this->gatheredDetails['level']) || $this->gatheredDetails['level'] != 'title' ? ' checked="checked"' : ''?>>
-            <?=$this->transEsc('storage_retrieval_request_selected_item')?>
-          </label>
+          <div class="radio">
+            <label>
+              <input type="radio" id="storageRetrievalRequestItem" name="gatheredDetails[level]" value="copy"<?=!isset($this->gatheredDetails['level']) || $this->gatheredDetails['level'] != 'title' ? ' checked="checked"' : ''?>>
+              <?=$this->transEsc('storage_retrieval_request_selected_item')?>
+            </label>
+          </div>
 
-          <label class="radio">
-            <input type="radio" id="storageRetrievalRequestTitle" name="gatheredDetails[level]" value="title"<?=isset($this->gatheredDetails['level']) && $this->gatheredDetails['level'] == 'title' ? ' checked="checked"' : ''?>>
-            <?=$this->transEsc('storage_retrieval_request_reference')?>
-          </label>
+          <div class="radio">
+            <label>
+              <input type="radio" id="storageRetrievalRequestTitle" name="gatheredDetails[level]" value="title"<?=isset($this->gatheredDetails['level']) && $this->gatheredDetails['level'] == 'title' ? ' checked="checked"' : ''?>>
+              <?=$this->transEsc('storage_retrieval_request_reference')?>
+            </label>
+          </div>
         </div>
         <div id="storageRetrievalRequestReference" class="storageRetrievalRequestReference">
           <label class="col-sm-3 control-label"><?=$this->transEsc('storage_retrieval_request_volume')?>:</label>
