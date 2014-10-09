@@ -58,9 +58,9 @@ class Followup extends AbstractPlugin
     /**
      * Clear an element of the stored followup information.
      *
-     * @param string $key     Element to clear.
+     * @param string $key Element to clear.
      *
-     * @return bool           True if cleared, false if never set.
+     * @return bool       True if cleared, false if never set.
      */
     public function clear($key)
     {
