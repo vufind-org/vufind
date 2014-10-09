@@ -632,12 +632,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function getFollowupUrl()
     {
-        $followup = $this->followup()->retrieve();
         // followups aren't used in lightboxes.
-        if (isset($followup->url) && !$this->inLightbox()) {
-            return $followup->url;
-        }
-        return '';
+        return ($this->inLightbox()) ? '' : $this->followup()->retrieve('url', '');
     }
 
     /**
@@ -647,9 +643,6 @@ class AbstractBase extends AbstractActionController
      */
     protected function clearFollowupUrl()
     {
-        $followup = $this->followup()->retrieve();
-        if (isset($followup->url)) {
-            unset($followup->url);
-        }
+        $this->followup()->clear('url');
     }
 }

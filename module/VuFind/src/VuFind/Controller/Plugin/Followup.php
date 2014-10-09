@@ -56,13 +56,54 @@ class Followup extends AbstractPlugin
     }
 
     /**
+     * Clear an element of the stored followup information.
+     *
+     * @param string $key Element to clear.
+     *
+     * @return bool       True if cleared, false if never set.
+     */
+    public function clear($key)
+    {
+        if (isset($this->session->$key)) {
+            unset($this->session->$key);
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Retrieve the stored followup information.
      *
-     * @return \Zend\Session\Container
+     * @param string $key     Element to retrieve and clear (null for entire
+     * \Zend\Session\Container object)
+     * @param mixed  $default Default value to return if no stored value found
+     * (ignored when $key is null)
+     *
+     * @return mixed
      */
-    public function retrieve()
+    public function retrieve($key = null, $default = null)
     {
-        return $this->session;
+        if (null === $key) {
+            return $this->session;
+        }
+        return isset($this->session->$key)
+            ? $this->session->$key : $default;
+
+    }
+
+    /**
+     * Retrieve and then clear a particular followup element.
+     *
+     * @param string $key     Element to retrieve and clear.
+     * @param mixed  $default Default value to return if no stored value found
+     *
+     * @return mixed
+     */
+    public function retrieveAndClear($key, $default = null)
+    {
+        $value = $this->retrieve($key, $default);
+        $this->clear($key);
+        return $value;
     }
 
     /**
