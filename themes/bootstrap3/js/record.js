@@ -142,6 +142,25 @@ function registerAjaxCommentRecord() {
   $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
 }
 
+function registerTabEvents() {
+  // register the record comment form to be submitted via AJAX
+  registerAjaxCommentRecord();
+
+  setUpCheckRequest();
+
+  // Place a Hold
+  // Place a Storage Hold
+  // Place an ILL Request
+  $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
+    var parts = $(this).attr('href').split('?');
+    parts = parts[0].split('/');
+    var params = deparam($(this).attr('href'));
+    params.id = parts[parts.length-2];
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    return Lightbox.get('Record', parts[parts.length-1], params);
+  });
+}
+
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
   $.ajax({
