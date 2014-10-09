@@ -6,7 +6,7 @@ function showhideTabs(id) {
   $('#'+id).tab('show');
 }
 
-function ajaxLoadTab(tabid) {
+function ajaxFLLoadTab(tabid) {
   var id = $('#'+tabid).parent().parent().parent().find(".hiddenId")[0].value;
   $.ajax({
     url: path + '/Record/'+id+'/AjaxTab',

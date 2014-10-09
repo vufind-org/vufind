@@ -1,5 +1,5 @@
 <? if ($this->params->getOptions()->getListViewOption()!="full"): ?>    
-    <div class="col-xs-11 middle" style="padding-top: 5px">
+    <div class="col-xs-11 middle">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption()?>">
       <?
         $summHighlightedTitle = $this->driver->getHighlightedTitle();
@@ -17,11 +17,13 @@
 <? else: ?>
 <div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
 <? endif; ?>
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
-  <div class="col-sm-2 col-xs-3 left">
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
+  <div class="row">
+    <div class="col-sm-2 col-xs-3 left">
+       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+
+       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+          <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
         <img class="recordcover" src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
       <? else: ?>
         <img class="recordcover" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
@@ -30,36 +32,6 @@
   </div>
   <div class="col-sm-7 col-xs-6 middle">
 <? if ($this->params->getOptions()->getListViewOption()=="full"): ?>
-    <div>
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-      <?
-        $summHighlightedTitle = $this->driver->getHighlightedTitle();
-        $summTitle = $this->driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-          echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-          echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-          echo $this->transEsc('Title not available');
-        }
-      ?>
-      </a>
-    </div>
-<? endif; ?>
-<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
-  <div class="row">
-    <div class="col-sm-2 col-xs-3 left">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-        <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-          <img class="recordcover" src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-        <? else: ?>
-          <img class="recordcover" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-        <? endif; ?>
-      </a>
-    </div>
-    <div class="col-sm-7 col-xs-6 middle">
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
         <?
@@ -75,6 +47,7 @@
         ?>
         </a>
       </div>
+<? endif; ?>
 
       <div>
         <? if($this->driver->isCollection()): ?>
@@ -235,8 +208,9 @@
       <? endif; ?>
 
       <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
-   </div>
-   <? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
-    <div id="long_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"></div>
+    </div>
+  </div>
+</div><? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
+<div id="long_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"></div>
 </div>
 <?endif?>
