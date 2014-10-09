@@ -9,10 +9,12 @@
 <?=$this->flashmessages()?>
 <form class="form-inline" action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
   <? if (!$this->cart()->isEmpty()): ?>
-    <label class="checkbox">
-      <input type="checkbox" name="selectAll" class="checkbox-select-all"/> <?=$this->transEsc('select_page')?>
-        | <?=$this->transEsc('with_selected')?>:
-    </label>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" name="selectAll" class="checkbox-select-all"/> <?=$this->transEsc('select_page')?>
+          | <?=$this->transEsc('with_selected')?>:
+      </label>
+    </div>
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <input class="btn btn-default" type="submit" name="saveCart" value="<?=$this->transEsc('bookbag_save_selected')?>" title="<?=$this->transEsc('bookbag_save')?>"/>
     <? endif; ?>

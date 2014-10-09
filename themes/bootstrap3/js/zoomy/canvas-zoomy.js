@@ -5,12 +5,28 @@ var Zoomy = {
     this.canvas  = canvas;
     this.canvas.width  = Math.floor(this.canvas.clientWidth);
     this.canvas.height = Math.floor(this.canvas.clientHeight);
+    addEventListener('resize', function() {
+      Zoomy.canvas.width  = Math.floor(Zoomy.canvas.clientWidth);
+      Zoomy.canvas.height = Math.floor(Zoomy.canvas.clientHeight);
+      Zoomy.width = Zoomy.canvas.width;
+      Zoomy.height = Zoomy.canvas.height;
+      Zoomy.rebound();
+      Zoomy.draw();
+    }, false);
     addEventListener('mousemove', Zoomy.mouseHandle, false);
+    addEventListener('touchmove', Zoomy.mouseHandle, false);
     addEventListener('mouseup', function(e) {
       Zoomy.mouseDown = false;
       Zoomy.mouse = undefined;
     }, false);
+    addEventListener('touchend', function(e) {
+      Zoomy.mouseDown = false;
+      Zoomy.mouse = undefined;
+    }, false);
     this.canvas.addEventListener('mousedown', function(e) {
+      Zoomy.mouseDown = true;
+    }, false);
+    this.canvas.addEventListener('touchstart', function(e) {
       Zoomy.mouseDown = true;
     }, false);
     this.canvas.addEventListener('mousewheel', function(e) {
@@ -28,8 +44,15 @@ var Zoomy = {
   },
   mouseHandle: function(e) {
     if(!Zoomy.mouseDown) return;
-    var mx = e.pageX-Zoomy.canvas.offsetLeft;
-    var my = e.pageY-Zoomy.canvas.offsetTop;
+    e.preventDefault();
+    var mx = e.type.match("touch")
+      ? e.targetTouches[0].pageX
+      : e.pageX;
+    mx -= Zoomy.canvas.offsetLeft;
+    var my = e.type.match("touch")
+      ? e.targetTouches[0].pageY
+      : e.pageY;
+    my -= Zoomy.canvas.offsetTop;
     if(typeof Zoomy.mouse !== "undefined") {
       Zoomy.image.x = Math.floor(Zoomy.image.x + mx - Zoomy.mouse.x);
       Zoomy.image.y = Math.floor(Zoomy.image.y + my - Zoomy.mouse.y);

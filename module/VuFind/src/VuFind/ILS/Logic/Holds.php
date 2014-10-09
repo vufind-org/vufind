@@ -42,11 +42,11 @@ use VuFind\ILS\Connection as ILSConnection;
 class Holds
 {
     /**
-     * Auth manager object
+     * ILS authenticator
      *
-     * @var \VuFind\Auth\Manager
+     * @var \VuFind\Auth\ILSAuthenticator
      */
-    protected $account;
+    protected $ilsAuth;
 
     /**
      * Catalog connection object
@@ -79,15 +79,15 @@ class Holds
     /**
      * Constructor
      *
-     * @param \VuFind\Auth\Manager $account Auth manager object
-     * @param ILSConnection        $ils     A catalog connection
-     * @param \VuFind\Crypt\HMAC   $hmac    HMAC generator
-     * @param \Zend\Config\Config  $config  VuFind configuration
+     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
+     * @param ILSConnection                 $ils     A catalog connection
+     * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
+     * @param \Zend\Config\Config           $config  VuFind configuration
      */
-    public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils,
-        \VuFind\Crypt\HMAC $hmac, \Zend\Config\Config $config
+    public function __construct(\VuFind\Auth\ILSAuthenticator $ilsAuth,
+        ILSConnection $ils, \VuFind\Crypt\HMAC $hmac, \Zend\Config\Config $config
     ) {
-        $this->account = $account;
+        $this->ilsAuth = $ilsAuth;
         $this->hmac = $hmac;
         $this->config = $config;
 
@@ -166,7 +166,7 @@ class Holds
             // Retrieve stored patron credentials; it is the responsibility of the
             // controller and view to inform the user that these credentials are
             // needed for hold data.
-            $patron = $this->account->storedCatalogLogin();
+            $patron = $this->ilsAuth->storedCatalogLogin();
             $result = $this->catalog->getHolding($id, $patron ? $patron : null);
             $mode = $this->catalog->getHoldsMode();
 

@@ -66,10 +66,12 @@
     ?>
     <? if ((isset($hasDefaultsApplied) && $hasDefaultsApplied) || !empty($filterDetails)): ?>
       <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
-      <label class="checkbox">
-        <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
-        <?=$this->transEsc("basic_search_keep_filters")?>
-      </label>
+      <div class="checkbox">
+        <label>
+          <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
+          <?=$this->transEsc("basic_search_keep_filters")?>
+        </label>
+      </div>
       <div class="hidden">
         <? foreach ($filterDetails as $current): ?>
           <input class="applied-filter" id="<?=$this->escapeHtmlAttr($current['id'])?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtmlAttr($current['value'])?>" />

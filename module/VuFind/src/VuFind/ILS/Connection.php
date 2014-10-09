@@ -227,7 +227,7 @@ class Connection implements TranslatorAwareInterface
      * if the system supports a particular function.
      *
      * @param string $function The name of the function to check.
-     * @param string $id       (optional) A record id used to identify the used
+     * @param string $id       (optional) A record id used to e.g. identify the used
      * backend with MultiBackend driver
      *
      * @return mixed On success, an associative array with specific function keys
@@ -236,8 +236,10 @@ class Connection implements TranslatorAwareInterface
     public function checkFunction($function, $id = null)
     {
         // Extract the configuration from the driver if available:
-        $functionConfig = $this->checkCapability('getConfig')
-            ? $this->getDriver()->getConfig($function, $id) : false;
+        $functionConfig = $this->checkCapability(
+            'getConfig',
+            compact('function', 'id')
+        ) ? $this->getDriver()->getConfig($function, $id) : false;
 
         // See if we have a corresponding check method to analyze the response:
         $checkMethod = "checkMethod".$function;
@@ -255,7 +257,7 @@ class Connection implements TranslatorAwareInterface
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Holds.
      *
-     * @param string $functionConfig The Hold configuration values
+     * @param array $functionConfig The Hold configuration values
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing holds via a form or a URL; on failure, false.
@@ -294,7 +296,7 @@ class Connection implements TranslatorAwareInterface
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Cancelling Holds.
      *
-     * @param string $functionConfig The Cancel Hold configuration values
+     * @param array $functionConfig The Cancel Hold configuration values
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling holds via a form or a URL;
@@ -325,7 +327,7 @@ class Connection implements TranslatorAwareInterface
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Renewing Items.
      *
-     * @param string $functionConfig The Renewal configuration values
+     * @param array $functionConfig The Renewal configuration values
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for renewing items via a form or a URL; on failure, false.
@@ -356,7 +358,7 @@ class Connection implements TranslatorAwareInterface
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param string $functionConfig The storage retrieval request configuration
+     * @param array $functionConfig The storage retrieval request configuration
      * values
      *
      * @return mixed On success, an associative array with specific function keys
@@ -390,7 +392,7 @@ class Connection implements TranslatorAwareInterface
      * the driver configuration to determine if the system supports Cancelling
      * Storage Retrieval Requests.
      *
-     * @param string $functionConfig The Cancel function configuration values
+     * @param array $functionConfig The Cancel function configuration values
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
@@ -423,7 +425,7 @@ class Connection implements TranslatorAwareInterface
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param string $functionConfig The ILL request configuration values
+     * @param array $functionConfig The ILL request configuration values
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing requests via a form; on failure, false.
@@ -456,7 +458,7 @@ class Connection implements TranslatorAwareInterface
      * the driver configuration to determine if the system supports Cancelling
      * ILL Requests.
      *
-     * @param string $functionConfig The Cancel function configuration values
+     * @param array $functionConfig The Cancel function configuration values
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
@@ -517,7 +519,9 @@ class Connection implements TranslatorAwareInterface
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        if ($this->checkCapability('checkRequestIsValid')) {
+        if ($this->checkCapability(
+            'checkRequestIsValid', compact('id', 'data', 'patron')
+        )) {
             return $this->getDriver()->checkRequestIsValid($id, $data, $patron);
         }
         // If the driver has no checkRequestIsValid method, we will assume that
@@ -540,7 +544,9 @@ class Connection implements TranslatorAwareInterface
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if ($this->checkCapability('checkStorageRetrievalRequestIsValid')) {
+        if ($this->checkCapability(
+            'checkStorageRetrievalRequestIsValid', compact('id', 'data', 'patron')
+        )) {
             return $this->getDriver()->checkStorageRetrievalRequestIsValid(
                 $id, $data, $patron
             );
@@ -564,7 +570,9 @@ class Connection implements TranslatorAwareInterface
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
-        if ($this->checkCapability('checkILLRequestIsValid')) {
+        if ($this->checkCapability(
+            'checkILLRequestIsValid', compact('id', 'data', 'patron')
+        )) {
             return $this->getDriver()->checkILLRequestIsValid(
                 $id, $data, $patron
             );
@@ -625,7 +633,7 @@ class Connection implements TranslatorAwareInterface
     public function hasHoldings($id)
     {
         // Graceful degradation -- return true if no method supported.
-        return $this->checkCapability('hasHoldings')
+        return $this->checkCapability('hasHoldings', compact('id'))
             ? $this->getDriver()->hasHoldings($id) : true;
     }
 
@@ -654,17 +662,16 @@ class Connection implements TranslatorAwareInterface
      */
     public function checkCapability($method, $params = array())
     {
-        // If possible, we want to try to check the capability without the expense
-        // of instantiating an object:
+        // First check that the function is callable without the expense of
+        // initializing the driver:
         if (is_callable(array($this->getDriverClass(), $method))) {
+            // At least drivers implementing the __call() magic method must also
+            // implement supportsMethod() to verify that the method is actually
+            // usable:
+            if (method_exists($this->getDriverClass(), 'supportsMethod')) {
+                return $this->getDriver()->supportsMethod($method, $params);
+            }
             return true;
-        }
-
-        // The problem with is_callable is that it doesn't work well for classes
-        // implementing the __call() magic method; to compensate for this, ILS
-        // drivers using __call() must also implement supportsMethod().
-        if (is_callable(array($this->getDriverClass(), 'supportsMethod'))) {
-            return $this->getDriver()->supportsMethod($method, $params);
         }
 
         // If we got this far, the feature is unsupported:

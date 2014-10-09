@@ -1,8 +1,14 @@
 /*global path, registerTabEvents*/
 
-function ajaxLoadTab(tabid) {
-  var id = $('#'+tabid).parent().parent().parent().find(".hiddenId")[0].value;
+function showhideTabs(tabid) {
   console.log(tabid);
+  $('#'+tabid).parents('.search_tabs').find('.tab-pane.active').removeClass('active');
+  $('#'+tabid+'-tab').addClass('active');
+  $('#'+tabid).tab('show');
+}
+
+function ajaxFLLoadTab(tabid) {
+  var id = $('#'+tabid).parent().parent().parent().find(".hiddenId")[0].value;
   var tab = tabid.split('_');
   tab = tab[0];
   if($('#'+tabid+'-tab').is(':empty')) {
@@ -11,18 +17,15 @@ function ajaxLoadTab(tabid) {
       type: 'POST',
       data: {tab: tab},
       success: function(data) {
-        $('#'+tabid).parent().parent().find('#record-tabs .tab-pane.active').removeClass('active');
-        $('#'+tabid+'-tab').html(data).addClass('active');
-        $('#'+tabid).tab('show');
+        $('#'+tabid+'-tab').html(data);
+        showhideTabs(tabid);
         if(typeof syn_get_widget === "function") {
           syn_get_widget();
         }
       }
     });
   } else {
-    $('#'+tabid).parent().parent().find('#record-tabs .tab-pane.active').removeClass('active');
-    $('#'+tabid+'-tab').addClass('active');
-    $('#'+tabid).tab('show');
+    showhideTabs(tabid);
   }
 }
 

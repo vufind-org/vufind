@@ -34,47 +34,48 @@
   var documentID = '<?=$this->id ?>';
   var initPage = <?=isset($this->initPage) ? $this->initPage : 0 ?>;
 </script>
-<div class="vudl container row">
+<div class="vudl row">
   <div class="col-sm-3">
     <?=$this->context($this)->renderInContext('vudl/details.phtml', array())?>
   </div>
   <div class="col-sm-9">
-    <? $index=0; foreach($this->outline['lists'] as $key=>$list): ?>
-      <!-- PRE LOADING PLACEHOLDERS -->
-      <? for($i=0;$i<current(array_keys($list))-1;$i++, $index++): ?>
-        <a class="col-sm-3 page-grid" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
-      <? endfor; ?>
-      <!-- LOADED ITEMS -->
-      <? foreach($list as $i=>$item): ?>
-        <a href="<?=$this->url('vudl-record', array('id'=>$item['id'])) ?>" class="col-sm-3 page-grid" title="<?=$item['id'] ?>" id="item<?=$index?>">
-          <? if(isset($item['thumbnail'])): ?>
-            <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/>
-          <? else: ?>
-            <img class="<?=$item['fulltype'] ?>" src="<?=$this->imageLink('vudl/'.$item['fulltype'].'.png') ?>"/>
-          <? endif; ?>
-          <br/><?=$this->transEsc($item['label']) ?>
-        </a>
-        <? $index++; ?>
-      <? endforeach; ?>
-      <!-- POST LOADING PLACEHOLDERS -->
-      <? if(isset($this->outline['counts'][$key])): ?>
-        <? for($i=$this->initPage+count($list);$i<$this->outline['counts'][$key];$i++, $index++): ?>
+    <div class="row">
+      <? $index=0; foreach($this->outline['lists'] as $key=>$list): ?>
+        <!-- PRE LOADING PLACEHOLDERS -->
+        <? for($i=0;$i<current(array_keys($list))-1;$i++, $index++): ?>
           <a class="col-sm-3 page-grid" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
         <? endfor; ?>
-      <? endif; ?>
-    <? endforeach; ?>
+        <!-- LOADED ITEMS -->
+        <? foreach($list as $i=>$item): ?>
+          <a class="col-sm-3 page-grid" href="<?=$this->url('vudl-record', array('id'=>$item['id'])) ?>" title="<?=$item['id'] ?>" id="item<?=$index?>">
+            <? if(isset($item['thumbnail'])): ?>
+              <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/>
+            <? else: ?>
+              <img class="<?=$item['fulltype'] ?>" src="<?=$this->imageLink('vudl/'.$item['fulltype'].'.png') ?>"/>
+            <? endif; ?>
+            <br/><?=$this->transEsc($item['label']) ?>
+          </a>
+          <? $index++; ?>
+        <? endforeach; ?>
+        <!-- POST LOADING PLACEHOLDERS -->
+        <? if(isset($this->outline['counts'][$key])): ?>
+          <? for($i=$this->initPage+count($list);$i<$this->outline['counts'][$key];$i++, $index++): ?>
+            <a class="col-sm-3 page-grid" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
+          <? endfor; ?>
+        <? endif; ?>
+      <? endforeach; ?>
+    </div>
   </div>
-  <script>
-    $.ajax({dataType:'json',
-      url:'../VuDL/ajax?method=pageAjax&record=<?=$this->id ?>&start=0&end=16',
-      success:ajaxLoadPages,
-      error:function(d,e){
-        console.log(d);console.log(e)
-      }
-    });
-    counts = $.parseJSON('<?=json_encode($this->outline['counts'], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
-    $('.accordion').removeClass('hidden');
-    $('#collapse0').addClass('in');
-  </script>
 </div>
-<div class="bottom">&nbsp;</div>
+<script>
+  $.ajax({dataType:'json',
+    url:'../VuDL/ajax?method=pageAjax&record=<?=$this->id ?>&start=0&end=16',
+    success:ajaxLoadPages,
+    error:function(d,e){
+      console.log(d);console.log(e)
+    }
+  });
+  counts = $.parseJSON('<?=json_encode($this->outline['counts'], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
+  $('.accordion').removeClass('hidden');
+  $('#collapse_details').addClass('in');
+</script>

@@ -88,7 +88,9 @@ class CartController extends AbstractBase
         } else if (strlen($this->params()->fromPost('export', '')) > 0) {
             $action = 'Export';
         } else {
-            $action = 'Cart';
+            // Check if the user is in the midst of a login process; if not,
+            // default to cart home.
+            $action = $this->followup()->retrieveAndClear('cartAction', 'Cart');
         }
         return $this->forwardTo('Cart', $action);
     }
@@ -171,20 +173,29 @@ class CartController extends AbstractBase
      */
     public function emailAction()
     {
+        // Retrieve ID list:
+        $ids = is_null($this->params()->fromPost('selectAll'))
+            ? $this->params()->fromPost('ids')
+            : $this->params()->fromPost('idsAll');
+
+        // Retrieve follow-up information if necessary:
+        if (!is_array($ids) || empty($ids)) {
+            $ids = $this->followup()->retrieveAndClear('cartIds');
+        }
+        if (!is_array($ids) || empty($ids)) {
+            return $this->redirectToSource('error', 'bulk_noitems_advice');
+        }
+
         // Force login if necessary:
         $config = $this->getConfig();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
-            return $this->forceLogin();
+            return $this->forceLogin(
+                null, array('cartIds' => $ids, 'cartAction' => 'Email')
+            );
         }
 
-        $ids = is_null($this->params()->fromPost('selectAll'))
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
-        if (!is_array($ids) || empty($ids)) {
-            return $this->redirectToSource('error', 'bulk_noitems_advice');
-        }
         $view = $this->createEmailViewModel();
         $view->records = $this->getRecordLoader()->loadBatch($ids);
 
@@ -348,13 +359,17 @@ class CartController extends AbstractBase
             ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids'))
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
+            $ids = $this->followup()->retrieveAndClear('cartIds');
+        }
+        if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
         // Make sure user is logged in:
-        $user = $this->getUser();
-        if ($user == false) {
-            return $this->forceLogin();
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin(
+                null, array('cartIds' => $ids, 'cartAction' => 'Save')
+            );
         }
 
         // Process submission if necessary:

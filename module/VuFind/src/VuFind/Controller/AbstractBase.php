@@ -134,6 +134,16 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the ILS authenticator.
+     *
+     * @return \VuFind\Auth\ILSAuthenticator
+     */
+    protected function getILSAuthenticator()
+    {
+        return $this->getServiceLocator()->get('VuFind\ILSAuthenticator');
+    }
+
+    /**
      * Get the user object if logged in, false otherwise.
      *
      * @return object|bool
@@ -336,10 +346,11 @@ class AbstractBase extends AbstractActionController
         }
 
         // Now check if the user has provided credentials with which to log in:
+        $ilsAuth = $this->getILSAuthenticator();
         if (($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {
-            $patron = $account->newCatalogLogin($username, $password);
+            $patron = $ilsAuth->newCatalogLogin($username, $password);
 
             // If login failed, store a warning message:
             if (!$patron) {
@@ -348,7 +359,7 @@ class AbstractBase extends AbstractActionController
             }
         } else {
             // If no credentials were provided, try the stored values:
-            $patron = $account->storedCatalogLogin();
+            $patron = $ilsAuth->storedCatalogLogin();
         }
 
         // If catalog login failed, send the user to the right page:
@@ -621,12 +632,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function getFollowupUrl()
     {
-        $followup = $this->followup()->retrieve();
         // followups aren't used in lightboxes.
-        if (isset($followup->url) && !$this->inLightbox()) {
-            return $followup->url;
-        }
-        return '';
+        return ($this->inLightbox()) ? '' : $this->followup()->retrieve('url', '');
     }
 
     /**
@@ -636,9 +643,6 @@ class AbstractBase extends AbstractActionController
      */
     protected function clearFollowupUrl()
     {
-        $followup = $this->followup()->retrieve();
-        if (isset($followup->url)) {
-            unset($followup->url);
-        }
+        $this->followup()->clear('url');
     }
 }

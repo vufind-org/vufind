@@ -18,14 +18,6 @@
             "url": "http://pear.php.net"
         },
         {
-            "type": "vcs",
-            "url": "https://github.com/summon/Summon.php"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/Jasig/phpCAS"
-        },
-        {
             "type": "package",
             "package": {
                 "name": "mobileesp/mdetect",
@@ -56,14 +48,15 @@
     ],
     "require": {
         "aferrandini/phpqrcode": "1.0.1",
-        "jasig/phpCAS": "dev-master",
+        "jasig/phpcas": "*",
         "johnwohlers/sip2": "dev-master",
         "mobileesp/mdetect": "dev-master",
+        "ocramius/proxy-manager": "*",
         "oyejorge/less.php": "*",
         "pear-pear.php.net/file_marc": "*",
         "pear-pear.php.net/pear": "*",
         "pear-pear.php.net/validate_ispn": "*",
-        "serialssolutions/summon": "dev-master",
+        "serialssolutions/summon": "*",
         "symfony/yaml": "*",
         "zendframework/zendframework": "2.2.7",
         "zendframework/zendrest": "2.*",

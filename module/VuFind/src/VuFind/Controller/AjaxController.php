@@ -1153,7 +1153,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = $this->getILS();
-                $patron = $this->getAuthManager()->storedCatalogLogin();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
                     switch ($requestType) {
                     case 'ILLRequest':
@@ -1468,7 +1468,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = $this->getILS();
-                $patron = $this->getAuthManager()->storedCatalogLogin();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
                     $results = $catalog->getILLPickupLocations(
                         $id, $pickupLib, $patron
@@ -1521,7 +1521,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = $this->getILS();
-                $patron = $this->getAuthManager()->storedCatalogLogin();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
                     $details = array(
                         'id' => $id,

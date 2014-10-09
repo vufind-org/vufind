@@ -40,7 +40,7 @@
       <? endif; ?>
       </select>
     <? endif; ?>
-      <a class="btn btn-link" id="make-list" href="<?=$this->url('editList', array('id' => 'NEW'))?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordSource=<?=urlencode($this->driver->getResourceSource())?>" title="<?=$this->transEsc('Create a List') ?>"><?=$showLists ? $this->transEsc('or').' '.$this->transEsc('Create a List') : $this->transEsc('Create a List'); ?></a>
+      <a class="btn btn-link" id="make-list" href="<?=$this->url('editList', array('id' => 'NEW'))?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordSource=<?=urlencode($this->driver->getResourceSource())?>" title="<?=$this->transEsc('Create a List') ?>"><?=$showLists ? $this->transEsc('or create a new list') : $this->transEsc('Create a List'); ?></a>
     </div>
   </div>
 
@@ -62,7 +62,7 @@
     </div>
     <div class="form-group">
       <div class="col-sm-9 col-sm-offset-3">
-        <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save to List') ?>"/>
+        <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save') ?>"/>
       </div>
     </div>
   <? endif; ?>
