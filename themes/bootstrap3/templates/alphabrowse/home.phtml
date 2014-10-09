@@ -22,91 +22,87 @@
 <? $pageLinks = ob_get_contents(); ?>
 <? ob_end_clean(); ?>
 
-<div class="<?=$this->layoutClass('mainbody')?>">
-  <div>
-    <form class="form-inline" method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
-      <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
-      <select id="alphaBrowseForm_source" name="source" class="form-control">
-        <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
-          <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
-        <? endforeach; ?>
-      </select>
-      <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
-      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="form-control"/>
-      <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Browse') ?>"/>
-    </form>
-  </div>
+<form class="form-inline" method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
+  <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
+  <select id="alphaBrowseForm_source" name="source" class="form-control">
+    <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
+      <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
+    <? endforeach; ?>
+  </select>
+  <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
+  <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>" class="form-control"/>
+  <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Browse') ?>"/>
+</form>
 
-  <? if ($this->result): ?>
-    <?=$pageLinks ?>
-    <table class="table table-striped">
-      <tr><td></td><th><?=$this->transEsc("alphabrowse_matches") ?></th></tr>
-      <? foreach ($this->result['Browse']['items'] as $i => $item): ?>
-      <tr>
-        <td>
-          <? if ($item['count'] > 0): ?>
-            <?/* linking using bib ids is generally more reliable than
-              doing searches for headings, but headings give shorter
-              queries and don't look as strange. */?>
-            <? if ($item['count'] < 5): ?>
-              <? $query = array('type' => 'ids', 'lookfor' => implode(' ', $item['ids'])); ?>
-            <? else: ?>
-              <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => '"' . addcslashes($item['heading'], '"') . '"'); ?>
-            <? endif; ?>
-            <a class="col-sm-6" href="<?=$this->escapeHtmlAttr($this->url('search-results', array(), array('query' => $query)))?>"><?=$this->escapeHtml($item['heading'])?></a>
+<? if ($this->result): ?>
+  <?=$pageLinks ?>
+  <table class="table table-striped">
+    <tr><td></td><th><?=$this->transEsc("alphabrowse_matches") ?></th></tr>
+    <? foreach ($this->result['Browse']['items'] as $i => $item): ?>
+    <tr>
+      <td>
+        <? if ($item['count'] > 0): ?>
+          <?/* linking using bib ids is generally more reliable than
+            doing searches for headings, but headings give shorter
+            queries and don't look as strange. */?>
+          <? if ($item['count'] < 5): ?>
+            <? $query = array('type' => 'ids', 'lookfor' => implode(' ', $item['ids'])); ?>
           <? else: ?>
-            <span class="col-sm-6"><?=$this->escapeHtml($item['heading'])?></span>
+            <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => '"' . addcslashes($item['heading'], '"') . '"'); ?>
           <? endif; ?>
+          <a class="col-sm-6" href="<?=$this->escapeHtmlAttr($this->url('search-results', array(), array('query' => $query)))?>"><?=$this->escapeHtml($item['heading'])?></a>
+        <? else: ?>
+          <span class="col-sm-6"><?=$this->escapeHtml($item['heading'])?></span>
+        <? endif; ?>
 
-          <?
-            foreach ($this->extras as $ei => $extraName):
-              $extraData = $item['extras'][$extraName];
-          ?>
-            <div class="col-sm-<?=floor(6/count($this->extras)) ?>">
-              <?
-                $extraDisplayArray = array();
-                foreach ($extraData as $j => $e) {
-                  $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
-                }
-                echo (empty($extraDisplayArray)) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
-              ?>
-            </div>
-          <? endforeach; ?>
-          <div class="clearfix"></div>
-          <? if (count($item['useInstead']) > 0): ?>
-            <div>
-              <?=$this->transEsc('Use instead') ?>:
-              <ul>
-                <? foreach ($item['useInstead'] as $heading): ?>
-                <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
-                <? endforeach; ?>
-              </ul>
-            </div>
-          <? endif; ?>
+        <?
+          foreach ($this->extras as $ei => $extraName):
+            $extraData = $item['extras'][$extraName];
+        ?>
+          <div class="col-sm-<?=floor(6/count($this->extras)) ?>">
+            <?
+              $extraDisplayArray = array();
+              foreach ($extraData as $j => $e) {
+                $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
+              }
+              echo (empty($extraDisplayArray)) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
+            ?>
+          </div>
+        <? endforeach; ?>
+        <div class="clearfix"></div>
+        <? if (count($item['useInstead']) > 0): ?>
+          <div>
+            <?=$this->transEsc('Use instead') ?>:
+            <ul>
+              <? foreach ($item['useInstead'] as $heading): ?>
+              <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+              <? endforeach; ?>
+            </ul>
+          </div>
+        <? endif; ?>
 
-          <? if (count($item['seeAlso']) > 0): ?>
-            <div>
-              <?=$this->transEsc('See also') ?>:
-              <ul>
-                <? foreach ($item['seeAlso'] as $heading): ?>
-                <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
-                <? endforeach; ?>
-              </ul>
-            </div>
-          <? endif; ?>
+        <? if (count($item['seeAlso']) > 0): ?>
+          <div>
+            <?=$this->transEsc('See also') ?>:
+            <ul>
+              <? foreach ($item['seeAlso'] as $heading): ?>
+              <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+              <? endforeach; ?>
+            </ul>
+          </div>
+        <? endif; ?>
 
-          <? if ($item['note']): ?>
-            <div>
-              <?=$this->transEsc('Note') ?>:
-              <ul>
-                <li><?=$this->escapeHtml($item['note'])?></li>
-              </ul>
-            </div>
-          <? endif; ?>
-        </td>
-        <td><? if ($item['count'] > 0): echo $item['count']; endif; ?></td>
-      <? endforeach; ?>
-    </table>
-    <?= $pageLinks ?>
-  <? endif; ?>
-</div>
+        <? if ($item['note']): ?>
+          <div>
+            <?=$this->transEsc('Note') ?>:
+            <ul>
+              <li><?=$this->escapeHtml($item['note'])?></li>
+            </ul>
+          </div>
+        <? endif; ?>
+      </td>
+      <td><? if ($item['count'] > 0): echo $item['count']; endif; ?></td>
+    <? endforeach; ?>
+  </table>
+  <?= $pageLinks ?>
+<? endif; ?>

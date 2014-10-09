@@ -903,5 +903,3 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         return $cancelDetails;
     }
 }
-
-?>

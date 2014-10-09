@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "231b305c8c70b43d87f2685e50469688",
+    "hash": "bdf603dc03336b065db2cb676f092114",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -52,16 +52,16 @@
         },
         {
             "name": "jasig/phpcas",
-            "version": "dev-master",
+            "version": "1.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Jasig/phpCAS.git",
-                "reference": "83168b398e10defc384b740e104950a3fef83e51"
+                "reference": "b6f5d484735d3b0e80b068a87bd1eabac04b2cbe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/83168b398e10defc384b740e104950a3fef83e51",
-                "reference": "83168b398e10defc384b740e104950a3fef83e51",
+                "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/b6f5d484735d3b0e80b068a87bd1eabac04b2cbe",
+                "reference": "b6f5d484735d3b0e80b068a87bd1eabac04b2cbe",
                 "shasum": ""
             },
             "require": {
@@ -71,11 +71,17 @@
                 "phpunit/phpunit": "~3.7.10"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3.x-dev"
+                }
+            },
             "autoload": {
                 "classmap": [
                     "source/"
                 ]
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "Apache-2.0"
             ],
@@ -95,11 +101,7 @@
                 "cas",
                 "jasig"
             ],
-            "support": {
-                "source": "https://github.com/Jasig/phpCAS/tree/master",
-                "issues": "https://github.com/Jasig/phpCAS/issues"
-            },
-            "time": "2014-07-02 15:38:35"
+            "time": "2014-07-24 20:29:29"
         },
         {
             "name": "johnwohlers/sip2",
@@ -132,6 +134,70 @@
                     "/"
                 ]
             }
+        },
+        {
+            "name": "ocramius/proxy-manager",
+            "version": "0.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Ocramius/ProxyManager.git",
+                "reference": "eaaf10f9a24ffd79a3e388809f6d61f229e261bd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/eaaf10f9a24ffd79a3e388809f6d61f229e261bd",
+                "reference": "eaaf10f9a24ffd79a3e388809f6d61f229e261bd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "zendframework/zend-code": ">2.2.5,<3.0"
+            },
+            "require-dev": {
+                "ext-phar": "*",
+                "phpunit/phpunit": "~3.7",
+                "squizlabs/php_codesniffer": "1.5.*"
+            },
+            "suggest": {
+                "ocramius/generated-hydrator": "To have very fast object to array to object conversion for ghost objects",
+                "zendframework/zend-json": "To have the JsonRpc adapter (Remote Object feature)",
+                "zendframework/zend-soap": "To have the Soap adapter (Remote Object feature)",
+                "zendframework/zend-stdlib": "To use the hydrator proxy",
+                "zendframework/zend-xmlrpc": "To have the XmlRpc adapter (Remote Object feature)"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.6.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "ProxyManager\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marco Pivetta",
+                    "email": "ocramius@gmail.com",
+                    "homepage": "http://ocramius.github.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A library providing utilities to generate, instantiate and generally operate with Object Proxies",
+            "homepage": "https://github.com/Ocramius/ProxyManager",
+            "keywords": [
+                "aop",
+                "lazy loading",
+                "proxy",
+                "proxy pattern",
+                "service proxies"
+            ],
+            "time": "2014-03-12 14:00:19"
         },
         {
             "name": "oyejorge/less.php",
@@ -194,10 +260,10 @@
         },
         {
             "name": "pear-pear.php.net/Archive_Tar",
-            "version": "1.3.11",
+            "version": "1.3.13",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/Archive_Tar-1.3.11.tgz",
+                "url": "http://pear.php.net/get/Archive_Tar-1.3.13.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -205,7 +271,7 @@
                 "php": ">=4.3.0.0"
             },
             "replace": {
-                "pear-pear/archive_tar": "== 1.3.11.0"
+                "pear-pear/archive_tar": "== 1.3.13.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -414,7 +480,7 @@
         },
         {
             "name": "serialssolutions/summon",
-            "version": "dev-master",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/summon/Summon.php.git",
@@ -432,6 +498,7 @@
                     "SerialsSolutions": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0"
             ],
@@ -442,25 +509,21 @@
                 }
             ],
             "description": "Library for interacting with Serials Solutions' Summon API.",
-            "support": {
-                "source": "https://github.com/summon/Summon.php/tree/master",
-                "issues": "https://github.com/summon/Summon.php/issues"
-            },
             "time": "2013-11-13 19:07:09"
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.5.2",
+            "version": "v2.5.4",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "f868ecdbcc0276b6158dfbf08b9e98ce07f014e1"
+                "reference": "01a7695bcfb013d0a15c6757e15aae120342986f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/f868ecdbcc0276b6158dfbf08b9e98ce07f014e1",
-                "reference": "f868ecdbcc0276b6158dfbf08b9e98ce07f014e1",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/01a7695bcfb013d0a15c6757e15aae120342986f",
+                "reference": "01a7695bcfb013d0a15c6757e15aae120342986f",
                 "shasum": ""
             },
             "require": {
@@ -483,19 +546,17 @@
             ],
             "authors": [
                 {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com",
-                    "homepage": "http://fabien.potencier.org",
-                    "role": "Lead Developer"
-                },
-                {
                     "name": "Symfony Community",
                     "homepage": "http://symfony.com/contributors"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
                 }
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2014-07-09 09:05:48"
+            "time": "2014-08-31 03:22:04"
         },
         {
             "name": "zendframework/zendframework",
@@ -818,10 +879,8 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "jasig/phpcas": 20,
         "johnwohlers/sip2": 20,
-        "mobileesp/mdetect": 20,
-        "serialssolutions/summon": 20
+        "mobileesp/mdetect": 20
     },
     "prefer-stable": false,
     "platform": [

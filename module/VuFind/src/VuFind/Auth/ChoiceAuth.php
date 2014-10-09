@@ -27,11 +27,12 @@
  */
 namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
+use Zend\Http\PhpEnvironment\Request;
 
 /**
  * ChoiceAuth Authentication plugin
  *
- * This module enables a user to choose between two authentication methods. 
+ * This module enables a user to choose between two authentication methods.
  * choices are presented side-by-side and one is manually selected.
  *
  * See config.ini for more details
@@ -51,26 +52,12 @@ class ChoiceAuth extends AbstractBase
      */
     protected $strategies = array();
 
-    /** 
+    /**
      * Auth strategy selected by user
      *
      * @var string
      */
     protected $strategy;
-
-    /**
-     * Username input
-     *
-     * @var string
-     */
-    protected $username;
-
-    /**
-     * Password input
-     *
-     * @var string
-     */
-    protected $password;
 
     /**
      * Plugin manager for obtaining other authentication objects
@@ -89,9 +76,12 @@ class ChoiceAuth extends AbstractBase
     /**
      * Constructor
      */
-    public function __construct() 
+    public function __construct()
     {
+        // Set up session container and load cached strategy (if found):
         $this->session = new \Zend\Session\Container('ChoiceAuth');
+        $this->strategy = isset($this->session->auth_method)
+            ? $this->session->auth_method : false;
     }
 
     /**
@@ -104,8 +94,7 @@ class ChoiceAuth extends AbstractBase
      */
     protected function validateConfig()
     {
-        if (!isset($this->config->ChoiceAuth)
-            || !isset($this->config->ChoiceAuth->choice_order)
+        if (!isset($this->config->ChoiceAuth->choice_order)
             || !strlen($this->config->ChoiceAuth->choice_order)
         ) {
             throw new AuthException(
@@ -127,63 +116,34 @@ class ChoiceAuth extends AbstractBase
     {
         parent::setConfig($config);
         $this->strategies = array_map(
-            'trim', explode(',', $config->ChoiceAuth->choice_order)
+            'trim', explode(',', $this->getConfig()->ChoiceAuth->choice_order)
         );
     }
 
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
-    public function authenticate($request) 
+    public function authenticate($request)
     {
-        $this->username = trim($request->getPost()->get('username'));
-        $this->password = trim($request->getPost()->get('password'));
-        $this->strategy = trim($request->getPost()->get('auth_method'));
-
-        if ($this->strategy == '') {
-            if (isset($this->session->auth_method)) {
-                $this->strategy = $this->session->auth_method;
-            } else {
-                throw new AuthException('authentication_error_technical');
-            }
-        }
-
-        // Do the actual authentication work:
-        return $this->authUser($request);
+        return $this->proxyUserLoad($request, 'authenticate', func_get_args());
     }
 
     /**
-     * Do the actual work of authenticating the user (supports 
-     * authenticate()).
+     * Create a new user account from the request.
      *
-     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * account credentials.
+     * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return \VuFind\Db\Row\User New user row.
      */
-    protected function authUser($request)
+    public function create($request)
     {
-        try {
-            $user = $this->proxyAuthMethod('authenticate', func_get_args());
-            if ($user) {
-                $this->session->auth_method = $this->strategy;
-            }
-        } catch (AuthException $exception) {
-            throw $exception;
-        }
-
-        if (isset($user)) {
-            return $user;
-        } else {
-            throw new AuthException('authentication_error_technical');
-        }
+        return $this->proxyUserLoad($request, 'create', func_get_args());
     }
 
     /**
@@ -213,19 +173,26 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Does the class allow for authentication from more than one strategy?
-     * If so return an array that lists the classes for the strategies allowed.
+     * Return an array of authentication options allowed by this class.
      *
-     * @return array | bool
+     * @return array
      */
-    public function getClasses()
+    public function getSelectableAuthOptions()
     {
-        $classes = array();
-        foreach ($this->strategies as $strategy) {
-            $classes[] = get_class($this->manager->get($strategy));
-        }
-        return $classes;
+        return $this->strategies;
     }
+
+    /**
+     * If an authentication strategy has been selected, return the active option.
+     * If not, return false.
+     *
+     * @return bool|string
+     */
+    public function getSelectedAuthOption()
+    {
+        return $this->strategy;
+    }
+
     /**
      * Perform cleanup at logout time.
      *
@@ -236,14 +203,15 @@ class ChoiceAuth extends AbstractBase
      */
     public function logout($url)
     {
-        // clear user's login choice
+        // clear user's login choice, if necessary:
         if (isset($this->session->auth_method)) {
-            $this->strategy = $this->session->auth_method;
             unset($this->session->auth_method);
-            return $this->proxyAuthMethod('logout', func_get_args());
         }
-        // No special cleanup or URL modification needed by default.
-        return $url;
+
+        // If we have a selected strategy, proxy the appropriate class; otherwise,
+        // perform default behavior of returning unmodified URL:
+        return $this->strategy
+            ? $this->proxyAuthMethod('logout', func_get_args()) : $url;
     }
 
     /**
@@ -257,12 +225,34 @@ class ChoiceAuth extends AbstractBase
      */
     public function getSessionInitiator($target)
     {
-        if (isset($this->session->auth_method)) {
-            // if user has chosen and logged in; use that auth's method
-            $this->strategy = $this->session->auth_method;
-            return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
-        }
-        return false;
+        return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
+    }
+
+    /**
+     * Does this authentication method support password changing
+     *
+     * @return bool
+     */
+    public function supportsPasswordChange()
+    {
+        return $this->proxyAuthMethod('supportsPasswordChange', func_get_args());
+    }
+
+    /**
+     * Update a user's password from the request.
+     *
+     * @param Request $request Request object containing password change details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     */
+    public function updatePassword($request)
+    {
+        // When a user is recovering a forgotten password, there may be an
+        // auth method included in the request since we haven't set an active
+        // strategy yet -- thus we should check for it.
+        $this->setStrategyFromRequest($request);
+        return $this->proxyAuthMethod('updatePassword', func_get_args());
     }
 
     /**
@@ -277,8 +267,15 @@ class ChoiceAuth extends AbstractBase
      */
     protected function proxyAuthMethod($method, $params)
     {
-        $manager = $this->getPluginManager();
-        $authenticator = $manager->get($this->strategy);
+        // If no strategy is found, we can't do anything -- return false.
+        if (!$this->strategy) {
+            return false;
+        }
+
+        if (!in_array($this->strategy, $this->strategies)) {
+            throw new \Exception("Illegal setting: {$this->strategy}");
+        }
+        $authenticator = $this->getPluginManager()->get($this->strategy);
         $authenticator->setConfig($this->getConfig());
         if (!is_callable(array($authenticator, $method))) {
             throw new AuthException($this->strategy . "has no method $method");
@@ -286,4 +283,54 @@ class ChoiceAuth extends AbstractBase
         return call_user_func_array(array($authenticator, $method), $params);
     }
 
+    /**
+     * Proxy auth method that checks the request for an active method and then
+     * loads a User object from the database (e.g. authenticate or create).
+     *
+     * @param Request $request Request object to check.
+     * @param string  $method  the method to proxy
+     * @param array   $params  array of params to pass
+     *
+     * @throws AuthException
+     * @return mixed
+     */
+    protected function proxyUserLoad($request, $method, $params)
+    {
+        $this->setStrategyFromRequest($request);
+        try {
+            $user = $this->proxyAuthMethod($method, $params);
+            if (!$user) {
+                throw new AuthException('Unexpected return value');
+            }
+        } catch (AuthException $e) {
+            $this->strategy = false;
+            throw $e;
+        }
+        $this->session->auth_method = $this->strategy;
+        return $user;
+    }
+
+    /**
+     * Set the active strategy based on the auth_method value in the request,
+     * if found.
+     *
+     * @param Request $request Request object to check.
+     *
+     * @return void
+     */
+    protected function setStrategyFromRequest($request)
+    {
+        // Set new strategy; fall back to old one if there is a problem:
+        $defaultStrategy = $this->strategy;
+        $this->strategy = trim($request->getPost()->get('auth_method'));
+        if (empty($this->strategy)) {
+            $this->strategy = trim($request->getQuery()->get('auth_method'));
+        }
+        if (empty($this->strategy)) {
+            $this->strategy = $defaultStrategy;
+            if (empty($this->strategy)) {
+                throw new AuthException('authentication_error_technical');
+            }
+        }
+    }
 }

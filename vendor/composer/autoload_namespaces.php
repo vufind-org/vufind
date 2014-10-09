@@ -13,6 +13,7 @@ return array(
     'ZendRest' => array($vendorDir . '/zendframework/zendrest/library'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'SerialsSolutions' => array($vendorDir . '/serialssolutions/summon'),
+    'ProxyManager\\' => array($vendorDir . '/ocramius/proxy-manager/src'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
     'Less' => array($vendorDir . '/oyejorge/less.php/lib'),
 );
