@@ -30,14 +30,18 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Autocomplete --- */
 .twitter-typeahead {
-  background: #FFF;
-  padding: 8px 0 10px;
-  border-radius: @border-radius-base;
+  background:#FFF;
+  border-radius:@border-radius-base;
+  vertical-align:top;
   .tt-hint {display:none}
+  @media (max-width:767px) {
+    width:100%;
+  }
 }
-.tt-dropdown-menu {.list-group;margin-top:10px;}
+.tt-dropdown-menu {.list-group;}
 .tt-suggestion {
   .list-group-item;
+  cursor:pointer;
   text-overflow:ellipsis;
   white-space:nowrap;
   &.active {

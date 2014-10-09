@@ -52,7 +52,7 @@ function addGroup(firstTerm, firstField, join)
   if (firstField == undefined) {firstField = '';}
   if (join       == undefined) {join       = '';}
 
-  var newGroup = '<div id="group'+nextGroup+'" class="group well clearfix">'
+  var newGroup = '<div id="group'+nextGroup+'" class="group well row">'
     + '<div class="col-md-9"><div class="row"><div class="col-md-3"><label class="help-block">'+searchLabel+':</label></div>'
     + '<div class="col-md-9"><i id="group'+nextGroup+'Holder" class="fa fa-plus-circle"></i> <a href="#" onClick="addSearch('+nextGroup+')">'+addSearchString+'</a></div></div></div>'
     + '<div class="col-md-3">'

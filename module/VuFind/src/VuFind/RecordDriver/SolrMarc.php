@@ -127,7 +127,7 @@ class SolrMarc extends SolrDefault
     {
         // These are the fields that may contain subject headings:
         $fields = array(
-            '600', '610', '611', '630', '648', '650', '651', '655', '656'
+            '600', '610', '611', '630', '648', '650', '651', '653', '655', '656'
         );
 
         // This is all the collected data:
@@ -772,56 +772,67 @@ class SolrMarc extends SolrDefault
                         }
                     }
 
-                    // Normalize blank relationship indicator to 0:
-                    $relationshipIndicator = $field->getIndicator('2');
-                    if ($relationshipIndicator == ' ') {
-                        $relationshipIndicator = '0';
-                    }
-
-                    // Assign notes based on the relationship type
-                    switch ($value) {
-                    case '780':
-                        if (in_array($relationshipIndicator, range('0', '7'))) {
-                            $value .= '_' . $relationshipIndicator;
-                        }
-                        break;
-                    case '785':
-                        if (in_array($relationshipIndicator, range('0', '8'))) {
-                            $value .= '_' . $relationshipIndicator;
-                        }
-                        break;
-                    }
-
                     // Get data for field
-                    $tmp = $this->getFieldData($field, $value);
+                    $tmp = $this->getFieldData($field);
                     if (is_array($tmp)) {
                         $retVal[] = $tmp;
                     }
                 }
             }
         }
-        if (empty($retVal)) {
-            $retVal = null;
+        return empty($retVal) ? null : $retVal;
+    }
+
+    /**
+     * Support method for getFieldData() -- factor the relationship indicator
+     * into the field number where relevant to generate a note to associate
+     * with a record link.
+     *
+     * @param File_MARC_Data_Field $field Field to examine
+     *
+     * @return string
+     */
+    protected function getRecordLinkNote($field)
+    {
+        // Normalize blank relationship indicator to 0:
+        $relationshipIndicator = $field->getIndicator('2');
+        if ($relationshipIndicator == ' ') {
+            $relationshipIndicator = '0';
         }
-        return $retVal;
+
+        // Assign notes based on the relationship type
+        $value = $field->getTag();
+        switch ($value) {
+        case '780':
+            if (in_array($relationshipIndicator, range('0', '7'))) {
+                $value .= '_' . $relationshipIndicator;
+            }
+            break;
+        case '785':
+            if (in_array($relationshipIndicator, range('0', '8'))) {
+                $value .= '_' . $relationshipIndicator;
+            }
+            break;
+        }
+
+        return 'note_' . $value;
     }
 
     /**
      * Returns the array element for the 'getAllRecordLinks' method
      *
      * @param File_MARC_Data_Field $field Field to examine
-     * @param string               $value Field name for use in label
      *
      * @return array|bool                 Array on success, boolean false if no
      * valid link could be found in the data.
      */
-    protected function getFieldData($field, $value)
+    protected function getFieldData($field)
     {
         // Make sure that there is a t field to be displayed:
         if ($title = $field->getSubfield('t')) {
             $title = $title->getData();
         } else {
-            return;
+            return false;
         }
 
         $linkTypeSetting = isset($this->mainConfig->Record->marc_links_link_types)
@@ -883,9 +894,11 @@ class SolrMarc extends SolrDefault
             }
         }
         // Make sure we have something to display:
-        return isset($link)
-            ? array('title' => 'note_' . $value, 'value' => $title, 'link'  => $link)
-            : false;
+        return !isset($link) ? false : array(
+            'title' => $this->getRecordLinkNote($field),
+            'value' => $title,
+            'link'  => $link
+        );
     }
 
     /**
