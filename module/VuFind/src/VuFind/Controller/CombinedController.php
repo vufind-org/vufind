@@ -195,7 +195,8 @@ class CombinedController extends AbstractSearch
                 'placement' => $placement,
                 'results' => $results,
                 'supportsCart' => $supportsCart,
-                'showBulkOptions' => $settings['Site']['showBulkOptions']
+                'showBulkOptions' => isset($settings->Site->showBulkOptions)
+                  && $settings->Site->showBulkOptions
             )
         );
     }
