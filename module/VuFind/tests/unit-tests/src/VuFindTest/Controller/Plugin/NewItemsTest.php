@@ -104,6 +104,17 @@ class NewItemsTest extends TestCase
     }
 
     /**
+     * Test getFundList() in non-ILS mode.
+     *
+     * @return void
+     */
+    public function testGetFundListWithoutILS()
+    {
+        $newItems = new NewItems(new Config(array('method' => 'solr')));
+        $this->assertEquals(array(), $newItems->getFundList());
+    }
+
+    /**
      * Test a single hidden filter.
      *
      * @return void
@@ -165,6 +176,19 @@ class NewItemsTest extends TestCase
         $config = new Config(array('result_pages' => '2'));
         $newItems = new NewItems($config);
         $this->assertEquals(2, $newItems->getResultPages());
+    }
+
+    /**
+     * Test illegal result pages setting.
+     *
+     * @return void
+     */
+    public function testIllegalResultPages()
+    {
+        $config = new Config(array('result_pages' => '-2'));
+        $newItems = new NewItems($config);
+        // expect a default of 10 if a bad value was passed in
+        $this->assertEquals(10, $newItems->getResultPages());
     }
 
     /**
