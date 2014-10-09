@@ -45,12 +45,18 @@ echo "VuFind has been found in {$baseDir}.\n\n";
 try {
     $opts = new Getopt(
         array(
-        'use-defaults' => 'Use VuFind Defaults to Configure (ignores any other arguments passed)',
-        'overridedir=s' => "Where would you like to store your local settings? [{$baseDir}/local]",
-        'module-name=w' => 'What module name would you like to use? Use disabled, to not use',
-        'basepath=s' => 'What base path should be used in VuFind\'s URL? [/vufind]',
-        'multisite-w' => 'Specify we are going to setup a multisite. Options are: directory and host',
-        'hostname=s' => 'Specify the hostname for the VuFind Site, this is used when multisite=host',
+        'use-defaults' => 
+           'Use VuFind Defaults to Configure (ignores any other arguments passed)',
+        'overridedir=s' => 
+           "Where would you like to store your local settings? [{$baseDir}/local]",
+        'module-name=w' => 
+           'What module name would you like to use? Use disabled, to not use',
+        'basepath=s' => 
+           'What base path should be used in VuFind\'s URL? [/vufind]',
+        'multisite-w' => 
+           'Specify we are going to setup a multisite. Options: directory and host',
+        'hostname=s' => 
+            'Specify the hostname for the VuFind Site, When multisite=host',
       )
     );
 
