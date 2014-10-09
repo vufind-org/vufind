@@ -80,7 +80,7 @@ class ResultScroller extends AbstractPlugin
     {
         // Do nothing if disabled:
         if (!$this->enabled) {
-            return;
+            return false;
         }
 
         // Save the details of this search in the session
