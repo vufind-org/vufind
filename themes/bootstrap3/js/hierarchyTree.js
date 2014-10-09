@@ -1,6 +1,6 @@
 /*global hierarchySettings, html_entity_decode, jqEscape, path, vufindString*/
 
-var hierarchyID, recordID, htmlID;
+var hierarchyID, recordID, htmlID, hierarchyContext;
 var baseTreeSearchFullURL;
 
 function getRecord(recordID)
@@ -97,7 +97,7 @@ $(document).ready(function()
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
   recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
   htmlID = htmlEncodeId(recordID);
-  var context = $("#hierarchyTree").find(".hiddenContext")[0].value;
+  hierarchyContext = $("#hierarchyTree").find(".hiddenContext")[0].value;
 
   $("#hierarchyTree")
     .bind("ready.jstree", function (event, data) {
@@ -105,12 +105,12 @@ $(document).ready(function()
       tree.select_node(htmlID);
       tree._open_to(htmlID);
 
-      if (context == "Collection") {
+      if (hierarchyContext == "Collection") {
         getRecord(recordID);
       }
 
       $("#hierarchyTree").bind('select_node.jstree', function(e, data) {
-        if (context == "Record") {
+        if (hierarchyContext == "Record") {
           window.location.href = data.node.a_attr.href;
         } else {
           getRecord(data.node.li_attr.recordid);
@@ -181,7 +181,7 @@ function buildTreeWithXml()
     'data': {
       'hierarchyID': hierarchyID,
       'id': recordID,
-      'context': context,
+      'context': hierarchyContext,
       'mode': 'Tree'
     },
     'success': function(xml) {
