@@ -88,82 +88,206 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
             return '';
         }
 
-        $search = false;
-        $facets = '';
-        $facetTypes = '';
-        $searchTerms = '';
-        $searchType = 'false';
-        $record = false;
-        $formats = '';
-        $id = '';
-        $author = '';
-        $title = '';
-        $institutions = '';
+        if ($results = $this->getSearchResults()) {
+            $code = $this->trackSearch($results);
+        } else if ($recordDriver = $this->getRecordDriver()) {
+            $code = $this->trackRecordPage($recordDriver);
+        } else {
+            $code = $this->trackPageView();
+        }
 
-        $view = $this->getView();
-        $escape = $view->plugin('escapeHtmlAttr');
-        $viewModel = $view->plugin('view_model');
+        $inlineScript = $this->getView()->plugin('inlinescript');
+        return $inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $code, 'SET');
+    }
+
+    /**
+     * Track a Search
+     *
+     * @param VuFind\Search\Base\Results $results Search Results
+     *
+     * @return string Tracking Code
+     */
+    protected function trackSearch($results)
+    {
+        $customVars = $this->getSearchCustomVars($results);
+
+        $code = $this->getOpeningTrackingCode();
+        $code .= $this->getCustomVarsCode($customVars);
+        $code .= $this->getTrackSearchCode($results);
+        $code .= $this->getClosingTrackingCode();
+
+        return $code;
+    }
+
+    /**
+     * Track a Record View
+     *
+     * @param VuFind\RecordDriver\AbstractBase $recordDriver Record Driver
+     *
+     * @return string Tracking Code
+     */
+    protected function trackRecordPage($recordDriver)
+    {
+        $customVars = $this->getRecordPageCustomVars($recordDriver);
+
+        $code = $this->getOpeningTrackingCode();
+        $code .= $this->getCustomVarsCode($customVars);
+        $code .= $this->getTrackPageViewCode();
+        $code .= $this->getClosingTrackingCode();
+
+        return $code;
+    }
+
+    /**
+     * Track a Generic Page View
+     *
+     * @return string Tracking Code
+     */
+    protected function trackPageView()
+    {
+        $customVars = $this->getGenericCustomVars();
+
+        $code = $this->getOpeningTrackingCode();
+        $code .= $this->getCustomVarsCode($customVars);
+        $code .= $this->getTrackPageViewCode();
+        $code .= $this->getClosingTrackingCode();
+
+        return $code;
+    }
+
+    /**
+     * Get Search Results if on a Results Page
+     *
+     * @return VuFind\Search\Base\Results|null Search results or null if not
+     * on a search page
+     */
+    protected function getSearchResults()
+    {
+        $viewModel = $this->getView()->plugin('view_model');
         $children = $viewModel->getCurrent()->getChildren();
         if (isset($children[0])) {
             $template = $children[0]->getTemplate();
             if (!strstr($template, '/home')) {
                 $results = $children[0]->getVariable('results');
+                if (is_a($results, 'VuFind\Search\Base\Results')) {
+                    return $results;
+                }
             }
-            $recordDriver = $children[0]->getVariable('driver');
         }
-        if ($results && is_a($results, 'VuFind\Search\Base\Results')) {
-            $search = true;
-            $resultCount = $results->getResultTotal();
-            if ($this->customVars) {
-                $facets = array();
-                $facetTypes = array();
-                $params = $results->getParams();
-                foreach ($params->getFilterList() as $filterType => $filters) {
-                    $facetTypes[] = $escape($filterType);
-                    foreach ($filters as $filter) {
-                        $facets[] = $escape($filter['field']) . '|'
-                            . $escape($filter['value']);
-                    }
-                }
-                $facets = implode('\t', $facets);
-                $facetTypes = implode('\t', $facetTypes);
-                $searchType = $escape($params->getSearchType());
-                $searchTerms = $escape($params->getDisplayQuery());
+        return null;
+    }
+
+    /**
+     * Get Record Driver if on a Record Page
+     *
+     * @return VuFind\RecordDriver\AbstractBase|null Record driver or null if not
+     * on a record page
+     */
+    protected function getRecordDriver()
+    {
+        $viewModel = $this->getView()->plugin('view_model');
+        $children = $viewModel->getCurrent()->getChildren();
+        if (isset($children[0])) {
+            $driver = $children[0]->getVariable('driver');
+            if (is_a($driver, 'VuFind\RecordDriver\AbstractBase')) {
+                return $driver;
             }
-        } elseif ($recordDriver
-            && is_a($recordDriver, 'VuFind\RecordDriver\AbstractBase')
-        ) {
-            $record = true;
-            $id = $escape($recordDriver->getUniqueID());
-            if (is_callable(array($recordDriver, 'getFormats'))) {
-                $formats = $recordDriver->getFormats();
-                if (is_array($formats)) {
-                    $formats = implode(',', $formats);
-                }
-                $formats = $escape($formats);
-            }
-            if (is_callable(array($recordDriver, 'getPrimaryAuthor'))) {
-                $author = $escape($recordDriver->getPrimaryAuthor());
-                if (!$author) {
-                    $author = '-';
-                }
-            }
-            if (is_callable(array($recordDriver, 'getTitle'))) {
-                $title = $escape($recordDriver->getTitle());
-                if (!$title) {
-                    $title = '-';
-                }
-            }
-            if (is_callable(array($recordDriver, 'getInstitutions'))) {
-                $institutions = $recordDriver->getInstitutions();
-                if (is_array($institutions)) {
-                    $institutions = implode(',', $institutions);
-                }
-                $institutions = $escape($institutions);
-            }
+        }
+        return null;
+    }
+
+    /**
+     * Get Custom Variables for Search Results
+     *
+     * @param VuFind\Search\Base\Results $results Search results
+     *
+     * @return array Associative array of custom variables
+     */
+    protected function getSearchCustomVars($results)
+    {
+        if (!$this->customVars) {
+            return array();
         }
 
-        $code = <<<EOT
+        $facets = array();
+        $facetTypes = array();
+        $params = $results->getParams();
+        foreach ($params->getFilterList() as $filterType => $filters) {
+            $facetTypes[] = $filterType;
+            foreach ($filters as $filter) {
+                $facets[] = $filter['field'] . '|' . $filter['value'];
+            }
+        }
+        $facets = implode("\t", $facets);
+        $facetTypes = implode("\t", $facetTypes);
+
+        return array(
+            'Facets' => $facets,
+            'FacetTypes' => $facetTypes,
+            'SearchType' => $params->getSearchType(),
+            'SearchBackend' => $params->getSearchClassId(),
+            'Sort' => $params->getSort(),
+            'Page' => $params->getPage(),
+            'Limit' => $params->getLimit(),
+            'View' => $params->getView()
+        );
+    }
+
+    /**
+     * Get Custom Variables for a Record Page
+     *
+     * @param VuFind\RecordDriver\AbstractBase $recordDriver Record driver
+     *
+     * @return array Associative array of custom variables
+     */
+    protected function getRecordPageCustomVars($recordDriver)
+    {
+        $id = $recordDriver->getUniqueID();
+        $formats = $recordDriver->tryMethod('getFormats');
+        if (is_array($formats)) {
+            $formats = implode(',', $formats);
+        }
+        $formats = $formats;
+        $author = $recordDriver->tryMethod('getPrimaryAuthor');
+        if (empty($author)) {
+            $author = '-';
+        }
+        // Use breadcrumb for title since it's guaranteed to return something
+        $title = $recordDriver->tryMethod('getBreadcrumb');
+        if (empty($title)) {
+            $title = '-';
+        }
+        $institutions = $recordDriver->tryMethod('getInstitutions');
+        if (is_array($institutions)) {
+            $institutions = implode(',', $institutions);
+        }
+        $institutions = $institutions;
+
+        return array(
+            'RecordFormat' => $formats,
+            'RecordData' => "$id|$author|$title",
+            'RecordInstitution' => $institutions
+        );
+    }
+
+    /**
+     * Get Custom Variables for a Generic Page View
+     *
+     * @return array Associative array of custom variables
+     */
+    protected function getGenericCustomVars()
+    {
+        return array();
+    }
+
+    /**
+     * Get the Initialization Part of the Tracking Code
+     *
+     * @return string JavaScript Code Fragment
+     */
+    protected function getOpeningTrackingCode()
+    {
+        return <<<EOT
 var _paq = _paq || [];
 (function(){
 _paq.push(['setSiteId', {$this->siteId}]);
@@ -172,37 +296,16 @@ _paq.push(['setCustomUrl', location.protocol + '//'
      + location.host + location.pathname]);
 
 EOT;
+    }
 
-        if ($search) {
-            if ($this->customVars) {
-                $code .= <<<EOT
-_paq.push(['setCustomVariable', 1, 'Facets', "$facets", 'page']);
-_paq.push(['setCustomVariable', 2, 'FacetTypes', "$facetTypes", 'page']);
-_paq.push(['setCustomVariable', 3, 'SearchType', "$searchType", 'page']);
-
-EOT;
-            }
-            // Use trackSiteSearch *instead* of trackPageView in searches
-            $code .= <<<EOT
-_paq.push(['trackSiteSearch', '$searchTerms', "$searchType", $resultCount]);
-
-EOT;
-        } else if ($record && $this->customVars) {
-            $code .= <<<EOT
-_paq.push(['setCustomVariable', 1, 'RecordFormat', "$formats", 'page']);
-_paq.push(['setCustomVariable', 2, 'RecordData', "$id|$author|$title", 'page']);
-_paq.push(['setCustomVariable', 3, 'RecordInstitution', "$institutions", 'page']);
-
-EOT;
-        }
-
-        if (!$search) {
-            $code .= <<<EOT
-_paq.push(['trackPageView']);
-
-EOT;
-        };
-        $code .= <<<EOT
+    /**
+     * Get the Finalization Part of the Tracking Code
+     *
+     * @return string JavaScript Code Fragment
+     */
+    protected function getClosingTrackingCode()
+    {
+        return <<<EOT
 _paq.push(['enableLinkTracking']);
 var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.type='text/javascript'; g.defer=true; g.async=true;
@@ -210,8 +313,63 @@ var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[
 s.parentNode.insertBefore(g,s); })();
 
 EOT;
+    }
 
-        $inlineScript = $view->plugin('inlinescript');
-        return $inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $code, 'SET');
+    /**
+     * Convert a Custom Variables Array to JavaScript Code
+     *
+     * @param array $customVars Custom Variables
+     *
+     * @return string JavaScript Code Fragment
+     */
+    protected function getCustomVarsCode($customVars)
+    {
+        $escape = $this->getView()->plugin('escapeHtmlAttr');
+        $code = '';
+        $i = 0;
+        foreach ($customVars as $key => $value) {
+            ++$i;
+            $value = $escape($value);
+            $code .= <<<EOT
+_paq.push(['setCustomVariable', $i, '$key', '$value', 'page']);
+
+EOT;
+        }
+        return $code;
+    }
+
+    /**
+     * Get Site Search Tracking Code
+     *
+     * @param VuFind\Search\Base\Results $results Search results
+     *
+     * @return string JavaScript Code Fragment
+     */
+    protected function getTrackSearchCode($results)
+    {
+        $escape = $this->getView()->plugin('escapeHtmlAttr');
+        $params = $results->getParams();
+        $searchTerms = $escape($params->getDisplayQuery());
+        $searchType = $escape($params->getSearchType());
+        $resultCount = $results->getResultTotal();
+
+        // Use trackSiteSearch *instead* of trackPageView in searches
+        return <<<EOT
+_paq.push(['trackSiteSearch', '$searchTerms', '$searchType', $resultCount]);
+
+EOT;
+    }
+
+    /**
+     * Get Page View Tracking Code
+     *
+     * @return string JavaScript Code Fragment
+     */
+    protected function getTrackPageViewCode()
+    {
+        return <<<EOT
+_paq.push(['trackPageView']);
+
+EOT;
     }
 }
