@@ -19,12 +19,23 @@ if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
     }
 }
 
-// Set up cache directory:
+// Set up cache directory (be sure to keep separate cache for CLI vs. web):
 $baseDir = ($local = getenv('VUFIND_LOCAL_DIR')) ? $local : 'data';
-$cacheDir = $baseDir . '/cache/configs';
+if (PHP_SAPI == 'cli') {
+    $cacheDir = $baseDir . '/cache/cli';
+    if (!is_dir($cacheDir)) {
+        mkdir($cacheDir);
+    }
+    $cacheDir .= '/configs';
+} else {
+    $cacheDir = $baseDir . '/cache/configs';
+}
 if (!is_dir($cacheDir)) {
     mkdir($cacheDir);
 }
+
+// Enable caching unless in dev mode or running tests:
+$useCache = APPLICATION_ENV != 'development' && !defined('VUFIND_PHPUNIT_RUNNING');
 
 // Build configuration:
 return array(
@@ -33,8 +44,8 @@ return array(
         'config_glob_paths'    => array(
             'config/autoload/{,*.}{global,local}.php',
         ),
-        'config_cache_enabled' => (APPLICATION_ENV != 'development'),
-        'module_map_cache_enabled' => (APPLICATION_ENV != 'development'),
+        'config_cache_enabled' => $useCache,
+        'module_map_cache_enabled' => $useCache,
         'check_dependencies' => (APPLICATION_ENV == 'development'),
         'cache_dir'            => $cacheDir,
         'module_paths' => array(
