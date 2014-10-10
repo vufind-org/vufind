@@ -34,7 +34,7 @@
       $this->escapeHtml($lookfor) . '</li>';
   }
 
-  // Disable cart if appropriate:
+  // Enable cart if appropriate:
   $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
 
   // Load Javascript dependencies into header:
