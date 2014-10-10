@@ -152,7 +152,7 @@ class CombinedController extends AbstractSearch
             ->get('VuFind\SearchOptionsPluginManager');
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
             ->toArray();
-        $supportsCart = true;
+        $supportsCart = false;
         $supportsCartOptions = array();
         foreach ($config as $current => $settings) {
             // Special case -- ignore recommendation config:
