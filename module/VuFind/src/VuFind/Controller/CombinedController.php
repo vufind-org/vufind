@@ -102,11 +102,25 @@ class CombinedController extends AbstractSearch
         ) {
             $html = '';
         } else {
+            $viewParams = array(
+              'searchClassId' => $searchClassId,
+              'currentSearch' => $settings
+            );
+            $cart = $this->getServiceLocator()->get('VuFind\Cart');
+            $general = $this->getServiceLocator()->get('VuFind\Config')
+                ->get('config');
+            if ($currentOptions->supportsCart() && $cart->isActive()) {
+                $viewParams['showCartControls'] = true;
+            }
+            if ($currentOptions->supportsCart()
+                && isset($general->Site->showBulkOptions)
+                && $general->Site->showBulkOptions
+            ) {
+                $viewParams['showBulkOptions'] = true;
+            }
             $html = $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
-                array(
-                    'searchClassId' => $searchClassId, 'currentSearch' => $settings
-                )
+                $viewParams
             );
         }
         $response->setContent($html);

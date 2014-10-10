@@ -68,12 +68,12 @@
       ? 'list' : $params->getView();
     $viewParams = array('results' => $results, 'params' => $params);
     // Disable cart if appropriate:
-    if ($params->getOptions()->supportsCart() && $this->cart()->isActive()) {
-      $viewParams['showCartControls'] = true;
+    if (isset($this->showCartControls)) {
+      $viewParams['showCartControls'] = $this->showCartControls;
     }
     // Disable bulk options if appropriate:
-    if ($params->getOptions()->supportsCart() && $this->showBulkOptions) {
-      $viewParams['showBulkOptions'] = true;
+    if (isset($this->showBulkOptions)) {
+      $viewParams['showBulkOptions'] = $this->showBulkOptions;
     }
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>

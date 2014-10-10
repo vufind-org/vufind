@@ -61,7 +61,18 @@
   <? if ($this->supportsCart): ?>
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
   <? endif; ?>
-  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', array('searchClassId' => $searchClassId, 'combinedResults' => $this->combinedResults))?>
+  <?
+    $viewParams = array('searchClassId' => $searchClassId, 'combinedResults' => $this->combinedResults);
+    // Disable cart if appropriate:
+    if ($params->getOptions()->supportsCart() && $this->cart()->isActive()) {
+      $viewParams['showCartControls'] = true;
+    }
+    // Disable bulk options if appropriate:
+    if ($params->getOptions()->supportsCart() && $this->showBulkOptions) {
+      $viewParams['showBulkOptions'] = true;
+    }
+  ?>
+  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
   <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>
