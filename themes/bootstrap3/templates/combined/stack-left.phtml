@@ -10,13 +10,9 @@
     <?
       $viewParams = array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch);
       // Disable cart if appropriate:
-      if (isset($this->showCartControls)) {
-        $viewParams['showCartControls'] = $this->showCartControls;
-      }
+      $viewParams['showCartControls'] = $this->showCartControls;
       // Disable bulk options if appropriate:
-      if (isset($this->showBulkOptions)) {
-        $viewParams['showBulkOptions'] = $this->showBulkOptions;
-      }
+      $viewParams['showBulkOptions'] = $this->showBulkOptions;
     ?>
     <div id="combined_<?=$this->escapeHtmlAttr($searchClassId)?>">
       <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>

@@ -31,13 +31,9 @@
   }
 
   // Disable cart if appropriate:
-  if ($this->params->getOptions()->supportsCart() && $this->cart()->isActive()) {
-    $this->showCartControls = true;
-  }
+  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
   // Disable bulk options if appropriate:
-  if ($this->params->getOptions()->supportsCart() && $this->showBulkOptions) {
-    $this->showBulkOptions = true;
-  }
+  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");

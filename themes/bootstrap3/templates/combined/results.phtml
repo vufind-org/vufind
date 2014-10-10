@@ -35,13 +35,9 @@
   }
 
   // Disable cart if appropriate:
-  if ($this->params->getOptions()->supportsCart() && $this->cart()->isActive()) {
-    $this->showCartControls = true;
-  }
+  $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
   // Disable bulk options if appropriate:
-  if ($this->params->getOptions()->supportsCart() && $this->showBulkOptions) {
-    $this->showBulkOptions = true;
-  }
+  $this->showBulkOptions = $this->supportsCart && $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
@@ -62,15 +58,13 @@
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
   <? endif; ?>
   <?
-    $viewParams = array('searchClassId' => $searchClassId, 'combinedResults' => $this->combinedResults);
-    // Disable cart if appropriate:
-    if ($params->getOptions()->supportsCart() && $this->cart()->isActive()) {
-      $viewParams['showCartControls'] = true;
-    }
-    // Disable bulk options if appropriate:
-    if ($params->getOptions()->supportsCart() && $this->showBulkOptions) {
-      $viewParams['showBulkOptions'] = true;
-    }
+    $viewParams = array(
+      'searchClassId' => $searchClassId,
+      'combinedResults' => $this->combinedResults,
+      'supportsCartOptions' => $this->supportsCartOptions,
+      'showCartControls' => $this->showCartControls,
+      'showBulkOptions' => $this->showBulkOptions
+    );
   ?>
   <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
   <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>

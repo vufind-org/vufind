@@ -66,15 +66,12 @@
   <?
     $viewType = in_array('list', array_keys($params->getViewList()))
       ? 'list' : $params->getView();
-    $viewParams = array('results' => $results, 'params' => $params);
-    // Disable cart if appropriate:
-    if (isset($this->showCartControls)) {
-      $viewParams['showCartControls'] = $this->showCartControls;
-    }
-    // Disable bulk options if appropriate:
-    if (isset($this->showBulkOptions)) {
-      $viewParams['showBulkOptions'] = $this->showBulkOptions;
-    }
+    $viewParams = array(
+      'results' => $results,
+      'params' => $params,
+      'showCartControls' => $this->showCartControls,
+      'showBulkOptions' => $this->showBulkOptions
+    );
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
   <? if ($currentSearch['more_link']): ?>
