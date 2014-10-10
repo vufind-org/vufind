@@ -57,6 +57,8 @@ try {
            'Specify we are going to setup a multisite. Options: directory and host',
         'hostname=s' => 
             'Specify the hostname for the VuFind Site, When multisite=host',
+        'non-interactive' =>
+            'Use settings if provided via arguments, otherwise use defaults',
       )
     );
 
@@ -67,7 +69,7 @@ try {
 }
 
 // Load user settings if we are not forcing defaults:
-if (!$opts->getOption('use-defaults') ) {
+if (!$opts->getOption('use-defaults') && !opts->getOption('non-interactive')) {
     if ($opts->getOption('overridedir')) {
         $overrideDir = $opts->getOption('overridedir');
         initializeOverrideDir($overrideDir, true);
@@ -109,6 +111,34 @@ if (!$opts->getOption('use-defaults') ) {
     }
 
 } else {
+    // Check to determine if non-interactive. If non-interactive, 
+    // check to see if there are any options present, if they are,
+    // overwrite the default values, and continue processing with
+    // the default values for any flag not presented.
+    
+    if ($opts->getOption('non-interactive')) {
+        if ($opts->getOption('overridedir')) {
+            $overrideDir = $opts->getOption('overridedir');
+        }
+        if ($opts->getOption('module-name')) {
+            if ($opts->getOption('module-name') !== 'disabled') {
+                $module = $opts->getOption('module-name');
+            }
+        } 
+        if ($opts->getOption('basepath')) {
+            $basePath = $opts->getOption('basepath');
+        } 
+
+        if ($opts->getOption('multisite') === 'directory') {
+            $multisiteMode = MULTISITE_DIR_BASED;
+        } else if ($opts->getOption('multisite') === 'host') {
+            $multisiteMode = MULTISITE_HOST_BASED;
+            if ($opts->getOption('hostname')) {
+                $host = $opts->getOption('hostname');
+            }
+        }
+        
+    }
     // In interactive mode, we initialize the directory as part of the input
     // process; in defaults mode, we need to do it here:
     initializeOverrideDir($overrideDir, true);
