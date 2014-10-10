@@ -31,9 +31,15 @@
   }
 
   // Disable cart if appropriate:
+<<<<<<< HEAD
   if (!$this->params->getOptions()->supportsCart()) {
     $this->hideCartControls = true;
   }
+=======
+  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
+  // Disable bulk options if appropriate:
+  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
+>>>>>>> b916700... Per column cart support checking and logic compression.
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");

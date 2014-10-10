@@ -66,10 +66,12 @@
   <?
     $viewType = in_array('list', array_keys($params->getViewList()))
       ? 'list' : $params->getView();
-    $viewParams = array('results' => $results, 'params' => $params);
-    if (!$params->getOptions()->supportsCart()) {
-      $viewParams['hideCartControls'] = true;
-    }
+    $viewParams = array(
+      'results' => $results,
+      'params' => $params,
+      'showCartControls' => $this->showCartControls,
+      'showBulkOptions' => $this->showBulkOptions
+    );
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
   <? if ($currentSearch['more_link']): ?>

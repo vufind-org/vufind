@@ -34,6 +34,11 @@
       $this->escapeHtml($lookfor) . '</li>';
   }
 
+  // Disable cart if appropriate:
+  $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
+  // Disable bulk options if appropriate:
+  $this->showBulkOptions = $this->supportsCart && $this->showBulkOptions;
+
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
   $this->headScript()->appendFile("check_save_statuses.js");
@@ -54,19 +59,16 @@
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
     </div>
   <? endif; ?>
-  <div class="row">
-    <? $columns = count($this->combinedResults); ?>
-    <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
-      <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { continue; } ?>
-      <div class="col-sm-<?=floor(12/$columns)?> combined-list" id="combined_<?=$this->escapeHtml($searchClassId)?>">
-        <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
-          <?=$this->render('combined/results-ajax.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
-        <? else: ?>
-          <?=$this->render('combined/results-list.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
-        <? endif; ?>
-      </div>
-    <? endforeach; ?>
-  </div>
+  <?
+    $viewParams = array(
+      'searchClassId' => $searchClassId,
+      'combinedResults' => $this->combinedResults,
+      'supportsCartOptions' => $this->supportsCartOptions,
+      'showCartControls' => $this->showCartControls,
+      'showBulkOptions' => $this->showBulkOptions
+    );
+  ?>
+  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
   <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>
