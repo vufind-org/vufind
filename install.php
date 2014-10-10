@@ -69,7 +69,7 @@ try {
 }
 
 // Load user settings if we are not forcing defaults:
-if (!$opts->getOption('use-defaults') && !opts->getOption('non-interactive')) {
+if (!$opts->getOption('use-defaults') && !$opts->getOption('non-interactive')) {
     if ($opts->getOption('overridedir')) {
         $overrideDir = $opts->getOption('overridedir');
         initializeOverrideDir($overrideDir, true);
