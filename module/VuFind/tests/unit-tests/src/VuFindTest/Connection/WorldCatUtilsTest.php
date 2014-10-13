@@ -32,6 +32,7 @@ use VuFind\Connection\WorldCatUtils;
 
 use Zend\Http\Client\Adapter\Test as TestAdapter;
 use Zend\Http\Client as HttpClient;
+use Zend\Config\Config;
 
 /**
  * Unit tests for WorldCat utility connector.
@@ -116,6 +117,6 @@ class WorldCatUtilsTest extends \PHPUnit_Framework_TestCase
         $adapter->setResponse(file_get_contents($file));
         $client = new HttpClient();
         $client->setAdapter($adapter);
-        return new WorldCatUtils('dummy', $client, $silent);
+        return new WorldCatUtils(new Config(array()), $client, $silent);
     }
 }
