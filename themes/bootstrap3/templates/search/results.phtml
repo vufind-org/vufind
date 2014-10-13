@@ -35,7 +35,10 @@
     $this->hideCartControls = true;
   }
 
-  $this->headScript()->appendFile("full_view.js");
+  // Load Javacsript only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption()!="full") {
+     $this->headScript()->appendFile("full_view.js");
+  }
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");

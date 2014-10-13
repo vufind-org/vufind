@@ -689,6 +689,7 @@ class AjaxController extends AbstractBase
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')
         );
+	$viewtype=preg_replace('/\W/','',trim(strtolower($this->params()->fromQuery('type'))));
         $request = $this->getRequest();
         $cfg = $this->getServiceLocator()->get('Config');
         $allTabs = $this->getServiceLocator()
@@ -700,7 +701,7 @@ class AjaxController extends AbstractBase
             );
         $html = $this->getViewRenderer()
             ->render(
-                "record/".$this->params()->fromQuery('type').".phtml",
+                "record/ajaxview-".$viewtype.".phtml",
                 array('driver' => $driver, 'tabs' => $allTabs)
             );
         return $this->output($html, self::STATUS_OK);
