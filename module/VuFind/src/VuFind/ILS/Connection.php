@@ -227,8 +227,8 @@ class Connection implements TranslatorAwareInterface
      * if the system supports a particular function.
      *
      * @param string $function The name of the function to check.
-     * @param string $id       (optional) A record id used to e.g. identify the used
-     * backend with MultiBackend driver
+     * @param string $id       (optional) A record or patron id used to e.g. identify
+     * the used backend with MultiBackend driver
      *
      * @return mixed On success, an associative array with specific function keys
      * and values; on failure, false.
@@ -248,7 +248,7 @@ class Connection implements TranslatorAwareInterface
         }
 
         // Send back the settings:
-        return $this->$checkMethod($functionConfig);
+        return $this->$checkMethod($functionConfig, $id);
     }
 
     /**
@@ -480,6 +480,31 @@ class Connection implements TranslatorAwareInterface
                     'function' => 'getCancelILLRequestLink'
                 );
             }
+        }
+        return $response;
+    }
+
+    /**
+     * Check Password Change
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports changing
+     * password.
+     *
+     * @param array  $functionConfig The password change configuration values
+     * @param string $patronID       Patron ID
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values either for cancelling requests via a form or a URL;
+     * on failure, false.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodchangePassword($functionConfig, $patronID)
+    {
+        $response = false;
+
+        if ($this->checkCapability('changePassword', array('id' => $patronID))) {
+            $response = array('function' => 'changePassword');
         }
         return $response;
     }

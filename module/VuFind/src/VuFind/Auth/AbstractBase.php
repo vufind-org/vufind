@@ -234,6 +234,26 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     }
 
     /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getPasswordPolicy()
+    {
+        $policy = array();
+        $config = $this->getConfig();
+        if (isset($config->Authentication->minimum_password_length)) {
+            $policy['minLength']
+                = $config->Authentication->minimum_password_length;
+        }
+        if (isset($config->Authentication->maximum_password_length)) {
+            $policy['maxLength']
+                = $config->Authentication->maximum_password_length;
+        }
+        return $policy;
+    }
+
+    /**
      * Get access to the user table.
      *
      * @return \VuFind\Db\Table\User
@@ -267,5 +287,29 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
     {
         $this->tableManager = $manager;
+    }
+
+    /**
+     * Verify that a password fulfills the password policy. Throws exception if
+     * the password is invalid.
+     *
+     * @param string $password Password to verify
+     *
+     * @throws AuthException
+     */
+    protected function validatePasswordAgainstPolicy($password)
+    {
+        $policy = $this->getPasswordPolicy();
+        if (isset($policy['minLength'])
+            && strlen($password) < $policy['minLength']
+        ) {
+            throw new AuthException('password_error_too_short');
+        }
+        if (isset($policy['maxLength'])
+            && strlen($password) > $policy['maxLength']
+        ) {
+            throw new AuthException('password_error_too_long');
+        }
+
     }
 }

@@ -218,6 +218,8 @@ class Database extends AbstractBase
         if ($params['password'] != $params['password2']) {
             throw new AuthException('Passwords do not match');
         }
+        // Password policy
+        $this->validatePasswordAgainstPolicy($params['password']);
     }
 
     /**
