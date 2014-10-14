@@ -455,6 +455,7 @@ $config = array(
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
+                    'similaritemscarousel' => 'VuFind\RecordTab\Factory::getSimilarItemsCarousel',
                     'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
                 ),
                 'invokables' => array(
@@ -610,7 +611,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                    'Details' => 'StaffViewArray',
+                    'Details' => 'StaffViewArray', 'Similar' => 'SimilarItemsCarousel'
                 ),
                 'defaultTab' => null,
             ),
