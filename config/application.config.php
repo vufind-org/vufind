@@ -19,7 +19,8 @@ if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
     }
 }
 
-// Set up cache directory (be sure to keep separate cache for CLI vs. web):
+// Set up cache directory (be sure to keep separate cache for CLI vs. web and
+// to account for potentially variant environment settings):
 $baseDir = ($local = getenv('VUFIND_LOCAL_DIR')) ? $local : 'data';
 if (PHP_SAPI == 'cli') {
     $cacheDir = $baseDir . '/cache/cli';
@@ -30,6 +31,15 @@ if (PHP_SAPI == 'cli') {
 } else {
     $cacheDir = $baseDir . '/cache/configs';
 }
+if (!is_dir($cacheDir)) {
+    mkdir($cacheDir);
+}
+$cacheHash = md5(
+    APPLICATION_ENV
+    . (defined('VUFIND_LOCAL_DIR') ? VUFIND_LOCAL_DIR : '')
+    . implode(',', $modules)
+);
+$cacheDir .= '/' . $cacheHash;
 if (!is_dir($cacheDir)) {
     mkdir($cacheDir);
 }
