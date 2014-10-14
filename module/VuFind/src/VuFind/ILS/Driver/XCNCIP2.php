@@ -47,9 +47,32 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected $httpService = null;
 
+    /**
+     * Is this a consortium? Default: false
+     *
+     * @var boolean
+     */
     protected $consortium = false;
+
+    /**
+     * Agency definitions (consortial) - Array list of consortium members
+     *
+     * @var array
+     */
     protected $agency = array();
+
+    /**
+     * NCIP server URL
+     *
+     * @var string
+     */
     protected $url;
+
+    /**
+     * Pickup locations
+     *
+     * @var array
+     */
     protected $pickupLocations = array();
     
     /**
@@ -102,6 +125,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * Loads pickup location information from configuration file.
      *
+     * @throws ILSException
      * @return void
      */
     public function loadPickupLocations($filename)
@@ -471,18 +495,20 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getConsortialHolding($id, array $patron = null, array $ids = null)
+    public function getConsortialHoldings($id, array $patron = null, array $ids = null)
     {
         $aggregate_id = $id;
         
         $item_agency_id = array();
-        foreach ($ids as $_id) { 
-            // Need to parse out the 035$a format, e.g., "(Agency) 123"
-            if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $_id, $matches)) {
-                $matched_agency = $matches[1];
-                $matched_id = $matches[2];
-                if ($this->agency[$matched_agency]) {
-                    $item_agency_id[$matched_agency] = $matched_id;
+        if (! is_null($ids)) {
+            foreach ($ids as $_id) { 
+                // Need to parse out the 035$a format, e.g., "(Agency) 123"
+                if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $_id, $matches)) {
+                    $matched_agency = $matches[1];
+                    $matched_id = $matches[2];
+                    if ($this->agency[$matched_agency]) {
+                        $item_agency_id[$matched_agency] = $matched_id;
+                    }
                 }
             }
         }
@@ -535,8 +561,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, array $patron = null, array $ids = null)
+    public function getHolding($id, array $patron = null)
     {
+        $ids = null;
         if (! $this->consortium) {
             // Translate $id into consortial (035$a) format, e.g., "123" -> "(Agency) 123"
             $sourceRecord = '';
@@ -951,6 +978,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         return array();
     }
 
+    /**
+     * Public Function which retrieves Holds, StorageRetrivalRequests, and Consortial settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     *
+     * @return array An array with key-value pairs.
+     */
     public function getConfig($function)
     {
         if ($function == 'Holds') {
@@ -958,6 +993,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'HMACKeys' => 'item_id:holdtype:item_agency_id:aggregate_id:bib_id',
                 'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => '0:2:0',
+                'consortium' => $this->consortium,
             );
         }
         if ($function == 'StorageRetrievalRequests') {

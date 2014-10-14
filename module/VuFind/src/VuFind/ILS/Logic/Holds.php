@@ -157,7 +157,6 @@ class Holds
      *
      * @return array A sorted results set
      */
-
     public function getHoldings($id, $ids = null)
     {
         $holdings = array();
@@ -168,7 +167,15 @@ class Holds
             // controller and view to inform the user that these credentials are
             // needed for hold data.
             $patron = $this->ilsAuth->storedCatalogLogin();
-            $result = $this->catalog->getHolding($id, $patron ? $patron : null, $ids);
+
+            // Does this ILS Driver handle consortial holdings?
+            $config = $this->catalog->getConfig('Holds');
+            if (isset($config['consortium']) && $config['consortium'] == true) {
+               $result = $this->catalog->getConsortialHoldings($id, $patron ? $patron : null, $ids);
+            } else {
+               $result = $this->catalog->getHolding($id, $patron ? $patron : null);
+            }
+
             $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {

@@ -150,18 +150,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     abstract public function getUniqueID();
 
     /**
-     * Return the list of "source records" for this consortial record.
-     *
-     * @throws \Exception
-     * @return array
-     */
-    public function getConsortialIDs()
-    {
-        throw new \Exception("getConsortialIDs() was called, but not implemented.");
-    }
-
-
-    /**
      * Get comments associated with this record.
      *
      * @return array
