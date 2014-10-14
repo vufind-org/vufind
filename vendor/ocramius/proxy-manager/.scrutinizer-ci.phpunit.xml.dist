@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <phpunit
-    bootstrap="./vendor/autoload.php"
+    bootstrap="./tests/Bootstrap.php"
     colors="true"
     convertErrorsToExceptions="true"
     convertNoticesToExceptions="true"
@@ -14,9 +14,12 @@
     <testsuite name="ProxyManager tests">
         <directory>./tests/ProxyManagerTest</directory>
     </testsuite>
-    <testsuite name="ProxyManager language integration tests">
-        <directory suffix=".phpt">./tests/language-feature-scripts</directory>
-    </testsuite>
+    <groups>
+        <exclude>
+            <group>Functional</group>
+            <group>Performance</group>
+        </exclude>
+    </groups>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./src</directory>
