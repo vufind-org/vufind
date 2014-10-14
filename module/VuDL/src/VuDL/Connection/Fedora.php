@@ -105,9 +105,9 @@ class Fedora extends AbstractBase
     /**
      * Return the content of a datastream.
      *
-     * @param string $id     Record id
-     * @param string $stream Name of stream to retrieve
-     *
+     * @param string  $id         Record id
+     * @param string  $stream     Name of stream to retrieve
+     * @param boolean $justStream Do not append /content and return from url as is
      * @return string
      */
     public function getDatastreamContent($id, $stream, $justStream = false)

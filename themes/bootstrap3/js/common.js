@@ -304,7 +304,7 @@ $(document).ready(function() {
             q:query,
             method:'getACSuggestions',
             searcher:searcher['searcher'],
-            type:$('#searchForm_type').val(),
+            type:$('#searchForm_type').val()
           },
           dataType:'json',
           success: function(json) {
@@ -318,7 +318,7 @@ $(document).ready(function() {
               cb([]);
             }
           }
-        })
+        });
       }
     }
   );

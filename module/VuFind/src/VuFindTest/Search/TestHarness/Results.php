@@ -107,7 +107,7 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Get a fake record driver
      *
-     * @var string $id ID to use
+     * @param string $id ID to use
      *
      * @return RecordDriver
      */
