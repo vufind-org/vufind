@@ -68,9 +68,7 @@ class Fedora extends AbstractBase
      */
     public function getClasses($id)
     {
-        $data = file_get_contents(
-            $this->getBase() . $id . '/datastreams/RELS-EXT/content'
-        );
+        $data = $this->getDatastreamContent($id, 'RELS-EXT');
         $matches = array();
         preg_match_all(
             '/rdf:resource="info:fedora\/vudl-system:([^"]+)/',
@@ -91,8 +89,10 @@ class Fedora extends AbstractBase
     public function getDatastreams($id, $xml = false)
     {
         if (!isset($this->datastreams[$id])) {
-            $this->datastreams[$id] = file_get_contents(
-                $this->getBase() . $id . '/datastreams?format=xml'
+            $this->datastreams[$id] = $this->getDatastreamContent(
+                $id,
+                '/datastreams?format=xml',
+                true
             );
         }
         if ($xml) {
@@ -110,11 +110,14 @@ class Fedora extends AbstractBase
      *
      * @return string
      */
-    public function getDatastreamContent($id, $stream)
+    public function getDatastreamContent($id, $stream, $justStream = false)
     {
-        return file_get_contents(
-            $this->getBase() . $id . '/datastreams/' . $stream . '/content'
-        );
+        if ($justStream) {
+            $url = $this->getBase() . $id . '/datastreams' . $stream;
+        } else {
+            $url = $this->getBase() . $id . '/datastreams/' . $stream . '/content';
+        }
+        return file_get_contents($url);
     }
 
     /**

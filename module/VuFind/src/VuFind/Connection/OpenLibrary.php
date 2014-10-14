@@ -180,5 +180,3 @@ class OpenLibrary
         return $subject;
     }
 }
-
-?>

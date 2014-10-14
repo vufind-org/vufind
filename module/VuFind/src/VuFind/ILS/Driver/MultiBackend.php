@@ -45,7 +45,7 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class MultiBackend extends AbstractBase 
+class MultiBackend extends AbstractBase
     implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     /**
@@ -106,20 +106,30 @@ class MultiBackend extends AbstractBase
     protected $configLoader;
 
     /**
+     * ILS authenticator
+     *
+     * @param \VuFind\Auth\ILSAuthenticator
+     */
+    protected $ilsAuth;
+
+    /**
      * Logger (or false for none)
      *
      * @var LoggerInterface|bool
      */
     protected $logger = false;
-    
+
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
+     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
-    {
+    public function __construct(\VuFind\Config\PluginManager $configLoader,
+        \VuFind\Auth\ILSAuthenticator $ilsAuth
+    ) {
         $this->configLoader = $configLoader;
+        $this->ilsAuth = $ilsAuth;
     }
 
     /**
@@ -134,34 +144,6 @@ class MultiBackend extends AbstractBase
         $this->logger = $logger;
     }
 
-    /**
-     * Log an error message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function error($msg)
-    {
-        if ($this->logger) {
-            $this->logger->err(get_class($this) . ": $msg");
-        }
-    }
-    
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
-    }
-    
     /**
      * Set the driver configuration.
      *
@@ -189,15 +171,13 @@ class MultiBackend extends AbstractBase
             throw new ILSException('Configuration needs to be set.');
         }
         $this->drivers = $this->config['Drivers'];
-        $this->defaultDriver = isset($this->config['General']['default_driver'])?
-            $this->config['General']['default_driver']:
-            null;
-        $this->delimiters['login']
-            = (isset($this->config['Delimiters']['login']) ?
-                   $this->config['Delimiters']['login'] :
-                   "\t");
+        $this->defaultDriver = isset($this->config['General']['default_driver'])
+            ? $this->config['General']['default_driver']
+            : null;
+        $this->delimiters['login'] = isset($this->config['Delimiters']['login'])
+            ? $this->config['Delimiters']['login']
+            : '.';
     }
-
 
     /**
      * Set the service locator.
@@ -223,6 +203,997 @@ class MultiBackend extends AbstractBase
     }
 
     /**
+     * Get Status
+     *
+     * This is responsible for retrieving the status information of a certain
+     * record.
+     *
+     * @param string $id The record id to retrieve the holdings for
+     *
+     * @throws ILSException
+     * @return mixed     On success, an associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber.
+     */
+    public function getStatus($id)
+    {
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $status = $driver->getStatus($this->getLocalId($id));
+            return $this->addIdPrefixes($status, $source);
+        }
+        return array();
+    }
+
+    /**
+     * Get Statuses
+     *
+     * This is responsible for retrieving the status information for a
+     * collection of records.
+     *
+     * @param array $ids The array of record ids to retrieve the status for
+     *
+     * @throws ILSException
+     * @return array     An array of getStatus() return values on success.
+     */
+    public function getStatuses($ids)
+    {
+        $items = array();
+        foreach ($ids as $id) {
+            $items[] = $this->getStatus($id);
+        }
+        return $items;
+    }
+
+    /**
+     * Get Holding
+     *
+     * This is responsible for retrieving the holding information of a certain
+     * record.
+     *
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array  $patron Patron data
+     *
+     * @return array         On success, an associative array with the following
+     * keys: id, availability (boolean), status, location, reserve, callnumber,
+     * duedate, number, barcode.
+     */
+    public function getHolding($id, array $patron = null)
+    {
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $holdings = $driver->getHolding(
+                $this->getLocalId($id),
+                $this->stripIdPrefixes($patron, $source)
+            );
+            return $this->addIdPrefixes($holdings, $source);
+        }
+        return array();
+    }
+
+    /**
+     * Get Purchase History
+     *
+     * This is responsible for retrieving the acquisitions history data for the
+     * specific record (usually recently received issues of a serial).
+     *
+     * @param string $id The record id to retrieve the info for
+     *
+     * @throws ILSException
+     * @return array     An array with the acquisitions data on success.
+     */
+    public function getPurchaseHistory($id)
+    {
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            return $driver->getPurchaseHistory($this->getLocalId($id));
+        }
+        return array();
+    }
+
+    /**
+     * Get available login targets (drivers enabled for login)
+     *
+     * @return string[] Source ID's
+     */
+    public function getLoginDrivers()
+    {
+        return isset($this->config['Login']['drivers'])
+            ? $this->config['Login']['drivers']
+            : array();
+    }
+
+    /**
+     * Get default login driver
+     *
+     * @return string Default login driver or empty string
+     */
+    public function getDefaultLoginDriver()
+    {
+        if (isset($this->config['Login']['default_driver'])) {
+            return $this->config['Login']['default_driver'];
+        }
+        $drivers = $this->getLoginDrivers();
+        if ($drivers) {
+            return $drivers[0];
+        }
+        return '';
+    }
+
+    /**
+     * Get New Items
+     *
+     * Retrieve the IDs of items recently added to the catalog.
+     *
+     * @param int $page    Page number of results to retrieve (counting starts at 1)
+     * @param int $limit   The size of each page of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
+     *
+     * @return array       Associative array with 'count' and 'results' keys
+     */
+    public function getNewItems($page, $limit, $daysOld, $fundId = null)
+    {
+        $driver = $this->getDriver($this->defaultDriver);
+        if ($driver) {
+            return $driver->getNewItems($page, $limit, $daysOld, $fundId);
+        }
+        return array();
+    }
+
+    /**
+     * Find Reserves
+     *
+     * Obtain information on course reserves.
+     *
+     * @param string $course ID from getCourses (empty string to match all)
+     * @param string $inst   ID from getInstructors (empty string to match all)
+     * @param string $dept   ID from getDepartments (empty string to match all)
+     *
+     * @return mixed An array of associative arrays representing reserve items
+     */
+    public function findReserves($course, $inst, $dept)
+    {
+        $driver = $this->getDriver($this->defaultDriver);
+        if ($driver) {
+            return $driver->findReserves($course, $inst, $dept);
+        }
+        return array();
+    }
+
+    /**
+     * Get Patron Profile
+     *
+     * This is responsible for retrieving the profile for a specific patron.
+     *
+     * @param array $user The patron array
+     *
+     * @return mixed      Array of the patron's profile data
+     */
+    public function getMyProfile($user)
+    {
+        $source = $this->getSource($user['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $profile = $driver->getMyProfile($this->stripIdPrefixes($user, $source));
+            return $this->addIdPrefixes($profile, $source);
+        }
+        return array();
+    }
+
+    /**
+     * Patron Login
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * @param string $username The patron user id or barcode
+     * @param string $password The patron password
+     *
+     * @return mixed           Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     */
+    public function patronLogin($username, $password)
+    {
+        $source = $this->getSource($username, 'login');
+        if (!$source) {
+            $source = $this->getDefaultLoginDriver();
+        }
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $patron = $driver->patronLogin(
+                $this->getLocalId($username, $this->delimiters['login']), $password
+            );
+            $patron = $this->addIdPrefixes($patron, $source);
+            return $patron;
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Patron Transactions
+     *
+     * This is responsible for retrieving all transactions (i.e. checked out items)
+     * by a specific patron.
+     *
+     * @param array $user The patron array from patronLogin
+     *
+     * @return mixed      Array of the patron's transactions
+     */
+    public function getMyTransactions($user)
+    {
+        $source = $this->getSource($user['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $transactions = $driver->getMyTransactions(
+                $this->stripIdPrefixes($user, $source)
+            );
+            return $this->addIdPrefixes($transactions, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Renew Details
+     *
+     * In order to renew an item, the ILS requires information on the item and
+     * patron. This function returns the information as a string which is then used
+     * as submitted form data in checkedOut.php. This value is then extracted by
+     * the RenewMyItems function.
+     *
+     * @param array $checkoutDetails An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getRenewDetails($checkoutDetails)
+    {
+        $source = $this->getSource($checkoutDetails['id']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $details = $driver->getRenewDetails(
+                $this->stripIdPrefixes($checkoutDetails, $source)
+            );
+            return $this->addIdPrefixes($details, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Renew My Items
+     *
+     * Function for attempting to renew a patron's items. The data in
+     * $renewDetails['details'] is determined by getRenewDetails().
+     *
+     * @param array $renewDetails An array of data required for renewing items
+     * including the Patron ID and an array of renewal IDS
+     *
+     * @return array              An array of renewal information keyed by item ID
+     */
+    public function renewMyItems($renewDetails)
+    {
+        $source = $this->getSource($renewDetails['patron']['id']);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $details = $driver->renewMyItems(
+                $this->stripIdPrefixes($renewDetails, $source)
+            );
+            return $this->addIdPrefixes($details, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Patron Fines
+     *
+     * This is responsible for retrieving all fines by a specific patron.
+     *
+     * @param array $user The patron array from patronLogin
+     *
+     * @return mixed      Array of the patron's fines
+     */
+    public function getMyFines($user)
+    {
+        $source = $this->getSource($user['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $fines = $driver->getMyFines($this->stripIdPrefixes($user, $source));
+            return $this->addIdPrefixes($fines, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Patron Holds
+     *
+     * This is responsible for retrieving all holds by a specific patron.
+     *
+     * @param array $user The patron array from patronLogin
+     *
+     * @return mixed      Array of the patron's holds
+     */
+    public function getMyHolds($user)
+    {
+        $source = $this->getSource($user['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $holds = $driver->getMyHolds($this->stripIdPrefixes($user, $source));
+            return $this->addIdPrefixes(
+                $holds, $source, array('id', 'item_id', 'cat_username')
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Patron Call Slips
+     *
+     * This is responsible for retrieving all call slips by a specific patron.
+     *
+     * @param array $user The patron array from patronLogin
+     *
+     * @return mixed      Array of the patron's holds
+     */
+    public function getMyStorageRetrievalRequests($user)
+    {
+        $source = $this->getSource($user['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if (!$this->methodSupported($driver, 'getMyStorageRetrievalRequests')) {
+                // Return empty array if not supported by the driver
+                return array();
+            }
+            $requests = $driver->getMyStorageRetrievalRequests(
+                $this->stripIdPrefixes($user, $source)
+            );
+            return $this->addIdPrefixes($requests, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Check whether a hold or recall request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return string True if request is valid, false if not
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+        if (!isset($patron['cat_username'])) {
+            return false;
+        }
+        $source = $this->getSource($patron['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if ($this->getSource($id) != $source) {
+                return false;
+            }
+            return $driver->checkRequestIsValid(
+                $this->stripIdPrefixes($id, $source),
+                $this->stripIdPrefixes($data, $source),
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Check whether a storage retrieval request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return string True if request is valid, false if not
+     */
+    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    {
+        $source = $this->getSource($patron['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if ($this->getSource($id) != $source
+                || !is_callable(
+                    array($driver, 'checkStorageRetrievalRequestIsValid')
+                )
+            ) {
+                return false;
+            }
+            return $driver->checkStorageRetrievalRequestIsValid(
+                $this->stripIdPrefixes($id, $source),
+                $this->stripIdPrefixes($data, $source),
+                $this->stripIdPrefixes($patron, $source)
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Get Pick Up Locations
+     *
+     * This is responsible get a list of valid library locations for holds / recall
+     * retrieval
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * or may be ignored.  The driver must not add new options to the return array
+     * based on this data or other areas of VuFind may behave incorrectly.
+     *
+     * @return array        An array of associative arrays with locationID and
+     * locationDisplay keys
+     */
+    public function getPickUpLocations($patron = false, $holdDetails = null)
+    {
+        $source = $this->getSource($patron['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if ($holdDetails) {
+                if ($this->getSource($holdDetails['id']) != $source) {
+                    // Return empty array since the sources don't match
+                    return array();
+                }
+            }
+            $locations = $driver->getPickUpLocations(
+                $this->stripIdPrefixes($patron, $source),
+                $this->stripIdPrefixes($holdDetails, $source)
+            );
+            return $this->addIdPrefixes($locations, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Default Pick Up Location
+     *
+     * Returns the default pick up location
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * or may be ignored.
+     *
+     * @return string A location ID
+     */
+    public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
+    {
+        $source = $this->getSource($patron['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if ($holdDetails) {
+                if ($this->getSource($holdDetails['id']) != $source) {
+                    // Return false since the sources don't match
+                    return false;
+                }
+            }
+            $locations = $driver->getDefaultPickUpLocation(
+                $this->stripIdPrefixes($patron, $source),
+                $this->stripIdPrefixes($holdDetails, $source)
+            );
+            return $this->addIdPrefixes($locations, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get request groups
+     *
+     * @param integer $bibId  BIB ID
+     * @param array   $patron Patron information returned by the patronLogin
+     * method.
+     *
+     * @return array  An array of associative arrays with requestGroupId and
+     * name keys
+     */
+    public function getRequestGroups($bibId, $patron)
+    {
+        $source = $this->getSource($bibId);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if ($this->getSource($patron['id']) != $source
+                || !$this->methodSupported($driver, 'getRequestGroups')
+            ) {
+                // Return empty array since the sources don't match or the method
+                // isn't supported by the driver
+                return array();
+            }
+            $groups = $driver->getRequestGroups(
+                $this->stripIdPrefixes($bibId, $source),
+                $this->stripIdPrefixes($patron, $source)
+            );
+            return $groups;
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Default Request Group
+     *
+     * Returns the default request group
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
+     *
+     * @return string A location ID
+     */
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
+    {
+        $source = $this->getSource($patron['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if (!empty($holdDetails)) {
+                if ($this->getSource($holdDetails['id']) != $source
+                    || !$this->methodSupported($driver, 'getDefaultRequestGroup')
+                ) {
+                    // Return false since the sources don't match or the method
+                    // isn't supported by the driver
+                    return false;
+                }
+            }
+            $locations = $driver->getDefaultRequestGroup(
+                $this->stripIdPrefixes($patron, $source),
+                $this->stripIdPrefixes($holdDetails, $source)
+            );
+            return $this->addIdPrefixes($locations, $source);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Place Hold
+     *
+     * Attempts to place a hold or recall on a particular item and returns
+     * an array with result details
+     *
+     * @param array $holdDetails An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeHold($holdDetails)
+    {
+        $source = $this->getSource($holdDetails['patron']['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if ($this->getSource($holdDetails['id']) != $source) {
+                return array(
+                    "success" => false,
+                    "sysMessage" => 'hold_wrong_user_institution'
+                );
+            }
+            $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
+            return $driver->placeHold($holdDetails);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Cancel Holds
+     *
+     * Attempts to Cancel a hold or recall on a particular item. The
+     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelHolds($cancelDetails)
+    {
+        $source = $this->getSource(
+            $cancelDetails['patron']['cat_username'], 'login'
+        );
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            return $driver->cancelHolds(
+                $this->stripIdPrefixes($cancelDetails, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Cancel Hold Details
+     *
+     * In order to cancel a hold, the ILS requires some information on the hold.
+     * This function returns the required information, which is then submitted
+     * as form data in Hold.php. This value is then extracted by the CancelHolds
+     * function.
+     *
+     * @param array $holdDetails An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelHoldDetails($holdDetails)
+    {
+        $source = $this->getSource(
+            $holdDetails['id'] ? $holdDetails['id'] : $holdDetails['item_id']
+        );
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
+            return $driver->getCancelHoldDetails($holdDetails);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Place Call Slip Request
+     *
+     * Attempts to place a call slip request on a particular item and returns
+     * an array with result details
+     *
+     * @param array $details An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeStorageRetrievalRequest($details)
+    {
+        $source = $this->getSource($details['patron']['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver
+            && is_callable(driver($driver, 'placeStorageRetrievalRequest'))
+        ) {
+            if ($this->getSource($details['id']) != $source) {
+                return array(
+                    "success" => false,
+                    "sysMessage" => 'hold_wrong_user_institution'
+                );
+            }
+            $details = $this->stripIdPrefixes($details, $source);
+            return $driver->placeStorageRetrievalRequest($details);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Cancel Call Slips
+     *
+     * Attempts to Cancel a call slip on a particular item. The
+     * data in $cancelDetails['details'] is determined by
+     * getCancelStorageRetrievalRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelStorageRetrievalRequests($cancelDetails)
+    {
+        $source = $this->getSource(
+            $cancelDetails['patron']['cat_username'], 'login'
+        );
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported($driver, 'cancelStorageRetrievalRequests')
+        ) {
+            return $driver->cancelStorageRetrievalRequests(
+                $this->stripIdPrefixes($cancelDetails, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Cancel Call Slip Details
+     *
+     * In order to cancel a call slip, the ILS requires some information on it.
+     * This function returns the required information, which is then submitted
+     * as form data. This value is then extracted by the
+     * CancelStorageRetrievalRequests function.
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelStorageRetrievalRequestDetails($details)
+    {
+        $source = $this->getSource($details['id']);
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported(
+                $driver, 'getCancelStorageRetrievalRequestDetails'
+            )
+        ) {
+            $details = $this->stripIdPrefixes($details, $source);
+            return $driver->getCancelStorageRetrievalRequestDetails($details);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Check whether an ILL request is valid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return string True if request is valid, false if not
+     */
+    public function checkILLRequestIsValid($id, $data, $patron)
+    {
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver && $this->methodSupported($driver, 'checkILLRequestIsValid')) {
+            // Patron is not stripped so that the correct library can be determined
+            return $driver->checkILLRequestIsValid(
+                $this->stripIdPrefixes($id, $source),
+                $this->stripIdPrefixes($data, $source),
+                $patron
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get ILL Pickup Libraries
+     *
+     * This is responsible for getting information on the possible pickup libraries
+     *
+     * @param string $id     Record ID
+     * @param array  $patron Patron
+     *
+     * @return bool|array False if request not allowed, or an array of associative
+     * arrays with libraries.
+     */
+    public function getILLPickupLibraries($id, $patron)
+    {
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver && $this->methodSupported($driver, 'getILLPickupLibraries')) {
+            // Patron is not stripped so that the correct library can be determined
+            return $driver->getILLPickupLibraries(
+                $this->stripIdPrefixes($id, $source, array('id')),
+                $patron
+            );
+        }
+    }
+
+    /**
+     * Get ILL Pickup Locations
+     *
+     * This is responsible for getting a list of possible pickup locations for a
+     * library
+     *
+     * @param string $id        Record ID
+     * @param string $pickupLib Pickup library ID
+     * @param array  $patron    Patron
+     *
+     * @return bool|array False if request not allowed, or an array of
+     * locations.
+     */
+    public function getILLPickupLocations($id, $pickupLib, $patron)
+    {
+        $source = $this->getSource($id);
+        $driver = $this->getDriver($source);
+        if ($driver && $this->methodSupported($driver, 'getILLPickupLocations')) {
+            // Patron is not stripped so that the correct library can be determined
+            return $driver->getILLPickupLocations(
+                $this->stripIdPrefixes($id, $source, array('id')),
+                $pickupLib,
+                $patron
+            );
+        }
+    }
+
+    /**
+     * Place ILL Request
+     *
+     * Attempts to place an ILL request on a particular item and returns
+     * an array with result details or a PEAR error on failure of support classes
+     *
+     * @param array $details An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     * @access public
+     */
+    public function placeILLRequest($details)
+    {
+        $source = $this->getSource($details['id']);
+        $driver = $this->getDriver($source);
+        if ($driver && $this->methodSupported($driver, 'placeILLRequest')) {
+            $details = $this->stripIdPrefixes($details, $source, array('id'));
+            return $driver->placeILLRequest($details);
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Patron ILL Requests
+     *
+     * This is responsible for retrieving all ILL Requests by a specific patron.
+     *
+     * @param array $user The patron array from patronLogin
+     *
+     * @return mixed      Array of the patron's ILL requests
+     */
+    public function getMyILLRequests($user)
+    {
+        $source = $this->getSource($user['cat_username'], 'login');
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if (!$this->methodSupported($driver, 'getMyILLRequests')) {
+                // Return empty array if not supported by the driver
+                return array();
+            }
+            $requests = $driver->getMyILLRequests(
+                $this->stripIdPrefixes($user, $source)
+            );
+            return $this->addIdPrefixes(
+                $requests, $source, array('id', 'item_id', 'cat_username')
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Cancel ILL Requests
+     *
+     * Attempts to Cancel an ILL request on a particular item. The
+     * data in $cancelDetails['details'] is determined by
+     * getCancelILLRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelILLRequests($cancelDetails)
+    {
+        $source = $this->getSource(
+            $cancelDetails['patron']['cat_username'], 'login'
+        );
+        $driver = $this->getDriver($source);
+        if ($driver && $this->methodSupported($driver, 'cancelILLRequests')) {
+            return $driver->cancelILLRequests(
+                $this->stripIdPrefixes($cancelDetails, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Get Cancel ILL Request Details
+     *
+     * In order to cancel an ILL request, the ILS requires some information on the
+     * request. This function returns the required information, which is then
+     * submitted as form data. This value is then extracted by the CancelILLRequests
+     * function.
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelILLRequestDetails($details)
+    {
+        $source = $this->getSource(
+            $details['id'] ? $details['id'] : $details['item_id']
+        );
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported($driver, 'getCancelILLRequestDetails')
+        ) {
+            return $driver->getCancelILLRequestDetails(
+                $this->stripIdPrefixes($details, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Function which specifies renew, hold and cancel settings.
+     *
+     * @param string $function The name of the feature to be checked
+     * @param string $id       Optional record id
+     *
+     * @return array An array with key-value pairs.
+     */
+    public function getConfig($function, $id = null)
+    {
+        $source = null;
+        if (!empty($id)) {
+            $source = $this->getSource($id);
+        }
+        if (!$source) {
+            $patron = $this->ilsAuth->storedCatalogLogin();
+            if ($patron && isset($patron['cat_username'])) {
+                $source = $this->getSource($patron['cat_username'], 'login');
+            }
+        }
+
+        $driver = $this->getDriver(
+            $source, empty($id) ? null : $this->getLocalId($id)
+        );
+
+        // If we have resolved the needed driver, just getConfig and return.
+        if ($driver && $this->methodSupported($driver, 'getConfig')) {
+            return $driver->getConfig($function);
+        }
+
+        // If driver not available, return an empty array
+        return array();
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return boolean  True if the method can be called with the given
+     *                  parameters, false otherwise.
+     */
+    public function supportsMethod($method, $params)
+    {
+        if ($method == 'getLoginDrivers' || $method == 'getDefaultLoginDriver') {
+            return true;
+        }
+
+        $source = $this->getSourceFromParams($params);
+        if (!$source && $this->defaultDriver) {
+            $source = $this->defaultDriver;
+        }
+        if (!$source) {
+            return false;
+        }
+
+        $driver = $this->getDriver($source);
+        return $driver && $this->methodSupported($driver, $method);
+    }
+
+    /**
+     * Log an error message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function error($msg)
+    {
+        if ($this->logger) {
+            $this->logger->err(get_class($this) . ": $msg");
+        }
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug(get_class($this) . ": $msg");
+        }
+    }
+
+    /**
      * Extract local ID from the given prefixed ID
      *
      * @param string $id        The id to be split
@@ -232,7 +1203,7 @@ class MultiBackend extends AbstractBase
      */
     protected function getLocalId($id, $delimiter = '.')
     {
-        $pos = strrpos($id, $delimiter);
+        $pos = strpos($id, $delimiter);
         if ($pos > 0) {
             return substr($id, $pos + 1);
         }
@@ -244,19 +1215,52 @@ class MultiBackend extends AbstractBase
      * Extract source from the given ID
      *
      * @param string $id        The id to be split
-     * @param string $delimiter The delimiter to be used
+     * @param string $delimiter The delimiter to be used from $this->delimiters
      *
      * @return string  Source
      */
-    protected function getSource($id, $delimiter = '.')
+    protected function getSource($id, $delimiter = '')
     {
-        $pos = strrpos($id, $delimiter);
+        $delimiter = $delimiter && isset($this->delimiters[$delimiter])
+            ? $this->delimiters[$delimiter]
+            : '.';
+        $pos = strpos($id, $delimiter);
         if ($pos > 0) {
             return substr($id, 0, $pos);
         }
 
         $this->debug("Cannot find source id in '$id' using '$delimiter'");
-        return $id;
+        return '';
+    }
+
+    /**
+     * Get source from method parameters
+     *
+     * @param array $params Parameters of a driver method call
+     *
+     * @return string Source id or empty string if not found
+     */
+    protected function getSourceFromParams($params)
+    {
+        if (!is_array($params)) {
+            return is_string($params) ? $this->getSource($params) : '';
+        }
+        foreach ($params as $key => $value) {
+            if (is_array($value)) {
+                $source = $this->getSourceFromParams($value);
+                if ($source) {
+                    return $source;
+                }
+            } elseif ($key === 0 || $key === 'id' || $key === 'cat_username') {
+                $source = $this->getSource(
+                    $value, $key === 'cat_username' ? 'login' : ''
+                );
+                if ($source) {
+                    return $source;
+                }
+            }
+        }
+        return '';
     }
 
     /**
@@ -269,6 +1273,14 @@ class MultiBackend extends AbstractBase
      */
     protected function getDriver($source)
     {
+        if (!$source) {
+            // Check for default driver
+            if ($this->defaultDriver) {
+                $this->debug('Using default driver ' . $this->defaultDriver);
+                $source = $this->defaultDriver;
+            }
+        }
+
         if (!isset($this->isInitialized[$source])
             || !$this->isInitialized[$source]
         ) {
@@ -310,7 +1322,7 @@ class MultiBackend extends AbstractBase
         if (isset($this->cache[$source])) {
             return $this->cache[$source];
         }
-        
+
         if (isset($this->drivers[$source])) {
             $driver = $this->drivers[$source];
             $config = $this->getDriverConfig($source);
@@ -406,7 +1418,10 @@ class MultiBackend extends AbstractBase
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
-                    $data[$key] = $source . '.' . $value;
+                    $delimiter = $key === 'cat_username'
+                        ? $this->delimiters['login']
+                        : '.';
+                    $data[$key] = "$source$delimiter$value";
                 }
             }
         }
@@ -427,7 +1442,6 @@ class MultiBackend extends AbstractBase
     protected function stripIdPrefixes($data, $source,
         $modifyFields = array('id', 'cat_username')
     ) {
-
         if (!isset($data) || empty($data)) {
             return $data;
         }
@@ -439,10 +1453,14 @@ class MultiBackend extends AbstractBase
                     $value, $source, $modifyFields
                 );
             } else {
-                if (in_array($key, $modifyFields)
-                    && strncmp($source . '.', $value, strlen($source) + 1) == 0
+                $delimiter = $key === 'cat_username'
+                    ? $this->delimiters['login']
+                    : '.';
+                $prefixLen = strlen($source) + strlen($delimiter);
+                if ((!is_array($data) || in_array($key, $modifyFields))
+                    && strncmp($source . $delimiter, $value, $prefixLen) == 0
                 ) {
-                        $array[$key] = substr($value, strlen($source) + 1);
+                    $array[$key] = substr($value, $prefixLen);
                 }
             }
         }
@@ -450,362 +1468,21 @@ class MultiBackend extends AbstractBase
     }
 
     /**
-     * Get Status
+     * Check whether the given driver supports the given method
      *
-     * This is responsible for retrieving the status information of a certain
-     * record.
+     * @param object $driver ILS Driver
+     * @param string $method Method name
      *
-     * @param string $id The record id to retrieve the holdings for
-     *
-     * @throws ILSException
-     * @return mixed     On success, an associative array with the following keys:
-     * id, availability (boolean), status, location, reserve, callnumber.
+     * @return boolean
      */
-    public function getStatus($id)
+    protected function methodSupported($driver, $method)
     {
-        return $this->getStatusOrHolding($id, "Status");
-    }
-
-    /**
-     * Get Statuses
-     *
-     * This is responsible for retrieving the status information for a
-     * collection of records.
-     *
-     * @param array $ids The array of record ids to retrieve the status for
-     *
-     * @throws ILSException
-     * @return array     An array of getStatus() return values on success.
-     */
-    public function getStatuses($ids)
-    {
-        $items = array();
-        foreach ($ids as $id) {
-            $items[] = $this->getStatus($id);
-        }
-        return $items;
-    }
-
-    /**
-     * Get Holding
-     *
-     * This is responsible for retrieving the holding information of a certain
-     * record.
-     *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
-     *
-     * @return array         On success, an associative array with the following
-     * keys: id, availability (boolean), status, location, reserve, callnumber,
-     * duedate, number, barcode.
-     */
-    public function getHolding($id, array $patron = null)
-    {
-        return $this->getStatusOrHolding($id, "Holding", $patron);
-    }
-
-    /**
-     * Support method for getStatus / getHolding
-     *
-     * @param string $id     The record id to retrieve the holdings for
-     * @param string $method "Status" or "Holding"
-     * @param array  $patron Patron data
-     *
-     * @return array
-     */
-    protected function getStatusOrHolding($id, $method, array $patron = null)
-    {
-        $method = "get".ucfirst($method);
-        $source = $this->getSource($id);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            $holdings = $driver->$method($this->getLocalId($id), $patron);
-            if ($holdings) {
-                return $this->addIdPrefixes($holdings, $source);
+        if (is_callable(array($driver, $method))) {
+            if (method_exists($driver, 'supportsMethod')) {
+                return $driver->supportsMethod($method);
             }
-        }
-        //$source not found in $drivers
-        return Array();
-
-    }
-
-    /**
-     * Get Purchase History
-     *
-     * This is responsible for retrieving the acquisitions history data for the
-     * specific record (usually recently received issues of a serial).
-     *
-     * @param string $id The record id to retrieve the info for
-     *
-     * @throws ILSException
-     * @return array     An array with the acquisitions data on success.
-     */
-    public function getPurchaseHistory($id)
-    {
-        $source = $this->getSource($id);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            return $driver->getPurchaseHistory($this->getLocalId($id));
-        }
-        return null;
-    }
-
-    /**
-     * patronLogin function.  This function handles patron logins in a multiple
-     * backend environment by looping through all available driver configurations
-     * until it finds one that allows the login, then returns the login information
-     * supplied by that ILS.
-     *
-     * @param string $username The username to log in with
-     * @param string $password The password to log in with
-     *
-     * @return mixed   Associative array of patron info on successful login,
-     *                 null on unsuccessful login.
-     */
-    public function patronLogin($username, $password)
-    {
-
-        $pos = strrpos($username, $this->delimiters['login']);
-        $login = null;
-        if ($pos > 0) {
-            $key = $this->getSource($username, $this->delimiters['login']);
-            $user = $this->getLocalID($username, $this->delimiters['login']);
-            $login = $this->getDriver($key)->patronLogin($user, $password);
-            $login['cat_username']
-                = $key.$this->delimiters['login'].$login['cat_username'];
-            return $login;
-        }
-        foreach (array_keys($this->drivers) as $key) {
-            $login =  $this->getDriver($key)->patronLogin($username, $password);
-            if ($login) {
-                $login['cat_username']
-                    = $key.$this->delimiters['login'].$login['cat_username'];
-                return $login;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Get available login targets (drivers enabled for login)
-     * 
-     * @return string[] Source ID's
-     */
-    public function getLoginDrivers()
-    {
-        return isset($this->config['Login']['drivers'])
-            ? $this->config['Login']['drivers']
-            : array();
-    }
-
-    /**
-     * Get default login driver
-     * 
-     * @return string Default login driver or empty string
-     */
-    public function getDefaultLoginDriver()
-    {
-        if (isset($this->config['Login']['default_driver'])) {
-            return $this->config['Login']['default_driver'];
-        }
-        $drivers = $this->getLoginDrivers();
-        if ($drivers) {
-            return $drivers[0];
-        }
-        return '';
-    }
-    
-    /**
-     * Function developed to reduce code duplication in supportsMethod() and __call()
-     *
-     * @param array $params Array of passed parameters
-     *
-     * @return mixed Finds the driver instance associated with a pre-indexed catalog.
-     *               Null if cat_username is not pre-indexed with the catalog name.
-     */
-    protected function getInstanceFromParams($params)
-    {
-        if (isset($params[0]["cat_username"])) {
-            $instName = $this->getSource(
-                $params[0]["cat_username"],
-                $this->delimiters['login']
-            );
-            if (strlen($params[0]["cat_username"])>strlen($instName)) {
-                return $instName;
-            }
-        }
-        return null;
-    }
-
-
-    /**
-     * Helper method to determine whether or not a certain method can be
-     * called on this driver.  Required method for any smart drivers.
-     *
-     * @param string $method The name of the called method.
-     * @param array  $params Array of passed parameters
-     *
-     * @return boolean  True if the method can be called with the given
-     *                  parameters, false otherwise.
-     */
-    public function supportsMethod($method, $params)
-    {
-        // First we see if we can determine what instance the user is connected with
-        $instance = $this->getInstanceFromParams($params);
-        if ($instance) {
-            $driverInst = $this->getUninitializedDriver($instance);
-            return is_callable(array($driverInst, $method));
-        }
-
-        // Falling back, we try to use a default driver if it's set
-        $instance = $this->defaultDriver;
-        if ($instance) {
-            $driverInst = $this->getUninitializedDriver($instance);
-            return is_callable(array($driverInst, $method));
-        }
-
-        // Lastly, we see if any of the drivers we have support the function
-        foreach (array_keys($this->drivers) as $key) {
-            $driverInst = $this->getUninitializedDriver($key);
-            if (is_callable(array($driverInst, $method))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * This method runs a given method on a given driver instance with the given
-     * params.
-     *
-     * @param string    $instName   The name of the driver instance to use.
-     * @param string    $methodName The name of the method to be called
-     * @param array     $params     Array of passed parameters
-     * @param reference &$called    A reference to a passed in boolean to determine
-     *                              if the function was actually called and returned
-     *                              false, or if it just didn't run.
-     *
-     * @return boolean  False if the method could not be run, and the return
-     *                  of the method if it could be.
-     */
-    protected function runIfPossible($instName, $methodName, $params, &$called)
-    {
-        if ($instName) {
-            $driverInst = $this->getUninitializedDriver($instName);
-            if (is_callable(array($driverInst, $methodName))) {
-                $this->initializeDriver($driverInst, $instName);
-                $funcReturn =  call_user_func_array(
-                    array($driverInst, $methodName), $params
-                );
-
-                // Because things like getMyFines return false if you have no fines,
-                // we need a different way of knowing if the function was called.
-                $called = true;
-                return $funcReturn;
-            }
-        }
-        $called = false;
-        return $called;
-    }
-
-    /**
-     * Determine what behavior a method should have if we are unable to determine
-     * a specific ILS to associate with it.
-     *
-     * @param string $methodName The name of the method to be called
-     *
-     * @return string  The behavior to be used.
-     */
-    protected function getMethodBehavior($methodName)
-    {
-        $var = 'default_fallback_driver_selection';
-        $default = isset($this->config['General'][$var])?
-                        $this->config['General'][$var] :
-                        "use_first";
-        $section = 'FallbackDriverSelectionOverride';
-        return isset($this->config[$section][$methodName])?
-                        $this->config[$section][$methodName] :
-                        $default;
-    }
-
-
-    /**
-     * A method to run a given method if we are unable to determine an ILS driver to
-     * associate with the method call.
-     *
-     * @param string    $methodName The name of the method to be called
-     * @param array     $params     Array of passed parameters
-     * @param reference &$called    A reference to a passed in boolean to determine
-     *                              if the function was actually called and returned
-     *                              false, or if it just didn't run.
-     *
-     * @return boolean  False if the method could not be run, and the return
-     *                  of the method if it could be.
-     */
-    protected function runMethodNoILS($methodName, $params, &$called)
-    {
-        $behavior = $this->getMethodBehavior($methodName);
-        $funcWasCalled = false;
-        $returnArray = array();
-        // Here we loop through evry instance we have access to and change what
-        // we do based off of the configuration behavior.
-        foreach (array_keys($this->drivers) as $key) {
-            $funcReturn = $this->runIfPossible($key, $methodName, $params, $called);
-            if ($called) {
-                if ($behavior == "use_first" || !is_array($funcReturn)) {
-                    return $funcReturn;
-                } else if ($behavior == "merge") {
-                    $funcWasCalled = true;
-                    $returnArray = array_merge($returnArray, $funcReturn);
-                }
-            }
-            $called = false;
-        }
-
-        //We only return something if we were able to call this method on an ILS,
-        //Otherwise it should be handled like an uncallable function below.
-        if ($funcWasCalled) {
-            $called = true;
-            return $returnArray;
+            return true;
         }
         return false;
-    }
-        
-    /**
-     * Default method -- pass along calls to the driver if available; return
-     * false otherwise.  This allows custom functions to be implemented in
-     * the driver without constant modification to the MultiBackend class.
-     *
-     * @param string $methodName The name of the called method.
-     * @param array  $params     Array of passed parameters.
-     *
-     * @return mixed             Varies by method (false if undefined method)
-     */
-    public function __call($methodName, $params)
-    {
-        $called = false;
-        //Try for the driver associated with the user
-        $instName = $this->getInstanceFromParams($params);
-        $funcReturn = $this->runIfPossible($instName, $methodName, $params, $called);
-        if ($called) {
-            return $funcReturn;
-        }
-
-        //Get the driver associated with the current instance
-        $instName = $this->defaultDriver;
-        $funcReturn = $this->runIfPossible($instName, $methodName, $params, $called);
-        if ($called) {
-            return $funcReturn;
-        }
-
-        $funcReturn = $this->runMethodNoILS($methodName, $params, $called);
-        if ($called) {
-            return $funcReturn;
-        }
-        throw new ILSException(
-            "Cannot call method: $methodName, instance: '$instName'"
-        );
     }
 }
-

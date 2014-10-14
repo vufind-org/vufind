@@ -72,16 +72,29 @@ class Connector
     protected $host;
 
     /**
+     * API version number
+     *
+     * @var float
+     */
+    protected $apiVersion;
+
+    /**
      * Constructor
      *
      * Sets up the LibGuides Client
      *
-     * @param string     $iid    Institution ID
-     * @param HttpClient $client HTTP client
+     * @param string     $iid        Institution ID
+     * @param HttpClient $client     HTTP client
+     * @param float      $apiVersion API version number
      */
-    public function __construct($iid, $client)
+    public function __construct($iid, $client, $apiVersion = 1)
     {
-        $this->host = "http://api.libguides.com/api_search.php?";
+        $this->apiVersion = $apiVersion;
+        if ($this->apiVersion < 2) {
+            $this->host = "http://api.libguides.com/api_search.php?";
+        } else {
+            $this->host = "http://lgapi.libapps.com/widgets.php?";
+        }
         $this->iid = $iid;
         $this->client = $client;
     }
@@ -113,14 +126,7 @@ class Connector
      */
     public function query(array $params, $offset = 0, $limit = 20, $returnErr = true)
     {
-        // defaults for params
-        $args = array(
-            'iid' => $this->iid,
-            'type' => 'guides',
-            'more' => 'false',
-            'sortby' => 'relevance',
-        );
-        $args = array_merge($args, $params);
+        $args = $this->prepareParams($params);
 
         // run search, deal with exceptions
         try {
@@ -209,5 +215,47 @@ class Connector
         );
 
         return $results;
+    }
+
+    /**
+     * Prepare API parameters
+     *
+     * @param array $params Incoming parameters
+     *
+     * @return array
+     */
+    protected function prepareParams(array $params)
+    {
+        // defaults for params (vary by version)
+        if ($this->apiVersion < 2) {
+            $args = array(
+                'iid' => $this->iid,
+                'type' => 'guides',
+                'more' => 'false',
+                'sortby' => 'relevance',
+            );
+        } else {
+            $args = array(
+                'site_id' => $this->iid,
+                'sort_by' => 'relevance',
+                'widget_type' => 1,
+                'search_match' => 2,
+                'search_type' => 0,
+                'sort_by' => 'relevance',
+                'list_format' => 1,
+                'output_format' => 1,
+                'load_type' => 2,
+                'enable_description' => 0,
+                'enable_group_search_limit' => 0,
+                'enable_subject_search_limit' => 0,
+                'widget_embed_type' => 2,
+            );
+            // remap v1 --> v2 params:
+            if (isset($params['search'])) {
+                $params['search_terms'] = $params['search'];
+                unset($params['search']);
+            }
+        }
+        return array_merge($args, $params);
     }
 }

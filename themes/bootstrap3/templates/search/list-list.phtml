@@ -2,7 +2,14 @@
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
   <div id="result<?=$i++ ?>" class="row result clearfix">
-    <label class="pull-left hidden-print checkbox"><? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?><?=$this->record($current)->getCheckbox()?><? endif; ?><?=$recordNumber?></label>
+    <div class="col-xs-1 hidden-print checkbox">
+      <label>
+        <? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
+          <?=$this->record($current)->getCheckbox()?>
+        <? endif; ?>
+        <?=$recordNumber?>
+      </label>
+    </div>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>
 <? endforeach; ?>

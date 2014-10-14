@@ -50,9 +50,7 @@ class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetLangName()
     {
-        $config = new Config(array('Languages' => array('en' => 'English')));
-        $c = $this->getMock('VuFindDevTools\Controller\DevtoolsController', array('getConfig'));
-        $c->expects($this->any())->method('getConfig')->will($this->returnValue($config));
+        $c = $this->getMockController();
 
         // config-driven case:
         $this->assertEquals('English', $c->getLangName('en'));
@@ -82,5 +80,52 @@ class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
             'l2Percent' => '66.67'
         );
         $this->assertEquals($expected, $this->callMethod($c, 'compareLanguages', array($l1, $l2)));
+    }
+
+    /**
+     * Test language action.
+     *
+     * @return void
+     */
+    public function testLanguageAction()
+    {
+        $c = $this->getMockController();
+        $result = $c->languageAction();
+
+        // Test default language selection -- English
+        $this->assertEquals('en', $result['mainCode']);
+        $this->assertEquals('English', $result['mainName']);
+
+        // Make sure correct type of object was loaded:
+        $this->assertEquals('Zend\I18n\Translator\TextDomain', get_class($result['main']));
+
+        // Shortcut to help check some key details:
+        $en = $result['details']['en'];
+
+        // Did we load help files correctly?
+        $this->assertTrue(count($en['helpFiles']) >= 4);
+        $this->assertTrue(in_array('search.phtml', $en['helpFiles']));
+
+        // Did we put the object in the right place?
+        $this->assertEquals('Zend\I18n\Translator\TextDomain', get_class($en['object']));
+
+        // Did the @parent_ini macro get stripped correctly?
+        $this->assertFalse(isset($result['details']['en-gb']['object']['@parent_ini']));
+
+        // Did the native.ini file get properly ignored?
+        $this->assertFalse(isset($result['details']['native']));
+    }
+
+    /**
+     * Get a mock controller.
+     *
+     * @return Controller
+     */
+    protected function getMockController()
+    {
+        $config = new Config(array('Languages' => array('en' => 'English')));
+        $c = $this->getMock('VuFindDevTools\Controller\DevtoolsController', array('getConfig'));
+        $c->expects($this->any())->method('getConfig')->will($this->returnValue($config));
+        return $c;
     }
 }

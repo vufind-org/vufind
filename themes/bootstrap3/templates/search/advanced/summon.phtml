@@ -7,8 +7,8 @@
     <div class="row">
       <? foreach ($this->facetList as $field => $list): ?>
         <div class="col-sm-<?=floor(12/count($this->facetList)) ?>">
-          <label class="displayBlock" for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
-          <select class="col-sm-12" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+          <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
+          <select class="form-control" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
             <?
               // Sort the current facet list alphabetically; we'll use this data
               // along with the foreach below to display facet options in the
@@ -29,5 +29,7 @@
     </div>
   </fieldset>
 <? endif; ?>
-<?=$this->render('search/advanced/limit.phtml')?>
-<?=$this->render('search/advanced/ranges.phtml')?>
+<div class="row">
+  <?=$this->render('search/advanced/limit.phtml')?>
+  <?=$this->render('search/advanced/ranges.phtml')?>
+</div>

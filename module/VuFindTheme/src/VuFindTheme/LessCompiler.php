@@ -173,7 +173,9 @@ class LessCompiler
         }
         $lessDir = $this->basePath . '/themes/' . $theme . '/less/';
         if (!file_exists($lessDir . $less)) {
-            $this->logMessage("\t\t" . $lessDir . $less . ' does not exist; skipping.');
+            $this->logMessage(
+                "\t\t" . $lessDir . $less . ' does not exist; skipping.'
+            );
             return;
         }
         $outDir = sys_get_temp_dir();
@@ -246,7 +248,8 @@ class LessCompiler
      *
      * @return void
      */
-    protected function logMessage($str) {
+    protected function logMessage($str)
+    {
         if ($this->verbose) {
             Console::writeLine($str);
         }

@@ -22,6 +22,7 @@ return array(
             'keepalive' => 'VuFind\View\Helper\Root\Factory::getKeepAlive',
             'proxyurl' => 'VuFind\View\Helper\Root\Factory::getProxyUrl',
             'openurl' => 'VuFind\View\Helper\Root\Factory::getOpenUrl',
+            'piwik' => 'VuFind\View\Helper\Root\Factory::getPiwik',
             'recaptcha' => 'VuFind\View\Helper\Root\Factory::getRecaptcha',
             'record' => 'VuFind\View\Helper\Root\Factory::getRecord',
             'recordlink' => 'VuFind\View\Helper\Root\Factory::getRecordLink',

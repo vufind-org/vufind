@@ -1,7 +1,7 @@
 <? $list = $this->params->getSortList(); if (!empty($list)): ?>
   <form class="form-inline" action="<?=$this->currentPath()?>" method="get" name="sort">
     <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
-    <label for="sort_options_1" class="checkbox"><?=$this->transEsc('Sort')?></label>
+    <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
     <select id="sort_options_1" name="sort" class="jumpMenu form-control">
       <? foreach ($list as $sortType => $sortData): ?>
         <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected']?' selected="selected"':''?>><?=$this->transEsc($sortData['desc'])?></option>

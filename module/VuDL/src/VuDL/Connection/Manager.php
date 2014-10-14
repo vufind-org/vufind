@@ -44,20 +44,20 @@ class Manager
      * Array of classes to try in order
      */
     protected $priority;
-    
+
     /**
      * Cache of class objects
      */
     protected $connections;
-    
+
     /**
      * Used to load class objects
      */
     protected $serviceLocator;
-    
+
     /**
      * Constructor
-     * 
+     *
      * @param array          $priority Order we want to try connectors in
      * @param ServiceLocator $sm       Object to load everything from
      */
@@ -67,12 +67,12 @@ class Manager
         $this->connections = array();
         $this->serviceLocator = $sm;
     }
-    
+
     /**
      * Get a class object from a classname, save in cache
-     * 
+     *
      * @param string $className Class we want to load
-     * 
+     *
      * @return object
      */
     protected function get($className)
@@ -83,7 +83,7 @@ class Manager
         }
         return $this->connections[$className];
     }
-    
+
     /**
      * Try to call a function in each successive class
      * according to priority

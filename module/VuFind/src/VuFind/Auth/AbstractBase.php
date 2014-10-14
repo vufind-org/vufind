@@ -213,17 +213,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     }
 
     /**
-     * Does the class allow for authentication from more than one auth method?
-     * If so return an array that lists the classes for the methods allowed.
-     *
-     * @return array | bool
-     */
-    public function getClasses()
-    {
-        return false;
-    }
-
-    /**
      * Get access to the user table.
      *
      * @return \VuFind\Db\Table\User
