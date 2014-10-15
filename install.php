@@ -337,6 +337,8 @@ function getOverrideDir($overrideDir)
 /**
  * Validate the custom module name. Returns true on success, message on failure.
  *
+ * @param string $module Module name to validate.
+ *
  * @return bool|string
  */
 function validateModule($module)
@@ -508,9 +510,9 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
         );
         break;
     case MULTISITE_HOST_BASED:
-         if (($result = validateHost($host)) !== true) {
-             die($result . "\n");
-         }
+        if (($result = validateHost($host)) !== true) {
+            die($result . "\n");
+        }
         $config = preg_replace(
             '/SetEnv\s+(\w+)\s+(.*)/',
             'SetEnvIfNoCase Host ' . str_replace('.', '\.', $host) . ' $1=$2',
