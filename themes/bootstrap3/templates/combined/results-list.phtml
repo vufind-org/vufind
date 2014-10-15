@@ -68,9 +68,11 @@
       ? 'list' : $params->getView();
     $viewParams = array(
       'results' => $results,
-      'params' => $params,
-      'showCartControls' => $this->showCartControls
+      'params' => $params
     );
+    if(isset($this->showCartControls) && !$this->showCartControls) {
+      $viewParams['hideCartControls'] = true;
+    }
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
   <? if ($currentSearch['more_link']): ?>

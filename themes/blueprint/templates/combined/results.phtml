@@ -34,6 +34,9 @@
             $this->escapeHtml($lookfor) . '</em>';
     }
 
+    // Enable cart if appropriate:
+    $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
+
     // Load Javascript dependencies into header:
     $this->headScript()->appendFile("check_item_statuses.js");
     $this->headScript()->appendFile("check_save_statuses.js");
@@ -49,7 +52,15 @@
     </div>
   <? endif; ?>
   <?=$this->flashmessages()?>
-  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', array('searchClassId' => $searchClassId, 'combinedResults' => $this->combinedResults))?>
+  <?
+    $viewParams = array(
+      'searchClassId' => $searchClassId,
+      'combinedResults' => $this->combinedResults,
+      'supportsCartOptions' => $this->supportsCartOptions,
+      'showCartControls' => $this->showCartControls
+    );
+  ?>
+  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
 </div>
 <? /* End Main Listing */ ?>
 
