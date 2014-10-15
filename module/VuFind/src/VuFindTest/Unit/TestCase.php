@@ -119,6 +119,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'factories' => array(
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
+                ),
+                'invokables' => array(
+                    'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper'
                 )
             )
         );
