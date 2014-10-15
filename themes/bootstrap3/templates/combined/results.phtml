@@ -36,8 +36,6 @@
 
   // Disable cart if appropriate:
   $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
-  // Disable bulk options if appropriate:
-  $this->showBulkOptions = $this->supportsCart && $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
@@ -64,8 +62,7 @@
       'searchClassId' => $searchClassId,
       'combinedResults' => $this->combinedResults,
       'supportsCartOptions' => $this->supportsCartOptions,
-      'showCartControls' => $this->showCartControls,
-      'showBulkOptions' => $this->showBulkOptions
+      'showCartControls' => $this->showCartControls
     );
   ?>
   <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>

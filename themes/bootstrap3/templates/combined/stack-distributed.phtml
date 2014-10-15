@@ -18,8 +18,6 @@
             $viewParams = array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch);
             // Disable cart if appropriate:
             $viewParams['showCartControls'] = $this->supportsCartOptions[$columnIndex] && $this->showCartControls;
-            // Disable bulk options if appropriate:
-            $viewParams['showBulkOptions'] = $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions;
           ?>
           <div id="combined_<?=$this->escapeHtmlAttr($searchClassId)?>">
             <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
