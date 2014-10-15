@@ -160,7 +160,7 @@ class CombinedController extends AbstractSearch
             $currentOptions = $options->get($current);
             $supportsCartOptions[] = $currentOptions->supportsCart();
             if ($currentOptions->supportsCart()) {
-              $supportsCart = true;
+                $supportsCart = true;
             }
             list($controller, $action)
                 = explode('-', $currentOptions->getSearchAction());

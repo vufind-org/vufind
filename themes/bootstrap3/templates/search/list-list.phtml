@@ -1,5 +1,5 @@
 <? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
-<? $showCheckboxes = (isset($this->showCartControls) && $this->showCartControls) ?>
+<? $showCheckboxes = !isset($this->hideCartControls) && $this->cart()->isActive() ?>
 <? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
   <div id="result<?=$i++ ?>" class="row result clearfix">

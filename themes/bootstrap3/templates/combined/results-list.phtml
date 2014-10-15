@@ -70,7 +70,7 @@
       'results' => $results,
       'params' => $params
     );
-    if(isset($this->showCartControls) && !$this->showCartControls) {
+    if(!isset($this->showCartControls) || !$this->showCartControls) {
       $viewParams['hideCartControls'] = true;
     }
   ?>
