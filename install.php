@@ -70,14 +70,14 @@ echo "VuFind has been found in {$baseDir}.\n\n";
 
 // Are we allowing user interaction?
 $interactive = !$opts->getOption('non-interactive');
-$getInput = array();
+$userInputNeeded = array();
 
 // Load user settings if we are not forcing defaults:
 if (!$opts->getOption('use-defaults')) {
     if ($opts->getOption('overridedir')) {
         $overrideDir = $opts->getOption('overridedir');
     } else if ($interactive) {
-        $getInput['overrideDir'] = true;
+        $userInputNeeded['overrideDir'] = true;
     }
     if ($opts->getOption('module-name')) {
         if ($opts->getOption('module-name') !== 'disabled') {
@@ -87,7 +87,7 @@ if (!$opts->getOption('use-defaults')) {
             }
         }
     } else if ($interactive) {
-        $getInput['module'] = true;
+        $userInputNeeded['module'] = true;
     }
 
     if ($opts->getOption('basepath')) {
@@ -96,7 +96,7 @@ if (!$opts->getOption('use-defaults')) {
             die($result . "\n");
         }
     } else if ($interactive) {
-        $getInput['basePath'] = true;
+        $userInputNeeded['basePath'] = true;
     }
 
     // We assume "single site" mode unless the --multisite switch is set:
@@ -108,22 +108,22 @@ if (!$opts->getOption('use-defaults')) {
         } else if (($bad = $opts->getOption('multisite')) && $bad !== true) {
             die('Unexpected multisite mode: ' . $bad . "\n");
         } else if ($interactive) {
-            $getInput['multisiteMode'] = true;
+            $userInputNeeded['multisiteMode'] = true;
         }
     }
 
     // Now that we've validated as many parameters as possible, retrieve
     // user input where needed.
-    if (isset($getInput['overrideDir'])) {
+    if (isset($userInputNeeded['overrideDir'])) {
         $overrideDir = getOverrideDir($overrideDir);
     }
-    if (isset($getInput['module'])) {
+    if (isset($userInputNeeded['module'])) {
         $module = getModule();
     }
-    if (isset($getInput['basePath'])) {
+    if (isset($userInputNeeded['basePath'])) {
         $basePath = getBasePath($basePath);
     }
-    if (isset($getInput['multisiteMode'])) {
+    if (isset($userInputNeeded['multisiteMode'])) {
         $multisiteMode = getMultisiteMode();
     }
 
@@ -453,19 +453,7 @@ function getHost()
  */
 function getInput($prompt)
 {
-    // Standard function for most uses
-    if (function_exists('readline')) {
-        $in = readline($prompt);
-        return $in;
-    } else {
-        // Or use our own if it doesn't exist (windows)
-        print $prompt;
-        $fp = fopen("php://stdin", "r");
-        $in = fgets($fp, 4094); // Maximum windows buffer size
-        fclose($fp);
-        // Seems to keep the carriage return if you don't trim
-        return trim($in);
-    }
+    return \Zend\Console\Prompt\Line::prompt($prompt, true);
 }
 
 /**
