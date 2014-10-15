@@ -82,7 +82,7 @@ class Fedora extends AbstractBase
      * Returns file contents of the structmap, our most common call
      *
      * @param string  $id  Record id
-     * @param boolean $xml Return data as SimpleXMLElement?
+     * @param bool    $xml Return data as SimpleXMLElement?
      *
      * @return string|\SimpleXMLElement
      */
@@ -107,7 +107,8 @@ class Fedora extends AbstractBase
      *
      * @param string  $id         Record id
      * @param string  $stream     Name of stream to retrieve
-     * @param boolean $justStream Do not append /content and return from url as is
+     * @param bool    $justStream Do not append /content and return from url as is
+     *
      * @return string
      */
     public function getDatastreamContent($id, $stream, $justStream = false)
@@ -139,7 +140,7 @@ class Fedora extends AbstractBase
      * Get details for the sidebar on a record.
      *
      * @param string  $id     ID to retrieve
-     * @param boolean $format Send result through formatDetails?
+     * @param bool    $format Send result through formatDetails?
      *
      * @return string
      */
