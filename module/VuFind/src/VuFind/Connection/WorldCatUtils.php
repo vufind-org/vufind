@@ -49,6 +49,13 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     protected $logger = false;
 
     /**
+     * WorldCat configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
      * WorldCat ID
      *
      * @var string
@@ -72,14 +79,16 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string            $worldCatId WorldCat ID
-     * @param \Zend\Http\Client $client     HTTP client
-     * @param bool              $silent     Should we silently ignore HTTP failures?
+     * @param \Zend\Config\Config $config WorldCat configuration
+     * @param \Zend\Http\Client   $client HTTP client
+     * @param bool                $silent Should we silently ignore HTTP failures?
      */
-    public function __construct($worldCatId, \Zend\Http\Client $client,
-        $silent = true
+    public function __construct(\Zend\Config\Config $config,
+        \Zend\Http\Client $client, $silent = true
     ) {
-        $this->worldCatId = $worldCatId;
+        $this->config = $config;
+        $this->worldCatId = isset($config->id)
+            ? $config->id : false;
         $this->client = $client;
         $this->silent = $silent;
     }
@@ -145,6 +154,32 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Build a url to use in querying OCLC's xID service.
+     *
+     * @param string $base      base url with no querystring
+     * @param string $tokenVar  config file variable holding the token
+     * @param string $secretVar config file variable holding the secret
+     * @param string $format    data format for api response
+     *
+     * @return string
+     */
+    protected function buildXIdUrl($base, $tokenVar, $secretVar, $format) {
+        $token = isset($this->config->$tokenVar)
+            ? $this->config->$tokenVar : false;
+        $secret = isset($this->config->$secretVar)
+            ? $this->config->$secretVar : false;
+        $querystr = '?method=getEditions&format=' . $format;
+        if ($token && $secret) {
+            $hash = md5($base . '|' . $_SERVER['SERVER_ADDR'] . '|' . $secret);
+            $querystr .= '&token=' . $token . '&hash=' . $hash;
+        } if ($wcId = $this->getWorldCatId()) {
+            $querystr .= '&ai=' . urlencode($wcId);
+        }
+        $base .= $querystr;
+        return $base;
+    }
+
+    /**
      * Retrieve results from the index using the XISBN service.
      *
      * @param string $isbn ISBN of main record
@@ -154,12 +189,9 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     public function getXISBN($isbn)
     {
         // Build URL
-        $url = 'http://xisbn.worldcat.org/webservices/xid/isbn/' .
-                urlencode(is_array($isbn) ? $isbn[0] : $isbn) .
-               '?method=getEditions&format=json';
-        if ($wcId = $this->getWorldCatId()) {
-            $url .= '&ai=' . urlencode($wcId);
-        }
+        $base = 'http://xisbn.worldcat.org/webservices/xid/isbn/' .
+                urlencode(is_array($isbn) ? $isbn[0] : $isbn);
+        $url = $this->buildXIdUrl($base, 'xISBN_token', 'xISBN_secret', 'json');
 
         // Print Debug code
         $this->debug("XISBN: $url");
@@ -193,12 +225,9 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     public function getXOCLCNUM($oclc)
     {
         // Build URL
-        $url = 'http://xisbn.worldcat.org/webservices/xid/oclcnum/' .
-                urlencode(is_array($oclc) ? $oclc[0] : $oclc) .
-               '?method=getEditions&format=json';
-        if ($wcId = $this->getWorldCatId()) {
-            $url .= '&ai=' . urlencode($wcId);
-        }
+        $base = 'http://xisbn.worldcat.org/webservices/xid/oclcnum/' .
+                urlencode(is_array($oclc) ? $oclc[0] : $oclc);
+        $url = $this->buildXIdUrl($base, 'xISBN_token', 'xISBN_secret', 'json');
 
         // Print Debug code
         $this->debug("XOCLCNUM: $url");
@@ -234,13 +263,9 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     public function getXISSN($issn)
     {
         // Build URL
-        $url = 'http://xissn.worldcat.org/webservices/xid/issn/' .
-                urlencode(is_array($issn) ? $issn[0] : $issn) .
-               //'?method=getEditions&format=csv';
-               '?method=getEditions&format=xml';
-        if ($wcId = $this->getWorldCatId()) {
-            $url .= '&ai=' . urlencode($wcId);
-        }
+        $base = 'http://xissn.worldcat.org/webservices/xid/issn/' .
+                urlencode(is_array($issn) ? $issn[0] : $issn);
+        $url = $this->buildXIdUrl($base, 'xISSN_token', 'xISSN_secret', 'xml');
 
         // Print Debug code
         $this->debug("XISSN: $url");
