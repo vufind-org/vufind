@@ -27,7 +27,7 @@
  * @link     http://vufind.org
  */
 namespace VuFindTest\Content\Covers;
-use VuFind\Code\ISBN, VuFind\Content\Covers\OpenLibrary;
+use VuFindCode\ISBN, VuFind\Content\Covers\OpenLibrary;
 
 /**
  * Unit tests for OpenLibrary cover loader.

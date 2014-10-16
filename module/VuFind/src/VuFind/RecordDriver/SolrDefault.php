@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Code\ISBN, VuFind\View\Helper\Root\RecordLink;
+use VuFindCode\ISBN, VuFind\View\Helper\Root\RecordLink;
 
 /**
  * Default model for Solr records -- used when a more specific model based on

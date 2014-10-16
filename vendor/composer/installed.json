@@ -903,5 +903,91 @@
         ],
         "description": "Symfony Yaml Component",
         "homepage": "http://symfony.com"
+    },
+    {
+        "name": "vufind-org/vufindhttp",
+        "version": "v1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/vufind-org/vufindhttp.git",
+            "reference": "2f56535bd3c306747ecf89ecea33c798f16f8c4e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/2f56535bd3c306747ecf89ecea33c798f16f8c4e",
+            "reference": "2f56535bd3c306747ecf89ecea33c798f16f8c4e",
+            "shasum": ""
+        },
+        "require": {
+            "zendframework/zend-http": "2.2.*"
+        },
+        "require-dev": {
+            "zendframework/zend-uri": "2.2.*"
+        },
+        "time": "2014-10-16 14:38:35",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "VuFindHttp\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0"
+        ],
+        "authors": [
+            {
+                "name": "David Maus",
+                "email": "maus@hab.de",
+                "role": "Developer"
+            },
+            {
+                "name": "Demian Katz",
+                "email": "demian.katz@villanova.edu",
+                "role": "Maintainer"
+            }
+        ],
+        "description": "VuFind 2.x HTTP service library",
+        "homepage": "http://vufind.org/"
+    },
+    {
+        "name": "vufind-org/vufindcode",
+        "version": "v1.0.2",
+        "version_normalized": "1.0.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/vufind-org/vufindcode.git",
+            "reference": "1c6a0ad73cdf24c363f0e0564ac29ef1ba323ec0"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/vufind-org/vufindcode/zipball/1c6a0ad73cdf24c363f0e0564ac29ef1ba323ec0",
+            "reference": "1c6a0ad73cdf24c363f0e0564ac29ef1ba323ec0",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2014-09-17 15:48:11",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "VuFindCode\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Demian Katz",
+                "email": "demian.katz@villanova.edu"
+            }
+        ],
+        "description": "Class for representing ISBNs (a VuFind support library)"
     }
 ]
