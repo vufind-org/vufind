@@ -48,6 +48,7 @@ abstract class Options implements TranslatorAwareInterface
      * @var array
      */
     protected $sortOptions = array();
+    protected $listviewOption = "full";
 
     /**
      * Overall default sort option
@@ -508,6 +509,16 @@ abstract class Options implements TranslatorAwareInterface
     public function autocompleteEnabled()
     {
         return $this->autocompleteEnabled;
+    }
+
+    /**
+     * Get a string of the listviewOption (full or tab).
+     *
+     * @return string 
+     */
+    public function getListViewOption()
+    {
+        return $this->listviewOption;
     }
 
     /**
