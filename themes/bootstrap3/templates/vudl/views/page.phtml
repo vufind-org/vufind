@@ -60,13 +60,6 @@
     updateFunction(pageData, 'medium-tab');
   });
 </script>
-<? if($this->counts[0] > 1): ?>
-  <div class="row btn-group visible-xs">
-    <a href="javascript:prevPage()" class="btn btn-default">Prev Page</a>
-    <a href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>" class="btn btn-default grid-btn"><i class="fa fa-th"></i></a>
-    <a href="javascript:nextPage()" class="btn btn-default">Next Page</a>
-  </div>
-<? endif; ?>
 <ul class="nav nav-tabs">
   <li class="static opener">
     <a onClick="toggleSideNav()">
@@ -79,13 +72,6 @@
   <li class="hidden-xs"><a href="#image" id="large-tab" onClick="showPreview('large', this)">Large</a></li>
   <li><a href="#zoom" id="zoom-tab">Zoom</a></li>
   <li><a href="#master" id="master-tab">Downloads</a></li>
-  <? if($this->counts[0] > 1): ?>
-    <li class="pull-right static hidden-xs">
-      <a class="pull-left" href="javascript:prevPage()">Prev Page</a>
-      <a class="pull-left" href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>"><i class="fa fa-th"></i></a>
-      <a class="pull-left" href="javascript:nextPage()">Next Page</a>
-    </li>
-  <? endif; ?>
 </ul>
 <div class="tab-content">
   <div class="loading-bar front">
