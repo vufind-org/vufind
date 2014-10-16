@@ -561,5 +561,4 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         return null !== $this->translator
             ? $this->translator->translate($msg) : $msg;
     }
-
 }

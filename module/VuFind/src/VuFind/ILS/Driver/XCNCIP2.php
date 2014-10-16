@@ -553,7 +553,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
-     * @param array $ids     The consortial source records for this record id
      *
      * @throws \VuFind\Exception\Date
      * @throws ILSException
