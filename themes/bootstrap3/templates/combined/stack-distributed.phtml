@@ -16,9 +16,9 @@
         <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { $columnIndex += $columns; continue; } ?>
           <?
             $viewParams = array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch);
-            // Disable cart if appropriate:
+            // Enable cart if appropriate:
             $viewParams['showCartControls'] = $this->supportsCartOptions[$columnIndex] && $this->showCartControls;
-            // Disable bulk options if appropriate:
+            // Enable bulk options if appropriate:
             $viewParams['showBulkOptions'] = $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions;
           ?>
           <div id="combined_<?=$this->escapeHtmlAttr($searchClassId)?>">

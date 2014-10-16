@@ -7,17 +7,21 @@ php:
   - 5.5
   - 5.6
   - hhvm
+  - hhvm-nightly
 
 before_script:
-  - composer self-update
-  - composer update --prefer-source; composer install --dev --prefer-source;
+  - sh .travis.install.sh
 
 script:
   - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml --exclude-group Performance
-  - ./vendor/bin/phpunit ./tests/language-feature-scripts/
   - php -n ./vendor/bin/phpunit --group=Performance
   - ./vendor/bin/phpcs --standard=PSR2 ./src/ ./tests/
 
 matrix:
   allow_failures:
     - php: hhvm
+    - php: hhvm-nightly
+
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml

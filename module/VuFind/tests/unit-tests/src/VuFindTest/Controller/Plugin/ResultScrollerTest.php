@@ -50,42 +50,151 @@ class ResultScrollerTest extends TestCase
     public function testDisabled()
     {
         $plugin = new ResultScroller(false);
-        $this->assertFalse($plugin->init($this->getMockResults()));
+        $results = $this->getMockResults();
+        $this->assertFalse($plugin->init($results));
         $expected = array(
             'previousRecord'=>null, 'nextRecord'=>null,
             'currentPosition'=>null, 'resultTotal'=>null
         );
-        $this->assertEquals($expected, $plugin->getScrollData($this->getMockRecordDriver('foo')));
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(1)));
     }
 
     /**
-     * Get mock record driver
+     * Test scrolling for a record in the middle of the page
      *
-     * @param string $id     ID
-     * @param string $source Backend
-     *
-     * @return \VuFind\RecordDriver\AbstractBase
+     * @return void
      */
-    protected function getMockRecordDriver($id, $source = 'VuFind')
+    public function testScrollingInMiddleOfPage()
     {
-        $driver = $this->getMockBuilder('VuFind\RecordDriver\AbstractBase')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $driver->expects($this->any())->method('getUniqueId')->will($this->returnValue($id));
-        $driver->expects($this->any())->method('getResourceSource')->will($this->returnValue($source));
-        return $driver;
+        $results = $this->getMockResults(1, 10, 10);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = array(
+            'previousRecord'=>'VuFind|4', 'nextRecord'=>'VuFind|6',
+            'currentPosition'=>5, 'resultTotal'=>10
+        );
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(5)));
+    }
+
+    /**
+     * Test scrolling for a record at the start of the first page
+     *
+     * @return void
+     */
+    public function testScrollingAtStartOfFirstPage()
+    {
+        $results = $this->getMockResults(1, 10, 10);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = array(
+            'previousRecord'=>null, 'nextRecord'=>'VuFind|2',
+            'currentPosition'=>1, 'resultTotal'=>10
+        );
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(1)));
+    }
+
+    /**
+     * Test scrolling for a record at the end of the last page (single-page example)
+     *
+     * @return void
+     */
+    public function testScrollingAtEndOfLastPage()
+    {
+        $results = $this->getMockResults(1, 10, 10);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = array(
+            'previousRecord'=>'VuFind|9', 'nextRecord'=>null,
+            'currentPosition'=>10, 'resultTotal'=>10
+        );
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(10)));
+    }
+
+    /**
+     * Test scrolling for a record at the end of the last page (multi-page example)
+     *
+     * @return void
+     */
+    public function testScrollingAtEndOfLastPageInMultiPageScenario()
+    {
+        $results = $this->getMockResults(2, 10, 17);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = array(
+            'previousRecord'=>'VuFind|16', 'nextRecord'=>null,
+            'currentPosition'=>17, 'resultTotal'=>17
+        );
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(17)));
+    }
+
+    /**
+     * Test scrolling at beginning of middle page.
+     *
+     * @return void
+     */
+    public function testScrollingAtStartOfMiddlePage()
+    {
+        $results = $this->getMockResults(2, 10, 30);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = array(
+            'previousRecord'=>'VuFind|10', 'nextRecord'=>'VuFind|12',
+            'currentPosition'=>11, 'resultTotal'=>30
+        );
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(11)));
+    }
+
+    /**
+     * Test scrolling at end of middle page.
+     *
+     * @return void
+     */
+    public function testScrollingAtEndOfMiddlePage()
+    {
+        $results = $this->getMockResults(2, 10, 30);
+        $plugin = $this->getMockResultScroller($results);
+        $this->assertTrue($plugin->init($results));
+        $expected = array(
+            'previousRecord'=>'VuFind|19', 'nextRecord'=>'VuFind|21',
+            'currentPosition'=>20, 'resultTotal'=>30
+        );
+        $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(20)));
     }
 
     /**
      * Get mock search results
      *
+     * @param int $page  Current page number
+     * @param int $limit Page size
+     * @param int $total Total size of fake result set
+     *
      * @return \VuFind\Search\Base\Results
      */
-    protected function getMockResults()
+    protected function getMockResults($page = 1, $limit = 20, $total = 0)
     {
-        $results = $this->getMockBuilder('VuFind\Search\Solr\Results')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $pm = $this->getMockBuilder('VuFind\Config\PluginManager')->disableOriginalConstructor()->getMock();
+        $options = new \VuFindTest\Search\TestHarness\Options($pm);
+        $params = new \VuFindTest\Search\TestHarness\Params($options, $pm);
+        $params->setPage($page);
+        $params->setLimit($limit);
+        $results = new \VuFindTest\Search\TestHarness\Results($params, $total);
         return $results;
+    }
+
+    /**
+     * Get mock result scroller
+     *
+     * @param \VuFind\Search\Base\Results restoreLastSearch results (null to ignore)
+     * @param array                       $methods Methods to mock
+     *
+     * @return ResultScroller
+     */
+    protected function getMockResultScroller($results = null, $methods = array('restoreLastSearch', 'rememberSearch'))
+    {
+        $mock = $this->getMock('VuFind\Controller\Plugin\ResultScroller', $methods);
+        if (in_array('restoreLastSearch', $methods) && null !== $results) {
+            $mock->expects($this->any())->method('restoreLastSearch')->will($this->returnValue($results));
+        }
+        return $mock;
     }
 }

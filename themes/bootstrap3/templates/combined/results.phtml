@@ -34,9 +34,9 @@
       $this->escapeHtml($lookfor) . '</li>';
   }
 
-  // Disable cart if appropriate:
+  // Enable cart if appropriate:
   $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
-  // Disable bulk options if appropriate:
+  // Enable bulk options if appropriate:
   $this->showBulkOptions = $this->supportsCart && $this->showBulkOptions;
 
   // Load Javascript dependencies into header:

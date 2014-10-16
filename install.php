@@ -25,6 +25,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:installation_notes Wiki
  */
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Zend\Console\Getopt;
+
 define('MULTISITE_NONE', 0);
 define('MULTISITE_DIR_BASED', 1);
 define('MULTISITE_HOST_BASED', 2);
@@ -35,26 +40,107 @@ $host = $module = '';
 $multisiteMode = MULTISITE_NONE;
 $basePath = '/vufind';
 
+try {
+    $opts = new Getopt(
+        array(
+        'use-defaults' => 
+           'Use VuFind Defaults to Configure (ignores any other arguments passed)',
+        'overridedir=s' => 
+           "Where would you like to store your local settings? [{$baseDir}/local]",
+        'module-name=w' => 
+           'What module name would you like to use? Use disabled, to not use',
+        'basepath=s' => 
+           'What base path should be used in VuFind\'s URL? [/vufind]',
+        'multisite-w' => 
+           'Specify we are going to setup a multisite. Options: directory and host',
+        'hostname=s' => 
+            'Specify the hostname for the VuFind Site, When multisite=host',
+        'non-interactive' =>
+            'Use settings if provided via arguments, otherwise use defaults',
+      )
+    );
+
+    $opts->parse();
+} catch (Exception $e) {
+    echo $e->getUsageMessage();
+    exit;
+}
+
 echo "VuFind has been found in {$baseDir}.\n\n";
 
+// Are we allowing user interaction?
+$interactive = !$opts->getOption('non-interactive');
+$userInputNeeded = array();
+
 // Load user settings if we are not forcing defaults:
-if (!isset($argv[1]) || !in_array('--use-defaults', $argv)) {
-    $overrideDir = getOverrideDir($overrideDir);
-    $module = getModule();
-    $basePath = getBasePath($basePath);
+if (!$opts->getOption('use-defaults')) {
+    if ($opts->getOption('overridedir')) {
+        $overrideDir = $opts->getOption('overridedir');
+    } else if ($interactive) {
+        $userInputNeeded['overrideDir'] = true;
+    }
+    if ($opts->getOption('module-name')) {
+        if ($opts->getOption('module-name') !== 'disabled') {
+            $module = $opts->getOption('module-name');
+            if (($result = validateModule($module)) !== true) {
+                die($result . "\n");
+            }
+        }
+    } else if ($interactive) {
+        $userInputNeeded['module'] = true;
+    }
+
+    if ($opts->getOption('basepath')) {
+        $basePath = $opts->getOption('basepath');
+        if (($result = validateBasePath($basePath, true)) !== true) {
+            die($result . "\n");
+        }
+    } else if ($interactive) {
+        $userInputNeeded['basePath'] = true;
+    }
 
     // We assume "single site" mode unless the --multisite switch is set:
-    if (isset($argv[1]) && in_array('--multisite', $argv)) {
+    if ($opts->getOption('multisite')) {
+        if ($opts->getOption('multisite') === 'directory') {
+            $multisiteMode = MULTISITE_DIR_BASED;
+        } else if ($opts->getOption('multisite') === 'host') {
+            $multisiteMode = MULTISITE_HOST_BASED;
+        } else if (($bad = $opts->getOption('multisite')) && $bad !== true) {
+            die('Unexpected multisite mode: ' . $bad . "\n");
+        } else if ($interactive) {
+            $userInputNeeded['multisiteMode'] = true;
+        }
+    }
+
+    // Now that we've validated as many parameters as possible, retrieve
+    // user input where needed.
+    if (isset($userInputNeeded['overrideDir'])) {
+        $overrideDir = getOverrideDir($overrideDir);
+    }
+    if (isset($userInputNeeded['module'])) {
+        $module = getModule();
+    }
+    if (isset($userInputNeeded['basePath'])) {
+        $basePath = getBasePath($basePath);
+    }
+    if (isset($userInputNeeded['multisiteMode'])) {
         $multisiteMode = getMultisiteMode();
     }
+
+    // Load supplemental multisite parameters:
     if ($multisiteMode == MULTISITE_HOST_BASED) {
-        $host = getHost();
+        if ($opts->getOption('hostname')) {
+             $host = $opts->getOption('hostname');
+        } else if ($interactive) {
+             $host = getHost();
+        }
     }
-} else {
-    // In interactive mode, we initialize the directory as part of the input
-    // process; in defaults mode, we need to do it here:
-    initializeOverrideDir($overrideDir, true);
 }
+
+// Make sure the override directory is initialized (using defaults or CLI
+// parameters will not have initialized it yet; attempt to reinitialize it
+// here is harmless if it was already initialized in interactive mode):
+initializeOverrideDir($overrideDir, true);
 
 // Build the Windows start file in case we need it:
 buildWindowsConfig($baseDir, $overrideDir, $module);
@@ -154,6 +240,24 @@ function getApacheLocation($overrideDir)
 }
 
 /**
+ * Validate a base path. Returns true on success, message on failure.
+ *
+ * @param string $basePath   String to validate.
+ * @param bool   $allowEmpty Are empty values acceptable?
+ *
+ * @return bool|string
+ */
+function validateBasePath($basePath, $allowEmpty = false)
+{
+    if ($allowEmpty && empty($basePath)) {
+        return true;
+    }
+    return preg_match('/^\/\w*$/', $basePath)
+        ? true
+        : 'Error: Base path must be alphanumeric and start with a slash.';
+}
+
+/**
  * Get a base path from the user (or return a default).
  *
  * @param string $basePath Default value
@@ -168,9 +272,8 @@ function getBasePath($basePath)
             "What base path should be used in VuFind's URL? [{$basePath}] "
         );
         if (!empty($basePathInput)) {
-            if (!preg_match('/^\/\w*$/', $basePathInput)) {
-                echo "Error: Base path must be alphanumeric and start with a "
-                    . "slash.\n\n";
+            if (($result = validateBasePath($basePathInput)) !== true) {
+                echo "$result\n\n";
             } else {
                 return $basePathInput;
             }
@@ -226,9 +329,31 @@ function getOverrideDir($overrideDir)
                 return str_replace('\\', '/', realpath($overrideDirInput));
             }
         } else {
-            initializeOverrideDir($overrideDir, true);
             return $overrideDir;
         }
+    }
+}
+
+/**
+ * Validate the custom module name. Returns true on success, message on failure.
+ *
+ * @param string $module Module name to validate.
+ *
+ * @return bool|string
+ */
+function validateModule($module)
+{
+    $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
+    $illegalModules = array(
+        'VuDL', 'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
+        'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
+    );
+    if (in_array($module, $illegalModules)) {
+        return "{$module} is a reserved module name; please try another.";
+    } else if (empty($module) || preg_match($regex, $module)) {
+        return true;
+    } else {
+        return "Illegal name: {$module}; please use alphanumeric text.";
     }
 }
 
@@ -251,15 +376,10 @@ function getModule()
                 "\nWhat module name would you like to use? [blank for none] "
             )
         );
-        $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
-        $illegalModules = array('VuFind', 'VuFindConsole', 'VuFindTest');
-        if (in_array($moduleInput, $illegalModules)) {
-            echo "\n{$moduleInput} is a reserved name; please try another.\n";
-        } else if (empty($moduleInput) || preg_match($regex, $moduleInput)) {
+        if (($result = validateModule($moduleInput)) === true) {
             return $moduleInput;
-        } else {
-            echo "\nIllegal name: {$moduleInput}; please use alphanumeric text.\n";
         }
+        echo "\n$result\n";
     }
 }
 
@@ -289,22 +409,36 @@ function getMultisiteMode()
 }
 
 /**
+ * Validate the user's hostname input. Returns true on success, message on failure.
+ *
+ * @param string $host String to check
+ *
+ * @return bool|string
+ */
+function validateHost($host)
+{
+    // From http://stackoverflow.com/questions/106179/
+    //             regular-expression-to-match-hostname-or-ip-address
+    $valid = "/^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*"
+        . "([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/";
+    return preg_match($valid, $host)
+        ? true
+        : 'Invalid hostname.';
+}
+
+/**
  * Get the user's hostname preference.
  *
  * @return string
  */
 function getHost()
 {
-    // From http://stackoverflow.com/questions/106179/
-    //             regular-expression-to-match-hostname-or-ip-address
-    $valid = "/^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*"
-        . "([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/";
     while (true) {
         $input = getInput("\nPlease enter the hostname for your site: ");
-        if (preg_match($valid, $input)) {
+        if (($result = validateHost($input)) === true) {
             return $input;
         } else {
-            echo "Invalid hostname.\n";
+            echo "$result\n";
         }
     }
 }
@@ -318,19 +452,7 @@ function getHost()
  */
 function getInput($prompt)
 {
-    // Standard function for most uses
-    if (function_exists('readline')) {
-        $in = readline($prompt);
-        return $in;
-    } else {
-        // Or use our own if it doesn't exist (windows)
-        print $prompt;
-        $fp = fopen("php://stdin", "r");
-        $in = fgets($fp, 4094); // Maximum windows buffer size
-        fclose($fp);
-        // Seems to keep the carriage return if you don't trim
-        return trim($in);
-    }
+    return \Zend\Console\Prompt\Line::prompt($prompt, true);
 }
 
 /**
@@ -375,6 +497,9 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
         );
         break;
     case MULTISITE_HOST_BASED:
+        if (($result = validateHost($host)) !== true) {
+            die($result . "\n");
+        }
         $config = preg_replace(
             '/SetEnv\s+(\w+)\s+(.*)/',
             'SetEnvIfNoCase Host ' . str_replace('.', '\.', $host) . ' $1=$2',

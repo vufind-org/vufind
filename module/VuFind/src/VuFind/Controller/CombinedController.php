@@ -265,3 +265,4 @@ class CombinedController extends AbstractSearch
         $query->noRecommend = 1;
     }
 }
+
