@@ -170,7 +170,8 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
      *
      * @return string
      */
-    protected function buildXIdUrl($base, $tokenVar, $secretVar, $format) {
+    protected function buildXIdUrl($base, $tokenVar, $secretVar, $format)
+    {
         $token = isset($this->config->$tokenVar)
             ? $this->config->$tokenVar : false;
         $secret = isset($this->config->$secretVar)
