@@ -34,9 +34,6 @@
       $this->escapeHtml($lookfor) . '</li>';
   }
 
-  // Enable cart if appropriate:
-  $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
-
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
   $this->headScript()->appendFile("check_save_statuses.js");
@@ -55,15 +52,27 @@
   <? if ($this->supportsCart && $this->cart()->isActive()): ?>
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
   <? endif; ?>
-  <?
-    $viewParams = array(
-      'searchClassId' => $searchClassId,
-      'combinedResults' => $this->combinedResults,
-      'supportsCartOptions' => $this->supportsCartOptions,
-      'showCartControls' => $this->showCartControls
-    );
-  ?>
-  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
+  <div class="row">
+    <? $columns = count($this->combinedResults); ?>
+    <? $columnIndex = 0; ?>
+    <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+      <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { continue; } ?>
+      <div class="col-sm-<?=floor(12/$columns)?> combined-list" id="combined_<?=$this->escapeHtml($searchClassId)?>">
+        <?
+          $viewParams = array(
+            'searchClassId' => $searchClassId,
+            'currentSearch' => $currentSearch,
+            'showCartControls' => $this->supportsCartOptions[$columnIndex++] && $this->cart()->isActive()
+          );
+        ?>
+        <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
+          <?=$this->render('combined/results-ajax.phtml', $viewParams)?>
+        <? else: ?>
+          <?=$this->render('combined/results-list.phtml', $viewParams)?>
+        <? endif; ?>
+      </div>
+    <? endforeach; ?>
+  </div>
   <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>
