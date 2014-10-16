@@ -346,8 +346,7 @@ function validateModule($module)
     $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
     $illegalModules = array(
         'VuDL', 'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
-        'VuFindHttp', 'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest',
-        'VuFindTheme',
+        'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
     );
     if (in_array($module, $illegalModules)) {
         return "{$module} is a reserved module name; please try another.";

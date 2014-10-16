@@ -58,7 +58,7 @@ use VuFindHttp\HttpService as Service;
  * @link     https://github.com/dmj/vf2-proxy
  */
 
-class ProxyServiceTest extends Unit\TestCase
+class ProxyServiceTest extends \PHPUnit_Framework_TestCase
 {
 
     protected $local = array('ipv4 localhost' => 'http://localhost',
@@ -136,7 +136,15 @@ class ProxyServiceTest extends Unit\TestCase
     public function testPostForm()
     {
         $service = new Service();
-        $adapter = new \Zend\Http\Client\Adapter\Test();
+        $adapter = $this->getMock('Zend\Http\Client\Adapter\Test', array('write'));
+        $adapter->expects($this->once())
+            ->method('write')
+            ->with(
+                $this->equalTo('POST'),
+                $this->equalTo(
+                    new \Zend\Uri\Http('http://example.tld', 'foo=bar&bar=baz')
+                )
+            );
         $service->setDefaultAdapter($adapter);
         $service->postForm('http://example.tld', array('foo=bar'));
     }
@@ -259,5 +267,24 @@ class ProxyServiceTest extends Unit\TestCase
         $client = $service->createClient(null, \Zend\Http\Request::METHOD_GET, 67);
         $clientConfig = $this->getProperty($client, 'config');
         $this->assertEquals($clientConfig['timeout'], 67);
+    }
+
+    /**
+     * Return protected or private property.
+     *
+     * Uses PHP's reflection API in order to modify property accessibility.
+     *
+     * @param object|string $object   Object or class name
+     * @param string        $property Property name
+     *
+     * @throws \ReflectionException Property does not exist
+     *
+     * @return mixed
+     */
+    protected function getProperty($object, $property)
+    {
+        $reflectionProperty = new \ReflectionProperty($object, $property);
+        $reflectionProperty->setAccessible(true);
+        return $reflectionProperty->getValue($object);
     }
 }
