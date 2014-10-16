@@ -429,7 +429,7 @@ class VudlController extends AbstractVuDL
         if ($index == -1) {
             return $this->redirect()
                 ->toRoute('collection', array('id'=>$params['trail']));
-        } elseif (isset($params['prev_x'])) {
+        } elseif (isset($params['prev'])) {
             return $this->redirect()->toRoute(
                 'vudl-record', array('id'=>$members[($index-1)%count($members)])
             );
