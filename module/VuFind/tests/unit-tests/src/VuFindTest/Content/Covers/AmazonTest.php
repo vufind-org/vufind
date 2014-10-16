@@ -27,7 +27,7 @@
  * @link     http://vufind.org
  */
 namespace VuFindTest\Content\Covers;
-use VuFind\Code\ISBN;
+use VuFindCode\ISBN;
 
 /**
  * Unit tests for Amazon cover loader.

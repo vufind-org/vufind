@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="vufindcode" basedir="." default="main">
+  <property name="tmp" value="/tmp" />
+  <property name="package"  value="${phing.project.name}" override="true" />
+  <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
+  <property name="srcdir"   value="${project.basedir}" override="true" />
+
+  <!-- Main Target -->
+  <target name="main" description="main target">
+    <trycatch property="exceptionmsg">
+      <try>
+        <phingcall target="ci-tasks" />
+      </try>
+      <catch>
+        <phingcall target="shutdown" />
+        <fail>Unexpected error during continuous integration tasks -- ${exceptionmsg}</fail>
+      </catch>
+    </trycatch>
+  </target>
+
+  <!-- Continuous Integration Tasks -->
+  <target name="ci-tasks" description="continuous integration tasks">
+
+    <!-- Create dirs -->
+    <mkdir dir="${builddir}/reports"/>
+    <mkdir dir="${builddir}/reports/coverage"/>
+
+    <!-- Call standard tasks -->
+    <phingcall target="phpcs"/>
+    <phingcall target="phpunit"/>
+    <phingcall target="phpdoc"/>
+    <phingcall target="phpcpd"/>
+    <phingcall target="phpmd"/>
+    <phingcall target="pdepend"/>
+    <phingcall target="phploc"/>
+  </target>
+
+  <!-- Report rule violations with PHPMD (mess detector) -->
+  <target name="phpmd">
+    <exec command="phpmd ${srcdir}/src xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/tests --reportfile ${builddir}/reports/phpmd.xml" />
+  </target>
+
+  <!-- Measure project with phploc -->
+  <target name="phploc">
+    <exec command="phploc --log-csv ${builddir}/reports/phploc.csv ${srcdir}/src" />
+  </target>
+
+  <!-- PHP_Depend code analysis -->
+  <target name="pdepend">
+    <exec command="pdepend --jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/src" />
+  </target>
+
+  <!-- PHP copy-and-paste detection -->
+  <target name="phpcpd">
+    <exec command="phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude tests ${srcdir}/src" />
+  </target>
+
+  <!-- PHP CodeSniffer -->
+  <target name="phpcs">
+    <exec command="phpcs --standard=PEAR --ignore=tests/* --extensions=php --report=checkstyle ${srcdir}/src &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+  </target>
+
+  <!-- PHP API Documentation -->
+  <target name="phpdoc">
+    <mkdir dir="${builddir}/apidocs"/>
+    <phpdoc2 title="VuFindCode API Documentation"
+      destdir="${builddir}/apidocs">
+      <fileset dir=".">
+        <include name="src/**/*.php" />
+      </fileset>
+    </phpdoc2>
+  </target>
+
+  <!-- PHPUnit -->
+  <target name="phpunit" description="Run tests">
+    <exec dir="${srcdir}/tests" command="phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/" passthru="true" checkreturn="true" />
+  </target>
+
+  <!-- PHPUnit without logging output -->
+  <target name="phpunitfast" description="Run tests">
+    <exec dir="${srcdir}/tests" command="phpunit -dzend.enable_gc=0" passthru="true" checkreturn="true" />
+  </target>
+</project>

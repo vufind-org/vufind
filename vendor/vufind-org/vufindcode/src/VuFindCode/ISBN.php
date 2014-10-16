@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Code;
+namespace VuFindCode;
 
 /**
  * ISBN Class
@@ -97,20 +97,17 @@ class ISBN
      */
     public function get13()
     {
-        // Is it valid?
-        if ($this->isValid()) {
-            // Is it already an ISBN-13?  If so, return as-is.
-            if (strlen($this->raw) == 13) {
-                return $this->raw;
-            } else if (strlen($this->raw) == 10) {
-                // Is it an ISBN-10?  If so, convert to Bookland EAN:
-                $start = '978' . substr($this->raw, 0, 9);
-                return $start . self::getISBN13CheckDigit($start);
-            }
+        // Is it invalid?
+        if (!$this->isValid()) {
+            return false;
         }
-        
-        // If we made it this far, conversion was not possible:
-        return false;
+        // Is it an ISBN-10?  If so, convert to Bookland EAN:
+        if (strlen($this->raw) == 10) {
+            $start = '978' . substr($this->raw, 0, 9);
+            return $start . self::getISBN13CheckDigit($start);
+        }
+        // If we made it this far, it must already be an ISBN-13; return as-is.
+        return $this->raw;
     }
 
     /**
@@ -121,14 +118,9 @@ class ISBN
     public function isValid()
     {
         // If we haven't already checked validity, do so now and store the result:
-        if (is_null($this->valid)) {
-            if (self::isValidISBN10($this->raw)
-                || self::isValidISBN13($this->raw)
-            ) {
-                $this->valid = true;
-            } else {
-                $this->valid = false;
-            }
+        if (null === $this->valid) {
+            $this->valid = self::isValidISBN10($this->raw)
+                || self::isValidISBN13($this->raw);
         }
         return $this->valid;
     }

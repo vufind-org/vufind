@@ -69,7 +69,7 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
      * Attempt to get an ISBN-10; revert to ISBN-13 only when ISBN-10 representation
      * is impossible.
      *
-     * @param \VuFind\Code\ISBN $isbnObj ISBN object to convert
+     * @param \VuFindCode\ISBN $isbnObj ISBN object to convert
      *
      * @return string
      */
@@ -111,9 +111,9 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
      * Load results for a particular API key and ISBN.
      *
      * @param string            $key     API key
-     * @param \VuFind\Code\ISBN $isbnObj ISBN object
+     * @param \VuFindCode\ISBN $isbnObj ISBN object
      *
      * @return array
      */
-    abstract public function loadByIsbn($key, \VuFind\Code\ISBN $isbnObj);
+    abstract public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj);
 }
