@@ -58,14 +58,6 @@ $config = array(
         'allow_override' => true,
         'factories' => array(
             'VuFind\Translator' => 'Finna\Service\Factory::getTranslator',
-            /*'VuFind\ILSConnection' => function ($sm) {
-                $catalog = new \Finna\ILS\Connection(
-                    $sm->get('VuFind\Config')->get('config')->Catalog,
-                    $sm->get('VuFind\ILSDriverPluginManager'),
-                    $sm->get('VuFind\Config')
-                );
-                return $catalog->setHoldConfig($sm->get('VuFind\ILSHoldSettings'));
-            }*/
         )
     ),
     // This section contains all VuFind-specific settings (i.e. configurations
@@ -79,27 +71,6 @@ $config = array(
                 'aliases' => array(
                     // Allow Solr core names to be used as aliases for services:
                     'biblio' => 'Solr',
-                )
-            ),
-            'ils_driver' => array(
-                'factories' => array(
-/*                    'multibackend' => function ($sm) {
-                        return new \Finna\ILS\Driver\MultiBackend(
-                            $sm->getServiceLocator()->get('VuFind\Config')
-                        );
-                    },
-                    'voyager' => function ($sm) {
-                        return new \Finna\ILS\Driver\Voyager(
-                            $sm->getServiceLocator()->get('VuFind\DateConverter')
-                        );
-                    },
-                    'voyagerrestful' => function ($sm) {
-                        $ils = $sm->getServiceLocator()->get('VuFind\ILSHoldSettings');
-                        return new \Finna\ILS\Driver\VoyagerRestful(
-                            $sm->getServiceLocator()->get('VuFind\DateConverter'),
-                            $ils->getHoldsMode(), $ils->getTitleHoldsMode()
-                        );
-                    },*/
                 )
             )
         )
