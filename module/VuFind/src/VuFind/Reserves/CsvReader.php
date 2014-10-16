@@ -182,7 +182,8 @@ class CsvReader
 
             $bibId = trim($line[$this->template['BIB_ID']]);
             if ($bibId == '') {
-                $this->errors .= "Skipping empty/missing Bib ID: $fn, line $lineNo\n";
+                $this->errors
+                    .= "Skipping empty/missing Bib ID: $fn, line $lineNo\n";
                 continue;
             }
 
