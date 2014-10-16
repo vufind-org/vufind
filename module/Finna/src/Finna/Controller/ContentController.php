@@ -56,7 +56,9 @@ class ContentController extends \VuFind\Controller\AbstractBase
         $language   = $translator->getLocale();
 
         if (!is_null(
-            $themeInfo->findContainingTheme("templates/content/{$page}_$language.phtml")
+            $themeInfo->findContainingTheme(
+                "templates/content/{$page}_$language.phtml"
+            )
         )) {
             $page = "{$page}_$language";
         }

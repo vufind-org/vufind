@@ -51,7 +51,8 @@ class Loader extends \VuFind\Cover\Loader
         if (!$isn) {
             return false;
         }
-        $url = 'http://siilo-kk.lib.helsinki.fi/getImage.php?query=' . $isn . '&return_error=true';
+        $url = 'http://siilo-kk.lib.helsinki.fi/getImage.php?query=' . $isn
+            . '&return_error=true';
         return $this->processImageURLForSource($url, 'NLF');
     }
 }
