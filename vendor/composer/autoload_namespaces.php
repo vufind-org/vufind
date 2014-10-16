@@ -12,6 +12,7 @@ return array(
     'ZendService' => array($vendorDir . '/zendframework/zendservice-recaptcha/library'),
     'ZendRest' => array($vendorDir . '/zendframework/zendrest/library'),
     'VuFindHttp\\' => array($vendorDir . '/vufind-org/vufindhttp/src'),
+    'VuFindCode\\' => array($vendorDir . '/vufind-org/vufindcode/src'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'SerialsSolutions' => array($vendorDir . '/serialssolutions/summon'),
     'ProxyManager\\' => array($vendorDir . '/ocramius/proxy-manager/src'),

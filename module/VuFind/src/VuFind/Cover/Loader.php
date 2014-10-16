@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFind\Code\ISBN,
-    VuFind\Content\Covers\PluginManager as ApiManager;
+use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
 
 /**
  * Book Cover Generator
