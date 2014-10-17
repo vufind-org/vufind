@@ -204,10 +204,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $status = empty($status) ? '' : (string)$status[0];
 
+        /* unused variable -- can we remove?
         $itemId = $current->xpath(
             'ns1:ItemId/ns1:ItemIdentifierValue'
         );
         $item_id = (string)$itemId[0];
+         */
 
         $itemCallNo = $current->xpath(
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
@@ -502,6 +504,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConsortialHoldings($id, array $patron = null,
         array $ids = null
@@ -578,7 +581,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             // Translate $id into consortial (035$a) format,
             // e.g., "123" -> "(Agency) 123"
             $sourceRecord = '';
-            foreach ($this->agency as $_agency => $_dummy) {
+            foreach (array_keys($this->agency) as $_agency) {
                 $sourceRecord = '(' . $_agency . ') ';
             }
             $sourceRecord .= $id;
@@ -793,7 +796,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:Ext/ns1:BibliographicDescription/' .
                 'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
             );
-            $created = $current->xpath('ns1:DatePlaced');
+            // (unused variable): $created = $current->xpath('ns1:DatePlaced');
             $title = $current->xpath('ns1:Title');
             $pos = $current->xpath('ns1:HoldQueuePosition');
             $requestType = $current->xpath('ns1:RequestType');
@@ -1064,7 +1067,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function getPickUpLocations($patron, $holdDetails = null)
     {
         $locations = array();
-        foreach ($this->agency as $agency => $agencyID) {
+        foreach (array_keys($this->agency) as $agency) {
             foreach ($this->pickupLocations[$agency] as $thisAgency) {
                 $locations[]
                     = array(
