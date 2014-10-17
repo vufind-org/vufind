@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ZfcRbac\\' => array($vendorDir . '/zf-commons/zfc-rbac/src'),
     'Zend\\' => array($vendorDir . '/zendframework/zendframework/library'),
     'ZendXml' => array($vendorDir . '/zendframework/zendxml/library'),
     'ZendService\\Amazon\\' => array($vendorDir . '/zendframework/zendservice-amazon/library'),
@@ -15,6 +16,7 @@ return array(
     'VuFindCode\\' => array($vendorDir . '/vufind-org/vufindcode/src'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'SerialsSolutions' => array($vendorDir . '/serialssolutions/summon'),
+    'Rbac\\' => array($vendorDir . '/zfr/rbac/src'),
     'ProxyManager\\' => array($vendorDir . '/ocramius/proxy-manager/src'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
     'Less' => array($vendorDir . '/oyejorge/less.php/lib'),

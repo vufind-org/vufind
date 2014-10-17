@@ -989,5 +989,135 @@
             }
         ],
         "description": "Class for representing ISBNs (a VuFind support library)"
+    },
+    {
+        "name": "zfr/rbac",
+        "version": "1.2.0",
+        "version_normalized": "1.2.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zf-fr/rbac.git",
+            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/zf-fr/rbac/zipball/493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
+            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~3.7",
+            "satooshi/php-coveralls": "~0.6",
+            "squizlabs/php_codesniffer": "1.4.*",
+            "zendframework/zend-servicemanager": "~2.2"
+        },
+        "time": "2014-02-06 14:18:34",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Rbac\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Michaël Gallego",
+                "email": "mic.gallego@gmail.com",
+                "homepage": "http://michaelgallego.fr"
+            }
+        ],
+        "description": "Zend Framework 3 prototype for Zend\\Permissions\\Rbac.",
+        "homepage": "https://github.com/zf-fr/rbac",
+        "keywords": [
+            "rbac",
+            "security",
+            "zf2",
+            "zf3"
+        ]
+    },
+    {
+        "name": "zf-commons/zfc-rbac",
+        "version": "2.4.0",
+        "version_normalized": "2.4.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/ZF-Commons/zfc-rbac.git",
+            "reference": "e4a646cde5fb4771767e25fe687104437f76d75a"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/ZF-Commons/zfc-rbac/zipball/e4a646cde5fb4771767e25fe687104437f76d75a",
+            "reference": "e4a646cde5fb4771767e25fe687104437f76d75a",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4",
+            "zendframework/zend-mvc": "~2.2",
+            "zendframework/zend-servicemanager": "~2.2",
+            "zfr/rbac": "~1.2"
+        },
+        "require-dev": {
+            "doctrine/common": "~2.4",
+            "doctrine/doctrine-module": "~0.8",
+            "doctrine/doctrine-orm-module": "~0.8",
+            "phpunit/phpunit": "~3.7",
+            "satooshi/php-coveralls": "~0.6",
+            "squizlabs/php_codesniffer": "1.4.*",
+            "zendframework/zend-developer-tools": "dev-master",
+            "zendframework/zendframework": "~2.2"
+        },
+        "suggest": {
+            "doctrine/doctrine-module": "if you want to use Doctrine role provider",
+            "zendframework/zend-developer-tools": "if you want to show information about the roles"
+        },
+        "time": "2014-06-22 22:17:38",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.4-dev",
+                "dev-develop": "3.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ZfcRbac\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Kyle Spraggs",
+                "email": "theman@spiffyjr.me",
+                "homepage": "http://www.spiffyjr.me/"
+            },
+            {
+                "name": "Michaël Gallego",
+                "email": "mic.gallego@gmail.com",
+                "homepage": "http://michaelgallego.fr"
+            },
+            {
+                "name": "Jean-Marie Leroux",
+                "email": "jmleroux.pro@gmail.com"
+            }
+        ],
+        "description": "Zend Framework 2 Module that provides a layer of features of Zend\\Permissions\\Rbac",
+        "homepage": "http://www.github.com/ZF-Commons/zfc-rbac",
+        "keywords": [
+            "module",
+            "permissions",
+            "rbac",
+            "zf2"
+        ]
     }
 ]
