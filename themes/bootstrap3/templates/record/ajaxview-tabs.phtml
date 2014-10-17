@@ -40,7 +40,7 @@
       <? endforeach; ?>
         <li class="hidden">
         <a id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxFLLoadTab("tools_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toogle="tab" data-target="#tools-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-Tools
+        <?=$this->translate('ajaxview_label_tools') ?>
         </a>
         </li>
         <li>
