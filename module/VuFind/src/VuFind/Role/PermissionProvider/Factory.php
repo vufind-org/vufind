@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for VuFindAdmin services.
+ * Permission Provider Factory Class
  *
  * PHP version 5
  *
@@ -20,42 +20,49 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Service
+ * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
-namespace VuFindAdmin;
+namespace VuFind\Role\PermissionProvider;
 use Zend\ServiceManager\ServiceManager;
 
 /**
- * Factory for VuFindAdmin services.
+ * Permission Provider Factory Class
  *
  * @category VuFind2
- * @package  Service
+ * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  * @codeCoverageIgnore
  */
 class Factory
 {
     /**
-     * Construct the Admin module's permission provider.
+     * Factory for IpRegEx
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return VuFind\Role\PermissionProvider
+     * @return IpRegEx
      */
-    public static function getPermissionProvider(ServiceManager $sm)
+    public static function getIpRegEx(ServiceManager $sm)
     {
-        $rawConfig = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $config = isset($rawConfig->AdminAuth)
-            ? $rawConfig->AdminAuth->toArray() : array();
-        $auth = $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService');
-        $request = $sm->getServiceLocator()->get('Request');
-        return new \VuFind\Role\PermissionProvider(
-            $config, ['guest', 'loggedin'], 'access.AdminModule', $auth, $request
+        return new IpRegEx($sm->getServiceLocator()->get('Request'));
+    }
+
+    /**
+     * Factory for Username
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Username
+     */
+    public static function getUsername(ServiceManager $sm)
+    {
+        return new Username(
+            $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService')
         );
     }
 }

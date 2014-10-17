@@ -54,7 +54,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
         $rbacConfig = $config['zfc_rbac'];
         return new DynamicRoleProvider(
             $this->getPermissionProviderPluginManager($serviceLocator, $rbacConfig),
-            $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider']
+            $this->getPermissionConfiguration($serviceLocator, $rbacConfig)
         );
     }
 
@@ -69,10 +69,70 @@ class DynamicRoleProviderFactory implements FactoryInterface
     protected function getPermissionProviderPluginManager(
         ServiceLocatorInterface $serviceLocator, array $rbacConfig
     ) {
-        $pm = new PermissionProviderPluginManager(
+        $pm = new PermissionProvider\PluginManager(
             new Config($rbacConfig['vufind_permission_provider_manager'])
         );
         $pm->setServiceLocator($serviceLocator->getServiceLocator());
         return $pm;
+    }
+
+    /**
+     * Get a configuration array.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Service locator
+     * @param array $rbacConfig ZfcRbac configuration
+     *
+     * @return array
+     */
+    protected function getPermissionConfiguration(
+        ServiceLocatorInterface $serviceLocator, array $rbacConfig
+    ) {
+        // Get role provider settings from the ZfcRbac configuration:
+        $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
+
+        // Load the permissions:
+        $configLoader = $serviceLocator->getServiceLocator()->get('VuFind\Config');
+        $permissions = $configLoader->get('permissions')->toArray();
+
+        // If we're configured to map legacy settings, do so now:
+        if (isset($config['map_legacy_settings'])
+            && $config['map_legacy_settings']
+        ) {
+            $permissions = $this->addLegacySettings($configLoader, $permissions);
+        }
+
+        return $permissions;
+    }
+
+    /**
+     * Map legacy VuFind settings into the permissions.ini setup.
+     *
+     * @param \VuFind\Config\PluginManager $loader      Config loader
+     * @param array                        $permissions Permissions to update
+     *
+     * @return array
+     */
+    protected function addLegacySettings(\VuFind\Config\PluginManager $loader,
+        array $permissions
+    ) {
+        // Add admin settings if they are absent:
+        if (!isset($permissions['access.AdminModule'])) {
+            $config = $loader->get('config')->toArray();
+            $permissions['access.AdminModule'] = [];
+            if (isset($config['AdminAuth']['ipRegEx'])) {
+                $permissions['access.AdminModule']['ipRegEx']
+                    = $config['AdminAuth']['ipRegEx'];
+            }
+            if (isset($config['AdminAuth']['userWhitelist'])) {
+                $permissions['access.AdminModule']['username']
+                    = $config['AdminAuth']['userWhitelist'];
+            }
+            // If no settings exist in config.ini, we grant access to everyone
+            // by allowing both logged-in and logged-out roles.
+            if (empty($permissions['access.AdminModule'])) {
+                $permissions['access.AdminModule']['role'] = ['guest', 'loggedin'];
+            }
+        }
+        return $permissions;
     }
 }

@@ -654,14 +654,24 @@ $config = array(
         'identity_provider' => 'VuFind\AuthManager',
         'guest_role' => 'guest',
         'role_provider' => array(
-            'VuFind\Role\DynamicRoleProvider' => array(),
+            'VuFind\Role\DynamicRoleProvider' => array(
+                'map_legacy_settings' => true,
+            ),
         ),
         'role_provider_manager' => array(
             'factories' => array(
                 'VuFind\Role\DynamicRoleProvider' => 'VuFind\Role\DynamicRoleProviderFactory',
             ),
         ),
-        'vufind_permission_provider_manager' => array(),
+        'vufind_permission_provider_manager' => array(
+            'factories' => array(
+                'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
+                'username' => 'VuFind\Role\PermissionProvider\Factory::getUsername',
+            ),
+            'invokables' => array(
+                'role' => 'VuFind\Role\PermissionProvider\Role',
+            ),
+        ),
     ),
 );
 

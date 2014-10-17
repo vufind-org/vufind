@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
-namespace VuFind\Role;
+namespace VuFind\Role\PermissionProvider;
 
 /**
  * Permission provider interface
@@ -39,9 +39,12 @@ namespace VuFind\Role;
 interface PermissionProviderInterface
 {
     /**
-     * Return an associative array of role name(s) to arrays of permissions.
+     * Return an array of roles which may be granted the permission based on
+     * the options.
+     *
+     * @param mixed $options Options provided from configuration.
      *
      * @return array
      */
-    public function getPermissions();
+    public function getPermissions($options);
 }

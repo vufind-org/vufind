@@ -89,18 +89,6 @@ $config = array(
             ),
         ),
     ),
-    'zfc_rbac' => array(
-        'role_provider' => array(
-            'VuFind\Role\DynamicRoleProvider' => array(
-                'VuFindAdmin\Role\PermissionProvider',
-            ),
-        ),
-        'vufind_permission_provider_manager' => array(
-            'factories' => array(
-                'VuFindAdmin\Role\PermissionProvider' => 'VuFindAdmin\Factory::getPermissionProvider',
-            ),
-        ),
-    ),
 );
 
 return $config;

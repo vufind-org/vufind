@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
-namespace VuFind\Role;
+namespace VuFind\Role\PermissionProvider;
 
 /**
  * Permission provider plugin manager
@@ -36,7 +36,7 @@ namespace VuFind\Role;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
-class PermissionProviderPluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
      * Return the name of the base class or interface that plug-ins must conform
@@ -46,6 +46,6 @@ class PermissionProviderPluginManager extends \VuFind\ServiceManager\AbstractPlu
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\Role\PermissionProviderInterface';
+        return 'VuFind\Role\PermissionProvider\PermissionProviderInterface';
     }
 }
