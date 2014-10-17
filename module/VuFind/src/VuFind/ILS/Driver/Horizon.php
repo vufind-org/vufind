@@ -1042,7 +1042,7 @@ class Horizon extends AbstractBase
      *
      * @param string $hzVersionRequired Minimum version required
      *
-     * @return boolean   True or False the required version is the same or higher.
+     * @return bool True or False the required version is the same or higher.
      */
     protected function checkHzVersion($hzVersionRequired)
     {
