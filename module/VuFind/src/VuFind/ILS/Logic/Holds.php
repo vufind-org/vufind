@@ -152,8 +152,8 @@ class Holds
      * Public method for getting item holdings from the catalog and selecting which
      * holding method to call
      *
-     * @param string $id A Bib ID
-     * @param array $ids A list of Source Records (if catalog is for a consortium)
+     * @param string $id  A Bib ID
+     * @param array  $ids A list of Source Records (if catalog is for a consortium)
      *
      * @return array A sorted results set
      */
@@ -171,9 +171,11 @@ class Holds
             // Does this ILS Driver handle consortial holdings?
             $config = $this->catalog->getConfig('Holds');
             if (isset($config['consortium']) && $config['consortium'] == true) {
-               $result = $this->catalog->getConsortialHoldings($id, $patron ? $patron : null, $ids);
+                $result = $this->catalog->getConsortialHoldings(
+                    $id, $patron ? $patron : null, $ids
+                );
             } else {
-               $result = $this->catalog->getHolding($id, $patron ? $patron : null);
+                $result = $this->catalog->getHolding($id, $patron ? $patron : null);
             }
 
             $mode = $this->catalog->getHoldsMode();
