@@ -37,7 +37,7 @@ $(document).ready(function() {
     var shortNode = jQuery('#short_'+div_html_id);
     var mainNode = shortNode.parent();
     var longNode = jQuery('#long_'+div_html_id);
-    if ( !longNode.is(":visible") ) {
+    if (longNode.is(':empty')) {
       var url = path + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType});
       $.ajax({
         dataType: 'json',
@@ -51,6 +51,9 @@ $(document).ready(function() {
           }
         }
       });
+    } else if (!longNode.is(":visible")) {
+      shortNode.addClass("hidden");
+      longNode.removeClass("hidden");
     } else {
       longNode.addClass("hidden");
       shortNode.removeClass("hidden");
