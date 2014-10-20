@@ -377,10 +377,13 @@ class Fedora extends AbstractBase
         $ret = array();
         // OCR
         if (isset($record['ocr-dirty'])) {
-            $record['ocr-dirty'] = $this->getDatastreamContent(
-                $record['id'],
-                'OCR-DIRTY'
-            );
+            $record['ocr-dirty'] =
+                htmlentities(
+                    $this->getDatastreamContent(
+                        $record['id'],
+                        'OCR-DIRTY'
+                    )
+                );
         }
         // Technical Information
         if (isset($record['master-md'])) {
