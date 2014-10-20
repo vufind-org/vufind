@@ -1,4 +1,4 @@
-/*global Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
+/*global bulkActionLightboxHandler, Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -158,22 +158,7 @@ function registerUpdateCart($form) {
 var lastCartSubmit = false;
 function cartSubmit($form) {
   lastCartSubmit = $form;
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
-  if (submit == 'print') {
-    //redirect page
-    var checks = $form.find('input.checkbox-select-item:checked');
-    if(checks.length > 0) {
-      var url = path+'/Records/Home?print=true';
-      for(var i=0;i<checks.length;i++) {
-        url += '&id[]='+checks[i].value;
-      }
-      document.location.href = url;
-    } else {
-      Lightbox.displayError(vufindString['bulk_noitems_advice']);
-    }
-  } else {
-    Lightbox.submit($form, Lightbox.changeContent);
-  }
+  bulkActionLightboxHandler($form, false);
 }
 
 $(document).ready(function() {

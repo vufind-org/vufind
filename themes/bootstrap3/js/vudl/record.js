@@ -143,6 +143,10 @@ function resizeAccordions(offset) {
     'max-height':vudlAccordionHeight,
     'overflow-y':'auto'
   });
+  $('#zoom').css({
+    'height':vudlAccordionHeight,
+    'overflow-y':'auto'
+  });
 }
 // Toggle side menu
 function toggleSideNav() {
@@ -156,6 +160,12 @@ $(document).ready(function() {
   $('.page-link').click(function() {
     $('.page-link.selected').removeClass('selected');
     $(this).addClass('selected');
+    var list = parseInt($(this).parents('.item-list').attr('list-index'));
+    if(counts[list] > 1) {
+      $('.siblings-form .turn-button').removeClass('hidden');
+    } else {
+      $('.siblings-form .turn-button').addClass('hidden');
+    }
   });
   // Load clicked items
   $('.unloaded').click(function() {

@@ -49,7 +49,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * for more information.
      * Configuration:  Sources are processed in order - refer to $sourceList.
      *
-     * @param string            $key     API key
+     * @param string           $key     API key
      * @param \VuFindCode\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
