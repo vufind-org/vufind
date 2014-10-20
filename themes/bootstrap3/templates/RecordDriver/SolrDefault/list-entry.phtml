@@ -11,9 +11,9 @@
   }
 ?>
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
-  <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
-  <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
   <div class="col-xs-2 left">
+    <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
+    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
         <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
@@ -175,16 +175,19 @@
           ? $this->url('myresearch-favorites')
           : $this->url('userList', array('id' => $list_id));
       $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
+
+      $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
     ?>
     <div class="dropdown">
-      <i class="fa fa-trash-o"></i> <a class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
+      <i class="fa fa-trash-o"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
         <?=$this->transEsc('Delete') ?>
       </a>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+      <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
         <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeHtmlAttr($id) ?>','source':'<?=$this->escapeHtmlAttr($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
     </div>
+
+    <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
   </div>
-  <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
 </div>

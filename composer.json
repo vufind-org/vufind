@@ -58,6 +58,8 @@
         "pear-pear.php.net/validate_ispn": "*",
         "serialssolutions/summon": "*",
         "symfony/yaml": "*",
+        "vufind-org/vufindcode": "*",
+        "vufind-org/vufindhttp": "*",
         "zendframework/zendframework": "2.2.7",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",

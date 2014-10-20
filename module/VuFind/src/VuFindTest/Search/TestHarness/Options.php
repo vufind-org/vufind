@@ -1,11 +1,10 @@
 <?php
-
 /**
- * ZF2 module definition for the VF2 http service
+ * Test options search model.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2012, 2013.
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,38 +20,33 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Http
- * @author   David Maus <maus@hab.de>
+ * @package  Search_Base
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     http://www.vufind.org  Main Page
  */
-namespace VuFindHttp;
+namespace VuFindTest\Search\TestHarness;
 
 /**
- * ZF2 module definition for the VF2 HTTP service.
+ * Test options search model.
+ *
+ * This abstract class defines the results methods for modeling a search in VuFind.
  *
  * @category VuFind2
- * @package  Http
- * @author   David Maus <maus@hab.de>
+ * @package  Search_Base
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     http://www.vufind.org  Main Page
  */
-class Module
+class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Return autoloader configuration.
+     * Return the route name for the search results action.
      *
-     * @return array
+     * @return string
      */
-    public function getAutoloaderConfig()
+    public function getSearchAction()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+        return 'fake-fake';
     }
-
 }

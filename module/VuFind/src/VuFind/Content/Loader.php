@@ -70,13 +70,13 @@ class Loader
      *
      * @param string $isbn ISBN
      *
-     * @return \VuFind\Code\ISBN|bool
+     * @return \VuFindCode\ISBN|bool
      */
     protected function getIsbnObject($isbn)
     {
         // We can't proceed without an ISBN:
         return (empty($isbn))
-            ? false : new \VuFind\Code\ISBN($isbn);
+            ? false : new \VuFindCode\ISBN($isbn);
     }
 
     /**

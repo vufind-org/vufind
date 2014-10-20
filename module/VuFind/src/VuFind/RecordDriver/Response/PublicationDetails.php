@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver\Response;
-use VuFind\Code\ISBN;
 
 /**
  * Class encapsulating publication details.
