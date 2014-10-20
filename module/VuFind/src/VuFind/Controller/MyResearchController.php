@@ -1291,18 +1291,15 @@ class MyResearchController extends AbstractBase
         // Verify old password if we're logged in
         if ($this->getUser()) {
             if (isset($post->oldpwd)) {
-                try {
-                    // Reassign oldpwd to password in the request so login works
-                    $temp_password = $post->password;
-                    $post->password = $post->oldpwd;
-                    $this->getAuthManager()->login($request);
-                    $post->password = $temp_password;
-                } catch(AuthException $e) {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage($e->getMessage());
-                    return $view;
-                }
+                // Reassign oldpwd to password in the request so login works
+                $tempPassword = $post->password;
+                $post->password = $post->oldpwd;
+                $valid = $this->getAuthManager()->validateCredentials($request);
+                $post->password = $tempPassword;
             } else {
+                $valid = false;
+            }
+            if (!$valid) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('authentication_error_invalid');
                 $view->verifyold = true;

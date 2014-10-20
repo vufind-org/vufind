@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
  */
 namespace VuFind\Auth;
-use VuFind\Exception\Auth as AuthException;
+use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
 use Zend\Http\PhpEnvironment\Request;
 
 /**
@@ -126,7 +126,7 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return User Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -139,7 +139,7 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      */
     public function create($request)
     {
@@ -244,7 +244,7 @@ class ChoiceAuth extends AbstractBase
      * @param Request $request Request object containing password change details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      */
     public function updatePassword($request)
     {
@@ -332,5 +332,29 @@ class ChoiceAuth extends AbstractBase
                 throw new AuthException('authentication_error_technical');
             }
         }
+    }
+
+    /**
+     * Validate the credentials in the provided request, but do not change the state
+     * of the current logged-in user. Return true for valid credentials, false
+     * otherwise.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * account credentials.
+     *
+     * @throws AuthException
+     * @return bool
+     */
+    public function validateCredentials($request)
+    {
+        try {
+            // In this instance we are checking credentials but do not wish to
+            // change the state of the current object. Thus, we use proxyAuthMethod()
+            // here instead of proxyUserLoad().
+            $user = $this->proxyAuthMethod('authenticate', func_get_args());
+        } catch (AuthException $e) {
+            return false;
+        }
+        return isset($user) && $user instanceof User;
     }
 }
