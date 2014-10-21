@@ -609,7 +609,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -643,7 +643,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
@@ -1403,7 +1403,7 @@ EOT;
      * @param string $bibId    An item's Bib ID
      * @param string $itemId   An item's Item ID (optional)
      *
-     * @return boolean         true if the request can be made, false if it cannot
+     * @return bool true if the request can be made, false if it cannot
      */
     protected function checkItemRequests($patronId, $request, $bibId,
         $itemId = false
@@ -1611,7 +1611,7 @@ EOT;
      * @param integer $patronId Patron ID
      * @param integer $bibId    BIB ID
      *
-     * @return boolean
+     * @return bool
      */
     protected function isRecordOnLoan($patronId, $bibId)
     {
@@ -1668,7 +1668,7 @@ EOT;
      * @param integer $bibId          BIB ID
      * @param integer $requestGroupId Request group ID or null
      *
-     * @return boolean;
+     * @return bool
      */
     protected function itemsExist($bibId, $requestGroupId)
     {
@@ -1731,7 +1731,7 @@ EOT;
      * @param integer $bibId          BIB ID
      * @param integer $requestGroupId Request group ID or null
      *
-     * @return boolean;
+     * @return bool
      */
     protected function itemsAvailable($bibId, $requestGroupId)
     {
@@ -2514,7 +2514,7 @@ EOT;
      * @param string $id     BIB id
      * @param array  $patron Patron
      *
-     * @return boolean|array False if UB request is not available or an array
+     * @return bool|array False if UB request is not available or an array
      * of details on success
      */
     protected function getUBRequestDetails($id, $patron)
@@ -2712,7 +2712,7 @@ EOT;
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {

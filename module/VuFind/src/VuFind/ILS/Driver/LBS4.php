@@ -317,7 +317,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param string $loanindi The loan indicator
      * @param string $material The material code
      *
-     * @return boolean
+     * @return bool
      */
     protected function checkHold($loanindi, $material)
     {
