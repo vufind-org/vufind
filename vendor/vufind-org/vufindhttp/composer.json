@@ -1,5 +1,5 @@
 {
-    "name": "vufind/http",
+    "name": "vufind-org/vufindhttp",
     "description": "VuFind 2.x HTTP service library",
     "authors": [
         {
@@ -18,9 +18,6 @@
     "support": {
         "issues": "http://vufind.org/jira"
     },
-    "repositories": [
-	{ "type": "composer", "url":  "http://packages.zendframework.com/" }
-    ],
     "require": {
         "zendframework/zend-http": "2.2.*"
     },
@@ -29,7 +26,7 @@
     },
     "autoload": {
         "psr-0": {
-            "VuFindHttp\\": "src"
+            "VuFindHttp\\": "src/"
         }
     }
 }

@@ -1061,9 +1061,9 @@ class SolrMarc extends SolrDefault
      */
     public function getRealTimeHoldings()
     {
-        return $this->hasILS()
-            ? $this->holdLogic->getHoldings($this->getUniqueID())
-            : array();
+        return $this->hasILS() ? $this->holdLogic->getHoldings(
+            $this->getUniqueID(), $this->getConsortialIDs()
+        ) : array();
     }
 
     /**
@@ -1134,5 +1134,15 @@ class SolrMarc extends SolrDefault
         return XSLTProcessor::process(
             'record-rdf-mods.xsl', trim($this->marcRecord->toXML())
         );
+    }
+
+    /**
+     * Return the list of "source records" for this consortial record.
+     *
+     * @return array
+     */
+    public function getConsortialIDs()
+    {
+        return $this->getFieldArray('035', 'a', true);
     }
 }
