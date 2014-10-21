@@ -1,3 +1,21 @@
+.grid-btn {font-size:14px}
+.sibling-form .navbar-nav {display:table;float:none;margin:auto}
+.sibling-form .navbar-nav li {margin:0 4px}
+.sibling-form .navbar {min-height:1px}
+.sibling-form .navbar-nav > li > a {
+  padding-top:6px;
+  padding-bottom:6px;
+}
+
+/* Navbar buttons */
+.sibling-form .navbar-nav li a.btn.btn-default:active,
+.sibling-form .navbar-nav li a.btn.btn-default:focus,
+.sibling-form .navbar-nav li a.btn.btn-default:hover {
+  color:#FFF;
+  background-color:#333;
+  border-color:#ADADAD;
+}
+
 .panel {border:1px solid #DDD}
 .panel .panel-heading {background:#EEE}
 
@@ -38,8 +56,3 @@ div.xml.collapsed > div { display:none;margin-left:2px }
 .fa.file-msexcel:before {content: "\f1c3";}
 .fa.file-msword:before {content: "\f1c2";}
 .fa.file-pdf:before {content: "\f1c1";}
-
-.siblings-form .trail {
-  display:inline-block;
-  vertical-align:bottom;
-}

@@ -565,7 +565,7 @@ class MultiBackend extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -596,7 +596,7 @@ class MultiBackend extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
@@ -930,7 +930,7 @@ class MultiBackend extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
@@ -1144,8 +1144,8 @@ class MultiBackend extends AbstractBase
      * @param string $method The name of the called method.
      * @param array  $params Array of passed parameters
      *
-     * @return boolean  True if the method can be called with the given
-     *                  parameters, false otherwise.
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
      */
     public function supportsMethod($method, $params)
     {
@@ -1473,7 +1473,7 @@ class MultiBackend extends AbstractBase
      * @param object $driver ILS Driver
      * @param string $method Method name
      *
-     * @return boolean
+     * @return bool
      */
     protected function methodSupported($driver, $method)
     {

@@ -2,9 +2,6 @@
   $this->headTitle($this->translate($this->title) .' - '. $this->translate('vudl_access_denied'));
   $this->layout()->breadcrumbs = false;
 ?>
-
-<div class="<?=$this->layoutClass('mainbody')?>">
-  <div class="alert alert-danger">
-    <?=$this->transEsc('vudl_access_denied')?>
-  </div>
+<div class="alert alert-danger">
+  <?=$this->transEsc('vudl_access_denied')?>
 </div>

@@ -4,7 +4,6 @@
     "type":              "library",
     "license":           "MIT",
     "homepage":          "https://github.com/Ocramius/ProxyManager",
-    "minimum-stability": "dev",
     "keywords":          [
         "proxy",
         "proxy pattern",
@@ -25,7 +24,7 @@
     },
     "require-dev": {
         "ext-phar":                    "*",
-        "phpunit/phpunit":             "~3.7",
+        "phpunit/phpunit":             "~4.0",
         "squizlabs/php_codesniffer":   "1.5.*"
     },
     "suggest": {
@@ -38,6 +37,12 @@
     "autoload": {
         "psr-0": {
             "ProxyManager\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-0": {
+            "ProxyManagerTest\\": "tests",
+            "ProxyManagerTestAsset\\": "tests"
         }
     },
     "extra": {

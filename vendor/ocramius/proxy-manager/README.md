@@ -9,6 +9,8 @@ This library aims at providing abstraction for generating various kinds of [prox
 [![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/Ocramius/ProxyManager/badges/quality-score.png?s=eaa858f876137ed281141b1d1e98acfa739729ed)](https://scrutinizer-ci.com/g/Ocramius/ProxyManager/)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/69fe5f97-b1c8-4ddd-93ce-900b8b788cf2/mini.png)](https://insight.sensiolabs.com/projects/69fe5f97-b1c8-4ddd-93ce-900b8b788cf2)
 [![Dependency Status](https://www.versioneye.com/package/php--ocramius--proxy-manager/badge.png)](https://www.versioneye.com/package/php--ocramius--proxy-manager)
+[![Reference Status](https://www.versioneye.com/php/ocramius:proxy-manager/reference_badge.svg)](https://www.versioneye.com/php/ocramius:proxy-manager/references)
+[![HHVM Status](http://hhvm.h4cc.de/badge/ocramius/proxy-manager.png)](http://hhvm.h4cc.de/package/ocramius/proxy-manager)
 
 [![Total Downloads](https://poser.pugx.org/ocramius/proxy-manager/downloads.png)](https://packagist.org/packages/ocramius/proxy-manager)
 [![Latest Stable Version](https://poser.pugx.org/ocramius/proxy-manager/v/stable.png)](https://packagist.org/packages/ocramius/proxy-manager)
@@ -95,7 +97,7 @@ A Null Object Proxy can be created from an object, a class name or an interface 
 ```php
 $factory = new \ProxyManager\Factory\NullObjectFactory();
 
-$proxy = $factory->createProxy('My\EntityObjectInterface'); // created from interface name
+$proxy = $factory->createProxy('My\EntityObjectInterface');
 $proxy->getName(); // empty return
 
 $proxy = $factory->createProxy($entity); // created from object
@@ -141,17 +143,6 @@ $proxy->doFoo();
 
 See the [complete documentation about lazy loading ghost objects](/docs/lazy-loading-ghost-object.md)
 in the `docs/` directory.
-
-## Lazy References
-
-A lazy reference proxy is actually a proxy backed by some kind of reference holder (usually a registry) that can fetch
-existing instances of a particular object.
-
-A lazy reference is usually necessary when multiple instances of the same object can be avoided, or when the instances
-are not hard links (like with [Weakref](http://php.net/manual/en/book.weakref.php)), and could be garbage-collected to
-save memory in long time running processes.
-
-This feature [yet to be planned](https://github.com/Ocramius/ProxyManager/issues/8).
 
 ## Remote Object
 

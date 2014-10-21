@@ -2,3 +2,4 @@
 .main .combined-list {margin:0 2px;}
 .main .combined-list .result [class^=span-] {width:100%;}
 .main .combined-list .result .summcover {display:block;margin:0 auto;}
+.main .combined-list .result .span-15 {margin-left:5px;width:80%}
