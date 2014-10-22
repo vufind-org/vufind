@@ -15,8 +15,10 @@
   <div style="float: right;">
     <a href="<?=$moreUrl?>"><?=$this->transEsc('More options')?></a>
   </div>
+  <h2><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['label'])?></a></h2>
+<? else: ?>
+  <h2><?=$this->transEsc($currentSearch['label'])?></h2>
 <? endif; ?>
-<h2><?=$this->transEsc($currentSearch['label'])?></h2>
 <? if (isset($currentSearch['sublabel'])): ?>
   <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
 <? endif; ?>
