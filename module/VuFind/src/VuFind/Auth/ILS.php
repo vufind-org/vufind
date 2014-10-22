@@ -28,9 +28,7 @@
  */
 namespace VuFind\Auth;
 
-use VuFind\Exception\Auth as AuthException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * ILS authentication module.
@@ -42,14 +40,14 @@ use VuFind\Exception\Auth as AuthException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
  */
-class ILS extends AbstractBase implements ServiceLocatorAwareInterface
+class ILS extends AbstractBase
 {
     /**
-     * The serviceLocator instance (implementing ServiceLocatorAwareInterface).
+     * ILS Authenticator
      *
      * @var object
      */
-    protected $serviceLocator;
+    protected $authenticator;
 
     /**
      * Catalog connection
@@ -61,34 +59,15 @@ class ILS extends AbstractBase implements ServiceLocatorAwareInterface
     /**
      * Set the ILS connection for this object.
      *
-     * @param \VuFind\ILS\Connection $connection ILS connection to set
+     * @param \VuFind\ILS\Connection    $connection    ILS connection to set
+     * @param \VuFind\ILS\Authenticator $authenticator ILS authenticator
      */
-    public function __construct(\VuFind\ILS\Connection $connection)
-    {
+    public function __construct(
+        \VuFind\ILS\Connection $connection,
+        \VuFind\Auth\ILSAuthenticator $authenticator
+    ) {
         $this->setCatalog($connection);
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Manager
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
+        $this->authenticator = $authenticator;
     }
 
     /**
@@ -192,9 +171,7 @@ class ILS extends AbstractBase implements ServiceLocatorAwareInterface
         }
 
         // Connect to catalog:
-        $authenticator = $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\ILSAuthenticator');
-        $patron = $authenticator->storedCatalogLogin();
+        $patron = $this->authenticator->storedCatalogLogin();
         if (!$patron) {
             throw new AuthException('authentication_error_technical');
         }
@@ -295,9 +272,7 @@ class ILS extends AbstractBase implements ServiceLocatorAwareInterface
      */
     protected function getLoggedInPatronID()
     {
-        $authenticator = $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\ILSAuthenticator');
-        $patron = $authenticator->storedCatalogLogin();
+        $patron = $this->authenticator->storedCatalogLogin();
         return isset($patron['cat_username']) ? $patron['cat_username'] : false;
     }
 }

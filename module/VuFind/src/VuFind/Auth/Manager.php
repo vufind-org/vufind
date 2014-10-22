@@ -223,10 +223,7 @@ class Manager
      */
     public function getPasswordPolicy($authMethod=null)
     {
-        if ($authMethod != null) {
-            $this->setActiveAuthClass($authMethod);
-        }
-        return $this->getAuth()->getPasswordPolicy();
+        return $this->getAuth($authMethod)->getPasswordPolicy();
     }
 
     /**
