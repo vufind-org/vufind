@@ -79,38 +79,35 @@
               ?>
             </td>
           <? endforeach; ?>
-          <? if (count($item['useInstead']) > 0): ?>
-            <td>
-              <?=$this->transEsc('Use instead') ?>:
-              <ul>
-                <? foreach ($item['useInstead'] as $heading): ?>
-                <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
-                <? endforeach; ?>
-              </ul>
-            </td>
-          <? endif; ?>
 
           <? if (count($item['seeAlso']) > 0): ?>
-            <td>
-              <?=$this->transEsc('See also') ?>:
-              <ul>
-                <? foreach ($item['seeAlso'] as $heading): ?>
-                <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
-                <? endforeach; ?>
-              </ul>
-            </td>
+            <?=$this->transEsc('See also') ?>:
+            <ul>
+              <? foreach ($item['seeAlso'] as $heading): ?>
+              <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+              <? endforeach; ?>
+            </ul>
           <? endif; ?>
 
           <? if ($item['note']): ?>
-            <td>
-              <?=$this->transEsc('Note') ?>:
-              <ul>
-                <li><?=$this->escapeHtml($item['note'])?></li>
-              </ul>
-            </td>
+            <?=$this->transEsc('Note') ?>:
+            <ul>
+              <li><?=$this->escapeHtml($item['note'])?></li>
+            </ul>
           <? endif; ?>
         </td>
-        <td><? if ($item['count'] > 0): echo $item['count']; endif; ?></td>
+        <td>
+          <? if ($item['count'] > 0): ?>
+            <?=$item['count']; ?>
+          <? elseif (count($item['useInstead']) > 0): ?>
+            <?=$this->transEsc('Use instead') ?>:
+            <ul>
+              <? foreach ($item['useInstead'] as $heading): ?>
+              <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+              <? endforeach; ?>
+            </ul>
+          <? endif; ?>
+        </td>
       <? endforeach; ?>
     </tbody>
   </table>

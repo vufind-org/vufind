@@ -63,6 +63,22 @@
             <? else: ?>
               <span><?=$this->escapeHtml($item['heading'])?></span>
             <? endif; ?>
+
+            <? if (count($item['seeAlso']) > 0): ?>
+              <?=$this->transEsc('See also') ?>:
+              <ul>
+                <? foreach ($item['seeAlso'] as $heading): ?>
+                <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+                <? endforeach; ?>
+              </ul>
+            <? endif; ?>
+
+            <? if ($item['note']): ?>
+              <?=$this->transEsc('Note') ?>:
+              <ul>
+                <li><?=$this->escapeHtml($item['note'])?></li>
+              </ul>
+            <? endif; ?>
           </td>
 
           <? foreach ($this->extras as $extraName): ?>
@@ -76,26 +92,6 @@
               ?>
             </td>
           <? endforeach; ?>
-
-          <? if (count($item['seeAlso']) > 0): ?>
-            <td>
-              <?=$this->transEsc('See also') ?>:
-              <ul>
-                <? foreach ($item['seeAlso'] as $heading): ?>
-                <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
-                <? endforeach; ?>
-              </ul>
-            </td>
-          <? endif; ?>
-
-          <? if ($item['note']): ?>
-            <td>
-              <?=$this->transEsc('Note') ?>:
-              <ul>
-                <li><?=$this->escapeHtml($item['note'])?></li>
-              </ul>
-            </td>
-          <? endif; ?>
 
           <td class="titles">
             <? if ($item['count'] > 0): ?>
