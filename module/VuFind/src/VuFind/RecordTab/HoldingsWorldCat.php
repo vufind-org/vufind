@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
+use VuFindSearch\Backend\WorldCat\Connector;
 
 /**
  * Holdings (WorldCat) tab
@@ -39,6 +40,23 @@ namespace VuFind\RecordTab;
 class HoldingsWorldCat extends AbstractBase
 {
     /**
+     * WorldCat connection
+     *
+     * @var Connector
+     */
+    protected $wc;
+
+    /**
+     * Constructor
+     *
+     * @param Connector $wc WorldCat connection
+     */
+    public function __construct(Connector $wc)
+    {
+        $this->wc = $wc;
+    }
+
+    /**
      * Get the on-screen description for this tab.
      *
      * @return string
@@ -46,5 +64,17 @@ class HoldingsWorldCat extends AbstractBase
     public function getDescription()
     {
         return 'Holdings';
+    }
+
+    /**
+     * Get holdings information from WorldCat.
+     *
+     * @param string $id Record ID
+     *
+     * @return \SimpleXMLElement
+     */
+    public function getHoldings($id)
+    {
+        return $this->wc->getHoldings($id);
     }
 }
