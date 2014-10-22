@@ -22,28 +22,36 @@
 <? $pageLinks = ob_get_contents(); ?>
 <? ob_end_clean(); ?>
 
-<div class="<?=$this->layoutClass('mainbody')?>">
-  <div>
-    <form class="form-inline" method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
-      <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
-      <select id="alphaBrowseForm_source" name="source">
-        <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
-          <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
-        <? endforeach; ?>
-      </select>
-      <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
-      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>"/>
-      <input class="btn" type="submit" value="<?=$this->transEsc('Browse') ?>"/>
-    </form>
-  </div>
+<div>
+  <form class="form-inline" method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
+    <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
+    <select id="alphaBrowseForm_source" name="source">
+      <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
+        <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
+      <? endforeach; ?>
+    </select>
+    <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
+    <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>"/>
+    <input class="btn" type="submit" value="<?=$this->transEsc('Browse') ?>"/>
+  </form>
+</div>
 
-  <? if ($this->result): ?>
-    <?=$pageLinks ?>
-    <table class="table table-striped">
-      <tr><td></td><th><?=$this->transEsc("alphabrowse_matches") ?></th></tr>
+<? if ($this->result): ?>
+  <?=$pageLinks ?>
+  <table class="alphabrowse table table-striped">
+    <thead>
+      <tr>
+        <th class="<?=$this->source ?>"></th>
+        <? foreach ($this->extras as $e): ?>
+          <th></th>
+        <? endforeach; ?>
+        <th class="titles"><?=$this->transEsc("alphabrowse_matches") ?></th>
+      </tr>
+    </thead>
+    <tbody>
       <? foreach ($this->result['Browse']['items'] as $i => $item): ?>
       <tr>
-        <td>
+        <td class="<?=$this->source ?>">
           <? if ($item['count'] > 0): ?>
             <?/* linking using bib ids is generally more reliable than
               doing searches for headings, but headings give shorter
@@ -53,26 +61,11 @@
             <? else: ?>
               <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => '"' . addcslashes($item['heading'], '"') . '"'); ?>
             <? endif; ?>
-            <a class="span6" href="<?=$this->escapeHtmlAttr($this->url('search-results', array(), array('query' => $query)))?>"><?=$this->escapeHtml($item['heading'])?></a>
+            <a href="<?=$this->escapeHtmlAttr($this->url('search-results', array(), array('query' => $query)))?>"><?=$this->escapeHtml($item['heading'])?></a>
           <? else: ?>
-            <span class="span6"><?=$this->escapeHtml($item['heading'])?></span>
+            <span><?=$this->escapeHtml($item['heading'])?></span>
           <? endif; ?>
 
-          <?
-            foreach ($this->extras as $ei => $extraName):
-              $extraData = $item['extras'][$extraName];
-          ?>
-            <div class="span<?=floor(6/count($this->extras)) ?>">
-              <?
-                $extraDisplayArray = array();
-                foreach ($extraData as $j => $e) {
-                  $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
-                }
-                echo (empty($extraDisplayArray)) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
-              ?>
-            </div>
-          <? endforeach; ?>
-          <div class="clearfix"></div>
           <? if (count($item['useInstead']) > 0): ?>
             <div>
               <?=$this->transEsc('Use instead') ?>:
@@ -104,9 +97,28 @@
             </div>
           <? endif; ?>
         </td>
-        <td><? if ($item['count'] > 0): echo $item['count']; endif; ?></td>
+
+        <? foreach ($this->extras as $ei => $extraName):
+            $extraData = $item['extras'][$extraName];
+        ?>
+          <td>
+            <?
+              $extraDisplayArray = array();
+              foreach ($extraData as $j => $e) {
+                $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
+              }
+              echo (empty($extraDisplayArray)) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
+            ?>
+          </td>
+        <? endforeach; ?>
+
+        <td class="titles">
+          <? if ($item['count'] > 0): ?>
+            <?=$item['count']; ?>
+          <? endif; ?>
+        </td>
       <? endforeach; ?>
-    </table>
-    <?= $pageLinks ?>
-  <? endif; ?>
-</div>
+    </tbody>
+  </table>
+  <?= $pageLinks ?>
+<? endif; ?>
