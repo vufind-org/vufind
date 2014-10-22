@@ -67,14 +67,38 @@ class HoldingsWorldCat extends AbstractBase
     }
 
     /**
-     * Get holdings information from WorldCat.
+     * Get holdings information from WorldCat (false if none available).
      *
-     * @param string $id Record ID
-     *
-     * @return \SimpleXMLElement
+     * @return \SimpleXMLElement|bool
      */
-    public function getHoldings($id)
+    public function getHoldings()
     {
-        return $this->wc->getHoldings($id);
+        $id = $this->getOCLCNum();
+        return empty($id) ? false : $this->wc->getHoldings($id);
+    }
+
+    /**
+     * Is this tab active?
+     *
+     * @return bool
+     */
+    public function isActive()
+    {
+        $id = $this->getOCLCNum();
+        return !empty($id);
+    }
+
+    /**
+     * Get the OCLC number from the active record driver.
+     *
+     * @return string
+     */
+    protected function getOCLCNum()
+    {
+        static $id = false;     // cache value in static variable
+        if (!$id) {
+            $id = $this->getRecordDriver()->tryMethod('getCleanOCLCNum');
+        }
+        return $id;
     }
 }
