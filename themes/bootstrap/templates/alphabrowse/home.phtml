@@ -38,7 +38,7 @@
 
 <? if ($this->result): ?>
   <?=$pageLinks ?>
-  <table class="table table-striped">
+  <table class="alphabrowse table table-striped">
     <thead>
       <tr>
         <th class="<?=$this->source ?>"></th>
@@ -51,7 +51,7 @@
     <tbody>
       <? foreach ($this->result['Browse']['items'] as $i => $item): ?>
       <tr>
-        <td>
+        <td class="<?=$this->source ?>">
           <? if ($item['count'] > 0): ?>
             <?/* linking using bib ids is generally more reliable than
               doing searches for headings, but headings give shorter
@@ -66,46 +66,55 @@
             <span><?=$this->escapeHtml($item['heading'])?></span>
           <? endif; ?>
 
-          <? foreach ($this->extras as $ei => $extraName):
-              $extraData = $item['extras'][$extraName];
-          ?>
-            <td>
-              <?
-                $extraDisplayArray = array();
-                foreach ($extraData as $j => $e) {
-                  $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
-                }
-                echo (empty($extraDisplayArray)) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
-              ?>
-            </td>
-          <? endforeach; ?>
+          <? if (count($item['useInstead']) > 0): ?>>
+            <div>
+              <?=$this->transEsc('Use instead') ?>:
+              <ul>
+                <? foreach ($item['useInstead'] as $heading): ?>
+                <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+                <? endforeach; ?>
+              </ul>
+            </div>
+          <? endif; ?>
 
           <? if (count($item['seeAlso']) > 0): ?>
-            <?=$this->transEsc('See also') ?>:
-            <ul>
-              <? foreach ($item['seeAlso'] as $heading): ?>
-              <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
-              <? endforeach; ?>
-            </ul>
+            <div>
+              <?=$this->transEsc('See also') ?>:
+              <ul>
+                <? foreach ($item['seeAlso'] as $heading): ?>
+                <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
+                <? endforeach; ?>
+              </ul>
+            </div>
           <? endif; ?>
 
           <? if ($item['note']): ?>
-            <?=$this->transEsc('Note') ?>:
-            <ul>
-              <li><?=$this->escapeHtml($item['note'])?></li>
-            </ul>
+            <div>
+              <?=$this->transEsc('Note') ?>:
+              <ul>
+                <li><?=$this->escapeHtml($item['note'])?></li>
+              </ul>
+            </div>
           <? endif; ?>
         </td>
-        <td>
+
+        <? foreach ($this->extras as $ei => $extraName):
+            $extraData = $item['extras'][$extraName];
+        ?>
+          <td>
+            <?
+              $extraDisplayArray = array();
+              foreach ($extraData as $j => $e) {
+                $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
+              }
+              echo (empty($extraDisplayArray)) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
+            ?>
+          </td>
+        <? endforeach; ?>
+
+        <td class="titles">
           <? if ($item['count'] > 0): ?>
             <?=$item['count']; ?>
-          <? elseif (count($item['useInstead']) > 0): ?>
-            <?=$this->transEsc('Use instead') ?>:
-            <ul>
-              <? foreach ($item['useInstead'] as $heading): ?>
-              <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
-              <? endforeach; ?>
-            </ul>
           <? endif; ?>
         </td>
       <? endforeach; ?>
