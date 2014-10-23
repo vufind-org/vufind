@@ -157,7 +157,6 @@ function bulkActionLightboxHandler($form, refreshOnDelete) {
   }
   if (submit == 'print') {
     //redirect page
-    var checks = $form.find('input.checkbox-select-item:checked');
     var url = path+'/Records/Home?print=true';
     for(var i=0;i<checks.length;i++) {
       url += '&id[]='+checks[i].value;
