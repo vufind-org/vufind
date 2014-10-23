@@ -322,6 +322,7 @@ var Lightbox = {
    */
   registerForms: function() {
     var form = $("#modal").find('form');
+    form.validator();
     var name = $(form).attr('name');
     // Assign form handler based on name
     if(typeof name !== "undefined" && typeof Lightbox.formHandlers[name] !== "undefined") {

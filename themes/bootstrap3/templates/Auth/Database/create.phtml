@@ -37,15 +37,3 @@
   </div>
 </div>
 <input type="hidden" name="auth_method" value="<?=$this->auth()->getManager()->getAuthMethod()?>"/>
-<?
-$script = <<<JS
-if ($.isReady) {
-  $('#accountForm').validator();
-} else {
-  $(document).ready(function(){
-    $('#accountForm').validator();
-  });
-}
-JS;
-echo $this->inlineScript()->appendScript($script);
-?>
