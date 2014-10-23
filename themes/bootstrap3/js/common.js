@@ -149,15 +149,14 @@ function registerLightboxEvents() {
   });
 }
 function bulkActionLightboxHandler($form, refreshOnDelete) {
+  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
-  if(checks.length == 0) {
+  if(submit != 'empty' && checks.length == 0) {
     Lightbox.displayError(vufindString['bulk_noitems_advice']);
     return;
   }
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
   if (submit == 'print') {
     //redirect page
-    var checks = $form.find('input.checkbox-select-item:checked');
     var url = path+'/Records/Home?print=true';
     for(var i=0;i<checks.length;i++) {
       url += '&id[]='+checks[i].value;

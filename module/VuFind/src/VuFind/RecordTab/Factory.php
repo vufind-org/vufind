@@ -154,6 +154,19 @@ class Factory
     }
 
     /**
+     * Factory for HoldingsWorldCat tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HoldingsWorldCat
+     */
+    public static function getHoldingsWorldCat(ServiceManager $sm)
+    {
+        $bm = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
+        return new HoldingsWorldCat($bm->get('WorldCat')->getConnector());
+    }
+
+    /**
      * Factory for Map tab plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -165,6 +178,38 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $enabled = isset($config->Content->recordMap);
         return new Map($enabled);
+    }
+
+    /**
+     * Factory for Preview tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Preview
+     */
+    public static function getPreview(ServiceManager $sm)
+    {
+        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        // currently only active if config [content] [previews] contains google
+        // and googleoptions[tab] is not empty.
+        $active = false;
+        if (isset($cfg->Content->previews)) {
+            $content_previews = explode(
+                ',', strtolower(str_replace(' ', '', $cfg->Content->previews))
+            );
+            if (in_array('google', $content_previews)
+                && isset($cfg->Content->GoogleOptions)
+            ) {
+                $g_options = $cfg->Content->GoogleOptions;
+                if (isset($g_options->tab)) {
+                    $tabs = explode(',', $g_options->tab);
+                    if (count($tabs) > 0) {
+                        $active = true;
+                    }
+                }
+            }
+        }
+        return new Preview($active);
     }
 
     /**
@@ -200,37 +245,5 @@ class Factory
         $enabled = !isset($cfg->Social->comments)
             || ($cfg->Social->comments && $cfg->Social->comments !== 'disabled');
         return new UserComments($enabled);
-    }
-
-    /**
-     * Factory for Preview tab plugin.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Preview
-     */
-    public static function getPreview(ServiceManager $sm)
-    {
-        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        // currently only active if config [content] [previews] contains google
-        // and googleoptions[tab] is not empty.
-        $active = false;
-        if (isset($cfg->Content->previews)) {
-            $content_previews = explode(
-                ',', strtolower(str_replace(' ', '', $cfg->Content->previews))
-            );
-            if (in_array('google', $content_previews)
-                && isset($cfg->Content->GoogleOptions)
-            ) {
-                $g_options = $cfg->Content->GoogleOptions;
-                if (isset($g_options->tab)) {
-                    $tabs = explode(',', $g_options->tab);
-                    if (count($tabs) > 0) {
-                        $active = true;
-                    }
-                }
-            }
-        }
-        return new Preview($active);
     }
 }
