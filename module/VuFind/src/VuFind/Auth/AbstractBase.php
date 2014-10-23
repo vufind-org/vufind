@@ -39,7 +39,8 @@ use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
+abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
+    \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     /**
      * Has the configuration been validated?
@@ -61,6 +62,25 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      * @var \VuFind\Db\Table\PluginManager
      */
     protected $tableManager;
+
+    /**
+     * Translator
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator;
+
+    /**
+     * Set a translator
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator
+     *
+     * @return TranslatorAwareInterface
+     */
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    {
+        $this->translator = $translator;
+    }
 
     /**
      * Get configuration (load automatically if not previously set).  Throw an
@@ -303,13 +323,49 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
         if (isset($policy['minLength'])
             && strlen($password) < $policy['minLength']
         ) {
-            throw new AuthException('password_error_too_short');
+            throw new AuthException(
+                $this->translate(
+                    'password_minimum_length',
+                    array('%%minlength%%' => $policy['minLength'])
+                )
+            );
         }
         if (isset($policy['maxLength'])
             && strlen($password) > $policy['maxLength']
         ) {
-            throw new AuthException('password_error_too_long');
+            throw new AuthException(
+                $this->translate(
+                    'password_maximum_length',
+                    array('%%minlength%%' => $policy['maxLength'])
+                )
+            );
+        }
+    }
+
+    /**
+     * Translate a string
+     *
+     * @todo Use TranslatorAwareTrait instead when it's implemented
+     *
+     * @param string $str     String to translate
+     * @param array  $tokens  Tokens to inject into the translated string
+     *
+     * @return string
+     */
+    public function translate($str, $tokens = array())
+    {
+        $msg = $translator->translate($str);
+
+        // Do we need to perform substitutions?
+        if (!empty($tokens)) {
+            $in = $out = array();
+            foreach ($tokens as $key => $value) {
+                $in[] = $key;
+                $out[] = $value;
+            }
+            $msg = str_replace($in, $out, $msg);
         }
 
+        return $msg;
     }
 }

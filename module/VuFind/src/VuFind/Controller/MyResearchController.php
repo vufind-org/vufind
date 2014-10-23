@@ -156,7 +156,7 @@ class MyResearchController extends AbstractBase
         $view = $this->createViewModel();
         // Password policy
         $view->passwordPolicy = $this->getAuthManager()
-            ->getPasswordPolicy();
+            ->getPasswordPolicy($method);
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('newAccount');
         // Pass request to view so we can repopulate user parameters in form:
