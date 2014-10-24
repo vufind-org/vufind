@@ -148,30 +148,6 @@ function registerLightboxEvents() {
     }
   });
 }
-function bulkActionLightboxHandler($form, refreshOnDelete) {
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
-  var checks = $form.find('input.checkbox-select-item:checked');
-  if(submit != 'empty' && checks.length == 0) {
-    Lightbox.displayError(vufindString['bulk_noitems_advice']);
-    return;
-  }
-  if (submit == 'print') {
-    //redirect page
-    var url = path+'/Records/Home?print=true';
-    for(var i=0;i<checks.length;i++) {
-      url += '&id[]='+checks[i].value;
-    }
-    document.location.href = url;
-  } else {
-    if (refreshOnDelete && submit == 'delete') {
-      Lightbox.addCloseAction(function(){document.location.reload(true);});
-    }
-    Lightbox.submit($form, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
-    });
-  }
-  return false;
-}
 function updatePageForLogin() {
   // Hide "log in" options and show "log out" options:
   $('#loginOptions').addClass('hidden');
