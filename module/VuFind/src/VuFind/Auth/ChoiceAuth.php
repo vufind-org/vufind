@@ -303,7 +303,8 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return mixed
      */
-    protected function proxyUserLoad($request, $method, $params) {
+    protected function proxyUserLoad($request, $method, $params)
+    {
         $this->setStrategyFromRequest($request);
         $user = $this->proxyAuthMethod($method, $params);
         if (!$user) {
