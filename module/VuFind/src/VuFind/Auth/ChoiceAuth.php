@@ -143,7 +143,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function create($request)
     {
-        return $this->proxyUserLoad($request, 'create', func_get_args());
+        return $this->proxyUserLoad($request, 'create', func_get_args(), false);
     }
 
     /**
@@ -287,15 +287,19 @@ class ChoiceAuth extends AbstractBase
      * Proxy auth method that checks the request for an active method and then
      * loads a User object from the database (e.g. authenticate or create).
      *
-     * @param Request $request Request object to check.
-     * @param string  $method  the method to proxy
-     * @param array   $params  array of params to pass
+     * @param Request $request       Request object to check.
+     * @param string  $method        the method to proxy
+     * @param array   $params        array of params to pass
+     * @param bool    $clearStrategy Should we clear the strategy if an exception is
+     * thrown? (Yes for login, since we need to display the ChoiceAuth form; no for
+     * create, since we want to remain in the context of a particular creation form).
      *
      * @throws AuthException
      * @return mixed
      */
-    protected function proxyUserLoad($request, $method, $params)
-    {
+    protected function proxyUserLoad($request, $method, $params,
+        $clearStrategy = true
+    ) {
         $this->setStrategyFromRequest($request);
         try {
             $user = $this->proxyAuthMethod($method, $params);
@@ -303,7 +307,9 @@ class ChoiceAuth extends AbstractBase
                 throw new AuthException('Unexpected return value');
             }
         } catch (AuthException $e) {
-            $this->strategy = false;
+            if ($clearStrategy) {
+                $this->strategy = false;
+            }
             throw $e;
         }
         $this->session->auth_method = $this->strategy;
