@@ -52,15 +52,20 @@
     </div>
   <? endif; ?>
   <?=$this->flashmessages()?>
-  <?
-    $viewParams = array(
-      'searchClassId' => $searchClassId,
-      'combinedResults' => $this->combinedResults,
-      'supportsCartOptions' => $this->supportsCartOptions,
-      'showCartControls' => $this->showCartControls
-    );
-  ?>
-  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
+  <form method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+    <? if ($this->supportsCart && $this->cart()->isActive()): ?>
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+    <? endif; ?>
+    <?
+      $viewParams = array(
+        'searchClassId' => $searchClassId,
+        'combinedResults' => $this->combinedResults,
+        'supportsCartOptions' => $this->supportsCartOptions,
+        'showCartControls' => $this->showCartControls
+      );
+    ?>
+    <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
+  </form>
 </div>
 <? /* End Main Listing */ ?>
 
