@@ -432,7 +432,6 @@ $config = array(
                 'factories' => array(
                     'eds' => 'VuFind\RecordDriver\Factory::getEDS',
                     'eit' => 'VuFind\RecordDriver\Factory::getEIT',
-                    'libguides' => 'VuFind\RecordDriver\Factory::getLibGuides',
                     'missing' => 'VuFind\RecordDriver\Factory::getMissing',
                     'pazpar2' => 'VuFind\RecordDriver\Factory::getPazpar2',
                     'primo' => 'VuFind\RecordDriver\Factory::getPrimo',
@@ -443,6 +442,9 @@ $config = array(
                     'solrweb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
                     'summon' => 'VuFind\RecordDriver\Factory::getSummon',
                     'worldcat' => 'VuFind\RecordDriver\Factory::getWorldCat',
+                ),
+                'invokables' => array(
+                    'libguides' => 'VuFind\RecordDriver\LibGuides',
                 ),
             ),
             'recordtab' => array(
