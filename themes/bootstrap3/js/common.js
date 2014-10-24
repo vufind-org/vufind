@@ -388,7 +388,9 @@ $(document).ready(function() {
       Lightbox.submit($(this), Lightbox.close);
       Lightbox.close();
     } else {
-      Lightbox.submit($(this), Lightbox.changeContent);
+      Lightbox.submit($(this), function(html) {
+        Lightbox.checkForError(html, Lightbox.changeContent);
+      });
       return false;
     }
   });
@@ -444,22 +446,5 @@ $(document).ready(function() {
   $('.save-record').click(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
-  });
-
-  // Search tool ribbon
-  function getCheckedIds() {
-    var ids = $("input[name='ids[]']:checked").map(function() {
-      return $(this).attr('value');
-    });
-    return $.makeArray(ids);
-  }
-  $('#ribbon-email').click(function() {
-    return Lightbox.get('Cart', 'Home', {}, {ids:getCheckedIds(), email:'yes'});
-  });
-  $('#ribbon-export').click(function() {
-    return Lightbox.get('Cart', 'Home', {}, {ids:getCheckedIds(), export:'yes'});
-  });
-  $('#ribbon-save').click(function() {
-    return Lightbox.get('Cart', 'Home', {}, {ids:getCheckedIds(), saveCart:'yes'});
   });
 });
