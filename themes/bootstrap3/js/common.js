@@ -388,7 +388,9 @@ $(document).ready(function() {
       Lightbox.submit($(this), Lightbox.close);
       Lightbox.close();
     } else {
-      Lightbox.submit($(this), Lightbox.changeContent);
+      Lightbox.submit($(this), function(html) {
+        Lightbox.checkForError(html, Lightbox.changeContent);
+      });
       return false;
     }
   });
