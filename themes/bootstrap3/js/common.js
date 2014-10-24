@@ -406,13 +406,21 @@ $(document).ready(function() {
     Lightbox.close();
     checkSaveStatuses();
   });
-  $('[name=bulkActionForm]').submit(function(evt) {
-    bulkActionLightboxHandler($(evt.target), true);
+
+  $('[name=bulkActionForm]').submit(function() {
+    if($(this).find('[clicked=true]').attr('name') == 'print') {
+      Lightbox.submit($(this), Lightbox.close);
+      Lightbox.close();
+    } else {
+      Lightbox.submit($(this), Lightbox.changeContent);
+      return false;
+    }
   });
   $('[name=bulkActionForm]').find('[type=submit]').click(function() {
     $("[clicked=true]").attr("clicked", "false");
     $(this).attr("clicked", "true");
   });
+
   Lightbox.addFormHandler('feedback', function(evt) {
     var $form = $(evt.target);
     // Grabs hidden inputs
