@@ -5,7 +5,7 @@
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
-  <property name="apachectl" value="/etc/init.d/apache2" />
+  <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
   <property name="vufindurl" value="http://localhost/vufind" />
   <property name="vufinddb" value="vufind_test" />
   <property name="vufinddbuser" value="vufindtest" />
@@ -104,10 +104,14 @@
     <!-- Generate basic configuration -->
     <exec command="php ${srcdir}/install.php --use-defaults" />
 
-    <!-- Activate Apache (currently disabled; not necessary unless we start using Selenium again)
-    <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest" />
-    <exec command="${apachectl} restart" />
-     -->
+    <!-- Activate Apache (if an apachectl path has been provided) -->
+    <if>
+      <istrue value="${apachectl}" />
+      <then>
+        <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <exec command="${apachectl} restart" />
+      </then>
+    </if>
 
     <!-- build and configure the requested database type -->
     <if>
@@ -160,10 +164,14 @@
   <!-- Uninstall and Deactivate VuFind -->
   <target name="shutdown" description="deactivate and uninstall demo">
 
-    <!-- Remove Apache settings (disabled until corresponding lines in startup are also uncommented)
-    <exec command="rm ${apacheconfdir}/vufindtest" />
-    <exec command="${apachectl} restart" />
-     -->
+    <!-- Remove Apache settings (if Apache was enabled) -->
+    <if>
+      <istrue value="${apachectl}" />
+      <then>
+        <delete file="${apacheconfdir}/vufindtest.conf" />
+        <exec command="${apachectl} restart" />
+      </then>
+    </if>
 
     <!-- drop database -->
     <if>
