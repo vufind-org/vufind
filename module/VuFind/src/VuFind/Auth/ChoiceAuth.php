@@ -130,7 +130,16 @@ class ChoiceAuth extends AbstractBase
      */
     public function authenticate($request)
     {
-        return $this->proxyUserLoad($request, 'authenticate', func_get_args());
+        try {
+            return $this->proxyUserLoad($request, 'authenticate', func_get_args());
+        } catch (AuthException $e) {
+            // If an exception was thrown during login, we need to clear the
+            // stored strategy to ensure that we display the full ChoiceAuth
+            // form rather than the form for only the method that the user
+            // attempted to use.
+            $this->strategy = false;
+            throw $e;
+        }
     }
 
     /**
@@ -294,17 +303,11 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return mixed
      */
-    protected function proxyUserLoad($request, $method, $params)
-    {
+    protected function proxyUserLoad($request, $method, $params) {
         $this->setStrategyFromRequest($request);
-        try {
-            $user = $this->proxyAuthMethod($method, $params);
-            if (!$user) {
-                throw new AuthException('Unexpected return value');
-            }
-        } catch (AuthException $e) {
-            $this->strategy = false;
-            throw $e;
+        $user = $this->proxyAuthMethod($method, $params);
+        if (!$user) {
+            throw new AuthException('Unexpected return value');
         }
         $this->session->auth_method = $this->strategy;
         return $user;
