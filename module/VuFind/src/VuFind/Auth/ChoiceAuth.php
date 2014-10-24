@@ -130,7 +130,16 @@ class ChoiceAuth extends AbstractBase
      */
     public function authenticate($request)
     {
-        return $this->proxyUserLoad($request, 'authenticate', func_get_args());
+        try {
+            return $this->proxyUserLoad($request, 'authenticate', func_get_args());
+        } catch (AuthException $e) {
+            // If an exception was thrown during login, we need to clear the
+            // stored strategy to ensure that we display the full ChoiceAuth
+            // form rather than the form for only the method that the user
+            // attempted to use.
+            $this->strategy = false;
+            throw $e;
+        }
     }
 
     /**
@@ -143,7 +152,7 @@ class ChoiceAuth extends AbstractBase
      */
     public function create($request)
     {
-        return $this->proxyUserLoad($request, 'create', func_get_args(), false);
+        return $this->proxyUserLoad($request, 'create', func_get_args());
     }
 
     /**
@@ -287,12 +296,9 @@ class ChoiceAuth extends AbstractBase
      * Proxy auth method that checks the request for an active method and then
      * loads a User object from the database (e.g. authenticate or create).
      *
-     * @param Request $request       Request object to check.
-     * @param string  $method        the method to proxy
-     * @param array   $params        array of params to pass
-     * @param bool    $clearStrategy Should we clear the strategy if an exception is
-     * thrown? (Yes for login, since we need to display the ChoiceAuth form; no for
-     * create, since we want to remain in the context of a particular creation form).
+     * @param Request $request Request object to check.
+     * @param string  $method  the method to proxy
+     * @param array   $params  array of params to pass
      *
      * @throws AuthException
      * @return mixed
@@ -301,16 +307,9 @@ class ChoiceAuth extends AbstractBase
         $clearStrategy = true
     ) {
         $this->setStrategyFromRequest($request);
-        try {
-            $user = $this->proxyAuthMethod($method, $params);
-            if (!$user) {
-                throw new AuthException('Unexpected return value');
-            }
-        } catch (AuthException $e) {
-            if ($clearStrategy) {
-                $this->strategy = false;
-            }
-            throw $e;
+        $user = $this->proxyAuthMethod($method, $params);
+        if (!$user) {
+            throw new AuthException('Unexpected return value');
         }
         $this->session->auth_method = $this->strategy;
         return $user;
