@@ -453,6 +453,7 @@ $config = array(
                     'excerpt' => 'VuFind\RecordTab\Factory::getExcerpt',
                     'hierarchytree' => 'VuFind\RecordTab\Factory::getHierarchyTree',
                     'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
+                    'holdingsworldcat' => 'VuFind\RecordTab\Factory::getHoldingsWorldCat',
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
@@ -460,7 +461,6 @@ $config = array(
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
-                    'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
