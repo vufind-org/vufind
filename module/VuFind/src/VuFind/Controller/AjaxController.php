@@ -1550,7 +1550,7 @@ class AjaxController extends AbstractBase
         $params->addFacet($facet, null, $operator === 'OR');
         $params->initFromRequest($this->getRequest()->getQuery());
 
-        $facets = $results->getFullFieldFacets(array($facet), false);
+        $facets = $results->getFullFieldFacets(array($facet), false, -1, 'count');
         if (empty($facets[$facet]['data']['list'])) {
             return $this->output(array(), self::STATUS_OK);
         }
