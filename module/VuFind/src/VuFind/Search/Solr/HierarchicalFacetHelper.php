@@ -58,42 +58,29 @@ class HierarchicalFacetHelper
         }
         // Avoid problems having the reference set further below
         unset($facetItem);
-        $sortFunc = null;
-        if ($topLevel) {
-            $sortFunc = function($a, $b) {
-                if ($a['level'] == 0 && $b['level'] == 0) {
-                    $aText = $a['displayText'] == $a['value']
-                        ? $this->formatDisplayText($a['displayText'])
-                        : $a['displayText'];
-                    $bText = $b['displayText'] == $b['value']
-                        ? $this->formatDisplayText($b['displayText'])
-                        : $b['displayText'];
-                    return strcasecmp($aText, $bText);
-                }
-                return $a['level'] == $b['level']
-                    ? $b['count'] - $a['count']
-                    : $b['level'] - $a['level'];
-            };
-        } else {
-            $sortFunc = function($a, $b) {
-                if ($a['level'] == $b['level']) {
-                    $aText = $a['displayText'] == $a['value']
-                        ? $this->formatDisplayText($a['displayText'])
-                        : $a['displayText'];
-                    $bText = $b['displayText'] == $b['value']
-                        ? $this->formatDisplayText($b['displayText'])
-                        : $b['displayText'];
-                    return strcasecmp($aText, $bText);
-                }
-                return $b['level'] - $a['level'];
-            };
-        }
+        $sortFunc = function($a, $b) use ($topLevel) {
+            if ($a['level'] == $b['level'] && (!$topLevel || $a['level'] == 0)) {
+                $aText = $a['displayText'] == $a['value']
+                    ? $this->formatDisplayText($a['displayText'])
+                    : $a['displayText'];
+                $bText = $b['displayText'] == $b['value']
+                    ? $this->formatDisplayText($b['displayText'])
+                    : $b['displayText'];
+                return strcasecmp($aText, $bText);
+            }
+            return $a['level'] == $b['level']
+                ? $b['count'] - $a['count']
+                : $b['level'] - $a['level'];
+        };
         uasort($facetList, $sortFunc);
     }
 
     /**
      * Helper method for building hierarchical facets:
      * Convert facet list to a hierarchical array
+     *
+     * @see http://blog.tekerson.com/2009/03/03/converting-a-flat-array-with-parent-ids-to-a-nested-tree/
+     * Based on this example
      *
      * @param string    $facet            Facet name
      * @param array     $facetList        Facet list
