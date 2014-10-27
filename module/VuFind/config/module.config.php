@@ -569,6 +569,7 @@ $config = array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
                  ),
+	    ),
             'VuFind\RecordDriver\Primo' => array(
                 'tabs' => array(
                     'Description' => 'Description',

@@ -107,6 +107,25 @@ class DAIA extends AbstractBase
     }
 
     /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     *
+     * @return array An array with key-value pairs.
+     */
+    public function getConfig($function)
+    {
+        if (isset($this->config[$function]) ) {
+            $functionConfig = $this->config[$function];
+        } else {
+            $functionConfig = false;
+        }
+        return $functionConfig;
+    }
+
+
+    /**
      * Get Holding
      *
      * This is responsible for retrieving the holding information of a certain
@@ -255,6 +274,7 @@ class DAIA extends AbstractBase
                 }
                 $messageElements
                     = $itemlist->item($c)->getElementsByTagName('message');
+	/*	
                 if ($messageElements->length > 0) {
                     for ($m = 0; $messageElements->item($m) !== null; $m++) {
                         $errno = $messageElements->item($m)->attributes
@@ -271,7 +291,8 @@ class DAIA extends AbstractBase
                                 = $messageElements->item($m)->nodeValue;
                         }
                     }
-                }
+                }*/
+		
 
                 //$loanAvail = 0;
                 //$loanExp = 0;
