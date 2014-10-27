@@ -1,0 +1,19 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Upgrade VuFind'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="'.$this->url('upgrade-home').'">'.$this->transEsc('Upgrade').'</a></li> <li class="active">' . $this->transEsc('Upgrade VuFind') . '</li>';
+?>
+<h2><?=$this->transEsc('Upgrade VuFind')?></h2>
+<?=$this->flashmessages()?>
+
+<p>Some of the items in your resource table appear to be missing metadata.  Adding this metadata may take some time,
+but it will improve the user experience by allowing proper sorting of favorites and tagged records.</p>
+
+<br />
+
+<form method="post" action="<?=$this->url('upgrade-fixmetadata')?>">
+  <input type="submit" name="submit" value="<?=$this->transEsc('fix_metadata') ?>." /><br /><br />
+  <input type="submit" name="skip" value="<?=$this->transEsc('skip_fix_metadata') ?>." onclick="return confirm('<?=$this->transEsc('skip_confirm') ?>');"/>
+</form>

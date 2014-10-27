@@ -1,6 +1,6 @@
 <? if ($mobileViewLink = $this->mobileUrl()): // display 'return to mobile' link when applicable ?>
   <hr/>
-  <div class="mobileViewLink"><a href="<?=$this->escapeHtml($mobileViewLink)?>"><?=$this->transEsc("mobile_link")?></a></div>
+  <div class="mobileViewLink"><a href="<?=$this->escapeHtmlAttr($mobileViewLink)?>"><?=$this->transEsc("mobile_link")?></a></div>
 <? endif; ?>
 <hr/>
 <div class="span8 row-fluid small">

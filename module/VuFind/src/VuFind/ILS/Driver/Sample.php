@@ -119,7 +119,7 @@ class Sample extends AbstractBase
      * number, barcode.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         return $this->getStatus($id);
     }

@@ -1,0 +1,60 @@
+<? if ($this->pageCount): ?>
+  <ul class="pagination">
+    <!-- Previous page link -->
+    <li<? if (isset($this->previous)): ?>>
+      <? $newParams = $this->params; $newParams['page'] = $this->previous; ?>
+      <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
+        &laquo; <?=$this->translate('Previous')?>
+      </a>
+    <? else: ?>
+       class="disabled"> <span>&laquo; <?=$this->translate('Previous')?></span>
+    <? endif; ?>
+    </li>
+
+    <!-- First page link -->
+    <li<? if (isset($this->first) && $this->first != $this->current): ?>>
+      <? $newParams = $this->params; $newParams['page'] = $this->first; ?>
+      <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
+        <?=$this->translate('First')?>
+      </a>
+    <? else: ?>
+       class="disabled"> <span><?=$this->translate('First')?></span>
+    <? endif; ?>
+    </li>
+
+    <!-- Numbered page links -->
+    <? foreach ($this->pagesInRange as $page): ?>
+      <li<? if ($page != $this->current): ?>>
+        <? $newParams = $this->params; $newParams['page'] = $page; ?>
+        <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
+            <? echo $page; ?>
+        </a>
+      <? else: ?>
+         class="active"> <span><? echo $page; ?></span>
+      <? endif; ?>
+      </li>
+    <? endforeach; ?>
+
+    <!-- Last page link -->
+    <li<? if (isset($this->last)  && $this->last != $this->current): ?>>
+      <? $newParams = $this->params; $newParams['page'] = $this->last; ?>
+      <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
+        <?=$this->translate('Last')?>
+      </a>
+    <? else: ?>
+       class="disabled"> <span><?=$this->translate('Last')?></span>
+    <? endif; ?>
+    </li>
+
+    <!-- Next page link -->
+    <li<? if (isset($this->next)): ?>>
+      <? $newParams = $this->params; $newParams['page'] = $this->next; ?>
+      <a href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
+        <?=$this->translate('Next')?> >
+      </a>
+    <? else: ?>
+       class="disabled"> <span><?=$this->translate('Next')?> &raquo;</span>
+    <? endif; ?>
+    </li>
+  </ul>
+<? endif; ?>

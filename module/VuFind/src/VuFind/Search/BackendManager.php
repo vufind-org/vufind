@@ -68,7 +68,7 @@ class BackendManager implements SharedListenerAggregateInterface
     /**
      * Constructor.
      *
-     * @param ServiceManager $registry Backend registry
+     * @param ServiceLocatorInterface $registry Backend registry
      *
      * @return void
      */

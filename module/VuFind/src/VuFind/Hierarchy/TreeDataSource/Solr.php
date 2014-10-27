@@ -28,6 +28,7 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
+use VuFindSearch\ParamBag;
 
 /**
  * Hierarchy Tree Data Source (Solr)
@@ -57,17 +58,27 @@ class Solr extends AbstractBase
     protected $cacheDir = null;
 
     /**
+     * Filter queries
+     *
+     * @var array
+     */
+    protected $filters = array();
+
+    /**
      * Constructor.
      *
      * @param SearchService $search   Search service
      * @param string        $cacheDir Directory to hold cache results (optional)
+     * @param array         $filters  Filters to apply to Solr tree queries
      */
-    public function __construct(SearchService $search, $cacheDir = null)
-    {
+    public function __construct(SearchService $search, $cacheDir = null,
+        $filters = array()
+    ) {
         $this->searchService = $search;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');
         }
+        $this->filters = $filters;
     }
 
     /**
@@ -140,7 +151,10 @@ class Solr extends AbstractBase
         $query = new Query(
             'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"'
         );
-        $results = $this->searchService->search('Solr', $query, 0, 10000);
+        $results = $this->searchService->search(
+            'Solr', $query, 0, 10000,
+            new ParamBag(array('fq' => $this->filters, 'hl' => 'false'))
+        );
         if ($results->getTotal() < 1) {
             return '';
         }
@@ -151,9 +165,12 @@ class Solr extends AbstractBase
             ++$count;
             if ($sorting) {
                 $positions = $current->getHierarchyPositionsInParents();
+                $titles = $current->getTitlesInHierarchy();
                 if (isset($positions[$parentID])) {
                     $sequence = $positions[$parentID];
                 }
+                $title = isset($titles[$parentID])
+                    ? $titles[$parentID] : $current->getTitle();
             }
 
             $this->debug("$parentID: " . $current->getUniqueID());
@@ -161,7 +178,7 @@ class Solr extends AbstractBase
             $isCollection = $current->isCollection() ? "true" : "false";
             $xmlNode .= '<item id="' . htmlspecialchars($current->getUniqueID()) .
                 '" isCollection="' . $isCollection . '"><content><name>' .
-                htmlspecialchars($current->getTitle()) . '</name></content>';
+                htmlspecialchars($title) . '</name></content>';
             $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
             $xmlNode .= '</item>';
             array_push($xml, array((isset($sequence) ? $sequence : 0), $xmlNode));

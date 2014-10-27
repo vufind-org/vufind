@@ -49,26 +49,17 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     protected $wskey;
 
     /**
-     * OCLC codes for limiting search results
-     *
-     * @var string
-     */
-    protected $limitCodes;
-
-    /**
      * Constructor
      *
-     * @param string            $wsKey      Web services key
-     * @param string            $limitCodes OCLC codes to use for limiting
-     * @param \Zend\Http\Client $client     An HTTP client object
+     * @param string            $wsKey  Web services key
+     * @param \Zend\Http\Client $client An HTTP client object
      */
-    public function __construct($wsKey, $limitCodes, \Zend\Http\Client $client)
+    public function __construct($wsKey, \Zend\Http\Client $client)
     {
         parent::__construct(
             'http://www.worldcat.org/webservices/catalog/search/sru', $client
         );
         $this->wskey = $wsKey;
-        $this->limitCodes = $limitCodes;
     }
 
     /**
@@ -142,11 +133,6 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $params->set('maximumRecords', $limit);
         $params->set('servicelevel', 'full');
         $params->set('wskey', $this->wskey);
-
-        // Establish a limitation on searching by OCLC Codes
-        if (!empty($this->limitCodes)) {
-            $params->set('oclcsymbol', $this->limitCodes);
-        }
 
         $response = $this->call('POST', $params->getArrayCopy(), false);
 

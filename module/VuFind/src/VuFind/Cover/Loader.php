@@ -27,7 +27,9 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFind\Code\ISBN, Zend\Log\LoggerInterface, ZendService\Amazon\Amazon;
+use VuFind\Code\ISBN,
+    VuFind\Content\Covers\PluginManager as ApiManager,
+    Zend\Log\LoggerInterface;
 
 /**
  * Book Cover Generator
@@ -63,6 +65,13 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     protected $config;
 
     /**
+     * Plugin manager for API handlers
+     *
+     * @var ApiManager
+     */
+    protected $apiManager;
+
+    /**
      * HTTP client
      *
      * @var \Zend\Http\Client
@@ -77,11 +86,32 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     protected $baseDir;
 
     /**
-     * User ISN parameter
+     * User ISBN parameter
      *
      * @var ISBN
      */
-    protected $isn = null;
+    protected $isbn = null;
+
+    /**
+     * User ISSN parameter
+     *
+     * @var string
+     */
+    protected $issn = null;
+
+    /**
+     * User OCLC number parameter
+     *
+     * @var string
+     */
+    protected $oclc = null;
+
+    /**
+     * User UPC number parameter
+     *
+     * @var string
+     */
+    protected $upc = null;
 
     /**
      * User size parameter
@@ -129,15 +159,17 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * Constructor
      *
      * @param \Zend\Config\Config    $config  VuFind configuration
+     * @param ApiManager             $manager Plugin manager for API handlers
      * @param \VuFindTheme\ThemeInfo $theme   VuFind theme tools
      * @param \Zend\Http\Client      $client  HTTP client
      * @param string                 $baseDir Directory to store downloaded images
      * (set to system temp dir if not otherwise specified)
      */
-    public function __construct($config, \VuFindTheme\ThemeInfo $theme,
-        \Zend\Http\Client $client, $baseDir = null
+    public function __construct($config, ApiManager $manager,
+        \VuFindTheme\ThemeInfo $theme, \Zend\Http\Client $client, $baseDir = null
     ) {
         $this->config = $config;
+        $this->apiManager = $manager;
         $this->themeTools = $theme;
         $this->client = $client;
         $this->baseDir = rtrim(
@@ -198,20 +230,42 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
         return $this->contentType;
     }
-
+    
+    /**
+     * Get Cover Generator Object
+     *
+     * @return VuFind\Cover\Generator
+     */
+    public function getCoverGenerator()
+    {
+        return new \VuFind\Cover\Generator($this->themeTools);
+    }
     /**
      * Load an image given an ISBN and/or content type.
      *
-     * @param string $isn  ISBN
-     * @param string $size Requested size
-     * @param string $type Content type
+     * @param string $isbn       ISBN
+     * @param string $size       Requested size
+     * @param string $type       Content type
+     * @param string $title      Title of book (for dynamic covers)
+     * @param string $author     Author of the book (for dynamic covers)
+     * @param string $callnumber Callnumber (unique id for dynamic covers)
+     * @param string $issn       ISSN
+     * @param string $oclc       OCLC number
+     * @param string $upc        UPC number
      *
      * @return void
      */
-    public function loadImage($isn, $size = 'small', $type = null)
-    {
+    public function loadImage($isbn = null, $size = 'small', $type = null,
+        $title = null, $author = null, $callnumber = null, $issn = null,
+        $oclc = null, $upc = null
+    ) {
         // Sanitize parameters:
-        $this->isn = new ISBN($isn);
+        $this->isbn = new ISBN($isbn);
+        $this->issn = empty($issn)
+            ? null
+            : substr(preg_replace('/[^0-9X]/', '', strtoupper($issn)), 0, 8);
+        $this->oclc = $oclc;
+        $this->upc = $upc;
         $this->type = preg_replace("/[^a-zA-Z]/", "", $type);
         $this->size = $size;
 
@@ -219,31 +273,87 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         // are able to display an ISBN or content-type-based image.
         if (!in_array($this->size, $this->validSizes)) {
             $this->loadUnavailable();
-        } else if (!$this->fetchFromISBN()
+        } else if (!$this->fetchFromAPI()
             && !$this->fetchFromContentType()
         ) {
-            $this->loadUnavailable();
+            if (isset($this->config->Content->makeDynamicCovers)
+                && true == $this->config->Content->makeDynamicCovers
+            ) {
+                $this->image = $this->getCoverGenerator()
+                    ->generate($title, $author, $callnumber);
+                $this->contentType = 'image/png';
+            } else {
+                $this->loadUnavailable();
+            }
         }
     }
 
     /**
-     * Load bookcover fom URL from cache or remote provider and display if possible.
+     * Support method for fetchFromAPI() -- set the localFile property.
      *
-     * @return bool        True if image loaded, false on failure.
+     * @param array $ids IDs returned by getIdentifiers() method
+     *
+     * @return void
      */
-    protected function fetchFromISBN()
+    protected function determineLocalFile($ids)
     {
-        if (!$this->isn || !$this->isn->isValid()) {
-            return false;
-        }
-
         // We should check whether we have cached images for the 13- or 10-digit
         // ISBNs. If no file exists, we'll favor the 10-digit number if
         // available for the sake of brevity.
-        $this->localFile = $this->getCachePath($this->size, $this->isn->get13());
-        if (!is_readable($this->localFile) && $this->isn->get10()) {
-            $this->localFile = $this->getCachePath($this->size, $this->isn->get10());
+        if (isset($ids['isbn'])) {
+            $file = $this->getCachePath($this->size, $ids['isbn']->get13());
+            if (!is_readable($file) && $ids['isbn']->get10()) {
+                return $this->getCachePath($this->size, $ids['isbn']->get10());
+            }
+            return $file;
+        } else if (isset($ids['issn'])) {
+            return $this->getCachePath($this->size, $ids['issn']);
+        } else if (isset($ids['oclc'])) {
+            return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
+        } else if (isset($ids['upc'])) {
+            return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
         }
+        throw new \Exception('Unexpected code path reached!');
+    }
+
+    /**
+     * Get all valid identifiers as an associative array.
+     *
+     * @return array
+     */
+    protected function getIdentifiers()
+    {
+        $ids = array();
+        if ($this->isbn && $this->isbn->isValid()) {
+            $ids['isbn'] = $this->isbn;
+        }
+        if ($this->issn && strlen($this->issn) == 8) {
+            $ids['issn'] = $this->issn;
+        }
+        if ($this->oclc && strlen($this->oclc) > 0) {
+            $ids['oclc'] = $this->oclc;
+        }
+        if ($this->upc && strlen($this->upc) > 0) {
+            $ids['upc'] = $this->upc;
+        }
+        return $ids;
+    }
+
+    /**
+     * Load bookcover from cache or remote provider and display if possible.
+     *
+     * @return bool        True if image loaded, false on failure.
+     */
+    protected function fetchFromAPI()
+    {
+        // Check that we have at least one valid identifier:
+        $ids = $this->getIdentifiers();
+        if (empty($ids)) {
+            return false;
+        }
+
+        // Set up local file path:
+        $this->localFile = $this->determineLocalFile($ids);
         if (is_readable($this->localFile)) {
             // Load local cache if available
             $this->contentType = 'image/jpeg';
@@ -253,16 +363,26 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             $providers = explode(',', $this->config->Content->coverimages);
             foreach ($providers as $provider) {
                 $provider = explode(':', trim($provider));
-                $func = trim($provider[0]);
+                $apiName = strtolower(trim($provider[0]));
                 $key = isset($provider[1]) ? trim($provider[1]) : null;
                 try {
-                    if ($this->$func($key)) {
-                        return true;
+                    $handler = $this->apiManager->get($apiName);
+
+                    // Is the current provider appropriate for the available data?
+                    if ($handler->supports($ids)) {
+                        if ($url = $handler->getUrl($key, $this->size, $ids)) {
+                            $success = $this->processImageURLForSource(
+                                $url, $handler->isCacheAllowed(), $apiName
+                            );
+                            if ($success) {
+                                return true;
+                            }
+                        }
                     }
                 } catch (\Exception $e) {
                     $this->debug(
-                        get_class($e) . ' during processing of ' . $func . ': '
-                        . $e->getMessage()
+                        get_class($e) . ' during processing of ' . $apiName
+                        . ': ' . $e->getMessage()
                     );
                 }
             }
@@ -271,16 +391,16 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * Return a path to the image cache for the given size and ISN; ensure that
+     * Return a path to the image cache for the given size and ID; ensure that
      * directories are created as needed.
      *
      * @param string $size      Size category
-     * @param string $isn       ISBN
+     * @param string $id        Unique identifier (ISBN / ISSN)
      * @param string $extension File extension to use (default = jpg)
      *
      * @return string      Cache path
      */
-    protected function getCachePath($size, $isn, $extension = 'jpg')
+    protected function getCachePath($size, $id, $extension = 'jpg')
     {
         $base = $this->baseDir . '/covers';
         if (!is_dir($base)) {
@@ -290,7 +410,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         if (!is_dir($base)) {
             mkdir($base);
         }
-        return $base . '/' . $isn . '.' . $extension;
+        return $base . '/' . $id . '.' . $extension;
     }
 
     /**
@@ -470,21 +590,17 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * Wrapper around processImageURL to determine cache setting based on
      * image source.
      *
-     * @param string $url    URL to load image from
-     * @param string $source Service being used for image loading
+     * @param string $url        URL to load image from
+     * @param bool   $allowCache Is caching allowed by the service?
+     * @param string $source     Service being used for image loading
      *
      * @return bool         True if image loaded, false on failure.
      */
-    protected function processImageURLForSource($url, $source)
+    protected function processImageURLForSource($url, $allowCache, $source)
     {
-        $source = strtolower($source);
-        switch ($source) {
-        case 'amazon':
-        case 'google':
-            // These services disallow caching
-            $cache = false;
-            break;
-        default:
+        // If caching is allowed at the source level, let's see if it's locally
+        // configured....
+        if ($allowCache) {
             // All other services cache based on configuration:
             $conf = isset($this->config->Content->coverimagesCache)
                 ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
@@ -496,9 +612,11 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 $cache = false;
             } else {
                 $conf = array_map('trim', explode(',', $conf));
+                $source = strtolower($source);
                 $cache = in_array($source, $conf);
             }
-            break;
+        } else {
+            $cache = false;
         }
         return $this->processImageURL($url, $cache);
     }
@@ -549,249 +667,4 @@ class Loader implements \Zend\Log\LoggerAwareInterface
 
         return true;
     }
-
-    /**
-     * Retrieve a Syndetics cover.
-     *
-     * @param string $id Syndetics client ID.
-     *
-     * @return bool      True if image loaded, false otherwise.
-     */
-    protected function syndetics($id)
-    {
-        switch ($this->size) {
-        case 'small':
-            $size = 'SC.GIF';
-            break;
-        case 'medium':
-            $size = 'MC.GIF';
-            break;
-        case 'large':
-            $size = 'LC.JPG';
-            break;
-        }
-
-        $url = isset($this->config->Syndetics->url) ?
-                $this->config->Syndetics->url : 'http://syndetics.com';
-        $isbn = $this->isn->get13();
-        $url .= "/index.aspx?type=xw12&isbn={$isbn}/{$size}&client={$id}";
-        return $isbn ? $this->processImageURLForSource($url, 'syndetics') : false;
-    }
-
-    /**
-     * Retrieve a Content Cafe cover.
-     *
-     * @param string $id Content Cafe client ID.
-     *
-     * @return bool      True if image loaded, false otherwise.
-     */
-    protected function contentcafe($id)
-    {
-        switch ($this->size) {
-        case 'small':
-            $size = 'S';
-            break;
-        case 'medium':
-            $size = 'M';
-            break;
-        case 'large':
-            $size = 'L';
-            break;
-        }
-        $pw = $this->config->Contentcafe->pw;
-        $url = isset($this->config->Contentcafe->url)
-            ? $this->config->Contentcafe->url : 'http://contentcafe2.btol.com';
-        $isbn = $this->isn->get13();
-        $url .= "/ContentCafe/Jacket.aspx?UserID={$id}&Password={$pw}&Return=1" .
-            "&Type={$size}&Value={$isbn}&erroroverride=1";
-        return $isbn ? $this->processImageURLForSource($url, 'contentcafe') : false;
-    }
-
-    /**
-     * Retrieve a LibraryThing cover.
-     *
-     * @param string $id LibraryThing client ID.
-     *
-     * @return bool      True if image loaded, false otherwise.
-     */
-    protected function librarything($id)
-    {
-        $isbn = $this->isn->get13();
-        $url = 'http://covers.librarything.com/devkey/' . $id . '/' .
-            $this->size . '/isbn/' . $isbn;
-        return $isbn ? $this->processImageURLForSource($url, 'librarything') : false;
-    }
-
-    /**
-     * Retrieve an OpenLibrary cover.
-     *
-     * @return bool True if image loaded, false otherwise.
-     */
-    protected function openlibrary()
-    {
-        // Convert internal size value to openlibrary equivalent:
-        switch ($this->size) {
-        case 'large':
-            $size = 'L';
-            break;
-        case 'medium':
-            $size = 'M';
-            break;
-        case 'small':
-        default:
-            $size = 'S';
-            break;
-        }
-
-        // Retrieve the image; the default=false parameter indicates that we
-        // want a 404 if the ISBN is not supported.
-        $isbn = $this->isn->get13();
-        $url = 'http://covers.openlibrary.org/b/isbn/' . $isbn .
-            "-{$size}.jpg?default=false";
-        return $isbn ? $this->processImageURLForSource($url, 'openlibrary') : false;
-    }
-
-    /**
-     * Retrieve a Google Books cover.
-     *
-     * @return bool True if image loaded, false otherwise.
-     */
-    protected function google()
-    {
-        // Don't bother trying if we can't read JSON:
-        if (!is_callable('json_decode')) {
-            return false;
-        }
-        $isbn = $this->isn->get13();
-        if (!$isbn) {
-            return false;
-        }
-
-        // Construct the request URL:
-        $url = 'http://books.google.com/books?jscmd=viewapi&' .
-               'bibkeys=ISBN:' . $isbn . '&callback=addTheCover';
-
-        // Make the HTTP request:
-        $result = $this->client->setUri($url)->send();
-
-        // Was the request successful?
-        if ($result->isSuccess()) {
-            // grab the response:
-            $json = $result->getBody();
-
-            // extract the useful JSON from the response:
-            $count = preg_match('/^[^{]*({.*})[^}]*$/', $json, $matches);
-            if ($count < 1) {
-                return false;
-            }
-            $json = $matches[1];
-
-            // convert \x26 or \u0026 to &
-            $json = str_replace(array("\\x26", "\\u0026"), "&", $json);
-
-            // decode the object:
-            $json = json_decode($json, true);
-
-            // convert a flat object to an array -- probably unnecessary, but
-            // retained just in case the response format changes:
-            if (isset($json['thumbnail_url'])) {
-                $json = array($json);
-            }
-
-            // find the first thumbnail URL and process it:
-            foreach ($json as $current) {
-                if (isset($current['thumbnail_url'])) {
-                    return $this->processImageURLForSource(
-                        $current['thumbnail_url'], 'google'
-                    );
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Retrieve an Amazon cover.
-     *
-     * @param string $id Amazon Web Services client ID.
-     *
-     * @return bool      True if image loaded, false otherwise.
-     */
-    protected function amazon($id)
-    {
-        try {
-            $amazon = new Amazon($id, 'US', $this->config->Content->amazonsecret);
-            $params = array(
-                'ResponseGroup' => 'Images',
-                'AssociateTag' => isset($this->config->Content->amazonassociate)
-                    ? $this->config->Content->amazonassociate : null
-            );
-            // TODO: add support for 13-digit ISBNs (requires extra lookup)
-            $isbn = $this->isn->get10();
-            if (!$isbn) {
-                return false;
-            }
-            $result = $amazon->itemLookup($isbn, $params);
-        } catch (\Exception $e) {
-            // Something went wrong?  Just report failure:
-            return false;
-        }
-
-        // Where in the response can we find the URL we need?
-        switch ($this->size) {
-        case 'small':
-            $imageIndex = 'SmallImage';
-            break;
-        case 'medium':
-            $imageIndex = 'MediumImage';
-            break;
-        case 'large':
-            $imageIndex = 'LargeImage';
-            break;
-        default:
-            $imageIndex = false;
-            break;
-        }
-
-        if ($imageIndex && isset($result->$imageIndex->Url)) {
-            $imageUrl = (string)$result->$imageIndex->Url;
-            return $this->processImageURLForSource($imageUrl, 'amazon');
-        }
-
-        return false;
-    }
-
-    /**
-     * Retrieve a Summon cover.
-     *
-     * @param string $id Serials Solutions client key.
-     *
-     * @return bool      True if image loaded, false otherwise.
-     */
-    protected function summon($id)
-    {
-        $isn = $this->isn->get13();
-        $url = 'http://api.summon.serialssolutions.com/2.0.0/image/isbn/' . $id .
-            '/' . $isn . '/' . $this->size;
-        return $this->processImageURLForSource($url, 'summon');
-    }
-
-    /**
-     * Retrieve a Booksite cover.
-     *
-     * @return bool      True if image loaded, false otherwise.
-     */
-    protected function booksite()
-    {
-        $isn = $this->isn->get13();
-        $url = isset($this->config->Booksite->url)
-            ? $this->config->Booksite->url  : 'https://api.booksite.com';
-        if (! isset($this->config->Booksite->key)) {
-            throw new \Exception("Booksite 'key' not set in VuFind config");
-        }
-        $key = $this->config->Booksite->key;
-        $url = $url . '/poca/content_img?apikey=' . $key . '&ean=' . $isn;
-        return $this->processImageURLForSource($url, 'booksite');
-    }
-
 }

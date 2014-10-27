@@ -19,17 +19,17 @@
   <label class="offscreen" for="searchForm_lookfor">
     <?=$this->transEsc("Search")?>
   </label>
-  <input type="search" placeholder="<?=$this->transEsc("Search")?>" name="lookfor" id="searchForm_lookfor" value="<?=$this->escapeHtml($this->lookfor)?>"/>
+  <input type="search" placeholder="<?=$this->transEsc("Search")?>" name="lookfor" id="searchForm_lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
   
   <label class="offscreen" for="searchForm_type"><?=$this->transEsc("Search Type")?></label>
   <? if ($handlerCount > 1): ?>
     <select id="searchForm_type" name="type" data-native-menu="false">
       <? foreach ($handlers as $handler): ?>
-        <option value="<?=$this->escapeHtml($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
+        <option value="<?=$this->escapeHtmlAttr($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
       <? endforeach; ?>
     </select>
   <? elseif ($handlerCount == 1): ?>
-    <input type="hidden" name="type" value="<?=$this->escapeHtml($handlers[0]['value'])?>" />
+    <input type="hidden" name="type" value="<?=$this->escapeHtmlAttr($handlers[0]['value'])?>" />
   <? endif; ?>
   <div data-role="fieldcontain">
     <input type="submit" data-theme="b" name="submit" value="<?=$this->transEsc("Find")?>"/>
@@ -37,14 +37,14 @@
   <?
     /* Show hidden field for active search class when in combined handler mode. */
     if ($this->searchbox()->combinedHandlersActive()) {
-      echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtml($this->searchClassId) . '" />';
+      echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtmlAttr($this->searchClassId) . '" />';
     }
     /* Load hidden limit preference from Session */
     if (!empty($lastLimit)) {
-      echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';
+      echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
     }
     if (!empty($lastSort)) {
-      echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
+      echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
     }
   ?>
 </form>

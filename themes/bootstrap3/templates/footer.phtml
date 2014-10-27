@@ -1,0 +1,27 @@
+<hr/>
+<div class="row">
+  <div class="col-sm-4">
+    <p><strong><?=$this->transEsc('Search Options')?></strong></p>
+    <ul>
+      <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
+      <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
+    </ul>
+  </div>
+  <div class="col-sm-4">
+    <p><strong><?=$this->transEsc('Find More')?></strong></p>
+    <ul>
+      <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+      <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+      <li><a href="<?=$this->url('search-reserves')?>"><?=$this->transEsc('Course Reserves')?></a></li>
+      <li><a href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a></li>
+    </ul>
+  </div>
+  <div class="col-sm-4">
+    <p><strong><?=$this->transEsc('Need Help?')?></strong></p>
+    <ul>
+      <li><a href="<?=$this->url('help-home')?>?topic=search" class="help-link" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Search Tips')?></a></li>
+      <li><a href="#"><?=$this->transEsc('Ask a Librarian')?></a></li>
+      <li><a href="#"><?=$this->transEsc('FAQs')?></a></li>
+    </ul>
+  </div>
+</div>

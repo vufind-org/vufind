@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -128,7 +128,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
     protected $where = null;
 
     /**
-     * @var null|string
+     * @var array
      */
     protected $order = array();
 
@@ -499,7 +499,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 $this->offset = null;
                 break;
             case self::ORDER:
-                $this->order = null;
+                $this->order = array();
                 break;
             case self::COMBINE:
                 $this->combine = array();

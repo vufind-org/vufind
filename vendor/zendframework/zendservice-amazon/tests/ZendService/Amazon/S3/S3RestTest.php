@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Service
  */
@@ -162,8 +162,8 @@ BODY;
             ->with('/');
 
         $this->httpClient->expects($this->once())
-             ->method('setUri')
-            ->with($this->uriHttp);
+            ->method('setUri')
+            ->with((string) $this->uriHttp);
 
         $this->httpClient->expects($this->once())
             ->method('setMethod')
@@ -273,4 +273,3 @@ BODY;
         $this->amazon->_validBucketName('iam.aninvalid.-bucketname');
     }
 }
-

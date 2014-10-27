@@ -12,10 +12,10 @@
 <? ob_start(); ?>
   <div class="alphaBrowsePageLinks">
     <? if (isset($prevpage)): ?>
-      <div class="alphaBrowsePrevLink"><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtml($filterString)?>">&laquo; <?=$this->transEsc('Prev')?></a></div>
+      <div class="alphaBrowsePrevLink"><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtmlAttr($filterString)?>">&laquo; <?=$this->transEsc('Prev')?></a></div>
     <? endif; ?>
     <? if (isset($nextpage)): ?>
-      <div class="alphaBrowseNextLink"><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtml($filterString)?>"><?=$this->transEsc('Next')?> &raquo;</a></div>
+      <div class="alphaBrowseNextLink"><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->transEsc('Next')?> &raquo;</a></div>
     <? endif; ?>
     <div class="clear"></div>
   </div>
@@ -34,22 +34,22 @@
                 }
             }
         ?>
-        <a href="<?=$this->escapeHtml($removalUrl)?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="Delete"/></a>
-        <a href="<?=$this->escapeHtml($removalUrl)?>"><?=$this->escapeHtml($filter['displayText'])?></a>
+        <a href="<?=$this->escapeHtmlAttr($removalUrl)?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="Delete"/></a>
+        <a href="<?=$this->escapeHtmlAttr($removalUrl)?>"><?=$this->escapeHtml($filter['displayText'])?></a>
       </li>
     <? endforeach; ?>
     </ul>
 <? endif; ?>
 <div class="browseAlphabetSelector">
   <? foreach ($letters as $letter): ?>
-   <div class="browseAlphabetSelectorItem"><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtml($filterString)?>"><?=$this->escapeHtml($letter)?></a></div>
+   <div class="browseAlphabetSelectorItem"><a href="<?=$this->url('collections-home')?>?from=<?=urlencode($letter)?><?=$this->escapeHtmlAttr($filterString)?>"><?=$this->escapeHtml($letter)?></a></div>
   <? endforeach; ?>
 </div>
 
 <div class="browseJumpTo">
 <form method="GET" action="<?=$this->url('collections-home')?>" class="browseForm">
   <input type="submit" value="<?=$this->transEsc('Jump to')?>" />
-  <input type="text" name="from" value="<?=$this->escapeHtml($from)?>" />
+  <input type="text" name="from" value="<?=$this->escapeHtmlAttr($from)?>" />
 </form>
 </div>
 

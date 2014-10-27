@@ -42,6 +42,11 @@ use Zend\Db\TableGateway\AbstractTableGateway,
  */
 class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterface
 {
+    /**
+     * Name of class used to represent rows (null for default)
+     *
+     * @var string
+     */
     protected $rowClass = null;
     
     /**
@@ -90,7 +95,8 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
         // Special case for PostgreSQL sequences:
         if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
             $cfg = $this->getServiceLocator()->getServiceLocator()->get('config');
-            $maps = $cfg['vufind']['pgsql_seq_mapping'];
+            $maps = isset($cfg['vufind']['pgsql_seq_mapping'])
+                ? $cfg['vufind']['pgsql_seq_mapping'] : null;
             if (isset($maps[$this->table])) {
                 $this->featureSet = new Feature\FeatureSet();
                 $this->featureSet->addFeature(

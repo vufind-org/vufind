@@ -39,6 +39,13 @@ namespace VuFindTheme;
 class ResourceContainer
 {
     /**
+     * Less CSS files
+     *
+     * @var array
+     */
+    protected $less = array();
+
+    /**
      * CSS files
      *
      * @var array
@@ -74,6 +81,25 @@ class ResourceContainer
     protected $generator = '';
 
     /**
+     * Add a Less CSS file.
+     *
+     * @param array|string $less Less CSS file (or array of Less CSS files) to add
+     *
+     * @return void
+     */
+    public function addLessCss($less)
+    {
+        if (!is_array($less) && !is_a($less, 'Traversable')) {
+            $less = array($less);
+        }
+        unset($less['active']);
+        foreach ($less as $current) {
+            $this->less[] = $current;
+            $this->removeCSS($current);
+        }
+    }
+
+    /**
      * Add a CSS file.
      *
      * @param array|string $css CSS file (or array of CSS files) to add (possibly
@@ -87,7 +113,9 @@ class ResourceContainer
             $css = array($css);
         }
         foreach ($css as $current) {
-            $this->css[] = $current;
+            if (!$this->dynamicallyParsed($current)) {
+                $this->css[] = $current;
+            }
         }
     }
 
@@ -107,6 +135,16 @@ class ResourceContainer
         foreach ($js as $current) {
             $this->js[] = $current;
         }
+    }
+
+    /**
+     * Get Less CSS files.
+     *
+     * @return array
+     */
+    public function getLessCss()
+    {
+        return array_unique($this->less);
     }
 
     /**
@@ -193,5 +231,39 @@ class ResourceContainer
     public function getGenerator()
     {
         return $this->generator;
+    }
+
+    /**
+     * Check if a CSS file is being dynamically compiled in LESS
+     *
+     * @param string $file Filename to check
+     *
+     * @return boolean
+     */
+    protected function dynamicallyParsed($file)
+    {
+        if (empty($this->less)) {
+            return false;
+        }
+        list($fileName, ) = explode('.', $file);
+        $lessFile = $fileName . '.less';
+        return in_array($lessFile, $this->less, true);
+    }
+
+    /**
+     * Remove a CSS file if it matches another file's name
+     *
+     * @param string $file Filename to remove
+     *
+     * @return boolean
+     */
+    protected function removeCSS($file)
+    {
+        list($name, ) = explode('.', $file);
+        $name .= '.css';
+        $index = array_search($name, $this->css);
+        if (false !== $index) {
+            unset($this->css[$index]);
+        }
     }
 }

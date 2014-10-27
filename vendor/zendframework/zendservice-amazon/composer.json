@@ -14,7 +14,7 @@
     "license": "BSD-3-Clause",
     "autoload": {
         "psr-0": {
-            "ZendService": "library/"
+            "ZendService\\Amazon\\": "library/"
         }
     },
     "repositories": [
@@ -25,13 +25,14 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "zendframework/zend-http": ">=2.0.0",
-        "zendframework/zendrest": ">=2.0.0",
-        "zendframework/zend-crypt": ">=2.0.0",
-        "zendframework/zend-json": ">=2.0.0"
+        "zendframework/zend-http": "~2.0",
+        "zendframework/zendrest": "~2.0",
+        "zendframework/zend-crypt": "~2.0",
+        "zendframework/zend-json": "~2.0",
+        "zendframework/zendxml": "~1.0-dev"
     },
     "require-dev": {
-        "zendframework/zend-i18n": ">=2.0.0"
+        "zendframework/zend-i18n": "~2.0"
     },
     "suggest": {
         "zendframework/zend-uri": "Zend\\Uri component"

@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:database_gateways Wiki
  */
 namespace VuFind\Db\Table;
+use Zend\ServiceManager\ConfigInterface;
 
 /**
  * Database table plugin manager
@@ -43,11 +44,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * Make sure table gateways are properly initialized.
      *
-     * @param null|ConfigInterface $configuration Configuration settings (optional)
+     * @param ConfigInterface $configuration Configuration settings (optional)
      */
-    public function __construct(
-        \Zend\ServiceManager\ConfigInterface $configuration = null
-    ) {
+    public function __construct(ConfigInterface $configuration = null)
+    {
         parent::__construct($configuration);
         $initializer = function ($instance, $manager) {
             $instance

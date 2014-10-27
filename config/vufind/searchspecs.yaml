@@ -353,6 +353,7 @@ AllFields:
     - fulltext_unstemmed^10
     - allfields
     - fulltext
+    - description
     - isbn
     - issn
   QueryFields:
@@ -406,6 +407,8 @@ AllFields:
     allfields:
       - [or, ~]
     fulltext:
+      - [or, ~]
+    description:
       - [or, ~]
     isbn:
       - [onephrase, ~]

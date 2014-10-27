@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend
  */
@@ -62,7 +62,7 @@ if (defined('TESTS_GENERATE_REPORT') && TESTS_GENERATE_REPORT === true) {
     $lastArg = end($_SERVER['argv']);
     if (is_dir($zfCoreTests . '/' . $lastArg)) {
         $codeCoverageFilter->addDirectoryToWhitelist($zfCoreLibrary . '/' . $lastArg);
-    } else if (is_file($zfCoreTests . '/' . $lastArg)) {
+    } elseif (is_file($zfCoreTests . '/' . $lastArg)) {
         $codeCoverageFilter->addDirectoryToWhitelist(dirname($zfCoreLibrary . '/' . $lastArg));
     } else {
         $codeCoverageFilter->addDirectoryToWhitelist($zfCoreLibrary);

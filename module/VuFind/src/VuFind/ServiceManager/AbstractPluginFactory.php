@@ -64,17 +64,18 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      */
     protected function getClassName($name, $requestedName)
     {
-        // If we have a FQCN, return it as-is; otherwise, prepend the default prefix:
-        if (strpos($name, '\\') === false) {
-            // First try the raw service name, then try a normalized version:
-            $name = $this->defaultNamespace . '\\' . $requestedName
-                . $this->classSuffix;
-            if (!class_exists($name)) {
-                $name = $this->defaultNamespace . '\\' . ucwords(strtolower($name))
-                    . $this->classSuffix;
-            }
+        // If we have a FQCN that refers to an existing class, return it as-is:
+        if (strpos($requestedName, '\\') !== false && class_exists($requestedName)) {
+            return $requestedName;
         }
-        return $name;
+        // First try the raw service name, then try a normalized version:
+        $finalName = $this->defaultNamespace . '\\' . $requestedName
+            . $this->classSuffix;
+        if (!class_exists($finalName)) {
+            $finalName = $this->defaultNamespace . '\\' . ucwords(strtolower($name))
+                . $this->classSuffix;
+        }
+        return $finalName;
     }
 
     /**

@@ -120,11 +120,12 @@ class Bootstrapper
 
         // Use naming conventions to set up a bunch of services based on namespace:
         $namespaces = array(
-            'Auth', 'Autocomplete', 'Db\Table', 'Hierarchy\Driver',
-            'Hierarchy\TreeDataSource', 'Hierarchy\TreeRenderer', 'ILS\Driver',
-            'Recommend', 'RecordDriver', 'RecordTab', 'Related', 'Resolver\Driver',
-            'Search\Options', 'Search\Params', 'Search\Results', 'Session',
-            'Statistics\Driver'
+            'Auth', 'Autocomplete', 'Content', 'Content\AuthorNotes',
+            'Content\Covers', 'Content\Excerpts', 'Content\Reviews', 'Db\Table',
+            'Hierarchy\Driver', 'Hierarchy\TreeDataSource', 'Hierarchy\TreeRenderer',
+            'ILS\Driver', 'Recommend', 'RecordDriver', 'RecordTab', 'Related',
+            'Resolver\Driver', 'Search\Options', 'Search\Params', 'Search\Results',
+            'Session', 'Statistics\Driver'
         );
         foreach ($namespaces as $ns) {
             $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';
@@ -363,9 +364,8 @@ class Bootstrapper
             }
 
             $sm = $event->getApplication()->getServiceManager();
-            $langFile = APPLICATION_PATH  . '/languages/' . $language . '.ini';
             $sm->get('VuFind\Translator')
-                ->addTranslationFile('ExtendedIni', $langFile, 'default', $language)
+                ->addTranslationFile('ExtendedIni', null, 'default', $language)
                 ->setLocale($language);
 
             // Send key values to view:

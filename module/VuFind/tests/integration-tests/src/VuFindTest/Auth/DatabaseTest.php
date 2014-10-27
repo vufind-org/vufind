@@ -39,15 +39,12 @@ use VuFind\Auth\Database;
  */
 class DatabaseTest extends \VuFindTest\Unit\DbTestCase
 {
-    protected $auth;
-
     /**
-     * Constructor
+     * Object to test
+     *
+     * @var Database
      */
-    public function __construct()
-    {
-        $this->auth = $this->getAuthManager()->get('Database');
-    }
+    protected $auth;
 
     /**
      * Standard setup method.
@@ -82,6 +79,7 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
         if (!$this->continuousIntegrationRunning()) {
             return $this->markTestSkipped('Continuous integration not running.');
         }
+        $this->auth = $this->getAuthManager()->get('Database');
     }
 
     /**

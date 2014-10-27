@@ -51,7 +51,7 @@ ul.comments .ui-li-aside {
 ul.comments p {
     white-space: normal;
     margin-top: .3em;
-    font-size: 14px;;
+    font-size: 14px;
 }
 ul.comments p.posted-by {
     font-size: 12px;
@@ -64,7 +64,7 @@ ul.history .ui-icon-plus {
 }
 ul.history p {
     white-space: normal;
-    font-size: 12px;;
+    font-size: 12px;
 }
 .result {
     white-space: normal !important;
@@ -204,6 +204,11 @@ div.footer-text {
     color:#ff890f;
     padding-left:18px
 }
+.ajax_hold_request_loading {
+    background: url(../images/loading.gif) no-repeat left top;
+    padding:0 .5em .5em 20px;
+}
+
 .error, .alert, .info {
   text-align:center;
   padding:10px 0;

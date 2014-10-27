@@ -68,6 +68,13 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetSort = null;
 
     /**
+     * Fields for visual faceting
+     *
+     * @var string
+     */
+    protected $pivotFacets = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -234,32 +241,19 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @param string $facetList     Config section containing fields to activate
      * @param string $facetSettings Config section containing related settings
+     * @param string $cfgFile       Name of configuration to load
      *
      * @return bool                 True if facets set, false if no settings found
      */
-    protected function initFacetList($facetList, $facetSettings)
+    protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
     {
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
-        if (!isset($config->$facetList)) {
-            return false;
-        }
-        if (isset($config->$facetSettings->orFacets)) {
-            $orFields
-                = array_map('trim', explode(',', $config->$facetSettings->orFacets));
-        } else {
-            $orFields = array();
-        }
-        foreach ($config->$facetList as $key => $value) {
-            $useOr = (isset($orFields[0]) && $orFields[0] == '*')
-                || in_array($key, $orFields);
-            $this->addFacet($key, $value, $useOr);
-        }
         if (isset($config->$facetSettings->facet_limit)
             && is_numeric($config->$facetSettings->facet_limit)
         ) {
             $this->setFacetLimit($config->$facetSettings->facet_limit);
         }
-        return true;
+        return parent::initFacetList($facetList, $facetSettings, $cfgFile);
     }
 
     /**
@@ -490,7 +484,35 @@ class Params extends \VuFind\Search\Base\Params
             $backendParams->add('hl', 'false');
         }
 
+        // Pivot facets for visual results
+
+        if ($pf = $this->getPivotFacets()) {
+            $backendParams->add('facet.pivot', $pf);
+        }
+
         return $backendParams;
+    }
+
+    /**
+     * Set pivot facet fields to use for visual results
+     *
+     * @param string $facets A comma-separated list of fields
+     *
+     * @return void
+     */
+    public function setPivotFacets($facets)
+    {
+        $this->pivotFacets = $facets;
+    }
+
+    /**
+     * Get pivot facet information for visual facets
+     *
+     * @return string
+     */
+    public function getPivotFacets()
+    {
+        return $this->pivotFacets;
     }
 
     /**
@@ -510,8 +532,18 @@ class Params extends \VuFind\Search\Base\Params
         );
 
         // Convert range queries to a language-non-specific format:
+        $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
+            // Simple case: [X TO Y]
             $filter['displayText'] = $matches[1] . '-' . $matches[2];
+        } else if (preg_match($caseInsensitiveRegex, $value, $matches)) {
+            // Case insensitive case: [x TO y] OR [X TO Y]; convert
+            // only if values in both ranges match up!
+            if (strtolower($matches[3]) == strtolower($matches[1])
+                && strtolower($matches[4]) == strtolower($matches[2])
+            ) {
+                $filter['displayText'] = $matches[1] . '-' . $matches[2];
+            }
         }
 
         return $filter;

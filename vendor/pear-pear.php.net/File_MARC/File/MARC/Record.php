@@ -550,7 +550,9 @@ class File_MARC_Record
         /* End fields and record */
 
         $json->fields = $fields;
-        return json_encode($json);
+        $json_rec = json_encode($json);
+        // Required because json_encode() does not let us stringify integer keys
+        return preg_replace('/("subfields":)(.*?)\["([^\"]+?)"\]/', '\1\2{"0":"\3"}', $json_rec);
     }
 
     // }}}

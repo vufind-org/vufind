@@ -64,7 +64,7 @@ class AdapterFactory
      * @param string $overridePass Password override (leave null to use password
      * from config.ini)
      *
-     * @return object
+     * @return Adapter
      */
     public function getAdapter($overrideUser = null, $overridePass = null)
     {
@@ -99,7 +99,7 @@ class AdapterFactory
      *
      * @param array $options Options for building adapter
      *
-     * @return object
+     * @return Adapter
      */
     public function getAdapterFromOptions($options)
     {       
@@ -138,7 +138,7 @@ class AdapterFactory
      * @param string $overridePass     Password override (leave null to use password
      * from connection string)
      *
-     * @return object
+     * @return Adapter
      */
     public function getAdapterFromConnectionString($connectionString,
         $overrideUser = null, $overridePass = null

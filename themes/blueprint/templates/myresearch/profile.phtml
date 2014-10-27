@@ -34,7 +34,7 @@
     ?>
     <select id="home_library" name="home_library">
       <? foreach ($this->pickup as $lib): ?>
-        <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
+        <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
       <? endforeach; ?>
     </select>
     <br class="clear"/>
@@ -46,6 +46,8 @@
               $this->transEsc('Address') . ' 1' => 'address1',
               $this->transEsc('Address') . ' 2' => 'address2',
               $this->transEsc('Zip') => 'zip',
+              $this->transEsc('City') => 'city',
+              $this->transEsc('Country') => 'country',
               $this->transEsc('Phone Number') => 'phone',
               $this->transEsc('Group') => 'group'
           )

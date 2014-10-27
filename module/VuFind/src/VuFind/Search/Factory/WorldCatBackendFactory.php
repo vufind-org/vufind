@@ -113,11 +113,8 @@ class WorldCatBackendFactory implements FactoryInterface
     {
         $wsKey = isset($this->config->WorldCat->apiKey)
             ? $this->config->WorldCat->apiKey : null;
-        $limitCodes = isset($this->config->WorldCat->LimitCodes)
-            ? $this->config->WorldCat->LimitCodes : null;
         $connector = new Connector(
-            $wsKey, $limitCodes,
-            $this->serviceLocator->get('VuFind\Http')->createClient()
+            $wsKey, $this->serviceLocator->get('VuFind\Http')->createClient()
         );
         $connector->setLogger($this->logger);
         return $connector;

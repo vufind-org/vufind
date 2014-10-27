@@ -1,0 +1,109 @@
+<?php
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - Tag Management'));
+?>
+
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <h2><?=$this->translate('Tag Management')?></h2>
+    <h3><?=$this->translate('List Tags')?></h3>
+
+    <?=$this->render("admin/tags/menu.phtml")?>
+
+    <?=$this->flashmessages()?>
+
+    <div class="tagForm">
+      <form action="<?= $this->url('admin/tags', array('action' => 'List'))?>" method="get">
+
+        <fieldset>
+          <legend><?=$this->translate('filter_tags')?></legend>
+
+          <div class="row">
+            <div class="col-sm-3">
+              <label for="user_id"><?=$this->translate('Username')?></label>
+              <select name="user_id" id="user_id" class="form-control">
+                <option value="ALL"><?=$this->translate('All')?></option>
+                <? foreach($this->uniqueUsers as $user):?>
+                  <option value="<?= $user['user_id'] ?>"<? if(isset($this->params['user_id']) && $user['user_id'] == $this->params['user_id']): ?> selected="selected"<? endif;?>>
+                    <?=$user['username'] ?>
+                  </option>
+                <? endforeach;?>
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <label for="tag_id"><?=$this->translate('Tag')?></label>
+              <select name="tag_id" id="tag_id" class="form-control">
+                <option value="ALL"><?=$this->translate('All')?></option>
+                <? foreach($this->uniqueTags as $tag):?>
+                <option value="<?= $tag['tag_id'] ?>"<? if(isset($this->params['tag_id']) && $tag['tag_id'] == $this->params['tag_id']): ?> selected="selected"<? endif;?>>
+                    <?=$tag['tag'] ?>
+                </option>
+                <? endforeach;?>
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <label for="resource_id"><?=$this->translate('Title')?></label>
+              <select name="resource_id" id="resource_id" class="form-control">
+                <option value="ALL"><?=$this->translate('All')?></option>
+                <? foreach($this->uniqueResources as $resource):?>
+                <option value="<?= $resource['resource_id']; ?>" title="<?=$resource['title'] ?>"<? if(isset($this->params['resource_id']) && $resource['resource_id'] == $this->params['resource_id']): ?> selected="selected"<? endif;?>>
+                    <?=$this->truncate($resource['title'], 80) ?> (<?=$resource['resource_id'] ?>)
+                </option>
+                <? endforeach;?>
+              </select>
+            </div>
+            <div class="col-sm-3">
+              <input type="submit" value="<?=$this->transEsc('Filter')?>" class="btn btn-primary">
+              <? if((isset($this->params['user_id']) && !is_null($this->params['user_id'])) || (isset($this->params['tag_id']) && !is_null($this->params['tag_id'])) || (isset($this->params['resource_id']) && !is_null($this->params['resource_id']))):?>
+                <a href="<?= $this->url('admin/tags', array('action' => 'List')); ?>"><?=$this->translate('clear_tag_filter')?></a>
+              <? endif;?>
+            </div>
+          </div>
+
+        </fieldset>
+
+      </form>
+    </div>
+
+    <? if(count($this->results) > 0):?>
+      <div class="tagsList">
+        <form action="<?= $this->url('admin/tags', array('action' => 'Delete'))?>" method="post">
+          <input type="hidden" name="user_id" value="<?=isset($this->params['user_id']) ? $this->params['user_id'] : '' ?>" />
+          <input type="hidden" name="tag_id" value="<?=isset($this->params['tag_id']) ? $this->params['tag_id'] : '' ?>" />
+          <input type="hidden" name="resource_id" value="<?=isset($this->params['resource_id']) ? $this->params['resource_id'] : '' ?>" />
+          <input type="hidden" name="origin" value="list" />
+
+          <table class="table table-striped">
+            <tr>
+              <th>&nbsp;</th>
+              <th><?=$this->translate('Username')?></th>
+              <th><?=$this->translate('Tag')?></th>
+              <th><?=$this->translate('Title')?></th>
+            </tr>
+
+            <? foreach ($this->results as $tag): ?>
+              <tr>
+                <td><?=$this->render('admin/tags/checkbox', array('tag'=>$tag)) ; ?></td>
+                <td><?=$tag->username ?> (<?= $tag->user_id?>)</td>
+                <td><?=$tag->tag?> (<?= $tag->tag_id?>)</td>
+                <td><?=$tag->title?> (<?= $tag->resource_id?>)</td>
+              </tr>
+            <? endforeach;?>
+          </table>
+
+          <input type="submit" name="deleteSelected" value="<?=$this->transEsc('delete_selected')?>" class="btn btn-default">
+          <input type="submit" name="deletePage" value="<?=$this->transEsc('delete_page')?>" class="btn btn-default">
+          <input type="submit" name="deleteFilter" value="<?=$this->transEsc('delete_all')?>" class="btn btn-default">
+
+        </form>
+      </div>
+      <?=$this->paginationControl($this->results, 'Sliding', 'admin/tags/pagination.phtml', array('params' => $this->params))?>
+    <? else:?>
+      <p><?=$this->translate('tag_filter_empty')?></p>
+    <? endif;?>
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->render("admin/menu.phtml")?>
+  </div>
+</div>

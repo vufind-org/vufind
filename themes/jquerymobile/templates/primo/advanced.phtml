@@ -1,0 +1,67 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Advanced Search'));
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'Solr';
+  }
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $lastSort = $options->getLastSort();
+  $lastLimit = $options->getLastLimit();
+?>
+<div data-role="page" id="Search-home">
+  <?=$this->mobileMenu()->header(array('hideSearchLink' => true))?>
+  <div data-role="content">
+    <!-- SEARCH BOXES -->
+    <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" data-ajax="false">
+      <input type="hidden" name="join" value="AND" />
+      <? $numGroups = 1; $numRows = 3; // hard-coded sizes ?>
+      <? for ($i = 0; $i < $numGroups; $i++): ?>
+        <input type="hidden" name="bool<?=$i?>[]" value="AND" />
+        <fieldset class="ui-grid-b">
+        <? for ($j = 0; $j < $numRows; $j++): ?>
+          <div class="ui-block-a">
+            <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]">
+              <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                <option value="<?=$this->escapeHtmlAttr($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
+              <? endforeach; ?>
+            </select>
+          </div>
+          <div class="ui-block-b">
+            <select id="searchForm_op<?=$i?>_<?=$j?>" name="op<?=$i?>[]">
+              <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
+                <option value="<?=$this->escapeHtmlAttr($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
+              <? endforeach; ?>
+            </select>
+          </div>
+          <div class="ui-block-c">
+            <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="" name="lookfor<?=$i?>[]" style="margin-top:.5em;height:28px"/>
+          </div>
+        <? endfor; ?>
+        </fieldset>
+      <? endfor; ?>
+      <? $lastSort = $this->options->getLastSort(); ?>
+      <? if (!empty($lastSort)): ?>
+        <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
+      <? endif; ?>
+      <hr/>
+      <fieldset class="ui-grid-solo">
+        <div class="ui-block-a">
+          <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>" data-role="button" data-theme="b"/>
+        </div>
+      </fieldset>
+      <?
+        /* Load hidden limit preference from Session */
+        if (!empty($lastLimit)) {
+          echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
+        }
+        if (!empty($lastSort)) {
+          echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
+        }
+      ?>
+    </form>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

@@ -26,7 +26,14 @@
     <ul class="well well-small nav nav-list" id="list2">
     <? foreach($this->categoryList as $findby=>$category): ?>
       <li<? if ($this->findby == $findby): ?> class="active"<? endif; ?>>
-        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>"><?=$this->transEsc($category)/*html*/?> <i class="icon-angle-right pull-right"></i></a>
+        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>">
+          <? if(is_string($category)): ?>
+            <?=$this->transEsc($category)?>
+            <i class="icon-angle-right pull-right"></i>
+          <? else: ?>
+            <?=$this->transEsc($category['text'])?> (<?=number_format($category['count'])?>)
+          <? endif; ?>
+        </a>
       </li>
     <? endforeach; ?>
     </ul>

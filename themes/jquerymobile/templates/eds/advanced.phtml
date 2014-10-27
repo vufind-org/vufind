@@ -1,0 +1,123 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Advanced Search'));
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'Solr';
+  }
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $searchHome = $basicSearch;
+  $searchHome['action'] = 'Home';
+  $lastSort = $options->getLastSort();
+  $lastLimit = $options->getLastLimit();
+?>
+<div data-role="page" id="Search-home">
+  <?=$this->mobileMenu()->header(array('hideSearchLink' => true))?>
+  <div data-role="content">
+    <!-- SEARCH BOXES -->
+    <form method="get" action="<?=$this->url($basicSearch)?>" data-ajax="false">
+      <input type="hidden" name="join" value="AND" />
+      <fieldset class="ui-grid-a">
+      <? for ($i = 0; $i < 3; $i++): ?>
+        <div class="ui-block-a">
+          <? if ($i == 0): ?>
+            <input type="hidden" name="op0[]" value="AND" />
+            <label for="search_lookfor0">
+              <?=$this->transEsc("Search")?>
+            </label>
+          <? else: ?>
+            <select id="searchForm_type" name="op0[]" data-mini="true">
+              <? foreach (array('AND', 'OR', 'NOT') as $searchVal): ?>
+                <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>>
+                  <?=$this->transEsc($searchVal)?>
+                </option>
+              <? endforeach; ?>
+            </select>
+          <? endif; ?>
+        </div>
+        <div class="ui-block-b">
+          <input id="search_lookfor<?=$i ?>" type="text" name="lookfor0[]" style="margin-top:.5em;height:28px"/>
+        </div>
+      <? endfor; ?>
+      </fieldset>
+      <fieldset class="ui-grid-a">
+        <hr/>
+        <h3><?=$this->transEsc('eds_modes_and_expanders')?></h3>
+        <? foreach ($this->expanderList as $field => $expander):
+          $value = $expander['Value'] ?>
+          <label class="checkbox" for="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
+            <input id="expand_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($expander['selected']) && $expander['selected'])?'checked="checked"':''?> name="filter[]" value="EXPAND:<?=$this->escapeHtmlAttr($value)?>">
+            <?=$this->transEsc('eds_expander_' . $value, array(), $expander['Label'])?>
+          </label>
+        <? endforeach; ?>
+        <hr/>
+        <h3><?=$this->transEsc('Limit To')?></h3>
+        <? foreach ($this->limiterList as $field => $facet): ?>
+          <? switch($facet['Type']){
+              case 'multiselectvalue': ?>
+                <h3><?=$this->transEsc($facet['Label'])?></h3>
+                <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10">
+                  <? foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
+                    <? $value = $facetValue['Value']; ?>
+                    <option value="<?='LIMIT|'.$this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
+                  <? endforeach; ?>
+                </select>
+                <!-- <br/> -->
+                <? break;
+              case 'select':
+                $value = $facet['LimiterValues'][0]['Value'] ?>
+                <label class="checkbox" for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
+                  <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|'.$field . ':' . $value)?>">
+                  <?=$this->transEsc('eds_limiter_' . $field, array(), $facet['Label'])?>
+                </label>
+                <? break;
+              case 'text': ?>
+                <!-- not implemented -->
+                <? break;
+              case 'numeric':?>
+                <!--  not implemented -->
+                <? break;
+              case 'numericrange':?>
+                <!--  not implemented -->
+                <? break;
+              case 'ymrange': ?>
+                <!--  not implemented -->
+                <? break;
+              case 'yrange': ?>
+                <!--  not implemented -->
+                <? break;
+              case 'historicalrange':?>
+                <!--  not implemented -->
+                <? break;
+              case 'singleselectvalue':?>
+                <!--  not implemented -->
+                <? break;
+            }; ?>
+        <? endforeach; ?>
+        <hr/>
+        <div class="ui-block-a">
+          <select id="search_bool0" name="bool0[]">
+            <option value="AND"><?=$this->transEsc("search_match")?>: <?=$this->transEsc('search_AND') ?></option>
+            <option value="OR" ><?=$this->transEsc("search_match")?>: <?=$this->transEsc('search_OR')  ?></option>
+            <option value="NOT"><?=$this->transEsc("search_match")?>: <?=$this->transEsc('search_NOT') ?></option>
+          </select>
+        </div>
+        <div class="ui-block-b">
+          <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>" data-role="button" data-theme="b"/>
+        </div>
+      </fieldset>
+      <?
+        /* Load hidden limit preference from Session */
+        if (!empty($lastLimit)) {
+          echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
+        }
+        if (!empty($lastSort)) {
+          echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
+        }
+      ?>
+    </form>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

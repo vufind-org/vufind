@@ -254,7 +254,7 @@ class WorldCat extends SolrMarc
      */
     public function getPublishers()
     {
-        return $this->getFieldArray('260', array('b'));
+        return $this->getPublicationInfo('b');
     }
 
     /**
@@ -264,7 +264,7 @@ class WorldCat extends SolrMarc
      */
     public function getPublicationDates()
     {
-        return $this->getFieldArray('260', array('c'));
+        return $this->getPublicationInfo('c');
     }
 
     /**

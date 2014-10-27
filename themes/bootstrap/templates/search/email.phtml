@@ -8,7 +8,7 @@
 ?>
 <?=$this->flashmessages()?>
 <form class="form-horizontal" action="" method="post"  name="emailSearch">
-  <input type="hidden" name="url" value="<?=$this->escapeHtml($this->url)?>" />
+  <input type="hidden" name="url" value="<?=$this->escapeHtmlAttr($this->url)?>" />
   <div class="control-group">
     <label class="control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
     <div class="controls">

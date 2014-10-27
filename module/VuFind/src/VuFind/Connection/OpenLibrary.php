@@ -21,7 +21,7 @@
  *
  * @category VuFind2
  * @package  OpenLibrary
- * @author   Eoghan ” Carrag·in <eoghan.ocarragain@gmail.com>
+ * @author   Eoghan √ì Carrag√°in <eoghan.ocarragain@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -34,7 +34,7 @@ namespace VuFind\Connection;
  *
  * @category VuFind2
  * @package  OpenLibrary
- * @author   Eoghan ” Carrag·in <eoghan.ocarragain@gmail.com>
+ * @author   Eoghan √ì Carrag√°in <eoghan.ocarragain@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -111,7 +111,7 @@ class OpenLibrary
         return $result;
     }
 
-     /**
+    /**
      * Return the following array of values for each work:
      * title, cover_id, cover_id_type, key, ia, mainAuthor
      *
@@ -135,7 +135,7 @@ class OpenLibrary
             $json = $response->getBody();
             // parse json
             $data = json_decode($json, true);
-            if ($data) {
+            if ($data && isset($data['works']) && !empty($data['works'])) {
                 $i = 1;
                 foreach ($data['works'] as $work) {
                     if ($i <= $limit) {
@@ -163,7 +163,7 @@ class OpenLibrary
         return $result;
     }
 
-     /**
+    /**
      * Support function to return a normalised version of the search string
      *     for use in the API url
      *
@@ -173,9 +173,8 @@ class OpenLibrary
      */
     protected function normaliseSubjectString($subject)
     {
-        //normalise search term
-        $subject = str_replace('"', "", $subject);
-        $subject = str_replace(",", "", $subject);
+        // Normalise search term
+        $subject = str_replace(array('"', ',', '/'), '', $subject);
         $subject = trim(strtolower($subject));
         $subject = preg_replace("/\s+/", "_", $subject);
         return $subject;

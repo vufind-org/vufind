@@ -1,0 +1,79 @@
+<?
+  $view = $currentSearch['view'];
+  $results = $view->results;
+  $params = $results->getParams();
+  $lookfor = $params->getDisplayQuery();
+  $recordTotal = $results->getResultTotal();
+
+  // More link should use default limit, not custom limit:
+  $limit = $params->getLimit();
+  $params->setLimit($params->getOptions()->getDefaultLimit());
+  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
+  $params->setLimit($limit);
+?>
+<? if (isset($currentSearch['more_link'])): ?>
+  <div class="pull-right">
+    <a href="<?=$moreUrl?>" class="btn btn-link"><i class="fa fa-gears"></i> <?=$this->transEsc('More options')?></a>
+  </div>
+<? endif; ?>
+<h2><?=$this->transEsc($currentSearch['label'])?></h2>
+<? if (isset($currentSearch['sublabel'])): ?>
+  <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
+<? endif; ?>
+<div class="clearfix">
+  <div class="pull-left help-block">
+    <? if ($recordTotal > 0): ?>
+      <?=$this->transEsc("Showing")?>
+      <strong><?=$results->getStartRecord()?></strong> - <strong><?=$results->getEndRecord()?></strong>
+      <? if (!isset($view->skipTotalCount)): ?>
+        <?=$this->transEsc('of')?> <strong><?=number_format($recordTotal)?></strong>
+      <? endif; ?>
+      <? if (isset($view->overrideSearchHeading)): ?>
+        <?=$view->overrideSearchHeading?>
+      <? elseif ($params->getSearchType() == 'basic'): ?>
+        <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
+      <? endif; ?>
+      <? if ($qtime = $results->getQuerySpeed()): ?>
+        <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
+      <? endif; ?>
+      <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $results, $this); ?>
+    <? else: ?>
+      <h3><?=$this->transEsc('nohit_heading')?></h3>
+    <? endif; ?>
+  </div>
+</div>
+<? /* End Listing Options */ ?>
+
+<? if ($recordTotal < 1): ?>
+  <p class="alert alert-danger">
+    <? if (isset($view->overrideEmptyMessage)): ?>
+      <?=$view->overrideEmptyMessage?>
+    <? else: ?>
+      <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+    <? endif; ?>
+  </p>
+  <? if (isset($view->parseError)): ?>
+    <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
+  <? endif; ?>
+  <?=$this->search()->renderSpellingSuggestions($this->transEsc('nohit_spelling') . ':', $results, $this); ?>
+  <? foreach ($results->getRecommendations('top') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+  <? foreach ($results->getRecommendations('noresults') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+<? else: ?>
+  <?
+    $viewType = in_array('list', array_keys($params->getViewList()))
+      ? 'list' : $params->getView();
+    $viewParams = array(
+      'results' => $results,
+      'params' => $params,
+      'showCartControls' => $this->showCartControls
+    );
+  ?>
+  <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
+  <? if (isset($currentSearch['more_link'])): ?>
+    <p><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?> <i class="fa fa-long-arrow-right"></i></a></p>
+  <? endif; ?>
+<? endif; ?>

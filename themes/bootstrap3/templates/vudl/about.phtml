@@ -1,0 +1,24 @@
+<?php
+  $this->headTitle($this->translate($this->title) .' - '. $this->translate('About'));
+  $this->layout()->breadcrumbs = false;
+?>
+
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <div class="alert alert-info">
+      <h2><?=$this->transEsc('Powered By') ?> <a href="http://vudl.org">VuDL</a></h2>
+    </div>
+      <li><strong>Total Collections:</strong> <?=$this->totals['folders'] ?></li>
+      <li><strong>Total Resources:</strong> <?=$this->totals['resources'] ?></li>
+      <!-- These counts aren't working yet --
+      <li><strong>Total Images:</strong> <?=$this->totals['images'] ?></li>
+      <li><strong>Total PDFs:</strong> <?=$this->totals['pdfs'] ?></li> -->
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <ul class="list-group">
+      <li class="list-group-item title"><?=$this->transEsc('Content') ?></li>
+      <li class="list-group-item"><a href="http://vudl.org">VuDL</a></li>
+    </ul>
+  </div>
+</div>

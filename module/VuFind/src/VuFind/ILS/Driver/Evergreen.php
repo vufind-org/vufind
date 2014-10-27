@@ -42,7 +42,18 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
  */
 class Evergreen extends AbstractBase
 {
+    /**
+     * Database connection
+     *
+     * @var PDO
+     */
     protected $db;
+
+    /**
+     * Database name
+     *
+     * @var string
+     */
     protected $dbName;
 
      /**
@@ -183,7 +194,7 @@ HERE;
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $holding = array();
 

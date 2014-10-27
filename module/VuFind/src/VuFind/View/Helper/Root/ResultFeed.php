@@ -40,6 +40,11 @@ use DateTime, Zend\Feed\Writer\Writer as FeedWriter, Zend\Feed\Writer\Feed,
  */
 class ResultFeed extends AbstractHelper
 {
+    /**
+     * Translator helper
+     *
+     * @var object
+     */
     protected $translator = false;
 
     /**

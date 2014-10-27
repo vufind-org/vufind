@@ -1,0 +1,49 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - Home'));
+
+  // Set up map of core name => label
+  $coreLabels = array(
+    'biblio' => $this->translate('Bibliographic Index'),
+    'authority' => $this->translate('Authority Index'),
+    'stats' => $this->translate('Usage Statistics Index')
+  );
+?>
+
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <h2><?=$this->transEsc('VuFind Administration')?></h2>
+    <? $cores = is_object($this->xml) ? $this->xml->xpath('/response/lst[@name="status"]/lst') : array(); ?>
+    <? foreach ($cores as $core): ?>
+      <? $coreName = (string)$core['name']; ?>
+      <? $coreLabel = isset($coreLabels[$coreName]) ? $coreLabels[$coreName] : ucwords($coreName) . ' Index'; ?>
+      <h3><?=$this->transEsc($coreLabel)?></h3>
+      <table class="table table-striped">
+        <tr>
+          <th><?=$this->transEsc('Record Count')?>: </th>
+          <? $recordCount = $core->xpath('//lst[@name="' . $coreName . '"]/lst/int[@name="numDocs"]') ?>
+          <td><?=$this->escapeHtml((string)array_pop($recordCount))?></td>
+        </tr>
+        <tr>
+          <th><?=$this->transEsc('Start Time')?>: </th>
+          <? $startTime = $core->xpath('//lst[@name="' . $coreName . '"]/date[@name="startTime"]') ?>
+          <td><?=$this->escapeHtml(strftime("%b %d, %Y %l:%M:%S%p", strtotime((string)array_pop($startTime))))?></td>
+        </tr>
+        <tr>
+          <th><?=$this->transEsc('Last Modified')?>: </th>
+          <? $lastModified = $core->xpath('//lst[@name="' . $coreName . '"]/lst/date[@name="lastModified"]') ?>
+          <td><?=$this->escapeHtml(strftime("%b %d, %Y %l:%M:%S%p", strtotime((string)array_pop($lastModified))))?></td>
+        </tr>
+        <tr>
+          <th><?=$this->transEsc('Uptime')?>: </th>
+          <? $uptime = $core->xpath('//lst[@name="' . $coreName . '"]/long[@name="uptime"]') ?>
+          <td><?=$this->printms((string)array_pop($uptime))?></td>
+        </tr>
+      </table>
+    <? endforeach; ?>
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->render("admin/menu.phtml")?>
+  </div>
+</div>

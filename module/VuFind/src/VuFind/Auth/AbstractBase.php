@@ -145,11 +145,28 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     }
 
     /**
+     * Update a user's password from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function updatePassword($request)
+    {
+        throw new AuthException(
+            'Account password updating not supported by ' . get_class($this)
+        );
+    }
+
+    /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
-     * send user to after login (some drivers may override this).
+     * send user after login (some drivers may override this).
      *
      * @return bool|string
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -181,6 +198,17 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     public function supportsCreation()
     {
         // By default, account creation is not supported.
+        return false;
+    }
+
+    /**
+     * Does this authentication method support password changing
+     *
+     * @return bool
+     */
+    public function supportsPasswordChange()
+    {
+        // By default, password changing is not supported.
         return false;
     }
 

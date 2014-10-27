@@ -1,10 +1,8 @@
-<table class="table table-bordered">
-  <tr>
-    <? $i = 0; foreach ($this->results->getResults() as $current): ?>
-      <td id="result<?=$i++ ?>" width="25%">
-        <?=$this->record($current)->getSearchResult('grid')?>
-      </td>
-      <?=($i%4==0)?'</tr><tr>':''?>
-    <? endforeach; ?>
-  </tr>
-</table>
+<div class="row-fluid">
+<? $i = 0; foreach ($this->results->getResults() as $current): ?>
+  <div id="result<?=$i++ ?>" class="span3 grid">
+    <?=$this->record($current)->getSearchResult('grid')?>
+  </div>
+  <?=($i%4==0)?'</div><div class="row-fluid">':''?>
+<? endforeach; ?>
+</div>

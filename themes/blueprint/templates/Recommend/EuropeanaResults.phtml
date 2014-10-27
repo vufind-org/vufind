@@ -12,9 +12,9 @@
         <li class="suggestedResult <? (++$i % 2) ? 'alt ' : ''?>record<?=$i?>">
           <div class="resultitem">
             <? if (isset($work['enclosure'])): ?>
-              <span class="europeanaImg"><img src="<?=$this->escapeHtml($work['enclosure'])?>" id="europeanaImage<?=$this->escapeHtml($workKey)?>" style="display: none;" class="europeanaImage" onload="document.getElementById('europeanaImage<?=$this->escapeHtml($workKey)?>').style.display = 'inline';"/></span>
+              <span class="europeanaImg"><img src="<?=$this->escapeHtmlAttr($work['enclosure'])?>" id="europeanaImage<?=$this->escapeHtmlAttr($workKey)?>" style="display: none;" class="europeanaImage" onload="document.getElementById('europeanaImage<?=$this->escapeHtmlAttr($workKey)?>').style.display = 'inline';"/></span>
             <? endif; ?>
-            <a href="<?=$this->escapeHtml($work['link'])?>" target="_blank">
+            <a href="<?=$this->escapeHtmlAttr($work['link'])?>" target="_blank">
               <span><?=$this->escapeHtml($this->truncate($work['title'], 90))?></span>
             </a>
           <div class="clearer"></div>
@@ -22,7 +22,7 @@
       <? endforeach; ?>
     </ul>
     <p class="olSubjectMore">
-      <a href="<?=$this->escapeHtml($data['sourceLink'])?>" title="<?=$this->escapeHtml($data['feedTitle'])?>" target="_blank">
+      <a href="<?=$this->escapeHtmlAttr($data['sourceLink'])?>" title="<?=$this->escapeHtmlAttr($data['feedTitle'])?>" target="_blank">
         <?=$this->transEsc('more')?>...
       </a>
     </p>

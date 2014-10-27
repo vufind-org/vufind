@@ -1,0 +1,90 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - Tag Maintenance'));
+?>
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <h2><?=$this->translate('Tag Management')?></h2>
+    <h3><?=$this->translate('Manage Tags')?></h3>
+
+    <?=$this->render("admin/tags/menu.phtml")?>
+
+    <?=$this->flashmessages()?>
+
+    <form class="form-horizontal" action="<?= $this->url('admin/tags', array('action' => 'Manage'));?>" method="post" role="form">
+      <div class="form-group">
+        <label for="type" class="col-sm-2 control-label"><?=$this->translate('delete_tags_by')?>:</label>
+        <div class="col-sm-6">
+          <select id="type" name="type" class="form-control">
+            <option value="user" <? if("user" == $this->type) echo " selected=selected";?>><?=$this->translate('Username')?></option>
+            <option value="tag" <? if("tag" == $this->type) echo " selected=selected";?>><?=$this->translate('Tag')?></option>
+            <option value="resource" <? if("resource" == $this->type) echo " selected=selected";?>><?=$this->translate('Title')?></option>
+          </select>
+        </div>
+        <div class="col-sm-4">
+          <input type="submit" value="<?=$this->translate('Submit')?>" class="btn btn-primary"/>
+        </div>
+      </div>
+    </form>
+
+    <? if(false !== $this->type):?>
+      <form class="form-horizontal" action="<?= $this->url('admin/tags', array('action' => 'Delete'))?>" method="post">
+        <input type="hidden" name="origin" value="manage" />
+        <input type="hidden" name="type" value="<?= $this->type; ?>" />
+        <? if("user" == $type):?>
+          <div class="form-group">
+            <label for="user_id" class="col-sm-2 control-label"><?=$this->translate('Username')?></label>
+            <div class="col-sm-6">
+              <select name="user_id" id="user_id" class="form-control">
+                <? foreach($this->uniqueUsers as $user):?>
+                <option value="<?= $user['user_id'] ?>">
+                  <?= $user['username'] ?>
+                </option>
+                <? endforeach;?>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <input type="submit"  name="deleteFilter" value="<?=$this->translate('delete_tags')?>" class="btn btn-primary"/>
+            </div>
+          </div>
+        <? elseif("tag" == $type):?>
+          <div class="form-group">
+            <label for="tag_id" class="col-sm-2 control-label"><?=$this->translate('Tag')?></label>
+            <div class="col-sm-6">
+              <select name="tag_id" id="tag_id" class="form-control">
+                <? foreach($this->uniqueTags as $tag):?>
+                <option value="<?= $tag['tag_id'] ?>">
+                    <?= $tag['tag'] ?>
+                </option>
+                <? endforeach;?>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <input type="submit" name="deleteFilter" value="<?=$this->translate('delete_tags')?>" class="btn btn-primary"/>
+            </div>
+          </div>
+        <? elseif("resource" == $type):?>
+          <div class="form-group">
+            <label for="resource_id" class="col-sm-2 control-label"><?=$this->translate('Title')?></label>
+            <div class="col-sm-6">
+              <select name="resource_id" id="resource_id" class="form-control">
+                <? foreach($this->uniqueResources as $resource):?>
+                <option value="<?=$resource['resource_id'] ?>" title="<?=$resource['title'] ?>">
+                  <?=$this->truncate($resource['title'], 80) ?> (<?= $resource['resource_id'] ?>)
+                </option>
+                <? endforeach;?>
+              </select>
+            </div>
+            <div class="col-sm-4">
+              <input type="submit" name="deleteFilter" value="<?=$this->translate('delete_tags')?>" class="btn btn-primary"/>
+            </div>
+        <? endif;?>
+      </form>
+    <? endif;?>
+
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->render("admin/menu.phtml")?>
+  </div>
+</div>

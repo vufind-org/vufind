@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Service
  */
@@ -75,26 +75,33 @@ class Offer
     {
         $xpath = new DOMXPath($dom->ownerDocument);
         $xpath->registerNamespace('az', 'http://webservices.amazon.com/AWSECommerceService/' . Amazon::getVersion());
-        $this->MerchantId = (string) $xpath->query('./az:Merchant/az:MerchantId/text()', $dom)->item(0)->data;
-        $name = $xpath->query('./az:Merchant/az:Name/text()', $dom);
-        if ($name->length == 1) {
-          $this->MerchantName = (string) $name->item(0)->data;
+
+        $map = array(
+            'MerchantId'     => './az:Merchant/az:MerchantId/text()',
+            'MerchantName'   => './az:Merchant/az:Name/text()',
+            'GlancePage'     => './az:Merchant/az:GlancePage/text()',
+            'Condition'      => './az:OfferAttributes/az:Condition/text()',
+            'OfferListingId' => './az:OfferListing/az:OfferListingId/text()',
+            'Price'          => './az:OfferListing/az:Price/az:Amount/text()',
+            'CurrencyCode'   => './az:OfferListing/az:Price/az:CurrencyCode/text()',
+            'Availability'   => './az:OfferListing/az:Availability/text()',
+            'IsEligibleForSuperSaverShipping' => './az:OfferListing/az:IsEligibleForSuperSaverShipping/text()',
+        );
+
+        foreach ($map as $param_name => $xquery) {
+            $query_result = $xpath->query($xquery, $dom);
+            if ($query_result->length <= 0) {
+                continue;
+            }
+            $text = $query_result->item(0);
+            if (!$text instanceof DOMText) {
+                continue;
+            }
+            $this->$param_name = (string) $text->data;
         }
-        $this->GlancePage = (string) $xpath->query('./az:Merchant/az:GlancePage/text()', $dom)->item(0)->data;
-        $this->Condition = (string) $xpath->query('./az:OfferAttributes/az:Condition/text()', $dom)->item(0)->data;
-        $this->OfferListingId = (string) $xpath->query('./az:OfferListing/az:OfferListingId/text()', $dom)->item(0)->data;
-        $Price = $xpath->query('./az:OfferListing/az:Price/az:Amount', $dom);
-        if ($Price->length == 1) {
-            $this->Price = (int) $xpath->query('./az:OfferListing/az:Price/az:Amount/text()', $dom)->item(0)->data;
-            $this->CurrencyCode = (string) $xpath->query('./az:OfferListing/az:Price/az:CurrencyCode/text()', $dom)->item(0)->data;
-        }
-        $availability = $xpath->query('./az:OfferListing/az:Availability/text()', $dom)->item(0);
-        if($availability instanceof DOMText) {
-            $this->Availability = (string) $availability->data;
-        }
-        $result = $xpath->query('./az:OfferListing/az:IsEligibleForSuperSaverShipping/text()', $dom);
-        if ($result->length >= 1) {
-            $this->IsEligibleForSuperSaverShipping = (bool) $result->item(0)->data;
+
+        if (isset($this->IsEligibleForSuperSaverShipping)) {
+            $this->IsEligibleForSuperSaverShipping = (bool) $this->IsEligibleForSuperSaverShipping;
         }
     }
 }

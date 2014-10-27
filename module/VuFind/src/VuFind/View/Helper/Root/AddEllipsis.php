@@ -59,6 +59,22 @@ class AddEllipsis extends AbstractHelper
         // If the dehighlighted string is shorter than the full string, we need
         // to figure out where things changed:
         if (strlen($dehighlighted) < strlen($fullString)) {
+            // If we can splice the highlighted text into the unhighlighted text,
+            // let's do so!
+            $pos = strpos($fullString, $dehighlighted);
+            if ($pos !== false) {
+                // Attach the highlighted snippet to the unhighlighted preceding text
+                $title = substr($fullString, 0, $pos) . $highlighted;
+                // If the overall title is relatively short, attach the rest;
+                // otherwise, unless we already have the full string, add ellipses.
+                if (strlen($fullString) < 160) {
+                    $title .= substr($fullString, $pos + strlen($dehighlighted));
+                } else if ($pos + strlen($dehighlighted) < strlen($fullString)) {
+                    $title = trim($title) . '...';
+                }
+                return $title;
+            }
+
             // If the first five characters don't match chances are something was cut
             // from the front:
             if (substr($dehighlighted, 0, 5) != substr($fullString, 0, 5)) {

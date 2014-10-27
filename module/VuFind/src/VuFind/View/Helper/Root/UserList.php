@@ -40,6 +40,33 @@ use VuFind\Db\Row\UserList as UserListRow, Zend\View\Helper\AbstractHelper;
 class UserList extends AbstractHelper
 {
     /**
+     * List mode (enabled or disabled)
+     *
+     * @var string
+     */
+    protected $mode;
+
+    /**
+     * Constructor
+     *
+     * @param string $mode List mode (enabled or disabled)
+     */
+    public function __construct($mode = 'enabled')
+    {
+        $this->mode = $mode;
+    }
+
+    /**
+     * Get mode
+     *
+     * @return string
+     */
+    public function getMode()
+    {
+        return $this->mode;
+    }
+
+    /**
      * Retrieve the ID of the last list that was accessed, if any.
      *
      * @return mixed User_list ID (if set) or null (if not available).

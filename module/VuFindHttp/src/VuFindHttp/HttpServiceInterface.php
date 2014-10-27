@@ -46,10 +46,10 @@ interface HttpServiceInterface
      *
      * Returns the client given as argument with appropriate proxy setup.
      *
-     * @param Zend\Http\Client $client  HTTP client
-     * @param array            $options ZF2 ProxyAdapter options
+     * @param \Zend\Http\Client $client  HTTP client
+     * @param array             $options ZF2 ProxyAdapter options
      *
-     * @return Zend\Http\Client
+     * @return \Zend\Http\Client
      */
     public function proxify(\Zend\Http\Client $client, array $options = array());
 

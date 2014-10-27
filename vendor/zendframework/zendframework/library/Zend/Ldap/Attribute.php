@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -335,7 +335,7 @@ class Attribute
     {
         $values = static::getAttribute($data, $attribName, $index);
         if (is_array($values)) {
-            for ($i = 0; $i < count($values); $i++) {
+            for ($i = 0, $count = count($values); $i < $count; $i++) {
                 $newVal = static::valueFromLdapDateTime($values[$i]);
                 if ($newVal !== null) {
                     $values[$i] = $newVal;

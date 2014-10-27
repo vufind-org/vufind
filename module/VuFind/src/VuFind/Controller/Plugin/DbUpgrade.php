@@ -40,8 +40,25 @@ use Zend\Db\Adapter\Adapter as DbAdapter, Zend\Db\Metadata\Metadata as DbMetadat
  */
 class DbUpgrade extends AbstractPlugin
 {
+    /**
+     * Database commands to generate table
+     *
+     * @var array
+     */
     protected $dbCommands = array();
+
+    /**
+     * Database adapter
+     *
+     * @var DbAdapter
+     */
     protected $adapter;
+
+    /**
+     * Table metadata
+     *
+     * @var array
+     */
     protected $tableInfo = false;
 
     /**

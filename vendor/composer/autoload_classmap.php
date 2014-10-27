@@ -142,6 +142,7 @@ return array(
     'Validate' => $vendorDir . '/pear-pear.php.net/Validate/Validate.php',
     'Validate_ISPN' => $vendorDir . '/pear-pear.php.net/Validate_ISPN/Validate/ISPN.php',
     'XML_Util' => $vendorDir . '/pear-pear.php.net/XML_Util/XML/Util.php',
+    'lessc' => $vendorDir . '/oyejorge/less.php/lessc.inc.php',
     'phpCAS' => $vendorDir . '/jasig/phpcas/source/CAS.php',
     'sip2' => $vendorDir . '/johnwohlers/sip2/sip2.class.php',
     'uagent_info' => $vendorDir . '/mobileesp/mdetect/mdetect.php',

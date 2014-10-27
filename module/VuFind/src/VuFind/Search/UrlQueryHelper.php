@@ -123,6 +123,16 @@ class UrlQueryHelper
     }
 
     /**
+     * Is query suppressed?
+     *
+     * @return bool
+     */
+    public function isQuerySuppressed()
+    {
+        return $this->suppressQuery;
+    }
+
+    /**
      * Get an array of URL parameters.
      *
      * @return array
@@ -151,6 +161,9 @@ class UrlQueryHelper
                                 }
                                 $params['lookfor'.$i][] = $inner->getString();
                                 $params['type' . $i][] = $inner->getHandler();
+                                if (null !== ($op = $inner->getOperator())) {
+                                    $params['op' . $i][] = $op;
+                                }
                             }
                         } else {
                             throw new \Exception('Unexpected Query object.');
@@ -208,6 +221,9 @@ class UrlQueryHelper
             if (implode(':::', $shards) != implode(':::', $defaultShards)) {
                 $params['shard'] = $shards;
             }
+        }
+        if ($this->params->hasDefaultsApplied()) {
+            $params['dfApplied'] = 1;
         }
 
         return $params;

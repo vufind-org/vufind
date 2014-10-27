@@ -1,0 +1,36 @@
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="account_firstname"><?=$this->transEsc('First Name')?>:</label>
+  <div class="col-sm-9">
+    <input id="account_firstname" type="text" name="firstname" value="<?=$this->escapeHtmlAttr($this->request->get('firstname'))?>" class="form-control"/>
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="account_lastname"><?=$this->transEsc('Last Name')?>:</label>
+  <div class="col-sm-9">
+    <input id="account_lastname" type="text" name="lastname" value="<?=$this->escapeHtmlAttr($this->request->get('lastname'))?>" class="form-control"/>
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="account_email"><?=$this->transEsc('Email Address')?>:</label>
+  <div class="col-sm-9">
+    <input id="account_email" type="email" name="email" value="<?=$this->escapeHtmlAttr($this->request->get('email'))?>" class="form-control"/>
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="account_username"><?=$this->transEsc('Desired Username')?>:</label>
+  <div class="col-sm-9">
+    <input id="account_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control"/>
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="account_password"><?=$this->transEsc('Password')?>:</label>
+  <div class="col-sm-9">
+    <input id="account_password" type="password" name="password" class="form-control"/>
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-sm-3 control-label" for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
+  <div class="col-sm-9">
+    <input id="account_password2" type="password" name="password2" class="form-control"/>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<? $editions = $this->related->getResults(); if (!empty($editions)): ?>
+  <h4><?=$this->transEsc('Other Editions')?></h4>
+  <ul class="list-group">
+    <? foreach ($editions as $data): ?>
+      <li class="list-group-item">
+        <? $formats = $data->getFormats(); ?>
+        <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
+        <a href="<?=$this->recordLink()->getUrl($data)?>"><?=$this->escapeHtml($data->getTitle())?></a>
+        <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
+          <br/><?=$this->transEsc('By')?>: <?=$this->escapeHtml($author);?>
+        <? endif; ?>
+        <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
+          <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+        <? endif; ?>
+      </li>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>

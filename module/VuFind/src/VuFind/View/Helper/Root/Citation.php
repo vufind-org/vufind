@@ -226,18 +226,37 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Get MLA citation.
+     * Get Chicago Style citation.
      *
-     * This function assigns all the necessary variables and then returns an MLA
-     * citation.
+     * This function returns a Chicago Style citation using a modified version
+     * of the MLA logic.
      *
      * @return string
      */
-    public function getCitationMLA()
+    public function getCitationChicago()
+    {
+        return $this->getCitationMLA(9, ', no. ');
+    }
+
+    /**
+     * Get MLA citation.
+     *
+     * This function assigns all the necessary variables and then returns an MLA
+     * citation. By adjusting the parameters below, it can also render a Chicago
+     * Style citation.
+     *
+     * @param int    $etAlThreshold   The number of authors to abbreviate with 'et
+     * al.'
+     * @param string $volNumSeparator String to separate volume and issue number
+     * in citation.
+     *
+     * @return string
+     */
+    public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.')
     {
         $mla = array(
             'title' => $this->getMLATitle(),
-            'authors' => $this->getMLAAuthors()
+            'authors' => $this->getMLAAuthors($etAlThreshold)
         );
         $mla['periodAfterTitle'] = !$this->isPunctuated($mla['title']);
 
@@ -252,7 +271,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
             // Add other journal-specific details:
             $mla['pageRange'] = $this->getPageRange();
             $mla['journal'] =  $this->capitalizeTitle($this->details['journal']);
-            $mla['numberAndDate'] = $this->getMLANumberAndDate();
+            $mla['numberAndDate'] = $this->getMLANumberAndDate($volNumSeparator);
             return $partial('Citation/mla-article.phtml', $mla);
         }
     }
@@ -271,11 +290,14 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Construct volume/issue/date portion of MLA citation.
+     * Construct volume/issue/date portion of MLA or Chicago Style citation.
+     *
+     * @param string $volNumSeparator String to separate volume and issue number
+     * in citation (only difference between MLA/Chicago Style).
      *
      * @return string
      */
-    protected function getMLANumberAndDate()
+    protected function getMLANumberAndDate($volNumSeparator = '.')
     {
         $vol = $this->driver->tryMethod('getContainerVolume');
         $num = $this->driver->tryMethod('getContainerIssue');
@@ -302,7 +324,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
             // If volume and number are both non-empty, separate them with a
             // period; otherwise just use the one that is set.
             $volNum = (!empty($vol) && !empty($num))
-                ? $vol . '.' . $num : $vol . $num;
+                ? $vol . $volNumSeparator . $num : $vol . $num;
             return $volNum . ' (' . $year . ')';
         } else {
             // Right now, we'll assume if day == 1, this is a monthly publication;
@@ -438,6 +460,24 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Fix bad punctuation on abbreviated name letters.
+     *
+     * @param string $str String to fix.
+     *
+     * @return string
+     */
+    protected function fixAbbreviatedNameLetters($str)
+    {
+        // Fix abbreviated letters.
+        if (strlen($str) == 1
+            || preg_match('/\s[a-zA-Z]/', substr($str, -2))
+        ) {
+            return $str . '.';
+        }
+        return $str;
+    }
+
+    /**
      * Strip the dates off the end of a name.
      *
      * @param string $str Name to clean.
@@ -449,7 +489,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
         $arr = explode(', ', $str);
         $name = $arr[0];
         if (isset($arr[1]) && !$this->isDateRange($arr[1])) {
-            $name .= ', ' . $arr[1];
+            $name .= ', ' . $this->fixAbbreviatedNameLetters($arr[1]);
             if (isset($arr[2]) && $this->isNameSuffix($arr[2])) {
                 $name .= ', ' . $arr[2];
             }
@@ -503,7 +543,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
             return $arr[0];
         }
 
-        $name = $arr[1] . ' ' . $arr[0];
+        $name = $this->fixAbbreviatedNameLetters($arr[1]) . ' ' . $arr[0];
         if (isset($arr[2]) && $this->isNameSuffix($arr[2])) {
             $name .= ', ' . $arr[2];
         }
@@ -645,18 +685,21 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Get an array of authors for an APA citation.
+     * Get an array of authors for an MLA or Chicago Style citation.
+     *
+     * @param int $etAlThreshold The number of authors to abbreviate with 'et al.'
+     * This is the only difference between MLA/Chicago Style.
      *
      * @return array
      */
-    protected function getMLAAuthors()
+    protected function getMLAAuthors($etAlThreshold = 4)
     {
         $authorStr = '';
         if (isset($this->details['authors'])
             && is_array($this->details['authors'])
         ) {
             $i = 0;
-            if (count($this->details['authors']) > 4) {
+            if (count($this->details['authors']) > $etAlThreshold) {
                 $author = $this->details['authors'][0];
                 $authorStr = $this->cleanNameDates($author) . ', et al';
             } else {

@@ -51,7 +51,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
     public function testGetHoldings()
     {
         $client = $this->getMock('Zend\Http\Client');
-        $connector = new Connector('key', '', $client);
+        $connector = new Connector('key', $client);
         $client->expects($this->once())->method('setMethod')
             ->with($this->equalTo('POST'))
             ->will($this->returnValue($client));
@@ -78,7 +78,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
     public function testGetHoldingsHttpFailure()
     {
         $client = $this->getMock('Zend\Http\Client');
-        $connector = new Connector('key', '', $client);
+        $connector = new Connector('key', $client);
         $client->expects($this->once())->method('setMethod')
             ->with($this->equalTo('POST'))
             ->will($this->returnValue($client));
@@ -98,7 +98,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
     public function testGetRecord()
     {
         $client = $this->getMock('Zend\Http\Client');
-        $connector = new Connector('key', '', $client);
+        $connector = new Connector('key', $client);
         $client->expects($this->once())->method('setMethod')
             ->with($this->equalTo('POST'))
             ->will($this->returnValue($client));
@@ -124,7 +124,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
     public function testGetRecordWithError()
     {
         $client = $this->getMock('Zend\Http\Client');
-        $connector = new Connector('key', '', $client);
+        $connector = new Connector('key', $client);
         $client->expects($this->once())->method('setMethod')
             ->with($this->equalTo('POST'))
             ->will($this->returnValue($client));
@@ -150,7 +150,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
     public function testSearch()
     {
         $client = $this->getMock('Zend\Http\Client');
-        $connector = new Connector('key', '', $client);
+        $connector = new Connector('key', $client);
         $client->expects($this->once())->method('setMethod')
             ->with($this->equalTo('POST'))
             ->will($this->returnValue($client));

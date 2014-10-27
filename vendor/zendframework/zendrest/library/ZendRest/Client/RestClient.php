@@ -74,6 +74,7 @@ class RestClient
         if (null === $this->httpClient) {
             $this->setHttpClient(new HttpClient());
         }
+
         return $this->httpClient;
     }
 
@@ -250,25 +251,26 @@ class RestClient
             $response           = $this->{'rest' . $method}($args[0], $data);
             $this->data         = array(); //Initializes for next Rest method.
             return new Result($response->getBody());
-        } else {
-            // More than one arg means it's definitely a Zend_Rest_Server
-            if (count($args) == 1) {
-                // Uses first called function name as method name
-                if (!isset($this->data['method'])) {
-                    $this->data['method'] = $method;
-                    $this->data['arg1']   = $args[0];
-                }
-                $this->data[$method]  = $args[0];
-            } else {
-                $this->data['method'] = $method;
-                if (count($args) > 0) {
-                    foreach ($args as $key => $arg) {
-                        $key = 'arg' . $key;
-                        $this->data[$key] = $arg;
-                    }
-                }
-            }
-            return $this;
         }
+
+			// More than one arg means it's definitely a Zend_Rest_Server
+			if (count($args) == 1) {
+				 // Uses first called function name as method name
+				 if (!isset($this->data['method'])) {
+					  $this->data['method'] = $method;
+					  $this->data['arg1']   = $args[0];
+				 }
+				 $this->data[$method]  = $args[0];
+			} else {
+				 $this->data['method'] = $method;
+				 if (count($args) > 0) {
+					  foreach ($args as $key => $arg) {
+							$key = 'arg' . $key;
+							$this->data[$key] = $arg;
+					  }
+				 }
+			}
+
+			return $this;
     }
 }

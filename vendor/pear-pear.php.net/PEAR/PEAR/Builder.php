@@ -10,7 +10,7 @@
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    CVS: $Id: Builder.php 313024 2011-07-06 19:51:24Z dufuz $
+ * @version    CVS: $Id$
  * @link       http://pear.php.net/package/PEAR
  * @since      File available since Release 0.1
  *
@@ -33,7 +33,7 @@ require_once 'PEAR/PackageFile.php';
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.9.4
+ * @version    Release: 1.9.5
  * @link       http://pear.php.net/package/PEAR
  * @since      Class available since PHP 4.0.2
  * @see        http://pear.php.net/manual/en/core.ppm.pear-builder.php
@@ -242,7 +242,7 @@ class PEAR_Builder extends PEAR_Common
      */
     function build($descfile, $callback = null)
     {
-        if (preg_match('/(\\/|\\\\|^)([^\\/\\\\]+)?php(.+)?$/',
+        if (preg_match('/(\\/|\\\\|^)([^\\/\\\\]+)?php([^\\/\\\\]+)?$/',
                        $this->config->get('php_bin'), $matches)) {
             if (isset($matches[2]) && strlen($matches[2]) &&
                 trim($matches[2]) != trim($this->config->get('php_prefix'))) {
@@ -375,7 +375,7 @@ class PEAR_Builder extends PEAR_Common
         if (!file_exists($build_dir) || !is_dir($build_dir) || !chdir($build_dir)) {
             return $this->raiseError("could not chdir to $build_dir");
         }
-        putenv('PHP_PEAR_VERSION=1.9.4');
+        putenv('PHP_PEAR_VERSION=1.9.5');
         foreach ($to_run as $cmd) {
             $err = $this->_runCommand($cmd, $callback);
             if (PEAR::isError($err)) {

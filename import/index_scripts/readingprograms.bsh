@@ -1,0 +1,66 @@
+/**
+ * Reading program scripts courtesy of Chanel Wheeler
+ *
+ * Example usage:
+ *
+ * #### In marc_local.properties, insert this:
+ * arLvel = script(readingprograms.bsh), getARLevel, (pattern_map.level)
+ * rcLevel = script(readingprograms.bsh), getRCLevel, (pattern_map.level)
+ * pattern_map.level.pattern_0 = ([0-9]\\.[0-9]).*=>$1
+ *
+ * #### In solr/biblio/conf/schema.xml (I'm not aware of any way to localize this),
+ * #### add this in the <types> section:
+ * <fieldType name="tfloat" class="solr.TrieFloatField" precisionStep="8" positionIncrementGap="0"/>
+ *
+ * #### In solr/biblio/conf/schema.xml, add this in the <fields> section
+ * <field name="arLevel" type="tfloat" indexed="true" stored="true"/>
+ * <field name="rcLevel" type="tfloat" indexed="true" stored="true"/>
+ */
+import org.marc4j.marc.Record;
+import org.marc4j.marc.DataField;
+
+org.solrmarc.index.SolrIndexer indexer = null;
+
+/**
+ * Get reading level for Accelerated Reader items
+ *
+ * @param  Record          record
+ * @return String           AR level
+ */
+ public String getARLevel(Record record) {
+    List readingprograms = record.getVariableFields("526");
+    if (readingprograms != null) {
+        Iterator rpIter = readingprograms.iterator();
+        while(rpIter.hasNext()) {
+            DataField rp = (DataField) rpIter.next();
+            if (rp.getSubfield('a') != null){
+                if (rp.getSubfield('a').getData().toLowerCase().contains("accelerated reader")) {
+                    return rp.getSubfield('c').getData();
+                }
+            }
+        }
+    }
+    return null;
+ }
+
+ /**
+ * Get reading level for Reading Counts items
+ *
+ * @param  Record          record
+ * @return String           RC level
+ */
+ public String getRCLevel(Record record) {
+    List readingprograms = record.getVariableFields("526");
+    if (readingprograms != null) {
+        Iterator rpIter = readingprograms.iterator();
+        while(rpIter.hasNext()) {
+            DataField rp = (DataField) rpIter.next();
+            if (rp.getSubfield('a') != null){
+                if (rp.getSubfield('a').getData().toLowerCase().contains("reading counts")) {
+                    return rp.getSubfield('c').getData();
+                }
+            }
+        }
+    }
+    return null;
+}

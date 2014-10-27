@@ -1,5 +1,5 @@
 <? if ($this->pageCount): ?>
-  <div class="pagination pagination-centered">
+  <div class="pagination pagination-centered noprint">
     <ul>
     <? if (isset($this->previous)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>

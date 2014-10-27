@@ -56,4 +56,16 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
             && !empty($specs['Author']['DismaxFields'])
         );
     }
+
+    /**
+     * Test loading of a non-existent YAML file.
+     *
+     * @return void
+     */
+    public function testMissingFileRead()
+    {
+        $reader = $this->getServiceManager()->get('VuFind\SearchSpecsReader');
+        $specs = $reader->get('notreallyasearchspecs.yaml');
+        $this->assertEquals(array(), $specs);
+    }
 }

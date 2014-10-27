@@ -1,0 +1,21 @@
+<li><a href="<?=$this->url('home') ?>">Home</a></li>
+<li><a href="<?=$this->url('vudl-default-collection') ?>">Collections</a></li>
+<li class="dropdown">
+  <a data-toggle="dropdown" href="#">In <?=count($this->layout()->breadcrumbs) ?> Collections</a>
+  <div class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+    <? foreach ($this->layout()->breadcrumbs as $trail): ?>
+      <ul class="sub-breadcrumb">
+      <? foreach ($trail as $id=>$title): ?>
+        <li><a href="<?=$this->url('vudl-record', array('id'=>$id))?>"><?=$title ?></a></li>
+      <? endforeach; ?>
+      </ul>
+    <? endforeach; ?>
+  </div>
+</li>
+<? if(isset($this->layout()->end)): ?>
+  <li title="<?=$this->layout()->title ?>"><?=$this->truncate($this->layout()->title, 100) ?></li>
+  <li class="active"><?=$this->layout()->end ?></li>
+<? else: ?>
+  <li class="active" title="<?=$this->layout()->title ?>"><?=$this->truncate($this->layout()->title, 100) ?></li>
+<? endif; ?>
+<script>$('.dropdown-toggle').dropdown()</script>

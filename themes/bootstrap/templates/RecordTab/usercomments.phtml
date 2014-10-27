@@ -17,6 +17,6 @@
       <input class="btn" data-loading-text="Submitting..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
     </div>
   </div>
-  <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>"/>
-  <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>"/>
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>
 </form>

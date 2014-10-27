@@ -38,6 +38,11 @@ namespace VuFind\Statistics\Driver;
  */
 abstract class AbstractBase
 {
+    /**
+     * Statistics source
+     *
+     * @var string
+     */
     protected $source = null;
 
     /**

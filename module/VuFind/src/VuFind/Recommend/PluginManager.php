@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
+use Zend\ServiceManager\ConfigInterface;
 
 /**
  * Recommendation module plugin manager
@@ -41,11 +42,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Constructor
      *
-     * @param null|ConfigInterface $configuration Configuration settings (optional)
+     * @param ConfigInterface $configuration Configuration settings (optional)
      */
-    public function __construct(
-        \Zend\ServiceManager\ConfigInterface $configuration = null
-    ) {
+    public function __construct(ConfigInterface $configuration = null)
+    {
         // These plugins are not meant to be shared -- the same module may be used
         // multiple times with different configurations, so we need to build a new
         // copy each time the plugin is retrieved.

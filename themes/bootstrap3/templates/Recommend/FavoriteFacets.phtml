@@ -1,0 +1,28 @@
+<? $results = $this->recommend->getResults(); ?>
+<? $sideFacetSet = $this->recommend->getFacetSet(); ?>
+
+<? if (isset($sideFacetSet['tags']) && !empty($sideFacetSet['tags']['list'])): ?>
+  <h4 class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>
+  <ul class="list-group">
+  <? $filterList = $results->getParams()->getFilterList(true);
+     $tagFilterList = isset($filterList[$sideFacetSet['tags']['label']]) ? $filterList[$sideFacetSet['tags']['label']] : null; ?>
+    <? if (!empty($tagFilterList)): ?>
+      <? $field = $sideFacetSet['tags']['label']; ?>
+      <? foreach ($tagFilterList as $filter): ?>
+        <? $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
+        <a class="list-group-item active" href="<?=$removeLink?>">
+          <span class="pull-right"><i class="fa fa-minus-circle"></i></span>
+          <?=$this->escapeHtml($filter['displayText'])?>
+        </a>
+      <? endforeach; ?>
+    <? endif; ?>
+    <? foreach($sideFacetSet['tags']['list'] as $thisFacet): ?>
+      <? if(!$thisFacet['isApplied']): ?>
+        <a class="list-group-item" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>">
+          <span class="badge"><?=$this->escapeHtml($thisFacet['count'])?></span>
+          <?=$this->escapeHtml($thisFacet['displayText'])?>
+        </a>
+      <? endif ?>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>

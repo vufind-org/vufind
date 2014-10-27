@@ -1,4 +1,4 @@
-/*global Lightbox, path, vufindString */
+/*global btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -10,6 +10,9 @@ function htmlEncode(value){
 }
 function extractClassParams(str) {
   str = $(str).attr('class');
+  if (typeof str === "undefined") {
+    return [];
+  }
   var params = {};
   var classes = str.split(/\s+/);
   for(var i = 0; i < classes.length; i++) {
@@ -20,6 +23,30 @@ function extractClassParams(str) {
   }
   return params;
 }
+function jqEscape(myid) {
+  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
+}
+function html_entity_decode(string, quote_style)
+{
+  var hash_map = {},
+    symbol = '',
+    tmp_str = '',
+    entity = '';
+  tmp_str = string.toString();
+
+  delete(hash_map['&']);
+  hash_map['&'] = '&amp;';
+  hash_map['>'] = '&gt;';
+  hash_map['<'] = '&lt;';
+
+  for (symbol in hash_map) {
+    entity = hash_map[symbol];
+    tmp_str = tmp_str.split(entity).join(symbol);
+  }
+  tmp_str = tmp_str.split('&#039;').join("'");
+
+  return tmp_str;
+}
 // Turn GET string into array
 function deparam(url) {
   var request = {};
@@ -27,6 +54,9 @@ function deparam(url) {
   for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
     var name = decodeURIComponent(pair[0]);
+    if(name.length == 0) {
+      continue;
+    }
     if(name.substring(name.length-2) == '[]') {
       name = name.substring(0,name.length-2);
       if(!request[name]) {
@@ -61,7 +91,209 @@ function setupOrFacets() {
   $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
 }
 
+/* --- COMMON AND DEFAULT LIGHTBOX FUNCTIONS --- */
+/**
+ * This function adds jQuery events to elements in the lightbox
+ *
+ * This is a default open action, so it runs every time changeContent
+ * is called and the 'shown' lightbox event is triggered
+ */
+function registerLightboxEvents() {
+  var modal = $("#modal");
+  // New list
+  $('#make-list').click(function() {
+    var parts = this.href.split('?');
+    var get = deparam(parts[1]);
+    get['id'] = 'NEW';
+    return Lightbox.get('MyResearch', 'EditList', get);
+  });
+  // New account link handler
+  $('.createAccountLink').click(function() {
+    var parts = this.href.split('?');
+    var get = deparam(parts[1]);
+    return Lightbox.get('MyResearch', 'Account', get);
+  });
+  // Select all checkboxes
+  $(modal).find('.checkbox-select-all').change(function() {
+    $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
+  });
+  $(modal).find('.checkbox-select-item').change(function() {
+    if(!this.checked) { // Uncheck all selected if one is unselected
+      $(this).closest('.modal-body').find('.checkbox-select-all').attr('checked', false);
+    }
+  });
+  // Highlight which submit button clicked
+  $(modal).find("form input[type=submit]").click(function() {
+    // Abort requests triggered by the lightbox
+    $('#modal .icon-spinner').remove();
+    // Add useful information
+    $(this).attr("clicked", "true");
+    // Add prettiness
+    $(this).after(' <i class="icon-spinner icon-spin"></i> ');
+  });
+  /**
+   * Hide the header in the lightbox content
+   * if it matches the title bar of the lightbox
+   */
+  var header = $('#modal .modal-header h3').html();
+  var contentHeader = $('#modal .modal-body .lead');
+  if(contentHeader.length == 0) {
+    contentHeader = $('#modal .modal-body h2');
+  }
+  contentHeader.each(function(i,op) {
+    if (op.innerHTML == header) {
+      $(op).hide();
+    }
+  });
+  $('#modal .collapse').on('hidden', function(e){ e.stopPropagation(); });
+}
+function updatePageForLogin() {
+  // Hide "log in" options and show "log out" options:
+  $('#loginOptions').hide();
+  $('.logoutOptions').show();
+
+  var recordId = $('#record_id').val();
+
+  // Update user save statuses if the current context calls for it:
+  if (typeof(checkSaveStatuses) == 'function') {
+    checkSaveStatuses();
+  }
+
+  // refresh the comment list so the "Delete" links will show
+  $('.commentList').each(function(){
+    var recordSource = extractSource($('#record'));
+    refreshCommentList(recordId, recordSource);
+  });
+
+  var summon = false;
+  $('.hiddenSource').each(function(i, e) {
+    if(e.value == 'Summon') {
+      summon = true;
+      // If summon, queue reload for when we close
+      Lightbox.addCloseAction(function(){document.location.reload(true);});
+    }
+  });
+
+  // Refresh tab content
+  var recordTabs = $('.recordTabs');
+  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
+    var tab = recordTabs.find('.active a').attr('id');
+    $.ajax({ // Shouldn't be cancelled, not assigned to XHR
+      type:'POST',
+      url:path+'/AJAX/JSON?method=get&submodule=Record&subaction=AjaxTab&id='+recordId,
+      data:{tab:tab},
+      success:function(html) {
+        recordTabs.next('.tab-container').html(html);
+      },
+      error:function(d,e) {
+        console.log(d,e); // Error reporting
+      }
+    });
+  }
+}
+function newAccountHandler(html) {
+  updatePageForLogin();
+  var params = deparam(Lightbox.openingURL);
+  if (params['subaction'] != 'UserLogin') {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    Lightbox.openingURL = false;
+  } else {
+    Lightbox.close();
+  }
+}
+
+/**
+ * This is a full handler for the login form
+ */
+function ajaxLogin(form) {
+  Lightbox.ajax({
+    url: path + '/AJAX/JSON?method=getSalt',
+    dataType: 'json',
+    success: function(response) {
+      if (response.status == 'OK') {
+        var salt = response.data;
+
+        // get the user entered password
+        var password = form.password.value;
+
+        // encrypt the password with the salt
+        password = rc4Encrypt(salt, password);
+
+        // hex encode the encrypted password
+        password = hexEncode(password);
+
+        var params = {password:password};
+
+        // get any other form values
+        for (var i = 0; i < form.length; i++) {
+          if (form.elements[i].name == 'password') {
+            continue;
+          }
+          params[form.elements[i].name] = form.elements[i].value;
+        }
+
+        // login via ajax
+        Lightbox.ajax({
+          type: 'POST',
+          url: path + '/AJAX/JSON?method=login',
+          dataType: 'json',
+          data: params,
+          success: function(response) {
+            if (response.status == 'OK') {
+              updatePageForLogin();
+              // and we update the modal
+              var params = deparam(Lightbox.lastURL);
+              if (params['subaction'] == 'UserLogin') {
+                Lightbox.close();
+              } else {
+                Lightbox.getByUrl(
+                  Lightbox.lastURL,
+                  Lightbox.lastPOST,
+                  Lightbox.changeContent
+                );
+              }
+            } else {
+              Lightbox.displayError(response.data);
+            }
+          }
+        });
+      } else {
+        Lightbox.displayError(response.data);
+      }
+    }
+  });
+}
+
+/* --- BOOTSTRAP LIBRARY TWEAKS --- */
+// Prevent typeahead highlighting
+$.fn.typeahead.Constructor.prototype.render = function(items) {
+  var that = this;
+
+  items = $(items).map(function (i, item) {
+    i = $(that.options.item).attr('data-value', item);
+    i.find('a').html(that.highlighter(item));
+    return i[0];
+  });
+
+  this.$menu.html(items);
+  return this;
+};
+// Enter without highlight does not delete the query
+$.fn.typeahead.Constructor.prototype.select = function () {
+  var val = this.$menu.find('.active');
+  if (val.length > 0) {
+    val = val.attr('data-value');
+  } else {
+    val = this.$element.val();
+  }
+  this.$element.val(this.updater(val)).change();
+  return this.hide();
+};
+
 $(document).ready(function() {
+  // support "jump menu" dropdown boxes
+  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
+
   // Highlight previous links, grey out following
   $('.backlink')
     .mouseover(function() {
@@ -116,7 +348,13 @@ $(document).ready(function() {
             }
           }
         });
-      }, 600); // Delay request submission
+      }, 500); // Delay request submission
+    },
+    updater : function(item) { // Submit on update
+      // console.log(this.$element[0].form.submit);
+      this.$element[0].value = item;
+      this.$element[0].form.submit();
+      return item;
     }
   });
 
@@ -124,12 +362,7 @@ $(document).ready(function() {
   $('.checkbox-select-all').change(function() {
     $(this).closest('form').find('.checkbox-select-item').attr('checked', this.checked);
   });
-  $('#modal').find('.checkbox-select-item').change(function() {
-    if(!this.checked) {
-      $(this).closest('form').find('.checkbox-select-all').attr('checked', false);
-    }
-  });
-  
+
   // handle QR code links
   $('a.qrcodeLink').click(function() {
     if ($(this).hasClass("active")) {
@@ -145,19 +378,30 @@ $(document).ready(function() {
   var url = window.location.href;
   if(url.indexOf('?' + 'print' + '=') != -1  || url.indexOf('&' + 'print' + '=') != -1) {
     $("link[media='print']").attr("media", "all");
-    window.print();
+    $(document).ajaxStop(function() {
+      window.print();
+    });
+    // Make an ajax call to ensure that ajaxStop is triggered
+    $.getJSON(path + '/AJAX/JSON', {method: 'keepAlive'});
   }
-    
+
   // Collapsing facets
   $('.sidebar .collapsed .nav-header').click(function(){$(this).parent().toggleClass('open');});
-  
+
   // Advanced facets
   setupOrFacets();
-  
-  /**************************
-   * LIGHTBOX OPENING LINKS *
-   **************************/
-  
+
+  /******************************
+   * LIGHTBOX DEFAULT BEHAVIOUR *
+   ******************************/
+  Lightbox.addOpenAction(registerLightboxEvents);
+  Lightbox.addFormCallback('newList', Lightbox.changeContent);
+  Lightbox.addFormHandler('loginForm', function(evt) {
+    ajaxLogin(evt.target);
+    return false;
+  });
+  Lightbox.addFormCallback('accountForm', newAccountHandler);
+
   // Help links
   $('.help-link').click(function() {
     var split = this.href.split('=');
@@ -170,8 +414,8 @@ $(document).ready(function() {
     return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
   });
   // Login link
-  $('#loginOptions a').click(function() {
-    return Lightbox.get('MyResearch','Login',{},{'loggingin':true});
+  $('#loginOptions a.modal-link').click(function() {
+    return Lightbox.get('MyResearch','UserLogin');
   });
   // Email search link
   $('.mailSearch').click(function() {
@@ -182,7 +426,7 @@ $(document).ready(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
   });
-  Lightbox.addFormCallback('emailSearch', function(x) {
+  Lightbox.addFormCallback('emailSearch', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
 });

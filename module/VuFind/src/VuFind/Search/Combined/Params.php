@@ -38,4 +38,29 @@ namespace VuFind\Search\Combined;
  */
 class Params extends \VuFind\Search\Solr\Params
 {
+    /**
+     * Load all recommendation settings from the relevant ini file.  Returns an
+     * associative array where the key is the location of the recommendations (top
+     * or side) and the value is the settings found in the file (which may be either
+     * a single string or an array of strings).
+     *
+     * @return array associative: location (top/side) => search settings
+     */
+    protected function getRecommendationSettings()
+    {
+        // Bypass settings if recommendations are disabled.
+        if (!$this->recommendationsEnabled()) {
+            return array();
+        }
+        $recommend = array();
+        $config = $this->getServiceLocator()->get('VuFind\Config')
+            ->get('combined');
+        foreach (array('top', 'bottom') as $location) {
+            if (isset($config->RecommendationModules->$location)) {
+                $recommend[$location]
+                    = $config->RecommendationModules->$location->toArray();
+            }
+        }
+        return $recommend;
+    }
 }

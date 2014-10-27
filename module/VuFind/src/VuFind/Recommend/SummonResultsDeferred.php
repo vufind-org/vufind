@@ -32,7 +32,7 @@ namespace VuFind\Recommend;
  * SummonResultsDeferred Recommendations Module
  *
  * This class sets up an AJAX call to trigger a call to the SummonResults
- * module.  
+ * module.
  *
  * @category VuFind2
  * @package  Recommendations
@@ -40,22 +40,8 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class SummonResultsDeferred implements RecommendInterface
+class SummonResultsDeferred extends AbstractSummonRecommendDeferred
 {
-    /**
-     * Raw configuration parameters
-     *
-     * @var string
-     */
-    protected $rawParams;
-
-    /**
-     * Current search query
-     *
-     * @var string
-     */
-    protected $lookfor;
-
     /**
      * Label for current search type
      *
@@ -64,24 +50,12 @@ class SummonResultsDeferred implements RecommendInterface
     protected $typeLabel = '';
 
     /**
-     * Configuration parameters processed for submission via AJAX
-     *
-     * @var string
+     * Constructor
      */
-    protected $processedParams;
-
-    /**
-     * setConfig
-     *
-     * Store the configuration of the recommendation module.
-     *
-     * @param string $settings Settings from searches.ini.
-     *
-     * @return void
-     */
-    public function setConfig($settings)
+    public function __construct()
     {
-        $this->rawParams = $settings;
+        $this->module = 'SummonResults';
+        $this->paramCount = 2;
     }
 
     /**
@@ -100,23 +74,7 @@ class SummonResultsDeferred implements RecommendInterface
      */
     public function init($params, $request)
     {
-        // Parse out parameters:
-        $settings = explode(':', $this->rawParams);
-
-        // Make sure all elements of the params array are filled in, even if just
-        // with a blank string, so we can rebuild the parameters to pass through
-        // AJAX later on!
-        for ($i = 0; $i < 2; $i++) {
-            $settings[$i] = isset($settings[$i]) ? $settings[$i] : '';
-        }
-
-        // Collect the best possible search term(s):
-        $lookforParam = empty($settings[0]) ? 'lookfor' : $settings[0];
-        $this->lookfor =  $request->get($lookforParam, '');
-        if (empty($this->lookfor) && is_object($params)) {
-            $this->lookfor = $params->getQuery()->getAllTerms();
-        }
-        $this->lookfor = trim($this->lookfor);
+        parent::init($params, $request);
 
         // Collect the label for the current search type:
         if (is_object($params)) {
@@ -124,29 +82,6 @@ class SummonResultsDeferred implements RecommendInterface
                 $params->getSearchHandler()
             );
         }
-
-        // In AJAX mode, the query will always be found in the 'lookfor' parameter,
-        // so override the setting:
-        $settings[0] = 'lookfor';
-
-        // Now rebuild the parameters to pass via AJAX:
-        $this->processedParams = implode(':', $settings);
-    }
-
-    /**
-     * process
-     *
-     * Called after the Search Results object has performed its main search.  This
-     * may be used to extract necessary information from the Search Results object
-     * or to perform completely unrelated processing.
-     *
-     * @param \VuFind\Search\Base\Results $results Search results object
-     *
-     * @return void
-     */
-    public function process($results)
-    {
-        // No action needed
     }
 
     /**
@@ -156,8 +91,6 @@ class SummonResultsDeferred implements RecommendInterface
      */
     public function getUrlParams()
     {
-        return 'mod=SummonResults&params=' . urlencode($this->processedParams)
-            . '&lookfor=' . urlencode($this->lookfor)
-            . '&typeLabel=' . urlencode($this->typeLabel);
+        return parent::getUrlParams() . '&typeLabel=' . urlencode($this->typeLabel);
     }
 }

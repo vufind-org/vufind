@@ -8,7 +8,7 @@
   $this->layout()->breadcrumbs = '<li class="active">Error</li>';
 ?>
 <div class="alert alert-error">
-  <p class="lead"><?=$this->transEsc('System Unavailable')?></p>
+  <h2><?=$this->transEsc('System Unavailable')?></h2>
   <p>
     <?=$this->transEsc('The system is currently unavailable due to system maintenance')?>.
     <?=$this->transEsc('Please check back soon')?>.
@@ -16,7 +16,7 @@
   <p>
     <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
     <br/>
-    <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
+    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
     <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
   </p>
 </div>

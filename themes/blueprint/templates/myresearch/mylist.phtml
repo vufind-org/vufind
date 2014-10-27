@@ -49,8 +49,8 @@
     </div>
     <form method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>">
       <? if (isset($list)): ?>
-        <input type="hidden" name="listID" value="<?=$this->escapeHtml($list->id)?>" />
-        <input type="hidden" name="listName" value="<?=$this->escapeHtml($list->title)?>" />
+        <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->id)?>" />
+        <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->title)?>" />
       <? endif; ?>
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null))?>
       <ul class="recordSet">

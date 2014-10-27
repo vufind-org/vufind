@@ -45,18 +45,18 @@ use VuFind\Exception\Auth as AuthException;
 class ChoiceAuth extends AbstractBase
 {
     /**
-     * Authentication methods to present
+     * Authentication strategies to present
      *
      * @var array
      */
-    protected $methods = array();
+    protected $strategies = array();
 
     /** 
-     * Auth method selected by user
+     * Auth strategy selected by user
      *
      * @var string
      */
-    protected $method;
+    protected $strategy;
 
     /**
      * Username input
@@ -78,6 +78,21 @@ class ChoiceAuth extends AbstractBase
      * @var PluginManager
      */
     protected $manager;
+
+    /**
+     * Session container
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $session;
+
+    /**
+     * Constructor
+     */
+    public function __construct() 
+    {
+        $this->session = new \Zend\Session\Container('ChoiceAuth');
+    }
 
     /**
      * Validate configuration parameters.  This is a support method for getConfig(),
@@ -111,7 +126,7 @@ class ChoiceAuth extends AbstractBase
     public function setConfig($config)
     {
         parent::setConfig($config);
-        $this->methods = array_map(
+        $this->strategies = array_map(
             'trim', explode(',', $config->ChoiceAuth->choice_order)
         );
     }
@@ -129,10 +144,14 @@ class ChoiceAuth extends AbstractBase
     {
         $this->username = trim($request->getPost()->get('username'));
         $this->password = trim($request->getPost()->get('password'));
-        $this->method = trim($request->getPost()->get('auth_method'));
+        $this->strategy = trim($request->getPost()->get('auth_method'));
 
-        if ($this->method == '') {
-            throw new AuthException('authentication_error_technical');
+        if ($this->strategy == '') {
+            if (isset($this->session->auth_method)) {
+                $this->strategy = $this->session->auth_method;
+            } else {
+                throw new AuthException('authentication_error_technical');
+            }
         }
 
         // Do the actual authentication work:
@@ -151,11 +170,11 @@ class ChoiceAuth extends AbstractBase
      */
     protected function authUser($request)
     {
-        $manager = $this->getPluginManager();
-        $authenticator = $manager->get($this->method);
-        $authenticator->setConfig($this->getConfig());
         try {
-            $user = $authenticator->authenticate($request);
+            $user = $this->proxyAuthMethod('authenticate', func_get_args());
+            if ($user) {
+                $this->session->auth_method = $this->strategy;
+            }
         } catch (AuthException $exception) {
             throw $exception;
         }
@@ -166,7 +185,6 @@ class ChoiceAuth extends AbstractBase
             throw new AuthException('authentication_error_technical');
         }
     }
-
 
     /**
      * Set the manager for loading other authentication plugins.
@@ -195,17 +213,77 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
-     * Does the class allow for authentication from more than one method?
-     * If so return an array that lists the classes for the methods allowed.
+     * Does the class allow for authentication from more than one strategy?
+     * If so return an array that lists the classes for the strategies allowed.
      *
      * @return array | bool
      */
     public function getClasses()
     {
         $classes = array();
-        foreach ($this->methods as $method) {
-            $classes[] = get_class($this->manager->get($method));
+        foreach ($this->strategies as $strategy) {
+            $classes[] = get_class($this->manager->get($strategy));
         }
         return $classes;
     }
+    /**
+     * Perform cleanup at logout time.
+     *
+     * @param string $url URL to redirect user to after logging out.
+     *
+     * @return string     Redirect URL (usually same as $url, but modified in
+     * some authentication modules).
+     */
+    public function logout($url)
+    {
+        // clear user's login choice
+        if (isset($this->session->auth_method)) {
+            $this->strategy = $this->session->auth_method;
+            unset($this->session->auth_method);
+            return $this->proxyAuthMethod('logout', func_get_args());
+        }
+        // No special cleanup or URL modification needed by default.
+        return $url;
+    }
+
+    /**
+     * Get the URL to establish a session (needed when the internal VuFind login
+     * form is inadequate).  Returns false when no session initiator is needed.
+     *
+     * @param string $target Full URL where external authentication strategy should
+     * send user after login (some drivers may override this).
+     *
+     * @return bool|string
+     */
+    public function getSessionInitiator($target)
+    {
+        if (isset($this->session->auth_method)) {
+            // if user has chosen and logged in; use that auth's method
+            $this->strategy = $this->session->auth_method;
+            return $this->proxyAuthMethod('getSessionInitiator', func_get_args());
+        }
+        return false;
+    }
+
+    /**
+     * Proxy auth method; a helper function to be called like:
+     *   return $this->proxyAuthMethod(METHOD, func_get_args());
+     *
+     * @param string $method the method to proxy
+     * @param array  $params array of params to pass
+     *
+     * @throws AuthException
+     * @return mixed
+     */
+    protected function proxyAuthMethod($method, $params)
+    {
+        $manager = $this->getPluginManager();
+        $authenticator = $manager->get($this->strategy);
+        $authenticator->setConfig($this->getConfig());
+        if (!is_callable(array($authenticator, $method))) {
+            throw new AuthException($this->strategy . "has no method $method");
+        }
+        return call_user_func_array(array($authenticator, $method), $params);
+    }
+
 }

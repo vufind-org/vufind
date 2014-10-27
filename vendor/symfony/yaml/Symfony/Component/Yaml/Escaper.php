@@ -2,6 +2,7 @@
 
 /*
  * This file is part of the Symfony package.
+ *
  * (c) Fabien Potencier <fabien@symfony.com>
  *
  * For the full copyright and license information, please view the LICENSE
@@ -43,7 +44,7 @@ class Escaper
      *
      * @param string $value A PHP value
      *
-     * @return Boolean True if the value would require double quotes.
+     * @return bool    True if the value would require double quotes.
      */
     public static function requiresDoubleQuoting($value)
     {
@@ -67,11 +68,11 @@ class Escaper
      *
      * @param string $value A PHP value
      *
-     * @return Boolean True if the value would require single quotes.
+     * @return bool    True if the value would require single quotes.
      */
     public static function requiresSingleQuoting($value)
     {
-        return preg_match('/[ \s \' " \: \{ \} \[ \] , & \* \# \?] | \A[ - ? | < > = ! % @ ` ]/x', $value);
+        return preg_match('/[ \s \' " \: \{ \} \[ \] , & \* \# \?] | \A[ \- ? | < > = ! % @ ` ]/x', $value);
     }
 
     /**

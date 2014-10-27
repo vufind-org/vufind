@@ -1,0 +1,60 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Email Record'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+    . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+    . '<li class="active">' . $this->transEsc('Email Record') . '</li>';
+?>
+<?=$this->flashmessages()?>
+<form class="form-horizontal" action="" method="post" name="emailRecord">
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
+    <div class="col-sm-9">
+      <input type="email" id="email_to" class="form-control" oninvalid="$('#modal .fa-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+    </div>
+  </div>
+  <? if (!$this->disableFrom): ?>
+    <div class="form-group">
+      <label class="col-sm-3 control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
+      <div class="col-sm-9">
+        <input type="email" id="email_from" oninvalid="$('#modal .fa-spinner').remove()" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-9 col-sm-offset-3">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="ccself"/> <?=$this->translate('send_an_email_copy'); ?>
+          </label>
+        </div>
+      </div>
+    </div>
+  <? endif; ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
+    <div class="col-sm-9">
+      <textarea id="email_message" class="form-control" name="message" rows="4"><?=isset($this->message) ? $this->message : ''?></textarea>
+    </div>
+  </div>
+  <? if ($this->disableFrom && $this->userEmailInFrom): ?>
+    <div class="form-group">
+      <div class="col-sm-9 col-sm-offset-3">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="ccself"/> <?=$this->translate('send_email_copy_to_me'); ?>
+          </label>
+        </div>
+      </div>
+    </div>
+  <? endif ?>
+  <?=$this->recaptcha()->html($this->useRecaptcha) ?>
+  <div class="form-group">
+    <div class="col-sm-9 col-sm-offset-3">
+      <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc('Send Email')?>"/>
+    </div>
+  </div>
+</form>

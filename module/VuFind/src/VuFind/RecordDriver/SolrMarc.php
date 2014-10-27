@@ -26,7 +26,9 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Exception\ILS as ILSException, VuFind\XSLT\Processor as XSLTProcessor;
+use VuFind\Exception\ILS as ILSException,
+    VuFind\View\Helper\Root\RecordLink,
+    VuFind\XSLT\Processor as XSLTProcessor;
 
 /**
  * Model for MARC records in Solr.
@@ -305,6 +307,17 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get human readable publication dates for display purposes (may not be suitable
+     * for computer processing -- use getPublicationDates() for that).
+     *
+     * @return array
+     */
+    public function getHumanReadablePublicationDates()
+    {
+        return $this->getPublicationInfo('c');
+    }
+
+    /**
      * Get an array of newer titles for the record.
      *
      * @return array
@@ -319,46 +332,58 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get the item's publication information
+     *
+     * @param string $subfield The subfield to retrieve ('a' = location, 'c' = date)
+     *
+     * @return array
+     */
+    protected function getPublicationInfo($subfield = 'a')
+    {
+        // First check old-style 260 field:
+        $results = $this->getFieldArray('260', array($subfield));
+
+        // Now track down relevant RDA-style 264 fields; we only care about
+        // copyright and publication places (and ignore copyright places if
+        // publication places are present).  This behavior is designed to be
+        // consistent with default SolrMarc handling of names/dates.
+        $pubResults = $copyResults = array();
+
+        $fields = $this->marcRecord->getFields('264');
+        if (is_array($fields)) {
+            foreach ($fields as $currentField) {
+                $currentVal = $currentField->getSubfield($subfield);
+                $currentVal = is_object($currentVal)
+                    ? $currentVal->getData() : null;
+                if (!empty($currentVal)) {
+                    switch ($currentField->getIndicator('2')) {
+                    case '1':
+                        $pubResults[] = $currentVal;
+                        break;
+                    case '4':
+                        $copyResults[] = $currentVal;
+                        break;
+                    }
+                }
+            }
+        }
+        if (count($pubResults) > 0) {
+            $results = array_merge($results, $pubResults);
+        } else if (count($copyResults) > 0) {
+            $results = array_merge($results, $copyResults);
+        }
+
+        return $results;
+    }
+
+    /**
      * Get the item's places of publication.
      *
      * @return array
      */
     public function getPlacesOfPublication()
     {
-        // First check old-style 260a place:
-        $places = $this->getFieldArray('260');
-
-        // Now track down relevant RDA-style 264a places; we only care about
-        // copyright and publication places (and ignore copyright places if
-        // publication places are present).  This behavior is designed to be
-        // consistent with default SolrMarc handling of names/dates.
-        $pubPlaces = $copyPlaces = array();
-
-        $fields = $this->marcRecord->getFields('264');
-        if (is_array($fields)) {
-            foreach ($fields as $currentField) {
-                $currentPlace = $currentField->getSubfield('a');
-                $currentPlace = is_object($currentPlace)
-                    ? $currentPlace->getData() : null;
-                if (!empty($currentPlace)) {
-                    switch ($currentField->getIndicator('2')) {
-                    case '1':
-                        $pubPlaces[] = $currentPlace;
-                        break;
-                    case '4':
-                        $copyPlaces[] = $currentPlace;
-                        break;
-                    }
-                }
-            }
-        }
-        if (count($pubPlaces) > 0) {
-            $places = array_merge($places, $pubPlaces);
-        } else if (count($copyPlaces) > 0) {
-            $places = array_merge($places, $copyPlaces);
-        }
-
-        return $places;
+        return $this->getPublicationInfo();
     }
 
     /**
@@ -629,6 +654,32 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get hierarchical place names (MARC field 752)
+     *
+     * returns an array of formatted hierarchical place names, consisting of all
+     * alpha-subfields, concatenated for display
+     *
+     * @return array
+     */
+    public function getHierarchicalPlaceNames()
+    {
+        $placeNames = array();
+        if ($fields = $this->marcRecord->getFields('752')) {
+            foreach ($fields as $field) {
+                $subfields = $field->getSubfields();
+                $current = array();
+                foreach ($subfields as $subfield) {
+                    if (!is_numeric($subfield->getCode())) {
+                        $current[] = $subfield->getData();
+                    }
+                }
+                $placeNames[] = implode(' -- ', $current);
+            }
+        }
+        return $placeNames;
+    }
+
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *
@@ -721,68 +772,67 @@ class SolrMarc extends SolrDefault
                         }
                     }
 
-                    // Normalize blank relationship indicator to 0:
-                    $relationshipIndicator = $field->getIndicator('2');
-                    if ($relationshipIndicator == ' ') {
-                        $relationshipIndicator = '0';
-                    }
-
-                    // The relationship type is one of the following and there is a
-                    // 580 field, the 580 field should be shown instead see:
-                    //     http://www.loc.gov/marc/bibliographic/bd580.html
-                    $has580 = $this->marcRecord->getFields('580');
-                    if ($has580
-                        && (($value == '780') && ($relationshipIndicator == '4'))
-                        || (($value == '785') && (($relationshipIndicator == '6')
-                        || ($relationshipIndicator =='7')))
-                    ) {
-                        continue;
-                    }
-
-                    // Assign notes based on the relationship type
-                    switch ($value) {
-                    case '780':
-                        if (in_array($relationshipIndicator, range('0', '7'))) {
-                            $value .= '_' . $relationshipIndicator;
-                        }
-                        break;
-                    case '785':
-                        if (in_array($relationshipIndicator, range('0', '8'))) {
-                            $value .= '_' . $relationshipIndicator;
-                        }
-                        break;
-                    }
-
                     // Get data for field
-                    $tmp = $this->getFieldData($field, $value);
+                    $tmp = $this->getFieldData($field);
                     if (is_array($tmp)) {
                         $retVal[] = $tmp;
                     }
                 }
             }
         }
-        if (empty($retVal)) {
-            $retVal = null;
+        return empty($retVal) ? null : $retVal;
+    }
+
+    /**
+     * Support method for getFieldData() -- factor the relationship indicator
+     * into the field number where relevant to generate a note to associate
+     * with a record link.
+     *
+     * @param File_MARC_Data_Field $field Field to examine
+     *
+     * @return string
+     */
+    protected function getRecordLinkNote($field)
+    {
+        // Normalize blank relationship indicator to 0:
+        $relationshipIndicator = $field->getIndicator('2');
+        if ($relationshipIndicator == ' ') {
+            $relationshipIndicator = '0';
         }
-        return $retVal;
+
+        // Assign notes based on the relationship type
+        $value = $field->getTag();
+        switch ($value) {
+        case '780':
+            if (in_array($relationshipIndicator, range('0', '7'))) {
+                $value .= '_' . $relationshipIndicator;
+            }
+            break;
+        case '785':
+            if (in_array($relationshipIndicator, range('0', '8'))) {
+                $value .= '_' . $relationshipIndicator;
+            }
+            break;
+        }
+
+        return 'note_' . $value;
     }
 
     /**
      * Returns the array element for the 'getAllRecordLinks' method
      *
      * @param File_MARC_Data_Field $field Field to examine
-     * @param string               $value Field name for use in label
      *
      * @return array|bool                 Array on success, boolean false if no
      * valid link could be found in the data.
      */
-    protected function getFieldData($field, $value)
+    protected function getFieldData($field)
     {
         // Make sure that there is a t field to be displayed:
         if ($title = $field->getSubfield('t')) {
             $title = $title->getData();
         } else {
-            return;
+            return false;
         }
 
         $linkTypeSetting = isset($this->mainConfig->Record->marc_links_link_types)
@@ -844,9 +894,11 @@ class SolrMarc extends SolrDefault
             }
         }
         // Make sure we have something to display:
-        return isset($link)
-            ? array('title' => 'note_' . $value, 'value' => $title, 'link'  => $link)
-            : false;
+        return !isset($link) ? false : array(
+            'title' => $this->getRecordLinkNote($field),
+            'value' => $title,
+            'link'  => $link
+        );
     }
 
     /**
@@ -935,12 +987,16 @@ class SolrMarc extends SolrDefault
      * Return an XML representation of the record using the specified format.
      * Return false if the format is unsupported.
      *
-     * @param string $format Name of format to use (corresponds with OAI-PMH
+     * @param string     $format     Name of format to use (corresponds with OAI-PMH
      * metadataPrefix parameter).
+     * @param string     $baseUrl    Base URL of host containing VuFind (optional;
+     * may be used to inject record URLs into XML when appropriate).
+     * @param RecordLink $recordLink Record link helper (optional; may be used to
+     * inject record URLs into XML when appropriate).
      *
      * @return mixed         XML, or false if format unsupported.
      */
-    public function getXML($format)
+    public function getXML($format, $baseUrl = null, $recordLink = null)
     {
         // Special case for MARC:
         if ($format == 'marc21') {
@@ -966,7 +1022,7 @@ class SolrMarc extends SolrDefault
         }
 
         // Try the parent method:
-        return parent::getXML($format);
+        return parent::getXML($format, $baseUrl, $recordLink);
     }
 
     /**

@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -428,11 +428,12 @@ class Segment implements RouteInterface
      */
     protected function encode($value)
     {
-        if (!isset(static::$cacheEncode[$value])) {
-            static::$cacheEncode[$value] = rawurlencode($value);
-            static::$cacheEncode[$value] = strtr(static::$cacheEncode[$value], static::$urlencodeCorrectionMap);
+        $key = (string) $value;
+        if (!isset(static::$cacheEncode[$key])) {
+            static::$cacheEncode[$key] = rawurlencode($value);
+            static::$cacheEncode[$key] = strtr(static::$cacheEncode[$key], static::$urlencodeCorrectionMap);
         }
-        return static::$cacheEncode[$value];
+        return static::$cacheEncode[$key];
     }
 
     /**

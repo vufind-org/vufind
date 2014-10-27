@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Service
  */
@@ -327,5 +327,41 @@ class OfflineTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException('ZendService\Amazon\Exception\ExceptionInterface');
         $result->current();
+    }
+
+    /**
+     * NOTICE error does not occur even if RequestThrottled error happen in totalResults method.
+     */
+    public function testNoticeErrorDoesNotHappenInTotalResults()
+    {
+        $xml = file_get_contents(__DIR__ . '/_files/amazon-response-request-throttled-error.xml');
+        $dom = new \DOMDocument();
+        $dom->loadXML($xml);
+
+        $result = new Amazon\ResultSet($dom);
+
+        try {
+            $result->totalResults();
+        } catch (\PHPUnit_Framework_Error_Notice $e) {
+            $this->fail('totalResult method should not be occurred NOTICE error.');
+        }
+    }
+
+    /**
+     * NOTICE error does not occur even if RequestThrottled error happen in totalPages method.
+     */
+    public function testNoticeErrorDoesNotHappenInTotalPages()
+    {
+        $xml = file_get_contents(__DIR__ . '/_files/amazon-response-request-throttled-error.xml');
+        $dom = new \DOMDocument();
+        $dom->loadXML($xml);
+
+        $result = new Amazon\ResultSet($dom);
+
+        try {
+            $result->totalPages();
+        } catch (\PHPUnit_Framework_Error_Notice $e) {
+            $this->fail('totalResult method should not be occurred NOTICE error.');
+        }
     }
 }

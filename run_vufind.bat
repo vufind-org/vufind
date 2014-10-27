@@ -20,7 +20,7 @@ rem JAVA_OPTIONS
 rem   Extra options to pass to the JVM
 rem
 rem JETTY_HOME
-rem   Where Jetty is installed. If not set, the script will try to guess it based 
+rem   Where Jetty is installed. If not set, the script will try to guess it based
 rem   on the SOLR_HOME setting. The java system property "jetty.home" will be
 rem   set to this value for use by configure.xml files, f.e.:
 rem
@@ -46,7 +46,7 @@ rem
 rem JETTY_ARGS
 rem   The default arguments to pass to jetty.
 
-rem Make sure that environment edits are local and that we have access to the 
+rem Make sure that environment edits are local and that we have access to the
 rem Windows command extensions.
 setlocal enableextensions
 if not errorlevel 1 goto extensionsokay
@@ -60,6 +60,38 @@ set ACTION=%1
 shift
 
 rem Set Performance options for JETTY
+rem ========================================================================
+rem -Xms    Sets the initial heap size for when the JVM starts.
+rem -Xmx    Sets the maximum heap size.
+rem If you often get a "catalog error" or need to restart vufind you
+rem may need to increase the Xmx value if your system has the memory
+rem to support it. For example, on a system with 4GB of memory that is
+rem dedicated to running Vufind you may want to set the Xmx value to
+rem 2048m or 3,072m.
+rem
+rem IMPORTANT NOTE: You may want to skip setting the Xms value
+rem so that JAVA / Vufind will only use what it needs - potentialy
+rem leaving more memory for the rest of the system. To see the JVM memory
+rem usage visit your solr URL, possibly the same URL as your vufind,
+rem instance but appended with :8080/solr/
+rem
+rem The most important factors for determining the amount of memory
+rem that you will need to allocate are the number of records you have
+rem indexed, and how much traffic your site receives. It may also be
+rem beneficial to limit or block crawlers and robots as they can,
+rem at times, generate so many requests that your site has poor
+rem performance for your human patrons
+rem
+rem For more information on tuning vufind and java, see the
+rem vufind wiki article at https://vufind.org/wiki/performance
+rem and http://www.oracle.com/technetwork/java/gc-tuning-5-138395.html
+rem
+rem Some example settings:
+rem JAVA_OPTIONS="-server -Xms1048576k -Xmx1048576k -XX:+UseParallelGC -XX:NewRatio=5"
+rem JAVA_OPTIONS="-server -Xmx1048576k -XX:+UseParallelGC -XX:NewRatio=5"
+rem JAVA_OPTIONS="-server -Xms1024m -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
+rem JAVA_OPTIONS="-server -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
+rem ========================================================================
 if not "!%JAVA_OPTIONS%!"=="!!" goto javaoptionsset
 set JAVA_OPTIONS=-server -Xms1024m -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5
 :javaoptionsset

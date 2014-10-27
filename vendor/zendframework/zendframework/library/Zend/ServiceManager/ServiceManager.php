@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -501,6 +501,14 @@ class ServiceManager implements ServiceLocatorInterface
                 || $this->canCreateFromAbstractFactory($cName, $name)
             ) {
                 $instance = $this->create(array($cName, $name));
+            } elseif ($isAlias && $this->canCreateFromAbstractFactory($name, $cName)) {
+                /*
+                 * case of an alias leading to an abstract factory :
+                 * 'my-alias' => 'my-abstract-defined-service'
+                 *     $name = 'my-alias'
+                 *     $cName = 'my-abstract-defined-service'
+                 */
+                $instance = $this->create(array($name, $cName));
             } elseif ($usePeeringServiceManagers && !$this->retrieveFromPeeringManagerFirst) {
                 $instance = $this->retrieveFromPeeringManager($name);
             }

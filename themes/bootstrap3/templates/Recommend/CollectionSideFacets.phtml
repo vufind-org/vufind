@@ -1,0 +1,42 @@
+<?
+    $this->overrideSideFacetCaption = 'In This Collection';
+?>
+<? if ($this->recommend->keywordFilterEnabled()): ?>
+  <?
+    $keywordFilter = $this->recommend->getKeywordFilter();
+    if (!empty($keywordFilter)) {
+      $this->extraSideFacetFilters = array(
+        'Keyword' => array(
+            array(
+              'value' => $keywordFilter,
+              'displayText' => $keywordFilter,
+              'specialType' => 'keyword',
+              'operator' => 'OR'
+            )
+        )
+      );
+    }
+  ?>
+  <? ob_start() ?>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <?=$this->transEsc('Keyword Filter')?>
+      </h4>
+    </div>
+    <div class="panel-body">
+      <form class="form-inline" role="form" method="get" action="" name="keywordFilterForm" id="keywordFilterForm">
+        <input id="keywordFilter_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($keywordFilter)?>" class="form-control"/>
+        <? foreach ($this->recommend->getResults()->getParams()->getFilterList(true) as $field => $filters): ?>
+          <? foreach ($filters as $filter): ?>
+            <input type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($filter['field'])?>:&quot;<?=$this->escapeHtmlAttr($filter['value'])?>&quot;" />
+          <? endforeach; ?>
+        <? endforeach; ?>
+        <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Set')?>"/>
+      </form>
+    </div>
+  </div>
+  <? $this->sideFacetExtraControls = ob_get_contents(); ?>
+  <? ob_end_clean(); ?>
+<? endif; ?>
+<?=$this->render('Recommend/SideFacets.phtml')?>

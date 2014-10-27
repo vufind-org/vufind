@@ -106,12 +106,12 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
         });
 
         if (hasFilter) {
-          var newdiv = document.createElement('div');
+          var newdiv = document.createElement('span');
           var text = document.getElementById("clearButtonText").innerHTML;
           newdiv.setAttribute('id', 'clearButton' + key);
           newdiv.innerHTML = '<a href="' + htmlEncode(val['removalURL']) + '">' + text + '</a>';
           newdiv.className += "dateVisClear";
-          placeholder.append(newdiv);
+          placeholder.before(newdiv);
         }
       });
     }

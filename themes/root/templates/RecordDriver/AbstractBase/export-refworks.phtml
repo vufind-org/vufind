@@ -135,6 +135,10 @@ if (is_array($subjects)) {
     }
 }
 
+if ($doi = $this->driver->tryMethod('getCleanDOI')) {
+    echo "DO $doi\n";
+}
+
 // Record separator:
 echo "\n";
 ?>

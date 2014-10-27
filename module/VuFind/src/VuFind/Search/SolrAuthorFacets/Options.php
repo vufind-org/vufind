@@ -69,4 +69,15 @@ class Options extends \VuFind\Search\Solr\Options
     {
         return 'author-search';
     }
+
+    /**
+     * Does this search option support the cart/book bag?
+     *
+     * @return bool
+     */
+    public function supportsCart()
+    {
+        // Not currently supported
+        return false;
+    }
 }

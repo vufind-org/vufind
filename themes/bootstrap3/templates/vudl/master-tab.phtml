@@ -1,0 +1,14 @@
+<? if(isset($this->master)): ?>
+  <form method="get" id="file-download" action="<?=$this->url('files', array('id'=>$this->id, 'type'=>'MASTER')) ?>?download=true">
+    <button id="download-button" class="btn btn-primary btn-lg">
+      <i class="fa fa-download"></i> <?=$this->transEsc('Download File') ?><br>
+      <span class="details"><?=$this->techinfo['type'] ?><?if(isset($this->techinfo['size'])):?> ~ <?=$this->techinfo['size'] ?><? endif ?></span>
+    </button>
+  </form>
+<? else: ?>
+  <br/><br/>
+  <p>Original Image File Not Available.</p>
+  <p>See below for all available downloads.</p>
+<? endif; ?>
+<br/>
+<div class="accordion" id="techinfo"><?=$this->techinfo['div'] ?></div>

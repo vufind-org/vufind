@@ -1,0 +1,117 @@
+<?
+  $this->headTitle($this->translate('OAI Server'));
+  $this->layout()->breadcrumbs = $this->transEsc('OAI Server');
+  $baseUrl = $this->url('oai-server');
+?>
+<h2><?=$this->transEsc('OAI Server')?></h2>
+<p>
+  This OAI server is OAI 2.0 compliant.<br/>
+  The OAI Server URL is: <?=$this->serverUrl($baseUrl)?>
+</p>
+
+<p class="lead"><?=$this->transEsc('Available Functionality') ?>:</p>
+<dl>
+  <dt>Identify</dt>
+  <dd>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <p class="help-block">Returns the Identification information of this OAI Server.</p>
+      <input type="hidden" name="verb" value="Identify"/>
+      <p class="help-block">Accepts no additional parameters.</p>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+    </form>
+  </dd>
+
+  <dt>ListIdentifiers</dt>
+  <dd>
+    <form class="form-inline" method="get" action="<?=$baseUrl?>">
+      <p class="help-block">Returns a listing of available identifiers</p>
+      <input type="hidden" name="verb" value="ListIdentifiers"/>
+      <table class="text-right">
+        <tr>
+          <td><label for="ListIdentifier_from"><?=$this->transEsc('From')?>:</label></td>
+          <td><input id="ListIdentifier_from" type="text" name="from"/></td>
+        </tr>
+        <tr>
+          <td><label for="ListIdentifier_until"><?=$this->transEsc('Until')?>:</label></td>
+          <td><input id="ListIdentifier_until" type="text" name="until"/></td>
+        </tr>
+        <tr>
+          <td><label for="ListIdentifier_set"><?=$this->transEsc('Set')?>:</label></td>
+          <td><input id="ListIdentifier_set" type="text" name="set"/></td>
+        </tr>
+        <tr>
+          <td><label for="ListIdentifier_metadataPrefix"><?=$this->transEsc('Metadata Prefix')?>:</label></td>
+          <td><input id="ListIdentifier_metadataPrefix" type="text" name="metadataPrefix"/></td>
+        </tr>
+        <tr>
+          <td><label for="ListIdentifier_resumptionToken"><?=$this->transEsc('Resumption Token')?>:</label></td>
+          <td><input id="ListIdentifier_resumptionToken" type="text" name="resumptionToken"/></td>
+        </tr>
+      </table>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+    </form>
+  </dd>
+
+  <dt>ListMetadataFormats</dt>
+  <dd>
+    <form class="form-inline" method="get" action="<?=$baseUrl?>">
+      <p class="help-block">Returns a listing of available metadata formats.</p>
+      <input type="hidden" name="verb" value="ListMetadataFormats"/>
+      <label for="ListMetadataFormats_identifier"><?=$this->transEsc('Identifier')?>:</label> <input id="ListMetadataFormats_identifier" type="text" name="identifier"/><br/>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+    </form>
+  </dd>
+
+  <dt>ListSets</dt>
+  <dd>
+    <form class="form-inline" method="get" action="<?=$baseUrl?>">
+      <p class="help-block">Returns a listing of available sets.</p>
+      <input type="hidden" name="verb" value="ListSets"/>
+      <label for="ListSets_metadataPrefix"><?=$this->transEsc('Metadata Prefix')?>:</label> <input id="ListSets_metadataPrefix" type="text" name="metadataPrefix"/><br class="clear"/>
+      <label for="ListSets_resumptionToken"><?=$this->transEsc('Resumption Token')?>:</label> <input id="ListSets_resumptionToken" type="text" name="resumptionToken"/><br class="clear"/>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/><br class="clear"/>
+    </form>
+  </dd>
+
+  <dt>ListRecords</dt>
+  <dd>
+    <form class="form-inline" method="get" action="<?=$baseUrl?>">
+      <p class="help-block">Returns a listing of available records.</p>
+      <input type="hidden" name="verb" value="ListRecords"/>
+      <table class="text-right">
+        <tr>
+          <td><label for="ListRecord_from"><?=$this->transEsc('From')?>:</label></td>
+          <td><input id="ListRecord_from" type="text" name="from"/></td>
+        </tr>
+        <tr>
+          <td><label for="ListRecord_until"><?=$this->transEsc('Until')?>:</label></td>
+          <td><input id="ListRecord_until" type="text" name="until"/></td>
+        </tr>
+        <tr>
+          <td><label for="ListRecord_set"><?=$this->transEsc('Set')?>:</label></td>
+          <td><input id="ListRecord_set" type="text" name="set"/></td>
+        </tr>
+        <tr>
+          <td><label for="ListRecord_metadataPrefix"><?=$this->transEsc('Metadata Prefix')?>:</label></td>
+          <td><input id="ListRecord_metadataPrefix" type="text" name="metadataPrefix"/></td>
+        </tr>
+        <tr>
+          <td><label for="ListRecord_resumptionToken"><?=$this->transEsc('Resumption Token')?>:</label></td>
+          <td><input id="ListRecord_resumptionToken" type="text" name="resumptionToken"/></td>
+        </tr>
+      </table>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+    </form>
+  </dd>
+
+  <dt>GetRecord</dt>
+  <dd>
+    <form class="form-inline" method="get" action="<?=$baseUrl?>">
+      <p class="help-block">Returns a single record.</p>
+      <input type="hidden" name="verb" value="GetRecord"/>
+      <label for="GetRecord_identifier"><?=$this->transEsc('Identifier')?>:</label> <input id="GetRecord_identifier" type="text" name="identifier"/><br class="clear"/>
+      <label for="GetRecord_metadataPrefix"><?=$this->transEsc('Metadata Prefix')?>:</label> <input id="GetRecord_metadataPrefix" type="text" name="metadataPrefix"/><br class="clear"/>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/><br class="clear"/>
+    </form>
+  </dd>
+</dl>

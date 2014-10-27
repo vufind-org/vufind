@@ -3,13 +3,12 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\Http\Header;
 
-use Closure;
 use Zend\Uri\UriFactory;
 
 /**
@@ -97,7 +96,6 @@ class SetCookie implements MultipleHeaderInterface
      */
     public static function fromString($headerLine, $bypassHeaderFieldName = false)
     {
-        /* @var $setCookieProcessor Closure */
         static $setCookieProcessor = null;
 
         if ($setCookieProcessor === null) {
@@ -107,7 +105,7 @@ class SetCookie implements MultipleHeaderInterface
                 $keyValuePairs = preg_split('#;\s*#', $headerLine);
 
                 foreach ($keyValuePairs as $keyValue) {
-                    if (preg_match('#^(?<headerKey>[^=]+)=\s*("?)(?<headerValue>[^"]+)\2#',$keyValue,$matches)) {
+                    if (preg_match('#^(?P<headerKey>[^=]+)=\s*("?)(?P<headerValue>[^"]*)\2#', $keyValue, $matches)) {
                         $headerKey  = $matches['headerKey'];
                         $headerValue= $matches['headerValue'];
                     } else {
@@ -262,10 +260,6 @@ class SetCookie implements MultipleHeaderInterface
      */
     public function setName($name)
     {
-        if ($name !== null && preg_match("/[=,; \t\r\n\013\014]/", $name)) {
-            throw new Exception\InvalidArgumentException("Cookie name cannot contain these characters: =,; \\t\\r\\n\\013\\014 ({$name})");
-        }
-
         $this->name = $name;
         return $this;
     }
@@ -360,15 +354,24 @@ class SetCookie implements MultipleHeaderInterface
             return $this;
         }
 
+        $tsExpires = $expires;
         if (is_string($expires)) {
-            $expires = strtotime($expires);
+            $tsExpires = strtotime($expires);
+
+            // if $tsExpires is invalid and PHP is compiled as 32bit. Check if it fail reason is the 2038 bug
+            if (!is_int($tsExpires) && PHP_INT_SIZE === 4) {
+                $dateTime = new \DateTime($expires);
+                if ( $dateTime->format('Y') > 2038) {
+                    $tsExpires = PHP_INT_MAX;
+                }
+            }
         }
 
-        if (!is_int($expires) || $expires < 0) {
+        if (!is_int($tsExpires) || $tsExpires < 0) {
             throw new Exception\InvalidArgumentException('Invalid expires time specified');
         }
 
-        $this->expires = $expires;
+        $this->expires = $tsExpires;
         return $this;
     }
 

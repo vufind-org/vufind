@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Service
  */
@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\S3;
 
 use ZendService\Amazon\S3;
-use ZendService\Amazon\S3\Exception;
 use Zend\Http\Response;
 
 /**
@@ -49,8 +48,8 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('Zend_Service_Amazon online tests are not enabled');
         }
         $this->_amazon = new S3\S3(constant('TESTS_ZEND_SERVICE_AMAZON_ONLINE_ACCESSKEYID'),
-                                                    constant('TESTS_ZEND_SERVICE_AMAZON_ONLINE_SECRETKEY')
-                                                    );
+                                   constant('TESTS_ZEND_SERVICE_AMAZON_ONLINE_SECRETKEY')
+        );
         $this->_nosuchbucket = "nonexistingbucketnamewhichnobodyshoulduse";
         $this->_httpClientAdapterSocket = new \Zend\Http\Client\Adapter\Socket();
 
@@ -58,9 +57,6 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
 
         $this->_amazon->getHttpClient()
                       ->setAdapter($this->_httpClientAdapterSocket);
-
-        // terms of use compliance: no more than one query per second
-        sleep(1);
     }
 
     /**
@@ -91,6 +87,30 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->_amazon->isBucketAvailable($this->_bucket));
         $list = $this->_amazon->getBuckets();
         $this->assertContains($this->_bucket, $list);
+    }
+
+    /**
+     * Test bucket availability
+     */
+    public function testIsBucketAvailable()
+    {
+        $this->assertFalse(
+            $this->_amazon->isBucketAvailable($this->_bucket),
+            "Bucket should not be available before it's created."
+        );
+        $this->assertTrue(
+            $this->_amazon->createBucket($this->_bucket),
+            "Creating bucket should work."
+        );
+        $this->assertTrue(
+            $this->_amazon->isBucketAvailable($this->_bucket),
+            "Bucket should now be available."
+        );
+
+        $this->assertFalse(
+            $this->_amazon->isBucketAvailable(uniqid('zftest.nonexisting-', true)),
+            "That bucket really shouldn't exist."
+        );
     }
 
     /**
@@ -150,7 +170,8 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("testdata", $stream_read, 'Downloaded stream does not seem to match!');
         $this->assertEquals("testdata", $file_read, 'Downloaded file does not seem to match!');
     }
-/**
+
+    /**
      * Test getting info
      *
      * @return void
@@ -223,10 +244,10 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         $this->_amazon->removeBucket($this->_bucket);
 
         // otherwise amazon sends cached data
-        sleep(3);
-        $this->assertFalse($this->_amazon->isBucketAvailable($this->_bucket));
-        $this->assertFalse($this->_amazon->isObjectAvailable($this->_bucket."/zftest"));
-        $this->assertFalse($this->_amazon->getObjectsByBucket($this->_bucket));
+        sleep(2);
+        $this->assertFalse($this->_amazon->isObjectAvailable($this->_bucket."/zftest"), "Object shouldn't be available.");
+        $this->assertFalse($this->_amazon->getObjectsByBucket($this->_bucket), "Bucket should be empty.");
+        $this->assertFalse($this->_amazon->isBucketAvailable($this->_bucket), "Bucket shouldn't be available.");
         $list = $this->_amazon->getBuckets();
         $this->assertNotContains($this->_bucket, $list);
     }
@@ -244,6 +265,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->_amazon->isObjectAvailable($object));
 
         $info = $this->_amazon->getInfo($object);
+
         $this->assertEquals('"'.md5_file($filename).'"', $info["etag"]);
         $this->assertEquals(filesize($filename), $info["size"]);
         $this->assertEquals($exp_type, $info["type"]);
@@ -284,7 +306,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         $filedir = __DIR__."/_files/";
 
         $this->setExpectedException(
-            'ZendService\Amazon\Sqs\Exception\RuntimeException',
+            'ZendService\Amazon\S3\Exception\RuntimeException',
             'Cannot read file ' . $filedir."nosuchfile");
 
         $this->_amazon->putFile($filedir."nosuchfile", $this->_bucket."/zftestfile");
@@ -300,13 +322,12 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         $filedir = __DIR__."/_files/";
         try {
             $this->_amazon->putFile($filedir."nosuchfile", $this->_bucket."/zftestfile");
-        } catch (\ZendService\Amazon\Sqs\Exception\RuntimeException $e) {
+        } catch (S3\Exception\RuntimeException $e) {
             $this->assertFalse($this->_amazon->isObjectAvailable($this->_bucket."/zftestfile"));
             return;
         }
         $this->fail('Expected exception not thrown');
     }
-
 
     /**
      * @depends testCreateBucket
@@ -359,59 +380,58 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("testdata123", $this->_amazon->getObject($this->_bucket."/это тоже тест!"));
     }
 
-
     public function testCreateBucketWithBadName()
     {
         $this->setExpectedException(
-            'ZendService\Amazon\Sqs\Exception\InvalidArgumentException',
-            'Bucket name "This is a Very Bad Name" contains invalid characters');
-        $this->_amazon->createBucket("This is a Very Bad Name");
+            'ZendService\Amazon\S3\Exception\InvalidArgumentException',
+            'Bucket name "VERY.BAD.NAME" contains invalid characters');
+        $this->_amazon->createBucket("VERY.BAD.NAME");
     }
 
     public function testBucketAvailabilityWithBadName()
     {
         $this->setExpectedException(
-            '\Zend\Http\Client\Adapter\Exception',
-            'Unable to Connect to tcp://This is a Very Bad Name.s3.amazonaws.com:80');
-        $this->_amazon->isBucketAvailable("This is a Very Bad Name");
+            'ZendService\Amazon\S3\Exception\InvalidArgumentException',
+            'Bucket name "VERY.BAD.NAME" contains invalid characters');
+        $this->_amazon->isBucketAvailable("VERY.BAD.NAME");
     }
 
     public function testPutObjectWithBadName()
     {
         $this->setExpectedException(
-            'ZendService\Amazon\Sqs\Exception\InvalidArgumentException',
-            'Bucket name "This is a Very Bad Name" contains invalid characters');
-        $this->_amazon->putObject("This is a Very Bad Name/And It Gets Worse", "testdata");
+            'ZendService\Amazon\S3\Exception\InvalidArgumentException',
+            'Bucket name "VERY.BAD.NAME" contains invalid characters');
+        $this->_amazon->putObject("VERY.BAD.NAME/And It Gets Worse", "testdata");
     }
 
     public function testGetObjectWithBadName()
     {
         $this->setExpectedException(
-            'ZendService\Amazon\Sqs\Exception\InvalidArgumentException',
-            'Bucket name "This is a Very Bad Name" contains invalid characters');
-        $this->_amazon->getObject("This is a Very Bad Name/And It Gets Worse");
+            'ZendService\Amazon\S3\Exception\InvalidArgumentException',
+            'Bucket name "VERY.BAD.NAME" contains invalid characters');
+        $this->_amazon->getObject("VERY.BAD.NAME/And It Gets Worse");
     }
 
     public function testGetInfoWithBadName()
     {
         $this->setExpectedException(
-            'ZendService\Amazon\Sqs\Exception\InvalidArgumentException',
-            'Bucket name "This is a Very Bad Name" contains invalid characters');
-        $this->_amazon->getInfo("This is a Very Bad Name/And It Gets Worse");
+            'ZendService\Amazon\S3\Exception\InvalidArgumentException',
+            'Bucket name "VERY.BAD.NAME" contains invalid characters');
+        $this->_amazon->getInfo("VERY.BAD.NAME/And It Gets Worse");
     }
 
     public function testSetEndpointWithBadName()
     {
         $this->setExpectedException(
-            'ZendService\Amazon\Sqs\Exception\InvalidArgumentException',
+            'ZendService\Amazon\S3\Exception\InvalidArgumentException',
             'Invalid endpoint supplied');
-        $this->_amazon->setEndpoint("This is a Very Bad Name/And It Gets Worse");
+        $this->_amazon->setEndpoint("//");
     }
 
     public function testBucketNameIsTooShort()
     {
         $this->setExpectedException(
-            'ZendService\Amazon\Sqs\Exception\InvalidArgumentException',
+            'ZendService\Amazon\S3\Exception\InvalidArgumentException',
             sprintf('Bucket name "%s" must be between 3 and 255 characters long', 'xx'));
         $this->_amazon->createBucket('xx');
     }
@@ -420,7 +440,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
     {
         $bucketName = str_repeat('x', 256);
         $this->setExpectedException(
-            'ZendService\Amazon\Sqs\Exception\InvalidArgumentException',
+            'ZendService\Amazon\S3\Exception\InvalidArgumentException',
             sprintf('Bucket name "%s" must be between 3 and 255 characters long', $bucketName));
         $this->_amazon->createBucket($bucketName);
     }
@@ -447,7 +467,6 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
      * Test bucket name with /'s and encoding
      *
      * ZF-6855
-     *
      */
     public function testObjectPath()
     {
@@ -469,7 +488,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
     {
         $endpoint = $this->_amazon->getEndpoint();
         $this->_amazon->setEndpoint('https://s3.amazonaws.com');
-        $this->assertEquals('https://s3.amazonaws.com', $this->_amazon->getEndpoint()->generate());
+        $this->assertEquals('https://s3.amazonaws.com', $this->_amazon->getEndpoint()->toString());
         $this->_amazon->createBucket($this->_bucket);
         $this->_amazon->putObject($this->_bucket."/zftest", "testdata");
         $this->assertEquals("testdata", $this->_amazon->getObject($this->_bucket."/zftest"));
@@ -484,7 +503,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
     public function testBucketIPMaskException()
     {
         $this->setExpectedException(
-            'ZendService\Amazon\Sqs\Exception\InvalidArgumentException',
+            'ZendService\Amazon\S3\Exception\InvalidArgumentException',
             'Bucket name "127.0.0.1" cannot be an IP address');
         $this->_amazon->createBucket("127.0.0.1");
     }
@@ -498,7 +517,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $this->_amazon->createBucket("127.0.0.1");
-        } catch(\ZendService\Amazon\Sqs\Exception\InvalidArgumentException $e) {
+        } catch(S3\Exception\InvalidArgumentException $e) {
             $this->_amazon->createBucket("123-456-789-123");
             $this->assertTrue($this->_amazon->isBucketAvailable("123-456-789-123"));
             $this->_amazon->removeBucket("123-456-789-123");
@@ -509,7 +528,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *  @group ZF-7773
+     * @group ZF-7773
      */
     public function testGetObjectsByBucketParams()
     {
@@ -528,13 +547,16 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
     public function testCommonPrefixes()
     {
         $this->_amazon->createBucket($this->_bucket);
-        $this->_amazon->putObject($this->_bucket.'/test-folder/test1','test');
-        $this->_amazon->putObject($this->_bucket.'/test-folder/test2-folder/','');
-        $params= array(
-                    'prefix' => 'test-folder/',
-                    'delimiter' => '/'
-                 );
-        $response= $this->_amazon->getObjectsAndPrefixesByBucket($this->_bucket,$params);
+        $this->_amazon->putObject($this->_bucket . '/test-folder/test1', 'test');
+        $this->_amazon->putObject($this->_bucket . '/test-folder/test2-folder/', 'test');
+        $this->_amazon->putObject($this->_bucket . '/test-folder/test3-folder/', '');
+
+        $params = array(
+            'prefix' => 'test-folder/',
+            'delimiter' => '/'
+        );
+        $response = $this->_amazon->getObjectsAndPrefixesByBucket($this->_bucket, $params);
+
         $this->assertEquals($response['objects'][0],'test-folder/test1');
         $this->assertEquals($response['prefixes'][0],'test-folder/test2-folder/');
     }

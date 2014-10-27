@@ -12,11 +12,11 @@
           <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
           <select id="alphaBrowseForm_source" name="source">
             <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
-              <option value="<?=$this->escapeHtml($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
+              <option value="<?=$this->escapeHtmlAttr($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
             <? endforeach; ?>
           </select>
           <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
-          <input type="search" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtml($this->from) ?>"/>
+          <input type="search" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtmlAttr($this->from) ?>"/>
           <input type="submit" data-theme="b" value="<?=$this->transEsc('Browse') ?>"/>
         </div>
       </form>
@@ -33,12 +33,12 @@
       <div class="ui-grid-a">
         <div class="ui-block-a">
           <? if (isset($this->prevpage)): ?>
-            <a data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->prevpage))))?>"><?=$this->transEsc('Prev')?></a>
+            <a data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->prevpage))))?>"><?=$this->transEsc('Prev')?></a>
           <? endif; ?>
         </div>
         <div class="ui-block-b">
           <? if (isset($this->nextpage)): ?>
-            <a data-role="button" data-mini="true" data-icon="arrow-r" data-iconpos="right" href="<?=$this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->nextpage))))?>"><?=$this->transEsc('Next')?></a>
+            <a data-role="button" data-mini="true" data-icon="arrow-r" data-iconpos="right" href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->nextpage))))?>"><?=$this->transEsc('Next')?></a>
           <? endif; ?>
         </div>
       </div>
@@ -52,14 +52,14 @@
           <? if ($item['count'] > 0 || count($item['useInstead']) > 0): ?>
             <? if (count($item['useInstead']) > 0): ?>
               <? $query = array('from' => implode($item['useInstead'])) + $baseQuery; ?>
-              <? $searchLink = $this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => $query))); ?>
+              <? $searchLink = $this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $query))); ?>
             <? else: ?>
               <? if ($item['count'] < 5): ?>
                 <? $query = array('type' => 'ids', 'lookfor' => implode(' ', $item['ids'])); ?>
               <? else: ?>
                 <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => '"' . addcslashes($item['heading'], '"') . '"'); ?>
               <? endif; ?>
-              <? $searchLink = $this->escapeHtml($this->url('search-results', array(), array('query' => $query))); ?>
+              <? $searchLink = $this->escapeHtmlAttr($this->url('search-results', array(), array('query' => $query))); ?>
             <? endif; ?>
           <? endif; ?>
           <a class="ui-link-inherit" data-ajax="false" href="<?=$searchLink ?>">

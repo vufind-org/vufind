@@ -14,7 +14,9 @@
     </label>
     <span class="help-inline">|</span>
     <span class="help-inline"><?=$this->transEsc('with_selected')?>: </span>
-    <input class="btn btn-small" type="submit" name="saveCart" value="<?=$this->transEsc('bookbag_save_selected')?>" title="<?=$this->transEsc('bookbag_save')?>"/>
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <input class="btn btn-small" type="submit" name="saveCart" value="<?=$this->transEsc('bookbag_save_selected')?>" title="<?=$this->transEsc('bookbag_save')?>"/>
+    <? endif; ?>
     <input class="btn btn-small" type="submit" name="email" value="<?=$this->transEsc('bookbag_email_selected')?>" title="<?=$this->transEsc('bookbag_email')?>"/>
     <? $exportOptions = $this->export()->getBulkOptions(); if (count($exportOptions) > 0): ?>
       <input class="btn btn-small" type="submit" name="export" value="<?=$this->transEsc('bookbag_export_selected')?>" title="<?=$this->transEsc('bookbag_export')?>"/>

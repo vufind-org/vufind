@@ -1,6 +1,6 @@
 <?
     // Set up page title:
-    $lookfor = $this->params->getDisplayQuery();
+    $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
     if (isset($this->overrideTitle)) {
         $this->headTitle($this->overrideTitle);
     } else {
@@ -18,6 +18,7 @@
             'searchClassId' => $this->params->getsearchClassId(),
             'checkboxFilters' => $this->params->getCheckboxFacets(),
             'filterList' => $this->params->getFilters(),
+            'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
             'selectedShards' => $this->params->getSelectedShards()
         )
     );
@@ -28,6 +29,11 @@
     } else {
         $this->layout()->breadcrumbs = '<em>' . $this->transEsc('Search') . ': ' .
             $this->escapeHtml($lookfor) . '</em>';
+    }
+
+    // Disable cart if appropriate:
+    if (!$this->params->getOptions()->supportsCart()) {
+        $this->hideCartControls = true;
     }
 
     // Load Javascript dependencies into header:
@@ -103,7 +109,7 @@
     <div class="searchtools">
       <strong><?=$this->transEsc('Search Tools')?>:</strong>
       <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>" class="feed"><?=$this->transEsc('Get RSS Feed')?></a>
-      <a href="<?=$this->url('search-email')?>" class="mailSearch mail" id="mailSearch<?=$this->escapeHtml($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
+      <a href="<?=$this->url('search-email')?>" class="mailSearch mail" id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
       <? if (is_numeric($this->results->getSearchId())): ?>
         <? if ($this->results->isSavedSearch()): ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>" class="delete"><?=$this->transEsc('save_search_remove')?></a>

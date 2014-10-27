@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -282,7 +282,7 @@ class StripTags extends AbstractFilter
             foreach ($matches[1] as $index => $attributeName) {
                 $attributeName      = strtolower($attributeName);
                 $attributeDelimiter = empty($matches[2][$index]) ? $matches[4][$index] : $matches[2][$index];
-                $attributeValue     = empty($matches[3][$index]) ? $matches[5][$index] : $matches[3][$index];
+                $attributeValue     = (strlen($matches[3][$index]) == 0) ? $matches[5][$index] : $matches[3][$index];
 
                 // If the attribute is not allowed, then remove it entirely
                 if (!array_key_exists($attributeName, $this->tagsAllowed[$tagName])
