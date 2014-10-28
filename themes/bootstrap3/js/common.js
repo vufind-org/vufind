@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, vufindString */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -203,8 +203,9 @@ function ajaxLogin(form) {
         // get the user entered password
         var password = form.password.value;
 
-        // encrypt the password with the salt
-        password = rc4Encrypt(salt, password);
+        // base-64 encode the password (to allow support for Unicode)
+        // and then encrypt the password with the salt
+        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
 
         // hex encode the encrypted password
         password = hexEncode(password);
@@ -301,7 +302,7 @@ $(document).ready(function() {
             q:query,
             method:'getACSuggestions',
             searcher:searcher['searcher'],
-            type:$('#searchForm_type').val(),
+            type:$('#searchForm_type').val()
           },
           dataType:'json',
           success: function(json) {
@@ -315,7 +316,7 @@ $(document).ready(function() {
               cb([]);
             }
           }
-        })
+        });
       }
     }
   );
