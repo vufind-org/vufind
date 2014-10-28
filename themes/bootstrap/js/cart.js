@@ -159,20 +159,22 @@ var lastCartSubmit = false;
 function cartSubmit($form) {
   lastCartSubmit = $form;
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
+  var checks = $form.find('input.checkbox-select-item:checked');
+  if(checks.length == 0 && submit != 'empty') {
+    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+  }
   if (submit == 'print') {
     //redirect page
-    var checks = $form.find('input.checkbox-select-item:checked');
-    if(checks.length > 0) {
-      var url = path+'/Records/Home?print=true';
-      for(var i=0;i<checks.length;i++) {
-        url += '&id[]='+checks[i].value;
-      }
-      document.location.href = url;
-    } else {
-      Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    var url = path+'/Records/Home?print=true';
+    for(var i=0;i<checks.length;i++) {
+      url += '&id[]='+checks[i].value;
     }
-  } else {
+    document.location.href = url;
+  } else if ((submit != 'empty' || confirm(vufindString['confirmEmpty']))
+  && (submit != 'delete' || confirm(vufindString['confirmDelete']))) {
     Lightbox.submit($form, Lightbox.changeContent);
+  } else {
+    $('#modal').find('.icon-spinner').remove();
   }
 }
 
