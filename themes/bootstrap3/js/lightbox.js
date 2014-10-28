@@ -13,7 +13,6 @@ var Lightbox = {
   XHR: false,        // Used for current in-progress XHR lightbox request
   openStack: [],     // Array of functions to be called after changeContent or the lightbox event 'shown'
   closeStack: [],    // Array of functions to be called and cleared after the lightbox event 'hidden'
-  closeStackPerm: [],// Array of functions to be called after the lightbox event 'hidden'
   formHandlers: [],  // Full custom handlers for forms; by name
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
 
@@ -44,12 +43,6 @@ var Lightbox = {
    */
   addCloseAction: function(func) {
     this.closeStack.push(func);
-  },
-  /**
-   * Register permanent close event handlers
-   */
-  addPermanentCloseAction: function(func) {
-    this.closeStackPerm.push(func);
   },
   /**
    * For when you want to handle that form all by yourself
@@ -134,10 +127,6 @@ var Lightbox = {
   closeActions: function() {
     Lightbox.shown = false;
     Lightbox.openingURL = false;
-    // permanent close actions
-    for(var i=Lightbox.closeStackPerm.length;i--;) {
-      Lightbox.closeStackPerm[i]();
-    }
     // Clean out stack
     while(Lightbox.closeStack.length > 0) {
       var f = Lightbox.closeStack.pop();
