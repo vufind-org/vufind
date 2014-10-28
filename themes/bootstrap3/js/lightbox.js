@@ -46,9 +46,9 @@ var Lightbox = {
     this.closeStack.push(func);
   },
   /**
-   * Register custom close event handlers
+   * Register permanent close event handlers
    */
-  addPermenantCloseAction: function(func) {
+  addPermanentCloseAction: function(func) {
     this.closeStackPerm.push(func);
   },
   /**
@@ -134,7 +134,7 @@ var Lightbox = {
   closeActions: function() {
     Lightbox.shown = false;
     Lightbox.openingURL = false;
-    // Permenant close actions
+    // permanent close actions
     for(var i=Lightbox.closeStackPerm.length;i--;) {
       Lightbox.closeStackPerm[i]();
     }

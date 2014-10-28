@@ -115,12 +115,10 @@ function registerLightboxEvents() {
   });
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
+    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
   });
   $(modal).find('.checkbox-select-item').change(function() {
-    if(!this.checked) { // Uncheck all selected if one is unselected
-      $(this).closest('.modal-body').find('.checkbox-select-all').attr('checked', false);
-    }
+    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
   });
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
@@ -361,7 +359,10 @@ $(document).ready(function() {
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
-    $(this).closest('form').find('.checkbox-select-item').attr('checked', this.checked);
+    $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
+  });
+  $('.checkbox-select-item').change(function() {
+    $(this).closest('form').find('.checkbox-select-all').prop('checked', false);
   });
 
   // handle QR code links
