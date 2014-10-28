@@ -124,6 +124,8 @@ function registerLightboxEvents() {
   $(modal).find("form input[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .icon-spinner').remove();
+    // Remove other clicks
+    $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
@@ -214,8 +216,9 @@ function ajaxLogin(form) {
         // get the user entered password
         var password = form.password.value;
 
-        // encrypt the password with the salt
-        password = rc4Encrypt(salt, password);
+        // base-64 encode the password (to allow support for Unicode)
+        // and then encrypt the password with the salt
+        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
 
         // hex encode the encrypted password
         password = hexEncode(password);
@@ -349,7 +352,6 @@ $(document).ready(function() {
       }, 500); // Delay request submission
     },
     updater : function(item) { // Submit on update
-      // console.log(this.$element[0].form.submit);
       this.$element[0].value = item;
       this.$element[0].form.submit();
       return item;
