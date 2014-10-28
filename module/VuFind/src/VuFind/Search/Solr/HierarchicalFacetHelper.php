@@ -70,9 +70,9 @@ class HierarchicalFacetHelper
             }
             return $a['level'] == $b['level']
                 ? $b['count'] - $a['count']
-                : $b['level'] - $a['level'];
+                : $a['level'] - $b['level'];
         };
-        uasort($facetList, $sortFunc);
+        usort($facetList, $sortFunc);
     }
 
     /**
@@ -104,106 +104,22 @@ class HierarchicalFacetHelper
         $keyedList = array();
         $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         foreach ($facetList as $item) {
-            $href = '';
-            $exclude = '';
-            // Build URLs only if we were given an URL helper
-            if ($urlHelper !== false) {
-                if (isset($filterKeys[$item['value']])) {
-                    $href = $urlHelper->removeFacet(
-                        $facet, $item['value'], true, $item['operator'], $paramArray
-                    );
-                } else {
-                    $href = $urlHelper->addFacet(
-                        $facet, $item['value'], $item['operator'], $paramArray
-                    );
-                }
-                $exclude = $urlHelper->addFacet(
-                    $facet, $item['value'], 'NOT', $paramArray
-                );
-            }
-
-            $displayText = $item['displayText'];
-            if ($displayText == $item['value']) {
-                // Only show the current level part
-                $displayText = $this->formatDisplayText($displayText);
-            }
-
-            $facetItem = array(
-                'value' => $item['value'],
-                'displayText' => $displayText,
-                'count' => $item['count'],
-                'state' => array(
-                    'opened' => isset($parentFilterKeys[$item['value']]),
-                ),
-                'selected' => isset($filterKeys[$item['value']]),
-                'href' => $href,
-                'exclude' => $exclude,
-                'operator' => $item['operator'],
-                'children' => array()
+            $keyedList[$item['value']] = $this->createFacetItem(
+                $facet, $item, $urlHelper, $filterKeys, $parentFilterKeys
             );
-
-            $keyedList[$item['value']] = $facetItem;
         }
 
         // Convert the keyed array to a hierarchical array
         $result = array();
         foreach ($keyedList as $key => &$item) {
-            list($level, $value) = explode('/', $key, 2);
-            $item['level'] = $level;
-            if ($level > 0) {
-                $parentId = ($level - 1) . '/' . implode(
-                    '/',
-                    array_slice(
-                        explode('/', $value),
-                        0,
-                        $level
-                    )
-                ) . '/';
-                $keyedList[$parentId]['children'][] = &$item;
+            if ($item['level'] > 0) {
+                $keyedList[$item['parent']]['children'][] = &$item;
             } else {
                 $result[] = &$item;
             }
         }
 
         return $result;
-    }
-
-    /**
-     * Helper method for building hierarchical facets:
-     * Create two keyed arrays of currently active filter for quick lookup:
-     * - filterKeys: currently active filters
-     * - parentFilterKeys: all the parents of currently active filters
-     *
-     * @param string $facet             Facet name
-     * @param array  $filterList        Active filters
-     * @param array  &$filterKeys       Resulting array of active filters
-     * @param array  &$parentFilterKeys Resulting array of active filter parents
-     *
-     * @return void
-     */
-    public function buildFilterKeyArrays(
-        $facet, $filterList, &$filterKeys, &$parentFilterKeys
-    ) {
-        foreach ($filterList as $filters) {
-            foreach ($filters as $filterItem) {
-                if ($filterItem['field'] == $facet) {
-                    $filterKeys[$filterItem['value']] = true;
-                    list($filterLevel, $filterValue)
-                        = explode('/', $filterItem['value'], 2);
-                    for (; $filterLevel > 0; $filterLevel--) {
-                        $parentKey = ($filterLevel - 1) . '/' . implode(
-                            '/',
-                            array_slice(
-                                explode('/', $filterValue),
-                                0,
-                                $filterLevel
-                            )
-                        ) . '/';
-                        $parentFilterKeys[$parentKey] = true;
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -217,10 +133,14 @@ class HierarchicalFacetHelper
     {
         $results = array();
         foreach ($facetList as $facetItem) {
+            $children = !empty($facetItem['children'])
+                ? $facetItem['children']
+                : array();
+            unset($facetItem['children']);
             $results[] = $facetItem;
-            if (!empty($facetItem['children'])) {
+            if ($children) {
                 $results = array_merge(
-                    $results, $this->flattenFacetHierarchy($facetItem['children'])
+                    $results, $this->flattenFacetHierarchy($children)
                 );
             }
         }
@@ -250,5 +170,102 @@ class HierarchicalFacetHelper
             return implode($separator, $parts);
         }
         return $displayText;
+    }
+
+    /**
+     * Helper method for building hierarchical facets:
+     * Create two keyed arrays of currently active filter for quick lookup:
+     * - filterKeys: currently active filters
+     * - parentFilterKeys: all the parents of currently active filters
+     *
+     * @param string $facet             Facet name
+     * @param array  $filterList        Active filters
+     * @param array  &$filterKeys       Resulting array of active filters
+     * @param array  &$parentFilterKeys Resulting array of active filter parents
+     *
+     * @return void
+     */
+    protected function buildFilterKeyArrays(
+        $facet, $filterList, &$filterKeys, &$parentFilterKeys
+    ) {
+        foreach ($filterList as $filters) {
+            foreach ($filters as $filterItem) {
+                if ($filterItem['field'] == $facet) {
+                    $filterKeys[$filterItem['value']] = true;
+                    list($filterLevel, $filterValue)
+                        = explode('/', $filterItem['value'], 2);
+                    for (; $filterLevel > 0; $filterLevel--) {
+                        $parentKey = ($filterLevel - 1) . '/' . implode(
+                            '/',
+                            array_slice(
+                                explode('/', $filterValue),
+                                0,
+                                $filterLevel
+                            )
+                        ) . '/';
+                        $parentFilterKeys[$parentKey] = true;
+                    }
+                }
+            }
+        }
+    }
+
+    protected function createFacetItem(
+        $facet, $item, $urlHelper, $filterKeys, $parentFilterKeys
+    ) {
+        $href = '';
+        $exclude = '';
+        // Build URLs only if we were given an URL helper
+        if ($urlHelper !== false) {
+            if (isset($filterKeys[$item['value']])) {
+                $href = $urlHelper->removeFacet(
+                    $facet, $item['value'], true, $item['operator'], $paramArray
+                );
+            } else {
+                $href = $urlHelper->addFacet(
+                    $facet, $item['value'], $item['operator'], $paramArray
+                );
+            }
+            $exclude = $urlHelper->addFacet(
+                $facet, $item['value'], 'NOT', $paramArray
+            );
+        }
+
+        $displayText = $item['displayText'];
+        if ($displayText == $item['value']) {
+            // Only show the current level part
+            $displayText = $this->formatDisplayText($displayText);
+        }
+
+        list($level, $value) = explode('/', $item['value'], 2);
+        $parent = null;
+        if ($level > 0) {
+            $parent = ($level - 1) . '/' . implode(
+                '/',
+                array_slice(
+                    explode('/', $value),
+                    0,
+                    $level
+                )
+            ) . '/';
+        }
+
+        return array(
+            'value' => $item['value'],
+            'level' => $level,
+            'parent' => $parent,
+            'displayText' => $displayText,
+            'count' => $item['count'],
+            'state' => array(
+                'opened' => isset($parentFilterKeys[$item['value']]),
+            ),
+            'selected' => isset($filterKeys[$item['value']]),
+            'href' => $href,
+            'exclude' => $exclude,
+            'operator' => $item['operator'],
+            'children' => array()
+        );
+
+
     }
 }
