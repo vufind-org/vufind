@@ -302,4 +302,19 @@ class Database extends AbstractBase
     {
         return true;
     }
+
+   /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getPasswordPolicy()
+    {
+        $policy = parent::getPasswordPolicy();
+        // Limit maxLength to the database limit
+        if (!isset($policy['maxLength']) || $policy['maxLength'] > 32) {
+            $policy['maxLength'] = 32;
+        }
+        return $policy;
+    }
 }
