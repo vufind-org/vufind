@@ -249,7 +249,7 @@ $(document).ready(function() {
     });
     return false;
   });
-  Lightbox.addCloseAction(function() {
+  $('#modal').on('hidden', function(e) {
     // Update cart items (add to cart, remove from cart, cart lightbox interface)
     var cartCount = $('#cartItems strong');
     if(cartCount.length > 0) {
