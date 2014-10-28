@@ -503,17 +503,4 @@ class Factory
             ? 'enabled' : 'disabled';
         return new UserTags($mode);
     }
-
-    /**
-     * Construct the WorldCat helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return WorldCat
-     */
-    public static function getWorldCat(ServiceManager $sm)
-    {
-        $bm = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
-        return new WorldCat($bm->get('WorldCat')->getConnector());
-    }
 }

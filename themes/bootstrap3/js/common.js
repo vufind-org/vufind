@@ -148,31 +148,6 @@ function registerLightboxEvents() {
     }
   });
 }
-function bulkActionLightboxHandler($form, refreshOnDelete) {
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
-  var checks = $form.find('input.checkbox-select-item:checked');
-  if(submit != 'empty' && checks.length == 0) {
-    Lightbox.displayError(vufindString['bulk_noitems_advice']);
-    return;
-  }
-  if (submit == 'print') {
-    //redirect page
-    var checks = $form.find('input.checkbox-select-item:checked');
-    var url = path+'/Records/Home?print=true';
-    for(var i=0;i<checks.length;i++) {
-      url += '&id[]='+checks[i].value;
-    }
-    document.location.href = url;
-  } else {
-    if (refreshOnDelete && submit == 'delete') {
-      Lightbox.addCloseAction(function(){document.location.reload(true);});
-    }
-    Lightbox.submit($form, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
-    });
-  }
-  return false;
-}
 function updatePageForLogin() {
   // Hide "log in" options and show "log out" options:
   $('#loginOptions').addClass('hidden');
@@ -407,13 +382,23 @@ $(document).ready(function() {
     Lightbox.close();
     checkSaveStatuses();
   });
-  $('[name=bulkActionForm]').submit(function(evt) {
-    bulkActionLightboxHandler($(evt.target), true);
+
+  $('[name=bulkActionForm]').submit(function() {
+    if($(this).find('[clicked=true]').attr('name') == 'print') {
+      Lightbox.submit($(this), Lightbox.close);
+      Lightbox.close();
+    } else {
+      Lightbox.submit($(this), function(html) {
+        Lightbox.checkForError(html, Lightbox.changeContent);
+      });
+      return false;
+    }
   });
   $('[name=bulkActionForm]').find('[type=submit]').click(function() {
     $("[clicked=true]").attr("clicked", "false");
     $(this).attr("clicked", "true");
   });
+
   Lightbox.addFormHandler('feedback', function(evt) {
     var $form = $(evt.target);
     // Grabs hidden inputs
