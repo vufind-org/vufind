@@ -113,6 +113,53 @@ class SpellingProcessor
     }
 
     /**
+     * Input Tokenizer - Specifically for spelling purposes
+     *
+     * Because of its focus on spelling, these tokens are unsuitable
+     * for actual searching. They are stripping important search data
+     * such as joins and groups, simply because they don't need to be
+     * spellchecked.
+     *
+     * @param string $input Query to tokenize
+     *
+     * @return array        Tokenized array
+     */
+    public function tokenize($input)
+    {
+        // Blacklist of useless tokens:
+        $joins = array("AND", "OR", "NOT");
+
+        // Strip out parentheses -- irrelevant for tokenization:
+        $paren = array("(" => " ", ")" => " ");
+        $input = trim(strtr($input, $paren));
+
+        // Base of this algorithm comes straight from PHP doc example by
+        // benighted at gmail dot com: http://php.net/manual/en/function.strtok.php
+        $tokens = array();
+        $token = strtok($input, " \t");
+        while ($token !== false) {
+            // find double quoted tokens
+            if (substr($token, 0, 1) == '"' && substr($token, -1) != '"') {
+                $token .= ' '.strtok('"').'"';
+            }
+            // skip boolean operators
+            if (!in_array($token, $joins)) {
+                $tokens[] = $token;
+            }
+            $token = strtok(" \t");
+        }
+
+        // If the last token ends in a double quote but the input string does not,
+        // the tokenization process added the quote, which will break spelling
+        // replacements.  We need to strip it back off again:
+        $last = count($tokens) > 0 ? $tokens[count($tokens) - 1] : null;
+        if ($last && substr($last, -1) == '"' && substr($input, -1) != '"') {
+            $tokens[count($tokens) - 1] = substr($last, 0, strlen($last) - 1);
+        }
+        return $tokens;
+    }
+
+    /**
      * Get raw spelling suggestions for a query.
      *
      * @param Spellcheck    $spellcheck Complete spellcheck information
@@ -164,19 +211,19 @@ class SpellingProcessor
      * Process spelling suggestions.
      *
      * @param array  $suggestions Raw suggestions from getSuggestions()
-     * @param array  $tokens      Tokenized spelling query
+     * @param string $query       Spelling query
      * @param Params $params      Params helper object
      *
      * @return array
      */
-    public function processSuggestions($suggestions, $tokens, Params $params)
+    public function processSuggestions($suggestions, $query, Params $params)
     {
         $returnArray = array();
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
             $inToken = false;
             $targetTerm = "";
-            foreach ($tokens as $token) {
+            foreach ($this->tokenize($query) as $token) {
                 // TODO - Do we need stricter matching here, similar to that in
                 // \VuFindSearch\Query\Query::replaceTerm()?
                 if (stripos($token, $term) !== false) {

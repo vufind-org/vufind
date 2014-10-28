@@ -238,7 +238,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return bool                 True if facets set, false if no settings found
      */
-    protected function initFacetList($facetList, $facetSettings)
+    protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
     {
 	// $this->resetFacetConfig(); // facet Liste zurücksetzen
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('RDSIndex');
