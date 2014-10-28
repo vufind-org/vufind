@@ -124,6 +124,8 @@ function registerLightboxEvents() {
   $(modal).find("form input[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .icon-spinner').remove();
+    // Remove other clicks
+    $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
@@ -350,7 +352,6 @@ $(document).ready(function() {
       }, 500); // Delay request submission
     },
     updater : function(item) { // Submit on update
-      // console.log(this.$element[0].form.submit);
       this.$element[0].value = item;
       this.$element[0].form.submit();
       return item;

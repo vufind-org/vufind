@@ -126,6 +126,8 @@ function registerLightboxEvents() {
   $(modal).find("form input[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .fa-spinner').remove();
+    // Remove other clicks
+    $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness

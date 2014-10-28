@@ -171,7 +171,7 @@ function cartSubmit($form) {
     }
     document.location.href = url;
   } else if ((submit != 'empty' || confirm(vufindString['confirmEmpty']))
-  && (submit != 'delete' || confirm(vufindString['confirmDelete']))) {
+         && (submit != 'delete' || confirm(vufindString['confirmDelete']))) {
     Lightbox.submit($form, Lightbox.changeContent);
   } else {
     $('#modal').find('.icon-spinner').remove();
