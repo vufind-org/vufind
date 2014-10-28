@@ -32,10 +32,6 @@ namespace VuFindTest\Search\Solr;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
-use VuFind\Search\UrlQueryHelper;
-use VuFind\Search\Base\Params;
-use VuFind\Config\PluginManager;
-use VuFind\Search\Solr\Options;
 
 /**
  * Unit tests for Hierarchical Facet Helper.
