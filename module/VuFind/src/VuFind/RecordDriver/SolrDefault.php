@@ -894,8 +894,9 @@ class SolrDefault extends AbstractBase
      *
      * @return string
      */
-    public function getPrimaryAuthor()
+    public function getPrimaryAuthor()	
     {
+	return "Prim Test Author";
         return isset($this->fields['author']) ?
             $this->fields['author'] : '';
     }

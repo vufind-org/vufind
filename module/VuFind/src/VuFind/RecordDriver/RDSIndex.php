@@ -892,7 +892,7 @@ class RDSIndex extends SolrMarc
      */
     public function getPrimaryAuthor()
     {
-        return null;
+        return "RDSIndex Test Author";
     }
 
     /**

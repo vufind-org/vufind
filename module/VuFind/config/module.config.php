@@ -402,12 +402,7 @@ $config = array(
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
                 'factories' => array(
-                    'solrrdsindex' => function ($sm) {
-                        return new \VuFind\RecordDriver\RDSIndex(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('RDSIndex')
-                        );
-                    },
+		    'rdsindex' => 'VuFind\RecordDriver\Factory::getRDSIndex',
                     'eds' => 'VuFind\RecordDriver\Factory::getEDS',
                     'eit' => 'VuFind\RecordDriver\Factory::getEIT',
                     'libguides' => 'VuFind\RecordDriver\Factory::getLibGuides',
