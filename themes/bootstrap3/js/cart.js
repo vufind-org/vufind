@@ -171,8 +171,11 @@ function cartSubmit($form) {
     } else {
       Lightbox.displayError(vufindString['bulk_noitems_advice']);
     }
-  } else {
+  } else if ((submit != 'empty' || confirm(vufindString['confirmEmpty']))
+  && (submit != 'delete' || confirm(vufindString['confirmDelete']))) {
     Lightbox.submit($form, Lightbox.changeContent);
+  } else {
+    $('#modal').find('.fa.fa-spinner').remove();
   }
 }
 
@@ -247,7 +250,7 @@ $(document).ready(function() {
     });
     return false;
   });
-  Lightbox.addCloseAction(function() {
+  Lightbox.addPermenantCloseAction(function() {
     // Update cart items (add to cart, remove from cart, cart lightbox interface)
     var cartCount = $('#cartItems strong');
     if(cartCount.length > 0) {
