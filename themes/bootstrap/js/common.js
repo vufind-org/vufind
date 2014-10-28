@@ -1,4 +1,4 @@
-/*global btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
+/*global checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -216,9 +216,8 @@ function ajaxLogin(form) {
         // get the user entered password
         var password = form.password.value;
 
-        // base-64 encode the password (to allow support for Unicode)
-        // and then encrypt the password with the salt
-        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
+        // encrypt the password with the salt
+        password = rc4Encrypt(salt, password);
 
         // hex encode the encrypted password
         password = hexEncode(password);
