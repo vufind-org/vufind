@@ -148,8 +148,6 @@ abstract class MinkTestCase extends TestCase
      * Restore configurations to the state they were in prior to a call to
      * changeConfig().
      *
-     * @param array $configs The same configuration array passed to changeConfig().
-     *
      * @return void
      */
     protected function restoreConfigs()
