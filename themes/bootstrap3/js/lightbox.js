@@ -175,8 +175,11 @@ var Lightbox = {
   displayError: function(message) {
     var alert = $('#modal .modal-body .alert');
     var html = $.parseHTML($('#modal .modal-body').html());
+    // Page with dismissable alert already present
+    if(alert.find('.message').length > 0 && html.length > 1) {
+      $(alert).find('.message').html(message);
     // Page with alert already present
-    if(alert.length > 0 && html.length > 1) {
+    } else if(alert.length > 0 && html.length > 1) {
       $(alert).html(message);
     // Empty or alert only, change to message with button
     } else if($('#modal .modal-body').html() == vufindString.loading+"..."
@@ -184,7 +187,7 @@ var Lightbox = {
       Lightbox.changeContent('<div class="alert alert-danger" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
     // Page without alert
     } else {
-      $('#modal .modal-body').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>'+message+'</div>');
+      $('#modal .modal-body').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
     }
     $('.fa-spinner').remove();
     if (typeof Recaptcha !== "undefined" && Recaptcha.widget) {
