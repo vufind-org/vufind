@@ -79,15 +79,17 @@ class HierarchicalFacetHelper
      * Helper method for building hierarchical facets:
      * Convert facet list to a hierarchical array
      *
-     * @see http://blog.tekerson.com/2009/03/03/converting-a-flat-array-with-parent-ids-to-a-nested-tree/
-     * Based on this example
-     *
      * @param string    $facet            Facet name
      * @param array     $facetList        Facet list
      * @param array     $activeFilterList Array of active filters
      * @param UrlHelper $urlHelper        Query URL helper for building facet URLs
      *
      * @return array Facet hierarchy
+     *
+     * @see http://blog.tekerson.com/2009/03/03/
+     * converting-a-flat-array-with-parent-ids-to-a-nested-tree/
+     * Based on this example
+     *
      */
     public function buildFacetArray(
         $facet, $facetList, $activeFilterList = array(), $urlHelper = false
@@ -210,6 +212,19 @@ class HierarchicalFacetHelper
         }
     }
 
+    /**
+     * Create an item for the hierarchical facet array
+     *
+     * @param string         $facet            Facet name
+     * @param array          $item             Facet item received from Solr
+     * @param UrlQueryHelper $urlHelper        UrlQueryHelper for creating facet
+     * url's
+     * @param array          $filterKeys       Keyed array of active filters
+     * @param array          $parentFilterKeys Keyed array of facet nodes that have
+     * active children
+     *
+     * @return array Facet item
+     */
     protected function createFacetItem(
         $facet, $item, $urlHelper, $filterKeys, $parentFilterKeys
     ) {
@@ -265,7 +280,5 @@ class HierarchicalFacetHelper
             'operator' => $item['operator'],
             'children' => array()
         );
-
-
     }
 }
