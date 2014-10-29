@@ -181,10 +181,10 @@ var Lightbox = {
     // Empty or alert only, change to message with button
     } else if($('#modal .modal-body').html() == vufindString.loading+"..."
     || (html.length == 1 && $(html).hasClass('alert-danger'))) {
-      Lightbox.changeContent('<div class="alert alert-danger">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+      Lightbox.changeContent('<div class="alert alert-danger" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
     // Page without alert
     } else {
-      $('#modal .modal-body').prepend('<div class="alert alert-danger">'+message+'</div>');
+      $('#modal .modal-body').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>'+message+'</div>');
     }
     $('.fa-spinner').remove();
     if (typeof Recaptcha !== "undefined" && Recaptcha.widget) {
