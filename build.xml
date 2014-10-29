@@ -112,8 +112,7 @@
     <if>
       <istrue value="${apachectl}" />
       <then>
-        <!-- <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" /> -->
-        <exec command="cp ${srcdir}/local/httpd-vufind.conf ${apacheconfdir}/vufindtest.conf" />
+        <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
         <exec command="${apachectl} restart" />
       </then>
     </if>
