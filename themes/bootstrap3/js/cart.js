@@ -170,11 +170,8 @@ function cartSubmit($form) {
       url += '&id[]='+checks[i].value;
     }
     document.location.href = url;
-  } else if ((submit != 'empty' || confirm(vufindString['confirmEmpty']))
-         && (submit != 'delete' || confirm(vufindString['confirmDelete']))) {
-    Lightbox.submit($form, Lightbox.changeContent);
   } else {
-    $('#modal').find('.fa.fa-spinner').remove();
+    Lightbox.submit($form, Lightbox.changeContent);
   }
 }
 
