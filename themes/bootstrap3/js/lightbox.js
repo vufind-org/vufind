@@ -12,7 +12,7 @@ var Lightbox = {
   shown: false,      // Is the lightbox deployed?
   XHR: false,        // Used for current in-progress XHR lightbox request
   openStack: [],     // Array of functions to be called after changeContent or the lightbox event 'shown'
-  closeStack: [],    // Array of functions to be called after the lightbox event 'hidden'
+  closeStack: [],    // Array of functions to be called and cleared after the lightbox event 'hidden'
   formHandlers: [],  // Full custom handlers for forms; by name
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
 
@@ -175,16 +175,19 @@ var Lightbox = {
   displayError: function(message) {
     var alert = $('#modal .modal-body .alert');
     var html = $.parseHTML($('#modal .modal-body').html());
+    // Page with dismissable alert already present
+    if(alert.find('.message').length > 0 && html.length > 1) {
+      $(alert).find('.message').html(message);
     // Page with alert already present
-    if(alert.length > 0 && html.length > 1) {
+    } else if(alert.length > 0 && html.length > 1) {
       $(alert).html(message);
     // Empty or alert only, change to message with button
     } else if($('#modal .modal-body').html() == vufindString.loading+"..."
     || (html.length == 1 && $(html).hasClass('alert-danger'))) {
-      Lightbox.changeContent('<div class="alert alert-danger">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+      Lightbox.changeContent('<div class="alert alert-danger" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
     // Page without alert
     } else {
-      $('#modal .modal-body').prepend('<div class="alert alert-danger">'+message+'</div>');
+      $('#modal .modal-body').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
     }
     $('.fa-spinner').remove();
     if (typeof Recaptcha !== "undefined" && Recaptcha.widget) {

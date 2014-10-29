@@ -14,8 +14,12 @@ return array(
     'VuFindHttp\\' => array($vendorDir . '/vufind-org/vufindhttp/src'),
     'VuFindCode\\' => array($vendorDir . '/vufind-org/vufindcode/src'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
+    'Symfony\\Component\\Process\\' => array($vendorDir . '/symfony/process'),
+    'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
     'SerialsSolutions' => array($vendorDir . '/serialssolutions/summon'),
     'ProxyManager\\' => array($vendorDir . '/ocramius/proxy-manager/src'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
     'Less' => array($vendorDir . '/oyejorge/less.php/lib'),
+    'Behat\\Mink\\Driver' => array($vendorDir . '/behat/mink-zombie-driver/src'),
+    'Behat\\Mink' => array($vendorDir . '/behat/mink/src'),
 );
