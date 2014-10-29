@@ -105,7 +105,8 @@
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
 
     <!-- Generate basic configuration -->
-    <exec command="php ${srcdir}/install.php --use-defaults" />
+    <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
+    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" />
 
     <!-- Activate Apache (if an apachectl path has been provided) -->
     <if>
