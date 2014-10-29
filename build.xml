@@ -113,7 +113,8 @@
       <istrue value="${apachectl}" />
       <then>
         <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
-        <exec command="${apachectl} restart" />
+        <exec command="${apachectl} restart" outputProperty="LASTOUTPUT" />
+        <echo message="${LASTOUTPUT}" />
       </then>
     </if>
 
