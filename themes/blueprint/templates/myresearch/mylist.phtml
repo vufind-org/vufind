@@ -39,8 +39,8 @@
     <div class="resulthead">
       <div class="floatleft">
         <?=$this->transEsc("Showing")?>
-        <strong><?=$this->escapeHtml($this->results->getStartRecord())?></strong> - <strong><?=$this->escapeHtml($this->results->getEndRecord())?></strong>
-        <?=$this->transEsc('of')?> <strong><?=$this->escapeHtml($recordTotal)?></strong>
+        <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
       </div>
       <div class="floatright">
         <?=$this->render('search/controls/sort.phtml')?>

@@ -1,0 +1,312 @@
+a:4:{s:11:"recordCount";i:5706;s:9:"documents";a:3:{i:0;a:13:{s:8:"recordid";s:31:"crossref10.5755/j01.ss.71.1.377";s:5:"title";s:14:"Editorial Note";s:6:"format";s:7:"Article";s:7:"creator";a:1:{i:0;s:15:"Test, Test Test";}s:8:"ispartof";s:32:"Social Sciences, 2011, Vol.71(1)";s:11:"description";s:0:"";s:8:"language";s:0:"";s:6:"source";s:8:"CrossRef";s:10:"identifier";s:78:"<b>ISSN:</b> 1392-0758 ; <b>DOI:</b> http://dx.doi.org/10.5755/j01.ss.71.1.377";s:8:"fulltext";s:11:"no_fulltext";s:4:"issn";a:2:{i:0;s:9:"1392-0758";i:1;s:8:"13920758";}s:3:"url";s:860:"http://trixie.brynmawr.edu:9003/swarth?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2014-08-07T09%3A01%3A05IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Editorial%20Note&rft.jtitle=Social%20Sciences&rft.btitle=&rft.aulast=Test&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Test%2C%20Test%20Test&rft.aucorp=&rft.date=20110520&rft.volume=71&rft.issue=1&rft.part=&rft.quarter=&rft.ssn=&rft.spage=5&rft.epage=6&rft.pages=5-6&rft.artnum=&rft.issn=1392-0758&rft.eissn=1392-0758&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.5755/j01.ss.71.1.377&rft.object_id=&rft.eisbn=&rft_dat=<crossref>10.5755/j01.ss.71.1.377</crossref><grp_id>3636354433954260500</grp_id><oa></oa>&rft_id=info:oai/&req.language=";s:10:"fullrecord";s:4484:"<record>
+              <control>
+                <sourcerecordid>10.5755/j01.ss.71.1.377</sourcerecordid>
+                <sourceid>crossref</sourceid>
+                <recordid>TN_crossref10.5755/j01.ss.71.1.377</recordid>
+                <sourceformat>XML</sourceformat>
+                <sourcesystem>Other</sourcesystem>
+              </control>
+              <display>
+                <type>article</type>
+                <title>Editorial Note</title>
+                <creator>Test, Test Test</creator>
+                <ispartof>Social Sciences, 2011, Vol.71(1)</ispartof>
+                <identifier>&lt;b&gt;ISSN:&lt;/b&gt; 1392-0758 ; &lt;b&gt;DOI:&lt;/b&gt; http://dx.doi.org/10.5755/j01.ss.71.1.377</identifier>
+                <source>CrossRef</source>
+                <lds40>20110520</lds40>
+                <lds42>20110520</lds42>
+                <lds44>2011</lds44>
+                <lds45>20110520</lds45>
+                <lds50>peer_reviewed</lds50>
+              </display>
+              <links>
+                <openurl>$$Topenurl_article</openurl>
+                <openurlfulltext>$$Topenurlfull_article</openurlfulltext>
+                <addlink>$$Uhttps://exlibris-pub.s3.amazonaws.com/aboutCrossref.html$$DView CrossRef copyright notice</addlink>
+              </links>
+              <search>
+                <creatorcontrib>Test, Test Test</creatorcontrib>
+                <title>Editorial Note</title>
+                <general>10.5755/j01.ss.71.1.377</general>
+                <sourceid>crossref</sourceid>
+                <recordid>crossref10.5755/j01.ss.71.1.377</recordid>
+                <issn>1392-0758</issn>
+                <issn>13920758</issn>
+                <rsrctype>article</rsrctype>
+                <creationdate>2011</creationdate>
+                <addtitle>Social Sciences</addtitle>
+                <addtitle>socscie</addtitle>
+                <searchscope>crossref_rest</searchscope>
+                <searchscope>CrossRef</searchscope>
+                <searchscope>Crossref</searchscope>
+                <searchscope>crossref</searchscope>
+                <scope>crossref_rest</scope>
+                <scope>CrossRef</scope>
+                <scope>Crossref</scope>
+                <scope>crossref</scope>
+              </search>
+              <sort>
+                <title>Editorial Note</title>
+                <author>Test, Test Test</author>
+                <creationdate>20110520</creationdate>
+              </sort>
+              <facets>
+                <frbrgroupid>3636354433954260500</frbrgroupid>
+                <frbrtype>6</frbrtype>
+                <creationdate>2011</creationdate>
+                <prefilter>articles</prefilter>
+                <rsrctype>articles</rsrctype>
+                <creatorcontrib>Test, Test Test</creatorcontrib>
+                <jtitle>Social Sciences</jtitle>
+                <toplevel>peer_reviewed</toplevel>
+              </facets>
+              <frbr>
+                <t>2</t>
+                <k1>2011</k1>
+                <k2>13920758</k2>
+                <k3>10.5755/j01.ss.71.1.377</k3>
+                <k4>71</k4>
+                <k5>1</k5>
+                <k6>5</k6>
+                <k7>social sciences</k7>
+                <k8>editorial note</k8>
+                <k9>editorialnote</k9>
+                <k15>testtesttest</k15>
+                <k16>testtesttest</k16>
+              </frbr>
+              <delivery>
+                <delcategory>Remote Search Resource</delcategory>
+                <fulltext>no_fulltext</fulltext>
+              </delivery>
+              <ranking>
+                <booster1>1</booster1>
+                <booster2>1</booster2>
+                <pcg_type>aggregator_crossref</pcg_type>
+              </ranking>
+              <addata>
+                <aulast>Test</aulast>
+                <aufirst>Test Test</aufirst>
+                <au>Test, Test Test</au>
+                <atitle>Editorial Note</atitle>
+                <jtitle>Social Sciences</jtitle>
+                <date>20110520</date>
+                <risdate>20110520</risdate>
+                <volume>71</volume>
+                <issue>1</issue>
+                <spage>5</spage>
+                <epage>6</epage>
+                <pages>5-6</pages>
+                <issn>1392-0758</issn>
+                <eissn>1392-0758</eissn>
+                <genre>article</genre>
+                <ristype>JOUR</ristype>
+                <doi>10.5755/j01.ss.71.1.377</doi>
+              </addata>
+            </record>";}i:1;a:13:{s:8:"recordid";s:31:"crossref10.5755/j01.ss.71.2.533";s:5:"title";s:14:"Editorial Note";s:6:"format";s:7:"Article";s:7:"creator";a:1:{i:0;s:15:"Test, Test Test";}s:8:"ispartof";s:32:"Social Sciences, 2011, Vol.71(2)";s:11:"description";s:0:"";s:8:"language";s:0:"";s:6:"source";s:8:"CrossRef";s:10:"identifier";s:78:"<b>ISSN:</b> 1392-0758 ; <b>DOI:</b> http://dx.doi.org/10.5755/j01.ss.71.2.533";s:8:"fulltext";s:11:"no_fulltext";s:4:"issn";a:2:{i:0;s:9:"1392-0758";i:1;s:8:"13920758";}s:3:"url";s:856:"http://trixie.brynmawr.edu:9003/swarth?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2014-08-07T09%3A01%3A05IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Editorial%20Note&rft.jtitle=Social%20Sciences&rft.btitle=&rft.aulast=Test&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Test%2C%20Test%20Test&rft.aucorp=&rft.date=20110810&rft.volume=71&rft.issue=2&rft.part=&rft.quarter=&rft.ssn=&rft.spage=5&rft.epage=&rft.pages=&rft.artnum=&rft.issn=1392-0758&rft.eissn=1392-0758&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.5755/j01.ss.71.2.533&rft.object_id=&rft.eisbn=&rft_dat=<crossref>10.5755/j01.ss.71.2.533</crossref><grp_id>4168188511594702733</grp_id><oa></oa>&rft_id=info:oai/&req.language=";s:10:"fullrecord";s:4416:"<record>
+              <control>
+                <sourcerecordid>10.5755/j01.ss.71.2.533</sourcerecordid>
+                <sourceid>crossref</sourceid>
+                <recordid>TN_crossref10.5755/j01.ss.71.2.533</recordid>
+                <sourceformat>XML</sourceformat>
+                <sourcesystem>Other</sourcesystem>
+              </control>
+              <display>
+                <type>article</type>
+                <title>Editorial Note</title>
+                <creator>Test, Test Test</creator>
+                <ispartof>Social Sciences, 2011, Vol.71(2)</ispartof>
+                <identifier>&lt;b&gt;ISSN:&lt;/b&gt; 1392-0758 ; &lt;b&gt;DOI:&lt;/b&gt; http://dx.doi.org/10.5755/j01.ss.71.2.533</identifier>
+                <source>CrossRef</source>
+                <lds40>20110810</lds40>
+                <lds42>20110810</lds42>
+                <lds44>2011</lds44>
+                <lds45>20110810</lds45>
+                <lds50>peer_reviewed</lds50>
+              </display>
+              <links>
+                <openurl>$$Topenurl_article</openurl>
+                <openurlfulltext>$$Topenurlfull_article</openurlfulltext>
+                <addlink>$$Uhttps://exlibris-pub.s3.amazonaws.com/aboutCrossref.html$$DView CrossRef copyright notice</addlink>
+              </links>
+              <search>
+                <creatorcontrib>Test, Test Test</creatorcontrib>
+                <title>Editorial Note</title>
+                <general>10.5755/j01.ss.71.2.533</general>
+                <sourceid>crossref</sourceid>
+                <recordid>crossref10.5755/j01.ss.71.2.533</recordid>
+                <issn>1392-0758</issn>
+                <issn>13920758</issn>
+                <rsrctype>article</rsrctype>
+                <creationdate>2011</creationdate>
+                <addtitle>Social Sciences</addtitle>
+                <addtitle>socscie</addtitle>
+                <searchscope>crossref_rest</searchscope>
+                <searchscope>CrossRef</searchscope>
+                <searchscope>Crossref</searchscope>
+                <searchscope>crossref</searchscope>
+                <scope>crossref_rest</scope>
+                <scope>CrossRef</scope>
+                <scope>Crossref</scope>
+                <scope>crossref</scope>
+              </search>
+              <sort>
+                <title>Editorial Note</title>
+                <author>Test, Test Test</author>
+                <creationdate>20110810</creationdate>
+              </sort>
+              <facets>
+                <frbrgroupid>4168188511594702733</frbrgroupid>
+                <frbrtype>6</frbrtype>
+                <creationdate>2011</creationdate>
+                <prefilter>articles</prefilter>
+                <rsrctype>articles</rsrctype>
+                <creatorcontrib>Test, Test Test</creatorcontrib>
+                <jtitle>Social Sciences</jtitle>
+                <toplevel>peer_reviewed</toplevel>
+              </facets>
+              <frbr>
+                <t>2</t>
+                <k1>2011</k1>
+                <k2>13920758</k2>
+                <k3>10.5755/j01.ss.71.2.533</k3>
+                <k4>71</k4>
+                <k5>2</k5>
+                <k6>5</k6>
+                <k7>social sciences</k7>
+                <k8>editorial note</k8>
+                <k9>editorialnote</k9>
+                <k15>testtesttest</k15>
+                <k16>testtesttest</k16>
+              </frbr>
+              <delivery>
+                <delcategory>Remote Search Resource</delcategory>
+                <fulltext>no_fulltext</fulltext>
+              </delivery>
+              <ranking>
+                <booster1>1</booster1>
+                <booster2>1</booster2>
+                <pcg_type>aggregator_crossref</pcg_type>
+              </ranking>
+              <addata>
+                <aulast>Test</aulast>
+                <aufirst>Test Test</aufirst>
+                <au>Test, Test Test</au>
+                <atitle>Editorial Note</atitle>
+                <jtitle>Social Sciences</jtitle>
+                <date>20110810</date>
+                <risdate>20110810</risdate>
+                <volume>71</volume>
+                <issue>2</issue>
+                <spage>5</spage>
+                <issn>1392-0758</issn>
+                <eissn>1392-0758</eissn>
+                <genre>article</genre>
+                <ristype>JOUR</ristype>
+                <doi>10.5755/j01.ss.71.2.533</doi>
+              </addata>
+            </record>";}i:2;a:13:{s:8:"recordid";s:31:"crossref10.5755/j01.ss.71.2.544";s:5:"title";s:70:"Requirements for the Articles to be Published in ‘Social Sciences’";s:6:"format";s:7:"Article";s:7:"creator";a:1:{i:0;s:15:"Test, Test Test";}s:8:"ispartof";s:32:"Social Sciences, 2011, Vol.71(2)";s:11:"description";s:0:"";s:8:"language";s:0:"";s:6:"source";s:8:"CrossRef";s:10:"identifier";s:78:"<b>ISSN:</b> 1392-0758 ; <b>DOI:</b> http://dx.doi.org/10.5755/j01.ss.71.2.544";s:8:"fulltext";s:11:"no_fulltext";s:4:"issn";a:2:{i:0;s:9:"1392-0758";i:1;s:8:"13920758";}s:3:"url";s:938:"http://trixie.brynmawr.edu:9003/swarth?ctx_ver=Z39.88-2004&ctx_enc=info:ofi/enc:UTF-8&ctx_tim=2014-08-07T09%3A01%3A05IST&url_ver=Z39.88-2004&url_ctx_fmt=infofi/fmt:kev:mtx:ctx&rfr_id=info:sid/primo.exlibrisgroup.com:primo3-Article-crossref&rft_val_fmt=info:ofi/fmt:kev:mtx:&rft.genre=article&rft.atitle=Requirements%20for%20the%20Articles%20to%20be%20Published%20in%20‘Social%20Sciences’&rft.jtitle=Social%20Sciences&rft.btitle=&rft.aulast=Test&rft.auinit=&rft.auinit1=&rft.auinitm=&rft.ausuffix=&rft.au=Test%2C%20Test%20Test&rft.aucorp=&rft.date=20110810&rft.volume=71&rft.issue=2&rft.part=&rft.quarter=&rft.ssn=&rft.spage=94&rft.epage=104&rft.pages=94-104&rft.artnum=&rft.issn=1392-0758&rft.eissn=1392-0758&rft.isbn=&rft.sici=&rft.coden=&rft_id=info:doi/10.5755/j01.ss.71.2.544&rft.object_id=&rft.eisbn=&rft_dat=<crossref>10.5755/j01.ss.71.2.544</crossref><grp_id>5071027353088877618</grp_id><oa></oa>&rft_id=info:oai/&req.language=";s:10:"fullrecord";s:4838:"<record>
+              <control>
+                <sourcerecordid>10.5755/j01.ss.71.2.544</sourcerecordid>
+                <sourceid>crossref</sourceid>
+                <recordid>TN_crossref10.5755/j01.ss.71.2.544</recordid>
+                <sourceformat>XML</sourceformat>
+                <sourcesystem>Other</sourcesystem>
+              </control>
+              <display>
+                <type>article</type>
+                <title>Requirements for the Articles to be Published in ‘Social Sciences’</title>
+                <creator>Test, Test Test</creator>
+                <ispartof>Social Sciences, 2011, Vol.71(2)</ispartof>
+                <identifier>&lt;b&gt;ISSN:&lt;/b&gt; 1392-0758 ; &lt;b&gt;DOI:&lt;/b&gt; http://dx.doi.org/10.5755/j01.ss.71.2.544</identifier>
+                <source>CrossRef</source>
+                <lds40>20110810</lds40>
+                <lds42>20110810</lds42>
+                <lds44>2011</lds44>
+                <lds45>20110810</lds45>
+                <lds50>peer_reviewed</lds50>
+              </display>
+              <links>
+                <openurl>$$Topenurl_article</openurl>
+                <openurlfulltext>$$Topenurlfull_article</openurlfulltext>
+                <addlink>$$Uhttps://exlibris-pub.s3.amazonaws.com/aboutCrossref.html$$DView CrossRef copyright notice</addlink>
+              </links>
+              <search>
+                <creatorcontrib>Test, Test Test</creatorcontrib>
+                <title>Requirements for the Articles to be Published in ‘Social Sciences’</title>
+                <general>10.5755/j01.ss.71.2.544</general>
+                <sourceid>crossref</sourceid>
+                <recordid>crossref10.5755/j01.ss.71.2.544</recordid>
+                <issn>1392-0758</issn>
+                <issn>13920758</issn>
+                <rsrctype>article</rsrctype>
+                <creationdate>2011</creationdate>
+                <addtitle>Social Sciences</addtitle>
+                <addtitle>socscie</addtitle>
+                <searchscope>crossref_rest</searchscope>
+                <searchscope>CrossRef</searchscope>
+                <searchscope>Crossref</searchscope>
+                <searchscope>crossref</searchscope>
+                <scope>crossref_rest</scope>
+                <scope>CrossRef</scope>
+                <scope>Crossref</scope>
+                <scope>crossref</scope>
+              </search>
+              <sort>
+                <title>Requirements for the Articles to be Published in ‘Social Sciences’</title>
+                <author>Test, Test Test</author>
+                <creationdate>20110810</creationdate>
+              </sort>
+              <facets>
+                <frbrgroupid>5071027353088877618</frbrgroupid>
+                <frbrtype>6</frbrtype>
+                <creationdate>2011</creationdate>
+                <prefilter>articles</prefilter>
+                <rsrctype>articles</rsrctype>
+                <creatorcontrib>Test, Test Test</creatorcontrib>
+                <jtitle>Social Sciences</jtitle>
+                <toplevel>peer_reviewed</toplevel>
+              </facets>
+              <frbr>
+                <t>2</t>
+                <k1>2011</k1>
+                <k2>13920758</k2>
+                <k3>10.5755/j01.ss.71.2.544</k3>
+                <k4>71</k4>
+                <k5>2</k5>
+                <k6>94</k6>
+                <k7>social sciences</k7>
+                <k8>requirements for the articles to be published in ‘social sciences’</k8>
+                <k9>requirementsforthearnces’</k9>
+                <k12>requirementsforthearticle</k12>
+                <k15>testtesttest</k15>
+                <k16>testtesttest</k16>
+              </frbr>
+              <delivery>
+                <delcategory>Remote Search Resource</delcategory>
+                <fulltext>no_fulltext</fulltext>
+              </delivery>
+              <ranking>
+                <booster1>1</booster1>
+                <booster2>1</booster2>
+                <pcg_type>aggregator_crossref</pcg_type>
+              </ranking>
+              <addata>
+                <aulast>Test</aulast>
+                <aufirst>Test Test</aufirst>
+                <au>Test, Test Test</au>
+                <atitle>Requirements for the Articles to be Published in ‘Social Sciences’</atitle>
+                <jtitle>Social Sciences</jtitle>
+                <date>20110810</date>
+                <risdate>20110810</risdate>
+                <volume>71</volume>
+                <issue>2</issue>
+                <spage>94</spage>
+                <epage>104</epage>
+                <pages>94-104</pages>
+                <issn>1392-0758</issn>
+                <eissn>1392-0758</eissn>
+                <genre>article</genre>
+                <ristype>JOUR</ristype>
+                <doi>10.5755/j01.ss.71.2.544</doi>
+              </addata>
+            </record>";}}s:6:"facets";a:9:{s:7:"creator";a:19:{s:10:"Test, Alan";s:2:"45";s:10:"Test, D.W.";s:2:"58";s:11:"Test, David";s:2:"61";s:14:"Caskey, Rachel";s:1:"1";s:11:"Test, E. M.";s:1:"4";s:14:"Wood, Wendy M.";s:2:"20";s:8:"Test, DW";s:2:"54";s:11:"Test, D. W.";s:2:"54";s:12:"Angell, Beth";s:1:"1";s:16:"Mason, Christine";s:1:"1";s:12:"Neale, Melia";s:1:"4";s:13:"Konrad, Moira";s:1:"8";s:14:"Test, Mary Ann";s:2:"26";s:16:"Kelley, Kelly R.";s:1:"4";s:10:"Test, Test";s:1:"6";s:15:"Hughes, Carolyn";s:1:"1";s:13:"Test, David W";s:3:"104";s:15:"Test, Test Test";s:2:"12";s:10:"Test, S.T.";s:2:"21";}s:4:"lang";a:9:{s:3:"kor";s:1:"1";s:3:"ita";s:1:"3";s:3:"chi";s:2:"46";s:3:"rus";s:1:"8";s:3:"ger";s:1:"3";s:3:"jpn";s:2:"25";s:3:"eng";s:4:"1405";s:3:"fre";s:1:"7";s:3:"spa";s:1:"6";}s:5:"rtype";a:10:{s:15:"legal_documents";s:1:"1";s:5:"books";s:2:"64";s:7:"reviews";s:2:"27";s:8:"articles";s:4:"1136";s:17:"technical_reports";s:4:"2586";s:4:"maps";s:1:"2";s:13:"Dissertations";s:1:"8";s:14:"text_resources";s:4:"1471";s:22:"conference_proceedings";s:3:"292";s:18:"newspaper_articles";s:3:"162";}s:5:"topic";a:20:{s:2:"Us";s:2:"31";s:13:"United States";s:3:"137";s:17:"Special Education";s:2:"27";s:22:"Special Needs Students";s:1:"5";s:29:"Simian Immunodeficiency Virus";s:1:"2";s:6:"Humans";s:2:"13";s:10:"Guidelines";s:2:"20";s:7:"Suicide";s:1:"1";s:30:"Individualized Education Plans";s:1:"3";s:15:"Sales & Selling";s:2:"29";s:13:"Schizophrenia";s:2:"11";s:17:"Disabled Students";s:2:"19";s:11:"Neutrophils";s:2:"10";s:12:"Disabilities";s:2:"46";s:16:"Sales Management";s:2:"17";s:10:"Transition";s:1:"7";s:11:"Trade Shows";s:1:"8";s:20:"High School Students";s:2:"11";s:11:"Salespeople";s:2:"25";s:16:"Teaching Methods";s:2:"24";}s:6:"tlevel";a:2:{s:16:"online_resources";s:4:"2541";s:13:"peer_reviewed";s:3:"517";}s:7:"pfilter";a:8:{s:15:"legal_documents";s:1:"1";s:5:"books";s:4:"1507";s:7:"reviews";s:2:"27";s:8:"articles";s:4:"1151";s:4:"maps";s:1:"2";s:13:"Dissertations";s:1:"8";s:22:"conference_proceedings";s:3:"292";s:18:"newspaper_articles";s:3:"162";}s:12:"creationdate";a:69:{i:2008;s:3:"132";i:2009;s:3:"122";i:2006;s:2:"81";i:2007;s:3:"120";i:2004;s:3:"105";i:2005;s:3:"201";i:2002;s:2:"78";i:2003;s:2:"43";i:1930;s:1:"1";i:1970;s:3:"241";i:1971;s:3:"200";i:1972;s:3:"177";i:1973;s:3:"108";i:1974;s:2:"96";i:1975;s:2:"77";i:1976;s:2:"77";i:1977;s:2:"63";i:2012;s:2:"84";i:1978;s:2:"53";i:2011;s:3:"136";i:1979;s:2:"55";i:2010;s:3:"113";i:2013;s:2:"70";i:2014;s:2:"21";i:1900;s:1:"5";i:1990;s:2:"95";i:1940;s:1:"6";i:1982;s:2:"74";i:1983;s:2:"75";i:1980;s:2:"71";i:1981;s:3:"102";i:1986;s:2:"43";i:1987;s:2:"56";i:1984;s:2:"63";i:1985;s:2:"87";i:1988;s:2:"37";i:1989;s:2:"69";i:1910;s:1:"1";i:1959;s:2:"26";i:1958;s:2:"27";i:1957;s:2:"17";i:1956;s:2:"11";i:1955;s:2:"14";i:1954;s:1:"9";i:1953;s:1:"6";i:1952;s:1:"6";i:1951;s:1:"9";i:1950;s:2:"23";i:1995;s:2:"49";i:1996;s:2:"61";i:1997;s:2:"45";i:1998;s:2:"66";i:1991;s:3:"113";i:1992;s:3:"112";i:1993;s:3:"139";i:1994;s:3:"148";i:1999;s:2:"84";i:1967;s:3:"152";i:1966;s:3:"145";i:1969;s:3:"184";i:1968;s:3:"169";i:1963;s:3:"160";i:1962;s:3:"119";i:1965;s:3:"125";i:1964;s:3:"118";i:1961;s:3:"151";i:1960;s:2:"31";i:2001;s:2:"85";i:2000;s:2:"78";}s:6:"domain";a:18:{s:55:"NARCIS (Royal Netherlands Academy of Arts and Sciences)";s:1:"2";s:33:"Literature Resource Center (Gale)";s:1:"3";s:49:"Arts & Humanities Citation Index (Web of Science)";s:1:"6";s:13:"SAGE Journals";s:2:"26";s:5:"JSTOR";s:2:"46";s:30:"ERIC (U.S. Dept. of Education)";s:3:"245";s:33:"SciVerse ScienceDirect (Elsevier)";s:2:"50";s:48:"Science Citation Index Expanded (Web of Science)";s:2:"72";s:66:"DTIC Technical Reports (U.S. Defense Technical Information Center)";s:4:"3999";s:62:"American Association for the Advancement of Science (CrossRef)";s:1:"5";s:12:"SpringerLink";s:2:"14";s:47:"Social Sciences Citation Index (Web of Science)";s:2:"78";s:36:"Berkeley Electronic Press (CrossRef)";s:1:"2";s:13:"MEDLINE (NLM)";s:3:"116";s:32:"Duke University Press (CrossRef)";s:1:"1";s:28:"Sage Publications (CrossRef)";s:2:"57";s:49:"PsycARTICLES (American Psychological Association)";s:1:"9";s:14:"OneFile (GALE)";s:3:"514";}s:6:"jtitle";a:19:{s:25:"Journal of Rehabilitation";s:1:"8";s:21:"Engineering Economics";s:1:"4";s:33:"Intervention In School And Clinic";s:1:"4";s:7:"Vaccine";s:1:"4";s:37:"Remedial and special education : RASE";s:1:"6";s:15:"Library Journal";s:1:"2";s:5:"Chest";s:2:"13";s:22:"Schizophrenia Bulletin";s:1:"9";s:7:"Science";s:2:"10";s:30:"American Journal of Psychiatry";s:1:"4";s:33:"Maternal and Child Health Journal";s:1:"2";s:19:"Photo District News";s:1:"3";s:13:"Chest Journal";s:1:"9";s:30:"Remedial and Special Education";s:2:"16";s:8:"Quadrant";s:1:"2";s:20:"Exceptional Children";s:2:"10";s:15:"Social Sciences";s:1:"6";s:17:"American Salesman";s:2:"33";s:24:"Science (new york, n.y.)";s:1:"5";}}s:10:"didYouMean";a:1:{i:0;s:0:"";}}

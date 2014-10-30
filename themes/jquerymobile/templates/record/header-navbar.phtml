@@ -8,6 +8,10 @@
   <div data-role="navbar">
     <ul>
       <? foreach ($tabs as $tab => $obj): ?>
+        <?
+          /* Initially invisible tabs are not supported in this theme; just skip them! */
+          if (!$obj->isVisible()) continue;
+        ?>
         <li>
           <a rel="external"<?=(strtolower(isset($this->activeTab) ? $this->activeTab : '') == strtolower($tab)) ? ' class="ui-btn-active"' : ''?> href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>"><?=$this->transEsc($obj->getDescription())?></a>
         </li>

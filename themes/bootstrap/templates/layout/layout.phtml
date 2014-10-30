@@ -40,6 +40,7 @@
                 $this->jsTranslations()->addStrings(
                     array(
                         'bulk_noitems_advice' => 'bulk_noitems_advice',
+                        'confirmDelete' => 'confirm_delete',
                         'confirmEmpty' => 'bookbag_confirm_empty',
                         'viewBookBag' => 'View Book Bag',
                         'addBookBag' => 'Add to Book Bag',
@@ -54,7 +55,7 @@
             }
             $this->headScript()->appendScript($this->jsTranslations()->getScript());
         }
-        
+
         // Session keep-alive
         if ($this->KeepAlive()) {
             $this->headScript()->appendScript('var keepAliveInterval = '
@@ -87,7 +88,7 @@
         <?=$this->layout()->searchbox?>
         <? endif; ?>
       </div>
-      
+
       <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
         && !empty($this->layout()->breadcrumbs)
         && $this->layout()->breadcrumbs !== false
@@ -129,5 +130,6 @@
       <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
     </div>
     <?=$this->googleanalytics()?>
+    <?=$this->piwik()?>
   </body>
 </html>

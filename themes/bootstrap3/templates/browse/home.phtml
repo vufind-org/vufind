@@ -12,12 +12,12 @@
 
 <div class="row">
   <ul class="browse list-group col-sm-3<? if (!empty($this->categoryList)): ?> hidden-xs<? endif ?>" id="list1">
-  <? foreach ($this->browseOptions as $item=>$currentOption): ?>
-    <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="list-group-item<? if($currentOption['action'] == $this->currentAction): ?> active<? endif; ?>">
-      <?=$this->transEsc($currentOption['description']) ?>
-      <span class="pull-right"><i class="fa fa-angle-right"></i></span>
-    </a>
-  <? endforeach; ?>
+    <? foreach ($this->browseOptions as $item=>$currentOption): ?>
+      <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>" class="list-group-item<? if($currentOption['action'] == $this->currentAction): ?> active<? endif; ?>">
+        <?=$this->transEsc($currentOption['description']) ?>
+        <span class="pull-right"><i class="fa fa-angle-right"></i></span>
+      </a>
+    <? endforeach; ?>
   </ul>
 
   <? if (!empty($this->categoryList)): ?>
@@ -53,9 +53,11 @@
         $viewRecord = !empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical';
       ?>
       <a href="<?=$url ?>" class="list-group-item clearfix<? if ($this->query == $secondary['value'].'' || $this->query == $secondary['value'].'*'): ?> active<? endif; ?>">
-        <?=$this->escapeHtml($secondary['displayText']) ?> <i class="fa fa-angle-right"></i>
-        <? if ($this->findby != 'alphabetical'): ?>
+        <?=$this->escapeHtml($secondary['displayText']) ?>
+        <? if ($this->findby != 'alphabetical' && isset($secondary['count'])): ?>
           <span class="badge"><?=number_format($secondary['count']) ?></span>
+        <? else: ?>
+          <span class="pull-right"><i class="fa fa-angle-right"></i></span>
         <? endif; ?>
       </a>
       <? if($viewRecord): ?>

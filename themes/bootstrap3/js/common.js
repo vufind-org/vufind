@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, vufindString */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -117,17 +117,17 @@ function registerLightboxEvents() {
   });
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
+    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
   });
   $(modal).find('.checkbox-select-item').change(function() {
-    if(!this.checked) { // Uncheck all selected if one is unselected
-      $(this).closest('.modal-body').find('.checkbox-select-all').attr('checked', false);
-    }
+    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
   });
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .fa-spinner').remove();
+    // Remove other clicks
+    $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
@@ -205,8 +205,9 @@ function ajaxLogin(form) {
         // get the user entered password
         var password = form.password.value;
 
-        // encrypt the password with the salt
-        password = rc4Encrypt(salt, password);
+        // base-64 encode the password (to allow support for Unicode)
+        // and then encrypt the password with the salt
+        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
 
         // hex encode the encrypted password
         password = hexEncode(password);
@@ -303,7 +304,7 @@ $(document).ready(function() {
             q:query,
             method:'getACSuggestions',
             searcher:searcher['searcher'],
-            type:$('#searchForm_type').val(),
+            type:$('#searchForm_type').val()
           },
           dataType:'json',
           success: function(json) {
@@ -317,22 +318,17 @@ $(document).ready(function() {
               cb([]);
             }
           }
-        })
+        });
       }
     }
   );
 
   // Checkbox select all
-  $('.checkbox-select-all').click(function(event) {
-    if(this.checked) {
-      $(this).closest('form').find('.checkbox-select-item').each(function() {
-        this.checked = true;
-      });
-    } else {
-      $(this).closest('form').find('.checkbox-select-item').each(function() {
-        this.checked = false;
-      });
-    }
+  $('.checkbox-select-all').change(function() {
+    $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
+  });
+  $('.checkbox-select-item').change(function() {
+    $(this).closest('form').find('.checkbox-select-all').prop('checked', false);
   });
 
   // handle QR code links

@@ -31,7 +31,7 @@
             <?=$this->transEsc($category)?>
             <i class="icon-angle-right pull-right"></i>
           <? else: ?>
-            <?=$this->transEsc($category['text'])?> (<?=number_format($category['count'])?>)
+            <?=$this->transEsc($category['text'])?> (<?=$this->localizedNumber($category['count'])?>)
           <? endif; ?>
         </a>
       </li>
@@ -48,7 +48,7 @@
         <? if (!empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical'):?>
           <small><a class="pull-right muted" href="<?=$SEARCH_BASE ?>?lookfor=<? if ($this->filter): ?>&filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+','&filter[]=', urlencode($secondary['value'])) ?><? endif; ?>&filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]"><?=$this->transEsc('View Records') ?></a></small>
         <? endif; ?>
-        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($this->findby) ?>&category=<?=urlencode($this->category) ?>&query=<?=urlencode($secondary['value']) ?><? if ($this->facetPrefix): ?>&facet_prefix=<?=urlencode($secondary['displayText']) ?><? endif; ?><? if ($this->secondaryParams): foreach($this->secondaryParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($secondary['displayText']) ?><? if ($this->findby != 'alphabetical'): ?> (<?=$secondary['count'] ?>)<? endif; ?>
+        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($this->findby) ?>&category=<?=urlencode($this->category) ?>&query=<?=urlencode($secondary['value']) ?><? if ($this->facetPrefix): ?>&facet_prefix=<?=urlencode($secondary['displayText']) ?><? endif; ?><? if ($this->secondaryParams): foreach($this->secondaryParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($secondary['displayText']) ?><? if ($this->findby != 'alphabetical'): ?> (<?=$this->localizedNumber($secondary['count']) ?>)<? endif; ?>
         <i class="icon-angle-right pull-right"></i></a>
       </li>
     <? endforeach; ?>
@@ -60,7 +60,7 @@
     <div class="span3">
       <ul class="well well-small nav nav-list" id="list4">
       <? foreach($this->resultList as $result): ?>
-        <li><a href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['result']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($result['result'])/*html*/?> (<?=$result['count'] ?>)</a></li>
+        <li><a href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['result']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($result['result'])/*html*/?> (<?=$this->localizedNumber($result['count']) ?>)</a></li>
       <? endforeach; ?>
       </ul>
     </div>

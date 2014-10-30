@@ -310,8 +310,16 @@ class Params implements ServiceLocatorAwareInterface
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
         if (($limit = $request->get('limit')) != $defaultLimit) {
-            // make sure the url parameter is a valid limit
-            if (in_array($limit, $this->getOptions()->getLimitOptions())) {
+            // make sure the url parameter is a valid limit -- either
+            // one of the explicitly allowed values, or at least smaller
+            // than the largest allowed. (This leniency is useful in
+            // combination with combined search, where it is often useful
+            // to reduce the size of result lists without actually enabling
+            // the user's ability to select a reduced list size).
+            $legalOptions = $this->getOptions()->getLimitOptions();
+            if (in_array($limit, $legalOptions)
+                || ($limit > 0 && $limit < max($legalOptions))
+            ) {
                 $this->limit = $limit;
                 return;
             }

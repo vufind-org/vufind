@@ -68,9 +68,7 @@ class Fedora extends AbstractBase
      */
     public function getClasses($id)
     {
-        $data = file_get_contents(
-            $this->getBase() . $id . '/datastreams/RELS-EXT/content'
-        );
+        $data = $this->getDatastreamContent($id, 'RELS-EXT');
         $matches = array();
         preg_match_all(
             '/rdf:resource="info:fedora\/vudl-system:([^"]+)/',
@@ -83,16 +81,18 @@ class Fedora extends AbstractBase
     /**
      * Returns file contents of the structmap, our most common call
      *
-     * @param string  $id  Record id
-     * @param boolean $xml Return data as SimpleXMLElement?
+     * @param string $id  Record id
+     * @param bool   $xml Return data as SimpleXMLElement?
      *
      * @return string|\SimpleXMLElement
      */
     public function getDatastreams($id, $xml = false)
     {
         if (!isset($this->datastreams[$id])) {
-            $this->datastreams[$id] = file_get_contents(
-                $this->getBase() . $id . '/datastreams?format=xml'
+            $this->datastreams[$id] = $this->getDatastreamContent(
+                $id,
+                '/datastreams?format=xml',
+                true
             );
         }
         if ($xml) {
@@ -105,16 +105,20 @@ class Fedora extends AbstractBase
     /**
      * Return the content of a datastream.
      *
-     * @param string $id     Record id
-     * @param string $stream Name of stream to retrieve
+     * @param string $id         Record id
+     * @param string $stream     Name of stream to retrieve
+     * @param bool   $justStream Do not append /content and return from url as is
      *
      * @return string
      */
-    public function getDatastreamContent($id, $stream)
+    public function getDatastreamContent($id, $stream, $justStream = false)
     {
-        return file_get_contents(
-            $this->getBase() . $id . '/datastreams/' . $stream . '/content'
-        );
+        if ($justStream) {
+            $url = $this->getBase() . $id . '/datastreams' . $stream;
+        } else {
+            $url = $this->getBase() . $id . '/datastreams/' . $stream . '/content';
+        }
+        return file_get_contents($url);
     }
 
     /**
@@ -135,8 +139,8 @@ class Fedora extends AbstractBase
     /**
      * Get details for the sidebar on a record.
      *
-     * @param string  $id     ID to retrieve
-     * @param boolean $format Send result through formatDetails?
+     * @param string $id     ID to retrieve
+     * @param bool   $format Send result through formatDetails?
      *
      * @return string
      */
@@ -373,13 +377,12 @@ class Fedora extends AbstractBase
         $ret = array();
         // OCR
         if (isset($record['ocr-dirty'])) {
-            $record['ocr-dirty'] =
-                htmlentities(
-                    $this->getDatastreamContent(
-                        $record['id'],
-                        'OCR-DIRTY'
-                    )
-                );
+            $record['ocr-dirty'] = htmlentities(
+                $this->getDatastreamContent(
+                    $record['id'],
+                    'OCR-DIRTY'
+                )
+            );
         }
         // Technical Information
         if (isset($record['master-md'])) {

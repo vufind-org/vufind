@@ -13,7 +13,7 @@
 <div class="row-fluid result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
   <?=$this->record($this->driver)->getCheckbox() ?>
   <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
-  <div class="span2 text-center">
+  <div class="span2 left text-center">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
         <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
@@ -22,7 +22,7 @@
       <? endif; ?>
     </a>
   </div>
-  <div class="span7">
+  <div class="span7 middle">
     <div class="resultItemLine1">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <?
@@ -168,7 +168,7 @@
     </div>
   </div>
 
-  <div class="span2">
+  <div class="span2 right">
     <i class="icon-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
     <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
       $deleteUrl = is_null($list_id)

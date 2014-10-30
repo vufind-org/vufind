@@ -794,7 +794,8 @@ class Demo extends AbstractBase
                         'title'   => "ILL Loan Title $i",
                         'institution_id' => 'ill_institution',
                         'institution_name' => 'ILL Library',
-                        'institution_dbkey' => 'ill_institution'
+                        'institution_dbkey' => 'ill_institution',
+                        'borrowingLocation' => 'ILL Service Desk'
                     );
                 } else {
                     $transList[] = $this->getRandomItemIdentifier() + array(
@@ -805,7 +806,8 @@ class Demo extends AbstractBase
                         'renewLimit' => $renewLimit,
                         'request' => $req,
                         'item_id' => $i,
-                        'renewable' => $renew < $renewLimit
+                        'renewable' => $renew < $renewLimit,
+                        'borrowingLocation' => $this->getFakeLoc()
                     );
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();
@@ -1284,7 +1286,7 @@ class Demo extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkRequestIsValid($id, $data, $patron)
@@ -1383,7 +1385,7 @@ class Demo extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
@@ -1480,7 +1482,7 @@ class Demo extends AbstractBase
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkILLRequestIsValid($id, $data, $patron)

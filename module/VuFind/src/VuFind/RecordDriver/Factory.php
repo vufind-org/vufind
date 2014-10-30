@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -67,8 +68,7 @@ class Factory
     {
         $eds = $sm->getServiceLocator()->get('VuFind\Config')->get('EDS');
         return new EDS(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-            $eds, $eds
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'), $eds, $eds
         );
     }
 
@@ -81,20 +81,10 @@ class Factory
      */
     public static function getEIT(ServiceManager $sm)
     {
+        $eit = $sm->getServiceLocator()->get('VuFind\Config')->get('EIT');
         return new EIT(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('EIT')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'), $eit, $eit
         );
-    }
-
-    /**
-     * Factory for LibGuides record driver.
-     *
-     * @return LibGuides
-     */
-    public static function getLibGuides()
-    {
-        return new LibGuides();
     }
 
     /**
@@ -120,10 +110,9 @@ class Factory
      */
     public static function getPazpar2(ServiceManager $sm)
     {
+        $pp2 = $sm->getServiceLocator()->get('VuFind\Config')->get('Pazpar2');
         return new Pazpar2(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-            null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'), $pp2, $pp2
         );
     }
 
@@ -223,11 +212,9 @@ class Factory
      */
     public static function getSolrWeb(ServiceManager $sm)
     {
+        $web = $sm->getServiceLocator()->get('VuFind\Config')->get('website');
         return new SolrWeb(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-            null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('website'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('website')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'), $web, $web
         );
     }
 
@@ -260,9 +247,9 @@ class Factory
      */
     public static function getWorldCat(ServiceManager $sm)
     {
+        $wc = $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCat');
         return new WorldCat(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCat')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'), $wc, $wc
         );
     }
 }

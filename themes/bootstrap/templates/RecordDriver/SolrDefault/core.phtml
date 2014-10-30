@@ -20,6 +20,10 @@
       <? endif; ?>
     </div>
 
+    <? // if you have a preview tab but want to move or remove the preview link
+       // from this area of the record view, this can be split into
+       // getPreviewData() (should stay here) and
+       // getPreviewLink() (can go in your desired tab) ?>
     <?=$this->record($this->driver)->getPreviews()?>
   </div>
 

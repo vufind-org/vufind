@@ -47,15 +47,20 @@
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=$this->record($resource)->getFormatList()?>
             <? endif; ?>
-            
+
+            <? if (!empty($ilsDetails['borrowingLocation'])): ?>
+              <strong><?=$this->transEsc('Borrowing Location')?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['borrowingLocation'], array(), $ilsDetails['borrowingLocation'])?>
+              <br />
+            <? endif; ?>
+
             <? if (isset($ilsDetails['renew'])): ?>
               <strong><?=$this->transEsc('Renewed')?>:</strong> <?=$this->transEsc($ilsDetails['renew'])?>
               <? if (isset($ilsDetails['renewLimit'])): ?>
                 / <?=$this->transEsc($ilsDetails['renewLimit'])?>
               <? endif; ?>
               <br />
-            <? endif; ?>            
-            
+            <? endif; ?>
+
             <? $showStatus = true; ?>
 
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>

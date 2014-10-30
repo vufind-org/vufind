@@ -42,11 +42,11 @@ use VuFind\ILS\Connection as ILSConnection;
 class Holds
 {
     /**
-     * Auth manager object
+     * ILS authenticator
      *
-     * @var \VuFind\Auth\Manager
+     * @var \VuFind\Auth\ILSAuthenticator
      */
-    protected $account;
+    protected $ilsAuth;
 
     /**
      * Catalog connection object
@@ -79,15 +79,15 @@ class Holds
     /**
      * Constructor
      *
-     * @param \VuFind\Auth\Manager $account Auth manager object
-     * @param ILSConnection        $ils     A catalog connection
-     * @param \VuFind\Crypt\HMAC   $hmac    HMAC generator
-     * @param \Zend\Config\Config  $config  VuFind configuration
+     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
+     * @param ILSConnection                 $ils     A catalog connection
+     * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
+     * @param \Zend\Config\Config           $config  VuFind configuration
      */
-    public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils,
-        \VuFind\Crypt\HMAC $hmac, \Zend\Config\Config $config
+    public function __construct(\VuFind\Auth\ILSAuthenticator $ilsAuth,
+        ILSConnection $ils, \VuFind\Crypt\HMAC $hmac, \Zend\Config\Config $config
     ) {
-        $this->account = $account;
+        $this->ilsAuth = $ilsAuth;
         $this->hmac = $hmac;
         $this->config = $config;
 
@@ -152,12 +152,12 @@ class Holds
      * Public method for getting item holdings from the catalog and selecting which
      * holding method to call
      *
-     * @param string $id A Bib ID
+     * @param string $id  A Bib ID
+     * @param array  $ids A list of Source Records (if catalog is for a consortium)
      *
      * @return array A sorted results set
      */
-
-    public function getHoldings($id)
+    public function getHoldings($id, $ids = null)
     {
         $holdings = array();
 
@@ -166,8 +166,18 @@ class Holds
             // Retrieve stored patron credentials; it is the responsibility of the
             // controller and view to inform the user that these credentials are
             // needed for hold data.
-            $patron = $this->account->storedCatalogLogin();
-            $result = $this->catalog->getHolding($id, $patron ? $patron : null);
+            $patron = $this->ilsAuth->storedCatalogLogin();
+
+            // Does this ILS Driver handle consortial holdings?
+            $config = $this->catalog->getConfig('Holds');
+            if (isset($config['consortium']) && $config['consortium'] == true) {
+                $result = $this->catalog->getConsortialHoldings(
+                    $id, $patron ? $patron : null, $ids
+                );
+            } else {
+                $result = $this->catalog->getHolding($id, $patron ? $patron : null);
+            }
+
             $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {

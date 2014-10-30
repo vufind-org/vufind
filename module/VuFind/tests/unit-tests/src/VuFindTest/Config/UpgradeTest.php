@@ -212,6 +212,21 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test Google preview setting upgrade
+     *
+     * @return void
+     */
+    public function testGooglePreviewUpgrade()
+    {
+        $upgrader = $this->getUpgrader('googlepreview');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'noview,full', $results['config.ini']['Content']['GoogleOptions']['link']
+        );
+    }
+
+    /**
      * Test Google-related warnings.
      *
      * @return void

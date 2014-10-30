@@ -64,6 +64,17 @@ abstract class AbstractBase implements TabInterface
     }
 
     /**
+     * Is this tab initially visible?
+     *
+     * @return bool
+     */
+    public function isVisible()
+    {
+        // Assume visible by default; subclasses may add rules.
+        return true;
+    }
+
+    /**
      * Set the record driver
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver

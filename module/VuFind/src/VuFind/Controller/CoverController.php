@@ -55,12 +55,14 @@ class CoverController extends AbstractBase
     {
         // Construct object for loading cover images if it does not already exist:
         if (!$this->loader) {
+            $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
+                ->getCache('cover')->getOptions()->getCacheDir();
             $this->loader = new Loader(
                 $this->getConfig(),
                 $this->getServiceLocator()->get('VuFind\ContentCoversPluginManager'),
                 $this->getServiceLocator()->get('VuFindTheme\ThemeInfo'),
                 $this->getServiceLocator()->get('VuFind\Http')->createClient(),
-                $this->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir()
+                $cacheDir
             );
             \VuFind\ServiceManager\Initializer::initInstance(
                 $this->loader, $this->getServiceLocator()

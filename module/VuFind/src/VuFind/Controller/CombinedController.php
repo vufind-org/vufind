@@ -160,7 +160,7 @@ class CombinedController extends AbstractSearch
             $currentOptions = $options->get($current);
             $supportsCartOptions[] = $currentOptions->supportsCart();
             if ($currentOptions->supportsCart()) {
-              $supportsCart = true;
+                $supportsCart = true;
             }
             list($controller, $action)
                 = explode('-', $currentOptions->getSearchAction());
@@ -184,13 +184,21 @@ class CombinedController extends AbstractSearch
         && intval($config['Layout']['columns']) <= count($combinedResults)
             ? intval($config['Layout']['columns'])
             : count($combinedResults);
+        $placement = isset($config['Layout']['stack_placement'])
+            ? $config['Layout']['stack_placement']
+            : 'distributed';
+        if (!in_array($placement, array('distributed', 'left', 'right'))) {
+            $placement = 'distributed';
+        }
 
         // Build view model:
         return $this->createViewModel(
             array(
                 'columns' => $columns,
                 'combinedResults' => $combinedResults,
+                'config' => $config,
                 'params' => $params,
+                'placement' => $placement,
                 'results' => $results,
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions

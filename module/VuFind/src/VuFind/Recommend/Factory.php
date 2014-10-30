@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -109,6 +110,25 @@ class Factory
     {
         return new CollectionSideFacets(
             $sm->getServiceLocator()->get('VuFind\Config')
+        );
+    }
+
+    /**
+     * Factory for DPLA Terms module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return DPLATerms
+     */
+    public static function getDPLATerms(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (!isset($config->DPLA->apiKey)) {
+            throw new \Exception('DPLA API key missing from configuration.');
+        }
+        return new DPLATerms(
+            $config->DPLA->apiKey,
+            $sm->getServiceLocator()->get('VuFind\Http')->createClient()
         );
     }
 

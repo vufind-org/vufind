@@ -16,9 +16,18 @@
     <input id="del_daysOld" type="text" name="daysOld" size="5" value="2"/> days.
     <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
   </form>
+  <hr />
   <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'DeleteExpiredSessions'))?>">
     <label for="delsess_daysOld" style="font-weight: normal;">Delete user sessions older than</label>
     <input id="delsess_daysOld" type="text" name="daysOld" size="5" value="2"/> days.
+    <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
+  </form>
+  <hr />
+  <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'ClearCache'))?>">
+    Clear cache(s):
+    <? foreach ($caches as $cache): ?>
+      <input type="checkbox" checked="checked" name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>" /> <?=$this->escapeHtml($cache) ?>
+    <? endforeach; ?>
     <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
   </form>
 </div>

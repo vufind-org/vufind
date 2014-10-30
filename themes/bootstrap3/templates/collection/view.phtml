@@ -33,7 +33,7 @@
     <? else: ?>
       <li class="disabled"><a href="#">&laquo; <?=$this->transEsc('Prev')?></a></li>
     <? endif; ?>
-    #<?=$this->escapeHtml($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . number_format($this->escapeHtml($this->scrollData['resultTotal'])) . ' ' . $this->transEsc('results') ?>
+    #<?=$this->localizedNumber($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->localizedNumber($this->scrollData['resultTotal']) . ' ' . $this->transEsc('results') ?>
     <? if ($this->scrollData['nextRecord']): ?>
       <li>
         <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>" title="<?=$this->transEsc('Next Search Result')?>"><?=$this->transEsc('Next')?> &raquo;</a>

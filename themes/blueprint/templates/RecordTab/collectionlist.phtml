@@ -12,9 +12,9 @@
     <?=$this->recommend($current)?>
   <? endforeach; ?>
   <?=$this->transEsc("Showing")?>
-  <strong><?=$results->getStartRecord()?></strong> - <strong><?=$results->getEndRecord()?></strong>
+  <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
   <? if (!isset($this->skipTotalCount)): ?>
-    <?=$this->transEsc('of')?> <strong><?=$recordTotal?></strong> <?=$this->transEsc('Items')?>
+    <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong> <?=$this->transEsc('Items')?>
   <? endif; ?>
   <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
   <?=$this->render('search/controls/view.phtml', $searchDetails)?>
