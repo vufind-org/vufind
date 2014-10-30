@@ -264,38 +264,6 @@ class RDSIndex extends SolrMarc
     }
 
     /**
-     * Return the first valid ISBN found in the record (favoring ISBN-10 over
-     * ISBN-13 when possible).
-     *
-     * @return mixed
-     */
-    public function getCleanISBN()
-    {
-        // Get all the ISBNs and initialize the return value:
-        $isbns = $this->getISBNs();
-        $isbn13 = false;
-
-        // Loop through the ISBNs:
-        foreach ($isbns as $isbn) {
-            // Strip off any unwanted notes:
-            if ($pos = strpos($isbn, ' ')) {
-                $isbn = substr($isbn, 0, $pos);
-            }
-
-            // If we find an ISBN-10, return it immediately; otherwise, if we find
-            // an ISBN-13, save it if it is the first one encountered.
-            $isbnObj = new ISBN($isbn);
-            if ($isbn10 = $isbnObj->get10()) {
-                return $isbn10;
-            }
-            if (!$isbn13) {
-                $isbn13 = $isbnObj->get13();
-            }
-        }
-        return $isbn13;
-    }
-
-    /**
      * Get just the base portion of the first listed ISSN (or false if no ISSNs).
      *
      * @return mixed
