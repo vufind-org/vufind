@@ -164,7 +164,6 @@ function registerTabEvents() {
 
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
-  var parts = document.URL.split("/");
   // Grab the part of the url that is the Controller and Record ID
   var urlroot = document.URL.match(new RegExp('/[^/]+/'+id+'/'));
   $.ajax({
