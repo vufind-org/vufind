@@ -106,13 +106,13 @@ class CombinedController extends AbstractSearch
             $general = $this->getServiceLocator()->get('VuFind\Config')
                 ->get('config');
             $viewParams = array(
-              'searchClassId' => $searchClassId,
-              'currentSearch' => $settings,
-              'showCartControls' => $currentOptions->supportsCart()
-                && $cart->isActive(),
-              'showBulkOptions' => $currentOptions->supportsCart()
-                && isset($general->Site->showBulkOptions)
-                && $general->Site->showBulkOptions
+                'searchClassId' => $searchClassId,
+                'currentSearch' => $settings,
+                'showCartControls' => $currentOptions->supportsCart()
+                    && $cart->isActive(),
+                'showBulkOptions' => $currentOptions->supportsCart()
+                    && isset($general->Site->showBulkOptions)
+                    && $general->Site->showBulkOptions
             );
             $html = $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
@@ -163,7 +163,7 @@ class CombinedController extends AbstractSearch
             $currentOptions = $options->get($current);
             $supportsCartOptions[] = $currentOptions->supportsCart();
             if ($currentOptions->supportsCart()) {
-              $supportsCart = true;
+                $supportsCart = true;
             }
             list($controller, $action)
                 = explode('-', $currentOptions->getSearchAction());
@@ -209,7 +209,7 @@ class CombinedController extends AbstractSearch
                 'supportsCart' => $supportsCart,
                 'supportsCartOptions' => $supportsCartOptions,
                 'showBulkOptions' => isset($settings->Site->showBulkOptions)
-                  && $settings->Site->showBulkOptions
+                    && $settings->Site->showBulkOptions
             )
         );
     }
