@@ -595,8 +595,11 @@ $config = array(
             ),
             'VuFind\RecordDriver\RDSIndex' => array(
                 'tabs' => array (
+		    'Holdings' => 'HoldingsILS', 
+                    'Description' => 'Description',
                     'Details' => 'StaffViewMARC',
                  ),
+	         'defaultTab' => null,
 	    ),
             'VuFind\RecordDriver\Primo' => array(
                 'tabs' => array(
