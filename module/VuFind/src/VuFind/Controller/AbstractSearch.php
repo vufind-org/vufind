@@ -477,8 +477,8 @@ class AbstractSearch extends AbstractBase
      *
      * @return array
      */
-    protected function getFullDateRangeSettings($savedSearch = false, $config = 'facets',
-        $filter = array()
+    protected function getFullDateRangeSettings($savedSearch = false,
+        $config = 'facets', $filter = array()
     ) {
         $fields = $this->getRangeFieldList($config, 'fullDateRange', $filter);
         return $this->getRangeSettings($fields, 'fulldate', $savedSearch);
