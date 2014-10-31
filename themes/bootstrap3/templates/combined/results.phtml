@@ -54,9 +54,7 @@
       <? endforeach; ?>
     </div>
   <? endif; ?>
-  <? if ($this->supportsCart): ?>
-    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
-  <? endif; ?>
+  <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
   <?
     $viewParams = array(
       'searchClassId' => $searchClassId,
