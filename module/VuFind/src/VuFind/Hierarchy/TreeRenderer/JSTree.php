@@ -171,7 +171,36 @@ class JSTree extends AbstractBase
      */
     public function getJSON($hierarchyID)
     {
-        return $this->getDataSource()->getJSON($hierarchyID);
+        $json = $this->getDataSource()->getJSON($hierarchyID);
+        return json_encode($this->formatJSON(json_decode($json)));
+    }
+
+    protected function formatJSON($json)
+    {
+        $ret = $this->transformNode($json);
+        if (isset($json->children)) {
+            $ret['children'] = array();
+            for ($i=0;$i<count($json->children);$i++) {
+                $ret['children'][$i] = $this->formatJSON($json->children[$i]);
+            }
+        }
+        return $ret;
+    }
+
+    protected function transformNode($node)
+    {
+        return array(
+            'id' => preg_replace('/\W/', '-', $node->id),
+            'text' => $node->title,
+            'li_attr' => array(
+                'recordid' => $node->id
+            ),
+            'a_attr' => array(
+                'href' =>  '%%%%VUFIND-BASE-URL%%%%/Record/' . $node->id,
+                'title' => $node->title
+            ),
+            'type' => $node->type
+        );
     }
 
     /**

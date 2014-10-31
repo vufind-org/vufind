@@ -499,14 +499,7 @@ class UtilController extends AbstractBase
         $title = $this->getNodeTitle($id, $solr);
         $json = array(
             'id' => preg_replace('/\W/', '-', $id),
-            'text' => $title,
-            'li_attr' => array(
-                'recordid' => $id
-            ),
-            'a_attr' => array(
-                'href' => '%%%%VUFIND-BASE-URL%%%%/Record/' . $id,
-                'title' => $title
-            )
+            'title' => $title
         );
         $paramBag = new ParamBag(
             array(
@@ -528,15 +521,8 @@ class UtilController extends AbstractBase
                     $cjson = $this->createNode($child->id, $rows, $solr, $indent+1);
                 } else {
                     $cjson = array(
-                        'id' => preg_replace('/\W/', '-', $child->id),
-                        'text' => $child->title,
-                        'li_attr' => array(
-                            'recordid' => $child->id
-                        ),
-                        'a_attr' => array(
-                            'href' => '%%%%VUFIND-BASE-URL%%%%/Record/' . $child->id,
-                            'title' => $child->title
-                        ),
+                        'id' => $child->id,
+                        'title' => $child->title,
                         'type' => 'record'
                     );
                 }
