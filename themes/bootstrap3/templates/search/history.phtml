@@ -21,13 +21,14 @@
       <?=$this->transEsc("history_no_searches")?>
     <? endif; ?>
   </div>
-
-  <div class="<?=$this->layoutClass('sidebar')?>">
-    <?=$this->context($this)->renderInContext(
-        "myresearch/menu.phtml",
-        // Only activate search history in account menu if user is logged in.
-        $this->auth()->isLoggedIn() ? array('active' => 'history') : array()
-      );
-    ?>
-  </div>
+  <? if ($user = $this->auth()->isLoggedIn()): ?>
+    <div class="<?=$this->layoutClass('sidebar')?>">
+      <?=$this->context($this)->renderInContext(
+          "myresearch/menu.phtml",
+          // Only activate search history in account menu if user is logged in.
+          $this->auth()->isLoggedIn() ? array('active' => 'history') : array()
+        );
+      ?>
+    </div>
+  <? endif; ?>
 </div>
