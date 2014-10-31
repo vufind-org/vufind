@@ -46,6 +46,9 @@
       <? if (isset($rangeFacets[$title])): ?>
         <? if ($rangeFacets[$title]['type'] == 'date'): ?>
           <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
+          <? /* Set extra text input attributes */ $extraInputAttribs = 'maxlength="4" class="yearbox" '; ?>
+        <? else: ?>
+          <? /* No extra attributes by default */ $extraInputAttribs = ''; ?>
         <? endif; ?>
         <form action="" name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">
           <?=$results->getUrlQuery()->asHiddenFields(array('page' => '/./', 'filter' => "/^{$title}:.*/"))?>
@@ -53,9 +56,9 @@
           <fieldset class="publishDateLimit" id="<?=$this->escapeHtmlAttr($title)?>">
             <legend><?=$this->transEsc($cluster['label'])?></legend>
             <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('date_from')?>:</label>
-            <input type="text" size="4" maxlength="4" class="yearbox" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" value="<?=isset($rangeFacets[$title]['values'][0])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][0]):''?>" />
+            <input type="text" size="4" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" value="<?=isset($rangeFacets[$title]['values'][0])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][0]):''?>" <?=$extraInputAttribs?>/>
             <label for="<?=$this->escapeHtmlAttr($title)?>to"><?=$this->transEsc('date_to')?>:</label>
-            <input type="text" size="4" maxlength="4" class="yearbox" name="<?=$this->escapeHtmlAttr($title)?>to" id="<?=$this->escapeHtmlAttr($title)?>to" value="<?=isset($rangeFacets[$title]['values'][1])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][1]):''?>" />
+            <input type="text" size="4" name="<?=$this->escapeHtmlAttr($title)?>to" id="<?=$this->escapeHtmlAttr($title)?>to" value="<?=isset($rangeFacets[$title]['values'][1])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][1]):''?>" <?=$extraInputAttribs?>/>
             <div id="<?=$this->escapeHtmlAttr($title)?>Slider" class="<?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>Slider"></div>
             <input type="submit" value="<?=$this->transEsc('Set')?>" id="<?=$this->escapeHtmlAttr($title)?>goButton"/>
           </fieldset>
