@@ -1,6 +1,6 @@
 <?php
 /**
- * Solr aspect of the Search Multi-class (Results)
+ * RDSIndex aspect of the Search Multi-class (Results)
  *
  * PHP version 5
  *
@@ -20,8 +20,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Search_Solr
+ * @package  Search_RDSIndex
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -37,38 +38,18 @@ use VuFindSearch\Query\QueryGroup;
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   David Maus <maus@hab.de>
+ * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Results extends \VuFind\Search\Base\Results
+class Results extends \VuFind\Search\Solr\Results
 {
-    /**
-     * Facet details:
-     *
-     * @var array
-     */
-    protected $responseFacets = null;
-
     /**
      * Search backend identifiers.
      *
      * @var string
      */
     protected $backendId = 'RDSIndex';
-
-    /**
-     * Currently used spelling query, if any.
-     *
-     * @var string
-     */
-    protected $spellingQuery = '';
-
-    /**
-     * Class to process spelling.
-     *
-     * @var SpellingProcessor
-     */
-    protected $spellingProcessor = null;
 
     /**
      * Get spelling processor.
@@ -138,68 +119,6 @@ class Results extends \VuFind\Search\Base\Results
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
-    }
-
-    /**
-     * Try to fix a query that caused a parser error.
-     *
-     * @param AbstractQuery $query Bad query
-     *
-     * @return bool|AbstractQuery  Fixed query, or false if no solution is found.
-     */
-    protected function fixBadQuery(AbstractQuery $query)
-    {
-        if ($query instanceof QueryGroup) {
-            return $this->fixBadQueryGroup($query);
-        } else {
-            // Single query? Can we fix it on its own?
-            $oldString = $string = $query->getString();
-
-            // Are there any unescaped colons in the string?
-            $string = str_replace(':', '\\:', str_replace('\\:', ':', $string));
-
-            // Did we change anything? If so, we should replace the query:
-            if ($oldString != $string) {
-                $query->setString($string);
-                return $query;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Support method for fixBadQuery().
-     *
-     * @param QueryGroup $query Query to fix
-     *
-     * @return bool|QueryGroup  Fixed query, or false if no solution is found.
-     */
-    protected function fixBadQueryGroup(QueryGroup $query)
-    {
-        $newQueries = array();
-        $fixed = false;
-
-        // Try to fix each query in the group; replace any query that needs to
-        // be changed.
-        foreach ($query->getQueries() as $current) {
-            $fixedQuery = $this->fixBadQuery($current);
-            if ($fixedQuery) {
-                $fixed = true;
-                $newQueries[] = $fixedQuery;
-            } else {
-                $newQueries[] = $current;
-            }
-        }
-
-        // If any of the queries in the group was fixed, we'll treat the whole
-        // group as being fixed.
-        if ($fixed) {
-            $query->setQueries($newQueries);
-            return $query;
-        }
-
-        // If we got this far, nothing was changed -- report failure:
-        return false;
     }
 
     /**
