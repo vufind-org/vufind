@@ -187,7 +187,7 @@ $(document).ready(function() {
   Lightbox.addFormCallback('accountForm', function(html) {
     updatePageForLogin();
     if (lastCartSubmit !== false) {
-      cartSubmit(lastCartSubmit);
+      bulkActionSubmit(lastCartSubmit);
       lastCartSubmit = false;
     } else {
       newAccountHandler(html);
