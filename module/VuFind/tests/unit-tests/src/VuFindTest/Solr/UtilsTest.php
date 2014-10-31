@@ -79,6 +79,8 @@ class UtilsTest extends \VuFindTest\Unit\TestCase
             '1947-3' => '1947-03-01',
             '1973-02-31' => '1973-02-01',       // illegal day
             '1973-31-31' => '1973-01-01',       // illegal month
+            '1964-zz' => '1964-01-01',
+            '1964-01-zz' => '1964-01-01',
         );
         
         foreach ($tests as $in => $out) {
