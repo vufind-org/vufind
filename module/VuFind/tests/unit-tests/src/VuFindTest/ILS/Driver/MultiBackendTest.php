@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2011.
+ * Copyright (C) The National Library of Finland 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,11 +23,13 @@
  * @category VuFind2
  * @package  Tests
  * @author   Kyle McGrogan <km7717@ship.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\MultiBackend, VuFind\Config\Reader as ConfigReader;
+use VuFind\Auth\MultiAuth;
 
 /**
  * ILS driver test
@@ -34,6 +37,7 @@ use VuFind\ILS\Driver\MultiBackend, VuFind\Config\Reader as ConfigReader;
  * @category VuFind2
  * @package  Tests
  * @author   Kyle McGrogan <km7717@ship.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -623,7 +627,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $returnVal = $driver->getMyTransactions($patron);
         $this->assertTrue($returnVal);
 
-
         //Case: There is a default driver set in the configuration
             //Result: return the function results for that driver
 
@@ -643,6 +646,186 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->setProperty($driver, 'defaultDriver', 'otherinst');
         $returnVal = $driver->getMyTransactions($patron);
         $this->assertTrue($returnVal);
+    }
+
+    /**
+     * Testing method for getConfig
+     *
+     * @return void
+     */
+    public function testGetConfig()
+    {
+        $expected1 = array('config' => 'ok1');
+        $expected2 = array('config' => 'ok2');
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getConfig',
+            array('Holds', '123456'),
+            $expected1,
+            $expected2
+        );
+
+        $result = $this->callMethod(
+            $driver, 'getConfig', array('Holds', 'd1.123456')
+        );
+        $this->assertEquals($expected1, $result);
+
+        $return = $driver->getConfig('Holds', 'fail.123456');
+        $this->assertEquals(array(), $return);
+
+        $this->setProperty($driver, 'defaultDriver', 'd2');
+        $return = $driver->getConfig('Holds', '123456');
+        $this->assertEquals($expected2, $return);
+    }
+
+    /**
+     * Testing method for getNewItems
+     *
+     * @return void
+     */
+    public function testGetNewItems()
+    {
+        $expected = array('test' => 'true');
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->never(),
+            'getNewItems',
+            array(1, 10, 5, 0),
+            $expected,
+            $expected
+        );
+
+        // getNewItems only works with a default driver, so the first calls fails
+        $result = $driver->getNewItems(1, 10, 5, 0);
+        $this->assertEquals(array(), $result);
+
+        $this->setProperty($driver, 'defaultDriver', 'd1');
+        $result = $driver->getNewItems(1, 10, 5, 0);
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for findReserves
+     *
+     * @return void
+     */
+    public function testFindReserves()
+    {
+        $expected = array('test' => 'true');
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->never(),
+            'findReserves',
+            array('course', 'inst', 'dept'),
+            $expected,
+            $expected
+        );
+
+        // findReserves only works with a default driver, so the first calls fails
+        $result = $driver->findReserves('course', 'inst', 'dept');
+        $this->assertEquals(array(), $result);
+
+        $this->setProperty($driver, 'defaultDriver', 'd1');
+        $result = $driver->findReserves('course', 'inst', 'dept');
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for getMyProfile
+     *
+     * @return void
+     */
+    public function testGetMyProfile()
+    {
+        $expected1 = array('test' => '1');
+        $expected2 = array('test' => '2');
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getMyProfile',
+            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            $expected1,
+            $expected2
+        );
+
+        $result = $driver->getMyProfile(
+            array(
+                'cat_username' => 'invalid.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals(array(), $result);
+
+        $result = $driver->getMyProfile(
+            array(
+                'cat_username' => 'd1.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getMyProfile(
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+    }
+
+    /**
+     * Initialize a MultiBackend driver for a simple method test with two drivers
+     *
+     * @param object $times1   The number of times first driver is expected to be
+     * called
+     * @param object $times2   The number of times second driver is expected to be
+     * called
+     * @param string $function Function name
+     * @param array  $params   Function parameters
+     * @param mixed  $return1  What the function should return with first driver
+     * @param mixed  $return2  What the function should return with second driver
+     *
+     * @return object MultiBackend driver
+     */
+    protected function initSimpleMethodTest(
+        $times1, $times2, $function, $params, $return1, $return2
+    ) {
+        $driver = $this->getDriver();
+        $drivers = array('d1' => 'Voyager', 'd2' => 'Demo');
+        $this->setProperty($driver, 'drivers', $drivers);
+
+        $voyager = $this->getMockILS('Voyager', array('init', $function));
+        call_user_func_array(
+            array($voyager->expects($times1)->method($function), 'with'), $params
+        )->will($this->returnValue($return1));
+
+        $demo = $this->getMockILS('Demo', array('init', $function));
+        call_user_func_array(
+            array($demo->expects($times2)->method($function), 'with'), $params
+        )->will($this->returnValue($return2));
+
+        $sm = $this->getMockForAbstractClass(
+            'Zend\ServiceManager\ServiceLocatorInterface'
+        );
+        $sm->expects($this->any())
+            ->method('get')
+            ->with($this->logicalOr('Voyager', 'Demo'))
+            ->will(
+                $this->returnCallback(
+                    function ($param) use ($voyager, $demo) {
+                        if ($param == 'Voyager') {
+                            return $voyager;
+                        } else if ($param == 'Demo') {
+                            return $demo;
+                        }
+                        return null;
+                    }
+                )
+            );
+        $driver->setServiceLocator($sm);
+
+        return $driver;
     }
 
     /**
@@ -746,11 +929,21 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $mock = null;
         try {
-            $mock = $this->getMock(
-                "VuFind\ILS\Driver\\$type", $methods,
-                array(new \VuFind\Date\Converter())
-            );
-        }catch(\Exception $e){
+            if ($type == 'Demo') {
+                $mock = $this->getMock(
+                    "VuFind\ILS\Driver\\$type", $methods,
+                    array(
+                        new \VuFind\Date\Converter(),
+                        $this->getMock('VuFindSearch\Service')
+                    )
+                );
+            } else {
+                $mock = $this->getMock(
+                    "VuFind\ILS\Driver\\$type", $methods,
+                    array(new \VuFind\Date\Converter())
+                );
+            }
+        } catch(\Exception $e) {
             $mock = $this->getMock(
                 "VuFind\ILS\Driver\\$type", $methods
             );
