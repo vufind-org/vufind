@@ -55,6 +55,9 @@ class HierarchicalFacetHelper
         // can run faster
         foreach ($facetList as &$facetItem) {
             list($facetItem['level']) = explode('/', $facetItem['value'], 2);
+            if (!is_numeric($facetItem['level'])) {
+                $facetItem['level'] = 0;
+            }
         }
         // Avoid problems having the reference set further below
         unset($facetItem);
@@ -253,6 +256,9 @@ class HierarchicalFacetHelper
         }
 
         list($level, $value) = explode('/', $item['value'], 2);
+        if (!is_numeric($level)) {
+            $level = 0;
+        }
         $parent = null;
         if ($level > 0) {
             $parent = ($level - 1) . '/' . implode(
