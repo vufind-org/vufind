@@ -27,7 +27,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Exception\Auth as AuthException;
+use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
 
 /**
  * Abstract authentication base class
@@ -112,9 +112,30 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return User Object representing logged-in user.
      */
     abstract public function authenticate($request);
+
+    /**
+     * Validate the credentials in the provided request, but do not change the state
+     * of the current logged-in user. Return true for valid credentials, false
+     * otherwise.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * account credentials.
+     *
+     * @throws AuthException
+     * @return bool
+     */
+    public function validateCredentials($request)
+    {
+        try {
+            $user = $this->authenticate($request);
+        } catch (AuthException $e) {
+            return false;
+        }
+        return isset($user) && $user instanceof User;
+    }
 
     /**
      * Has the user's login expired?
@@ -134,7 +155,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      * new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function create($request)
@@ -151,7 +172,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      * new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function updatePassword($request)

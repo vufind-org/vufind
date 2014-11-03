@@ -49,15 +49,15 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * for more information.
      * Configuration:  Sources are processed in order - refer to $sourceList.
      *
-     * @param string            $key     API key
-     * @param \VuFind\Code\ISBN $isbnObj ISBN object
+     * @param string           $key     API key
+     * @param \VuFindCode\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
      * @return array     Returns array with excerpt data.
      * @author Joel Timothy Norman <joel.t.norman@wmich.edu>
      * @author Andrew Nagy <vufind-tech@lists.sourceforge.net>
      */
-    public function loadByIsbn($key, \VuFind\Code\ISBN $isbnObj)
+    public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         // List of syndetic excerpts
         $sourceList = array(

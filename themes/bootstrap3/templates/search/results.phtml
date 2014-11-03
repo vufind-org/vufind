@@ -30,10 +30,8 @@
     $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Search') . ': ' . $this->escapeHtml($lookfor) . '</li>';
   }
 
-  // Disable cart if appropriate:
-  if (!$this->params->getOptions()->supportsCart()) {
-    $this->hideCartControls = true;
-  }
+  // Enable cart if appropriate:
+  $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
