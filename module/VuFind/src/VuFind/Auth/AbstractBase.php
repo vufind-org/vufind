@@ -354,7 +354,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function translate($str, $tokens = array())
     {
-        $msg = $translator->translate($str);
+        $msg = $this->translator->translate($str);
 
         // Do we need to perform substitutions?
         if (!empty($tokens)) {
