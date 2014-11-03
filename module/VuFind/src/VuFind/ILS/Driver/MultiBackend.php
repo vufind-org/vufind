@@ -1130,7 +1130,9 @@ class MultiBackend extends AbstractBase
 
         // If we have resolved the needed driver, just getConfig and return.
         if ($driver && $this->methodSupported($driver, 'getConfig')) {
-            return $driver->getConfig($function);
+            return $driver->getConfig(
+                $function, $this->stripIdPrefixes($id, $source)
+            );
         }
 
         // If driver not available, return an empty array
