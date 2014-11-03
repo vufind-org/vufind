@@ -120,7 +120,10 @@ abstract class AbstractRequestBase extends AbstractPlugin
 
         $keyValueArray = array();
         foreach ($linkData as $details) {
-            $keyValueArray[$details] = $params->fromQuery($details);
+            // We expect most parameters to come via query, but some (mainly ID) may
+            // be in the route:
+            $keyValueArray[$details]
+                = $params->fromQuery($details, $params->fromRoute($details));
         }
         $hashKey = $this->hmac->generate($linkData, $keyValueArray);
 

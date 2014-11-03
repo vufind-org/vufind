@@ -277,13 +277,15 @@ class AjaxController extends AbstractBase
      * Support method for getItemStatuses() -- when presented with multiple values,
      * pick which one(s) to send back via AJAX.
      *
-     * @param array  $list Array of values to choose from.
-     * @param string $mode config.ini setting -- first, all or msg
-     * @param string $msg  Message to display if $mode == "msg"
+     * @param array  $list        Array of values to choose from.
+     * @param string $mode        config.ini setting -- first, all or msg
+     * @param string $msg         Message to display if $mode == "msg"
+     * @param string $transPrefix Translator prefix to apply to values (false to
+     * omit translation of values)
      *
      * @return string
      */
-    protected function pickValue($list, $mode, $msg)
+    protected function pickValue($list, $mode, $msg, $transPrefix = false)
     {
         // Make sure array contains only unique values:
         $list = array_unique($list);
@@ -291,11 +293,25 @@ class AjaxController extends AbstractBase
         // If there is only one value in the list, or if we're in "first" mode,
         // send back the first list value:
         if ($mode == 'first' || count($list) == 1) {
-            return $list[0];
+            if (!$transPrefix) {
+                return $list[0];
+            } else {
+                return $this->translate($transPrefix . $list[0], array(), $list[0]);
+            }
         } else if (count($list) == 0) {
             // Empty list?  Return a blank string:
             return '';
         } else if ($mode == 'all') {
+            // Translate values if necessary:
+            if ($transPrefix) {
+                $transList = array();
+                foreach ($list as $current) {
+                    $transList[] = $this->translate(
+                        $transPrefix . $current, array(), $current
+                    );
+                }
+                $list = $transList;
+            }
             // All values mode?  Return comma-separated values:
             return implode(', ', $list);
         } else {
@@ -349,7 +365,7 @@ class AjaxController extends AbstractBase
 
         // Determine location string based on findings:
         $location = $this->pickValue(
-            $locations, $locationSetting, 'Multiple Locations'
+            $locations, $locationSetting, 'Multiple Locations', 'location_'
         );
 
         $availability_message = $use_unknown_status
@@ -416,7 +432,10 @@ class AjaxController extends AbstractBase
             $locationInfo = array(
                 'availability' =>
                     isset($details['available']) ? $details['available'] : false,
-                'location' => htmlentities($location, ENT_COMPAT, 'UTF-8'),
+                'location' => htmlentities(
+                    $this->translate('location_' . $location, array(), $location),
+                    ENT_COMPAT, 'UTF-8'
+                ),
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8')
             );
@@ -1106,7 +1125,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = $this->getILS();
-                $patron = $this->getAuthManager()->storedCatalogLogin();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
                     switch ($requestType) {
                     case 'ILLRequest':
@@ -1421,7 +1440,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = $this->getILS();
-                $patron = $this->getAuthManager()->storedCatalogLogin();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
                     $results = $catalog->getILLPickupLocations(
                         $id, $pickupLib, $patron
@@ -1474,7 +1493,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = $this->getILS();
-                $patron = $this->getAuthManager()->storedCatalogLogin();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
                     $details = array(
                         'id' => $id,

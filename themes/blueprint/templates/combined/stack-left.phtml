@@ -21,8 +21,15 @@
   <? $currentSearch = $searches[$columnIndex]; ?>
   <div class="span-<?=$span ?> combined-list">
     <div id="combined_<?=$this->escapeHtmlAttr($searchClassId)?>">
-      <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
-      <?=$this->render('combined/results-' . $templateSuffix . '.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
+      <?
+        $viewParams = array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch);
+        // Enable cart if appropriate:
+        $viewParams['showCartControls'] = $this->supportsCartOptions[$columnIndex] && $this->showCartControls;
+      ?>
+      <div id="combined_<?=$this->escapeHtmlAttr($searchClassId)?>">
+        <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
+        <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
+      </div>
     </div>
   </div>
 <? endfor; ?>

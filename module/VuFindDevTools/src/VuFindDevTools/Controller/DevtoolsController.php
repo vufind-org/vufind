@@ -98,7 +98,9 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     protected function findMissingLanguageStrings($lang1, $lang2)
     {
         // Find strings missing from language 2:
-        return array_diff(array_keys((array)$lang1), array_keys((array)$lang2));
+        return array_values(
+            array_diff(array_keys((array)$lang1), array_keys((array)$lang2))
+        );
     }
 
     /**

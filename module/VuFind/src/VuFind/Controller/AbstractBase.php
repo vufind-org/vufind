@@ -134,6 +134,16 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the ILS authenticator.
+     *
+     * @return \VuFind\Auth\ILSAuthenticator
+     */
+    protected function getILSAuthenticator()
+    {
+        return $this->getServiceLocator()->get('VuFind\ILSAuthenticator');
+    }
+
+    /**
      * Get the user object if logged in, false otherwise.
      *
      * @return object|bool
@@ -237,15 +247,42 @@ class AbstractBase extends AbstractActionController
      */
     protected function delightboxURL($url)
     {
+        // If this isn't a lightbox URL, we don't want to mess with it!
         $parts = parse_url($url);
         parse_str($parts['query'], $query);
         if (false === strpos($parts['path'], '/AJAX/JSON')) {
             return $url;
         }
-        $controller = strtolower($query['submodule']);
-        $action     = strtolower($query['subaction']);
+
+        // Build the route name:
+        $routeName = strtolower($query['submodule']) . '-'
+            . strtolower($query['subaction']);
+
+        // Eliminate lightbox-specific parameters that might confuse the router:
         unset($query['method'], $query['subaction'], $query['submodule']);
-        return $this->url()->fromRoute($controller.'-'.$action, $query);
+
+        // Get a preliminary URL that we'll need to analyze in order to build
+        // the final URL:
+        $url = $this->url()->fromRoute($routeName, $query);
+
+        // Using the URL generated above, figure out which parameters are route
+        // params and which are GET params:
+        $request = new \Zend\Http\Request();
+        $request->setUri($url);
+        $router = $this->getEvent()->getRouter();
+        $matched = $router->match($request)->getParams();
+        $getParams = $routeParams = array();
+        foreach ($query as $current => $val) {
+            if (isset($matched[$current])) {
+                $routeParams[$current] = $val;
+            } else {
+                $getParams[$current] = $val;
+            }
+        }
+
+        // Now build the final URL:
+        return $this->url()
+            ->fromRoute($routeName, $routeParams, array('query' => $getParams));
     }
 
     /**
@@ -309,10 +346,11 @@ class AbstractBase extends AbstractActionController
         }
 
         // Now check if the user has provided credentials with which to log in:
+        $ilsAuth = $this->getILSAuthenticator();
         if (($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {
-            $patron = $account->newCatalogLogin($username, $password);
+            $patron = $ilsAuth->newCatalogLogin($username, $password);
 
             // If login failed, store a warning message:
             if (!$patron) {
@@ -321,7 +359,7 @@ class AbstractBase extends AbstractActionController
             }
         } else {
             // If no credentials were provided, try the stored values:
-            $patron = $account->storedCatalogLogin();
+            $patron = $ilsAuth->storedCatalogLogin();
         }
 
         // If catalog login failed, send the user to the right page:
@@ -594,12 +632,8 @@ class AbstractBase extends AbstractActionController
      */
     protected function getFollowupUrl()
     {
-        $followup = $this->followup()->retrieve();
         // followups aren't used in lightboxes.
-        if (isset($followup->url) && !$this->inLightbox()) {
-            return $followup->url;
-        }
-        return '';
+        return ($this->inLightbox()) ? '' : $this->followup()->retrieve('url', '');
     }
 
     /**
@@ -609,9 +643,6 @@ class AbstractBase extends AbstractActionController
      */
     protected function clearFollowupUrl()
     {
-        $followup = $this->followup()->retrieve();
-        if (isset($followup->url)) {
-            unset($followup->url);
-        }
+        $this->followup()->clear('url');
     }
 }

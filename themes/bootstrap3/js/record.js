@@ -1,4 +1,4 @@
-/*global deparam, extractClassParams, htmlEncode, Lightbox, path, vufindString */
+/*global deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -164,8 +164,10 @@ function registerTabEvents() {
 
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
+  // Grab the part of the url that is the Controller and Record ID
+  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id+'/'));
   $.ajax({
-    url: path + '/Record/'+id+'/AjaxTab',
+    url: path + urlroot[0] + 'AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
@@ -201,7 +203,7 @@ $(document).ready(function(){
       ajaxLoadTab(tabid);
     }
     return false;
-  })
+  });
 
   /* --- LIGHTBOX --- */
   // Cite lightbox

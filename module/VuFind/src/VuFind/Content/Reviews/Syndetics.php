@@ -52,15 +52,15 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * If your library does not like a reviewer, remove it.  If there are more
      * syndetics reviewers add another entry.
      *
-     * @param string            $key     API key (unused here)
-     * @param \VuFind\Code\ISBN $isbnObj ISBN object
+     * @param string           $key     API key (unused here)
+     * @param \VuFindCode\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
      * @return array     Returns array with review data.
      * @author Joel Timothy Norman <joel.t.norman@wmich.edu>
      * @author Andrew Nagy <vufind-tech@lists.sourceforge.net>
      */
-    public function loadByIsbn($key, \VuFind\Code\ISBN $isbnObj)
+    public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         // List of syndetic reviews
         $sourceList = array(

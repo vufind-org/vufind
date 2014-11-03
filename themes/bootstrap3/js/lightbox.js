@@ -129,7 +129,7 @@ var Lightbox = {
     var fi = html.indexOf('<div class="alert alert-danger">');
     if(fi > -1) {
       var li = html.indexOf('</div>', fi+31);
-      Lightbox.displayError(html.substring(fi+31, li).replace(/^[\s\>\<]+|[\s\>\<]+$/g, ''));
+      Lightbox.displayError(html.substring(fi+31, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
     } else {
       success(html);
     }
@@ -140,16 +140,19 @@ var Lightbox = {
   displayError: function(message) {
     var alert = $('#modal .modal-body .alert');
     var html = $.parseHTML($('#modal .modal-body').html());
+    // Page with dismissable alert already present
+    if(alert.find('.message').length > 0 && html.length > 1) {
+      $(alert).find('.message').html(message);
     // Page with alert already present
-    if(alert.length > 0 && html.length > 1) {
+    } else if(alert.length > 0 && html.length > 1) {
       $(alert).html(message);
     // Empty or alert only, change to message with button
     } else if($('#modal .modal-body').html() == vufindString.loading+"..."
     || (html.length == 1 && $(html).hasClass('alert-danger'))) {
-      Lightbox.changeContent('<div class="alert alert-danger">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+      Lightbox.changeContent('<div class="alert alert-danger" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
     // Page without alert
     } else {
-      $('#modal .modal-body').prepend('<div class="alert alert-danger">'+message+'</div>');
+      $('#modal .modal-body').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
     }
     $('.fa-spinner').remove();
     if (typeof Recaptcha !== "undefined" && Recaptcha.widget) {

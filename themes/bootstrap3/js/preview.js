@@ -5,7 +5,7 @@ function getHathiOptions() {
 function getGoogleOptions() {
     var opts_temp = $('[class*="googlePreviewSpan"]').attr("class").split('__')[1].split(';');
     var options = {};
-    for (key in opts_temp) {
+    for(var key in opts_temp) {
         var arr = opts_temp[key].split(':');
         options[arr[0]] = arr[1].split(',');
     }

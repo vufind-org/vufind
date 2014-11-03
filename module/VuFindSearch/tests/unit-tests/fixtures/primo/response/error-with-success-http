@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Server: Apache-Coyote/1.1
+Content-Type: text/xml;charset=UTF-8
+Date: Thu, 21 Aug 2014 12:14:18 GMT
+Connection: close
+
+<?xml version="1.0"?>
+<ERROR CODE="-1" MESSAGE="Unauthorized access" xmlns="http://www.exlibrisgroup.com/xsd/jaguar/search"/>
+

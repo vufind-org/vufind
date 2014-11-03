@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -186,6 +187,24 @@ class Factory
         $universal = isset($config->GoogleAnalytics->universal)
             ? $config->GoogleAnalytics->universal : false;
         return new GoogleAnalytics($key, $universal);
+    }
+
+    /**
+     * Construct the Piwik helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Piwik
+     */
+    public static function getPiwik(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
+        $siteId = isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1;
+        $customVars = isset($config->Piwik->custom_variables)
+            ? $config->Piwik->custom_variables
+            : false;
+        return new Piwik($url, $siteId, $customVars);
     }
 
     /**
@@ -483,18 +502,5 @@ class Factory
             || ($cfg->Social->tags && $cfg->Social->tags !== 'disabled')
             ? 'enabled' : 'disabled';
         return new UserTags($mode);
-    }
-
-    /**
-     * Construct the WorldCat helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return WorldCat
-     */
-    public static function getWorldCat(ServiceManager $sm)
-    {
-        $bm = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
-        return new WorldCat($bm->get('WorldCat')->getConnector());
     }
 }

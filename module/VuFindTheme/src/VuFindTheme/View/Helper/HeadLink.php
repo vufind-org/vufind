@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFindTheme\View\Helper;
+use VuFindTheme\ThemeInfo;
 
 /**
  * Head link view helper (extended for VuFind's theme system)
@@ -41,16 +42,16 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     /**
      * Theme information service
      *
-     * @var \VuFindTheme\ThemeInfo
+     * @var ThemeInfo
      */
     protected $themeInfo;
 
     /**
      * Constructor
      *
-     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
+     * @param ThemeInfo $themeInfo Theme information service
      */
-    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
+    public function __construct(ThemeInfo $themeInfo)
     {
         parent::__construct();
         $this->themeInfo = $themeInfo;
@@ -67,11 +68,15 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     {
         // Normalize href to account for themes, then call the parent class:
         $relPath = 'css/' . $item->href;
-        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
+        $details = $this->themeInfo
+            ->findContainingTheme($relPath, ThemeInfo::RETURN_ALL_DETAILS);
 
-        if (!empty($currentTheme)) {
+        if (!empty($details)) {
             $urlHelper = $this->getView()->plugin('url');
-            $item->href = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+            $url = $urlHelper('home') . "themes/{$details['theme']}/" . $relPath;
+            $url .= strstr($url, '?') ? '&_=' : '?_=';
+            $url .= filemtime($details['path']);
+            $item->href = $url;
         }
 
         return parent::itemToString($item);

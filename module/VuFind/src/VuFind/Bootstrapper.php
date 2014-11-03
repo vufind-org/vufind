@@ -97,49 +97,7 @@ class Bootstrapper
         // Create the configuration manager:
         $app = $this->event->getApplication();
         $serviceManager = $app->getServiceManager();
-        $config = $app->getConfig();
-        $cfg = new \Zend\ServiceManager\Config($config['vufind']['config_reader']);
-        $serviceManager->setService(
-            'VuFind\Config', new \VuFind\Config\PluginManager($cfg)
-        );
-
-        // Use the manager to load the configuration used in subsequent init methods:
         $this->config = $serviceManager->get('VuFind\Config')->get('config');
-    }
-
-    /**
-     * Set up plugin managers.
-     *
-     * @return void
-     */
-    protected function initPluginManagers()
-    {
-        $app = $this->event->getApplication();
-        $serviceManager = $app->getServiceManager();
-        $config = $app->getConfig();
-
-        // Use naming conventions to set up a bunch of services based on namespace:
-        $namespaces = array(
-            'Auth', 'Autocomplete', 'Content', 'Content\AuthorNotes',
-            'Content\Covers', 'Content\Excerpts', 'Content\Reviews', 'Db\Table',
-            'Hierarchy\Driver', 'Hierarchy\TreeDataSource', 'Hierarchy\TreeRenderer',
-            'ILS\Driver', 'Recommend', 'RecordDriver', 'RecordTab', 'Related',
-            'Resolver\Driver', 'Search\Options', 'Search\Params', 'Search\Results',
-            'Session', 'Statistics\Driver'
-        );
-        foreach ($namespaces as $ns) {
-            $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';
-            $factory = function () use ($config, $ns) {
-                $className = 'VuFind\\' . $ns . '\PluginManager';
-                $configKey = strtolower(str_replace('\\', '_', $ns));
-                return new $className(
-                    new \Zend\ServiceManager\Config(
-                        $config['vufind']['plugin_managers'][$configKey]
-                    )
-                );
-            };
-            $serviceManager->setFactory($serviceName, $factory);
-        }
     }
 
     /**

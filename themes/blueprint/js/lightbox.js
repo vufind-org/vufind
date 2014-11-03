@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, Recaptcha, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, vufindString*/
+/*global btoa, checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, Recaptcha, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, unescape, vufindString*/
 
 // keep a handle to the current opened dialog so we can access it later
 var __dialogHandle = {dialog: null, processFollowup:false, followupModule: null, followupAction: null, recordId: null, postParams: null};
@@ -72,7 +72,7 @@ function displayLightboxFeedback($form, message, type) {
 function displayFormError($form, error) {
     $form.parent().find('.error').remove();
     $form.prepend('<div class="error">' + error + '</div>');
-    if (Recaptcha) {
+    if (typeof Recaptcha != "undefined") {
       Recaptcha.reload();
     }
 }
@@ -168,6 +168,7 @@ function registerAjaxCart() {
 
     var $form = $('#modalDialog form[name="cartForm"]');
     if($form) {
+        $($form).submit(function(){return false;});
         $("input[name='ids[]']", $form).attr('checked', false);
         $($form).validate({
             rules: {

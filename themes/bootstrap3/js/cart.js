@@ -13,6 +13,7 @@ var Cart = {
     $('#cartItems strong').html(Cart.count);
   },
 
+
   getItems: function() {
     var items = Cookies.getItem(Cart.COOKIE);
     if(items) {
