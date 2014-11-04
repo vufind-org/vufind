@@ -117,9 +117,11 @@ class Params extends \VuFind\Search\Solr\Params
         $backendParams = new ParamBag();
 
         // Spellcheck
+	/*
         $backendParams->set(
             'spellcheck', $this->getOptions()->spellcheckEnabled() ? 'true' : 'false'
         );
+	*/
 
         // Facets
 	$this->initBasicFacets();
@@ -158,8 +160,11 @@ class Params extends \VuFind\Search\Solr\Params
         // Sort
         $sort = $this->getSort();
         if ($sort) {
-            $backendParams->add('sort', $this->normalizeSort($sort));
+            $backendParams->add('sort', $sort);
         }
+	// ToDo: guest und sid setzten
+	$backendParams->add('guest', 'y');
+	$backendParams->add('sid', 'TEST');
 
         // Highlighting -- on by default, but we should disable if necessary:
         if (!$this->getOptions()->highlightEnabled()) {
