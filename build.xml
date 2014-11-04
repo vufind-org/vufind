@@ -5,7 +5,10 @@
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
   <property name="apacheconfdir" value="/etc/apache2/conf.d" />
-  <property name="apachectl" value="/etc/init.d/apache2" />
+  <property name="apachectl" value="false" /><!-- set to apachectl path to spin up Apache instance -->
+  <property name="nodepath" value="" /><!-- set to node.js modules path to use Zombie.js testing -->
+  <!-- command for extra cleanup during shutdown; e.g. to change cache ownership after testing w/ Apache so deletion won't fail: -->
+  <property name="extra_shutdown_cleanup" value="false" />
   <property name="vufindurl" value="http://localhost/vufind" />
   <property name="vufinddb" value="vufind_test" />
   <property name="vufinddbuser" value="vufindtest" />
@@ -88,12 +91,12 @@
 
   <!-- PHPUnit -->
   <target name="phpunit" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_LOCAL_DIR=${srcdir}/local phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/" passthru="true" checkreturn="true" />
   </target>
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
-    <exec dir="${srcdir}/module/VuFind/tests" command="VUFIND_LOCAL_DIR=${srcdir}/local phpunit -dzend.enable_gc=0" passthru="true" checkreturn="true" />
+    <exec dir="${srcdir}/module/VuFind/tests" command="NODE_PATH=${nodepath} VUFIND_LOCAL_DIR=${srcdir}/local VUFIND_URL=${vufindurl} phpunit -dzend.enable_gc=0" passthru="true" checkreturn="true" />
   </target>
 
   <!-- Install and Activate VuFind -->
@@ -102,12 +105,18 @@
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
 
     <!-- Generate basic configuration -->
-    <exec command="php ${srcdir}/install.php --use-defaults" />
+    <php expression="end(explode('/', '${vufindurl}'))" returnProperty="basepath" />
+    <exec command="php ${srcdir}/install.php --basepath=/${basepath} --non-interactive" />
 
-    <!-- Activate Apache (currently disabled; not necessary unless we start using Selenium again)
-    <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest" />
-    <exec command="${apachectl} restart" />
-     -->
+    <!-- Activate Apache (if an apachectl path has been provided) -->
+    <if>
+      <istrue value="${apachectl}" />
+      <then>
+        <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <exec command="${apachectl} restart" outputProperty="LASTOUTPUT" />
+        <echo message="${LASTOUTPUT}" />
+      </then>
+    </if>
 
     <!-- build and configure the requested database type -->
     <if>
@@ -160,10 +169,14 @@
   <!-- Uninstall and Deactivate VuFind -->
   <target name="shutdown" description="deactivate and uninstall demo">
 
-    <!-- Remove Apache settings (disabled until corresponding lines in startup are also uncommented)
-    <exec command="rm ${apacheconfdir}/vufindtest" />
-    <exec command="${apachectl} restart" />
-     -->
+    <!-- Remove Apache settings (if Apache was enabled) -->
+    <if>
+      <istrue value="${apachectl}" />
+      <then>
+        <delete file="${apacheconfdir}/vufindtest.conf" />
+        <exec command="${apachectl} restart" />
+      </then>
+    </if>
 
     <!-- drop database -->
     <if>
@@ -180,6 +193,14 @@
     <!-- stop Solr -->
     <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid ${srcdir}/vufind.sh stop" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
+
+    <!-- run extra cleanup action, if any -->
+    <if>
+      <istrue value="${extra_shutdown_cleanup}" />
+      <then>
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${extra_shutdown_cleanup}" />
+      </then>
+    </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
     <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />

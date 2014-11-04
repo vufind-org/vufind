@@ -72,7 +72,7 @@ function displayLightboxFeedback($form, message, type) {
 function displayFormError($form, error) {
     $form.parent().find('.error').remove();
     $form.prepend('<div class="error">' + error + '</div>');
-    if (Recaptcha) {
+    if (typeof Recaptcha != "undefined") {
       Recaptcha.reload();
     }
 }
@@ -168,6 +168,7 @@ function registerAjaxCart() {
 
     var $form = $('#modalDialog form[name="cartForm"]');
     if($form) {
+        $($form).submit(function(){return false;});
         $("input[name='ids[]']", $form).attr('checked', false);
         $($form).validate({
             rules: {

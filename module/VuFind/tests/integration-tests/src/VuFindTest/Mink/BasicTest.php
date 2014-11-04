@@ -1,10 +1,10 @@
 <?php
 /**
- * WorldCat view helper
+ * Very simple Mink test class.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2011.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,52 +20,35 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\View\Helper\Root;
-use VuFindSearch\Backend\WorldCat\Connector;
-use Zend\View\Helper\AbstractHelper;
+namespace VuFindTest\Mink;
 
 /**
- * WorldCat view helper
+ * Very simple Mink test class.
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-class WorldCat extends AbstractHelper
+class BasicTest extends \VuFindTest\Unit\MinkTestCase
 {
     /**
-     * WorldCat connection
+     * Test that the home page is available.
      *
-     * @var Connector
+     * @return void
      */
-    protected $wc;
-
-    /**
-     * Constructor
-     *
-     * @param Connector $wc WorldCat connection
-     */
-    public function __construct(Connector $wc)
+    public function testHomePage()
     {
-        $this->wc = $wc;
-    }
-
-    /**
-     * Get holdings information from WorldCat.
-     *
-     * @param string $id Record ID
-     *
-     * @return \SimpleXMLElement
-     */
-    public function getHoldings($id)
-    {
-        return $this->wc->getHoldings($id);
+        $session = $this->getMinkSession();
+        $session->start();
+        $session->visit($this->getVuFindUrl());
+        $this->assertEquals(200, $session->getStatusCode());
+        $this->assertTrue(false !== strstr($session->getPage()->getContent(), 'VuFind'));
     }
 }
