@@ -371,7 +371,8 @@ class Connector
         $url         = $this->url . '/' . $handler;
         $paramString = implode('&', $params->request());
 	// ToDo Fix
-	$paramString .= "&guest=y&sid=TEST2";
+	$paramString .= "&guest=y";
+	$paramString .= "&sid=" . session_id();
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
         } else {
