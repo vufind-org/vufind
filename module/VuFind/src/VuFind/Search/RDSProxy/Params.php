@@ -163,8 +163,8 @@ class Params extends \VuFind\Search\Solr\Params
             $backendParams->add('sort', $sort);
         }
 	// ToDo: guest und sid setzten
-	$backendParams->add('guest', 'y');
-	$backendParams->add('sid', 'TEST');
+	//$backendParams->add('guest', 'y');
+	// $backendParams->add('sid', 'TEST');
 
         // Highlighting -- on by default, but we should disable if necessary:
         if (!$this->getOptions()->highlightEnabled()) {

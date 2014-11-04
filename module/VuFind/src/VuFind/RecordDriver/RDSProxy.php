@@ -495,8 +495,8 @@ class RDSProxy extends SolrDefault
         if (!$this->highlight) {
             return '';
         }
-        return (isset($this->highlightDetails['ti'][0]))
-            ? $this->highlightDetails['ti'][0] : '';
+        return (isset($this->highlightDetails['title']))
+            ? $this->highlightDetails['title'] : '';
     }
 
     /**
@@ -543,8 +543,8 @@ class RDSProxy extends SolrDefault
      */
     public function getLanguages()
     {
-        return isset($this->fields['la']) ?
-            $this->fields['la'] : array();
+        return isset($this->fields['languages']) ?
+            $this->fields['languages'] : array();
     }
 
     /**
@@ -865,8 +865,8 @@ class RDSProxy extends SolrDefault
 
     public function getShortAuthors()
     {
-        return isset($this->fields['au_display_short']) ?
-            $this->fields['au_display_short'] : array();
+        return isset($this->fields['authors']) ?
+            $this->fields['authors'] : array();
     }
     
 
@@ -877,7 +877,8 @@ class RDSProxy extends SolrDefault
      */
     public function getPrimaryAuthor()
     {
-        return "RDSProxy Test Author";
+	return isset($this->fields['authors']) ?
+            $this->fields['authors'][0] : "";
     }
 
     /**
@@ -1022,8 +1023,8 @@ class RDSProxy extends SolrDefault
      */
     public function getShortTitle()
     {
-        return isset($this->fields['ti_short']) ?
-            $this->fields['ti_short'] : '';
+        return isset($this->fields['title']) ?
+            $this->fields['title'] : '';
     }
 
     /**
@@ -1107,8 +1108,8 @@ class RDSProxy extends SolrDefault
      */
     public function getTitle()
     {
-        return isset($this->fields['ti_long']) ?
-            $this->fields['ti_long'] : '';
+        return isset($this->fields['title']) ?
+            $this->fields['title'] : '';
     }
 
     /**
