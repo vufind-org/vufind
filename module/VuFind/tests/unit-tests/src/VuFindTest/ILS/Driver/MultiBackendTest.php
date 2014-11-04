@@ -50,7 +50,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingConfiguration()
     {
-
         $this->setExpectedException('VuFind\Exception\ILS');
         $test = new MultiBackend(
             new \VuFind\Config\PluginManager(), $this->getMockILSAuthenticator()
@@ -772,6 +771,549 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             )
         );
         $this->assertEquals($expected2, $result);
+    }
+
+    /**
+     * Testing method for getMyTransactions
+     *
+     * @return void
+     */
+    public function testGetMyTransactions()
+    {
+        $expected1 = array(array('id' => 'd1.1'));
+        $expected2 = array(array('id' => 'd2.1'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getMyTransactions',
+            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array(array('id' => '1')),
+            array(array('id' => '1'))
+        );
+
+        $result = $driver->getMyTransactions(
+            array(
+                'cat_username' => 'd1.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getMyTransactions(
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getMyTransactions(
+            array(
+                'cat_username' => 'invalid.username',
+                'cat_password' => 'pw'
+            )
+        );
+    }
+
+    /**
+     * Testing method for getRenewDetails
+     *
+     * @return void
+     */
+    public function testGetRenewDetails()
+    {
+        $expected1 = array(array('id' => 'd1.1'));
+        $expected2 = array(array('id' => 'd2.1'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getRenewDetails',
+            array(array('id' => 'loanid')),
+            array(array('id' => '1')),
+            array(array('id' => '1'))
+        );
+
+        $result = $driver->getRenewDetails(
+            array(
+                'id' => 'd1.loanid'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getRenewDetails(
+            array(
+                'id' => 'd2.loanid'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getRenewDetails(
+            array(
+                'id' => 'invalid.loanid'
+            )
+        );
+    }
+
+    /**
+     * Testing method for renewMyItems
+     *
+     * @return void
+     */
+    public function testRenewMyItems()
+    {
+        $expected1 = array(
+            array('id' => 'd1.1'),
+            array('id' => 'd1.2')
+        );
+        $expected2 = array(
+            array('id' => 'd2.1'),
+            array('id' => 'd2.2')
+        );
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'renewMyItems',
+            array(array('patron' => array('id' => '1'))),
+            array(array('id' => '1'), array('id' => '2')),
+            array(array('id' => '1'), array('id' => '2'))
+        );
+
+        $result = $driver->renewMyItems(
+            array(
+                'patron' => array(
+                    'id' => 'd1.1'
+                )
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->renewMyItems(
+            array(
+                'patron' => array(
+                    'id' => 'd2.1'
+                )
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->renewMyItems(
+            array(
+                'patron' => array(
+                    'id' => 'invalid.1'
+                )
+            )
+        );
+    }
+
+    /**
+     * Testing method for getMyFines
+     *
+     * @return void
+     */
+    public function testGetMyFines()
+    {
+        $expected1 = array(array('id' => 'd1.1'));
+        $expected2 = array(array('id' => 'd2.1'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getMyFines',
+            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array(array('id' => '1')),
+            array(array('id' => '1'))
+        );
+
+        $result = $driver->getMyFines(
+            array(
+                'cat_username' => 'd1.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getMyFines(
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getMyFines(
+            array(
+                'cat_username' => 'invalid.username',
+                'cat_password' => 'pw'
+            )
+        );
+    }
+
+    /**
+     * Testing method for getMyHolds
+     *
+     * @return void
+     */
+    public function testGetMyHolds()
+    {
+        $expected1 = array(array('id' => 'd1.1'));
+        $expected2 = array(array('id' => 'd2.1'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getMyHolds',
+            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array(array('id' => '1')),
+            array(array('id' => '1'))
+        );
+
+        $result = $driver->getMyHolds(
+            array(
+                'cat_username' => 'd1.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getMyHolds(
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getMyHolds(
+            array(
+                'cat_username' => 'invalid.username',
+                'cat_password' => 'pw'
+            )
+        );
+    }
+
+    /**
+     * Testing method for getMyStorageRetrievalRequests
+     *
+     * @return void
+     */
+    public function testGetMyStorageRetrievalRequests()
+    {
+        $expected1 = array(array('id' => 'd1.1'));
+        $expected2 = array(array('id' => 'd2.1'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getMyStorageRetrievalRequests',
+            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array(array('id' => '1')),
+            array(array('id' => '1'))
+        );
+
+        $result = $driver->getMyStorageRetrievalRequests(
+            array(
+                'cat_username' => 'd1.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getMyStorageRetrievalRequests(
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getMyStorageRetrievalRequests(
+            array(
+                'cat_username' => 'invalid.username',
+                'cat_password' => 'pw'
+            )
+        );
+    }
+
+    /**
+     * Testing method for getMyILLRequests
+     *
+     * @return void
+     */
+    public function testGetMyILLRequests()
+    {
+        $expected1 = array(array('id' => 'd1.1'));
+        $expected2 = array(array('id' => 'd2.1'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getMyILLRequests',
+            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array(array('id' => '1')),
+            array(array('id' => '1'))
+        );
+
+        $result = $driver->getMyILLRequests(
+            array(
+                'cat_username' => 'd1.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getMyILLRequests(
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getMyILLRequests(
+            array(
+                'cat_username' => 'invalid.username',
+                'cat_password' => 'pw'
+            )
+        );
+    }
+
+    /**
+     * Testing method for checkRequestIsValid
+     *
+     * @return void
+     */
+    public function testCheckRequestIsValid()
+    {
+        $expected1 = true;
+        $expected2 = false;
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'checkRequestIsValid',
+            array(
+                'bibid',
+                array('id' => 'itemid'),
+                array('cat_username' => 'username', 'cat_password' => 'pw')
+            ),
+            true,
+            false
+        );
+
+        $result = $driver->checkRequestIsValid(
+            'd1.bibid',
+            array(
+                'id' => 'd1.itemid'
+            ),
+            array(
+                'cat_username' => 'd1.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->checkRequestIsValid(
+            'd2.bibid',
+            array(
+                'id' => 'd2.itemid'
+            ),
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        // Cross-driver request must not be accepted
+        $result = $driver->checkRequestIsValid(
+            'd1.bibid',
+            array(
+                'id' => 'd1.itemid'
+            ),
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals(false, $result);
+
+        $result = $driver->checkRequestIsValid(
+            'invalid.bibid',
+            array(
+                'id' => 'invalid.itemid'
+            ),
+            array(
+                'cat_username' => 'invalid.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals(false, $result);
+    }
+
+    /**
+     * Testing method for checkStorageRetrievalRequestIsValid
+     *
+     * @return void
+     */
+    public function testCheckStorageRetrievalRequestIsValid()
+    {
+        $expected1 = true;
+        $expected2 = false;
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'checkStorageRetrievalRequestIsValid',
+            array(
+                'bibid',
+                array('id' => 'itemid'),
+                array('cat_username' => 'username', 'cat_password' => 'pw')
+            ),
+            true,
+            false
+        );
+
+        $result = $driver->checkStorageRetrievalRequestIsValid(
+            'd1.bibid',
+            array(
+                'id' => 'd1.itemid'
+            ),
+            array(
+                'cat_username' => 'd1.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->checkStorageRetrievalRequestIsValid(
+            'd2.bibid',
+            array(
+                'id' => 'd2.itemid'
+            ),
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        // Cross-driver request must not be accepted
+        $result = $driver->checkStorageRetrievalRequestIsValid(
+            'd1.bibid',
+            array(
+                'id' => 'd1.itemid'
+            ),
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals(false, $result);
+
+        $result = $driver->checkStorageRetrievalRequestIsValid(
+            'invalid.bibid',
+            array(
+                'id' => 'invalid.itemid'
+            ),
+            array(
+                'cat_username' => 'invalid.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals(false, $result);
+    }
+
+    /**
+     * Testing method for checkILLRequestIsValid
+     *
+     * @return void
+     */
+    public function testCheckILLRequestIsValid()
+    {
+        $expected1 = true;
+        $expected2 = false;
+        $driver = $this->initSimpleMethodTest(
+            $this->exactly(2),
+            $this->once(),
+            'checkILLRequestIsValid',
+            array(
+                'bibid',
+                array('id' => 'itemid'),
+                $this->logicalOr(
+                    array('cat_username' => 'd1.username', 'cat_password' => 'pw'),
+                    array('cat_username' => 'd2.username', 'cat_password' => 'pw')
+                )
+            ),
+            true,
+            false
+        );
+
+        $result = $driver->checkILLRequestIsValid(
+            'd1.bibid',
+            array(
+                'id' => 'd1.itemid'
+            ),
+            array(
+                'cat_username' => 'd1.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->checkILLRequestIsValid(
+            'd2.bibid',
+            array(
+                'id' => 'd2.itemid'
+            ),
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        // Cross-driver request must be accepted
+        $result = $driver->checkILLRequestIsValid(
+            'd1.bibid',
+            array(
+                'id' => 'd1.itemid'
+            ),
+            array(
+                'cat_username' => 'd2.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals(true, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->checkILLRequestIsValid(
+            'invalid.bibid',
+            array(
+                'id' => 'invalid.itemid'
+            ),
+            array(
+                'cat_username' => 'invalid.username',
+                'cat_password' => 'pw'
+            )
+        );
+        $this->assertEquals(false, $result);
     }
 
     /**
