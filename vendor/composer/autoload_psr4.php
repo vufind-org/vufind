@@ -6,4 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'WorldCat\\Discovery\\' => array($vendorDir . '/worldcat/discovery/src'),
 );

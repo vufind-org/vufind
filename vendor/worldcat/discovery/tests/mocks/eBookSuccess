@@ -1,0 +1,22 @@
+
+-
+    request:
+        method: GET
+        url: 'https://beta.worldcat.org/discovery/bib/data/427686093'
+        headers:
+            Host: beta.worldcat.org
+            User-Agent: 'Guzzle/3.8.1 curl/7.21.4 PHP/5.3.28, WorldCat Discovery API PHP Client'
+            Authorization: 'Bearer tk_12345'
+            Accept: application/rdf+xml
+            Content-Length: '0'
+    response:
+        status: 200
+        headers:
+            Date: 'Tue, 04 Nov 2014 21:22:50 GMT'
+            X-OCLC-RequestId: a02c22d5-7892-458c-8b64-e995f461c643
+            X-OCLC-SelfId: b00bdd04-5562-4a9e-8a8d-fd85ca67e214
+            Content-Type: 'application/rdf+xml; charset=UTF-8'
+            Content-Location: 'http://beta.worldcat.org/discovery/bib/data/427686093.rdf'
+            Vary: 'Accept-Encoding, User-Agent'
+            Transfer-Encoding: chunked
+        body: "<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:j.0=\"http://purl.org/library/\"\n    xmlns:owl=\"http://www.w3.org/2002/07/owl#\"\n    xmlns:j.1=\"http://schema.org/\"\n    xmlns:j.2=\"http://www.w3.org/2006/gen/ont#\"\n    xmlns:j.3=\"http://rdfs.org/ns/void#\" > \n  <rdf:Description rdf:about=\"http://viaf.org/viaf/307472291\">\n    <rdf:type rdf:resource=\"http://schema.org/Organization\"/>\n    <j.1:name>Hathi Trust.</j.1:name>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://viaf.org/viaf/61540536\">\n    <rdf:type rdf:resource=\"http://schema.org/Person\"/>\n    <j.1:name>Tennyson, Alfred Tennyson, Baron, 1809-1892.</j.1:name>\n    <j.1:familyName>Tennyson</j.1:familyName>\n    <j.1:givenName>Alfred Tennyson</j.1:givenName>\n    <j.1:birthDate>1809</j.1:birthDate>\n    <j.1:deathDate>1892</j.1:deathDate>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://www.worldcat.org/oclc/427686093\">\n    <j.1:name>Poems by Alfred Tennyson</j.1:name>\n    <j.1:contributor rdf:resource=\"http://viaf.org/viaf/307472291\"/>\n    <j.0:oclcnum rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">427686093</j.0:oclcnum>\n    <j.1:datePublished>1863</j.1:datePublished>\n    <j.1:bookFormat rdf:resource=\"http://schema.org/EBook\"/>\n    <j.1:exampleOfWork rdf:resource=\"http://worldcat.org/entity/work/id/2054765128\"/>\n    <rdf:type rdf:resource=\"http://schema.org/Book\"/>\n    <j.1:url rdf:resource=\"http://www.worldcat.org/title/-/oclc/427686093\"/>\n    <j.1:creator rdf:resource=\"http://viaf.org/viaf/61540536\"/>\n    <owl:sameAs rdf:resource=\"info:oclcnum/427686093\"/>\n    <j.1:inLanguage>en</j.1:inLanguage>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://www.worldcat.org/title/-/oclc/427686093\">\n    <rdf:type rdf:resource=\"http://www.w3.org/2006/gen/ont#ContentTypeGenericResource\"/>\n    <rdf:type rdf:resource=\"http://www.w3.org/2006/gen/ont#InformationResource\"/>\n    <j.1:about rdf:resource=\"http://www.worldcat.org/oclc/427686093\"/>\n    <j.3:inDataset rdf:resource=\"http://purl.oclc.org/dataset/WorldCat\"/>\n  </rdf:Description>\n</rdf:RDF>\n"

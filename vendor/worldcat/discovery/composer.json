@@ -1,0 +1,36 @@
+{
+	"name" : "worldcat/discovery",
+	"version" : "0.11.1",
+	"license" : "Apache-2.0",
+	"repositories" : [{
+			"type" : "git",
+			"url" : "https://github.com/OCLC-Developer-Network/oclc-auth-php.git"
+		}
+	],
+	"require" : {
+		"php" : ">=5.3.3",
+		"lib-curl" : "*",
+		"lib-openssl" : "*",
+		"ext-curl" : "*",
+		"ext-json" : "*",
+		"ext-openssl" : "*",
+		"guzzle/guzzle" : ">=3.7.0,<3.9.0",
+		"easyrdf/easyrdf" : "*",
+		"OCLC/Auth" : "*"
+	},
+	"require-dev" : {
+		"phpunit/phpunit" : "~3",
+		"php-vcr/php-vcr" : "dev-master",
+		"php-vcr/phpunit-testlistener-vcr" : "*"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"WorldCat\\Discovery\\" : "src/"
+		}
+	},
+	"description" : "Library to interact with OCLC's WorldCat Discovery Web Services",
+	"type" : "library",
+	"keywords" : [
+		"OCLC"
+	]
+}

@@ -1,0 +1,19 @@
+-
+    request:
+        method: POST
+        url: 'https://authn.sd00.worldcat.org/oauth2/accessToken?grant_type=client_credentials&authenticatingInstitutionId=128807&contextInstitutionId=128807&scope=WMS_NCIP%20WMS_ACQ'
+        headers:
+            Host: authn.sd00.worldcat.org
+            User-Agent: 'Guzzle/3.8.1 curl/7.21.4 PHP/5.3.28, oclc-auth-php'
+            Authorization: 'http://www.worldcat.org/wskey/v2/hmac/v1 clientId="test", timestamp="1404244236", nonce="2fb4cfd7", signature="aJGtb3nr1sLsd227CdF8fxGtpBeFrTEwM9Y30pm5Le4="'
+            Accept: application/json
+            Content-Length: '0'
+    response:
+        status: 401
+        headers:
+            Date: 'Tue, 01 Jul 2014 19:50:37 GMT'
+            Server: Apache
+            Content-Length: '1190'
+            Content-Type: text/html;charset=utf-8
+        body: '<html><head><title> - Error report</title><style><!--H1 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:22px;} H2 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:16px;} H3 {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;font-size:14px;} BODY {font-family:Tahoma,Arial,sans-serif;color:black;background-color:white;} B {font-family:Tahoma,Arial,sans-serif;color:white;background-color:#525D76;} P {font-family:Tahoma,Arial,sans-serif;background:white;color:black;font-size:12px;}A {color : black;}A.name {color : black;}HR {color : #525D76;}--></style> </head><body><h1>HTTP Status 401 - WSKeyV2 error=&quot;invalid_request&quot; error_description=&quot;invalid WSKey/secret&quot;</h1><HR size="1" noshade="noshade"><p><b>type</b> Status report</p><p><b>message</b> <u>WSKeyV2 error=&quot;invalid_request&quot; error_description=&quot;request has invalid signature (l0rCvxM4kj+07kpBtZg+jQl3UNzo0jKxMevbC+HmhUE=)&quot;</u></p><p><b>description</b> <u>This request requires HTTP authentication (WSKeyV2 error=&quot;invalid_request&quot; error_description=&quot;invalid WSKey/secret&quot;).</u></p><HR size="1" noshade="noshade"><h3></h3></body></html>'
+        

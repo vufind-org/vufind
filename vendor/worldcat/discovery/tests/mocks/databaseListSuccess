@@ -1,0 +1,22 @@
+
+-
+    request:
+        method: GET
+        url: 'https://beta.worldcat.org/discovery/database/list'
+        headers:
+            Host: beta.worldcat.org
+            User-Agent: 'Guzzle/3.8.1 curl/7.21.4 PHP/5.3.28'
+            Authorization: 'Bearer tk_12345'
+            Accept: application/rdf+xml
+            Content-Length: '0'
+    response:
+        status: 200
+        headers:
+            Date: 'Tue, 04 Nov 2014 21:23:00 GMT'
+            X-OCLC-RequestId: 5e4bb069-96bc-4bcf-b285-a37fb1c8277e
+            X-OCLC-SelfId: d15e086e-6d68-4981-93dc-c497e8639535
+            Content-Type: 'application/rdf+xml; charset=UTF-8'
+            Content-Location: 'http://beta.worldcat.org/discovery/database/list.rdf'
+            Vary: 'Accept-Encoding, User-Agent'
+            Transfer-Encoding: chunked
+        body: "<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:j.0=\"http://purl.org/dc/dcmitype/\"\n    xmlns:j.1=\"http://worldcat.org/vocab/discovery/\"\n    xmlns:j.2=\"http://schema.org/\" > \n  <rdf:Description rdf:about=\"https://beta.worldcat.org/discovery/database/list/database/data/239\">\n    <rdf:type rdf:resource=\"http://purl.org/dc/dcmitype/Dataset\"/>\n    <j.2:description>Union catalog of digital resources</j.2:description>\n    <j.2:name>OAIster</j.2:name>\n    <j.1:requiresAuthentication>false</j.1:requiresAuthentication>\n    <j.1:dbId rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">239</j.1:dbId>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"https://beta.worldcat.org/discovery/database/list/database/data/2897\">\n    <rdf:type rdf:resource=\"http://purl.org/dc/dcmitype/Dataset\"/>\n    <j.2:description>Multidisciplinary collection of online resources covering life, health and physical sciences, social science, and the humanities.</j.2:description>\n    <j.2:name>Wiley Online Library</j.2:name>\n    <j.1:requiresAuthentication>false</j.1:requiresAuthentication>\n    <j.1:dbId rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">2897</j.1:dbId>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"https://beta.worldcat.org/discovery/database/list/database/data/638\">\n    <rdf:type rdf:resource=\"http://purl.org/dc/dcmitype/Dataset\"/>\n    <j.2:description>OCLC catalog of books, articles, and other materials in libraries worldwide</j.2:description>\n    <j.2:name>WorldCat.org</j.2:name>\n    <j.1:requiresAuthentication>false</j.1:requiresAuthentication>\n    <j.1:dbId rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">638</j.1:dbId>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"https://beta.worldcat.org/discovery/database/list/database/data/2662\">\n    <rdf:type rdf:resource=\"http://purl.org/dc/dcmitype/Dataset\"/>\n    <j.2:description>Economic research journals from the American Economic Association.</j.2:description>\n    <j.2:name>American Economic Association Journals</j.2:name>\n    <j.1:requiresAuthentication>false</j.1:requiresAuthentication>\n    <j.1:dbId rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">2662</j.1:dbId>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"https://beta.worldcat.org/discovery/database/list/database/data/1877\">\n    <rdf:type rdf:resource=\"http://purl.org/dc/dcmitype/Dataset\"/>\n    <j.2:description>The widest depth and breadth of information available of any online database collection on African American history and culture.</j.2:description>\n    <j.2:name>African American Experience</j.2:name>\n    <j.1:requiresAuthentication>false</j.1:requiresAuthentication>\n    <j.1:dbId rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">1877</j.1:dbId>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"https://beta.worldcat.org/discovery/database/list/database/data/283\">\n    <rdf:type rdf:resource=\"http://purl.org/dc/dcmitype/Dataset\"/>\n    <j.2:description>OCLC catalog of books and other materials in libraries worldwide</j.2:description>\n    <j.2:name>WorldCat</j.2:name>\n    <j.1:requiresAuthentication>false</j.1:requiresAuthentication>\n    <j.1:dbId rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">283</j.1:dbId>\n  </rdf:Description>\n</rdf:RDF>\n"

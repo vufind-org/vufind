@@ -1,0 +1,154 @@
+bibFind:
+    bibSuccess:
+        oclcNumber: 7977212
+    bibWithAwards: 
+        oclcNumber: 41266045
+    bibFailureInvalidAccessToken:
+        oclcNumber: 41266045
+        accessToken: tk_09876
+    bibFailureExpiredAccessToken:
+        oclcNumber: 41266045
+        accessToken: tk_o8NbDRTz855q3fUmQGNqf7jHFTCaPtJj2g1A
+    articleSuccess:
+        oclcNumber: 5131938809
+    periodicalSuccess:
+        oclcNumber: 2243594
+    imageSuccess:
+        oclcNumber: 744025845
+    eBookSuccess:
+        oclcNumber: 427686093
+    cdSuccess:
+        oclcNumber: 38027615
+    lpSuccess:
+        oclcNumber: 5791214
+    thesisSuccess:
+        oclcNumber: 56394544
+    personSuccess:
+        oclcNumber: 24503247
+    organizationSuccess:
+        oclcNumber: 56400296
+    placeSuccess: 
+        oclcNumber: 1942036
+    bibWithAudience:
+        oclcNumber: 15317067
+    bibOnlyContributors:
+        oclcNumber: 70879984
+bibSearch:
+    bibSearchByOclcNumber:
+        query: no:7977212
+        dbIds: 638
+    bibSearchFacets:
+        query: cats
+        facetFields:
+            - creator:10
+            - inLanguage:10
+        dbIds: 638
+    bibSearchFacetQueries:
+        query: cats
+        facetQueries:
+            - creator:potter, beatrix
+            - inLanguage:eng
+    bibSearchItemsPerPage:
+        query: cats
+        itemsPerPage: 10
+        dbIds: 638
+    bibSearchStartNumber10:
+        query: cats
+        startIndex: 10
+        dbIds: 638
+    bibSearchSuccessKeyword:
+        query: cats
+        dbIds: 638
+    bibSearchDatabaseSuccessKeyword:
+        query: gdp policy
+        dbIds: 2662
+    bibFailureSearchNoQuery:
+        query: ' '
+        dbIds: 638
+    bibFailureBadFacetCount:
+        query: cats
+        facetFields:
+            author: 5
+        dbIds: 638            
+    bibFailureDatabaseNotEnabled:
+        query: gdp policy
+        dbIds: 2663
+offers:
+    offerSuccess:
+        id: 30780581
+        options:
+            heldBy: 
+                - GZM
+                - GZN
+                - GZO
+    offerHeldByGroupSuccess:
+        id: 30780581
+        options:
+            heldByGroup: OHLL
+    offerHeldInCountrySuccess:
+        id: 30780581
+        options:
+            heldInCountry: CA
+    offerUseFRBRGroupingSuccess:
+        id: 30780581
+        options:
+            useFRBRGrouping: 'false'
+    offerStartPageSuccess:
+        id: 30780581
+        options:
+            heldInCountry: CA
+            startIndex: 10
+    offerItemsPerPageSuccess:
+        id: 30780581
+        options:
+            heldInCountry: CA
+            itemsPerPage: 10
+    offerGeoCoordinatesSuccess:
+        id: 30780581
+        options:
+            heldBy: 
+                - GZM
+                - GZN
+                - GZO
+            lat: 45.032916
+            lon: -84.668979
+            unit: M
+            distance: 60
+    offerFailureInvalidAccessToken:
+        id: 30780581
+        options:
+            heldBy:
+                - GZM
+                - GZN
+                - GZO
+        accessToken: tk_09876
+    offerFailureExpiredAccessToken:
+        id: 30780581
+        options:
+            heldBy: 
+                - GZM
+                - GZN
+                - GZO
+        accessToken: tk_o8NbDRTz855q3fUmQGNqf7jHFTCaPtJj2g1A         
+databaseFind:
+    databaseSuccess:
+        id: 638
+databaseSearch:
+    databaseListSuccess
+viaf:
+    personVIAFSuccess:
+        prod: http://viaf.org/viaf/105372100/rdf.xml
+        qa: http://rdap02pxdu.dev.oclc.org:8080/viaf/105372100/rdf.xml
+    organizationVIAFSuccess:
+        prod: http://viaf.org/viaf/127757303/rdf.xml
+        qa: http://rdap02pxdu.dev.oclc.org:8080/viaf/127757303/rdf.xml
+    placeVIAFSuccess:
+        prod: http://viaf.org/viaf/239072486/rdf.xml
+        qa: http://rdap02pxdu.dev.oclc.org:8080/viaf/239072486/rdf.xml
+authority:
+    authoritySuccess:
+        compound: http://id.loc.gov/authorities/subjects/sh2008124372.rdf
+        topic: http://id.loc.gov/authorities/subjects/sh85149296.rdf
+        geographic: http://id.loc.gov/authorities/names/n82068148.rdf
+            
+    

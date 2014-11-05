@@ -1,0 +1,22 @@
+
+-
+    request:
+        method: GET
+        url: 'https://beta.worldcat.org/discovery/bib/data/744025845'
+        headers:
+            Host: beta.worldcat.org
+            User-Agent: 'Guzzle/3.8.1 curl/7.21.4 PHP/5.3.28, WorldCat Discovery API PHP Client'
+            Authorization: 'Bearer tk_12345'
+            Accept: application/rdf+xml
+            Content-Length: '0'
+    response:
+        status: 200
+        headers:
+            Date: 'Tue, 04 Nov 2014 21:22:50 GMT'
+            X-OCLC-RequestId: 5f309eea-21f4-4af8-aed6-ddf2e23242e0
+            X-OCLC-SelfId: 6d1dfc79-8612-4a89-b7d2-e8cd6e30275b
+            Content-Type: 'application/rdf+xml; charset=UTF-8'
+            Content-Location: 'http://beta.worldcat.org/discovery/bib/data/744025845.rdf'
+            Vary: 'Accept-Encoding, User-Agent'
+            Transfer-Encoding: chunked
+        body: "<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:j.0=\"http://purl.org/library/\"\n    xmlns:owl=\"http://www.w3.org/2002/07/owl#\"\n    xmlns:j.1=\"http://schema.org/\"\n    xmlns:j.2=\"http://www.w3.org/2006/gen/ont#\"\n    xmlns:j.3=\"http://www.productontology.org/id/\"\n    xmlns:j.4=\"http://rdfs.org/ns/void#\" > \n  <rdf:Description rdf:about=\"http://www.worldcat.org/title/-/oclc/744025845\">\n    <rdf:type rdf:resource=\"http://www.w3.org/2006/gen/ont#ContentTypeGenericResource\"/>\n    <rdf:type rdf:resource=\"http://www.w3.org/2006/gen/ont#InformationResource\"/>\n    <j.1:about rdf:resource=\"http://www.worldcat.org/oclc/744025845\"/>\n    <j.4:inDataset rdf:resource=\"http://purl.oclc.org/dataset/WorldCat\"/>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://www.worldcat.org/oclc/744025845\">\n    <j.1:url rdf:resource=\"http://www.worldcat.org/title/-/oclc/744025845\"/>\n    <j.1:exampleOfWork rdf:resource=\"http://worldcat.org/entity/work/id/966843949\"/>\n    <owl:sameAs rdf:resource=\"info:oclcnum/744025845\"/>\n    <j.0:oclcnum rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">744025845</j.0:oclcnum>\n    <rdf:type rdf:resource=\"http://www.productontology.org/id/Image\"/>\n    <j.1:name>Cats</j.1:name>\n    <j.1:creator rdf:resource=\"http://experiment.worldcat.org/entity/work/data/966843949#Thing/griffith_pamela\"/>\n    <j.1:isPartOf rdf:resource=\"http://worldcat.org/issn/\"/>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://worldcat.org/issn/\">\n    <rdf:type rdf:resource=\"http://schema.org/Periodical\"/>\n    <j.1:name>Item held by National Gallery of Australia</j.1:name>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://experiment.worldcat.org/entity/work/data/966843949#Thing/griffith_pamela\">\n    <rdf:type rdf:resource=\"http://schema.org/Thing\"/>\n    <j.1:name>GRIFFITH, Pamela</j.1:name>\n  </rdf:Description>\n</rdf:RDF>\n"

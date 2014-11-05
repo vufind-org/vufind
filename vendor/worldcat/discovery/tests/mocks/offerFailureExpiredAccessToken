@@ -1,0 +1,21 @@
+
+-
+    request:
+        method: GET
+        url: 'https://beta.worldcat.org/discovery/offer/oclc/30780581?heldBy=GZM&heldBy=GZN&heldBy=GZO'
+        headers:
+            Host: beta.worldcat.org
+            User-Agent: 'Guzzle/3.8.1 curl/7.21.4 PHP/5.3.28, WorldCat Discovery API PHP Client'
+            Authorization: 'Bearer tk_o8NbDRTz855q3fUmQGNqf7jHFTCaPtJj2g1A'
+            Accept: application/rdf+xml
+            Content-Length: '0'
+    response:
+        status: 401
+        headers:
+            Date: 'Tue, 04 Nov 2014 21:23:04 GMT'
+            X-OCLC-RequestId: bacb4a11-b0cb-4ca6-8f2f-da0666943486
+            X-OCLC-SelfId: 059dd6ba-dd4d-4b5a-b91f-77ef28ff7918
+            Content-Type: 'application/rdf+xml; charset=UTF-8'
+            Content-Location: 'http://beta.worldcat.org/discovery/offer/oclc/30780581.rdf?heldBy=GZM&heldBy=GZN&heldBy=GZO'
+            Transfer-Encoding: chunked
+        body: "<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:discovery=\"http://worldcat.org/vocab/discovery/\"\n    xmlns:j.0=\"http://worldcat.org/xmlschemas/response/\" > \n  <rdf:Description rdf:about=\"http://beta.worldcat.org/discovery/offer/oclc/30780581?heldBy=GZM&amp;heldBy=GZN&amp;heldBy=GZO\">\n    <j.0:returnsError rdf:nodeID=\"A0\"/>\n  </rdf:Description>\n  <rdf:Description rdf:nodeID=\"A0\">\n    <rdf:type rdf:resource=\"http://worldcat.org/xmlschemas/response/ClientRequestError\"/>\n    <discovery:errorMessage>The given access token is not authorized to view this resource.  Please check your Authorization header and try again.</discovery:errorMessage>\n    <discovery:errorCode rdf:datatype=\"http://www.w3.org/2001/XMLSchema#positiveInteger\">401</discovery:errorCode>\n    <discovery:errorType>http</discovery:errorType>\n  </rdf:Description>\n</rdf:RDF>\n"
