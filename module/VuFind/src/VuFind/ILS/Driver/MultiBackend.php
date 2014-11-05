@@ -1357,16 +1357,9 @@ class MultiBackend extends AbstractBase
         if (!isset($this->isInitialized[$source])
             || !$this->isInitialized[$source]
         ) {
-            try
-            {
-                $driver->init();
-                $this->isInitialized[$source] = true;
-                $this->cache[$source] = $driver;
-            } catch (Exception $e) {
-                $this->error(
-                    "Driver init for '$source' failed: " . $e->getMessage()
-                );
-            }
+            $driver->init();
+            $this->isInitialized[$source] = true;
+            $this->cache[$source] = $driver;
         }
     }
 
