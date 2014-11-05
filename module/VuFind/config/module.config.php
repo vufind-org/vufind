@@ -102,6 +102,8 @@ $config = array(
             'upgrade' => 'VuFind\Controller\UpgradeController',
             'web' => 'VuFind\Controller\WebController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
+            'worldcatdiscovery' => 'VuFind\Controller\WorldCatDiscoveryController',
+            'worldcatdiscoveryrecord' => 'VuFind\Controller\WorldCatDiscoveryrecordController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
         ),
     ),
@@ -441,6 +443,7 @@ $config = array(
                     'solrweb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
                     'summon' => 'VuFind\RecordDriver\Factory::getSummon',
                     'worldcat' => 'VuFind\RecordDriver\Factory::getWorldCat',
+                    'worldcatdiscovery' => 'VuFind\RecordDriver\Factory::getWorldCatDiscovery',
                 ),
                 'invokables' => array(
                     'libguides' => 'VuFind\RecordDriver\LibGuides',
@@ -501,6 +504,7 @@ $config = array(
                     'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',
                     'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
+                    'WorldCatDiscovery' => 'VuFind\Search\Factory\WorldCatDiscoveryBackendFactory',
                 ),
                 'aliases' => array(
                     // Allow Solr core names to be used as aliases for services:
@@ -660,7 +664,8 @@ $recordRoutes = array(
     'primorecord' => 'PrimoRecord',
     'solrauthrecord' => 'Authority',
     'summonrecord' => 'SummonRecord',
-    'worldcatrecord' => 'WorldcatRecord'
+    'worldcatrecord' => 'WorldcatRecord',
+    'worldcatdiscoveryrecord' => 'WorldCatDiscoveryRecord',
 );
 // Record sub-routes are generally used to access tab plug-ins, but a few
 // URLs are hard-coded to specific actions; this array lists those actions.
@@ -714,7 +719,9 @@ $staticRoutes = array(
     'Upgrade/GetSourceDir', 'Upgrade/GetSourceVersion', 'Upgrade/Reset',
     'Upgrade/ShowSQL',
     'Web/Home', 'Web/Results',
-    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
+    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search',
+    'WorldCatDiscovery/Advanced', 'WorldCatDiscovery/Home',
+    'WorldCatDiscovery/Search',
 );
 
 // Build record routes
