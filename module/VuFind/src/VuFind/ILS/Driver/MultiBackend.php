@@ -477,7 +477,7 @@ class MultiBackend extends AbstractBase
      */
     public function renewMyItems($renewDetails)
     {
-        $source = $this->getSource($renewDetails['patron']['cat_username']);
+        $source = $this->getSource($renewDetails['patron']['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver) {
             $details = $driver->renewMyItems(
@@ -705,7 +705,7 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($bibId);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($this->getSource($patron['cat_username']) != $source
+            if ($this->getSource($patron['cat_username'], 'login') != $source
                 || !$this->methodSupported($driver, 'getRequestGroups')
             ) {
                 // Return empty array since the sources don't match or the method
