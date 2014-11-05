@@ -468,6 +468,9 @@ class UtilController extends AbstractBase
     {
         $argv = $this->consoleOpts->getRemainingArgs();
         $compiler = new \VuFindTheme\LessCompiler(true);
+        $cacheManager = $this->getServiceLocator()->get('VuFind\CacheManager');
+        $cacheDir = $cacheManager->getCacheDir() . 'less/';
+        $compiler->setTempPath($cacheDir);
         $compiler->compile($argv);
         return $this->getSuccessResponse();
     }

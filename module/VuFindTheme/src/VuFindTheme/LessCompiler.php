@@ -47,6 +47,13 @@ class LessCompiler
     protected $basePath;
 
     /**
+     * Temporary directory for cached files.
+     *
+     * @var string
+     */
+    protected $tempPath;
+
+    /**
      * Fake base path used for generating absolute paths in CSS.
      *
      * @var string
@@ -68,6 +75,7 @@ class LessCompiler
     public function __construct($verbose = false)
     {
         $this->basePath = realpath(__DIR__ . '/../../../../');
+        $this->tempPath = sys_get_temp_dir();
         $this->verbose = $verbose;
     }
 
@@ -81,6 +89,18 @@ class LessCompiler
     public function setBasePath($path)
     {
         $this->basePath = $path;
+    }
+
+    /**
+     * Set temporary directory
+     *
+     * @param string $path Path to set
+     *
+     * @return void
+     */
+    public function setTempPath($path)
+    {
+        $this->tempPath = rtrim($path, '/');
     }
 
     /**
@@ -178,17 +198,16 @@ class LessCompiler
             );
             return;
         }
-        $outDir = sys_get_temp_dir();
         $outFile = \Less_Cache::Regen(
             array($lessDir . $less => $this->fakePath . "themes/$theme/css/less"),
             array(
-                'cache_dir' => $outDir,
+                'cache_dir' => $this->tempPath,
                 'cache_method' => false,
                 'compress' => true,
                 'import_dirs' => $directories
             )
         );
-        $css = file_get_contents($outDir . '/' . $outFile);
+        $css = file_get_contents($this->tempPath . '/' . $outFile);
         if (!is_dir(dirname($finalFile))) {
             mkdir(dirname($finalFile));
         }

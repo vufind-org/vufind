@@ -8,7 +8,7 @@ body {
   font-size:13px;
   & a,.btn-link {color:#06C}
   & a:hover,.btn-link:hover {color:#09F}
-  @media (max-width: 768px) {
+  @media (max-width: 767px) {
     padding:6px;
     header {
       margin-top:0;
@@ -134,13 +134,13 @@ header {
     }
     .navbar-nav > li > a {
       padding:12px 6px;
-      @media (max-width: 768px) {
+      @media (max-width: 767px) {
         padding:8px 24px;
       }
     }
     .navbar-right {
       margin-top:12px;
-      @media (max-width: 768px) {
+      @media (max-width: 767px) {
         margin:0;
       }
     }
@@ -183,6 +183,7 @@ header {
     font-size:14px;
     height:32px;
     padding:5px 8px;
+    &[multiple] {height:auto}
   }
   .search-query {
     @media (min-width: 768px) {
