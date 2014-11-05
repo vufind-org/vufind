@@ -92,6 +92,45 @@ class ExportTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test XML case of process group
+     *
+     * @return void
+     */
+    public function testProcessGroupXML()
+    {
+        $config = array(
+            'foo' => array(
+                'combineNamespaces' => array('marc21|http://www.loc.gov/MARC21/slim'),
+                'combineXpath' => '/marc21:collection/marc21:record',
+            ),
+        );
+        $this->assertEquals(
+            "<?xml version=\"1.0\"?>\n"
+            . '<collection xmlns="http://www.loc.gov/MARC21/slim">'
+            . '<record><id>a</id></record><record><id>b</id></record></collection>',
+            trim (
+                $this->getExport(array(), $config)->processGroup(
+                    'foo',
+                    array($this->getFakeMARCXML('a'), $this->getFakeMARCXML('b'))
+                )
+            )
+        );
+    }
+
+    /**
+     * Get a fake MARCXML record
+     *
+     * @param string $id ID to put in record.
+     *
+     * @return string
+     */
+    public function getFakeMARCXML($id)
+    {
+        return '<collection xmlns="http://www.loc.gov/MARC21/slim"><record><id>'
+            . $id . '</id></record></collection>';
+    }
+
+    /**
      * Get a configured Export object.
      *
      * @param array $main   Main config
