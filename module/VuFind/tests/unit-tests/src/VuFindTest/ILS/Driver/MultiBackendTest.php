@@ -2072,9 +2072,9 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         //Case: getLoginDrivers and getDefaultLoginDriver are always supported
             //Result: A return of true
 
-        $methodReturn = $driver->supportsMethod('getLoginDrivers');
+        $methodReturn = $driver->supportsMethod('getLoginDrivers', null);
         $this->assertTrue($methodReturn);
-        $methodReturn = $driver->supportsMethod('getDefaultLoginDriver');
+        $methodReturn = $driver->supportsMethod('getDefaultLoginDriver', null);
         $this->assertTrue($methodReturn);
     }
 
