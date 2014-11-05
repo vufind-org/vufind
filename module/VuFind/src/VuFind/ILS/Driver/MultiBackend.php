@@ -477,7 +477,7 @@ class MultiBackend extends AbstractBase
      */
     public function renewMyItems($renewDetails)
     {
-        $source = $this->getSource($renewDetails['patron']['id']);
+        $source = $this->getSource($renewDetails['patron']['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             $details = $driver->renewMyItems(
@@ -705,7 +705,7 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($bibId);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($this->getSource($patron['id']) != $source
+            if ($this->getSource($patron['cat_username']) != $source
                 || !$this->methodSupported($driver, 'getRequestGroups')
             ) {
                 // Return empty array since the sources don't match or the method
@@ -852,7 +852,7 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($details['patron']['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver
-            && is_callable(driver($driver, 'placeStorageRetrievalRequest'))
+            && is_callable(array($driver, 'placeStorageRetrievalRequest'))
         ) {
             if ($this->getSource($details['id']) != $source) {
                 return array(
@@ -969,6 +969,7 @@ class MultiBackend extends AbstractBase
                 $patron
             );
         }
+        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -996,6 +997,7 @@ class MultiBackend extends AbstractBase
                 $patron
             );
         }
+        throw new ILSException('No suitable backend driver found');
     }
 
     /**
