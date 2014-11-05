@@ -123,10 +123,21 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $drivers = array($instance => 'Voyager');
         $isInit = array($instance => true);
         $cache = array($instance => $ILS);
-        $delimiters = array('login' => "\t");
         $this->setProperty($driver, 'drivers', $drivers);
         $this->setProperty($driver, 'isInitialized', $isInit);
         $this->setProperty($driver, 'cache', $cache);
+
+        //Call the method
+        $patron = $driver->patronLogin("$instance.username", 'password');
+
+        //Check that it added username info properly.
+        $this->assertSame(
+            $instance . '.' . $patronReturn['cat_username'],
+            $patron['cat_username']
+        );
+
+        // Try with another delimiter
+        $delimiters = array('login' => "\t");
         $this->setproperty($driver, 'delimiters', $delimiters);
 
         //Call the method
@@ -134,13 +145,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         //Check that it added username info properly.
         $this->assertSame(
-            $instance."\t".$patronReturn['cat_username'],
-            $patron['cat_username']
-        );
-
-        $patron = $driver->patronLogin("$instance\tusername", 'password');
-        $this->assertSame(
-            $instance."\t".$patronReturn['cat_username'],
+            $instance . "\t" . $patronReturn['cat_username'],
             $patron['cat_username']
         );
 
@@ -287,7 +292,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         //Add an entry for our test driver to the array of drivers
         $drivers = array('testing3' => 'Voyager');
         $this->setProperty($driver, 'drivers', $drivers);
-        $this->setProperty($driver, 'delimiters', array('login' => "\t"));
 
         //Case: No driver info in params, but default driver has method
             //Result: A return of false
@@ -339,42 +343,48 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals($data, $result);
 
         $data = array(
-            "id" => "record1",
-            "cat_username" => "record2"
+            'id' => 'record1',
+            'cat_username' => 'record2'
         );
         $expected = array(
-            "id" => "$source.record1",
-            "cat_username" => "$source.record2");
+            'id' => "$source.record1",
+            'cat_username' => "$source.record2"
+        );
         $result = $this->callMethod($driver, 'addIdPrefixes', array($data, $source));
         $this->assertEquals($expected, $result);
 
         $data = array(
-            "id" => "record1",
-            "cat_username" =>array(
-                "id" => "record2",
-                "cat_username" => array(
-                    "id" => "record3",
-                    "cat_username" => "record4"),
-                "cat_info" => "record5"),
-            "cat_info" => "record6"
+            'id' => 'record1',
+            'cat_username' => array(
+                'id' => 'record2',
+                'cat_username' => array(
+                    'id' => 'record3',
+                    'cat_username' => 'record4'
+                ),
+                'cat_info' => 'record5',
+                'other' => 'something'
+            ),
+            'cat_info' => 'record6'
         );
         $expected = array(
-            "id" => "$source.record1",
-            "cat_username" => array(
-                "id" => "$source.record2",
-                "cat_username" => array(
-                    "id" => "$source.record3",
-                    "cat_username" => "$source.record4"),
-                "cat_info" => "$source.record5"),
-            "cat_info" => "$source.record6"
+            'id' => "$source.record1",
+            'cat_username' => array(
+                'id' => "$source.record2",
+                'cat_username' => array(
+                    'id' => "$source.record3",
+                    'cat_username' => "$source.record4"
+                ),
+                'cat_info' => "$source.record5",
+                'other' => 'something'
+            ),
+            'cat_info' => "$source.record6"
         );
-        $modify = array("id", "cat_username", "cat_info");
+        $modify = array('id', 'cat_username', 'cat_info');
         $result = $this->callMethod(
             $driver, 'addIdPrefixes', array($data, $source, $modify)
         );
         $this->assertEquals($expected, $result);
     }
-
 
     /**
      * Testing method for stripIdPrefixes
@@ -399,37 +409,44 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $delimiters = array('login' => "\t");
         $this->setproperty($driver, 'delimiters', $delimiters);
         $expected = array(
-            "id" => "record1",
-            "cat_username" => "record2"
+            'id' => 'record1',
+            'cat_username' => 'record2'
         );
         $data = array(
-            "id" => "$source.record1",
-            "cat_username" => "$source\trecord2");
+            'id' => "$source.record1",
+            'cat_username' => "$source\trecord2"
+        );
         $result
             = $this->callMethod($driver, 'stripIdPrefixes', array($data, $source));
         $this->assertEquals($expected, $result);
 
         $expected = array(
-            "id" => "record1",
-            "cat_username" =>array(
-                "id" => "record2",
-                "cat_username" => array(
-                    "id" => "record3",
-                    "cat_username" => "record4"),
-                "cat_info" => "record5"),
-            "cat_info" => "record6"
+            'id' => 'record1',
+            'cat_username' => array(
+                'id' => 'record2',
+                'cat_username' => array(
+                    'id' => 'record3',
+                    'cat_username' => 'record4'
+                ),
+                'cat_info' => 'record5',
+                'other' => "$source.something"
+            ),
+            'cat_info' => 'record6'
         );
         $data = array(
-            "id" => "$source.record1",
-            "cat_username" => array(
-                "id" => "$source.record2",
-                "cat_username" => array(
-                    "id" => "$source.record3",
-                    "cat_username" => "$source\trecord4"),
-                "cat_info" => "$source.record5"),
-            "cat_info" => "$source.record6"
+            'id' => "$source.record1",
+            'cat_username' => array(
+                'id' => "$source.record2",
+                'cat_username' => array(
+                    'id' => "$source.record3",
+                    'cat_username' => "$source\trecord4"
+                ),
+                'cat_info' => "$source.record5",
+                'other' => "$source.something"
+            ),
+            'cat_info' => "$source.record6"
         );
-        $modify = array("id", "cat_username", "cat_info");
+        $modify = array('id', 'cat_username', 'cat_info');
         $result = $this->callMethod(
             $driver, 'stripIdPrefixes', array($data, $source, $modify)
         );
@@ -626,12 +643,10 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             //Result: return the function results for that driver
         $patron = $this->getUserObject('username', 'institution');
 
-        $delimiters = array('login' => "\t");
         $drivers = array(
             'otherinst' => 'Unicorn',
             'institution' => 'Voyager'
         );
-        $this->setProperty($driver, 'delimiters', $delimiters);
         $this->setProperty($driver, 'drivers', $drivers);
 
         $patronPrefixless = $this->callMethod(
@@ -767,33 +782,18 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyProfile',
-            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array($this->getUserObject('username')),
             $expected1,
             $expected2
         );
 
-        $result = $driver->getMyProfile(
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyProfile($this->getUserObject('username', 'invalid'));
         $this->assertEquals(array(), $result);
 
-        $result = $driver->getMyProfile(
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyProfile($this->getUserObject('username', 'd1'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getMyProfile(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyProfile($this->getUserObject('username', 'd2'));
         $this->assertEquals($expected2, $result);
     }
 
@@ -810,35 +810,22 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyTransactions',
-            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array($this->getUserObject('username')),
             array(array('id' => '1')),
             array(array('id' => '1'))
         );
 
-        $result = $driver->getMyTransactions(
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyTransactions($this->getUserObject('username', 'd1'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getMyTransactions(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyTransactions($this->getUserObject('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
         $this->setExpectedException(
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getMyTransactions(
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'invalid')
         );
     }
 
@@ -903,26 +890,18 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'renewMyItems',
-            array(array('patron' => array('id' => '1'))),
+            array(array('patron' => $this->getUserObject('username'))),
             array(array('id' => '1'), array('id' => '2')),
             array(array('id' => '1'), array('id' => '2'))
         );
 
         $result = $driver->renewMyItems(
-            array(
-                'patron' => array(
-                    'id' => 'd1.1'
-                )
-            )
+            array('patron' => $this->getUserObject('username', 'd1'))
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->renewMyItems(
-            array(
-                'patron' => array(
-                    'id' => 'd2.1'
-                )
-            )
+            array('patron' => $this->getUserObject('username', 'd2'))
         );
         $this->assertEquals($expected2, $result);
 
@@ -930,11 +909,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->renewMyItems(
-            array(
-                'patron' => array(
-                    'id' => 'invalid.1'
-                )
-            )
+            array('patron' => $this->getUserObject('username', 'invalid'))
         );
     }
 
@@ -951,36 +926,21 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyFines',
-            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array($this->getUserObject('username')),
             array(array('id' => '1')),
             array(array('id' => '1'))
         );
 
-        $result = $driver->getMyFines(
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyFines($this->getUserObject('username', 'd1'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getMyFines(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyFines($this->getUserObject('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
         $this->setExpectedException(
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
-        $result = $driver->getMyFines(
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyFines($this->getUserObject('username', 'invalid'));
     }
 
     /**
@@ -996,36 +956,21 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyHolds',
-            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array($this->getUserObject('username')),
             array(array('id' => '1')),
             array(array('id' => '1'))
         );
 
-        $result = $driver->getMyHolds(
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyHolds($this->getUserObject('username', 'd1'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getMyHolds(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyHolds($this->getUserObject('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
         $this->setExpectedException(
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
-        $result = $driver->getMyHolds(
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            )
-        );
+        $result = $driver->getMyHolds($this->getUserObject('username', 'invalid'));
     }
 
     /**
@@ -1041,33 +986,24 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyStorageRetrievalRequests',
-            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
+            array($this->getUserObject('username')),
             array(array('id' => '1')),
             array(array('id' => '1'))
         );
 
         $result = $driver->getMyStorageRetrievalRequests(
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getMyStorageRetrievalRequests(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
         // Try handling of unsupported request
         $result = $driver->getMyStorageRetrievalRequests(
-            array(
-                'cat_username' => 'd3.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'd3')
         );
         $this->assertEquals(array(), $result);
 
@@ -1075,55 +1011,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getMyStorageRetrievalRequests(
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            )
-        );
-    }
-
-    /**
-     * Testing method for getMyILLRequests
-     *
-     * @return void
-     */
-    public function testGetMyILLRequests()
-    {
-        $expected1 = array(array('id' => 'd1.1'));
-        $expected2 = array(array('id' => 'd2.1'));
-        $driver = $this->initSimpleMethodTest(
-            $this->once(),
-            $this->once(),
-            'getMyILLRequests',
-            array(array('cat_username' => 'username', 'cat_password' => 'pw')),
-            array(array('id' => '1')),
-            array(array('id' => '1'))
-        );
-
-        $result = $driver->getMyILLRequests(
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            )
-        );
-        $this->assertEquals($expected1, $result);
-
-        $result = $driver->getMyILLRequests(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
-        );
-        $this->assertEquals($expected2, $result);
-
-        $this->setExpectedException(
-            'VuFind\Exception\ILS', 'No suitable backend driver found'
-        );
-        $result = $driver->getMyILLRequests(
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'invalid')
         );
     }
 
@@ -1143,7 +1031,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'bibid',
                 array('id' => 'itemid'),
-                array('cat_username' => 'username', 'cat_password' => 'pw')
+                $this->getUserObject('username')
             ),
             true,
             false
@@ -1154,10 +1042,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd1.itemid'
             ),
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
@@ -1166,10 +1051,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd2.itemid'
             ),
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
@@ -1179,10 +1061,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd1.itemid'
             ),
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'd2')
         );
         $this->assertEquals(false, $result);
 
@@ -1191,10 +1070,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'invalid.itemid'
             ),
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'invalid')
         );
         $this->assertEquals(false, $result);
     }
@@ -1215,7 +1091,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'bibid',
                 array('id' => 'itemid'),
-                array('cat_username' => 'username', 'cat_password' => 'pw')
+                $this->getUserObject('username')
             ),
             true,
             false
@@ -1226,10 +1102,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd1.itemid'
             ),
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
@@ -1238,10 +1111,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd2.itemid'
             ),
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
@@ -1251,10 +1121,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd1.itemid'
             ),
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'd2')
         );
         $this->assertEquals(false, $result);
 
@@ -1263,10 +1130,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'invalid.itemid'
             ),
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            )
+            $this->getUserObject('username', 'invalid')
         );
         $this->assertEquals(false, $result);
     }
@@ -1285,7 +1149,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             'getPickUpLocations',
             array(
-                array('cat_username' => 'username', 'cat_password' => 'pw'),
+                $this->getUserObject('username'),
                 array('id' => '1')
             ),
             $expected1,
@@ -1293,36 +1157,21 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
 
         $result = $driver->getPickUpLocations(
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            ),
-            array(
-                'id' => 'd1.1'
-            )
+            $this->getUserObject('username', 'd1'),
+            array('id' => 'd1.1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getPickUpLocations(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            ),
-            array(
-                'id' => 'd2.1'
-            )
+            $this->getUserObject('username', 'd2'),
+            array('id' => 'd2.1')
         );
         $this->assertEquals($expected2, $result);
 
         // Must return empty set if sources of patron id and bib id differ
         $result = $driver->getPickUpLocations(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            ),
-            array(
-                'id' => 'd1.1'
-            )
+            $this->getUserObject('username', 'd2'),
+            array('id' => 'd1.1')
         );
         $this->assertEquals(array(), $result);
 
@@ -1330,13 +1179,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getPickUpLocations(
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            ),
-            array(
-                'id' => '1'
-            )
+            $this->getUserObject('username', 'invalid'),
+            array('id' => '1')
         );
     }
 
@@ -1354,7 +1198,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             'getDefaultPickUpLocation',
             array(
-                array('cat_username' => 'username', 'cat_password' => 'pw'),
+                $this->getUserObject('username'),
                 array('id' => '1')
             ),
             $expected1,
@@ -1362,36 +1206,21 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
 
         $result = $driver->getDefaultPickUpLocation(
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            ),
-            array(
-                'id' => 'd1.1'
-            )
+            $this->getUserObject('username', 'd1'),
+            array('id' => 'd1.1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getDefaultPickUpLocation(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            ),
-            array(
-                'id' => 'd2.1'
-            )
+            $this->getUserObject('username', 'd2'),
+            array('id' => 'd2.1')
         );
         $this->assertEquals($expected2, $result);
 
         // Must return false if sources of patron id and bib id differ
         $result = $driver->getDefaultPickUpLocation(
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            ),
-            array(
-                'id' => 'd1.1'
-            )
+            $this->getUserObject('username', 'd2'),
+            array('id' => 'd1.1')
         );
         $this->assertEquals(false, $result);
 
@@ -1399,13 +1228,396 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getDefaultPickUpLocation(
+            $this->getUserObject('username', 'invalid'),
+            array('id' => '1')
+        );
+    }
+
+    /**
+     * Testing method for getRequestGroups
+     *
+     * @return void
+     */
+    public function testGetRequestGroups()
+    {
+        $expected1 = array(array('locationID' => '1'));
+        $expected2 = array(array('locationID' => '2'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getRequestGroups',
             array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
+                '1',
+                $this->getUserObject('username')
             ),
+            $expected1,
+            $expected2
+        );
+
+        $result = $driver->getRequestGroups(
+            'd1.1',
+            $this->getUserObject('username', 'd1')
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getRequestGroups(
+            'd2.1',
+            $this->getUserObject('username', 'd2')
+        );
+        $this->assertEquals($expected2, $result);
+
+        // Must return empty set if sources of patron id and bib id differ
+        $result = $driver->getRequestGroups(
+            'd1.1',
+            $this->getUserObject('username', 'd2')
+        );
+        $this->assertEquals(array(), $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getRequestGroups(
+            '1',
+            $this->getUserObject('username', 'invalid')
+        );
+    }
+
+    /**
+     * Testing method for getDefaultRequestGroup
+     *
+     * @return void
+     */
+    public function testGetDefaultRequestGroup()
+    {
+        $expected1 = '1';
+        $expected2 = '1';
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getDefaultRequestGroup',
             array(
-                'id' => '1'
+                $this->getUserObject('username'),
+                array('id' => '1')
+            ),
+            $expected1,
+            $expected2
+        );
+
+        $result = $driver->getDefaultRequestGroup(
+            $this->getUserObject('username', 'd1'),
+            array('id' => 'd1.1')
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getDefaultRequestGroup(
+            $this->getUserObject('username', 'd2'),
+            array('id' => 'd2.1')
+        );
+        $this->assertEquals($expected2, $result);
+
+        // Must return false if sources of patron id and bib id differ
+        $result = $driver->getDefaultRequestGroup(
+            $this->getUserObject('username', 'd2'),
+            array('id' => 'd1.1')
+        );
+        $this->assertEquals(false, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getDefaultRequestGroup(
+            $this->getUserObject('username', 'invalid'),
+            array('id' => '1')
+        );
+    }
+
+    /**
+     * Testing method for placeHold
+     *
+     * @return void
+     */
+    public function testPlaceHold()
+    {
+        $expected1 = array(
+            'success' => true,
+            'status' => ''
+        );
+        $expected2 = array(
+            'success' => false,
+            'status' => 'hold_error_fail'
+        );
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'placeHold',
+            array(array('patron' => $this->getUserObject('username'), 'id' => 1)),
+            $expected1,
+            $expected2
+        );
+
+        $result = $driver->placeHold(
+            array(
+                'patron' => $this->getUserObject('username', 'd1'),
+                'id' => 'd1.1'
             )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->placeHold(
+            array(
+                'patron' => $this->getUserObject('username', 'd2'),
+                'id' => 'd2.1'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->placeHold(
+            array(
+                'patron' => $this->getUserObject('username', 'invalid'),
+                'id' => 'invalid.1'
+            )
+        );
+    }
+
+    /**
+     * Testing method for cancelHolds
+     *
+     * @return void
+     */
+    public function testCancelHolds()
+    {
+        $expected = array(
+            '1' => array(
+                'success' => true,
+                'status' => 'hold_cancel_success'
+            ),
+            '2' => array(
+                'success' => false,
+                'status' => 'hold_cancel_fail'
+            )
+
+        );
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'cancelHolds',
+            array(
+                array(
+                    'patron' => $this->getUserObject('username'),
+                    'details' => array('1', '2')
+                )
+            ),
+            $expected,
+            $expected
+        );
+
+        $result = $driver->cancelHolds(
+            array(
+                'patron' => $this->getUserObject('username', 'd1'),
+                'details' => array('1', '2')
+            )
+        );
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->cancelHolds(
+            array(
+                'patron' => $this->getUserObject('username', 'd2'),
+                'details' => array('1', '2')
+            )
+        );
+        $this->assertEquals($expected, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->cancelHolds(
+            array(
+                'patron' => $this->getUserObject('username', 'invalid'),
+                'details' => array('1', '2')
+            )
+        );
+    }
+
+    /**
+     * Testing method for getCancelHoldDetails
+     *
+     * @return void
+     */
+    public function testGetCancelHoldDetails()
+    {
+        $expected = array('1', '2');
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getCancelHoldDetails',
+            array(array('id' => '1', 'item_id' => '2')),
+            $expected,
+            $expected
+        );
+
+        $result = $driver->getCancelHoldDetails(
+            array('id' => 'd1.1', 'item_id' => 2)
+        );
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->getCancelHoldDetails(
+            array('id' => 'd2.1', 'item_id' => 2)
+        );
+        $this->assertEquals($expected, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getCancelHoldDetails(
+            array('id' => 'invalid.1', 'item_id' => 2)
+        );
+    }
+
+    /**
+     * Testing method for placeStorageRetrievalRequest
+     *
+     * @return void
+     */
+    public function testPlaceStorageRetrievalRequest()
+    {
+        $expected1 = array(
+            'success' => true,
+            'status' => ''
+        );
+        $expected2 = array(
+            'success' => false,
+            'status' => 'storage_retrieval_request_error_blocked'
+        );
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'placeStorageRetrievalRequest',
+            array(array('patron' => $this->getUserObject('username'), 'id' => 1)),
+            $expected1,
+            $expected2
+        );
+
+        $result = $driver->placeStorageRetrievalRequest(
+            array(
+                'patron' => $this->getUserObject('username', 'd1'),
+                'id' => 'd1.1'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->placeStorageRetrievalRequest(
+            array(
+                'patron' => $this->getUserObject('username', 'd2'),
+                'id' => 'd2.1'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->placeStorageRetrievalRequest(
+            array(
+                'patron' => $this->getUserObject('username', 'invalid'),
+                'id' => 'invalid.1'
+            )
+        );
+    }
+
+    /**
+     * Testing method for cancelStorageRetrievalRequests
+     *
+     * @return void
+     */
+    public function testCancelStorageRetrievalRequests()
+    {
+        $expected = array(
+            '1' => array(
+                'success' => true,
+                'status' => 'storage_retrieval_request_cancel_success'
+            ),
+            '2' => array(
+                'success' => false,
+                'status' => 'storage_retrieval_request_cancel_fail'
+            )
+
+        );
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'cancelStorageRetrievalRequests',
+            array(
+                array(
+                    'patron' => $this->getUserObject('username'),
+                    'details' => array('1', '2')
+                )
+            ),
+            $expected,
+            $expected
+        );
+
+        $result = $driver->cancelStorageRetrievalRequests(
+            array(
+                'patron' => $this->getUserObject('username', 'd1'),
+                'details' => array('1', '2')
+            )
+        );
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->cancelStorageRetrievalRequests(
+            array(
+                'patron' => $this->getUserObject('username', 'd2'),
+                'details' => array('1', '2')
+            )
+        );
+        $this->assertEquals($expected, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->cancelStorageRetrievalRequests(
+            array(
+                'patron' => $this->getUserObject('username', 'invalid'),
+                'details' => array('1', '2')
+            )
+        );
+    }
+
+    /**
+     * Testing method for getCancelStorageRetrievalRequestDetails
+     *
+     * @return void
+     */
+    public function testGetCancelStorageRetrievalRequestDetails()
+    {
+        $expected = array('1', '2');
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getCancelStorageRetrievalRequestDetails',
+            array(array('id' => '1','item_id' => '2')),
+            $expected,
+            $expected
+        );
+
+        $result = $driver->getCancelStorageRetrievalRequestDetails(
+            array('id' => 'd1.1', 'item_id' => 2)
+        );
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->getCancelStorageRetrievalRequestDetails(
+            array('id' => 'd2.1', 'item_id' => 2)
+        );
+        $this->assertEquals($expected, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getCancelStorageRetrievalRequestDetails(
+            array('id' => 'invalid.1', 'item_id' => 2)
         );
     }
 
@@ -1426,8 +1638,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                 'bibid',
                 array('id' => 'itemid'),
                 $this->logicalOr(
-                    array('cat_username' => 'd1.username', 'cat_password' => 'pw'),
-                    array('cat_username' => 'd2.username', 'cat_password' => 'pw')
+                    $this->getUserObject('username', 'd1'),
+                    $this->getUserObject('username', 'd2')
                 )
             ),
             true,
@@ -1436,38 +1648,23 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->checkILLRequestIsValid(
             'd1.bibid',
-            array(
-                'id' => 'd1.itemid'
-            ),
-            array(
-                'cat_username' => 'd1.username',
-                'cat_password' => 'pw'
-            )
+            array('id' => 'd1.itemid'),
+            $this->getUserObject('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->checkILLRequestIsValid(
             'd2.bibid',
-            array(
-                'id' => 'd2.itemid'
-            ),
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
+            array('id' => 'd2.itemid'),
+            $this->getUserObject('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
         // Cross-driver request must be accepted
         $result = $driver->checkILLRequestIsValid(
             'd1.bibid',
-            array(
-                'id' => 'd1.itemid'
-            ),
-            array(
-                'cat_username' => 'd2.username',
-                'cat_password' => 'pw'
-            )
+            array('id' => 'd1.itemid'),
+            $this->getUserObject('username', 'd2')
         );
         $this->assertEquals(true, $result);
 
@@ -1476,15 +1673,292 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $result = $driver->checkILLRequestIsValid(
             'invalid.bibid',
-            array(
-                'id' => 'invalid.itemid'
-            ),
-            array(
-                'cat_username' => 'invalid.username',
-                'cat_password' => 'pw'
-            )
+            array('id' => 'invalid.itemid'),
+            $this->getUserObject('username', 'invalid')
         );
         $this->assertEquals(false, $result);
+    }
+
+    /**
+     * Testing method for getILLPickupLibraries
+     *
+     * @return void
+     */
+    public function testGetILLPickupLibraries()
+    {
+        $expected1 = array(array('locationID' => '1'));
+        $expected2 = array(array('locationID' => '2'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getILLPickupLibraries',
+            array(
+                '1',
+                $this->logicalOr(
+                    $this->getUserObject('username', 'd1'),
+                    $this->getUserObject('username', 'd2')
+                )
+            ),
+            $expected1,
+            $expected2
+        );
+
+        $result = $driver->getILLPickupLibraries(
+            'd1.1',
+            $this->getUserObject('username', 'd1')
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getILLPickupLibraries(
+            'd2.1',
+            $this->getUserObject('username', 'd2')
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getILLPickupLibraries(
+            '1',
+            $this->getUserObject('username', 'invalid')
+        );
+    }
+
+    /**
+     * Testing method for getILLPickupLocations
+     *
+     * @return void
+     */
+    public function testGetILLPickupLocations()
+    {
+        $expected1 = array(array('locationID' => '1'));
+        $expected2 = array(array('locationID' => '2'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getILLPickupLocations',
+            array(
+                '1',
+                '2',
+                $this->logicalOr(
+                    $this->getUserObject('username', 'd1'),
+                    $this->getUserObject('username', 'd2')
+                )
+            ),
+            $expected1,
+            $expected2
+        );
+
+        $result = $driver->getILLPickupLocations(
+            'd1.1',
+            '2',
+            $this->getUserObject('username', 'd1')
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getILLPickupLocations(
+            'd2.1',
+            '2',
+            $this->getUserObject('username', 'd2')
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getILLPickupLocations(
+            '1',
+            '2',
+            $this->getUserObject('username', 'invalid')
+        );
+    }
+
+    /**
+     * Testing method for placeILLRequest
+     *
+     * @return void
+     */
+    public function testPlaceILLRequest()
+    {
+        $expected1 = array(
+            'success' => true,
+            'status' => ''
+        );
+        $expected2 = array(
+            'success' => false,
+            'status' => 'ill_request_error_fail'
+        );
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'placeILLRequest',
+            array(
+                $this->logicalOr(
+                    array(
+                        'patron' => $this->getUserObject('username', 'd1'),
+                        'id' => 1
+                    ),
+                    array(
+                        'patron' => $this->getUserObject('username', 'd2'),
+                        'id' => 1
+                    )
+                )
+            ),
+            $expected1,
+            $expected2
+        );
+
+        $result = $driver->placeILLRequest(
+            array(
+                'patron' => $this->getUserObject('username', 'd1'),
+                'id' => 'd1.1'
+            )
+        );
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->placeILLRequest(
+            array(
+                'patron' => $this->getUserObject('username', 'd2'),
+                'id' => 'd2.1'
+            )
+        );
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->placeILLRequest(
+            array(
+                'patron' => $this->getUserObject('username', 'invalid'),
+                'id' => 'invalid.1'
+            )
+        );
+    }
+
+    /**
+     * Testing method for getMyILLRequests
+     *
+     * @return void
+     */
+    public function testGetMyILLRequests()
+    {
+        $expected1 = array(array('id' => 'd1.1'));
+        $expected2 = array(array('id' => 'd2.1'));
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getMyILLRequests',
+            array($this->getUserObject('username')),
+            array(array('id' => '1')),
+            array(array('id' => '1'))
+        );
+
+        $result = $driver->getMyILLRequests($this->getUserObject('username', 'd1'));
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getMyILLRequests($this->getUserObject('username', 'd2'));
+        $this->assertEquals($expected2, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getMyILLRequests(
+            $this->getUserObject('username', 'invalid')
+        );
+    }
+
+    /**
+     * Testing method for cancelILLRequests
+     *
+     * @return void
+     */
+    public function testCancelILLRequests()
+    {
+        $expected = array(
+            '1' => array(
+                'success' => true,
+                'status' => 'ill_request_cancel_success'
+            ),
+            '2' => array(
+                'success' => false,
+                'status' => 'storage_retrieval_request_cancel_fail'
+            )
+
+        );
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'cancelILLRequests',
+            array(
+                array(
+                    'patron' => $this->getUserObject('username'),
+                    'details' => array('1', '2')
+                )
+            ),
+            $expected,
+            $expected
+        );
+
+        $result = $driver->cancelILLRequests(
+            array(
+                'patron' => $this->getUserObject('username', 'd1'),
+                'details' => array('1', '2')
+            )
+        );
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->cancelILLRequests(
+            array(
+                'patron' => $this->getUserObject('username', 'd2'),
+                'details' => array('1', '2')
+            )
+        );
+        $this->assertEquals($expected, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->cancelILLRequests(
+            array(
+                'patron' => $this->getUserObject('username', 'invalid'),
+                'details' => array('1', '2')
+            )
+        );
+    }
+
+    /**
+     * Testing method for getCancelILLRequestDetails
+     *
+     * @return void
+     */
+    public function testGetCancelILLRequestDetails()
+    {
+        $expected = array('1', '2');
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->once(),
+            'getCancelILLRequestDetails',
+            array(array('id' => '1','item_id' => '2')),
+            $expected,
+            $expected
+        );
+
+        $result = $driver->getCancelILLRequestDetails(
+            array('id' => 'd1.1', 'item_id' => 2)
+        );
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->getCancelILLRequestDetails(
+            array('id' => 'd2.1', 'item_id' => 2)
+        );
+        $this->assertEquals($expected, $result);
+
+        $this->setExpectedException(
+            'VuFind\Exception\ILS', 'No suitable backend driver found'
+        );
+        $result = $driver->getCancelILLRequestDetails(
+            array('id' => 'invalid.1', 'item_id' => 2)
+        );
     }
 
     /**
@@ -1607,7 +2081,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     protected function getUserObject($username, $instance = null)
     {
-        $cat_username = $instance ? $instance."\t".$username : $username;
+        $cat_username = $instance ? $instance . '.' . $username : $username;
         return array(
                     'id' => 1,
                     'firstname' => 'JANE',
