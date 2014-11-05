@@ -102,6 +102,7 @@ class LessCompilerTest extends Unit\TestCase
         }
         $this->compiler = new LessCompiler();
         $this->compiler->setBasePath($temp . '/vufind_less_comp_test');
+        $this->compiler->setTempPath($temp . '/vufind_less_comp_test/cache');
     }
 
     public static function tearDownAfterClass()
@@ -109,24 +110,18 @@ class LessCompilerTest extends Unit\TestCase
         $temp = sys_get_temp_dir();
         $testDest = $temp . '/vufind_less_comp_test/';
         // Delete directory structure
-        unlink($testDest . 'themes/child/less/compiled.less');
-        unlink($testDest . 'themes/child/theme.config.php');
-        unlink($testDest . 'themes/empty/theme.config.php');
-        unlink($testDest . 'themes/parent/less/relative/relative.less');
-        unlink($testDest . 'themes/parent/less/compiled.less');
-        unlink($testDest . 'themes/parent/less/parent.less');
-        unlink($testDest . 'themes/parent/theme.config.php');
-        rmdir($testDest . 'themes/child/css');
-        rmdir($testDest . 'themes/child/less');
-        rmdir($testDest . 'themes/child');
-        rmdir($testDest . 'themes/empty');
-        rmdir($testDest . 'themes/parent/less/relative');
-        rmdir($testDest . 'themes/parent/less');
-        rmdir($testDest . 'themes/parent/css/relative');
-        rmdir($testDest . 'themes/parent/css');
-        rmdir($testDest . 'themes/parent');
-        rmdir($testDest . 'themes');
-        rmdir($testDest);
+        self::delTree($testDest);
+    }
+
+    // adapted from http://php.net/manual/en/function.rmdir.php
+    protected static function delTree($dir)
+    {
+        $files = array_diff(scandir($dir), array('.', '..'));
+        foreach ($files as $file) {
+            is_dir("$dir/$file")
+                ? self::delTree("$dir/$file") : unlink("$dir/$file");
+        }
+        rmdir($dir);
     }
 
     public function testThemeCompile()

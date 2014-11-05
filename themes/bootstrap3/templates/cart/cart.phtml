@@ -23,8 +23,42 @@
       <input class="btn btn-default" type="submit" name="export" value="<?=$this->transEsc('bookbag_export_selected')?>" title="<?=$this->transEsc('bookbag_export')?>"/>
     <? endif; ?>
     <input class="btn btn-default" type="submit" name="print" value="<?=$this->transEsc('bookbag_print_selected')?>" title="<?=$this->transEsc('print_selected')?>"/>
-    <input class="btn btn-default" type="submit" name="delete" value="<?=$this->transEsc('bookbag_delete_selected')?>" title="<?=$this->transEsc('bookbag_delete')?>"/>
-    <input class="btn btn-default" type="submit" name="empty" value="<?=$this->transEsc('Empty Book Bag')?>" title="<?=$this->transEsc('Empty Book Bag')?>"/>
+    <div class="btn-group" id="cartDelete">
+      <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-delete-label"><?=$this->transEsc('bookbag_delete_selected')?></a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
+        <li><a onClick="submitFormWithIds(this, path+'/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home', {'delete':'delete'}, Lightbox.changeContent)" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_delete')?></a></li>
+        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+      </ul>
+    </div>
+    <div class="btn-group">
+      <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-empty-label"><?=$this->transEsc('Empty Book Bag')?></a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
+        <li><a onClick="$.post(path+'/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home', {'empty':'empty'}, Lightbox.changeContent)" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('bookbag_confirm_empty')?></a></li>
+        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+      </ul>
+    </div>
   <? endif; ?>
   <?=$this->render('cart/contents.phtml')?>
 </form>
+<?
+  $script = <<<JS
+  function submitFormWithIds(elem, url, data, callback) {
+    data['ids[]'] = [];
+    var form = $(elem).closest('form')[0];
+    var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
+    for(var i=0;i<checkboxes.length;i++) {
+      data['ids[]'].push(checkboxes[i].value);
+    }
+    $.post(url, data, callback);
+  }
+  $('#cartDelete').on('show.bs.dropdown', function () {
+    var form = $(this).closest('form')[0];
+    var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
+    if(checkboxes.length == 0) {
+      Lightbox.displayError(vufindString['bulk_noitems_advice']);
+      return false;
+    }
+  })
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

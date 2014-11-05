@@ -100,6 +100,24 @@ function setupOrFacets() {
  * This is a default open action, so it runs every time changeContent
  * is called and the 'shown' lightbox event is triggered
  */
+function bulkActionSubmit($form) {
+  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
+  var checks = $form.find('input.checkbox-select-item:checked');
+  if(checks.length == 0 && submit != 'empty') {
+    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+  }
+  if (submit == 'print') {
+    //redirect page
+    var url = path+'/Records/Home?print=true';
+    for(var i=0;i<checks.length;i++) {
+      url += '&id[]='+checks[i].value;
+    }
+    document.location.href = url;
+  } else {
+    Lightbox.submit($form, Lightbox.changeContent);
+  }
+  return false;
+}
 function registerLightboxEvents() {
   var modal = $("#modal");
   // New list
@@ -117,17 +135,17 @@ function registerLightboxEvents() {
   });
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
+    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
   });
   $(modal).find('.checkbox-select-item').change(function() {
-    if(!this.checked) { // Uncheck all selected if one is unselected
-      $(this).closest('.modal-body').find('.checkbox-select-all').attr('checked', false);
-    }
+    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
   });
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .fa-spinner').remove();
+    // Remove other clicks
+    $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
@@ -324,16 +342,11 @@ $(document).ready(function() {
   );
 
   // Checkbox select all
-  $('.checkbox-select-all').click(function(event) {
-    if(this.checked) {
-      $(this).closest('form').find('.checkbox-select-item').each(function() {
-        this.checked = true;
-      });
-    } else {
-      $(this).closest('form').find('.checkbox-select-item').each(function() {
-        this.checked = false;
-      });
-    }
+  $('.checkbox-select-all').change(function() {
+    $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
+  });
+  $('.checkbox-select-item').change(function() {
+    $(this).closest('form').find('.checkbox-select-all').prop('checked', false);
   });
 
   // handle QR code links
@@ -361,6 +374,18 @@ $(document).ready(function() {
   // Advanced facets
   setupOrFacets();
 
+  $('[name=bulkActionForm]').submit(function() {
+    return bulkActionSubmit($(this));
+  });
+  $('[name=bulkActionForm]').find("input[type=submit]").click(function() {
+    // Abort requests triggered by the lightbox
+    $('#modal .fa-spinner').remove();
+    // Remove other clicks
+    $(this).closest('form').find('input[type="submit"][clicked=true]').attr('clicked', false);
+    // Add useful information
+    $(this).attr("clicked", "true");
+  });
+
   /******************************
    * LIGHTBOX DEFAULT BEHAVIOUR *
    ******************************/
@@ -382,23 +407,6 @@ $(document).ready(function() {
     Lightbox.close();
     checkSaveStatuses();
   });
-
-  $('[name=bulkActionForm]').submit(function() {
-    if($(this).find('[clicked=true]').attr('name') == 'print') {
-      Lightbox.submit($(this), Lightbox.close);
-      Lightbox.close();
-    } else {
-      Lightbox.submit($(this), function(html) {
-        Lightbox.checkForError(html, Lightbox.changeContent);
-      });
-      return false;
-    }
-  });
-  $('[name=bulkActionForm]').find('[type=submit]').click(function() {
-    $("[clicked=true]").attr("clicked", "false");
-    $(this).attr("clicked", "true");
-  });
-
   Lightbox.addFormHandler('feedback', function(evt) {
     var $form = $(evt.target);
     // Grabs hidden inputs
