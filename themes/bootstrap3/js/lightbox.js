@@ -193,6 +193,11 @@ var Lightbox = {
     if (typeof Recaptcha !== "undefined" && Recaptcha.widget) {
       Recaptcha.reload();
     }
+    // If the lightbox isn't visible, fix that
+    if(this.shown == false) {
+      $('#modal').modal('show');
+      this.shown = true;
+    }
   },
 
   /***********************************/
