@@ -116,23 +116,44 @@ class DynamicRoleProviderFactory implements FactoryInterface
         array $permissions
     ) {
         // Add admin settings if they are absent:
-        if (!isset($permissions['access.AdminModule'])) {
+        if (!$this->permissionDefined($permissions, 'access.AdminModule')) {
             $config = $loader->get('config')->toArray();
-            $permissions['access.AdminModule'] = [];
+            $permissions['legacy.AdminModule'] = [];
             if (isset($config['AdminAuth']['ipRegEx'])) {
-                $permissions['access.AdminModule']['ipRegEx']
+                $permissions['legacy.AdminModule']['ipRegEx']
                     = $config['AdminAuth']['ipRegEx'];
             }
             if (isset($config['AdminAuth']['userWhitelist'])) {
-                $permissions['access.AdminModule']['username']
+                $permissions['legacy.AdminModule']['username']
                     = $config['AdminAuth']['userWhitelist'];
             }
             // If no settings exist in config.ini, we grant access to everyone
             // by allowing both logged-in and logged-out roles.
-            if (empty($permissions['access.AdminModule'])) {
-                $permissions['access.AdminModule']['role'] = ['guest', 'loggedin'];
+            if (empty($permissions['legacy.AdminModule'])) {
+                $permissions['legacy.AdminModule']['role'] = ['guest', 'loggedin'];
             }
+            $permissions['legacy.AdminModule']['permission'] = 'access.AdminModule';
         }
         return $permissions;
+    }
+
+    /**
+     * Is the specified permission already defined in the provided configuration?
+     *
+     * @param array  $config     Configuration
+     * @param string $permission Permission to check
+     *
+     * @return bool
+     */
+    protected function permissionDefined(array $config, $permission)
+    {
+        foreach ($config as $current) {
+            if (isset($current['permission'])
+                && in_array($permission, (array)$current['permission'])
+            ) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -136,17 +136,17 @@ class DynamicRoleProvider implements RoleProviderInterface
      */
     protected function getPermissionsArray()
     {
-        // First expand the configuration to account for inheritance:
-        $config = $this->getInheritedConfigurationArray();
-
-        // Now loop through all of the permissions:
+        // Loop through all of the permissions:
         $retVal = [];
-        foreach ($config as $permission => $settings) {
-            foreach ($this->getRolesForSettings($settings) as $role) {
+        foreach ($this->config as $settings) {
+            $current = $this->getRolesForSettings($settings);
+            foreach ($current['roles'] as $role) {
                 if (!isset($retVal[$role])) {
                     $retVal[$role] = [];
                 }
-                $retVal[$role][] = $permission;
+                foreach ($current['permissions'] as $permission) {
+                    $retVal[$role][] = $permission;
+                }
             }
         }
         return $retVal;
@@ -161,12 +161,20 @@ class DynamicRoleProvider implements RoleProviderInterface
      */
     protected function getRolesForSettings($settings)
     {
+        // Extract boolean setting:
         if (isset($settings['boolean'])) {
             $mode = strtoupper(trim($settings['boolean']));
             unset($settings['boolean']);
         } else {
             $mode = 'AND';
         }
+
+        // Extract permission setting:
+        $permissions = isset($settings['permission'])
+            ? (array)$settings['permission'] : [];
+        unset($settings['permission']);
+
+        // Process everything:
         $roles = null;
         foreach ($settings as $provider => $options) {
             $providerObj = $this->manager->get($provider);
@@ -179,55 +187,6 @@ class DynamicRoleProvider implements RoleProviderInterface
                 $roles = array_intersect($roles, $currentRoles);
             }
         }
-        return $roles;
-    }
-
-    /**
-     * Retrieve the stored configuration with inheritance applied.
-     *
-     * @return void
-     */
-    protected function getInheritedConfigurationArray()
-    {
-        $retVal = [];
-        foreach (array_keys($this->config) as $permission) {
-            $retVal[$permission] = $this->getInheritedConfiguration($permission);
-        }
-        return $retVal;
-    }
-
-    /**
-     * Process inheritance for a single permission.
-     *
-     * @param string $permission Name of permission to process.
-     * @param array  $stack      Stack of inherited permissions, used to avoid
-     * infinite loops.
-     *
-     * @throws \Exception
-     * @return array
-     */
-    protected function getInheritedConfiguration($permission, $stack = [])
-    {
-        // Not defined? Empty array.
-        if (!isset($this->config[$permission])) {
-            return [];
-        }
-
-        // No inheritance? Return as-is.
-        if (!isset($this->config[$permission]['inherit'])) {
-            return $this->config[$permission];
-        }
-
-        // Assemble using inheritance:
-        if (in_array($parent, $stack)) {
-            throw new \Exception('Inheritance loop detected!');
-        }
-        $stack[] = $permission;
-        $base = $this->getInheritedConfiguration($parent, $stack);
-        foreach ($this->config[$permission] as $key => $value) {
-            $base[$key] = $value;
-        }
-        unset($base['inherit']);
-        return $base;
+        return compact('permissions', 'roles');
     }
 }
