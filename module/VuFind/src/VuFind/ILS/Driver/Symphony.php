@@ -1089,18 +1089,28 @@ class Symphony extends AbstractBase
             'cat_password' => $password,
         );
 
-        $resp = $this->makeRequest(
-            'patron',
-            'lookupMyAccountInfo',
-            array(
-                'includePatronInfo' => 'true',
-                'includePatronAddressInfo' => 'true'
-            ),
-            array(
-                'login' => $username,
-                'password' => $password,
-            )
-        );
+        try {
+            $resp = $this->makeRequest(
+                'patron',
+                'lookupMyAccountInfo',
+                array(
+                    'includePatronInfo' => 'true',
+                    'includePatronAddressInfo' => 'true'
+                ),
+                array(
+                    'login' => $username,
+                    'password' => $password,
+                )
+            );
+        } catch (SoapFault $e) {
+            $unableToLogin = 'ns0:com.sirsidynix.symws.service.'
+                . 'exceptions.SecurityServiceException.unableToLogin';
+            if ($e->faultcode == $unableToLogin) {
+                return null;
+            } else {
+                throw $e;
+            }
+        }
 
         $patron['id']      = $resp->patronInfo->$usernameField;
         $patron['library'] = $resp->patronInfo->patronLibraryID;
