@@ -100,7 +100,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public function getSolrRecord($id)
+    protected function getSolrRecord($id)
     {
         return $this->recordLoader->load($id);
     }
