@@ -58,6 +58,9 @@ class PAIA extends DAIA
 
     protected $baseURL;
     protected $paiaURL;
+    protected $catalogURL;
+    protected $loanURL;
+    protected $opacfno;
 
     /**
      * Constructor
@@ -68,11 +71,17 @@ class PAIA extends DAIA
     {
         parent::init();
 
-        if (!isset($this->config['Catalog']['URL']) || !isset($this->config['PAIA']['URL'])) {
-            throw new ILSException('Catalog/URL and PAIA/URL configuration needs to be set.');
+        if (!isset($this->config['Catalog']['URL'])) {
+            throw new ILSException('Catalog/URL configuration needs to be set.');
+        }
+
+        if (!(isset($this->config['PAIA']['URL']) || isset($this->config['Catalog']['loanURL']))) {
+            throw new ILSException('Catalog/loanURL or PAIA/URL configuration needs to be set.');
         }
 
         $this->catalogURL = $this->config['Catalog']['URL'];
+        $this->loanURL = $this->config['Catalog']['loanURL'];
+        $this->opacfno = $this->config['Catalog']['opacfno'];
 
         $this->paiaURL = $this->config['PAIA']['URL'];
 
@@ -453,7 +462,35 @@ class PAIA extends DAIA
         }
         $returnArray = $details;
         return $returnArray;
-    }
+    } 
+
+    /**
+     * Get Hold Link
+     *
+     * The goal for this method is to return a URL to a "place hold" web page on
+     * the ILS OPAC. This is used for ILSs that do not support an API or method
+     * to place Holds.
+     *
+     * @param string $id      The id of the bib record
+     * @param array  $details Item details from getHoldings return array
+     *
+     * @return string         URL to ILS's OPAC's place hold screen.
+     */
+    public function getHoldLink($id, $details)
+    {
+        if (isset($details['item_id'])) {
+            $epn = $details['item_id'];
+            if (preg_match("/epn:([X\d]{9})/", $epn, $match)) {
+                $epn = $match[1];
+            }
+            $hold = $this->loanURL."?MTR=mon"
+                        ."&BES=".$this->opacfno
+                        ."&EPN=".$this->prfz($epn);
+            return $hold;
+        }
+        return $this->opcloan."?MTR=mon" ."&BES=".$this->opacfno
+               ."&EPN=".$this->prfz($id);
+    } 
 
 
     /**
@@ -795,6 +832,36 @@ class PAIA extends DAIA
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
         return false;
+    }
+
+    /**
+     * Helper function to compute the modulo 11 based
+     * ppn control number
+     *
+     * @param string $str input
+     *
+     * @return string
+     */
+    protected function prfz($str)
+    {
+        $x = 0; $y = 0; $w = 2;
+        $stra = str_split($str);
+        for ($i=strlen($str); $i>0; $i--) {
+            $c = $stra[$i-1];
+            $x = ord($c) - 48;
+            $y += $x*$w;
+            $w++;
+        }
+        $p = 11-$y%11;
+        if ($p==11) {
+            $p=0;
+        }
+        if ($p==10) {
+            $ret = $str."X";
+        } else {
+            $ret = $str.$p;
+        }
+        return $ret;
     }
 
 }
