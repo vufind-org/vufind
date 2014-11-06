@@ -1,0 +1,3 @@
+  <div class="alert alert-info">
+    <?=$this->transEsc('alphabrowselink_'.$this->recommend->getIndex())?> <a href="<?=$this->url('alphabrowse-home')?>?source=<?=$this->recommend->getIndex()?>&amp;from=<?=urlencode($this->recommend->getQuery())?>"><?=$this->recommend->getQuery()?></a>
+  </div>
