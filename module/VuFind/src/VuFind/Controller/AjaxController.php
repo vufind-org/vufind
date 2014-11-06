@@ -687,7 +687,7 @@ class AjaxController extends AbstractBase
     {
         $driver = $this->getRecordLoader()->load(
             $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind')
+            $this->params()->fromQuery('source')
         );
 	$viewtype=preg_replace('/\W/','',trim(strtolower($this->params()->fromQuery('type'))));
         $request = $this->getRequest();
