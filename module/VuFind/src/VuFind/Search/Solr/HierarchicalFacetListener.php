@@ -172,7 +172,7 @@ class HierarchicalFacetListener
             return $event;
         }
         $context = $event->getParam('context');
-        if ($context == 'search') {
+        if ($context == 'search' || $context == 'retrieve') {
             $this->processHierarchicalFacets($event);
         }
         return $event;
