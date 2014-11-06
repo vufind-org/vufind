@@ -113,7 +113,7 @@ class OaiController extends AbstractBase
 
         // Return response:
         $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'text/xml');
+        $headers->addHeaderLine('Content-type', 'text/xml; charset=UTF-8');
         $response->setContent($xml);
         return $response;
     }
