@@ -21,6 +21,10 @@
   <property name="pgsqlrootuser" value="postgres" />
   <property name="version" value="2.3" />
 
+  <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
+    <property name="mysqlpwswitch" value="-p" />
+  </then></if>
+
   <!-- Main Target -->
   <target name="main" description="main target">
     <phingcall target="startup" />
@@ -136,11 +140,11 @@
       </then>
       <else>
         <!-- build database -->
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} drop ${vufinddb}" />
-        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
         <!-- configure VuFind -->
         <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
@@ -186,7 +190,7 @@
         <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
       </then>
       <else>
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
       </else>
     </if>
 
