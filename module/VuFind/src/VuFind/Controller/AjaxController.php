@@ -1565,7 +1565,7 @@ class AjaxController extends AbstractBase
 
         return $this->output(
             $facetHelper->buildFacetArray(
-                $facet, $facetList, $params->getFilterList(), $results->getUrlQuery()
+                $facet, $facetList, $results->getUrlQuery()
             ),
             self::STATUS_OK
         );

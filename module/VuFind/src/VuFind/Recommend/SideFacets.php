@@ -27,6 +27,7 @@
  */
 namespace VuFind\Recommend;
 use VuFind\Solr\Utils as SolrUtils;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 /**
  * SideFacets Recommendations Module
@@ -103,6 +104,28 @@ class SideFacets extends AbstractFacets
      * @var array
      */
     protected $hierarchicalFacetSortOptions = array();
+
+    /**
+     * Hierarchical facet helper
+     *
+     * @var HierarchicalFacetHelper
+     */
+    protected $hierarchicalFacetHelper;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
+     * hierarchical facets
+     */
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
+        HierarchicalFacetHelper $facetHelper
+    ) {
+        $this->configLoader = $configLoader;
+        $this->hierarchicalFacetHelper = $facetHelper;
+    }
 
     /**
      * setConfig
@@ -212,7 +235,20 @@ class SideFacets extends AbstractFacets
      */
     public function getFacetSet()
     {
-        return $this->results->getFacetList($this->mainFacets);
+        $facetSet = $this->results->getFacetList($this->mainFacets);
+
+        foreach ($this->hierarchicalFacets as $hierarchicalFacet) {
+            if (isset($facetSet[$hierarchicalFacet])) {
+                $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
+                    $hierarchicalFacet, $facetSet[$hierarchicalFacet]['list']
+                );
+                $facetSet[$hierarchicalFacet]['list']
+                    = $this->hierarchicalFacetHelper
+                        ->flattenFacetHierarchy($facetArray);
+            }
+        }
+
+        return $facetSet;
     }
 
     /**

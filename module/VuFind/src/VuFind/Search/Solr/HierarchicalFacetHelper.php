@@ -84,7 +84,6 @@ class HierarchicalFacetHelper
      *
      * @param string    $facet            Facet name
      * @param array     $facetList        Facet list
-     * @param array     $activeFilterList Array of active filters
      * @param UrlHelper $urlHelper        Query URL helper for building facet URLs
      *
      * @return array Facet hierarchy
@@ -94,23 +93,14 @@ class HierarchicalFacetHelper
      * Based on this example
      *
      */
-    public function buildFacetArray(
-        $facet, $facetList, $activeFilterList = array(), $urlHelper = false
-    ) {
-        // First build associative arrays of currently active filters and
-        // their parents
-        $filterKeys = array();
-        $parentFilterKeys = array();
-        $this->buildFilterKeyArrays(
-            $facet, $activeFilterList, $filterKeys, $parentFilterKeys
-        );
-
+    public function buildFacetArray($facet, $facetList, $urlHelper = false)
+    {
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = array();
         $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper, $filterKeys, $parentFilterKeys
+                $facet, $item, $urlHelper
             );
         }
 
@@ -123,6 +113,9 @@ class HierarchicalFacetHelper
                 $result[] = &$item;
             }
         }
+
+        // Update information on whether items have applied children
+        $this->updateAppliedChildrenStatus($result);
 
         return $result;
     }
@@ -178,64 +171,23 @@ class HierarchicalFacetHelper
     }
 
     /**
-     * Helper method for building hierarchical facets:
-     * Create two keyed arrays of currently active filter for quick lookup:
-     * - filterKeys: currently active filters
-     * - parentFilterKeys: all the parents of currently active filters
-     *
-     * @param string $facet             Facet name
-     * @param array  $filterList        Active filters
-     * @param array  &$filterKeys       Resulting array of active filters
-     * @param array  &$parentFilterKeys Resulting array of active filter parents
-     *
-     * @return void
-     */
-    protected function buildFilterKeyArrays(
-        $facet, $filterList, &$filterKeys, &$parentFilterKeys
-    ) {
-        foreach ($filterList as $filters) {
-            foreach ($filters as $filterItem) {
-                if ($filterItem['field'] == $facet) {
-                    $filterKeys[$filterItem['value']] = true;
-                    list($filterLevel, $filterValue)
-                        = explode('/', $filterItem['value'], 2);
-                    for (; $filterLevel > 0; $filterLevel--) {
-                        $parentKey = ($filterLevel - 1) . '/' . implode(
-                            '/',
-                            array_slice(
-                                explode('/', $filterValue),
-                                0,
-                                $filterLevel
-                            )
-                        ) . '/';
-                        $parentFilterKeys[$parentKey] = true;
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Create an item for the hierarchical facet array
      *
      * @param string         $facet            Facet name
      * @param array          $item             Facet item received from Solr
      * @param UrlQueryHelper $urlHelper        UrlQueryHelper for creating facet
      * url's
-     * @param array          $filterKeys       Keyed array of active filters
-     * @param array          $parentFilterKeys Keyed array of facet nodes that have
      * active children
      *
      * @return array Facet item
      */
-    protected function createFacetItem(
-        $facet, $item, $urlHelper, $filterKeys, $parentFilterKeys
-    ) {
+    protected function createFacetItem($facet, $item, $urlHelper)
+    {
         $href = '';
         $exclude = '';
         // Build URLs only if we were given an URL helper
         if ($urlHelper !== false) {
-            if (isset($filterKeys[$item['value']])) {
+            if ($item['isApplied']) {
                 $href = $urlHelper->removeFacet(
                     $facet, $item['value'], true, $item['operator'], $paramArray
                 );
@@ -271,20 +223,35 @@ class HierarchicalFacetHelper
             ) . '/';
         }
 
-        return array(
-            'value' => $item['value'],
-            'level' => $level,
-            'parent' => $parent,
-            'displayText' => $displayText,
-            'count' => $item['count'],
-            'state' => array(
-                'opened' => isset($parentFilterKeys[$item['value']]),
-            ),
-            'selected' => isset($filterKeys[$item['value']]),
-            'href' => $href,
-            'exclude' => $exclude,
-            'operator' => $item['operator'],
-            'children' => array()
-        );
+        $item['level'] = $level;
+        $item['parent'] = $parent;
+        $item['displayText'] = $displayText;
+        // hasAppliedChildren is updated in updateAppliedChildrenStatus
+        $item['hasAppliedChildren'] = false;
+        $item['href'] = $href;
+        $item['exclude'] = $exclude;
+        $item['children'] = array();
+
+        return $item;
+    }
+
+    /**
+     * Update 'opened' of all facet items
+     *
+     * @param array $list Facet list
+     *
+     * @return boolean Whether any items are applied (for recursive calls)
+     */
+    protected function updateAppliedChildrenStatus($list)
+    {
+        $result = false;
+        foreach ($list as &$item) {
+            $item['hasAppliedChildren'] = !empty($item['children'])
+                && $this->updateAppliedChildrenStatus($item['children']);
+            if ($item['isApplied']) {
+                $result = true;
+            }
+        }
+        return $result;
     }
 }
