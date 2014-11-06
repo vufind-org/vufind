@@ -64,20 +64,31 @@ class ExtendedIni implements FileLoaderInterface
     protected $loadedFiles = array();
 
     /**
+     * Helper for reading .ini files from disk.
+     *
+     * @var ExtendedIniReader
+     */
+    protected $reader;
+
+    /**
      * Constructor
      *
-     * @param array           $pathStack       List of directories to search for
+     * @param array             $pathStack       List of directories to search for
      * language files.
-     * @param string|string[] $fallbackLocales Fallback locale(s) to use for language
-     * strings missing from selected file.
+     * @param string|string[]   $fallbackLocales Fallback locale(s) to use for
+     * language strings missing from selected file.
+     * @param ExtendedIniReader $reader          Helper for reading .ini files from
+     * disk.
      */
-    public function __construct($pathStack = array(), $fallbackLocales = null)
-    {
+    public function __construct($pathStack = array(), $fallbackLocales = null,
+        ExtendedIniReader $reader = null
+    ) {
         $this->pathStack = $pathStack;
         $this->fallbackLocales = $fallbackLocales;
         if (!empty($this->fallbackLocales) && !is_array($this->fallbackLocales)) {
             $this->fallbackLocales = array($this->fallbackLocales);
         }
+        $this->reader = ($reader === null) ? new ExtendedIniReader() : $reader;
     }
 
     /**
@@ -153,7 +164,7 @@ class ExtendedIni implements FileLoaderInterface
         $data = false;
         foreach ($this->pathStack as $path) {
             if (file_exists($path . '/' . $filename)) {
-                $current = $this->languageFileToTextDomain($path . '/' . $filename);
+                $current = $this->reader->getTextDomain($path . '/' . $filename);
                 if ($data === false) {
                     $data = $current;
                 } else {
@@ -184,48 +195,5 @@ class ExtendedIni implements FileLoaderInterface
         $parent = $this->loadLanguageFile($data['@parent_ini']);
         $parent->merge($data);
         return $parent;
-    }
-
-    /**
-     * Parse a language file.
-     *
-     * @param string $file Filename to load
-     *
-     * @return TextDomain
-     */
-    protected function languageFileToTextDomain($file)
-    {
-        $data = new TextDomain();
-
-        // Manually parse the language file:
-        $contents = file($file);
-        if (is_array($contents)) {
-            foreach ($contents as $current) {
-                // Split the string on the equals sign, keeping a max of two chunks:
-                $parts = explode('=', $current, 2);
-                $key = trim($parts[0]);
-                if ($key != "" && substr($key, 0, 1) != ';') {
-                    // Trim outermost double quotes off the value if present:
-                    if (isset($parts[1])) {
-                        $value = preg_replace(
-                            '/^\"?(.*?)\"?$/', '$1', trim($parts[1])
-                        );
-
-                        // Store the key/value pair (allow empty values -- sometimes
-                        // we want to replace a language token with a blank string,
-                        // but Zend translator doesn't support them so replace with
-                        // a zero-width non-joiner):
-                        if ($value === '') {
-                            $value = html_entity_decode(
-                                '&#x200C;', ENT_NOQUOTES, 'UTF-8'
-                            );
-                        }
-                        $data[$key] = $value;
-                    }
-                }
-            }
-        }
-
-        return $data;
     }
 }
