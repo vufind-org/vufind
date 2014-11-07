@@ -26,7 +26,9 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFindConsole\Controller;
-use Zend\Console\Console;
+use VuFind\I18n\ExtendedIniNormalizer,
+    VuFind\I18n\Translator\Loader\ExtendedIniReader,
+    Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools for dealing with language files
@@ -39,6 +41,55 @@ use Zend\Console\Console;
  */
 class LanguageController extends AbstractBase
 {
+    /**
+     * Copy one language string to another
+     *
+     * @return \Zend\Console\Response
+     */
+    public function copystringAction()
+    {
+        // Display help message if parameters missing:
+        $argv = $this->consoleOpts->getRemainingArgs();
+        if (!isset($argv[1])) {
+            Console::writeLine(
+                "Usage: {$_SERVER['argv'][0]} [source] [target]"
+            );
+            Console::writeLine("\tsource - the source key to read");
+            Console::writeLine("\ttarget - the target key to write");
+            return $this->getFailureResponse();
+        }
+
+        $reader = new ExtendedIniReader();
+        $normalizer = new ExtendedIniNormalizer();
+        $source = $argv[0];
+        $target = $argv[1];
+
+        $langDir = realpath(__DIR__ . '/../../../../../languages');
+        $handle = opendir($langDir);
+        if (!$handle) {
+            Console::writeLine("Could not open directory $langDir");
+            return $this->getFailureResponse();
+        }
+        while ($file = readdir($handle)) {
+            // Only process .ini files, and ignore native.ini special case file:
+            if (substr($file, -4) == '.ini' && $file !== 'native.ini') {
+                Console::writeLine("Processing $file...");
+                $full = $langDir . '/' . $file;
+                $strings = $reader->getTextDomain($full, false);
+                if (!isset($strings[$source])) {
+                    Console::writeLine("Source key not found.");
+                } else {
+                    $fHandle = fopen($full, "a");
+                    fputs($fHandle, "\n$target = \"" . $strings[$source] . "\"\n");
+                    fclose($fHandle);
+                    $normalizer->normalizeFile($full);
+                }
+            }
+        }
+
+        return $this->getSuccessResponse();
+    }
+
     /**
      * Normalizer
      *
@@ -56,7 +107,7 @@ class LanguageController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        $normalizer = new \VuFind\I18n\ExtendedIniNormalizer();
+        $normalizer = new ExtendedIniNormalizer();
         $target = $argv[0];
         if (is_dir($target)) {
             $normalizer->normalizeDirectory($target);
