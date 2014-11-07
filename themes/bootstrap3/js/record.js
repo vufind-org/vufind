@@ -114,28 +114,12 @@ function registerAjaxCommentRecord() {
         if (response.status == 'OK') {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
-        } else if (response.status == 'NEED_AUTH') {
-          Lightbox.addCloseAction(function() {
-            $.ajax({
-              type: 'POST',
-              url:  url,
-              data: data,
-              dataType: 'json',
-              success:function() {
-                refreshCommentList(id, recordSource);
-                $(form).find('textarea[name="comment"]').val('');
-              }
-            });
-          });
-          return Lightbox.get('Record', 'AddComment', data, data);
+          $(form).find('input[type="submit"]').button('loading');
         } else {
-          $('#modal').find('.modal-body').html(response.data+'!');
-          $('#modal').find('.modal-header h3').html('Error!');
-          $('#modal').modal('show');
+          Lightbox.displayError(response.data);
         }
       }
     });
-    $(form).find('input[type="submit"]').button('loading');
     return false;
   });
   // Delete links
