@@ -9,11 +9,17 @@ function showhideTabs(tabid) {
 
 function ajaxFLLoadTab(tabid) {
   var id = $('#'+tabid).parent().parent().parent().find(".hiddenId")[0].value;
+  var source = $('#'+tabid).parent().parent().parent().find(".hiddenSource")[0].value;
+  if (source == 'VuFind') {
+        urlroot = 'Record';
+  } else {
+	urlroot = source + 'record';
+  }
   var tab = tabid.split('_');
   tab = tab[0];
   if($('#'+tabid+'-tab').is(':empty')) {
     $.ajax({
-      url: path + '/Record/'+id+'/AjaxTab',
+      url: path + '/' + urlroot + '/' + id + '/AjaxTab',
       type: 'POST',
       data: {tab: tab},
       success: function(data) {
