@@ -601,7 +601,7 @@ $config = array(
                 'tabs' => array (
 		    'Holdings' => 'HoldingsILS', 
                     'Description' => 'Description',
-                    'Details' => 'StaffViewMARC',
+                    'Details' => 'StaffViewArray',
                  ),
 	         'defaultTab' => null,
 	    ),
@@ -609,7 +609,7 @@ $config = array(
                 'tabs' => array (
                     'Holdings' => 'HoldingsILS',
                     'Description' => 'Description',
-                    'Details' => 'StaffViewMARC',
+                    'Details' => 'StaffViewArray',
                  ),
                  'defaultTab' => null,
             ),
