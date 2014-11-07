@@ -95,7 +95,20 @@ class ExtendedIniNormalizer
         $input = (array)$input;
 
         // Perform a case-insensitive sort:
-        ksort($input, SORT_FLAG_CASE | SORT_STRING);
+        $sortCallback = function ($a, $b) {
+            // We need absolutely consistent sorting; a pure case-insensitive
+            // sort will randomly reorder strings that evaluate to the same
+            // thing (e.g. "by" vs. "By"). In our custom sort function, we'll
+            // do a case-sensitive sort on otherwise identical strings to
+            // ensure 100% consistent behavior.
+            $lowerA = strtolower($a);
+            $lowerB = strtolower($b);
+            if ($lowerA === $lowerB) {
+                return strcmp($a, $b);
+            }
+            return strcmp($lowerA, $lowerB);
+        };
+        uksort($input, $sortCallback);
 
         // Format the lines:
         $output = '';
