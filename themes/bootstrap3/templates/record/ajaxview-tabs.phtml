@@ -43,11 +43,13 @@
         <?=$this->translate('ajaxview_label_tools') ?>
         </a>
         </li>
+        <? if ($this->related()->getList($this->driver) != null ): ?>
         <li>
         <a id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxFLLoadTab("similar_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toogle="tab" data-target="#similar-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
 <?=$this->transEsc("Similar Items")?>
         </a>
         </li>
+        <? endif; ?>
     </ul>
   <div class="tab-content">
     <div class="tab-pane active" id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
@@ -59,11 +61,13 @@
     <div class="tab-pane" id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
   <?=$this->record($this->driver)->getToolbar()?>
     </div>
+    <? if ($this->related()->getList($this->driver) != null): ?>
       <div class="tab-pane" id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
   <? foreach ($this->related()->getList($this->driver) as $current): ?>
     <?=$this->related()->render($current)?>
   <? endforeach; ?>
       </div>
+     <? endif; ?>
   </div>
 </div>
   <span class="Z3988" title="<?=escapeJSAttr($this->driver->getOpenURL())?>"></span>

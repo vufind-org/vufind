@@ -57,6 +57,7 @@
     </div>
   </div>
 
+    <? if ($this->related()->getList($this->driver) != null ): ?>
   <div class="panel panel-default">
     <div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#similar-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
       <h4 class="panel-title">
@@ -73,6 +74,7 @@
       </div>
     </div>
   </div>
+  <? endif; ?>
 
   <? if (count($this->tabs) > 0): ?>
     <? foreach ($this->tabs as $tab => $obj): ?>
