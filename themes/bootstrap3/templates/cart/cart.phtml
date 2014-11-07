@@ -23,8 +23,69 @@
       <input class="btn btn-default" type="submit" name="export" value="<?=$this->transEsc('bookbag_export_selected')?>" title="<?=$this->transEsc('bookbag_export')?>"/>
     <? endif; ?>
     <input class="btn btn-default" type="submit" name="print" value="<?=$this->transEsc('bookbag_print_selected')?>" title="<?=$this->transEsc('print_selected')?>"/>
-    <input class="btn btn-default" type="submit" name="delete" value="<?=$this->transEsc('bookbag_delete_selected')?>" title="<?=$this->transEsc('bookbag_delete')?>"/>
-    <input class="btn btn-default" type="submit" name="empty" value="<?=$this->transEsc('Empty Book Bag')?>" title="<?=$this->transEsc('Empty Book Bag')?>"/>
+    <div class="btn-group" id="cartDelete">
+      <button type="submit" name="delete" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-delete-label"><?=$this->transEsc('bookbag_delete_selected')?></button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
+        <li><a onClick="submitFormWithIds(this, {'delete':'delete'})" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+      </ul>
+    </div>
+    <div class="btn-group">
+      <input type="submit" name="empty" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-empty-label" value="<?=$this->transEsc('Empty Book Bag')?>"/>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
+        <li><a onClick="submitCartForm(this, {'empty':'empty'})" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+      </ul>
+    </div>
   <? endif; ?>
   <?=$this->render('cart/contents.phtml')?>
 </form>
+<?
+  $script = <<<JS
+  function determineCallback(elem) {
+    var modal = $(elem).parents('.modal');
+    if(modal.length > 0) {
+      return Lightbox.changeContent;
+    } else {
+      console.log('!');
+      return function() {location.reload()}
+    }
+  }
+  function submitCartForm(elem, data) {
+    var url = path+'/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Home';
+    $.post(url, data, determineCallback(elem));
+  }
+  function submitFormWithIds(elem, data) {
+    data['ids[]'] = [];
+    var form = $(elem).closest('form')[0];
+    var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
+    for(var i=0;i<checkboxes.length;i++) {
+      data['ids[]'].push(checkboxes[i].value);
+    }
+    submitCartForm(elem, data);
+  }
+  $('[name=cartForm] [type=submit]').click(function() {
+    // Remove other clicks
+    $('[name=cartForm] [clicked=true]').attr('clicked', false);
+    // Add useful information
+    $(this).attr("clicked", "true");
+  });
+  $('[name=cartForm]').submit(function() {
+    var submit = $(this).find('[clicked=true]').attr('name');
+    if(submit == 'delete' || submit == 'empty') {
+      return false;
+    } else {
+      return true;
+    }
+  });
+  $('#cartDelete').on('show.bs.dropdown', function () {
+    var form = $(this).closest('form')[0];
+    var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
+    if(checkboxes.length == 0) {
+      Lightbox.displayError(vufindString['bulk_noitems_advice']);
+      return false;
+    }
+  });
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

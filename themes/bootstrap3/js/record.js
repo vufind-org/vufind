@@ -114,28 +114,12 @@ function registerAjaxCommentRecord() {
         if (response.status == 'OK') {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
-        } else if (response.status == 'NEED_AUTH') {
-          Lightbox.addCloseAction(function() {
-            $.ajax({
-              type: 'POST',
-              url:  url,
-              data: data,
-              dataType: 'json',
-              success:function() {
-                refreshCommentList(id, recordSource);
-                $(form).find('textarea[name="comment"]').val('');
-              }
-            });
-          });
-          return Lightbox.get('Record', 'AddComment', data, data);
+          $(form).find('input[type="submit"]').button('loading');
         } else {
-          $('#modal').find('.modal-body').html(response.data+'!');
-          $('#modal').find('.modal-header h3').html('Error!');
-          $('#modal').modal('show');
+          Lightbox.displayError(response.data);
         }
       }
     });
-    $(form).find('input[type="submit"]').button('loading');
     return false;
   });
   // Delete links
@@ -163,10 +147,10 @@ function registerTabEvents() {
 
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
-  var parts = document.URL.split(path+"/");
-  var urlparts = parts[1].split("/");
+  // Grab the part of the url that is the Controller and Record ID
+  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id+'/'));
   $.ajax({
-    url: path + '/' + urlparts[0] + '/'+id+'/AjaxTab',
+    url: path + urlroot[0] + 'AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {

@@ -169,7 +169,7 @@ class Holds
             $patron = $this->ilsAuth->storedCatalogLogin();
 
             // Does this ILS Driver handle consortial holdings?
-            $config = $this->catalog->getConfig('Holds');
+            $config = $this->catalog->checkFunction('Holds');
             if (isset($config['consortium']) && $config['consortium'] == true) {
                 $result = $this->catalog->getConsortialHoldings(
                     $id, $patron ? $patron : null, $ids

@@ -49,6 +49,49 @@ class ConsoleRouter extends SimpleRouteStack
     protected $pwd = '';
 
     /**
+     * Extract controller and action from command line when user directly accesses
+     * the index.php file.
+     *
+     * @return array Array with 0 => controller, 1 => action
+     */
+    protected function extractFromCommandLine()
+    {
+        // We need to modify the $_SERVER superglobals so that \Zend\Console\GetOpt
+        // will behave correctly after we've manipulated the CLI parameters. Let's
+        // use references for convenience.
+        $argv = & $_SERVER['argv'];
+        $argc = & $_SERVER['argc'];
+
+        // Pull the script name off the front of the argument array:
+        $script = array_shift($argv);
+
+        // Pull off the controller and action; if they are missing, we'll fill
+        // in dummy values for consistency's sake, which also requires us to
+        // adjust the argument count.
+        if ($argc > 0) {
+            $controller = array_shift($argv);
+        } else {
+            $controller = "undefined";
+            $argc++;
+        }
+        if ($argc > 1) {
+            $action = array_shift($argv);
+        } else {
+            $action = "undefined";
+            $argc++;
+        }
+
+        // In case later scripts are displaying $argv[0] for the script name,
+        // let's push the full invocation into that position. We want to eliminate
+        // the $controller and $action values as separate parts of the array since
+        // they'll confuse subsequent command line processing logic.
+        array_unshift($argv, "$script $controller $action");
+        $argc -= 2;
+
+        return array($controller, $action);
+    }
+
+    /**
      * Check CLIDIR
      *
      * @return string
@@ -105,6 +148,12 @@ class ConsoleRouter extends SimpleRouteStack
             $path   = $level1 . '/' . basename($filename);
         }
         $controller = basename($dir);       // the last directory part
+
+        // Special case: if user is accessing index.php directly, we expect
+        // controller and action as first two parameters.
+        if ($controller == 'public' && $actionName == 'index') {
+            list($controller, $actionName) = $this->extractFromCommandLine();
+        }
 
         $routeMatch = new RouteMatch(
             array('controller' => $controller, 'action' => $actionName), 1

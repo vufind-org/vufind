@@ -284,6 +284,9 @@ class Connection implements TranslatorAwareInterface
                     $functionConfig['helpText']
                 );
             }
+            if (isset($functionConfig['consortium'])) {
+                $response['consortium'] = $functionConfig['consortium'];
+            }
         } else if ($this->checkCapability('getHoldLink')) {
             $response = array('function' => "getHoldLink");
         }
