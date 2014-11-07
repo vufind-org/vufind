@@ -67,6 +67,18 @@ class ExtendedIniNormalizer
      */
     public function normalizeFile($file)
     {
+        file_put_contents($file, $this->normalizeFileToString($file));
+    }
+
+    /**
+     * Normalize a file from disk and returns the result as a string.
+     *
+     * @param string $file Filename.
+     *
+     * @return string
+     */
+    public function normalizeFileToString($file)
+    {
         $reader = new Translator\Loader\ExtendedIniReader();
 
         // Reading and rewriting the file by itself will eliminate all comments;
@@ -79,7 +91,7 @@ class ExtendedIniNormalizer
 
         $comments = $this->extractComments($fileArray);
         $strings = $this->formatAsString($reader->getTextDomain($fileArray, false));
-        file_put_contents($file, $comments . $strings);
+        return $comments . $strings;
     }
 
     /**
