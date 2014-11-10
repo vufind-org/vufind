@@ -420,6 +420,12 @@ class Summon extends SolrDefault
      */
     public function getThumbnail($size = 'small')
     {
+        // Support thumbnails embedded in the Summon record:
+        if ($size === 'small' && isset($this->fields['thumbnail_s'][0])) {
+            return array('proxy' => $this->fields['thumbnail_s'][0]);
+        } else if (isset($this->fields['thumbnail_m'][0])) {
+            return array('proxy' => $this->fields['thumbnail_m'][0]);
+        }
         $params = parent::getThumbnail($size);
         $formats = $this->getFormats();
         if (!empty($formats)) {
