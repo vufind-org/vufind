@@ -353,11 +353,14 @@ class WorldCatDiscovery extends SolrDefault
         $response = $this->getRawObject();
         if (is_a($response, 'WorldCat\Discovery\Article')){
             $parent = $response->getIsPartOf();
-            if ($parent) {
-                $name = $parent->getVolume()->getPeriodical()->getName();
-            }
-            if ($name) {
-                return $name->getValue();
+            if ($parent && is_callable(array($parent, 'getVolume'))) {
+                $volume = $parent->getVolume();
+                if ($volume && is_callable(array($volume, 'getPeriodical'))) {
+                    $name = $volume->getPeriodical()->getName();
+                    if ($name) {
+                        return $name->getValue();
+                    }
+                }
             }
         }
         return '';
