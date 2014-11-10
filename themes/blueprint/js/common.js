@@ -356,7 +356,7 @@ $(document).ready(function(){
         var $dialog = getLightbox('Cart', 'Home', null, null, this.title, '', '', '', {viewCart:"1"});
         return false;
     });
-    
+
     // handle QR code links
     $('a.qrcodeLink').click(function() {
         if ($(this).hasClass("active")) {
@@ -374,7 +374,7 @@ $(document).ready(function(){
         $("link[media='print']").attr("media", "all");
         window.print();
     }
-    
+
     // Collapsing facets
     $('.narrowList dt').click(function(){
       $(this).parent().toggleClass('open');
@@ -410,10 +410,45 @@ $(document).ready(function(){
       return cancelHolds('cancelAll');
     });
 
+    // Bulk action ribbon
+    function bulkActionRibbonLightbox(action) {
+      var ids = [];
+      var checks = $('.recordNumber [type=checkbox]:checked');
+      if(checks.length == 0) {
+        $('.bulkActionButtons').prepend('<div class="error">'+vufindString.bulk_noitems_advice+'</div>');
+        return false;
+      } else {
+        $('.bulkActionButtons .error').remove();
+      }
+      for(var i=0;i<checks.length;i++) {
+        ids.push(checks[i].value);
+      }
+      getLightbox('Cart', action, ids, null, null, 'Cart', action, '', {ids:ids});
+      return false;
+    }
+    $('#ribbon-email').unbind('click').click(function(){
+      return bulkActionRibbonLightbox('Email');
+    });
+    $('#ribbon-export').unbind('click').click(function(){
+      return bulkActionRibbonLightbox('Export');
+    });
+    $('#ribbon-save').unbind('click').click(function(){
+      return bulkActionRibbonLightbox('Save');
+    });
+    $('#ribbon-print').unbind('click').click(function(){
+      //redirect page
+      var url = path+'/Records/Home?print=true'
+      var checks = $('.recordNumber [type=checkbox]:checked');
+      for(var i=0;i<checks.length;i++) {
+        url += '&id[]='+checks[i].value;
+      }
+      document.location.href = url;
+    });
+
     //ContextHelp
     contextHelp.init();
     contextHelp.contextHelpSys.load();
-    
+
     // Advanced facets
     setupOrFacets();
 });
