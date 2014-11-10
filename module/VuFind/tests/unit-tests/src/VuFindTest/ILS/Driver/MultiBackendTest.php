@@ -2137,7 +2137,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $expected1 = array('config' => 'ok1');
         $expected2 = array('config' => 'ok2');
         $driver = $this->initSimpleMethodTest(
-            $this->exactly(2),
+            $this->exactly(4),
             $this->once(),
             'getConfig',
             array(
@@ -2151,6 +2151,12 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
 
         $result = $driver->getConfig('Holds', 'd1.123456');
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getConfig('Holds', array('id' => 'd1.123456'));
+        $this->assertEquals($expected1, $result);
+
+        $result = $driver->getConfig('Holds', array('cat_username' => 'd1.123456'));
         $this->assertEquals($expected1, $result);
 
         $return = $driver->getConfig('Holds', 'fail.123456');

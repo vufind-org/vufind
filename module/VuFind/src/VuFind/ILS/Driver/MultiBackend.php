@@ -1132,16 +1132,19 @@ class MultiBackend extends AbstractBase
     /**
      * Function which specifies renew, hold and cancel settings.
      *
-     * @param string $function The name of the feature to be checked
-     * @param string $id       Optional record id
+     * @param string       $function The name of the feature to be checked
+     * @param string|array $params   Optional record or patron id (string) or
+     * function-specific parameters (array)
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function, $id = null)
+    public function getConfig($function, $params = null)
     {
         $source = null;
-        if (!empty($id)) {
-            $source = $this->getSource($id);
+        if (!empty($params)) {
+            $source = is_string($params)
+                ? $this->getSource($params)
+                : $this->getSourceFromParams($params);
         }
         if (!$source) {
             $patron = $this->ilsAuth->storedCatalogLogin();
@@ -1150,14 +1153,12 @@ class MultiBackend extends AbstractBase
             }
         }
 
-        $driver = $this->getDriver(
-            $source, empty($id) ? null : $this->getLocalId($id)
-        );
+        $driver = $this->getDriver($source);
 
         // If we have resolved the needed driver, just getConfig and return.
         if ($driver && $this->methodSupported($driver, 'getConfig')) {
             return $driver->getConfig(
-                $function, $this->stripIdPrefixes($id, $source)
+                $function, $this->stripIdPrefixes($params, $source)
             );
         }
 
