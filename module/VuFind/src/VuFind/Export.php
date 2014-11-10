@@ -54,6 +54,13 @@ class Export
     protected $exportConfig;
 
     /**
+     * Bulk options (initialized to boolean false, populated later)
+     *
+     * @var array|bool
+     */
+    protected $bulkOptions = false;
+
+    /**
      * Constructor
      *
      * @param Config $mainConfig   Main VuFind configuration
@@ -72,10 +79,8 @@ class Export
      */
     public function getBulkOptions()
     {
-        static $options = false;
-
-        if ($options === false) {
-            $options = array();
+        if ($this->bulkOptions === false) {
+            $this->bulkOptions = array();
             if (isset($this->mainConfig->BulkExport->enabled)
                 && isset($this->mainConfig->BulkExport->options)
                 && $this->mainConfig->BulkExport->enabled
@@ -85,13 +90,13 @@ class Export
                     if (isset($this->mainConfig->Export->$option)
                         && $this->mainConfig->Export->$option == true
                     ) {
-                            $options[] = $option;
+                            $this->bulkOptions[] = $option;
                     }
                 }
             }
         }
 
-        return $options;
+        return $this->bulkOptions;
     }
 
     /**
