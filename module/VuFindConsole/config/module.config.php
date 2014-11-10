@@ -6,6 +6,7 @@ $config = array(
         'invokables' => array(
             'harvest' => 'VuFindConsole\Controller\HarvestController',
             'import' => 'VuFindConsole\Controller\ImportController',
+            'language' => 'VuFindConsole\Controller\LanguageController',
             'util' => 'VuFindConsole\Controller\UtilController',
         ),
     ),
