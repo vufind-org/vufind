@@ -49,6 +49,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams = new ParamBag();
 
         $backendParams->set('facets', $this->getBackendFacetParameters());
+        $backendParams->set('sortBy', $this->getSort());
 
         return $backendParams;
     }

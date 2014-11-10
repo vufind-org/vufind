@@ -126,6 +126,10 @@ class Backend extends AbstractBackend
         if (!empty($facets)) {
             $options['facetFields'] = $facets;
         }
+        $sort = $params->get('sortBy');
+        if (!empty($sort)) {
+            $options['sortBy'] = current($sort);
+        }
         //$options['facetQueries'] = $facetQueries;
         $options['startIndex'] = $offset;
         $options['itemsPerPage'] = $limit;
