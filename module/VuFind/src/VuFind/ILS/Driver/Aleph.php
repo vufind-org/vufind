@@ -1639,10 +1639,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * driver ini file.
      *
      * @param string $func The name of the feature to be checked
+     * @param string|array $params   Optional record id or function-specific
+     * parameters (array)
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($func)
+    public function getConfig($func, $params = null)
     {
         if ($func == "Holds") {
             if (isset($this->config['Holds'])) {

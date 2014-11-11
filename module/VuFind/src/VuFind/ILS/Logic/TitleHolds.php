@@ -112,17 +112,18 @@ class TitleHolds
         // Get Holdings Data
         if ($this->catalog) {
             $mode = $this->catalog->getTitleHoldsMode();
-            if ($mode == "disabled") {
+            if ($mode == 'disabled') {
                  return false;
-            } else if ($mode == "driver") {
+            } else if ($mode == 'driver') {
                 $patron = $this->ilsAuth->storedCatalogLogin();
                 if (!$patron) {
                     return false;
                 }
                 return $this->driverHold($id, $patron);
             } else {
-                $mode = $this->checkOverrideMode($id, $mode);
-                return $this->generateHold($id, $mode);
+                $patron = $this->ilsAuth->storedCatalogLogin();
+                $mode = $this->checkOverrideMode($id, $mode, $patron);
+                return $this->generateHold($id, $mode, $patron);
             }
         }
         return false;
@@ -190,7 +191,10 @@ class TitleHolds
     protected function driverHold($id, $patron)
     {
         // Get Hold Details
-        $checkHolds = $this->catalog->checkFunction("Holds");
+        $checkHolds = $this->catalog->checkFunction(
+            'Holds',
+            compact('id', 'patron')
+        );
         $data = array(
             'id' => $id,
             'level' => "title"
@@ -208,13 +212,14 @@ class TitleHolds
     /**
      * Protected method for vufind (i.e. User) defined holds
      *
-     * @param string $id   A Bib ID
-     * @param string $type The holds mode to be applied from:
+     * @param string $id     A Bib ID
+     * @param string $type   The holds mode to be applied from:
      * (disabled, always, availability, driver)
+     * @param array  $patron Patron
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function generateHold($id, $type)
+    protected function generateHold($id, $type, $patron)
     {
         $any_available = false;
         $addlink = false;
@@ -225,7 +230,10 @@ class TitleHolds
         );
 
         // Are holds allows?
-        $checkHolds = $this->catalog->checkFunction("Holds");
+        $checkHolds = $this->catalog->checkFunction(
+            'Holds',
+            compact('id', 'patron')
+        );
 
         if ($checkHolds != false) {
             if ($type == "always") {

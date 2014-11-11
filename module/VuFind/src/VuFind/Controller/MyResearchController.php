@@ -846,7 +846,7 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelStatus = $catalog->checkFunction('cancelHolds');
+        $cancelStatus = $catalog->checkFunction('cancelHolds', $patron);
         $view = $this->createViewModel();
         $view->cancelResults = $cancelStatus
             ? $this->holds()->cancelHolds($catalog, $patron) : array();
@@ -905,7 +905,9 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelSRR = $catalog->checkFunction('cancelStorageRetrievalRequests');
+        $cancelSRR = $catalog->checkFunction(
+            'cancelStorageRetrievalRequests', $patron
+        );
         $view = $this->createViewModel();
         $view->cancelResults = $cancelSRR
             ? $this->storageRetrievalRequests()->cancelStorageRetrievalRequests(
@@ -968,7 +970,7 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelStatus = $catalog->checkFunction('cancelILLRequests');
+        $cancelStatus = $catalog->checkFunction('cancelILLRequests', $patron);
         $view = $this->createViewModel();
         $view->cancelResults = $cancelStatus
             ? $this->ILLRequests()->cancelILLRequests(
@@ -1024,7 +1026,7 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Get the current renewal status and process renewal form, if necessary:
-        $renewStatus = $catalog->checkFunction('Renewals');
+        $renewStatus = $catalog->checkFunction('Renewals', $patron);
         $renewResult = $renewStatus
             ? $this->renewals()->processRenewals(
                 $this->getRequest()->getPost(), $catalog, $patron

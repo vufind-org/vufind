@@ -1133,8 +1133,8 @@ class MultiBackend extends AbstractBase
      * Function which specifies renew, hold and cancel settings.
      *
      * @param string       $function The name of the feature to be checked
-     * @param string|array $params   Optional record or patron id (string) or
-     * function-specific parameters (array)
+     * @param string|array $params   Optional record id or function-specific
+     * parameters (array)
      *
      * @return array An array with key-value pairs.
      */

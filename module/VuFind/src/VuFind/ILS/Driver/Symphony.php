@@ -368,7 +368,7 @@ class Symphony extends AbstractBase
      * called when an error happens that might be correctable by upgrading
      * SymWS. In such a case it will produce a potentially more helpful error
      * message than the original error would have.
-     * 
+     *
      * @throws Exception if the SymWS version is too old
      * @return void
      */
@@ -1452,10 +1452,12 @@ class Symphony extends AbstractBase
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param string|array $params   Optional record id or function-specific
+     * parameters (array)
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         if (isset($this->config[$function]) ) {
             $functionConfig = $this->config[$function];
