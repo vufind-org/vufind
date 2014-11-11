@@ -21,14 +21,17 @@ function addSearch(group, term, field)
     newSearch += ">" + searchFields[key] + "</option>";
   }
   newSearch += '</select></div><div class="col-md-1"><a class="help-block delete';
-  console.log(inputIndex == 0);
-  if(inputIndex == 0) newSearch += ' hidden';
+  if(inputIndex == 0) {
+    newSearch += ' hidden';
+  }
   newSearch += '" href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="delete">&times;</a></div></div>';
 
   // Insert it
   $("#group" + group + "Holder").before(newSearch);
   // Show x if we have more than one search inputs
-  if(inputIndex > 0) $('#group'+group+' .search .delete').removeClass('hidden');
+  if(inputIndex > 0) {
+    $('#group'+group+' .search .delete').removeClass('hidden');
+  }
 }
 
 function deleteSearch(group, eq)
