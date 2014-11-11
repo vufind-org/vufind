@@ -460,6 +460,7 @@ $config = array(
                     'excerpt' => 'VuFind\RecordTab\Factory::getExcerpt',
                     'hierarchytree' => 'VuFind\RecordTab\Factory::getHierarchyTree',
                     'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
+		    'holdingslinkresolver' => 'VuFind\RecordTab\Factory::getHoldingsLinkResolver',
                     'holdingsworldcat' => 'VuFind\RecordTab\Factory::getHoldingsWorldCat',
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
@@ -607,7 +608,7 @@ $config = array(
 	    ),
             'VuFind\RecordDriver\RDSProxy' => array(
                 'tabs' => array (
-                    'Holdings' => 'HoldingsILS',
+                    'Holdings' => 'HoldingsLinkResolver',
                     'Description' => 'Description',
                     'Details' => 'StaffViewArray',
                  ),

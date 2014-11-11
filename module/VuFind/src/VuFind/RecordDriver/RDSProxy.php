@@ -1162,13 +1162,14 @@ class RDSProxy extends SolrDefault
      */
     public function getURLs()
     {
-        // If non-empty, map internal URL array to expected return format;
-        // otherwise, return empty array:
-        if (isset($this->fields['url']) && is_array($this->fields['url'])) {
-            $filter = function ($url) {
-                return array('url' => $url);
-            };
-            return array_map($filter, $this->fields['url']);
+	$myurl = array();
+        if (isset($this->fields['links']) && is_array($this->fields['links'])) {
+	    foreach ($this->fields['links'] as $key => $value) {
+		if (is_array($value) && $value['type']!='embedded') {
+			$myurl[] = (array('url'=>$value['url'],'desc'=> $value['access'] . " " . $value['provider']));
+		}
+	    }
+	   return($myurl); 
         }
         return array();
     }

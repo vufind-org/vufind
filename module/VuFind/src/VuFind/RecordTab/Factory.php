@@ -153,6 +153,20 @@ class Factory
         return new HoldingsILS($catalog);
     }
 
+   /**
+     * Factory for HoldingsLinkResolver tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HoldingsLinkResolver
+     */
+    public static function getHoldingsLinkResolver(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('RDSProxy');
+        return new HoldingsLinkResolver();
+    }
+
+
     /**
      * Factory for HoldingsWorldCat tab plugin.
      *
