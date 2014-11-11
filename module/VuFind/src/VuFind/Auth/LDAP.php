@@ -178,8 +178,8 @@ class LDAP extends AbstractBase
             );
             if ($ldapBind) {
                 // If the bind was successful, we can look up the full user info:
-                $ldapSearch = ldap_search(
-                    $ldapConnection, $this->getSetting('basedn'), $ldapFilter
+                $ldapSearch = ldap_read(
+                    $ldapConnection, $info[0]['dn'], 'objectclass=*'
                 );
                 $data = ldap_get_entries($ldapConnection, $ldapSearch);
                 return $this->processLDAPUser($data);
