@@ -136,13 +136,12 @@ class Export
      */
     public function getRedirectUrl($format, $callback)
     {
-        // Fill in special tokens in template:/*
+        // Fill in special tokens in template:
         $template = $this->exportConfig->$format->redirectUrl;
         preg_match_all('/\{([^}]+)\}/', $template, $matches);
         foreach ($matches[1] as $current) {
             $parts = explode('|', $current);
             switch ($parts[0]) {
-                
             case 'config':
             case 'encodedConfig':
                 if (isset($this->mainConfig->{$parts[1]}->{$parts[2]})) {

@@ -209,6 +209,23 @@ class ExportTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test getRedirectUrl
+     *
+     * @return void
+     */
+    public function testGetRedirectUrl()
+    {
+        $mainConfig = array('config' => array('this' => 'that=true'));
+        $template = 'http://result?src={encodedCallback}&fallbacktest={config|config|unset|default}&configtest={encodedConfig|config|this|default}';
+        $exportConfig = array('foo' => array('redirectUrl' => $template));
+        $export = $this->getExport($mainConfig, $exportConfig);
+        $this->assertEquals(
+            'http://result?src=http%3A%2F%2Fcallback&fallbacktest=default&configtest=that%3Dtrue',
+            $export->getRedirectUrl('foo', 'http://callback')
+        );
+    }
+
+    /**
      * Get a fake MARCXML record
      *
      * @param string $id ID to put in record.
