@@ -56,8 +56,8 @@ class ExtendedIniNormalizerTest extends \VuFindTest\Unit\TestCase
             if (substr($file, -4) == '.ini') {
                 $full = $langDir . '/' . $file;
                 $this->assertEquals(
-                    file_get_contents($full),
                     $normalizer->normalizeFileToString($full),
+                    file_get_contents($full),
                     $file
                 );
             }
