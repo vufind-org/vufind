@@ -198,10 +198,22 @@ class HierarchicalFacetListener
                     continue;
                 }
                 if (is_array($fields[$facetName])) {
-                    foreach ($fields[$facetName] as &$value) {
-                        $value = $this->formatFacetField($facetName, $value);
+                    // If full facet display style is used, discard all but the
+                    // most significant value
+                    if (isset($this->displayStyles[$facetName])
+                        && $this->displayStyles[$facetName] == 'full'
+                    ) {
+                        $fields[$facetName] = array(
+                            $this->formatFacetField(
+                                $facetName, end($fields[$facetName])
+                            )
+                        );
+                    } else {
+                        foreach ($fields[$facetName] as &$value) {
+                            $value = $this->formatFacetField($facetName, $value);
+                        }
+                        $fields[$facetName] = array_unique($fields[$facetName]);
                     }
-                    $fields[$facetName] = array_unique($fields[$facetName]);
                 } else {
                     $fields[$facetName]
                         = $this->formatFacetField($facetName, $fields[$facetName]);
