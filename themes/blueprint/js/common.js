@@ -414,11 +414,10 @@ $(document).ready(function(){
     function bulkActionRibbonLightbox(action) {
       var ids = [];
       var checks = $('.recordNumber [type=checkbox]:checked');
+      $('.bulkActionButtons .error').remove();
       if(checks.length == 0) {
         $('.bulkActionButtons').prepend('<div class="error">'+vufindString.bulk_noitems_advice+'</div>');
         return false;
-      } else {
-        $('.bulkActionButtons .error').remove();
       }
       for(var i=0;i<checks.length;i++) {
         ids.push(checks[i].value);
@@ -439,6 +438,11 @@ $(document).ready(function(){
       //redirect page
       var url = path+'/Records/Home?print=true'
       var checks = $('.recordNumber [type=checkbox]:checked');
+      $('.bulkActionButtons .error').remove();
+      if(checks.length == 0) {
+        $('.bulkActionButtons').prepend('<div class="error">'+vufindString.bulk_noitems_advice+'</div>');
+        return false;
+      }
       for(var i=0;i<checks.length;i++) {
         url += '&id[]='+checks[i].value;
       }
