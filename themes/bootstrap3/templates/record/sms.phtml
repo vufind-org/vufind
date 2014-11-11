@@ -41,7 +41,7 @@
   <?=$this->recaptcha()->html($this->useRecaptcha) ?>
   <div class="form-group">
     <div class="col-sm-9 col-sm-offset-3">
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>" onClick="return phoneNumberFormHandler('sms_to', '<?=$this->validation ?>')"/>
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>"<? if(isset($this->validation) && !empty($this->validation)):?> onClick="return phoneNumberFormHandler('sms_to', '<?=$this->validation ?>')"<? endif; ?>/>
     </div>
   </div>
 </form>
