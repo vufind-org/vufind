@@ -19,7 +19,7 @@
       <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
     <? else: ?>
       <textarea id="comment" name="comment" class="form-control" rows="3" disabled></textarea><br/>
-      <input class="btn btn-primary" type="submit" value="<?=$this->transEsc("You must be logged in first")?>" disabled/>
+      <input onClick="Lightbox.get('MyResearch', 'Login'); return false;" class="btn btn-primary" type="submit" value="<?=$this->transEsc("You must be logged in first")?>"/>
     <? endif; ?>
   </div>
 </form>
