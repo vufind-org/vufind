@@ -53,7 +53,7 @@ class Results extends \VuFind\Search\Base\Results
         $collection = $this->getSearchService()->search(
             'WorldCatDiscovery', $query, $offset, $limit, $params
         );
-		
+
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
 
@@ -71,23 +71,42 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
+        // If there is no filter, we'll use all facets as the filter:
+        $filter = null === $filter ? $this->getParams()->getFacetConfig() : $filter;
+
+        // We want to sort the facets to match the order in the .ini file.  Let's
+        // create a lookup array to determine order:
+        $order = array_flip(array_keys($filter));
+
         $facets = array();
-        foreach ($this->responseFacets as $facet){
-        	$facetItemList = array();
-        	foreach ($facet->getFacetItems() as $facetItem){
-        		$facetItemInfo = array();
-        		$facetItemInfo['value'] = $facetItem->getName()->getValue();
-        		$facetItemInfo['displayText'] = $facetItem->getName()->getValue();
-        		$facetItemInfo['count'] = $facetItem->getCount()->getValue();
-        		$facetItemInfo['operator'] = 'AND';
-        		$facetItemInfo['isApplied'] = false;
-        		$facetItemList[] = $facetItemInfo;
-        	}
-        	$facets[$facet->getFacetIndex()->getValue()] = array(
-        		'label' => $facet->getFacetIndex()->getValue(),
-        		'list' => $facetItemList
-        	);
+        foreach ($this->responseFacets as $facet) {
+            $field = $facet->getFacetIndex()->getValue();
+            if (isset($filter[$field])) {
+                $facetItemList = array();
+                foreach ($facet->getFacetItems() as $facetItem){
+                    $facetItemInfo = array();
+                    $facetItemInfo['value'] = $facetItem->getName()->getValue();
+                    $facetItemInfo['displayText'] = $facetItem->getName()->getValue();
+                    $facetItemInfo['count'] = $facetItem->getCount()->getValue();
+                    $facetItemInfo['operator'] = 'AND';
+                    $facetItemInfo['isApplied'] = false;
+                    $facetItemList[] = $facetItemInfo;
+                }
+                $facets[$order[$field]] = array(
+                    'displayName' => $field,
+                    'label' => $filter[$field],
+                    'list' => $facetItemList
+                );
+            }
         }
-        return $facets;
+        ksort($facets);
+
+        // Rewrite the sorted array with appropriate keys:
+        $finalResult = array();
+        foreach ($facets as $current) {
+            $finalResult[$current['displayName']] = $current;
+        }
+
+        return $finalResult;
     }
 }
