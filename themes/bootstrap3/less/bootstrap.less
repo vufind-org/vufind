@@ -1,7 +1,11 @@
 @import "bootstrap/bootstrap";
 @import "a11y";
 
-.btn.disabled:hover {color:#000}
+.btn.disabled {
+  &:active,&:focus,&:hover {
+    color:#000;
+  }
+}
 [data-toggle~=dropdown] {cursor:pointer}
 .fa {cursor:default}
 .form-control {
