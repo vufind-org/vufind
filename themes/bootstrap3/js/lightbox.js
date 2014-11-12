@@ -338,14 +338,20 @@ var Lightbox = {
     // Default action, with custom callback
     } else if(typeof Lightbox.formCallbacks[name] !== "undefined") {
       $form.submit(function(evt){
-        if(evt.isDefaultPrevented()) return false;
+        if(evt.isDefaultPrevented()) {
+          $('.fa.fa-spinner', evt.target).remove();
+          return false;
+        }
         Lightbox.submit($(evt.target), Lightbox.formCallbacks[name]);
         return false;
       });
     // Default
     } else {
       $form.unbind('submit').submit(function(evt){
-        if(evt.isDefaultPrevented()) return false;
+        if(evt.isDefaultPrevented()) {
+          $('.fa.fa-spinner', evt.target).remove();
+          return false;
+        }
         Lightbox.submit($(evt.target), function(html){
           Lightbox.checkForError(html, Lightbox.close);
         });
