@@ -67,6 +67,13 @@ class Backend extends AbstractBackend
     protected $queryBuilder = null;
 
     /**
+     * Session container for discovery details.
+     *
+     * @var Container
+     */
+    protected $session;
+
+    /**
      * Constructor.
      *
      * @param RecordCollectionFactoryInterface $factory   Record collection factory
@@ -80,27 +87,32 @@ class Backend extends AbstractBackend
             $this->setRecordCollectionFactory($factory);
         }
         $this->identifier   = null;
-        
-        $this->wcDiscovery = new Container('WorldCatDiscovery');
-        
+
+        $this->session = new Container('WorldCatDiscovery');
+
         $this->wskey = $wskey;
         $this->secret = $secret;
         $this->institution = $institution;
         $this->heldBy = $heldBy;
         $this->databaseIDs = $databaseIDs;
     }
-    
+
+    /**
+     * Get or create an access token.
+     *
+     * @return string
+     */
     protected function getAccessToken()
     {
-        if (empty($this->wcDiscovery->accessToken)){
+        if (empty($this->session->accessToken)){
             $options = array(
                     'services' => array('WorldCatDiscoveryAPI refresh_token')
             );
             $wskey = new WSKey($this->wskey, $this->secret, $options);
             $accessToken = $wskey->getAccessTokenWithClientCredentials($this->institution, $this->institution);
-            $this->wcDiscovery->accessToken = $accessToken;
+            $this->session->accessToken = $accessToken;
         }
-        return $this->wcDiscovery->accessToken; 
+        return $this->session->accessToken;
     }
 
     /**
@@ -119,7 +131,7 @@ class Backend extends AbstractBackend
         if (null === $params) {
             $params = new ParamBag();
         }
-        
+
         $options = array();
         $options['dbIds'] = $this->databaseIDs;
         $facets = $params->get('facets');
@@ -133,7 +145,7 @@ class Backend extends AbstractBackend
         //$options['facetQueries'] = $facetQueries;
         $options['startIndex'] = $offset;
         $options['itemsPerPage'] = $limit;
-        
+
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response = Bib::search(current($params->get('query')), $this->getAccessToken(), $options);
         $collection = $this->createRecordCollection($response);
