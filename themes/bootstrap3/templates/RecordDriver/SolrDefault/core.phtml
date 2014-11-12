@@ -192,6 +192,15 @@
       </tr>
       <? endif; ?>
 
+      <? $componentPartCount = $this->driver->tryMethod('getComponentPartCount'); if ($componentPartCount): ?>
+      <tr>
+        <th><?=$this->transEsc('contained_records')?>: </th>
+        <td>
+          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('contained_record_count', array('%%count%%' => $componentPartCount))?></a>
+        </td>
+      </tr>
+      <? endif; ?>
+
       <?
         $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
         // Account for replace_other_urls setting
