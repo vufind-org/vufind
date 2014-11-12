@@ -141,10 +141,11 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * Public Function which retrieves renew, hold and cancel settings from the
      * driver ini file.
      *
-     * @param string $func   The name of the feature to be checked
-     * @param array  $params Optional feature-specific parameters (array)
+     * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($function, $params = null)
     {

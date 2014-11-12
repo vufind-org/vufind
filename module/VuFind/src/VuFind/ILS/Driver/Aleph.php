@@ -1642,6 +1642,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @param array  $params Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($func, $params = null)
     {
