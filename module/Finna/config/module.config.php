@@ -48,12 +48,6 @@ $config = array(
             ),
         )
     ),
-    'controllers' => array(
-        'invokables' => array(
-            'content' => 'Finna\Controller\ContentController',
-            'cover' => 'Finna\Controller\CoverController'
-        ),
-    ),
     'service_manager' => array(
         'allow_override' => true,
         'factories' => array(
@@ -72,7 +66,12 @@ $config = array(
                     // Allow Solr core names to be used as aliases for services:
                     'biblio' => 'Solr',
                 )
-            )
+            ),
+            'content_covers' => array(
+                'invokables' => array(
+                    'natlibfi' => 'Finna\Content\Covers\NatLibFi'
+                ),
+            ),
         )
     )
 );

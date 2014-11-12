@@ -452,7 +452,7 @@ email = SHIB_mail
 ; Contentcafe and/or Google Books.
 ;   Note: Summon service takes a Serials Solutions client key, NOT Summon API key!
 ;coverimages     = Syndetics:MySyndeticsId,Amazon:MyAccessKeyId,Booksite,LibraryThing:MyLibraryThingId,Google,OpenLibrary,Summon:MySerialsSolutionsClientKey,Contentcafe:MyContentCafeID
-coverimages     = NLF,OpenLibrary
+coverimages     = NatLibFi,OpenLibrary
 ; Cover image attributes
 coverwidth      = 126
 coverheight     = 126

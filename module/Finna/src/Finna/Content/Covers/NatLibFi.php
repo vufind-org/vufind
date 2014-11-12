@@ -1,6 +1,6 @@
 <?php
 /**
- * Cover Image Generator
+ * National Library of Finland cover content loader.
  *
  * PHP version 5
  *
@@ -20,39 +20,51 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Cover_Generator
- * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Content
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/use_of_external_content Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace Finna\Cover;
+namespace Finna\Content\Covers;
 
 /**
- * Cover Image Generator
+ * National Library of Finland cover content loader.
  *
  * @category VuFind2
- * @package  Cover_Generator
+ * @package  Content
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/use_of_external_content Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Loader extends \VuFind\Cover\Loader
+class NatLibFi extends \VuFind\Content\AbstractCover
 {
     /**
-     * Retrieve an NLF cover.
-     *
-     * @return bool True if image loaded, false otherwise.
+     * Constructor
      */
-    protected function nlf()
+    public function __construct()
     {
-        $isn = $this->isn->get13();
-        if (!$isn) {
+        $this->supportsIsbn = true;
+    }
+
+    /**
+     * Get image URL for a particular API key and set of IDs (or false if invalid).
+     *
+     * @param string $key  API key
+     * @param string $size Size of image to load (small/medium/large)
+     * @param array  $ids  Associative array of identifiers (keys may include 'isbn'
+     * pointing to an ISBN object and 'issn' pointing to a string)
+     *
+     * @return string|bool
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getUrl($key, $size, $ids)
+    {
+        if (!isset($ids['isbn'])) {
             return false;
         }
-        $url = 'http://siilo-kk.lib.helsinki.fi/getImage.php?query=' . $isn
+        $isbn = $ids['isbn']->get13();
+
+        return 'http://siilo-kk.lib.helsinki.fi/getImage.php?query=' . $isbn
             . '&return_error=true';
-        return $this->processImageURLForSource($url, 'NLF');
     }
 }
