@@ -1132,9 +1132,8 @@ class MultiBackend extends AbstractBase
     /**
      * Function which specifies renew, hold and cancel settings.
      *
-     * @param string       $function The name of the feature to be checked
-     * @param string|array $params   Optional record id or function-specific
-     * parameters (array)
+     * @param string $func   The name of the feature to be checked
+     * @param array  $params Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
      */
@@ -1142,9 +1141,7 @@ class MultiBackend extends AbstractBase
     {
         $source = null;
         if (!empty($params)) {
-            $source = is_string($params)
-                ? $this->getSource($params)
-                : $this->getSourceFromParams($params);
+            $source = $this->getSourceFromParams($params);
         }
         if (!$source) {
             $patron = $this->ilsAuth->storedCatalogLogin();

@@ -227,8 +227,7 @@ class Connection implements TranslatorAwareInterface
      * if the system supports a particular function.
      *
      * @param string $function The name of the function to check.
-     * @param string $params   (optional) A record id or an array of
-     * function-specific parameters
+     * @param array  $params   (optional) An array of function-specific parameters
      *
      * @return mixed On success, an associative array with specific function keys
      * and values; on failure, false.
@@ -258,7 +257,7 @@ class Connection implements TranslatorAwareInterface
      * the driver configuration to determine if the system supports Holds.
      *
      * @param array $functionConfig The Hold configuration values
-     * @param array $params         Record ID and Patron
+     * @param array $params         Record ID and Patron data
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing holds via a form or a URL; on failure, false.
@@ -301,25 +300,25 @@ class Connection implements TranslatorAwareInterface
      * the driver configuration to determine if the system supports Cancelling Holds.
      *
      * @param array $functionConfig The Cancel Hold configuration values
-     * @param array $patron         Patron
+     * @param array $params         Patron data
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling holds via a form or a URL;
      * on failure, false.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodcancelHolds($functionConfig, $patron)
+    protected function checkMethodcancelHolds($functionConfig, $params)
     {
         $response = false;
 
         if (isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
-            && $this->checkCapability('cancelHolds', $patron)
+            && $this->checkCapability('cancelHolds', $params)
         ) {
             $response = array('function' => "cancelHolds");
         } else if (isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
-            && $this->checkCapability('getCancelHoldLink', $patron)
+            && $this->checkCapability('getCancelHoldLink', $params)
         ) {
             $response = array('function' => "getCancelHoldLink");
         }
@@ -333,24 +332,24 @@ class Connection implements TranslatorAwareInterface
      * the driver configuration to determine if the system supports Renewing Items.
      *
      * @param array $functionConfig The Renewal configuration values
-     * @param array $patron         Patron
+     * @param array $params         Patron data
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for renewing items via a form or a URL; on failure, false.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodRenewals($functionConfig, $patron)
+    protected function checkMethodRenewals($functionConfig, $params)
     {
         $response = false;
 
         if (isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
-            && $this->checkCapability('renewMyItems', $patron)
+            && $this->checkCapability('renewMyItems', $params)
         ) {
             $response = array('function' => "renewMyItems");
         } else if (isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
-            && $this->checkCapability('renewMyItemsLink', $patron)
+            && $this->checkCapability('renewMyItemsLink', $params)
         ) {
             $response = array('function' => "renewMyItemsLink");
         }
@@ -366,7 +365,7 @@ class Connection implements TranslatorAwareInterface
      *
      * @param array $functionConfig The storage retrieval request configuration
      * values
-     * @param array $params         Record ID and Patron
+     * @param array $params         Record ID and Patron data
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing requests via a form; on failure, false.
@@ -400,7 +399,7 @@ class Connection implements TranslatorAwareInterface
      * Storage Retrieval Requests.
      *
      * @param array $functionConfig The Cancel function configuration values
-     * @param array $patron         Patron
+     * @param array $params         Patron data
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
@@ -408,17 +407,17 @@ class Connection implements TranslatorAwareInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkMethodcancelStorageRetrievalRequests(
-        $functionConfig, $patron
+        $functionConfig, $params
     ) {
         $response = false;
 
         if (isset($this->config->cancel_storage_retrieval_requests_enabled)
             && $this->config->cancel_storage_retrieval_requests_enabled
         ) {
-            if ($this->checkCapability('cancelStorageRetrievalRequests', $patron)) {
+            if ($this->checkCapability('cancelStorageRetrievalRequests', $params)) {
                 $response = array('function' => 'cancelStorageRetrievalRequests');
             } elseif ($this->checkCapability(
-                'getCancelStorageRetrievalRequestLink', $patron
+                'getCancelStorageRetrievalRequestLink', $params
             )) {
                 $response = array(
                     'function' => 'getCancelStorageRetrievalRequestLink'
@@ -436,7 +435,7 @@ class Connection implements TranslatorAwareInterface
      * retrieval requests.
      *
      * @param array $functionConfig The ILL request configuration values
-     * @param array $params         Record ID and Patron
+     * @param array $params         Record ID and Patron data
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing requests via a form; on failure, false.
@@ -470,23 +469,23 @@ class Connection implements TranslatorAwareInterface
      * ILL Requests.
      *
      * @param array $functionConfig The Cancel function configuration values
-     * @param array $patron         Patron
+     * @param array $params         Patron data
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
      * on failure, false.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodcancelILLRequests($functionConfig, $patron)
+    protected function checkMethodcancelILLRequests($functionConfig, $params)
     {
         $response = false;
 
         if (isset($this->config->cancel_ill_requests_enabled)
             && $this->config->cancel_ill_requests_enabled
         ) {
-            if ($this->checkCapability('cancelILLRequests', $patron)) {
+            if ($this->checkCapability('cancelILLRequests', $params)) {
                 $response = array('function' => 'cancelILLRequests');
-            } elseif ($this->checkCapability('getCancelILLRequestLink', $patron)) {
+            } elseif ($this->checkCapability('getCancelILLRequestLink', $params)) {
                 $response = array(
                     'function' => 'getCancelILLRequestLink'
                 );
@@ -503,18 +502,18 @@ class Connection implements TranslatorAwareInterface
      * password.
      *
      * @param array  $functionConfig The password change configuration values
-     * @param array  $patron         Patron
+     * @param array  $params         Patron data
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
      * on failure, false.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function checkMethodchangePassword($functionConfig, $patron)
+    protected function checkMethodchangePassword($functionConfig, $params)
     {
         $response = false;
 
-        if ($this->checkCapability('changePassword', $patron)) {
+        if ($this->checkCapability('changePassword', $params)) {
             $response = array('function' => 'changePassword');
         }
         return $response;

@@ -84,9 +84,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * Public Function which retrieves renew, hold and cancel settings from the
      * driver ini file.
      *
-     * @param string $function The name of the feature to be checked
-     * @param string|array $params   Optional record id or function-specific
-     * parameters (array)
+     * @param string $func   The name of the feature to be checked
+     * @param array  $params Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
      */
