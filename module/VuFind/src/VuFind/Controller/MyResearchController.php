@@ -154,6 +154,9 @@ class MyResearchController extends AbstractBase
 
         // Make view
         $view = $this->createViewModel();
+        // Password policy
+        $view->passwordPolicy = $this->getAuthManager()
+            ->getPasswordPolicy($method);
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('newAccount');
         // Pass request to view so we can repopulate user parameters in form:
@@ -1266,8 +1269,10 @@ class MyResearchController extends AbstractBase
         $userFromHash = isset($post->hash)
             ? $this->getTable('User')->getByVerifyHash($post->hash)
             : false;
-        // View and reCaptcha
+        // View, password policy and reCaptcha
         $view = $this->createViewModel($post);
+        $view->passwordPolicy = $this->getAuthManager()
+            ->getPasswordPolicy();
         $view->useRecaptcha = $this->recaptcha()->active('changePassword');
         // Check reCaptcha
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
@@ -1346,6 +1351,9 @@ class MyResearchController extends AbstractBase
         // Display username
         $user = $this->getUser();
         $view->username = $user->username;
+        // Password policy
+        $view->passwordPolicy = $this->getAuthManager()
+            ->getPasswordPolicy();
         // Identification
         $user->updateHash();
         $view->hash = $user->verify_hash;
