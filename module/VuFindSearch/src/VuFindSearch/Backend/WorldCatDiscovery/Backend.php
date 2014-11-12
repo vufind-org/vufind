@@ -147,7 +147,13 @@ class Backend extends AbstractBackend
         $options['itemsPerPage'] = $limit;
 
         $params->mergeWith($this->getQueryBuilder()->build($query));
-        $response = Bib::search(current($params->get('query')), $this->getAccessToken(), $options);
+        $query = current($params->get('query'));
+        $this->log(
+            'debug',
+            'Bib::search(); query = ' . $query . '; options = '
+            . print_r($options, true)
+        );
+        $response = Bib::search($query, $this->getAccessToken(), $options);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
@@ -164,6 +170,11 @@ class Backend extends AbstractBackend
     public function retrieve($id, ParamBag $params = null)
     {
         $options = array('heldBy' => $this->heldBy);
+        $this->log(
+            'debug',
+            'Offer::findByOclcNumber(); id = ' . $id . '; options = '
+            . print_r($options, true)
+        );
         $response   = Offer::findByOclcNumber($id, $this->getAccessToken(), $options);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
