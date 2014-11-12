@@ -235,7 +235,8 @@ class WorldCatDiscovery extends SolrDefault
     public function getPrimaryAuthor()
     {
         $author = $this->getRawObject()->getAuthor();
-        return is_callable($author, 'getName') ? $author->getName() : '';
+        
+        return is_callable(array($author, 'getName')) ? $author->getName() : '';
     }
 
     /**
@@ -274,6 +275,16 @@ class WorldCatDiscovery extends SolrDefault
             $contributor = $contributor->getName();
         });
         return $contributors;
+    }
+    
+    /**
+     * Get the short (pre-subtitle) title of the record.
+     *
+     * @return string
+     */
+    public function getShortTitle()
+    {
+    	return $this->getRawObject()->getName();
     }
 
     /**
