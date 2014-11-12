@@ -588,7 +588,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $ids = array($sourceRecord);
         }
 
-        return $this->getConsortialHolding($id, $patron, $ids);
+        return $this->getConsortialHoldings($id, $patron, $ids);
     }
 
 
@@ -624,7 +624,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function patronLogin($username, $password)
     {
-        $request = $this->getLookupUserRequest($username, $password);
+        $request = $this->getLookupUserRequest($username, $password, false);
         $response = $this->sendRequest($request);
         $id = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserId/ns1:UserIdentifierValue'
@@ -668,11 +668,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($patron)
+    public function getMyTransactions($patron = false)
     {
         $extras = array('<ns1:LoanedItemsDesired/>');
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $extras
+            $patron['cat_username'], $patron['cat_password'], $patron ? $patron['patron_agency_id'] : false, $extras
         );
         $response = $this->sendRequest($request);
 
@@ -720,11 +720,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
-    public function getMyFines($patron)
+    public function getMyFines($patron = false)
     {
         $extras = array('<ns1:UserFiscalAccountDesired/>');
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $extras
+            $patron['cat_username'], $patron['cat_password'], $patron ? $patron['patron_agency_id'] : false, $extras
         );
         $response = $this->sendRequest($request);
 
@@ -781,11 +781,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
-    public function getMyHolds($patron)
+    public function getMyHolds($patron = false)
     {
         $extras = array('<ns1:RequestedItemsDesired/>');
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $extras
+            $patron['cat_username'], $patron['cat_password'], $patron ? $patron['patron_agency_id'] : false, $extras
         );
         $response = $this->sendRequest($request);
 
@@ -836,7 +836,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return array        Array of the patron's profile data on success.
      */
-    public function getMyProfile($patron)
+    public function getMyProfile($patron = false)
     {
         $extras = array(
             '<ns1:UserElementType ns1:Scheme="http://www.niso.org/ncip/v1_0/' .
@@ -849,7 +849,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             '</ns1:UserElementType>'
         );
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $extras
+            $patron['cat_username'], $patron['cat_password'], $patron ? $patron['patron_agency_id'] : false, $extras
         );
         $response = $this->sendRequest($request);
 
@@ -1092,7 +1092,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $extras = array('<ns1:RequestedItemsDesired/>');
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $extras
+            $patron['cat_username'], $patron['cat_password'], $patron ? $patron['patron_agency_id'] : false, $extras
         );
         $response = $this->sendRequest($request);
 
@@ -1649,13 +1649,26 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string          NCIP request XML
      */
-    protected function getLookupUserRequest($username, $password, $extras = array())
+    protected function getLookupUserRequest($username, $password, $patron_agency_id, $extras = array())
     {
-        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+        $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
             'xsd/ncip_v2_0.xsd">' .
-                '<ns1:LookupUser>' .
+                '<ns1:LookupUser>';
+
+        if ($patron_agency_id) {
+            $ret .= 
+                   '<ns1:InitiationHeader>' .
+                        '<ns1:ToAgencyId>' .
+                            '<ns1:AgencyId>' .
+                                htmlspecialchars($patron_agency_id) .
+                            '</ns1:AgencyId>' .
+                        '</ns1:ToAgencyId>' .
+                    '</ns1:InitiationHeader>';
+        }
+
+        $ret .= 
                     '<ns1:AuthenticationInput>' .
                         '<ns1:AuthenticationInputData>' .
                             htmlspecialchars($username) .
@@ -1681,6 +1694,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     implode('', $extras) .
                 '</ns1:LookupUser>' .
             '</ns1:NCIPMessage>';
+
+        return $ret;
     }
 }
 
