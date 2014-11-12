@@ -50,6 +50,7 @@ class Params extends \VuFind\Search\Base\Params
 
         $backendParams->set('facets', $this->getBackendFacetParameters());
         $backendParams->set('sortBy', $this->getSort());
+        $this->createBackendFilterParameters($backendParams);
 
         return $backendParams;
     }
@@ -70,6 +71,28 @@ class Params extends \VuFind\Search\Base\Params
             $finalFacets[] = "{$facetName}:{$defaultFacetLimit}";
         }
         return $finalFacets;
+    }
+
+    /**
+     * Set up filters based on VuFind settings.
+     *
+     * @param ParamBag $params  Parameter collection to update
+     *
+     * @return void
+     */
+    public function createBackendFilterParameters(ParamBag $params)
+    {
+        // Which filters should be applied to our query?
+        $filterList = $this->getFilterList();
+        if (!empty($filterList)) {
+            // Loop through all filters and add appropriate values to request:
+            foreach ($filterList as $filterArray) {
+                foreach ($filterArray as $filt) {
+                    $fq = "{$filt['field']}:{$filt['value']}";
+                    $params->add('filters', $fq);
+                }
+            }
+        }
     }
 
     /**
