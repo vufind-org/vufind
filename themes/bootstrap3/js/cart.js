@@ -1,10 +1,11 @@
-/*global bulkActionLightboxHandler, Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
+/*global bulkActionSubmit, Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
 var _CART_COOKIE_DELIM = "\t";
 
 var currentId,currentSource;
+var lastCartSubmit = false;
 
 function getCartItems() {
   var items = Cookies.getItem(_CART_COOKIE);
@@ -154,13 +155,6 @@ function registerUpdateCart($form) {
   }
 }
 
-// Ajax cart submission for the lightbox
-var lastCartSubmit = false;
-function cartSubmit($form) {
-  lastCartSubmit = $form;
-  bulkActionLightboxHandler($form, false);
-}
-
 $(document).ready(function() {
   // Record buttons
   var cartId = $('#cartId');
@@ -193,14 +187,15 @@ $(document).ready(function() {
   Lightbox.addFormCallback('accountForm', function(html) {
     updatePageForLogin();
     if (lastCartSubmit !== false) {
-      cartSubmit(lastCartSubmit);
+      bulkActionSubmit(lastCartSubmit);
       lastCartSubmit = false;
     } else {
       newAccountHandler(html);
     }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
-    cartSubmit($(evt.target));
+    lastCartSubmit = $(evt.target);
+    bulkActionSubmit($(evt.target));
     return false;
   });
   Lightbox.addFormCallback('bulkEmail', function(html) {
@@ -232,7 +227,7 @@ $(document).ready(function() {
     });
     return false;
   });
-  Lightbox.addCloseAction(function() {
+  $('#modal').on('hidden.bs.modal', function() {
     // Update cart items (add to cart, remove from cart, cart lightbox interface)
     var cartCount = $('#cartItems strong');
     if(cartCount.length > 0) {

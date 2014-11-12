@@ -4,7 +4,7 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
   
   $(data).each(function() {
     var html = '';
-    if (!this.selected && counts) {
+    if (!this.isApplied && counts) {
       html = '<span class="badge" style="float: right">' + this.count;
       if (allowExclude) {
         var excludeURL = currentPath + this.exclude;
@@ -18,15 +18,15 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     var url = currentPath + this.href;
     // Just to be safe
     url.replace("'", "\\'");
-    html += '<span class="main' + (this.selected ? ' applied' : '') + '" title="' + htmlEncode(this.displayText) + '"'
+    html += '<span class="main' + (this.isApplied ? ' applied' : '') + '" title="' + htmlEncode(this.displayText) + '"'
       + ' onclick="document.location.href=\'' + url + '\'; return false;">';
     if (this.operator == 'OR') {
-      if (this.selected) {
+      if (this.isApplied) {
         html += '<i class="fa fa-check-square-o"></i>';  
       } else {
         html += '<i class="fa fa-square-o"></i>';  
       }
-    } else if (this.selected) {
+    } else if (this.isApplied) {
       html += '<i class="fa fa-check pull-right"></i>';  
     }
     html += ' ' + this.displayText;
@@ -39,11 +39,11 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
     json.push({
       'text': html,
       'children': children,
-      'applied': this.selected,
+      'applied': this.isApplied,
       'state': {
-        'opened': this.state.opened
+        'opened': this.hasAppliedChildren
       },
-      'li_attr': this.selected ? { 'class': 'active' } : {}
+      'li_attr': this.isApplied ? { 'class': 'active' } : {}
     });
   });
   

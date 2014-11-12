@@ -131,6 +131,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $this->serviceManager->setService('VuFind\Search\BackendManager', $bm);
         $ss = new \VuFindSearch\Service();
         $this->serviceManager->setService('VuFind\Search', $ss);
+        $fh = new \VuFind\Search\Solr\HierarchicalFacetHelper();
+        $this->serviceManager->setService('VuFind\HierarchicalFacetHelper', $fh);
         $events = $ss->getEventManager();
         $events->attach('resolve', array($bm, 'onResolve'));
     }

@@ -102,6 +102,11 @@ class CartController extends AbstractBase
      */
     public function cartAction()
     {
+        // Bail out if cart is disabled.
+        if (!$this->getCart()->isActive()) {
+            return $this->redirect()->toRoute('home');
+        }
+
         $ids = is_null($this->params()->fromPost('selectAll'))
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');

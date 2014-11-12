@@ -27,6 +27,7 @@
  */
 namespace VuFind\Recommend;
 use VuFind\Solr\Utils as SolrUtils;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 /**
  * SideFacets Recommendations Module
@@ -42,11 +43,18 @@ use VuFind\Solr\Utils as SolrUtils;
 class SideFacets extends AbstractFacets
 {
     /**
-     * Date facet configuration
+     * Year-only date facet configuration
      *
      * @var array
      */
     protected $dateFacets = array();
+
+    /**
+     * Day/month/year date facet configuration
+     *
+     * @var array
+     */
+    protected $fullDateFacets = array();
 
     /**
      * Generic range facet configuration
@@ -98,6 +106,28 @@ class SideFacets extends AbstractFacets
     protected $hierarchicalFacetSortOptions = array();
 
     /**
+     * Hierarchical facet helper
+     *
+     * @var HierarchicalFacetHelper
+     */
+    protected $hierarchicalFacetHelper;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
+     * hierarchical facets
+     */
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
+        HierarchicalFacetHelper $facetHelper
+    ) {
+        $this->configLoader = $configLoader;
+        $this->hierarchicalFacetHelper = $facetHelper;
+    }
+
+    /**
      * setConfig
      *
      * Store the configuration of the recommendation module.
@@ -128,6 +158,9 @@ class SideFacets extends AbstractFacets
         // standard facet lists.
         if (isset($config->SpecialFacets->dateRange)) {
             $this->dateFacets = $config->SpecialFacets->dateRange->toArray();
+        }
+        if (isset($config->SpecialFacets->fullDateRange)) {
+            $this->fullDateFacets = $config->SpecialFacets->fullDateRange->toArray();
         }
         if (isset($config->SpecialFacets->genericRange)) {
             $this->genericRangeFacets
@@ -202,19 +235,46 @@ class SideFacets extends AbstractFacets
      */
     public function getFacetSet()
     {
-        return $this->results->getFacetList($this->mainFacets);
+        $facetSet = $this->results->getFacetList($this->mainFacets);
+
+        foreach ($this->hierarchicalFacets as $hierarchicalFacet) {
+            if (isset($facetSet[$hierarchicalFacet])) {
+                $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
+                    $hierarchicalFacet, $facetSet[$hierarchicalFacet]['list']
+                );
+                $facetSet[$hierarchicalFacet]['list']
+                    = $this->hierarchicalFacetHelper
+                        ->flattenFacetHierarchy($facetArray);
+            }
+        }
+
+        return $facetSet;
     }
 
     /**
      * getDateFacets
      *
-     * Return date facet information in a format processed for use in the view.
+     * Return year-based date facet information in a format processed for use in the
+     * view.
      *
      * @return array Array of from/to value arrays keyed by field.
      */
     public function getDateFacets()
     {
         return $this->getRangeFacets('dateFacets');
+    }
+
+    /**
+     * getFullDateFacets
+     *
+     * Return year/month/day-based date facet information in a format processed for
+     * use in the view.
+     *
+     * @return array Array of from/to value arrays keyed by field.
+     */
+    public function getFullDateFacets()
+    {
+        return $this->getRangeFacets('fullDateFacets');
     }
 
     /**
@@ -252,6 +312,7 @@ class SideFacets extends AbstractFacets
     {
         $raw = array(
             'date' => $this->getDateFacets(),
+            'fulldate' => $this->getFullDateFacets(),
             'generic' => $this->getGenericRangeFacets(),
             'numeric' => $this->getNumericRangeFacets()
         );

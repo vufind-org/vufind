@@ -432,7 +432,6 @@ $config = array(
                 'factories' => array(
                     'eds' => 'VuFind\RecordDriver\Factory::getEDS',
                     'eit' => 'VuFind\RecordDriver\Factory::getEIT',
-                    'libguides' => 'VuFind\RecordDriver\Factory::getLibGuides',
                     'missing' => 'VuFind\RecordDriver\Factory::getMissing',
                     'pazpar2' => 'VuFind\RecordDriver\Factory::getPazpar2',
                     'primo' => 'VuFind\RecordDriver\Factory::getPrimo',
@@ -444,6 +443,9 @@ $config = array(
                     'summon' => 'VuFind\RecordDriver\Factory::getSummon',
                     'worldcat' => 'VuFind\RecordDriver\Factory::getWorldCat',
                 ),
+                'invokables' => array(
+                    'libguides' => 'VuFind\RecordDriver\LibGuides',
+                ),
             ),
             'recordtab' => array(
                 'abstract_factories' => array('VuFind\RecordTab\PluginFactory'),
@@ -453,6 +455,7 @@ $config = array(
                     'excerpt' => 'VuFind\RecordTab\Factory::getExcerpt',
                     'hierarchytree' => 'VuFind\RecordTab\Factory::getHierarchyTree',
                     'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
+                    'holdingsworldcat' => 'VuFind\RecordTab\Factory::getHoldingsWorldCat',
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
@@ -460,7 +463,6 @@ $config = array(
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
-                    'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
