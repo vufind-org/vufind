@@ -1,6 +1,6 @@
 <?php
 /**
- * ExtendedIniNormalizer Test Class
+ * RC4 Test Class
  *
  * PHP version 5
  *
@@ -25,43 +25,29 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFindTest\I18n;
-use VuFind\I18n\ExtendedIniNormalizer;
+namespace VuFindTest\Crypt;
+use VuFind\Crypt\RC4;
 
 /**
- * ExtendedIniNormalizer Test Class
+ * RC4 Test Class
  *
  * @category VuFind2
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-class ExtendedIniNormalizerTest extends \VuFindTest\Unit\TestCase
+class RC4Test extends \VuFindTest\Unit\TestCase
 {
     /**
-     * Test consistent normalization of translation files on disk. This tests not
-     * only the functionality of ExtendedIniNormalizer but also the integrity of
-     * the language files themselves.
+     * Test encryption/decryption.
      *
      * @return void
      */
-    public function testLanguageFileIntegrity()
+    public function testEncryptionAndDecryption()
     {
-        $normalizer = new ExtendedIniNormalizer();
-        $langDir = realpath(__DIR__ . '/../../../../../../../languages');
-        $handle = opendir($langDir);
-        while ($file = readdir($handle)) {
-            if (substr($file, -4) == '.ini') {
-                $full = $langDir . '/' . $file;
-                $this->assertEquals(
-                    $normalizer->normalizeFileToString($full),
-                    file_get_contents($full),
-                    $file
-                );
-            }
-        }
-        closedir($handle);
+        $key = 'secret';
+        $text = 'test';
+        $this->assertEquals($text, RC4::decrypt($key, RC4::encrypt($key, $text)));
     }
 }

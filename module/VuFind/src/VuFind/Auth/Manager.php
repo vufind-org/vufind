@@ -217,9 +217,9 @@ class Manager
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @param string $authMethod optional; check this auth method rather than
-     *  the one in config file
+     * the one in config file
      *
-     * @return bool
+     * @return array
      */
     public function getPasswordPolicy($authMethod=null)
     {

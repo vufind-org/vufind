@@ -1,6 +1,6 @@
 <?php
 /**
- * ExtendedIniNormalizer Test Class
+ * HMAC Test Class
  *
  * PHP version 5
  *
@@ -25,43 +25,31 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFindTest\I18n;
-use VuFind\I18n\ExtendedIniNormalizer;
+namespace VuFindTest\Crypt;
+use VuFind\Crypt\HMAC;
 
 /**
- * ExtendedIniNormalizer Test Class
+ * HMAC Test Class
  *
  * @category VuFind2
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-class ExtendedIniNormalizerTest extends \VuFindTest\Unit\TestCase
+class HMACTest extends \VuFindTest\Unit\TestCase
 {
     /**
-     * Test consistent normalization of translation files on disk. This tests not
-     * only the functionality of ExtendedIniNormalizer but also the integrity of
-     * the language files themselves.
+     * Test hashing.
      *
      * @return void
      */
-    public function testLanguageFileIntegrity()
+    public function testHash()
     {
-        $normalizer = new ExtendedIniNormalizer();
-        $langDir = realpath(__DIR__ . '/../../../../../../../languages');
-        $handle = opendir($langDir);
-        while ($file = readdir($handle)) {
-            if (substr($file, -4) == '.ini') {
-                $full = $langDir . '/' . $file;
-                $this->assertEquals(
-                    $normalizer->normalizeFileToString($full),
-                    file_get_contents($full),
-                    $file
-                );
-            }
-        }
-        closedir($handle);
+        $hmac = new HMAC('secret');
+        $this->assertEquals(
+            '330891b9db42bdf6aeb558a35e2a1780',
+            $hmac->generate(array('foo'), array('foo' => 'bar'))
+        );
     }
 }
