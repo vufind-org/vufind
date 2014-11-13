@@ -1126,9 +1126,7 @@ class MultiBackend extends AbstractBase
             }
         }
 
-        $driver = $this->getDriver(
-            $source, empty($id) ? null : $this->getLocalId($id)
-        );
+        $driver = $this->getDriver($source);
 
         // If we have resolved the needed driver, just getConfig and return.
         if ($driver && $this->methodSupported($driver, 'getConfig')) {
