@@ -187,8 +187,10 @@
       .attr("tabindex", 0)
       .append("div")
       .call(settext)
-      .attr("class", function(d) { return d.children ? "label" : "notalabel";} );
-  }
+      .attr("class", function(d) { return d.children ? "label" : "notalabel";} )
+      .insert("div")
+	    .call(setscreenreader);
+    }
 });
 
 function position() {
@@ -205,6 +207,17 @@ function settext() {
     if (d.field == "topic_facet" && d.name == "<?=$this->transEsc('More topics')?>") {return d.name + " (" + d.count + " <?=$this->transEsc('other topics')?>)"; }
     if (d.field == "topic_facet") {return d.name + " (" + d.count + ")"; }
   });
+}
+
+function setscreenreader() {
+	this.attr("class", "sr-only")
+	.text(function(d) {
+	  if (d.field == "topic_facet") {
+	    return "From " + d.parentlevel;
+	  } else {
+	    return "";
+	  }
+	});
 }
 
 function settitle() {
