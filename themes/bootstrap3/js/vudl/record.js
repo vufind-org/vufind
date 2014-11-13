@@ -23,8 +23,6 @@ function ajaxGetView(pageObject) {
         } else {
           currTab = $('.nav-tabs li a:eq(0)')[0].id;
         }
-        // Accordion size
-        resizeAccordions();
       },
       error: function(d,e){
         console.log(d.responseText);
@@ -123,31 +121,6 @@ function scrollToSelected() {
     scrollTop: $('#collapse1 .selected').offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop()-12
   });
 }
-function scrollAdjust() {
-  $('#collapse1').scrollTop($('#'+topScrollItem).offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop());
-}
-// Accordion size
-var vudlAccordionHeight
-function resizeAccordions(offset) {
-  vudlAccordionHeight = window.innerHeight // Window height
-    // Add scroll distance
-    + Math.min($('#side-nav').position().top, document.body.scrollTop)
-    // Minus the top of the accordion
-    - $('#side-nav').position().top
-    // Minus the target distance from the bottom
-    - vudlSettings.accordion.bottom
-    // Subtract height of the headers
-    - ($('#side-nav .accordion-heading').length*vudlSettings.accordion.headerHeight);
-  // All accordions
-  $('#side-nav .panel-collapse').css({
-    'max-height':vudlAccordionHeight,
-    'overflow-y':'auto'
-  });
-  $('#zoom').css({
-    'height':vudlAccordionHeight,
-    'overflow-y':'auto'
-  });
-}
 // Toggle side menu
 function toggleSideNav() {
   $('#side-nav').toggle();
@@ -195,6 +168,3 @@ $(document).ready(function() {
 });
 // Initial alignment
 $( window ).load( scrollToSelected );
-// Accordion size
-$( window ).resize( resizeAccordions );
-$( document ).scroll( resizeAccordions );

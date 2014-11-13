@@ -41,9 +41,10 @@
     // Initialize the size of Zoomy
     $('#zoom-tab').on('shown.bs.tab', function(e) {
       $('.loading-bar').removeClass('hidden');
-      var sidenav = document.getElementById('side-nav');
-      $('#zoomy').css('width', '100%');
-      $('#zoomy').css('height', vudlAccordionHeight);
+      $('#zoomy').css({
+        'width' : '100%',
+        'height': Math.ceil($('#side-nav').offset().top+$('#side-nav').height()-$('#zoomy').offset().top)
+      });
       Zoomy.init(document.getElementById('zoomy'));
       Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hidden'); });
     });
