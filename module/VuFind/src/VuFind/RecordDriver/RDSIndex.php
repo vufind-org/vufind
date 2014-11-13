@@ -172,10 +172,7 @@ class RDSIndex extends SolrMarc
      */
     public function getAllSubjectHeadings()
     {
-        $topic = isset($this->fields['topic']) ? $this->fields['topic'] : array();
-        $geo = isset($this->fields['geographic']) ?
-            $this->fields['geographic'] : array();
-        $genre = isset($this->fields['genre']) ? $this->fields['genre'] : array();
+        $topic = isset($this->fields['ct']) ? $this->fields['ct'] : array();
 
         // The Solr index doesn't currently store subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.  Other record
@@ -184,13 +181,6 @@ class RDSIndex extends SolrMarc
         foreach ($topic as $t) {
             $retval[] = array($t);
         }
-        foreach ($geo as $g) {
-            $retval[] = array($g);
-        }
-        foreach ($genre as $g) {
-            $retval[] = array($g);
-        }
-
         return $retval;
     }
 
@@ -214,7 +204,7 @@ class RDSIndex extends SolrMarc
      */
     public function getAllRecordLinks()
     {
-        return null;
+	return null;
     }
 
     /**
@@ -353,8 +343,8 @@ class RDSIndex extends SolrMarc
      */
     public function getEdition()
     {
-        return isset($this->fields['edition']) ?
-            $this->fields['edition'] : '';
+        return isset($this->fields['ausgabe'][0]) ?
+            $this->fields['ausgabe'][0] : '';
     }
 
     /**
@@ -599,11 +589,11 @@ class RDSIndex extends SolrMarc
         // If we have multiple formats, Book, Journal and Article are most
         // important...
         $formats = $this->getFormats();
-        if (in_array('Book', $formats)) {
+        if (in_array('book', $formats)) {
             return 'Book';
-        } else if (in_array('Article', $formats)) {
+        } else if (in_array('article', $formats)) {
             return 'Article';
-        } else if (in_array('Journal', $formats)) {
+        } else if (in_array('journal', $formats)) {
             return 'Journal';
         } else if (isset($formats[0])) {
             return $formats[0];
@@ -809,8 +799,9 @@ class RDSIndex extends SolrMarc
      */
     public function getPhysicalDescriptions()
     {
-        return isset($this->fields['physical']) ?
-            $this->fields['physical'] : array();
+	// ToDo
+        return isset($this->fields['umfang']) ?
+            $this->fields['umfang'] : array();
     }
 
     /**
@@ -821,7 +812,8 @@ class RDSIndex extends SolrMarc
     public function getPlacesOfPublication()
     {
         // Not currently stored in the Solr index
-        return array();
+	return isset($this->fields['pu_pp_display']) ?
+            $this->fields['pu_pp_display'] : array();
     }
 
     /**
@@ -860,7 +852,7 @@ class RDSIndex extends SolrMarc
      */
     public function getPrimaryAuthor()
     {
-        return "RDSIndex Test Author";
+        return isset($this->fields['au_display_short'][0]) ?  $this->fields['au_display_short'][0] : "" ;
     }
 
     /**
@@ -881,8 +873,8 @@ class RDSIndex extends SolrMarc
      */
     public function getPublicationDates()
     {
-        return isset($this->fields['publishDate']) ?
-            $this->fields['publishDate'] : array();
+        return (isset($this->fields['py']) && $this->fields['py']!="0") ?
+            array($this->fields['py']) : array();
     }
 
     /**
@@ -931,8 +923,8 @@ class RDSIndex extends SolrMarc
      */
     public function getPublishers()
     {
-        return isset($this->fields['publisher']) ?
-            $this->fields['publisher'] : array();
+        return isset($this->fields['pu']) ?
+            $this->fields['pu'] : array();
     }
 
     /**
@@ -991,11 +983,11 @@ class RDSIndex extends SolrMarc
     public function getSeries()
     {
         // Only use the contents of the series2 field if the series field is empty
-        if (isset($this->fields['series']) && !empty($this->fields['series'])) {
-            return $this->fields['series'];
+        if (isset($this->fields['orig_reihe_display']) && !empty($this->fields['orig_reihe_display'])) {
+            return $this->fields['orig_reihe_display'];
         }
-        return isset($this->fields['series2']) ?
-            $this->fields['series2'] : array();
+        return isset($this->fields['orig_ureihe_display']) ?
+            $this->fields['orig_ureihe_display'] : array();
     }
 
     /**
@@ -1016,6 +1008,7 @@ class RDSIndex extends SolrMarc
      */
     public function getSubtitle()
     {
+	// ToDo
         return isset($this->fields['title_sub']) ?
             $this->fields['title_sub'] : '';
     }
@@ -1144,13 +1137,10 @@ class RDSIndex extends SolrMarc
      */
     public function getURLs()
     {
-        // If non-empty, map internal URL array to expected return format;
-        // otherwise, return empty array:
-        if (isset($this->fields['url']) && is_array($this->fields['url'])) {
-            $filter = function ($url) {
-                return array('url' => $url);
-            };
-            return array_map($filter, $this->fields['url']);
+        $myurl = array();
+        if (isset($this->fields['url_short'])) {
+                $myurl[] = (array('url'=>$this->fields['url_short']));
+           	return($myurl);
         }
         return array();
     }
