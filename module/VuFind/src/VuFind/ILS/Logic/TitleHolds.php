@@ -122,7 +122,7 @@ class TitleHolds
                 return $this->driverHold($id, $patron);
             } else {
                 $patron = $this->ilsAuth->storedCatalogLogin();
-                $mode = $this->checkOverrideMode($id, $mode, $patron);
+                $mode = $this->checkOverrideMode($id, $mode);
                 return $this->generateHold($id, $mode, $patron);
             }
         }
@@ -192,8 +192,7 @@ class TitleHolds
     {
         // Get Hold Details
         $checkHolds = $this->catalog->checkFunction(
-            'Holds',
-            compact('id', 'patron')
+            'Holds', compact('id', 'patron')
         );
         $data = array(
             'id' => $id,
@@ -231,8 +230,7 @@ class TitleHolds
 
         // Are holds allows?
         $checkHolds = $this->catalog->checkFunction(
-            'Holds',
-            compact('id', 'patron')
+            'Holds', compact('id', 'patron')
         );
 
         if ($checkHolds != false) {

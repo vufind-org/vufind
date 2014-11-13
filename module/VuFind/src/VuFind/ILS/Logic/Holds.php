@@ -170,8 +170,7 @@ class Holds
 
             // Does this ILS Driver handle consortial holdings?
             $config = $this->catalog->checkFunction(
-                'Holds',
-                compact('id', 'patron')
+                'Holds', compact('id', 'patron')
             );
             if (isset($config['consortium']) && $config['consortium'] == true) {
                 $result = $this->catalog->getConsortialHoldings(
@@ -184,7 +183,7 @@ class Holds
             $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {
-                 $holdings = $this->standardHoldings($result);
+                $holdings = $this->standardHoldings($result);
             } else if ($mode == "driver") {
                 $holdings = $this->driverHoldings($result, $id, $config);
             } else {
@@ -367,8 +366,7 @@ class Holds
 
         // Are storage retrieval requests allowed?
         $requestConfig = $this->catalog->checkFunction(
-            'StorageRetrievalRequests',
-            compact('id', 'patron')
+            'StorageRetrievalRequests', compact('id', 'patron')
         );
 
         if (!$requestConfig) {
@@ -423,8 +421,7 @@ class Holds
 
         // Are storage retrieval requests allowed?
         $requestConfig = $this->catalog->checkFunction(
-            'ILLRequests',
-            compact('id', 'patron')
+            'ILLRequests', compact('id', 'patron')
         );
 
         if (!$requestConfig) {
