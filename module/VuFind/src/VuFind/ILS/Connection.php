@@ -728,6 +728,20 @@ class Connection implements TranslatorAwareInterface
     }
 
     /**
+     * Get the password policy from the driver
+     *
+     * @param array $patron Patron data
+     *
+     * @return bool|array Password policy array or false if unsupported
+     */
+    public function getPasswordPolicy($patron)
+    {
+        return $this->checkCapability('getConfig', compact('patron'))
+            ? $this->getDriver()->getConfig('changePassword', compact('patron'))
+            : false;
+    }
+
+    /**
      * Default method -- pass along calls to the driver if available; return
      * false otherwise.  This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.

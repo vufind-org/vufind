@@ -134,7 +134,8 @@ class ILS extends AbstractBase
     public function supportsPasswordChange()
     {
         return $this->getCatalog()->checkFunction(
-            'changePassword', $this->getLoggedInPatron()
+            'changePassword',
+            array('patron' => $this->getLoggedInPatron())
         );
     }
 
@@ -145,9 +146,8 @@ class ILS extends AbstractBase
      */
     public function getPasswordPolicy()
     {
-        return $this->getCatalog()->getConfig(
-            'changePassword', $this->getLoggedInPatron()
-        );
+        $policy = $this->getCatalog()->getPasswordPolicy($this->getLoggedInPatron());
+        return $policy !== false ? $policy : parent::getPasswordPolicy();
     }
 
     /**
