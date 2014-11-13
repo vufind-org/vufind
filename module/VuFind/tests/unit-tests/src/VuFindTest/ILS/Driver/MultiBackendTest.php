@@ -732,7 +732,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $driver = $this->getDriver();
         //Case: The parameters let it know what driver to use
             //Result: return the function results for that driver
-        $patron = $this->getUserObject('username', 'institution');
+        $patron = $this->getPatron('username', 'institution');
 
         $drivers = array(
             'otherinst' => 'Unicorn',
@@ -843,18 +843,18 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyProfile',
-            array($this->getUserObject('username')),
+            array($this->getPatron('username')),
             $expected1,
             $expected2
         );
 
-        $result = $driver->getMyProfile($this->getUserObject('username', 'invalid'));
+        $result = $driver->getMyProfile($this->getPatron('username', 'invalid'));
         $this->assertEquals(array(), $result);
 
-        $result = $driver->getMyProfile($this->getUserObject('username', 'd1'));
+        $result = $driver->getMyProfile($this->getPatron('username', 'd1'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getMyProfile($this->getUserObject('username', 'd2'));
+        $result = $driver->getMyProfile($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
     }
 
@@ -867,7 +867,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     public function testPatronLogin()
     {
         $driver = $this->getDriver();
-        $patronReturn = $this->getUserObject('username');
+        $patronReturn = $this->getPatron('username');
         $instance = 'institution';
 
         //Set up the mock object and prepare its expectations
@@ -938,22 +938,22 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyTransactions',
-            array($this->getUserObject('username')),
+            array($this->getPatron('username')),
             array(array('id' => '1')),
             array(array('id' => '1'))
         );
 
-        $result = $driver->getMyTransactions($this->getUserObject('username', 'd1'));
+        $result = $driver->getMyTransactions($this->getPatron('username', 'd1'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getMyTransactions($this->getUserObject('username', 'd2'));
+        $result = $driver->getMyTransactions($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
         $this->setExpectedException(
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getMyTransactions(
-            $this->getUserObject('username', 'invalid')
+            $this->getPatron('username', 'invalid')
         );
     }
 
@@ -1018,18 +1018,18 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'renewMyItems',
-            array(array('patron' => $this->getUserObject('username'))),
+            array(array('patron' => $this->getPatron('username'))),
             array(array('id' => '1'), array('id' => '2')),
             array(array('id' => '1'), array('id' => '2'))
         );
 
         $result = $driver->renewMyItems(
-            array('patron' => $this->getUserObject('username', 'd1'))
+            array('patron' => $this->getPatron('username', 'd1'))
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->renewMyItems(
-            array('patron' => $this->getUserObject('username', 'd2'))
+            array('patron' => $this->getPatron('username', 'd2'))
         );
         $this->assertEquals($expected2, $result);
 
@@ -1037,7 +1037,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->renewMyItems(
-            array('patron' => $this->getUserObject('username', 'invalid'))
+            array('patron' => $this->getPatron('username', 'invalid'))
         );
     }
 
@@ -1054,21 +1054,21 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyFines',
-            array($this->getUserObject('username')),
+            array($this->getPatron('username')),
             array(array('id' => '1')),
             array(array('id' => '1'))
         );
 
-        $result = $driver->getMyFines($this->getUserObject('username', 'd1'));
+        $result = $driver->getMyFines($this->getPatron('username', 'd1'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getMyFines($this->getUserObject('username', 'd2'));
+        $result = $driver->getMyFines($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
         $this->setExpectedException(
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
-        $result = $driver->getMyFines($this->getUserObject('username', 'invalid'));
+        $result = $driver->getMyFines($this->getPatron('username', 'invalid'));
     }
 
     /**
@@ -1084,21 +1084,21 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyHolds',
-            array($this->getUserObject('username')),
+            array($this->getPatron('username')),
             array(array('id' => '1')),
             array(array('id' => '1'))
         );
 
-        $result = $driver->getMyHolds($this->getUserObject('username', 'd1'));
+        $result = $driver->getMyHolds($this->getPatron('username', 'd1'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getMyHolds($this->getUserObject('username', 'd2'));
+        $result = $driver->getMyHolds($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
         $this->setExpectedException(
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
-        $result = $driver->getMyHolds($this->getUserObject('username', 'invalid'));
+        $result = $driver->getMyHolds($this->getPatron('username', 'invalid'));
     }
 
     /**
@@ -1114,24 +1114,24 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyStorageRetrievalRequests',
-            array($this->getUserObject('username')),
+            array($this->getPatron('username')),
             array(array('id' => '1')),
             array(array('id' => '1'))
         );
 
         $result = $driver->getMyStorageRetrievalRequests(
-            $this->getUserObject('username', 'd1')
+            $this->getPatron('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getMyStorageRetrievalRequests(
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
         // Try handling of unsupported request
         $result = $driver->getMyStorageRetrievalRequests(
-            $this->getUserObject('username', 'd3')
+            $this->getPatron('username', 'd3')
         );
         $this->assertEquals(array(), $result);
 
@@ -1139,7 +1139,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getMyStorageRetrievalRequests(
-            $this->getUserObject('username', 'invalid')
+            $this->getPatron('username', 'invalid')
         );
     }
 
@@ -1159,7 +1159,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'bibid',
                 array('id' => 'itemid'),
-                $this->getUserObject('username')
+                $this->getPatron('username')
             ),
             true,
             false
@@ -1170,7 +1170,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd1.itemid'
             ),
-            $this->getUserObject('username', 'd1')
+            $this->getPatron('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
@@ -1179,7 +1179,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd2.itemid'
             ),
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
@@ -1189,7 +1189,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd1.itemid'
             ),
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertFalse($result);
 
@@ -1208,7 +1208,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'invalid.itemid'
             ),
-            $this->getUserObject('username', 'invalid')
+            $this->getPatron('username', 'invalid')
         );
         $this->assertFalse($result);
     }
@@ -1229,7 +1229,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'bibid',
                 array('id' => 'itemid'),
-                $this->getUserObject('username')
+                $this->getPatron('username')
             ),
             true,
             false
@@ -1240,7 +1240,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd1.itemid'
             ),
-            $this->getUserObject('username', 'd1')
+            $this->getPatron('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
@@ -1249,7 +1249,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd2.itemid'
             ),
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
@@ -1259,7 +1259,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'd1.itemid'
             ),
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertFalse($result);
 
@@ -1268,7 +1268,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 'id' => 'invalid.itemid'
             ),
-            $this->getUserObject('username', 'invalid')
+            $this->getPatron('username', 'invalid')
         );
         $this->assertFalse($result);
     }
@@ -1287,7 +1287,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             'getPickUpLocations',
             array(
-                $this->getUserObject('username'),
+                $this->getPatron('username'),
                 array('id' => '1')
             ),
             $expected1,
@@ -1295,20 +1295,20 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
 
         $result = $driver->getPickUpLocations(
-            $this->getUserObject('username', 'd1'),
+            $this->getPatron('username', 'd1'),
             array('id' => 'd1.1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getPickUpLocations(
-            $this->getUserObject('username', 'd2'),
+            $this->getPatron('username', 'd2'),
             array('id' => 'd2.1')
         );
         $this->assertEquals($expected2, $result);
 
         // Must return empty set if sources of patron id and bib id differ
         $result = $driver->getPickUpLocations(
-            $this->getUserObject('username', 'd2'),
+            $this->getPatron('username', 'd2'),
             array('id' => 'd1.1')
         );
         $this->assertEquals(array(), $result);
@@ -1317,7 +1317,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getPickUpLocations(
-            $this->getUserObject('username', 'invalid'),
+            $this->getPatron('username', 'invalid'),
             array('id' => '1')
         );
     }
@@ -1336,7 +1336,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             'getDefaultPickUpLocation',
             array(
-                $this->getUserObject('username'),
+                $this->getPatron('username'),
                 array('id' => '1')
             ),
             $expected1,
@@ -1344,20 +1344,20 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
 
         $result = $driver->getDefaultPickUpLocation(
-            $this->getUserObject('username', 'd1'),
+            $this->getPatron('username', 'd1'),
             array('id' => 'd1.1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getDefaultPickUpLocation(
-            $this->getUserObject('username', 'd2'),
+            $this->getPatron('username', 'd2'),
             array('id' => 'd2.1')
         );
         $this->assertEquals($expected2, $result);
 
         // Must return false if sources of patron id and bib id differ
         $result = $driver->getDefaultPickUpLocation(
-            $this->getUserObject('username', 'd2'),
+            $this->getPatron('username', 'd2'),
             array('id' => 'd1.1')
         );
         $this->assertFalse($result);
@@ -1366,7 +1366,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getDefaultPickUpLocation(
-            $this->getUserObject('username', 'invalid'),
+            $this->getPatron('username', 'invalid'),
             array('id' => '1')
         );
     }
@@ -1386,7 +1386,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'getRequestGroups',
             array(
                 '1',
-                $this->getUserObject('username')
+                $this->getPatron('username')
             ),
             $expected1,
             $expected2
@@ -1394,20 +1394,20 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->getRequestGroups(
             'd1.1',
-            $this->getUserObject('username', 'd1')
+            $this->getPatron('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getRequestGroups(
             'd2.1',
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
         // Must return empty set if sources of patron id and bib id differ
         $result = $driver->getRequestGroups(
             'd1.1',
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertEquals(array(), $result);
 
@@ -1416,7 +1416,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $result = $driver->getRequestGroups(
             '1',
-            $this->getUserObject('username', 'invalid')
+            $this->getPatron('username', 'invalid')
         );
     }
 
@@ -1434,7 +1434,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             'getDefaultRequestGroup',
             array(
-                $this->getUserObject('username'),
+                $this->getPatron('username'),
                 array('id' => '1')
             ),
             $expected1,
@@ -1442,20 +1442,20 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
 
         $result = $driver->getDefaultRequestGroup(
-            $this->getUserObject('username', 'd1'),
+            $this->getPatron('username', 'd1'),
             array('id' => 'd1.1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getDefaultRequestGroup(
-            $this->getUserObject('username', 'd2'),
+            $this->getPatron('username', 'd2'),
             array('id' => 'd2.1')
         );
         $this->assertEquals($expected2, $result);
 
         // Must return false if sources of patron id and bib id differ
         $result = $driver->getDefaultRequestGroup(
-            $this->getUserObject('username', 'd2'),
+            $this->getPatron('username', 'd2'),
             array('id' => 'd1.1')
         );
         $this->assertFalse($result);
@@ -1464,7 +1464,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getDefaultRequestGroup(
-            $this->getUserObject('username', 'invalid'),
+            $this->getPatron('username', 'invalid'),
             array('id' => '1')
         );
     }
@@ -1488,14 +1488,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'placeHold',
-            array(array('patron' => $this->getUserObject('username'), 'id' => 1)),
+            array(array('patron' => $this->getPatron('username'), 'id' => 1)),
             $expected1,
             $expected2
         );
 
         $result = $driver->placeHold(
             array(
-                'patron' => $this->getUserObject('username', 'd1'),
+                'patron' => $this->getPatron('username', 'd1'),
                 'id' => 'd1.1'
             )
         );
@@ -1503,7 +1503,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->placeHold(
             array(
-                'patron' => $this->getUserObject('username', 'd2'),
+                'patron' => $this->getPatron('username', 'd2'),
                 'id' => 'd2.1'
             )
         );
@@ -1512,7 +1512,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         // Patron/item source mismatch
         $result = $driver->placeHold(
             array(
-                'patron' => $this->getUserObject('username', 'd2'),
+                'patron' => $this->getPatron('username', 'd2'),
                 'id' => 'd1.1'
             )
         );
@@ -1526,7 +1526,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $result = $driver->placeHold(
             array(
-                'patron' => $this->getUserObject('username', 'invalid'),
+                'patron' => $this->getPatron('username', 'invalid'),
                 'id' => 'invalid.1'
             )
         );
@@ -1556,7 +1556,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'cancelHolds',
             array(
                 array(
-                    'patron' => $this->getUserObject('username'),
+                    'patron' => $this->getPatron('username'),
                     'details' => array('1', '2')
                 )
             ),
@@ -1566,7 +1566,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->cancelHolds(
             array(
-                'patron' => $this->getUserObject('username', 'd1'),
+                'patron' => $this->getPatron('username', 'd1'),
                 'details' => array('1', '2')
             )
         );
@@ -1574,7 +1574,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->cancelHolds(
             array(
-                'patron' => $this->getUserObject('username', 'd2'),
+                'patron' => $this->getPatron('username', 'd2'),
                 'details' => array('1', '2')
             )
         );
@@ -1585,7 +1585,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $result = $driver->cancelHolds(
             array(
-                'patron' => $this->getUserObject('username', 'invalid'),
+                'patron' => $this->getPatron('username', 'invalid'),
                 'details' => array('1', '2')
             )
         );
@@ -1645,14 +1645,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'placeStorageRetrievalRequest',
-            array(array('patron' => $this->getUserObject('username'), 'id' => 1)),
+            array(array('patron' => $this->getPatron('username'), 'id' => 1)),
             $expected1,
             $expected2
         );
 
         $result = $driver->placeStorageRetrievalRequest(
             array(
-                'patron' => $this->getUserObject('username', 'd1'),
+                'patron' => $this->getPatron('username', 'd1'),
                 'id' => 'd1.1'
             )
         );
@@ -1660,7 +1660,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->placeStorageRetrievalRequest(
             array(
-                'patron' => $this->getUserObject('username', 'd2'),
+                'patron' => $this->getPatron('username', 'd2'),
                 'id' => 'd2.1'
             )
         );
@@ -1669,7 +1669,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         // Patron/item source mismatch
         $result = $driver->placeStorageRetrievalRequest(
             array(
-                'patron' => $this->getUserObject('username', 'd2'),
+                'patron' => $this->getPatron('username', 'd2'),
                 'id' => 'd1.1'
             )
         );
@@ -1683,7 +1683,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $result = $driver->placeStorageRetrievalRequest(
             array(
-                'patron' => $this->getUserObject('username', 'invalid'),
+                'patron' => $this->getPatron('username', 'invalid'),
                 'id' => 'invalid.1'
             )
         );
@@ -1713,7 +1713,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'cancelStorageRetrievalRequests',
             array(
                 array(
-                    'patron' => $this->getUserObject('username'),
+                    'patron' => $this->getPatron('username'),
                     'details' => array('1', '2')
                 )
             ),
@@ -1723,7 +1723,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->cancelStorageRetrievalRequests(
             array(
-                'patron' => $this->getUserObject('username', 'd1'),
+                'patron' => $this->getPatron('username', 'd1'),
                 'details' => array('1', '2')
             )
         );
@@ -1731,7 +1731,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->cancelStorageRetrievalRequests(
             array(
-                'patron' => $this->getUserObject('username', 'd2'),
+                'patron' => $this->getPatron('username', 'd2'),
                 'details' => array('1', '2')
             )
         );
@@ -1742,7 +1742,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $result = $driver->cancelStorageRetrievalRequests(
             array(
-                'patron' => $this->getUserObject('username', 'invalid'),
+                'patron' => $this->getPatron('username', 'invalid'),
                 'details' => array('1', '2')
             )
         );
@@ -1800,8 +1800,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                 'bibid',
                 array('id' => 'itemid'),
                 $this->logicalOr(
-                    $this->getUserObject('username', 'd1'),
-                    $this->getUserObject('username', 'd2')
+                    $this->getPatron('username', 'd1'),
+                    $this->getPatron('username', 'd2')
                 )
             ),
             true,
@@ -1811,14 +1811,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $driver->checkILLRequestIsValid(
             'd1.bibid',
             array('id' => 'd1.itemid'),
-            $this->getUserObject('username', 'd1')
+            $this->getPatron('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->checkILLRequestIsValid(
             'd2.bibid',
             array('id' => 'd2.itemid'),
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
@@ -1826,7 +1826,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $driver->checkILLRequestIsValid(
             'd1.bibid',
             array('id' => 'd1.itemid'),
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertEquals(true, $result);
 
@@ -1836,7 +1836,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $driver->checkILLRequestIsValid(
             'invalid.bibid',
             array('id' => 'invalid.itemid'),
-            $this->getUserObject('username', 'invalid')
+            $this->getPatron('username', 'invalid')
         );
         $this->assertFalse($result);
     }
@@ -1857,8 +1857,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 '1',
                 $this->logicalOr(
-                    $this->getUserObject('username', 'd1'),
-                    $this->getUserObject('username', 'd2')
+                    $this->getPatron('username', 'd1'),
+                    $this->getPatron('username', 'd2')
                 )
             ),
             $expected1,
@@ -1867,13 +1867,13 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->getILLPickupLibraries(
             'd1.1',
-            $this->getUserObject('username', 'd1')
+            $this->getPatron('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getILLPickupLibraries(
             'd2.1',
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
@@ -1882,7 +1882,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $result = $driver->getILLPickupLibraries(
             '1',
-            $this->getUserObject('username', 'invalid')
+            $this->getPatron('username', 'invalid')
         );
     }
 
@@ -1903,8 +1903,8 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                 '1',
                 '2',
                 $this->logicalOr(
-                    $this->getUserObject('username', 'd1'),
-                    $this->getUserObject('username', 'd2')
+                    $this->getPatron('username', 'd1'),
+                    $this->getPatron('username', 'd2')
                 )
             ),
             $expected1,
@@ -1914,14 +1914,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $driver->getILLPickupLocations(
             'd1.1',
             '2',
-            $this->getUserObject('username', 'd1')
+            $this->getPatron('username', 'd1')
         );
         $this->assertEquals($expected1, $result);
 
         $result = $driver->getILLPickupLocations(
             'd2.1',
             '2',
-            $this->getUserObject('username', 'd2')
+            $this->getPatron('username', 'd2')
         );
         $this->assertEquals($expected2, $result);
 
@@ -1931,7 +1931,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $driver->getILLPickupLocations(
             '1',
             '2',
-            $this->getUserObject('username', 'invalid')
+            $this->getPatron('username', 'invalid')
         );
     }
 
@@ -1957,11 +1957,11 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             array(
                 $this->logicalOr(
                     array(
-                        'patron' => $this->getUserObject('username', 'd1'),
+                        'patron' => $this->getPatron('username', 'd1'),
                         'id' => 1
                     ),
                     array(
-                        'patron' => $this->getUserObject('username', 'd2'),
+                        'patron' => $this->getPatron('username', 'd2'),
                         'id' => 1
                     )
                 )
@@ -1972,7 +1972,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->placeILLRequest(
             array(
-                'patron' => $this->getUserObject('username', 'd1'),
+                'patron' => $this->getPatron('username', 'd1'),
                 'id' => 'd1.1'
             )
         );
@@ -1980,7 +1980,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->placeILLRequest(
             array(
-                'patron' => $this->getUserObject('username', 'd2'),
+                'patron' => $this->getPatron('username', 'd2'),
                 'id' => 'd2.1'
             )
         );
@@ -1991,7 +1991,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $result = $driver->placeILLRequest(
             array(
-                'patron' => $this->getUserObject('username', 'invalid'),
+                'patron' => $this->getPatron('username', 'invalid'),
                 'id' => 'invalid.1'
             )
         );
@@ -2010,26 +2010,26 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $this->once(),
             $this->once(),
             'getMyILLRequests',
-            array($this->getUserObject('username')),
+            array($this->getPatron('username')),
             array(array('id' => '1')),
             array(array('id' => '1'))
         );
 
-        $result = $driver->getMyILLRequests($this->getUserObject('username', 'd1'));
+        $result = $driver->getMyILLRequests($this->getPatron('username', 'd1'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getMyILLRequests($this->getUserObject('username', 'd2'));
+        $result = $driver->getMyILLRequests($this->getPatron('username', 'd2'));
         $this->assertEquals($expected2, $result);
 
         // Try handling of unsupported request
-        $result = $driver->getMyILLRequests($this->getUserObject('username', 'd3'));
+        $result = $driver->getMyILLRequests($this->getPatron('username', 'd3'));
         $this->assertEquals(array(), $result);
 
         $this->setExpectedException(
             'VuFind\Exception\ILS', 'No suitable backend driver found'
         );
         $result = $driver->getMyILLRequests(
-            $this->getUserObject('username', 'invalid')
+            $this->getPatron('username', 'invalid')
         );
     }
 
@@ -2057,7 +2057,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'cancelILLRequests',
             array(
                 array(
-                    'patron' => $this->getUserObject('username'),
+                    'patron' => $this->getPatron('username'),
                     'details' => array('1', '2')
                 )
             ),
@@ -2067,7 +2067,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->cancelILLRequests(
             array(
-                'patron' => $this->getUserObject('username', 'd1'),
+                'patron' => $this->getPatron('username', 'd1'),
                 'details' => array('1', '2')
             )
         );
@@ -2075,7 +2075,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $result = $driver->cancelILLRequests(
             array(
-                'patron' => $this->getUserObject('username', 'd2'),
+                'patron' => $this->getPatron('username', 'd2'),
                 'details' => array('1', '2')
             )
         );
@@ -2086,7 +2086,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         );
         $result = $driver->cancelILLRequests(
             array(
-                'patron' => $this->getUserObject('username', 'invalid'),
+                'patron' => $this->getPatron('username', 'invalid'),
                 'details' => array('1', '2')
             )
         );
@@ -2137,33 +2137,37 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $expected1 = array('config' => 'ok1');
         $expected2 = array('config' => 'ok2');
         $driver = $this->initSimpleMethodTest(
-            $this->exactly(4),
+            $this->exactly(3),
             $this->once(),
             'getConfig',
             array(
                 $this->logicalOr(
                     'Holds',
-                    array('Holds', '123456')
+                    array('Holds', array('id' => '123456')),
+                    array(
+                        'Holds',
+                        array('patron' => $this->getPatron('123456'))
+                    )
                 )
             ),
             $expected1,
             $expected2
         );
 
-        $result = $driver->getConfig('Holds', 'd1.123456');
-        $this->assertEquals($expected1, $result);
-
         $result = $driver->getConfig('Holds', array('id' => 'd1.123456'));
         $this->assertEquals($expected1, $result);
 
-        $result = $driver->getConfig('Holds', array('cat_username' => 'd1.123456'));
+        $result = $driver->getConfig(
+            'Holds',
+            array('patron' => $this->getPatron('123456', 'd1'))
+        );
         $this->assertEquals($expected1, $result);
 
-        $return = $driver->getConfig('Holds', 'fail.123456');
+        $return = $driver->getConfig('Holds', array('id' => 'fail.123456'));
         $this->assertEquals(array(), $return);
 
         $this->setProperty($driver, 'defaultDriver', 'd2');
-        $return = $driver->getConfig('Holds', '123456');
+        $return = $driver->getConfig('Holds', array());
         $this->assertEquals($expected2, $return);
 
         $mockAuth = $this->getMockILSAuthenticator('d1');
@@ -2216,7 +2220,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         //Case: Instance to use is in parameters but does not have method
             //Result: A return of false
 
-        $patron = array($this->getUserObject('username', 'testing3'));
+        $patron = array($this->getPatron('username', 'testing3'));
         $methodReturn = $driver->supportsMethod('fail', $patron);
         $this->assertFalse($methodReturn);
 
@@ -2340,7 +2344,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             $mockAuth->expects($this->any())
                 ->method('storedCatalogLogin')
                 ->will(
-                    $this->returnValue($this->getUserObject('username', $userSource))
+                    $this->returnValue($this->getPatron('username', $userSource))
                 );
         }
         return $mockAuth;
@@ -2363,14 +2367,14 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Method to get a user object with the given username
+     * Method to get a patron with the given username
      *
      * @param string $username The username to use
      * @param string $instance The instance to append before the username
      *
-     * @return array A patron object.
+     * @return array A patron array.
      */
-    protected function getUserObject($username, $instance = null)
+    protected function getPatron($username, $instance = null)
     {
         $cat_username = $instance ? $instance . '.' . $username : $username;
         return array(
