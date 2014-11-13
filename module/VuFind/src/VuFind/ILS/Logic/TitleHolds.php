@@ -112,9 +112,9 @@ class TitleHolds
         // Get Holdings Data
         if ($this->catalog) {
             $mode = $this->catalog->getTitleHoldsMode();
-            if ($mode == "disabled") {
+            if ($mode == 'disabled') {
                  return false;
-            } else if ($mode == "driver") {
+            } else if ($mode == 'driver') {
                 $patron = $this->ilsAuth->storedCatalogLogin();
                 if (!$patron) {
                     return false;
@@ -170,12 +170,12 @@ class TitleHolds
             $allDisabled = true;
             foreach ($holdings as $holding) {
                 if (!isset($holding['holdOverride'])
-                    || "disabled" != $holding['holdOverride']
+                    || 'disabled' != $holding['holdOverride']
                 ) {
                     $allDisabled = false;
                 }
             }
-            $mode = (true == $allDisabled) ? "disabled" : $mode;
+            $mode = (true == $allDisabled) ? 'disabled' : $mode;
         }
         return $mode;
     }
@@ -196,7 +196,7 @@ class TitleHolds
         );
         $data = array(
             'id' => $id,
-            'level' => "title"
+            'level' => 'title'
         );
 
         if ($checkHolds != false) {
@@ -225,7 +225,7 @@ class TitleHolds
 
         $data = array(
             'id' => $id,
-            'level' => "title"
+            'level' => 'title'
         );
 
         // Are holds allows?
@@ -234,9 +234,9 @@ class TitleHolds
         );
 
         if ($checkHolds != false) {
-            if ($type == "always") {
+            if ($type == 'always') {
                  $addlink = true;
-            } elseif ($type == "availability") {
+            } elseif ($type == 'availability') {
 
                 $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
@@ -250,7 +250,7 @@ class TitleHolds
             }
 
             if ($addlink) {
-                if ($checkHolds['function'] == "getHoldLink") {
+                if ($checkHolds['function'] == 'getHoldLink') {
                     // Return opac link
                     return $this->catalog->getHoldLink($id, $data);
                 } else {
@@ -281,12 +281,12 @@ class TitleHolds
         foreach ($data as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {
-                $queryString[] = $key. "=" .urlencode($param);
+                $queryString[] = $key. '=' .urlencode($param);
             }
         }
 
         // Add HMAC
-        $queryString[] = "hashKey=" . urlencode($HMACkey);
+        $queryString[] = 'hashKey=' . urlencode($HMACkey);
         $queryString = implode('&', $queryString);
 
         // Build Params
