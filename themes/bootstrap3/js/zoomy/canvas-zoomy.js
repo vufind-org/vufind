@@ -10,6 +10,7 @@ var Zoomy = {
       Zoomy.canvas.height = Math.floor(Zoomy.canvas.clientHeight);
       Zoomy.width = Zoomy.canvas.width;
       Zoomy.height = Zoomy.canvas.height;
+      Zoomy.minimap = null;
       Zoomy.rebound();
       Zoomy.draw();
     }, false);
@@ -42,20 +43,67 @@ var Zoomy = {
     Math.TWO_PI = Math.PI*2;
     Math.HALF_PI = Math.PI/2;
   },
+  initMinimap: function() {
+    var aspectRatio = this.image.width / this.image.height;
+    var size = 150;
+    var mm = {
+      width  : this.image.width > this.image.height ? size : size * aspectRatio,
+      height : this.image.height > this.image.width ? size : size / aspectRatio,
+      size   : size
+    };
+    if(this.image.sideways) {
+      var t = mm.width;
+      mm.width = mm.height;
+      mm.height = t;
+    }
+    mm.x = this.width  - (size+mm.width)/2 - 10;
+    mm.y = this.height - (size+mm.height)/2 - 10;
+    return mm;
+  },
   mouseHandle: function(e) {
     if(!Zoomy.mouseDown) return;
     e.preventDefault();
+    var bounds = Zoomy.canvas.getBoundingClientRect();
     var mx = e.type.match("touch")
       ? e.targetTouches[0].pageX
       : e.pageX;
-    mx -= Zoomy.canvas.offsetLeft;
+    mx -= bounds.x;
     var my = e.type.match("touch")
       ? e.targetTouches[0].pageY
       : e.pageY;
-    my -= Zoomy.canvas.offsetTop;
+    my -= bounds.y + window.scrollY;
     if(typeof Zoomy.mouse !== "undefined") {
-      Zoomy.image.x = Math.floor(Zoomy.image.x + mx - Zoomy.mouse.x);
-      Zoomy.image.y = Math.floor(Zoomy.image.y + my - Zoomy.mouse.y);
+      var xdiff = mx - Zoomy.mouse.x;
+      var ydiff = my - Zoomy.mouse.y;
+      if(Zoomy.minimap != null
+      && mx > Zoomy.minimap.rect.x
+      && mx < Zoomy.minimap.rect.x+Zoomy.minimap.rect.w
+      && my > Zoomy.minimap.rect.y
+      && my < Zoomy.minimap.rect.y+Zoomy.minimap.rect.h) {
+        var ratio = Zoomy.image.rwidth / Zoomy.minimap.width;
+        switch(Zoomy.image.angle % Math.TWO_PI) {
+          case 0:
+            xdiff *= -ratio;
+            ydiff *= -ratio;
+            break;
+          case Math.HALF_PI: // On right side
+            var xtemp = xdiff;
+            xdiff = ydiff * ratio;
+            ydiff = xtemp * -ratio;
+            break;
+          case Math.PI: // Upside-down
+            xdiff *=  ratio;
+            ydiff *=  ratio;
+            break;
+          default: // On left side
+            var xtemp = xdiff;
+            xdiff = ydiff * -ratio;
+            ydiff = xtemp * ratio;
+            break;
+        }
+      }
+      Zoomy.image.x = Math.floor(Zoomy.image.x + xdiff);
+      Zoomy.image.y = Math.floor(Zoomy.image.y + ydiff);
       Zoomy.enforceBounds();
       Zoomy.draw();
     }
@@ -78,14 +126,17 @@ var Zoomy = {
       x: 0,
       y: 0,
       angle: 0,
+      sideways: false,
       content: img,
       transX: 0,
       transY: 0,
     }
+    Zoomy.minimap = null;
     Zoomy.center();
   },
   draw: function() {
     this.context.clearRect(0,0,this.width,this.height);
+    // Image
     this.context.save();
     this.context.translate(this.image.x, this.image.y);
     this.context.rotate(this.image.angle);
@@ -94,6 +145,68 @@ var Zoomy = {
       this.image.content, 0, 0,
       this.image.rwidth,
       this.image.rheight
+    );
+    this.context.restore();
+
+    // Minimap
+    if(this.minimap == null) {
+      this.minimap = this.initMinimap();
+    }
+    this.context.drawImage(
+      this.image.content,
+      this.minimap.x,
+      this.minimap.y,
+      this.minimap.width,
+      this.minimap.height
+    );
+
+    var hLength = (this.width  / this.image.rwidth)  * this.minimap.width;
+    var vLength = (this.height / this.image.rheight) * this.minimap.height;
+    var drawWidth  = this.image.sideways ? vLength : hLength;
+    var drawHeight = this.image.sideways ? hLength : vLength;
+
+    var xdiff = this.image.sideways
+      ? -(this.image.y / this.image.height) * this.minimap.width
+      : -(this.image.x / this.image.width)  * this.minimap.width;
+    var ydiff = this.image.sideways
+      ? -(this.image.x / this.image.width)  * this.minimap.height
+      : -(this.image.y / this.image.height) * this.minimap.height;
+    switch(this.image.angle % Math.TWO_PI) {
+      case 0:
+        break;
+      case Math.HALF_PI: // On right side
+        ydiff = this.minimap.height - drawHeight - ydiff;
+        break;
+      case Math.PI: // Upside-down
+        xdiff = this.minimap.width  - drawWidth  - xdiff;
+        ydiff = this.minimap.height - drawHeight - ydiff;
+        break;
+      default: // On left side
+        xdiff = this.minimap.width  - drawWidth  - xdiff;
+        break;
+    }
+
+    if(drawWidth > this.minimap.width) {
+      xdiff = 0;
+      drawWidth = this.minimap.width;
+    }
+    if(drawHeight > this.minimap.height) {
+      ydiff = 0;
+      drawHeight = this.minimap.height;
+    }
+    this.minimap.rect = {
+      x: this.minimap.x+Math.floor(Math.max(0, xdiff)),
+      y: this.minimap.y+Math.floor(Math.max(0, ydiff)),
+      w: Math.ceil(drawWidth),
+      h: Math.ceil(drawHeight)
+    };
+    this.context.save();
+    this.context.strokeStyle = "#00F";
+    this.context.strokeRect(
+      this.minimap.rect.x,
+      this.minimap.rect.y,
+      this.minimap.rect.w,
+      this.minimap.rect.h
     );
     this.context.restore();
   },
@@ -118,6 +231,7 @@ var Zoomy = {
 
     this.image.angle = (this.image.angle + Math.PI + Math.HALF_PI) % Math.TWO_PI;
     this.image.width = [this.image.height, this.image.height=this.image.width][0];
+    this.image.sideways = !this.image.sideways;
 
     this.rebound();
     this.draw();
@@ -130,6 +244,7 @@ var Zoomy = {
 
     this.image.angle = (this.image.angle + Math.HALF_PI) % Math.TWO_PI;
     this.image.width = [this.image.height, this.image.height=this.image.width][0];
+    this.image.sideways = !this.image.sideways;
 
     this.rebound();
     this.draw();
