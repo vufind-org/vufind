@@ -303,7 +303,7 @@ class Database extends AbstractBase
         return true;
     }
 
-   /**
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @return array

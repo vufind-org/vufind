@@ -349,6 +349,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @param string $password Password to verify
      *
+     * @return void
      * @throws AuthException
      */
     protected function validatePasswordAgainstPolicy($password)
@@ -379,12 +380,11 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * Translate a string
      *
-     * @todo Use TranslatorAwareTrait instead when it's implemented
-     *
-     * @param string $str     String to translate
-     * @param array  $tokens  Tokens to inject into the translated string
+     * @param string $str    String to translate
+     * @param array  $tokens Tokens to inject into the translated string
      *
      * @return string
+     * @todo Use TranslatorAwareTrait instead when it's implemented
      */
     public function translate($str, $tokens = array())
     {
