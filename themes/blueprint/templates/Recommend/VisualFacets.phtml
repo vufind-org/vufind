@@ -231,7 +231,7 @@ function setscreenreader() {
     this.attr("class", "offscreen")
  	.text(function(d) {
 	    if (d.field == "topic_facet") {
-	        return "From " + d.parentlevel;
+	        return "<?=$this->transEsc('From')?> " + d.parentlevel;
             } else {
                 return "";
 	    }
@@ -242,7 +242,7 @@ function settitle() {
     this.attr("title", function(d) {
         if (d.field == "callnumber-first" && d.count == "1") {return d.name + " (" + d.count + " item total)"; }
         if (d.field == "callnumber-first") {return d.name + " (" + d.count + " items total)"; }
-        if (d.field == "topic_facet" && d.name == "More topics") {return d.name + " (" + d.count + " other topics)"; }
+        if (d.field == "topic_facet" && d.name == "<?=$this->transEsc('More topics')?>") {return d.name + " (" + d.count + " other topics)"; }
         if (d.field == "topic_facet" && d.count == "1") {return d.name + " (" + d.count + " item on this topic)"; }
         if (d.field == "topic_facet") {return d.name + " (" + d.count + " items on this topic)"; }
     });
