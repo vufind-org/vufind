@@ -41,7 +41,9 @@ function addSearch(group, term, field, op)
     newSearch += ">" + searchFields[key] + "</option>";
   }
   newSearch += '</select></div> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="col-sm-1 help-block delete';
-  if(inputIndex == 0) newSearch += ' hidden';
+  if(inputIndex == 0) {
+    newSearch += ' hidden';
+  }
   newSearch += '">&times;</a></div>';
 
   // Insert it
