@@ -206,7 +206,7 @@
           .call(settext)
           .attr("class", function(d) { return d.children ? "label" : "notalabel";} )
           .insert("div")
-	      .call(setscreenreader);
+	  .call(setscreenreader);
     }
 
 });
@@ -228,13 +228,13 @@ function settext() {
 }
 
 function setscreenreader() {
-	this.attr("class", "offscreen")
- 	    .text(function(d) {
-		if (d.field == "topic_facet") {
-		    return "From " + d.parentlevel;
-		} else {
-		    return "";
-		}
+    this.attr("class", "offscreen")
+ 	.text(function(d) {
+	    if (d.field == "topic_facet") {
+	        return "From " + d.parentlevel;
+            } else {
+                return "";
+	    }
 	});
 }
 
