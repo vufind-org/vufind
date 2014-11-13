@@ -63,17 +63,47 @@ var Zoomy = {
   mouseHandle: function(e) {
     if(!Zoomy.mouseDown) return;
     e.preventDefault();
+    var bounds = Zoomy.canvas.getBoundingClientRect();
     var mx = e.type.match("touch")
       ? e.targetTouches[0].pageX
       : e.pageX;
-    mx -= Zoomy.canvas.offsetLeft;
+    mx -= bounds.x;
     var my = e.type.match("touch")
       ? e.targetTouches[0].pageY
       : e.pageY;
-    my -= Zoomy.canvas.offsetTop;
+    my -= bounds.y + window.scrollY;
     if(typeof Zoomy.mouse !== "undefined") {
-      Zoomy.image.x = Math.floor(Zoomy.image.x + mx - Zoomy.mouse.x);
-      Zoomy.image.y = Math.floor(Zoomy.image.y + my - Zoomy.mouse.y);
+      var xdiff = mx - Zoomy.mouse.x;
+      var ydiff = my - Zoomy.mouse.y;
+      if(Zoomy.minimap != null
+      && mx > Zoomy.minimap.rect.x
+      && mx < Zoomy.minimap.rect.x+Zoomy.minimap.rect.w
+      && my > Zoomy.minimap.rect.y
+      && my < Zoomy.minimap.rect.y+Zoomy.minimap.rect.h) {
+        var ratio = Zoomy.image.rwidth / Zoomy.minimap.width;
+        switch(Zoomy.image.angle % Math.TWO_PI) {
+          case 0:
+            xdiff *= -ratio;
+            ydiff *= -ratio;
+            break;
+          case Math.HALF_PI: // On right side
+            var xtemp = xdiff;
+            xdiff = ydiff * ratio;
+            ydiff = xtemp * -ratio;
+            break;
+          case Math.PI: // Upside-down
+            xdiff *=  ratio;
+            ydiff *=  ratio;
+            break;
+          default: // On left side
+            var xtemp = xdiff;
+            xdiff = ydiff * -ratio;
+            ydiff = xtemp * ratio;
+            break;
+        }
+      }
+      Zoomy.image.x = Math.floor(Zoomy.image.x + xdiff);
+      Zoomy.image.y = Math.floor(Zoomy.image.y + ydiff);
       Zoomy.enforceBounds();
       Zoomy.draw();
     }
@@ -117,19 +147,18 @@ var Zoomy = {
       this.image.rheight
     );
     this.context.restore();
+
     // Minimap
     if(this.minimap == null) {
       this.minimap = this.initMinimap();
     }
-    this.context.save();
-    this.context.translate(this.minimap.x, this.minimap.y);
     this.context.drawImage(
       this.image.content,
-      0, 0,
+      this.minimap.x,
+      this.minimap.y,
       this.minimap.width,
       this.minimap.height
     );
-    this.context.strokeStyle = "#00F";
 
     var hLength = (this.width  / this.image.rwidth)  * this.minimap.width;
     var vLength = (this.height / this.image.rheight) * this.minimap.height;
@@ -165,11 +194,19 @@ var Zoomy = {
       ydiff = 0;
       drawHeight = this.minimap.height;
     }
+    this.minimap.rect = {
+      x: this.minimap.x+Math.floor(Math.max(0, xdiff)),
+      y: this.minimap.y+Math.floor(Math.max(0, ydiff)),
+      w: Math.ceil(drawWidth),
+      h: Math.ceil(drawHeight)
+    };
+    this.context.save();
+    this.context.strokeStyle = "#00F";
     this.context.strokeRect(
-      Math.max(0, xdiff),
-      Math.max(0, ydiff),
-      drawWidth,
-      drawHeight
+      this.minimap.rect.x,
+      this.minimap.rect.y,
+      this.minimap.rect.w,
+      this.minimap.rect.h
     );
     this.context.restore();
   },
