@@ -117,9 +117,11 @@ function nextPage() {
   scrollToSelected();
 }
 function scrollToSelected() {
-  $('#collapse1').animate({
-    scrollTop: $('#collapse1 .selected').offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop()-12
-  });
+  if($('#collapse1').length > 0 && $('#collapse1 .selected').length > 0) {
+    $('#collapse1').animate({
+      scrollTop: $('#collapse1 .selected').offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop()-12
+    });
+  }
 }
 // Toggle side menu
 function toggleSideNav() {

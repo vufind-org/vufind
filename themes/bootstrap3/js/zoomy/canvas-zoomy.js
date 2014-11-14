@@ -114,11 +114,7 @@ var Zoomy = {
   load: function(src, callback) {
     if(typeof this.canvas === "undefined") return;
     var img = new Image();
-    img.onloadstart = function () { console.log('Loading...'); };
-    img.onprogress = function (e) { console.log(e.loaded / e.total * 100); };
     img.onload = function() { Zoomy.finishLoad(img); if(typeof callback !== "undefined") callback(); }
-    img.onerror = function () { /* Load failed. Show a custom error message. */ }
-    img.onloadend = function () { /* Load either either succeeded or failed. Either way, hide the progress bar. */ };
     img.src = src;
   },
   finishLoad: function(img) {
@@ -150,7 +146,6 @@ var Zoomy = {
     this.context.restore();
 
     // Minimap
-    console.log(this.showMinimap);
     if(!this.showMinimap) return;
     if(this.minimap == null) {
       this.minimap = this.initMinimap();
