@@ -18,7 +18,7 @@
 
 .panel {border:1px solid #DDD}
 .panel .panel-heading {background:#EEE}
-.panel-collapse {max-height:500px;}
+.panel-collapse {max-height:500px;overflow-y:auto}
 
 .details {text-align:center}
 .details .copyright {margin-bottom:1em}
