@@ -274,24 +274,23 @@ class DAIA extends AbstractBase
                 }
                 $messageElements
                     = $itemlist->item($c)->getElementsByTagName('message');
-	/*	
+		
                 if ($messageElements->length > 0) {
                     for ($m = 0; $messageElements->item($m) !== null; $m++) {
                         $errno = $messageElements->item($m)->attributes
                             ->getNamedItem('errno')->nodeValue;
                         if ($errno === '404') {
                             $result['status'] = 'missing';
+			
                         } else {
-                            if (is_array($result['notes'][$errno]) === false) {
-                                $result['notes'][$errno] = array();
-                            }
                             $lang = $messageElements->item($m)->attributes
                                 ->getNamedItem('lang')->nodeValue;
-                            $result['notes'][$errno][$lang]
+                            $result['notes'][$lang]
                                 = $messageElements->item($m)->nodeValue;
+			
                         }
                     }
-                }*/
+                }
 		
 
                 //$loanAvail = 0;
