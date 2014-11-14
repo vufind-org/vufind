@@ -240,7 +240,7 @@ class DAIA extends AbstractBase
                     'barcode' => 1,
                     'status' => '',
                     'id' => $id,
-                    'itemid' => '',
+                    'item_id' => '',
                     'recallhref' => '',
                     'location' => '',
                     'location.id' => '',
@@ -248,7 +248,7 @@ class DAIA extends AbstractBase
                     'label' => '',
                     'notes' => array()
                 );
-                $result['itemid'] = $itemlist->item($c)->attributes
+                $result['item_id'] = $itemlist->item($c)->attributes
                     ->getNamedItem('id')->nodeValue;
                 if ($itemlist->item($c)->attributes->getNamedItem('href') !== null) {
                     $result['recallhref'] = $itemlist->item($c)->attributes
