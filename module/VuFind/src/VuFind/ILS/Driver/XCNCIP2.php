@@ -624,8 +624,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function patronLogin($username, $password)
     {
-        // TODO: we somehow need to figure out 'patron_agency_id' in the consortium=true case
-        //$request = $this->getLookupUserRequest($username, $password, 'patron_agency_id');
+        // TODO: we somehow need to figure out 'patron_agency_id' in the
+        // consortium=true case
+        //$request = $this->getLookupUserRequest(
+        //    $username, $password, 'patron_agency_id'
+        //);
         $request = $this->getLookupUserRequest($username, $password);
         $response = $this->sendRequest($request);
         $id = $response->xpath(
@@ -674,7 +677,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $extras = array('<ns1:LoanedItemsDesired/>');
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $patron['patron_agency_id'], $extras
+            $patron['cat_username'], $patron['cat_password'],
+            $patron['patron_agency_id'], $extras
         );
         $response = $this->sendRequest($request);
 
@@ -726,7 +730,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $extras = array('<ns1:UserFiscalAccountDesired/>');
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $patron['patron_agency_id'], $extras
+            $patron['cat_username'], $patron['cat_password'],
+            $patron['patron_agency_id'], $extras
         );
         $response = $this->sendRequest($request);
 
@@ -787,7 +792,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $extras = array('<ns1:RequestedItemsDesired/>');
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $patron['patron_agency_id'], $extras
+            $patron['cat_username'], $patron['cat_password'],
+            $patron['patron_agency_id'], $extras
         );
         $response = $this->sendRequest($request);
 
@@ -851,7 +857,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             '</ns1:UserElementType>'
         );
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $patron['patron_agency_id'], $extras
+            $patron['cat_username'], $patron['cat_password'],
+            $patron['patron_agency_id'], $extras
         );
         $response = $this->sendRequest($request);
 
@@ -1096,7 +1103,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $extras = array('<ns1:RequestedItemsDesired/>');
         $request = $this->getLookupUserRequest(
-            $patron['cat_username'], $patron['cat_password'], $patron['patron_agency_id'], $extras
+            $patron['cat_username'], $patron['cat_password'],
+            $patron['patron_agency_id'], $extras
         );
         $response = $this->sendRequest($request);
 
@@ -1647,14 +1655,16 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * Helper function to build the request XML to log in a user
      * and/or retrieve loaned items / request information
      *
-     * @param string $username Username for login
-     * @param string $password Password for login
-     * @param string $extras   Extra elements to include in the request
+     * @param string $username         Username for login
+     * @param string $password         Password for login
+     * @param string $patron_agency_id Patron agency ID (optional)
+     * @param string $extras           Extra elements to include in the request
      *
      * @return string          NCIP request XML
      */
-    protected function getLookupUserRequest($username, $password, $patron_agency_id = null, $extras = array())
-    {
+    protected function getLookupUserRequest($username, $password,
+        $patron_agency_id = null, $extras = array()
+    ) {
         $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
             '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .

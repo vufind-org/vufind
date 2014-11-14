@@ -185,7 +185,7 @@ class Holds
             if ($mode == "disabled") {
                 $holdings = $this->standardHoldings($result);
             } else if ($mode == "driver") {
-                $holdings = $this->driverHoldings($result, $id, $config);
+                $holdings = $this->driverHoldings($result, $config);
             } else {
                 $holdings = $this->generateHoldings($result, $mode, $config);
             }
@@ -223,13 +223,12 @@ class Holds
     /**
      * Protected method for driver defined holdings
      *
-     * @param array  $result     A result set returned from a driver
-     * @param string $id         Record ID
-     * @param array  $holdConfig Hold configuration from driver
+     * @param array $result     A result set returned from a driver
+     * @param array $holdConfig Hold configuration from driver
      *
      * @return array A sorted results set
      */
-    protected function driverHoldings($result, $id, $holdConfig)
+    protected function driverHoldings($result, $holdConfig)
     {
         $holdings = array();
 

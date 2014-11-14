@@ -105,7 +105,8 @@ class RecordController extends AbstractRecord
 
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
-        $checkHolds = $catalog->checkFunction('Holds',
+        $checkHolds = $catalog->checkFunction(
+            'Holds',
             array(
                 'id' => $driver->getUniqueID(),
                 'patron' => $patron
