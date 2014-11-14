@@ -281,17 +281,14 @@ class DAIA extends AbstractBase
                             ->getNamedItem('errno')->nodeValue;
                         if ($errno === '404') {
                             $result['status'] = 'missing';
-			
                         } else {
                             $lang = $messageElements->item($m)->attributes
                                 ->getNamedItem('lang')->nodeValue;
                             $result['notes'][$lang]
                                 = $messageElements->item($m)->nodeValue;
-			
                         }
                     }
                 }
-		
 
                 //$loanAvail = 0;
                 //$loanExp = 0;
