@@ -68,6 +68,23 @@ class DAIA extends AbstractBase
         $this->baseURL = $this->config['Global']['baseUrl'];
     }
 
+   /**
+     * Get Hold Link
+     *
+     * The goal for this method is to return a URL to a "place hold" web page on
+     * the ILS OPAC. This is used for ILSs that do not support an API or method
+     * to place Holds.
+     *
+     * @param string $id      The id of the bib record
+     * @param array  $details Item details from getHoldings return array
+     *
+     * @return string         URL to ILS's OPAC's place hold screen.
+     */
+    public function getHoldLink($id, $details)
+    {
+	return($details['ilslink']);
+    }
+
     /**
      * Get Status
      *
@@ -194,6 +211,10 @@ class DAIA extends AbstractBase
         $status = array();
         for ($b = 0; $documentlist->item($b) !== null; $b++) {
             $itemlist = $documentlist->item($b)->getElementsByTagName('item');
+	    $ilslink='';
+	    if ($documentlist->item($b)->attributes->getNamedItem('href')!==null) { 
+	       $ilslink=($documentlist->item($b)->attributes->getNamedItem('href')->nodeValue);
+	    }
             $emptyResult = array(
                     'callnumber' => '-',
                     'availability' => '0',
@@ -274,7 +295,6 @@ class DAIA extends AbstractBase
                 }
                 $messageElements
                     = $itemlist->item($c)->getElementsByTagName('message');
-		
                 if ($messageElements->length > 0) {
                     for ($m = 0; $messageElements->item($m) !== null; $m++) {
                         $errno = $messageElements->item($m)->attributes
@@ -408,6 +428,7 @@ class DAIA extends AbstractBase
                     $result['availability'] = '-1';
                     $result['barcode'] = '-1';
                 }
+		$result['ilslink'] = $ilslink;
                 $status[] = $result;
                 /* $status = "available";
                 if (loanAvail) return 0;
