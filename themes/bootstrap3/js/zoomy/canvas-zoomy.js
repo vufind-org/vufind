@@ -3,6 +3,7 @@ var Zoomy = {
   // Create
   init: function(canvas) {
     this.canvas  = canvas;
+    this.showMinimap = true;
     this.canvas.width  = Math.floor(this.canvas.clientWidth);
     this.canvas.height = Math.floor(this.canvas.clientHeight);
     addEventListener('resize', function() {
@@ -113,11 +114,7 @@ var Zoomy = {
   load: function(src, callback) {
     if(typeof this.canvas === "undefined") return;
     var img = new Image();
-    img.onloadstart = function () { console.log('Loading...'); };
-    img.onprogress = function (e) { console.log(e.loaded / e.total * 100); };
     img.onload = function() { Zoomy.finishLoad(img); if(typeof callback !== "undefined") callback(); }
-    img.onerror = function () { /* Load failed. Show a custom error message. */ }
-    img.onloadend = function () { /* Load either either succeeded or failed. Either way, hide the progress bar. */ };
     img.src = src;
   },
   finishLoad: function(img) {
@@ -149,6 +146,7 @@ var Zoomy = {
     this.context.restore();
 
     // Minimap
+    if(!this.showMinimap) return;
     if(this.minimap == null) {
       this.minimap = this.initMinimap();
     }
@@ -316,6 +314,10 @@ var Zoomy = {
     this.image.width = newWidth;
     this.image.height = newHeight;
     this.rebound();
+    this.draw();
+  },
+  toggleMap: function() {
+    this.showMinimap = !this.showMinimap;
     this.draw();
   }
 };

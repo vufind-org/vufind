@@ -89,6 +89,9 @@
     <a class="btn btn-default" onClick="Zoomy.turnLeft()"><i class="fa fa-rotate-left"></i></a>
     <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:1})"><i class="fa fa-search-minus"></i></a>
     <a class="btn btn-default" onClick="Zoomy.zoom(0,1)">[1:1]</a>
+    <a class="btn btn-default" onClick="Zoomy.toggleMap();$(this).children('.fa').toggleClass('fa fa-toggle-down').toggleClass('fa fa-toggle-up');" title="<?=$this->transEsc('more_info_toggle') ?>">
+      <i class="fa fa-toggle-down"></i>
+    </a>
     <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:-1})"><i class="fa fa-search-plus"></i></a>
     <a class="btn btn-default" onClick="Zoomy.turnRight()"><i class="fa fa-rotate-right"></i></a>
     <canvas id="zoomy"></canvas>
