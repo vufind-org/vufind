@@ -31,6 +31,14 @@
     }
   }
 
+  function resizeZoom() {
+    $height = $(window).height() + window.scrollY - $('#zoomy').offset().top - 10;
+    $('#zoomy').css({
+      'width' : '100%',
+      'height': Math.max(400, Math.min($height, $('#side-nav').height() - 80))
+    });
+  }
+
   $(document).ready(function() {
     $('#view .nav-tabs li.opener a').addClass('hidden');
     $('#view .nav-tabs li:not(.static) a').click(function (e) {
@@ -39,15 +47,10 @@
       currTab = $(this).attr('id');
     });
     // Initialize the size of Zoomy
-    $('#zoom-tab').on('shown.bs.tab', function(e) {
-      $('.loading-bar').removeClass('hidden');
-      $('#zoomy').css({
-        'width' : '100%',
-        'height': Math.ceil($('#side-nav').offset().top+$('#side-nav').height()-$('#zoomy').offset().top)
-      });
-      Zoomy.init(document.getElementById('zoomy'));
-      Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hidden'); });
-    });
+    $('#zoom-tab').on('shown.bs.tab', resizeZoom);
+    $(window).scroll(resizeZoom);
+    $(window).resize(resizeZoom);
+    resizeZoom();
 
     var pageData = {
       'id'       :'<?=$this->id ?>',
