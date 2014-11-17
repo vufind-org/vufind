@@ -60,8 +60,9 @@ function findVisible() {
   var min = -1,max;
   // Flag pages on screen
   $('.page-link.unloaded').each(function(index, item) {
-    if($(item).offset().top > $('#collapse1').position().top-vudlSettings.scroll.top
-    && $(item).offset().top < $('#collapse1').position().top+$('#collapse1').height()+vudlSettings.scroll.bottom
+    var listID = '#collapse'+currentList;
+    if($(item).offset().top > $(listID).position().top-vudlSettings.scroll.top
+    && $(item).offset().top < $(listID).position().top+$(listID).height()+vudlSettings.scroll.bottom
     && $(item).hasClass('unloaded')) {
       $(item).addClass('loading');
       max = parseInt($(item).attr('title'));
@@ -172,6 +173,12 @@ $(document).ready(function() {
         break;
       }
     }
+  });
+  $('.panel-title a').click(function() {
+    if($(this).attr('href') == "#collapse_details") {
+      return;
+    }
+    currentList = parseInt($(this).attr('href').substring(9));
   });
   scrollToSelected();
   resizeElements();
