@@ -98,16 +98,22 @@ class RecordController extends AbstractRecord
     {
         $driver = $this->loadRecord();
 
-        // If we're not supposed to be here, give up now!
-        $catalog = $this->getILS();
-        $checkHolds = $catalog->checkFunction("Holds", $driver->getUniqueID());
-        if (!$checkHolds) {
-            return $this->forwardTo('Record', 'Home');
-        }
-
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
+        }
+
+        // If we're not supposed to be here, give up now!
+        $catalog = $this->getILS();
+        $checkHolds = $catalog->checkFunction(
+            'Holds',
+            array(
+                'id' => $driver->getUniqueID(),
+                'patron' => $patron
+            )
+        );
+        if (!$checkHolds) {
+            return $this->forwardTo('Record', 'Home');
         }
 
         // Do we have valid information?
@@ -232,19 +238,22 @@ class RecordController extends AbstractRecord
     {
         $driver = $this->loadRecord();
 
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
         $checkRequests = $catalog->checkFunction(
             'StorageRetrievalRequests',
-            $driver->getUniqueID()
+            array(
+                'id' => $driver->getUniqueID(),
+                'patron' => $patron
+            )
         );
         if (!$checkRequests) {
             return $this->forwardTo('Record', 'Home');
-        }
-
-        // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
         }
 
         // Do we have valid information?
@@ -339,19 +348,22 @@ class RecordController extends AbstractRecord
     {
         $driver = $this->loadRecord();
 
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
         $checkRequests = $catalog->checkFunction(
             'ILLRequests',
-            $driver->getUniqueID()
+            array(
+                'id' => $driver->getUniqueID(),
+                'patron' => $patron
+            )
         );
         if (!$checkRequests) {
             return $this->forwardTo('Record', 'Home');
-        }
-
-        // Stop now if the user does not have valid catalog credentials available:
-        if (!is_array($patron = $this->catalogLogin())) {
-            return $patron;
         }
 
         // Do we have valid information?
