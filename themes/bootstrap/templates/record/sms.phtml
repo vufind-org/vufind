@@ -6,10 +6,6 @@
   $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '<span class="divider">&gt;</span> </li>')
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span> </li>'
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
-
-  if ($this->validation == 'US') {
-    $phone_pattern = '^(\([2-9]\d{2}\)|[2-9]\d{2})[ -\.]?[2-9]\d{2}[-\.]?\d{4}$';
-  }
 ?>
 <?=$this->flashmessages()?>
 <form method="post" action="" name="smsRecord" class="form-horizontal">
@@ -19,6 +15,7 @@
     <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
     <div class="controls">
       <input id="sms_to" type="tel"<? if(isset($phone_pattern)): ?> pattern="<?=$phone_pattern ?>"<? endif ?> name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>" oninvalid="$('#modal .icon-spinner').remove()"/>
+      <div class="help-block with-errors"></div>
     </div>
   </div>
   <? if (is_array($this->carriers) && count($this->carriers) > 1): ?>
@@ -40,7 +37,7 @@
   <?=$this->recaptcha()->html($this->useRecaptcha) ?>
   <div class="control-group">
     <div class="controls">
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>"/>
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>"<? if(isset($this->validation) && !empty($this->validation)):?> onClick="return phoneNumberFormHandler('sms_to', '<?=$this->validation ?>')"<? endif; ?>/>
     </div>
   </div>
 </form>

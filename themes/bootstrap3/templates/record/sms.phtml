@@ -6,10 +6,6 @@
   $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
-
-  if ($this->validation == 'US') {
-    //$phone_pattern = '^(\([2-9]\d{2}\)|[2-9]\d{2})[ -\.]?[2-9]\d{2}[-\.]?\d{4}$';
-  }
 ?>
 <?=$this->flashmessages()?>
 <form method="post" action="" name="smsRecord" class="form-horizontal">
