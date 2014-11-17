@@ -32,10 +32,15 @@
   }
 
   function resizeZoom() {
-    $height = $(window).height() + window.scrollY - $('#zoomy').offset().top - 10;
+    var $height = $(window).height() + window.scrollY - $('#zoomy').offset().top - 10;
+    if($('#side-nav').height() > 200) {
+      $height = Math.min($height, $('#side-nav').height() - 80);
+    } else {
+      $height = Math.min($height, $(window).height() - 270);
+    }
     $('#zoomy').css({
       'width' : '100%',
-      'height': Math.max(400, Math.min($height, $('#side-nav').height() - 80))
+      'height': Math.max(400, $height)
     });
   }
 

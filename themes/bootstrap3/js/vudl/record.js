@@ -132,7 +132,7 @@ function toggleSideNav() {
 }
 
 function resizeElements() {
-  $height = $(window).height() + window.scrollY - $('.panel:last-child').offset().top - 50;
+  var $height = $(window).height() + window.scrollY - $('.panel:last-child').offset().top - 50;
   $('.panel-collapse').css('max-height', Math.max(300, Math.min($height, $(window).height() - 200)));
 }
 
