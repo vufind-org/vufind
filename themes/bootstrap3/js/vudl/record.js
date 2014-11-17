@@ -130,6 +130,12 @@ function toggleSideNav() {
   opener.toggleClass('hidden');
   $('#view').toggleClass('col-sm-9').toggleClass('col-sm-12');
 }
+
+function resizeElements() {
+  var $height = $(window).height() + window.scrollY - $('.panel:last-child').offset().top - 50;
+  $('.panel-collapse').css('max-height', Math.max(300, Math.min($height, $(window).height() - 200)));
+}
+
 // Ready? Let's go
 $(document).ready(function() {
   $('.page-link').click(function() {
@@ -167,6 +173,8 @@ $(document).ready(function() {
       }
     }
   });
+  scrollToSelected();
+  resizeElements();
+  $( window ).resize( resizeElements );
+  $( window ).scroll( resizeElements );
 });
-// Initial alignment
-$( window ).load( scrollToSelected );
