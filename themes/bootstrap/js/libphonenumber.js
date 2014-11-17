@@ -495,10 +495,10 @@ function phoneNumberFormHandler(numID, regionCode) {
     } else {
       $(phoneInput).siblings('.help-block.with-errors').html('Phone number invalid');
     }
-    $(phoneInput).closest('.form-group').addClass('has-error');
-    $('.icon-spinner').remove();
+    $(phoneInput).closest('.control-group').addClass('has-error');
+    setTimeout("$('.icon-spinner').remove();", 100);
   } else {
-    $(phoneInput).closest('.form-group').removeClass('has-error');
+    $(phoneInput).closest('.control-group').removeClass('has-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
   }
   return valid == true;
