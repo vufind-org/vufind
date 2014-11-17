@@ -57,4 +57,47 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
     }
+
+    /**
+     * Test bad to address.
+     *
+     * @return void
+     * @expectedException VuFind\Exception\Mail
+     * @expectedExceptionMessage Invalid Recipient Email Address
+     */
+    public function testBadTo()
+    {
+        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $mailer = new Mailer($transport);
+        $mailer->send('bad@bad', 'from@example.com', 'subject', 'body');
+    }
+
+    /**
+     * Test bad from address.
+     *
+     * @return void
+     * @expectedException VuFind\Exception\Mail
+     * @expectedExceptionMessage Invalid Sender Email Address
+     */
+    public function testBadFrom()
+    {
+        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $mailer = new Mailer($transport);
+        $mailer->send('to@example.com', 'bad@bad', 'subject', 'body');
+    }
+
+    /**
+     * Test transport exception.
+     *
+     * @return void
+     * @expectedException VuFind\Exception\Mail
+     * @expectedExceptionMessage Boom
+     */
+    public function testTransportException()
+    {
+        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
+        $mailer = new Mailer($transport);
+        $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
+    }
 }
