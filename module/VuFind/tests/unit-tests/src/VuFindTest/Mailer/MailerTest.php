@@ -100,4 +100,67 @@ class MailerTest extends \VuFindTest\Unit\TestCase
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
     }
+
+    /**
+     * Test sendLink
+     *
+     * @return void
+     */
+    public function testSendLink()
+    {
+        $viewCallback = function ($in) {
+            return $in['msgUrl'] == 'http://foo'
+                && $in['to'] == 'to@example.com'
+                && $in['from'] == 'from@example.com'
+                && $in['message'] == 'message';
+        };
+        $view = $this->getMock('Zend\View\Renderer\PhpRenderer', array('partial'));
+        $view->expects($this->once())->method('partial')
+            ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
+            ->will($this->returnValue('body'));
+
+        $callback = function ($message) {
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && '<from@example.com>' == $message->getFrom()->current()->toString()
+                && 'body' == $message->getBody()
+                && 'Library Catalog Search Result' == $message->getSubject();
+        };
+        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $mailer = new Mailer($transport);
+        $mailer->sendLink('to@example.com', 'from@example.com', 'message', 'http://foo', $view);
+    }
+
+    /**
+     * Test sendRecord
+     *
+     * @return void
+     */
+    public function testSendRecord()
+    {
+        $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
+        $driver->expects($this->once())->method('getBreadcrumb')->will($this->returnValue('breadcrumb'));
+
+        $viewCallback = function ($in) use ($driver) {
+            return $in['driver'] == $driver
+                && $in['to'] == 'to@example.com'
+                && $in['from'] == 'from@example.com'
+                && $in['message'] == 'message';
+        };
+        $view = $this->getMock('Zend\View\Renderer\PhpRenderer', array('partial'));
+        $view->expects($this->once())->method('partial')
+            ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
+            ->will($this->returnValue('body'));
+
+        $callback = function ($message) {
+            return '<to@example.com>' == $message->getTo()->current()->toString()
+                && '<from@example.com>' == $message->getFrom()->current()->toString()
+                && 'body' == $message->getBody()
+                && 'Library Catalog Record: breadcrumb' == $message->getSubject();
+        };
+        $transport = $this->getMock('Zend\Mail\Transport\TransportInterface');
+        $transport->expects($this->once())->method('send')->with($this->callback($callback));
+        $mailer = new Mailer($transport);
+        $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
+    }
 }
