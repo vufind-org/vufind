@@ -162,6 +162,13 @@ class Server
     protected $recordLinkHelper = null;
 
     /**
+     * added: custom set queries
+     */
+    protected $setQueries;
+
+
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
@@ -471,6 +478,11 @@ class Server
         if (isset($config->OAI->set_field)) {
             $this->setField = $config->OAI->set_field;
         }
+
+        // added: init custom sets queries:
+        if (isset($config->OAI->set_query)) {
+            $this->setQueries = $config->OAI->set_query;
+        }
     }
 
     /**
@@ -644,6 +656,15 @@ class Server
             $set->setName = $x['displayText'];
         }
 
+        // added: iterate over custom sets:
+        if (isset($this->setQueries)) {
+            foreach ($this->setQueries as $setName => $solrQuery) {
+                $set = $xml->addChild('set');
+                $set->setSpec = $solrQuery;
+                $set->setName = $setName;
+            }
+        }
+
         // Display the list:
         return $this->showResponse($xml);
     }
@@ -694,11 +715,16 @@ class Server
         );
 
         // Apply filters as needed.
-        if (!empty($set) && !is_null($this->setField)) {
-            $params->addFilter(
-                $this->setField . ':"' . addcslashes($set, '"') . '"'
-            );
+        if (!empty($set)) {
+            if (isset($this->setQueries[$set])) {
+                $params->addFilter($this->setQueries[$set]);
+            } else if (null !== $this->setField) {
+                $params->addFilter(
+                    $this->setField . ':"' . addcslashes($set, '"') . '"'
+                );
+            }
         }
+
 
         // Perform a Solr search:
         $results->overrideStartRecord($offset + 1);
