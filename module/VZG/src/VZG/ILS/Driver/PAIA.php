@@ -483,9 +483,11 @@ class PAIA extends DAIA
             if (preg_match("/epn:([X\d]{9})/", $epn, $match)) {
                 $epn = $match[1];
             }
-            $hold = $this->loanURL."?MTR=mon&LOGIN=ANONYMOUS"
+            $hold = $this->loanURL."?EPN=". $this->prfz($epn) . "&MTR=mon" 
+                        ."&BES=".$this->opacfno."&LOGIN=ANONYMOUS";
+        /*    $hold = $this->loanURL."?MTR=mon&LOGIN=ANONYMOUS"
                         ."&BES=".$this->opacfno
-                        ."&EPN=".$epn;
+                        ."&EPN=".$epn; */
             return $hold;
         }
         return $this->opcloan."?MTR=mon" ."&BES=".$this->opacfno
