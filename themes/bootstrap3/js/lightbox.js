@@ -158,6 +158,11 @@ var Lightbox = {
     if (typeof Recaptcha !== "undefined" && Recaptcha.widget) {
       Recaptcha.reload();
     }
+    // If the lightbox isn't visible, fix that
+    if(this.shown == false) {
+      $('#modal').modal('show');
+      this.shown = true;
+    }
   },
 
   /***********************************/
@@ -289,6 +294,7 @@ var Lightbox = {
    */
   registerForms: function() {
     var form = $("#modal").find('form');
+    $form.validator();
     var name = $(form).attr('name');
     // Assign form handler based on name
     if(typeof name !== "undefined" && typeof Lightbox.formHandlers[name] !== "undefined") {
@@ -296,12 +302,20 @@ var Lightbox = {
     // Default action, with custom callback
     } else if(typeof Lightbox.formCallbacks[name] !== "undefined") {
       $(form).unbind('submit').submit(function(evt){
+        if(evt.isDefaultPrevented()) {
+          $('.fa.fa-spinner', evt.target).remove();
+          return false;
+        }
         Lightbox.submit($(evt.target), Lightbox.formCallbacks[name]);
         return false;
       });
     // Default
     } else {
       $(form).unbind('submit').submit(function(evt){
+        if(evt.isDefaultPrevented()) {
+          $('.fa.fa-spinner', evt.target).remove();
+          return false;
+        }
         Lightbox.submit($(evt.target), function(html){
           Lightbox.checkForError(html, Lightbox.close);
         });
