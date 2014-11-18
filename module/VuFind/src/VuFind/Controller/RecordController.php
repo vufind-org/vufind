@@ -132,9 +132,9 @@ class RecordController extends AbstractRecord
 
         // Send various values to the view so we can build the form:
         $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
-        $requestGroups = $catalog->checkCapability('getRequestGroups')
-            ? $catalog->getRequestGroups($driver->getUniqueID(), $patron)
-            : array();
+        $requestGroups = $catalog->checkCapability(
+            'getRequestGroups', array($driver->getUniqueID(), $patron)
+        ) ? $catalog->getRequestGroups($driver->getUniqueID(), $patron) : array();
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(":", $checkHolds['extraHoldFields']) : array();
 
