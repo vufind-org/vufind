@@ -259,7 +259,11 @@ public Set getFormat(Record record){
                 result.add("Book");
             }
             break;
-        // Serial
+        // Analytics
+        case 'A':
+                result.add("Analytic");
+            break;
+		// Serial
         case 'S':
             // Look in 008 to determine what type of Continuing Resource
             formatCode = fixedField.getData().toUpperCase().charAt(21);
