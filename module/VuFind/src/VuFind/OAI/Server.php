@@ -715,11 +715,16 @@ class Server
         );
 
         // Apply filters as needed.
-        if (!empty($set) && !is_null($this->setField)) {
-            $params->addFilter(
-                $this->setField . ':"' . addcslashes($set, '"') . '"'
-            );
+        if (!empty($set)) {
+            if (isset($this->setQueries[$set])) {
+                $params->addFilter($this->setQueries[$set]);
+            } else if (null !== $this->setField) {
+                $params->addFilter(
+                    $this->setField . ':"' . addcslashes($set, '"') . '"'
+                );
+            }
         }
+
 
         // Perform a Solr search:
         $results->overrideStartRecord($offset + 1);
