@@ -1,6 +1,6 @@
 {
 	"name" : "worldcat/discovery",
-	"version" : "0.11.1",
+	"version" : "0.12.0",
 	"license" : "Apache-2.0",
 	"repositories" : [{
 			"type" : "git",
@@ -8,7 +8,7 @@
 		}
 	],
 	"require" : {
-		"php" : ">=5.3.3",
+		"php" : ">=5.4.0",
 		"lib-curl" : "*",
 		"lib-openssl" : "*",
 		"ext-curl" : "*",
@@ -21,7 +21,9 @@
 	"require-dev" : {
 		"phpunit/phpunit" : "~3",
 		"php-vcr/php-vcr" : "dev-master",
-		"php-vcr/phpunit-testlistener-vcr" : "*"
+		"php-vcr/phpunit-testlistener-vcr" : "*",
+		"zendframework/zend-log": "2.0.*",
+		"phpdocumentor/phpdocumentor": "2.*"
 	},
 	"autoload" : {
 		"psr-4" : {

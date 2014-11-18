@@ -18,8 +18,6 @@ namespace WorldCat\Discovery;
 use \EasyRdf_Graph;
 use \EasyRdf_Resource;
 use \EasyRdf_Format;
-use \EasyRdf_Namespace;
-use \EasyRdf_TypeMapper;
 
 /**
  * A class that represents a Bibliographic Resource in WorldCat
@@ -27,6 +25,8 @@ use \EasyRdf_TypeMapper;
  */
 class Bib extends EasyRdf_Resource
 {
+    use Helpers;
+    
     public static $serviceUrl = 'https://beta.worldcat.org/discovery';
     public static $testServer = FALSE;
     public static $userAgent = 'WorldCat Discovery API PHP Client';
@@ -49,23 +49,7 @@ class Bib extends EasyRdf_Resource
      */
     public function getCreativeWork()
     {
-        if (!$this->creativeWork->type()){
-            $this->graph->addType($this->creativeWork->getUri(), 'schema:CreativeWork');
-        }
-        
-        if (get_class($this->creativeWork) == 'EasyRdf_Resource'){
-            if ($this->creativeWork->type()){
-                $type = $this->creativeWork->type();
-            } else {
-                $type = 'schema:CreativeWork';
-            }
-            EasyRdf_TypeMapper::set($type, 'WorldCat\Discovery\CreativeWork');
-            $creativeWorkGraph = new EasyRdf_Graph();
-            $creativeWorkGraph->parse($this->graph->serialise('rdfxml'));
-            return $creativeWorkGraph->resource($this->creativeWork->getUri());
-        } else {
-            return $this->creativeWork;
-        }
+        return $this->creativeWork;
     }
     
     
@@ -79,6 +63,15 @@ class Bib extends EasyRdf_Resource
      */
     public static function find($id, $accessToken, $options = null)
     {
+        $validRequestOptions = array('useFRBRGrouping');
+        if (isset($options)){
+            $parsedOptions = static::parseOptions($options, $validRequestOptions);
+            $requestOptions = $parsedOptions['requestOptions'];
+            $logger = $parsedOptions['logger'];
+        } else {
+            $requestOptions = array();
+            $logger = null;
+        }
         
         if (!is_numeric($id)){
             Throw new \BadMethodCallException('You must pass a valid ID');
@@ -88,19 +81,13 @@ class Bib extends EasyRdf_Resource
         
         static::requestSetup();
         
-        $guzzleOptions = array(
-            'headers' => array(
-                'Authorization' => 'Bearer ' . $accessToken->getValue(),
-                'Accept' => 'application/rdf+xml',
-                'User-Agent' => static::$userAgent
-            )
-        );
-        
-        if (static::$testServer){
-            $guzzleOptions['verify'] = false;
-        }
+        $guzzleOptions = static::getGuzzleOptions($accessToken, $logger);
         
         $bibURI = Bib::$serviceUrl . '/bib/data/' . $id;
+        
+        if (!empty($requestOptions)){
+            $bibURI .= '?' . static::buildParameters(null, $requestOptions);
+        }
         
         try {
             $response = \Guzzle::get($bibURI, $guzzleOptions);
@@ -147,26 +134,33 @@ class Bib extends EasyRdf_Resource
     
     public static function search($query, $accessToken, $options = null)
     {
+        $validRequestOptions = array('dbIds', 'sortBy', 'heldBy', 'notHeldBy', 'heldByGroup', 'heldInCountry', 'inLanguage', 'materialType', 'datePublished', 'inCatalogLanguage', 'catalogSource', 'itemType', 'itemSubType', 'peerReview', 'useFRBRGrouping', 'facetQueries', 'facetFields', 'startIndex', 'itemsPerPage', 'lat', 'lon', 'distance', 'unit');
+        if (isset($options)){
+            $parsedOptions = static::parseOptions($options, $validRequestOptions);
+            $requestOptions = $parsedOptions['requestOptions'];
+            $logger = $parsedOptions['logger'];
+        } else {
+            $requestOptions = array();
+            $logger = null;
+        }
+        
         if (!is_string($query)){
             Throw new \BadMethodCallException('You must pass a valid query');
         } elseif (!is_a($accessToken, '\OCLC\Auth\AccessToken')) {
             Throw new \BadMethodCallException('You must pass a valid OCLC/Auth/AccessToken object');
+        } elseif ((isset($requestOptions['lat']) || isset($requestOptions['lon']) || isset($requestOptions['distance']) || isset($requestOptions['unit'])) && !($requestOptions['lat'] && $requestOptions['lon'] && $requestOptions['distance'] && $requestOptions['unit'] )){
+            Throw new \BadMethodCallException('If you are searching by holding in a radius, lat, lon, distance, and unit options are required');
         }
         
         static::requestSetup();
                 
-        $guzzleOptions = array(
-            'headers' => array(
-                'Authorization' => 'Bearer ' . $accessToken->getValue(),
-                'Accept' => 'application/rdf+xml'
-            )
-        );
+        $guzzleOptions = static::getGuzzleOptions($accessToken, $logger);
         
-        if (static::$testServer){
-            $guzzleOptions['verify'] = false;
+        if (empty($requestOptions['dbIds'])){
+            $requestOptions['dbIds'] = 638;
         }
         
-        $bibSearchURI = Bib::$serviceUrl . '/bib/search?' . static::buildParameters($query, $options);
+        $bibSearchURI = Bib::$serviceUrl . '/bib/search?' . static::buildParameters($query, $requestOptions);
         
         try {
             $searchResponse = \Guzzle::get($bibSearchURI, $guzzleOptions);
@@ -179,97 +173,4 @@ class Bib extends EasyRdf_Resource
             return Error::parseError($error);
         }
     }
-    
-    /**
-     * Perform the appropriate namespace setting and type mapping in EasyRdf before parsing the graph
-     */
-    
-    private static function requestSetup()
-    {
-        EasyRdf_Namespace::set('schema', 'http://schema.org/');
-        EasyRdf_Namespace::set('discovery', 'http://worldcat.org/vocab/discovery/');
-        EasyRdf_Namespace::set('response', 'http://worldcat.org/xmlschemas/response/');
-        EasyRdf_Namespace::set('library', 'http://purl.org/library/');
-        EasyRdf_Namespace::set('bgn', 'http://bibliograph.net/');
-        EasyRdf_Namespace::set('gr', 'http://purl.org/goodrelations/v1#');
-        EasyRdf_Namespace::set('owl', 'http://www.w3.org/2002/07/owl#');
-        EasyRdf_Namespace::set('foaf', 'http://xmlns.com/foaf/0.1/');
-        EasyRdf_Namespace::set('umbel', 'http://umbel.org/umbel#');
-        EasyRdf_Namespace::set('productontology', 'http://www.productontology.org/id/');
-        EasyRdf_Namespace::set('wdrs', 'http://www.w3.org/2007/05/powder-s#');
-        EasyRdf_Namespace::set('void', 'http://rdfs.org/ns/void#');
-        if (!EasyRdf_Namespace::prefixOfUri('http://purl.org/dc/terms/')){
-            EasyRdf_Namespace::set('dc', 'http://purl.org/dc/terms/');
-        }
-        EasyRdf_Namespace::set('rdaGr2', 'http://rdvocab.info/ElementsGr2/');
-        
-        EasyRdf_TypeMapper::set('http://www.w3.org/2006/gen/ont#InformationResource', 'WorldCat\Discovery\Bib');
-        
-        EasyRdf_TypeMapper::set('schema:Article', 'WorldCat\Discovery\Article');
-        EasyRdf_TypeMapper::set('http://www.productontology.org/id/Image', 'WorldCat\Discovery\Image');
-        EasyRdf_TypeMapper::set('schema:MusicAlbum', 'WorldCat\Discovery\MusicAlbum');
-        EasyRdf_TypeMapper::set('schema:Periodical', 'WorldCat\Discovery\Periodical');
-        EasyRdf_TypeMapper::set('productontology:Thesis', 'WorldCat\Discovery\Thesis');
-        EasyRdf_TypeMapper::set('schema:Book', 'WorldCat\Discovery\Book');
-        
-        EasyRdf_TypeMapper::set('schema:Country', 'WorldCat\Discovery\Country');
-        EasyRdf_TypeMapper::set('schema:Event', 'WorldCat\Discovery\Event');
-        EasyRdf_TypeMapper::set('schema:Intangible', 'WorldCat\Discovery\Intangible');
-        
-        EasyRdf_TypeMapper::set('schema:ProductModel', 'WorldCat\Discovery\ProductModel');
-        EasyRdf_TypeMapper::set('schema:PublicationVolume', 'WorldCat\Discovery\PublicationVolume');
-        EasyRdf_TypeMapper::set('schema:PublicationIssue', 'WorldCat\Discovery\PublicationIssue');
-        EasyRdf_TypeMapper::set('bgn:Agent', 'WorldCat\Discovery\Organization');
-        EasyRdf_TypeMapper::set('foaf:Agent', 'WorldCat\Discovery\Organization');
-        
-        EasyRdf_TypeMapper::set('schema:Organization', 'WorldCat\Discovery\Organization');
-        EasyRdf_TypeMapper::set('foaf:Organization', 'WorldCat\Discovery\Organization'); // will be deprecated
-        EasyRdf_TypeMapper::set('schema:Person', 'WorldCat\Discovery\Person');
-        EasyRdf_TypeMapper::set('foaf:Person', 'WorldCat\Discovery\Person'); // will be deprecated
-        EasyRdf_TypeMapper::set('schema:Place', 'WorldCat\Discovery\Place');
-        EasyRdf_TypeMapper::set('http://dbpedia.org/ontology/Place', 'WorldCat\Discovery\Place'); // will be deprecated
-        
-        EasyRdf_TypeMapper::set('discovery:SearchResults', 'WorldCat\Discovery\BibSearchResults');
-        EasyRdf_TypeMapper::set('discovery:Facet', 'WorldCat\Discovery\Facet');
-        EasyRdf_TypeMapper::set('discovery:FacetItem', 'WorldCat\Discovery\FacetItem');
-        EasyRdf_TypeMapper::set('response:ClientRequestError', 'WorldCat\Discovery\Error');
-        
-        if (!class_exists('Guzzle')) {
-            \Guzzle\Http\StaticClient::mount();
-        }
-    }
-    
-    /**
-     * Build the query string for the request
-     * 
-     * @param string $query
-     * @param array $options
-     * @return string
-     */
-    private static function buildParameters($query, $options = null)
-        {
-        $parameters = array('q' => $query);
-
-        $repeatingQueryParms = '';
-        if (!empty($options)){
-            foreach ($options as $option => $optionValue){
-                if (!is_array($optionValue)){
-                    $parameters[$option] = $optionValue;
-                } else {
-                    foreach ($optionValue as $value){
-                        $repeatingQueryParms .= '&' . $option . '=' . $value;
-                    }
-                }
-            }
-        }
-        
-        if (empty($parameters['dbIds'])){
-            $parameters['dbIds'] = 638;
-        }
-        
-        $queryString =  http_build_query($parameters) . $repeatingQueryParms;
-        
-        return $queryString;         
-    }
-    
 }

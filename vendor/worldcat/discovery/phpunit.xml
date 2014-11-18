@@ -10,38 +10,25 @@
          testSuiteLoaderClass="PHPUnit_Runner_StandardTestSuiteLoader">     
 	<testsuites>
     <testsuite name="Bib">
-      <file>tests/BibTest.php</file>
-      <file>tests/ArticleTest.php</file>
-      <file>tests/ImageTest.php</file>
-      <file>tests/MusicAlbumTest.php</file>
-      <file>tests/PeriodicalTest.php</file>
-      <file>tests/ThesisTest.php</file>
+      <directory>tests/bib</directory>           
     </testsuite>
     <testsuite name="BibSearch">
-      <file>tests/SearchResultsPaging_ItemsPerPageTest.php</file>
-      <file>tests/SearchResultsTest.php</file>
-      <file>tests/SearchResultsWithFacetsTest.php</file>
-      <file>tests/DatabaseSearchResultsTest.php</file>
+      <directory>tests/bibSearch</directory>
     </testsuite>
     <testsuite name="Offers">
-      <file>tests/OfferTest.php</file>
+      <directory>tests/offers</directory>
     </testsuite>
     <testsuite name="Database">
-        <file>tests/DatabaseTest.php</file>
+        <directory>tests/database</directory>
     </testsuite>
     <testsuite name="Entities">
-        <file>tests/PersonTest.php</file>
-        <file>tests/OrganizationTest.php</file>
-        <file>tests/PlaceTest.php</file>
-        <file>tests/AuthorityTest.php</file>
+        <directory>tests/entities</directory>
     </testsuite>
     <testsuite name="Errors">
-        <file>tests/ErrorTest.php</file>
+        <directory>tests/errors</directory>
     </testsuite>
     <testsuite name="Config">
-        <file>tests/BibConfigTest.php</file>
-        <file>tests/OfferConfigTest.php</file>
-        <file>tests/DatabaseConfigTest.php</file>
+        <directory>tests/config</directory>
     </testsuite>
   </testsuites>
     <listeners>

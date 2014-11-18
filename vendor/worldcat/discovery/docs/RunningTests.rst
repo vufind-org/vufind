@@ -9,3 +9,12 @@ Unit Tests
 
 .. code:: bash
    $ vendor/bin/phpunit
+   
+The unit tests is divided into test suites:
+-Bib
+-BibSearch
+-Offers
+-Database
+-Entities
+-Error
+-Config

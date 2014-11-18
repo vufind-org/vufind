@@ -27,6 +27,8 @@ use \EasyRdf_TypeMapper;
  */
 class Database extends EasyRdf_Resource
 {
+    use Helpers;
+    
     public static $serviceUrl = 'https://beta.worldcat.org/discovery';
     public static $testServer = FALSE;
     public static $userAgent = 'WorldCat Discovery API PHP Client';
@@ -86,6 +88,15 @@ class Database extends EasyRdf_Resource
     
     public static function find($id, $accessToken, $options = null)
     {
+        $validRequestOptions = array();
+        if (isset($options)){
+            $parsedOptions = static::parseOptions($options, $validRequestOptions);
+            $requestOptions = $parsedOptions['requestOptions'];
+            $logger = $parsedOptions['logger'];
+        } else {
+            $requestOptions = array();
+            $logger = null;
+        }
         
         if (!is_numeric($id)){
             Throw new \BadMethodCallException('You must pass a valid ID');
@@ -95,17 +106,7 @@ class Database extends EasyRdf_Resource
         
         static::requestSetup();
         
-        $guzzleOptions = array(
-            'headers' => array(
-                'Authorization' => 'Bearer ' . $accessToken->getValue(),
-                'Accept' => 'application/rdf+xml',
-                'User-Agent' => static::$userAgent
-            )
-        );
-        
-        if (static::$testServer){
-            $guzzleOptions['verify'] = false;
-        }
+        $guzzleOptions = static::getGuzzleOptions($accessToken, $logger);
         
         $databaseURI = static::$serviceUrl . '/database/data/' . $id;
         
@@ -124,28 +125,30 @@ class Database extends EasyRdf_Resource
     /**
      * 
      * @param $accessToken OCLC/Auth/AccessToken
+     * @param $options
      * @throws \BadMethodCallException
      * @return array of WorldCat\Discovery\Database objects or \Guzzle\Http\Exception\BadResponseException
      */
     
-    public static function getList($accessToken)
+    public static function getList($accessToken, $options = null)
     {
+        $validRequestOptions = array();
+        if (isset($options)){
+            $parsedOptions = static::parseOptions($options, $validRequestOptions);
+            $requestOptions = $parsedOptions['requestOptions'];
+            $logger = $parsedOptions['logger'];
+        } else {
+            $requestOptions = array();
+            $logger = null;
+        }
+        
         if (!is_a($accessToken, '\OCLC\Auth\AccessToken')) {
             Throw new \BadMethodCallException('You must pass a valid OCLC/Auth/AccessToken object');
         }
         
         static::requestSetup();
                 
-        $guzzleOptions = array(
-            'headers' => array(
-                'Authorization' => 'Bearer ' . $accessToken->getValue(),
-                'Accept' => 'application/rdf+xml'
-            )
-        );
-        
-        if (static::$testServer){
-            $guzzleOptions['verify'] = false;
-        }
+        $guzzleOptions = static::getGuzzleOptions($accessToken, $logger);
         
         $databaseListURI = static::$serviceUrl . '/database/list';
         
@@ -157,25 +160,6 @@ class Database extends EasyRdf_Resource
             return $list;
         } catch (\Guzzle\Http\Exception\BadResponseException $error) {
             return Error::parseError($error);
-        }
-    }
-    
-    /**
-     * Perform the appropriate namespace setting and type mapping in EasyRdf before parsing the graph
-     */
-    
-    private static function requestSetup()
-    {   
-        EasyRdf_Namespace::set('schema', 'http://schema.org/');
-        EasyRdf_Namespace::set('discovery', 'http://worldcat.org/vocab/discovery/');
-        EasyRdf_Namespace::set('response', 'http://worldcat.org/xmlschemas/response/');
-        EasyRdf_Namespace::set('dcmi', 'http://purl.org/dc/dcmitype/');
-        
-        EasyRdf_TypeMapper::set('dcmi:Dataset', 'WorldCat\Discovery\Database');
-        EasyRdf_TypeMapper::set('response:ClientRequestError', 'WorldCat\Discovery\Error');
-        
-        if (!class_exists('Guzzle')) {
-            \Guzzle\Http\StaticClient::mount();
         }
     }
     

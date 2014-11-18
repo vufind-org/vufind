@@ -105,7 +105,7 @@ class CreativeWork extends EasyRdf_Resource
     }    
     
     /**
-     *
+     * Return an array of contributors
      * @return array
      */
     
@@ -115,7 +115,17 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
-     *
+     * Return an array of illustrators
+     * @return array
+     */
+    function getIllustrators()
+    {
+        $illustrators = $this->allResources('schema:illustrators');
+        return $illustrators;
+    }
+    
+    /**
+     * Return an array of descriptions
      * @return array of EasyRDF_Literals
      */
     function getDescriptions()
@@ -125,6 +135,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Return the language
      * @return EasyRDF_Literal
      */
     function getLanguage()
@@ -134,6 +145,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Return the date published
      * @return EasyRDF_Literal
      */
     function getDatePublished()
@@ -143,6 +155,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Return the publisher
      * @return \WorldCat\Discovery\Organization
      */
     function getPublisher()
@@ -152,6 +165,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Return an array of Genres
      * @return array EasyRDF_Literal
      */
     function getGenres(){
@@ -160,6 +174,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Return the type
      * @return string
      */
     function getType(){
@@ -167,6 +182,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Return the Work
      * @return EasyRDF_Resource
      */
     function getWork(){
@@ -174,6 +190,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Return an array of abouts
      * @return array EasyRDF_Resources
      */
     function getAbout() {
@@ -182,6 +199,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Return an array of places of publication
      * @return array
      */
     function getPlacesOfPublication(){
@@ -190,6 +208,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Return an array of urls
      * @return array
      */
     function getUrls(){
@@ -198,12 +217,13 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
-     * return EasyRDF_Resource
+     * Return the data set
+     * return array EasyRDF_Resource
      */
-    function getDataSet()
+    function getDataSets()
     {
         if ($this->getResource('wdrs:describedby')){
-            $dataset = $this->getResource('wdrs:describedby')->get('void:inDataset');
+            $dataset = $this->getResource('wdrs:describedby')->all('void:inDataset');
         }else {
             $schemaUrls = $this->allResources('schema:url');
             $describedBy = array_filter($schemaUrls, function($schemaUrl)
@@ -211,13 +231,14 @@ class CreativeWork extends EasyRdf_Resource
                 return(strpos($schemaUrl->getURI(), 'worldcat.org/title'));
             });
             $describedBy = array_shift($describedBy);
-            $dataset = $describedBy->get('void:inDataset');
+            $dataset = $describedBy->all('void:inDataset');
         }
         
         return $dataset;
     }
     
     /**
+     * Return the audience
      * @return EasyRDF_Literal
      */
     function getAudience()
@@ -229,6 +250,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * return the content rating
      * @return EasyRDF_Literal
      */
     function getContentRating()
@@ -237,7 +259,7 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
-     *
+     * Return the part of
      * @return EasyRDF_Resource
      */
     function getIsPartOf()
@@ -246,4 +268,32 @@ class CreativeWork extends EasyRdf_Resource
         return $isPartOf;
     }
     
+    /**
+     * Get an array of reviews
+     * @return array
+     */
+    function getReviews(){
+        $reviews = $this->all('schema:review');
+        return $reviews;
+    }
+    
+
+    /**
+     * Get an array of Awards
+     * return array
+     */
+    function getAwards()
+    {
+        $awards =  $this->all('schema:awards');
+        return $awards;
+    }
+    
+    /**
+     * Get the number of pages
+     * @return EasyRDF_Literal
+     */
+    function getNumberOfPages(){
+        $numberOfPages = $this->get('schema:numberOfPages');
+        return $numberOfPages;
+    }
 }

@@ -43,4 +43,28 @@ class MusicAlbum extends CreativeWork
         });
         return $format;
     }
+    
+    /**
+     * Get the parts of the MusicAlbum
+     * @return array
+     */
+    function getParts(){
+        return $this->allResources('dcterms:hasPart');
+    }
+    
+    /**
+     * Get the artists of the MusicAlbum
+     * @return array
+     */
+    function getArtists(){
+        return $this->allResources('schema:artist');
+    }
+    
+    /**
+     * Get the performers of the MusicAlbum
+     * @return array
+     */
+    function getPerformers(){
+        return $this->allResources('schema:performer');
+    }
 }

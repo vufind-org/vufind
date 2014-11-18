@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a19707e0b2c5eefb587d3b843c5743ea",
+    "hash": "b479cf369e57c1bc878d6bfab88b18d0",
     "packages": [
         {
             "name": "OCLC/Auth",
@@ -89,31 +89,30 @@
         },
         {
             "name": "easyrdf/easyrdf",
-            "version": "0.8.0",
+            "version": "0.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/njh/easyrdf.git",
-                "reference": "3e43ab7274004e9f4192e06b9fc147781e1f85c2"
+                "reference": "bb9fd99768d23af0c5b7b55cec5baddc201272b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/njh/easyrdf/zipball/3e43ab7274004e9f4192e06b9fc147781e1f85c2",
-                "reference": "3e43ab7274004e9f4192e06b9fc147781e1f85c2",
+                "url": "https://api.github.com/repos/njh/easyrdf/zipball/bb9fd99768d23af0c5b7b55cec5baddc201272b8",
+                "reference": "bb9fd99768d23af0c5b7b55cec5baddc201272b8",
                 "shasum": ""
             },
             "require": {
+                "ext-mbstring": "*",
+                "ext-pcre": "*",
                 "php": ">=5.2.8"
             },
-            "replace": {
-                "njh/easyrdf": "self.version"
-            },
             "require-dev": {
-                "phpunit/phpunit": ">=3.5.15",
-                "sami/sami": "dev-master",
-                "squizlabs/php_codesniffer": ">=1.4.3"
+                "phpunit/phpunit": "~3.5",
+                "sami/sami": "~1.4",
+                "squizlabs/php_codesniffer": "~1.4.3"
             },
             "suggest": {
-                "ml/json-ld": "dev-master"
+                "ml/json-ld": "~1.0"
             },
             "type": "library",
             "autoload": {
@@ -131,6 +130,11 @@
                     "email": "njh@aelius.com",
                     "homepage": "http://www.aelius.com/njh/",
                     "role": "Developer"
+                },
+                {
+                    "name": "Alexey Zakhlestin",
+                    "email": "indeyets@gmail.com",
+                    "role": "Developer"
                 }
             ],
             "description": "EasyRdf is a PHP library designed to make it easy to consume and produce RDF.",
@@ -143,7 +147,7 @@
                 "rdfa",
                 "sparql"
             ],
-            "time": "2013-12-30 22:31:37"
+            "time": "2014-11-07 18:02:16"
         },
         {
             "name": "guzzle/guzzle",
@@ -885,11 +889,11 @@
         },
         {
             "name": "worldcat/discovery",
-            "version": "0.11.1",
+            "version": "0.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/OCLC-Developer-Network/worldcat-discovery-php.git",
-                "reference": "8b0499c7ba84f90fc896bb0872ae1ac61c5bd891"
+                "reference": "c824a9d6941e19950e573bcb1ce158d8355eb29d"
             },
             "require": {
                 "easyrdf/easyrdf": "*",
@@ -900,12 +904,14 @@
                 "lib-curl": "*",
                 "lib-openssl": "*",
                 "oclc/auth": "*",
-                "php": ">=5.3.3"
+                "php": ">=5.4.0"
             },
             "require-dev": {
                 "php-vcr/php-vcr": "dev-master",
                 "php-vcr/phpunit-testlistener-vcr": "*",
-                "phpunit/phpunit": "~3"
+                "phpdocumentor/phpdocumentor": "2.*",
+                "phpunit/phpunit": "~3",
+                "zendframework/zend-log": "2.0.*"
             },
             "type": "library",
             "autoload": {
@@ -920,7 +926,7 @@
             "keywords": [
                 "OCLC"
             ],
-            "time": "2014-11-05 16:28:32"
+            "time": "2014-11-18 15:39:31"
         },
         {
             "name": "zendframework/zendframework",

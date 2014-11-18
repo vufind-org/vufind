@@ -33,6 +33,42 @@ bibFind:
         oclcNumber: 15317067
     bibOnlyContributors:
         oclcNumber: 70879984
+    bibNotTypeMapped:
+        oclcNumber: 62262823        
+    bibMusicalScore:
+        oclcNumber: 233159081
+    bibArchivalMaterial:
+        oclcNumber: 754931850
+    bibSoundRecording:
+        oclcNumber: 4810259566
+    bibAudiobook:
+        oclcNumber: 558522801
+    bibJournal:
+        oclcNumber: 754932593
+    bibMap:
+        oclcNumber: 8594968
+    bibKit:     
+        oclcNumber: 457073380
+    bibVisual: 
+        oclcNumber: 233539402
+    bibVideo:
+        oclcNumber: 52156134
+    bibObject:
+        oclcNumber: 694454995
+    bibNews: 
+        oclcNumber: 700956433
+    bibCompfile:
+        oclcNumber: 701329553
+    bibDVD:
+        oclcNumber: 62774704
+    bibIllustrator:
+        oclcNumber: 8594968
+    bibEditor:
+        oclcNumber: 1004282
+    bibArtist:
+        oclcNumber: 226390945
+    bibPerformer:
+        oclcNumber: 100000138    
 bibSearch:
     bibSearchByOclcNumber:
         query: no:7977212
@@ -45,6 +81,9 @@ bibSearch:
         dbIds: 638
     bibSearchFacetQueries:
         query: cats
+        facetFields:
+            - creator:10
+            - inLanguage:10
         facetQueries:
             - creator:potter, beatrix
             - inLanguage:eng
@@ -76,6 +115,13 @@ bibSearch:
 offers:
     offerSuccess:
         id: 30780581
+        options:
+            heldBy: 
+                - GZM
+                - GZN
+                - GZO
+    offerCreativeWorkSuccess:
+        id: 62262823
         options:
             heldBy: 
                 - GZM

@@ -1,0 +1,22 @@
+
+-
+    request:
+        method: GET
+        url: 'https://beta.worldcat.org/discovery/bib/data/700956433'
+        headers:
+            Host: beta.worldcat.org
+            User-Agent: 'Guzzle/3.8.1 curl/7.21.4 PHP/5.3.28, WorldCat Discovery API PHP Client'
+            Authorization: 'Bearer tk_12345'
+            Accept: application/rdf+xml
+            Content-Length: '0'
+    response:
+        status: 200
+        headers:
+            Date: 'Fri, 07 Nov 2014 21:11:24 GMT'
+            X-OCLC-RequestId: 7e059973-62d8-4b84-922d-b9e40d9cc131
+            X-OCLC-SelfId: 7e412702-2497-40e0-b5bd-5d6f2349c388
+            Content-Type: 'application/rdf+xml; charset=UTF-8'
+            Content-Location: 'http://beta.worldcat.org/discovery/bib/data/700956433.rdf'
+            Vary: 'Accept-Encoding, User-Agent'
+            Transfer-Encoding: chunked
+        body: "<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:j.0=\"http://purl.org/library/\"\n    xmlns:j.1=\"http://bibliograph.net/\"\n    xmlns:j.2=\"http://www.w3.org/2007/05/powder-s#\"\n    xmlns:j.3=\"http://schema.org/\"\n    xmlns:j.4=\"http://www.w3.org/2006/gen/ont#\"\n    xmlns:j.5=\"http://rdfs.org/ns/void#\" > \n  <rdf:Description rdf:about=\"http://experiment.worldcat.org/entity/work/data/780619672#Agent/maruyama_osamu\">\n    <rdf:type rdf:resource=\"http://bibliograph.net/Agent\"/>\n    <j.3:name>Maruyama, Osamu</j.3:name>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://www.worldcat.org/title/-/oclc/700956433\">\n    <rdf:type rdf:resource=\"http://www.w3.org/2006/gen/ont#ContentTypeGenericResource\"/>\n    <rdf:type rdf:resource=\"http://www.w3.org/2006/gen/ont#InformationResource\"/>\n    <j.3:about rdf:resource=\"http://www.worldcat.org/oclc/700956433\"/>\n    <j.5:inDataset rdf:resource=\"http://purl.oclc.org/dataset/WorldCat/DigitalCollectionGateway\"/>\n    <j.5:inDataset rdf:resource=\"http://purl.oclc.org/dataset/WorldCat\"/>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://www.worldcat.org/oclc/700956433\">\n    <j.3:exampleOfWork rdf:resource=\"http://worldcat.org/entity/work/id/780619672\"/>\n    <j.3:inLanguage>en</j.3:inLanguage>\n    <j.3:creator rdf:resource=\"http://experiment.worldcat.org/entity/work/data/780619672#Agent/maruyama_osamu\"/>\n    <j.3:description>textversion:publisher</j.3:description>\n    <j.2:describedby rdf:resource=\"http://www.worldcat.org/title/-/oclc/700956433\"/>\n    <j.3:about rdf:resource=\"http://experiment.worldcat.org/entity/work/data/780619672#Thing/ndc_931\"/>\n    <j.0:oclcnum rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">700956433</j.0:oclcnum>\n    <j.3:publisher rdf:resource=\"http://experiment.worldcat.org/entity/work/data/780619672#Agent/静岡大学教育学部\"/>\n    <rdf:type rdf:resource=\"http://schema.org/MediaObject\"/>\n    <j.3:name>Immediate History? : Auden on Music</j.3:name>\n    <j.3:genre>Departmental Bulletin Paper</j.3:genre>\n    <j.3:publication rdf:resource=\"http://www.worldcat.org/title/-/oclc/700956433#PublicationEvent/静岡大学教育学部1993\"/>\n    <j.3:datePublished>1993</j.3:datePublished>\n    <rdf:type rdf:resource=\"http://bibliograph.net/Newspaper\"/>\n    <j.3:url rdf:resource=\"http://hdl.handle.net/10297/4181\"/>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://experiment.worldcat.org/entity/work/data/780619672#Thing/ndc_931\">\n    <rdf:type rdf:resource=\"http://schema.org/Thing\"/>\n    <j.3:name>NDC:931</j.3:name>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://experiment.worldcat.org/entity/work/data/780619672#Agent/静岡大学教育学部\">\n    <rdf:type rdf:resource=\"http://bibliograph.net/Agent\"/>\n    <j.3:name>静岡大学教育学部</j.3:name>\n  </rdf:Description>\n  <rdf:Description rdf:about=\"http://www.worldcat.org/title/-/oclc/700956433#PublicationEvent/静岡大学教育学部1993\">\n    <rdf:type rdf:resource=\"http://schema.org/PublicationEvent\"/>\n    <j.3:organizer rdf:resource=\"http://experiment.worldcat.org/entity/work/data/780619672#Agent/静岡大学教育学部\"/>\n    <j.3:startDate>1993</j.3:startDate>\n  </rdf:Description>\n</rdf:RDF>\n"

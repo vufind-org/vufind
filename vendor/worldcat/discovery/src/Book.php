@@ -47,15 +47,6 @@ class Book extends CreativeWork
     }
     
     /**
-     * Get the number of pages
-     * @return EasyRDF_Literal
-     */
-    function getNumberOfPages(){
-        $numberOfPages = $this->get('schema:numberOfPages');
-        return $numberOfPages;
-    }
-    
-    /**
      * Get the Book format
      * @return EasyRDF_Resource
      */
@@ -73,21 +64,10 @@ class Book extends CreativeWork
     }
     
     /**
-     * Get an array of reviews
-     * @return array
+     * Get an array of the Editors
      */
-    function getReviews(){
-        $reviews = $this->all('schema:review');
-        return $reviews;
-    }
-    
-    /**
-     * Get an array of Awards
-     * return array
-     */
-    function getAwards()
+    function getEditors()
     {
-        $awards =  $this->all('schema:awards');
-        return $awards;
+        return $this->allResources('schema:editor');
     }
 }
