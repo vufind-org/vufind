@@ -227,19 +227,18 @@ class Connection implements TranslatorAwareInterface
      * if the system supports a particular function.
      *
      * @param string $function The name of the function to check.
-     * @param string $id       (optional) A record id used to e.g. identify the used
-     * backend with MultiBackend driver
+     * @param array  $params   (optional) An array of function-specific parameters
      *
      * @return mixed On success, an associative array with specific function keys
      * and values; on failure, false.
      */
-    public function checkFunction($function, $id = null)
+    public function checkFunction($function, $params = null)
     {
         // Extract the configuration from the driver if available:
         $functionConfig = $this->checkCapability(
             'getConfig',
-            compact('function', 'id')
-        ) ? $this->getDriver()->getConfig($function, $id) : false;
+            compact('function', 'params')
+        ) ? $this->getDriver()->getConfig($function, $params) : false;
 
         // See if we have a corresponding check method to analyze the response:
         $checkMethod = "checkMethod".$function;
@@ -283,6 +282,9 @@ class Connection implements TranslatorAwareInterface
                 $response['helpText'] = $this->getHelpText(
                     $functionConfig['helpText']
                 );
+            }
+            if (isset($functionConfig['consortium'])) {
+                $response['consortium'] = $functionConfig['consortium'];
             }
         } else if ($this->checkCapability('getHoldLink')) {
             $response = array('function' => "getHoldLink");

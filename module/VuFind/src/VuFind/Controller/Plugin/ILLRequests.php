@@ -48,8 +48,8 @@ class ILLRequests extends AbstractRequestBase
      * @param array                  $ilsDetails   Details from ILS driver's
      * getMyILLRequests() method
      * @param array                  $cancelStatus Cancellation settings from ILS
-     * @param array                  $patron       ILS patron
      * driver's checkFunction() method
+     * @param array                  $patron       ILS patron
      *
      * @return array $ilsDetails with cancellation info added
      */

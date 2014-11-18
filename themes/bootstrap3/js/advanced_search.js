@@ -10,7 +10,7 @@ function addSearch(group, term, field)
 
   // Build the new search
   var inputIndex = $('#group'+group+' input').length;
-  var inputID = group+'_'+$('#group'+group+' input').length;
+  var inputID = group+'_'+inputIndex;
   var newSearch = '<div class="search" id="search'+inputID+'"><div class="row"><div class="col-md-7"><input id="search_lookfor'+inputID+'" class="form-control" type="text" name="lookfor'+group+'[]" value="'+term+'"/></div>'
     + '<div class="col-md-4"><select id="search_type'+inputID+'" name="type'+group+'[]" class="form-control">';
   for (var key in searchFields) {
@@ -20,12 +20,18 @@ function addSearch(group, term, field)
     }
     newSearch += ">" + searchFields[key] + "</option>";
   }
-  newSearch += '</select></div><div class="col-md-1"><a class="help-block delete" href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="delete">&times;</a></div></div>';
+  newSearch += '</select></div><div class="col-md-1"><a class="help-block delete';
+  if(inputIndex == 0) {
+    newSearch += ' hidden';
+  }
+  newSearch += '" href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="delete">&times;</a></div></div>';
 
   // Insert it
   $("#group" + group + "Holder").before(newSearch);
-  // Show x
-  $('#group'+group+' .search .delete').removeClass('hidden');
+  // Show x if we have more than one search inputs
+  if(inputIndex > 0) {
+    $('#group'+group+' .search .delete').removeClass('hidden');
+  }
 }
 
 function deleteSearch(group, eq)

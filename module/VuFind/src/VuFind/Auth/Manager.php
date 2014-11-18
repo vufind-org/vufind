@@ -214,6 +214,19 @@ class Manager
     }
 
     /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return array
+     */
+    public function getPasswordPolicy($authMethod=null)
+    {
+        return $this->getAuth($authMethod)->getPasswordPolicy();
+    }
+
+    /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
      *

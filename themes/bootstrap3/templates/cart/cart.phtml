@@ -34,7 +34,7 @@
       <input type="submit" name="empty" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-empty-label" value="<?=$this->transEsc('Empty Book Bag')?>"/>
       <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
         <li><a onClick="submitCartForm(this, {'empty':'empty'})" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
-        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+        <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
     </div>
   <? endif; ?>
@@ -47,6 +47,7 @@
     if(modal.length > 0) {
       return Lightbox.changeContent;
     } else {
+      console.log('!');
       return function() {location.reload()}
     }
   }
@@ -63,13 +64,28 @@
     }
     submitCartForm(elem, data);
   }
+  $('[name=cartForm] [type=submit]').click(function() {
+    // Remove other clicks
+    $('[name=cartForm] [clicked=true]').attr('clicked', false);
+    // Add useful information
+    $(this).attr("clicked", "true");
+  });
+  $('[name=cartForm]').submit(function() {
+    var submit = $(this).find('[clicked=true]').attr('name');
+    if(submit == 'delete' || submit == 'empty') {
+      return false;
+    } else {
+      return true;
+    }
+  });
   $('#cartDelete').on('show.bs.dropdown', function () {
     var form = $(this).closest('form')[0];
     var checkboxes = form.querySelectorAll('[name="ids[]"]:checked');
     if(checkboxes.length == 0) {
       Lightbox.displayError(vufindString['bulk_noitems_advice']);
+      return false;
     }
-  })
+  });
 JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
