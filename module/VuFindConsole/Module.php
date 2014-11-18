@@ -26,6 +26,7 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace VuFindConsole;
+use Zend\Console\Adapter\AdapterInterface as Console;
 
 /**
  * ZF2 module definition for the VuFind console module
@@ -36,7 +37,7 @@ namespace VuFindConsole;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
  */
-class Module
+class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterface
 {
     /**
      * Get module configuration
@@ -61,6 +62,35 @@ class Module
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
                 ),
             ),
+        );
+    }
+
+    /**
+     * Return usage information
+     *
+     * @param Console $console Console adapter
+     *
+     * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getConsoleUsage(Console $console)
+    {
+        return array(
+            'harvest harvest_oai' => 'OAI-PMH harvester',
+            'harvest merge-marc' => 'MARC merge tool',
+            'import import-xsl' => 'XSLT importer',
+            'import webcrawl' => 'Web crawler',
+            'language copystring' => 'Copy one language string to another',
+            'language normalize' => 'Normalize a directory of language files',
+            'util createHierarchyTrees' => 'Cache populator for hierarchies',
+            'util cssBuilder' => 'LESS compiler',
+            'util deletes' => 'Tool for deleting Solr records',
+            'util expire_searches' => 'Database search table cleanup',
+            'util expire_sessions' => 'Database session table cleanup',
+            'util index_reserves' => 'Solr reserves indexer',
+            'util optimize' => 'Solr optimize tool',
+            'util sitemap' => 'XML sitemap generator',
+            'util suppressed' => 'Remove ILS-suppressed records from Solr',
         );
     }
 }
