@@ -29,6 +29,10 @@
 
 namespace VuFindSearch\Backend\WorldCatDiscovery;
 
+use Guzzle\Plugin\Log\LogPlugin;
+use Guzzle\Log\MessageFormatter;
+use Guzzle\Log\Zf2LogAdapter;
+
 use VuFindSearch\Query\AbstractQuery;
 
 use VuFindSearch\ParamBag;
@@ -132,8 +136,7 @@ class Backend extends AbstractBackend
             $params = new ParamBag();
         }
 
-        $options = array();
-        $options['dbIds'] = $this->databaseIDs;
+        $options = array('dbIds' => $this->databaseIDs);
         $facets = $params->get('facets');
         if (!empty($facets)) {
             $options['facetFields'] = $facets;
@@ -157,7 +160,9 @@ class Backend extends AbstractBackend
             'Bib::search(); query = ' . $query . '; options = '
             . print_r($options, true)
         );
-        $response = Bib::search($query, $this->getAccessToken(), $options);
+        $response = Bib::search(
+            $query, $this->getAccessToken(), $this->addGuzzleLogger($options)
+        );
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
@@ -179,7 +184,9 @@ class Backend extends AbstractBackend
             'Offer::findByOclcNumber(); id = ' . $id . '; options = '
             . print_r($options, true)
         );
-        $response   = Offer::findByOclcNumber($id, $this->getAccessToken(), $options);
+        $response   = Offer::findByOclcNumber(
+            $id, $this->getAccessToken(), $this->addGuzzleLogger($options)
+        );
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
@@ -244,5 +251,22 @@ class Backend extends AbstractBackend
             );
         }
         return $this->getRecordCollectionFactory()->factory($records);
+    }
+
+    /**
+     * Add Guzzle logger plugin to options array if applicable.
+     *
+     * @param array $options Options array to modify
+     *
+     * @return array
+     */
+    protected function addGuzzleLogger($options)
+    {
+        if (is_object($this->logger)) {
+            $adapter = new Zf2LogAdapter($this->logger);
+            $options['logger']
+                = new LogPlugin($adapter, MessageFormatter::DEBUG_FORMAT);
+        }
+        return $options;
     }
 }
