@@ -162,6 +162,13 @@ class Server
     protected $recordLinkHelper = null;
 
     /**
+     * added: custom set queries
+     */
+    protected $setQueries;
+
+
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
@@ -471,6 +478,11 @@ class Server
         if (isset($config->OAI->set_field)) {
             $this->setField = $config->OAI->set_field;
         }
+
+        // added: init custom sets queries:
+        if (isset($config->OAI->set_query)) {
+            $this->setQueries = $config->OAI->set_query;
+        }
     }
 
     /**
@@ -642,6 +654,15 @@ class Server
             $set = $xml->addChild('set');
             $set->setSpec = $x['value'];
             $set->setName = $x['displayText'];
+        }
+
+        // added: iterate over custom sets:
+        if (isset($this->setQueries)) {
+            foreach ($this->setQueries as $setName => $solrQuery) {
+                $set = $xml->addChild('set');
+                $set->setSpec = $solrQuery;
+                $set->setName = $setName;
+            }
         }
 
         // Display the list:
