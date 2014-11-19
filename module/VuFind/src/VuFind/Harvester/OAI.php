@@ -269,6 +269,11 @@ class OAI
             $this->combineRecords = $settings['combineRecords'];
         }
 
+        // User-defined collection tag:
+        if (isset($settings['combineRecordsTag'])) {
+            $this->combineRecordsTag = $settings['combineRecordsTag'];
+        }
+
         // Don't time out during harvest!!
         set_time_limit(0);
 
