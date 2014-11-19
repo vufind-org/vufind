@@ -26,8 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Mailer;
-use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for instantiating Mailer objects
