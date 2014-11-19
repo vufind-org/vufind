@@ -67,10 +67,8 @@ class OAI
      *
      * @var string
      */
-    protected $combineRecordsTag = 'collection';;
+    protected $combineRecordsTag = 'collection';
 
-    /**
-    /**
     /**
      * URL to harvest from
      *
