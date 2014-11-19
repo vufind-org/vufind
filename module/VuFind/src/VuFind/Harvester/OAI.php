@@ -63,6 +63,14 @@ class OAI
     protected $combineRecords = false;
 
     /**
+     * The wrapping XML tag to be used if combinedRecords is set to true
+     *
+     * @var string
+     */
+    protected $combineRecordsTag = 'collection';;
+
+    /**
+    /**
     /**
      * URL to harvest from
      *
@@ -771,7 +779,7 @@ class OAI
     protected function processRecords($records)
     {
         $this->writeLine('Processing ' . count($records) . " records...");
-        $xml = '<collection>';
+        $xml = '<' . $this->combineRecordsTag . '>';
 
         // Array for tracking successfully harvested IDs:
         $harvestedIds = array();
@@ -816,7 +824,7 @@ class OAI
 
         if ($this->combineRecords) {
             if(!empty($harvestedIds)) {
-                $xml .= '</collection>';
+                $xml .= '</' . $this->combineRecordsTag . '>';
                 file_put_contents($this->getFilename($harvestedIds[0], 'xml'), $xml);
             }
 
