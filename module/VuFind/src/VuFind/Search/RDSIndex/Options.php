@@ -54,6 +54,7 @@ class Options extends \VuFind\Search\Solr\Options
     {
 	// ToDo: facetsIni und searchesIni auf RDSIndex_facets und RDSIndex_searches mappen, oder so lassen?
         $this->facetsIni = 'RDSIndex_facets';
+        $this->searchIni = 'RDSIndex_searches';
         parent::__construct($configLoader);
     }
 
