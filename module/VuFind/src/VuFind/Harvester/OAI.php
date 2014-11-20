@@ -277,7 +277,7 @@ class OAI
         }
 
         // User-defined collection tags:
-        if (isset($settings['combineRecordsBeginTag']) && isset($settings['combineRecordsBeginTag'])) {
+        if (isset($settings['combineRecordsBeginTag']) && isset($settings['combineRecordsEndTag'])) {
             $this->combineRecordsBeginTag = $settings['combineRecordsBeginTag'];
             $this->combineRecordsEndTag = $settings['combineRecordsEndTag'];
         }
