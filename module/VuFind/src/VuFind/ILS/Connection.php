@@ -775,9 +775,11 @@ class Connection implements TranslatorAwareInterface
      */
     public function getPasswordPolicy($patron)
     {
-        return $this->checkCapability('getConfig', compact('patron'))
-            ? $this->getDriver()->getConfig('changePassword', compact('patron'))
-            : false;
+        return $this->checkCapability('getConfig',
+                array('changePassword', array(compact('patron')))
+            ) ? $this->getDriver()->getConfig('changePassword',
+                array(compact('patron'))
+            ) : false;
     }
 
     /**
