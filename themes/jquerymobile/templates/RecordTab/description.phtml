@@ -141,6 +141,12 @@
     </dd>
   <? endif; ?>
 
+  <? $doi = $this->driver->tryMethod('getCleanDOI'); if (!empty($doi)): ?>
+    <? $contentDisplayed = true; ?>
+    <dt><?=$this->transEsc('DOI')?>: </dt>
+    <dd><p><?=$this->escapeHtml($doi)?></p></dd>
+  <? endif; ?>
+
   <? $related = $this->driver->getRelationshipNotes(); if (!empty($related)): ?>
     <? $contentDisplayed = true; ?>
     <dt><?=$this->transEsc('Related Items')?>: </dt>
