@@ -63,18 +63,11 @@ class OAI
     protected $combineRecords = false;
 
     /**
-     * The wrapping XML begin tag to be used if combinedRecords is set to true
+     * The wrapping XML tag to be used if combinedRecords is set to true
      *
      * @var string
      */
-    protected $combineRecordsBeginTag = '<collection>';
-
-    /**
-     * The wrapping XML end tag to be used if combinedRecords is set to true
-     *
-     * @var string
-     */
-    protected $combineRecordsEndTag = '</collection>';
+    protected $combineRecordsTag = '<collection>';
 
     /**
      * URL to harvest from
@@ -277,9 +270,8 @@ class OAI
         }
 
         // User-defined collection tags:
-        if (isset($settings['combineRecordsBeginTag']) && isset($settings['combineRecordsEndTag'])) {
-            $this->combineRecordsBeginTag = $settings['combineRecordsBeginTag'];
-            $this->combineRecordsEndTag = $settings['combineRecordsEndTag'];
+        if (isset($settings['combineRecordsTag'])) {
+            $this->combineRecordsTag = $settings['combineRecordsTag'];
         }
 
         // Don't time out during harvest!!
@@ -790,7 +782,7 @@ class OAI
     protected function processRecords($records)
     {
         $this->writeLine('Processing ' . count($records) . " records...");
-        $xml = $this->combineRecordsBeginTag;
+        $xml = $this->combineRecordsTag;
 
         // Array for tracking successfully harvested IDs:
         $harvestedIds = array();
@@ -835,7 +827,9 @@ class OAI
 
         if ($this->combineRecords) {
             if(!empty($harvestedIds)) {
-                $xml .= $this->combineRecordsEndTag;
+                $parts = explode(' ', $this->combineRecordsTag);
+                $combineRecordsEndTag = '</' . str_replace(array('<', '>'), '', $parts[0]) . '>';
+                $xml .= $combineRecordsEndTag;
                 file_put_contents($this->getFilename($harvestedIds[0], 'xml'), $xml);
             }
 
