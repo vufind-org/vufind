@@ -540,8 +540,8 @@ class Connection implements TranslatorAwareInterface
      * the driver configuration to determine if the system supports changing
      * password.
      *
-     * @param array  $functionConfig The password change configuration values
-     * @param array  $params         Patron data
+     * @param array $functionConfig The password change configuration values
+     * @param array $params         Patron data
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
@@ -550,12 +550,10 @@ class Connection implements TranslatorAwareInterface
      */
     protected function checkMethodchangePassword($functionConfig, $params)
     {
-        $response = false;
-
-        if ($this->checkCapability('changePassword', $params)) {
-            $response = array('function' => 'changePassword');
+        if ($this->checkCapability('changePassword', array($params ?: array()))) {
+            return array('function' => 'changePassword');
         }
-        return $response;
+        return false;
     }
 
     /**
@@ -775,11 +773,10 @@ class Connection implements TranslatorAwareInterface
      */
     public function getPasswordPolicy($patron)
     {
-        return $this->checkCapability('getConfig',
-                array('changePassword', array(compact('patron')))
-            ) ? $this->getDriver()->getConfig('changePassword',
-                array(compact('patron'))
-            ) : false;
+        return $this->checkCapability(
+            'getConfig', array('changePassword', compact('patron'))
+        ) ? $this->getDriver()->getConfig('changePassword', compact('patron'))
+            : false;
     }
 
     /**
