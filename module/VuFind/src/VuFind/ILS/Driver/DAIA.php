@@ -264,6 +264,8 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                     'barcode' => 'No samples',
                     'status' => '',
                     'id' => $id,
+		    'location' => '',
+                    'ilslink' => $ilslink,
                     'label' => 'No samples'
             );
             for ($c = 0; $itemlist->item($c) !== null; $c++) {
