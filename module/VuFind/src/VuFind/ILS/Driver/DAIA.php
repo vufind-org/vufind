@@ -116,7 +116,11 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      */
     public function getHoldLink($id, $details)
     {
-	return($details['ilslink']);
+	if ($details['ilslink']!='') {
+	   return($details['ilslink']);
+	} else {
+	   return null;
+        }
     }
 
     /**
@@ -338,7 +342,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                         } else {
 			    if ($this->logger) {
                                 $lang = $messageElements->item($m)->attributes->getNamedItem('lang')->nodeValue;
-                                $logString = "[DAIA] message";
+                                $logString = "[DAIA] message for ";
                                 $logString .= $lang . ': ' . $messageElements->item($m)->nodeValue;
 				$this->debug($logString);
 			    }
