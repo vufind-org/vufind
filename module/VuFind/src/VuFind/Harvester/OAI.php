@@ -49,6 +49,27 @@ class OAI
     protected $client;
 
     /**
+     * HTTP client's timeout
+     *
+     * @var int
+     */
+    protected $timeout = 60;
+
+    /**
+     * Do we combine harvested records (per OAI chunk size) into one (collection) file?
+     *
+     * @var bool
+     */
+    protected $combineRecords = false;
+
+    /**
+     * The wrapping XML tag to be used if combinedRecords is set to true
+     *
+     * @var string
+     */
+    protected $combineRecordsTag = '<collection>';
+
+    /**
      * URL to harvest from
      *
      * @var string
@@ -238,6 +259,21 @@ class OAI
             $this->client->setOptions(array('sslverifypeer' => false));
         }
 
+        // Store timeout:
+        if (isset($settings['timeout'])) {
+            $this->timeout = $settings['timeout'];
+        }
+
+        // Combine records if requested:
+        if (isset($settings['combineRecords'])) {
+            $this->combineRecords = $settings['combineRecords'];
+        }
+
+        // User-defined collection tags:
+        if (isset($settings['combineRecordsTag'])) {
+            $this->combineRecordsTag = $settings['combineRecordsTag'];
+        }
+
         // Don't time out during harvest!!
         set_time_limit(0);
 
@@ -407,8 +443,7 @@ class OAI
             // Set up the request:
             $this->client->resetParameters();
             $this->client->setUri($this->baseURL);
-            // TODO: make timeout configurable
-            $this->client->setOptions(array('timeout' => 60));
+            $this->client->setOptions(array('timeout' => $this->timeout));
 
             // Set authentication, if necessary:
             if ($this->httpUser && $this->httpPass) {
@@ -554,7 +589,7 @@ class OAI
      *
      * @return void
      */
-    protected function saveRecord($id, $record)
+    protected function saveRecordXML($id, $record)
     {
         if (!isset($record->metadata)) {
             throw new \Exception("Unexpected missing record metadata.");
@@ -613,6 +648,19 @@ class OAI
             isset($extractedNs[1]) ? $extractedNs[1] : ''
         );
 
+        return trim($xml);
+    }
+
+    /**
+     * Save a record to disk.
+     *
+     * @param string $id     ID of record to save.
+     * @param object $record Record to save (in SimpleXML format).
+     *
+     * @return void
+     */
+    protected function saveRecord($id, $xml)
+    {
         // Save our XML:
         file_put_contents($this->getFilename($id, 'xml'), trim($xml));
     }
@@ -734,9 +782,13 @@ class OAI
     protected function processRecords($records)
     {
         $this->writeLine('Processing ' . count($records) . " records...");
+        $xml = $this->combineRecordsTag;
 
         // Array for tracking successfully harvested IDs:
         $harvestedIds = array();
+
+        // Array for tracking deleted IDs:
+        $deletedIds = array();
 
         // Loop through the records:
         foreach ($records as $record) {
@@ -751,10 +803,18 @@ class OAI
             // Save the current record, either as a deleted or as a regular file:
             $attribs = $record->header->attributes();
             if (strtolower($attribs['status']) == 'deleted') {
-                $this->saveDeletedRecord($id);
+                if ($this->combineRecords) {
+                    $deletedIds[] = $id;
+                } else {
+                    $this->saveDeletedRecord($id);
+                }
             } else {
-                $this->saveRecord($id, $record);
-                $harvestedIds[] = $id;
+                if ($this->combineRecords) {
+                    $xml .= $this->saveRecordXML($id, $record);
+                    $harvestedIds[] = $id;
+                } else {
+                    $this->saveRecord($id, $this->saveRecordXML($id, $record));
+                }
             }
 
             // If the current record's date is newer than the previous end date,
@@ -762,6 +822,20 @@ class OAI
             $date = $this->normalizeDate($record->header->datestamp);
             if ($date && $date > $this->endDate) {
                 $this->endDate = $date;
+            }
+        }
+
+        if ($this->combineRecords) {
+            if(!empty($harvestedIds)) {
+                $parts = explode(' ', $this->combineRecordsTag);
+                $combineRecordsEndTag = '</' . str_replace(array('<', '>'), '', $parts[0]) . '>';
+                $xml .= $combineRecordsEndTag;
+                file_put_contents($this->getFilename($harvestedIds[0], 'xml'), $xml);
+            }
+
+            if (!empty($deletedIds)) {
+                $filename = $this->getFilename($deletedIds[0], 'delete');
+                file_put_contents($filename, implode("\n",$deletedIds));
             }
         }
 
