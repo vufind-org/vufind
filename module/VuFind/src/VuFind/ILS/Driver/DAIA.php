@@ -28,7 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use DOMDocument, VuFind\Exception\ILS as ILSException;
+use DOMDocument, VuFind\Exception\ILS as ILSException, Zend\Log\LoggerInterface;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -41,7 +41,7 @@ use DOMDocument, VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class DAIA extends AbstractBase
+class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
 {
     /**
      * Base URL
@@ -49,6 +49,40 @@ class DAIA extends AbstractBase
      * @var string
      */
     protected $baseURL;
+
+    /**
+     * Logger (or false for none)
+     *
+     * @var LoggerInterface|bool
+     */
+    protected $logger = false;
+
+
+   /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug(get_class($this) . ": $msg");
+        }
+    }
 
     /**
      * Initialize the driver.
@@ -66,6 +100,27 @@ class DAIA extends AbstractBase
         }
 
         $this->baseURL = $this->config['Global']['baseUrl'];
+    }
+
+   /**
+     * Get Hold Link
+     *
+     * The goal for this method is to return a URL to a "place hold" web page on
+     * the ILS OPAC. This is used for ILSs that do not support an API or method
+     * to place Holds.
+     *
+     * @param string $id      The id of the bib record
+     * @param array  $details Item details from getHoldings return array
+     *
+     * @return string         URL to ILS's OPAC's place hold screen.
+     */
+    public function getHoldLink($id, $details)
+    {
+	if ($details['ilslink']!='') {
+	   return($details['ilslink']);
+	} else {
+	   return null;
+        }
     }
 
     /**
@@ -105,6 +160,25 @@ class DAIA extends AbstractBase
         }
         return $items;
     }
+
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     *
+     * @return array An array with key-value pairs.
+     */
+    public function getConfig($function)
+    {
+        if (isset($this->config[$function]) ) {
+            $functionConfig = $this->config[$function];
+        } else {
+            $functionConfig = false;
+        }
+        return $functionConfig;
+    }
+
 
     /**
      * Get Holding
@@ -175,6 +249,10 @@ class DAIA extends AbstractBase
         $status = array();
         for ($b = 0; $documentlist->item($b) !== null; $b++) {
             $itemlist = $documentlist->item($b)->getElementsByTagName('item');
+	    $ilslink='';
+	    if ($documentlist->item($b)->attributes->getNamedItem('href')!==null) { 
+	       $ilslink=($documentlist->item($b)->attributes->getNamedItem('href')->nodeValue);
+	    }
             $emptyResult = array(
                     'callnumber' => '-',
                     'availability' => '0',
@@ -186,6 +264,8 @@ class DAIA extends AbstractBase
                     'barcode' => 'No samples',
                     'status' => '',
                     'id' => $id,
+		    'location' => '',
+                    'ilslink' => $ilslink,
                     'label' => 'No samples'
             );
             for ($c = 0; $itemlist->item($c) !== null; $c++) {
@@ -200,7 +280,7 @@ class DAIA extends AbstractBase
                     'barcode' => 1,
                     'status' => '',
                     'id' => $id,
-                    'itemid' => '',
+                    'item_id' => '',
                     'recallhref' => '',
                     'location' => '',
                     'location.id' => '',
@@ -208,7 +288,7 @@ class DAIA extends AbstractBase
                     'label' => '',
                     'notes' => array()
                 );
-                $result['itemid'] = $itemlist->item($c)->attributes
+                $result['item_id'] = $itemlist->item($c)->attributes
                     ->getNamedItem('id')->nodeValue;
                 if ($itemlist->item($c)->attributes->getNamedItem('href') !== null) {
                     $result['recallhref'] = $itemlist->item($c)->attributes
@@ -262,13 +342,12 @@ class DAIA extends AbstractBase
                         if ($errno === '404') {
                             $result['status'] = 'missing';
                         } else {
-                            if (is_array($result['notes'][$errno]) === false) {
-                                $result['notes'][$errno] = array();
-                            }
-                            $lang = $messageElements->item($m)->attributes
-                                ->getNamedItem('lang')->nodeValue;
-                            $result['notes'][$errno][$lang]
-                                = $messageElements->item($m)->nodeValue;
+			    if ($this->logger) {
+                                $lang = $messageElements->item($m)->attributes->getNamedItem('lang')->nodeValue;
+                                $logString = "[DAIA] message for ";
+                                $logString .= $lang . ': ' . $messageElements->item($m)->nodeValue;
+				$this->debug($logString);
+			    }
                         }
                     }
                 }
@@ -391,6 +470,7 @@ class DAIA extends AbstractBase
                     $result['availability'] = '-1';
                     $result['barcode'] = '-1';
                 }
+		$result['ilslink'] = $ilslink;
                 $status[] = $result;
                 /* $status = "available";
                 if (loanAvail) return 0;
