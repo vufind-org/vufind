@@ -401,6 +401,21 @@ class SpellingProcessorTest extends TestCase
     }
 
     /**
+     * Test detection of bad Solr response format.
+     *
+     * @return void
+     * @expectedException \Exception
+     * @expectedExceptionMessage Unexpected suggestion format; spellcheck.extendedResults must be set to true.
+     */
+    public function testDetectionOfMissingExtendedResultsSetting()
+    {
+        $sp = new SpellingProcessor(new Config(array()));
+        $spelling = $this->getFixture('spell5');
+        $query = $this->getFixture('query5');
+        $sp->getSuggestions($spelling, $query);
+    }
+
+    /**
      * Generic test.
      *
      * @param int   $testNum  Test data number to load
