@@ -240,7 +240,6 @@ function setscreenreader() {
 
 function settitle() {
   this.attr("title", function(d) {
-    if (d.field == "callnumber-first" && d.count == "1") {return d.name + " (" + d.count + " <?=$this->transEsc('item')?>)"; }
     if (d.field == "callnumber-first") {return d.name + " (" + d.count + " <?=$this->transEsc('items')?>)"; }
     if (d.field == "topic_facet" && d.name == "<?=$this->transEsc('More Topics')?>") {var topics = "<?=$this->translate('more_topics')?>"; return topics.replace("%%count%%", d.count); }
     if (d.field == "topic_facet") {var on_topic = "<?=$this->translate('on_topic')?>"; return d.name + " (" + on_topic.replace("%%count%%", d.count) + ")"; }
