@@ -164,10 +164,12 @@ class Results extends BaseResults
                 'id' => $row->record_id, 'source' => $row->source,
                 'extra_fields' => array(
                     'title' => $row->title
-                )
+                ),
+                'listId' => $listId,
+                'userId' => $userId
             );
         }
-        $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
+        $this->results = $this->getServiceLocator()->get('VuFind\RecordCache')
             ->loadBatch($recordsToRequest);
     }
 
