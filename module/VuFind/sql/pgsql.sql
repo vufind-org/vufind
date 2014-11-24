@@ -244,6 +244,28 @@ PRIMARY KEY (id)
 
 -- --------------------------------------------------------
 
+--
+-- Table structure for table `record`
+--
+
+DROP TABLE IF EXISTS "record";
+
+CREATE TABLE record
+(
+  id serial NOT NULL,
+  record_id character varying,
+  user_id integer,
+  list_id integer,
+  session_id character varying,
+  source character varying,
+  data text,
+  updated timestamp without time zone,
+  expires timestamp without time zone,
+  PRIMARY KEY (id)
+);
+
+-- --------------------------------------------------------
+
 -- 
 -- Constraints for dumped tables
 -- 

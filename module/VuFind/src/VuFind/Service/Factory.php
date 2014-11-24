@@ -509,6 +509,14 @@ class Factory
         );
     }
 
+    public static function getRecordCache(ServiceManager $sm)
+    {
+        return new \VuFind\Record\Cache(
+            $sm->get('VuFind\Search'),
+            $sm->get('VuFind\RecordDriverPluginManager')
+        );
+    }
+    
     /**
      * Construct the record router.
      *

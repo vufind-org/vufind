@@ -158,6 +158,7 @@ $config = array(
             'VuFind\RecommendPluginManager' => 'VuFind\Service\Factory::getRecommendPluginManager',
             'VuFind\RecordDriverPluginManager' => 'VuFind\Service\Factory::getRecordDriverPluginManager',
             'VuFind\RecordLoader' => 'VuFind\Service\Factory::getRecordLoader',
+            'VuFind\RecordCache' => 'VuFind\Service\Factory::getRecordCache',
             'VuFind\RecordRouter' => 'VuFind\Service\Factory::getRecordRouter',
             'VuFind\RecordStats' => 'VuFind\Service\Factory::getRecordStats',
             'VuFind\RecordTabPluginManager' => 'VuFind\Service\Factory::getRecordTabPluginManager',
@@ -221,7 +222,8 @@ $config = array(
             'tags'           => array('id', 'tags_id_seq'),
             'user'           => array('id', 'user_id_seq'),
             'user_list'      => array('id', 'user_list_id_seq'),
-            'user_resource'  => array('id', 'user_resource_id_seq')
+            'user_resource'  => array('id', 'user_resource_id_seq'),
+            'record'         => array('id', 'record_id_seq')
         ),
         // This section contains service manager configurations for all VuFind
         // pluggable components:
@@ -333,7 +335,8 @@ $config = array(
                     'userlist' => 'VuFind\Db\Table\UserList',
                     'userresource' => 'VuFind\Db\Table\UserResource',
                     'userstats' => 'VuFind\Db\Table\UserStats',
-                    'userstatsfields' => 'VuFind\Db\Table\UserStatsFields',
+                    'userstatsfields' => 'VuFind\Db\Table\UserStatsFields',                 
+                    'record' => 'VuFind\Db\Table\Record'
                 ),
             ),
             'hierarchy_driver' => array(
@@ -501,6 +504,7 @@ $config = array(
                     'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',
                     'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
+                    'RecordCache' => 'VuFind\Search\Factory\RecordCacheBackendFactory'
                 ),
                 'aliases' => array(
                     // Allow Solr core names to be used as aliases for services:
