@@ -42,20 +42,6 @@ use VuFind\Exception\Auth as AuthException;
 class LDAP extends AbstractBase
 {
     /**
-     * Username
-     *
-     * @var string
-     */
-    protected $username;
-
-    /**
-     * Password
-     *
-     * @var string
-     */
-    protected $password;
-
-    /**
      * Validate configuration parameters.  This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
@@ -107,96 +93,169 @@ class LDAP extends AbstractBase
      */
     public function authenticate($request)
     {
-        $this->username = trim($request->getPost()->get('username'));
-        $this->password = trim($request->getPost()->get('password'));
-        if ($this->username == '' || $this->password == '') {
+        $username = trim($request->getPost()->get('username'));
+        $password = trim($request->getPost()->get('password'));
+        if ($username == '' || $password == '') {
             throw new AuthException('authentication_error_blank');
         }
-        return $this->bindUser();
+        return $this->checkLdap($username, $password);
     }
 
     /**
      * Communicate with LDAP and obtain user details.
      *
+     * @param string $username Username
+     * @param string $password Password
+     *
      * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
-    protected function bindUser()
+    protected function checkLdap($username, $password)
     {
-        // Try to connect to LDAP and die if we can't; note that some LDAP setups
-        // will successfully return a resource from ldap_connect even if the server
-        // is unavailable -- we need to check for bad return values again at search
-        // time!
-        $ldapConnection = @ldap_connect(
-            $this->getSetting('host'), $this->getSetting('port')
-        );
-        if (!$ldapConnection) {
-            throw new AuthException('authentication_error_technical');
-        }
+        // Establish a connection:
+        $connection = $this->connect();
 
-        // Set LDAP options -- use protocol version 3
-        @ldap_set_option($ldapConnection, LDAP_OPT_PROTOCOL_VERSION, 3);
-
-        // if the host parameter is not specified as ldaps://
-        // then we need to initiate TLS so we
-        // can have a secure connection over the standard LDAP port.
-        if (stripos($this->getSetting('host'), 'ldaps://') === false) {
-            if (!@ldap_start_tls($ldapConnection)) {
-                throw new AuthException('authentication_error_technical');
-            }
-        }
-
-        // If bind_username and bind_password were supplied in the config file, use
-        // them to access LDAP before proceeding.  In some LDAP setups, these
-        // settings can be excluded in order to skip this step.
-        if ($this->getSetting('bind_username') != ''
-            && $this->getSetting('bind_password') != ''
-        ) {
-            $ldapBind = @ldap_bind(
-                $ldapConnection, $this->getSetting('bind_username'),
-                $this->getSetting('bind_password')
-            );
-            if (!$ldapBind) {
-                throw new AuthException('authentication_error_technical');
-            }
-        }
+        // If necessary, bind in order to perform a search:
+        $this->bindForSearch($connection);
 
         // Search for username
-        $ldapFilter = $this->getSetting('username') . '=' . $this->username;
-        $ldapSearch = @ldap_search(
-            $ldapConnection, $this->getSetting('basedn'), $ldapFilter
-        );
-        if (!$ldapSearch) {
-            throw new AuthException('authentication_error_technical');
-        }
-
-        $info = ldap_get_entries($ldapConnection, $ldapSearch);
+        $info = $this->findUsername($connection, $username);
         if ($info['count']) {
-            // Validate the user credentials by attempting to bind to LDAP:
-            $ldapBind = @ldap_bind(
-                $ldapConnection, $info[0]['dn'], $this->password
-            );
-            if ($ldapBind) {
-                // If the bind was successful, we can look up the full user info:
-                $ldapSearch = ldap_search(
-                    $ldapConnection, $this->getSetting('basedn'), $ldapFilter
-                );
-                $data = ldap_get_entries($ldapConnection, $ldapSearch);
-                return $this->processLDAPUser($data);
+            $data = $this->validateCredentialsInLdap($connection, $info, $password);
+            if ($data) {
+                return $this->processLDAPUser($username, $data);
             }
+        } else {
+            $this->debug('LDAP: user not found');
         }
 
         throw new AuthException('authentication_error_invalid');
     }
 
     /**
+     * Establish the LDAP connection.
+     *
+     * @return resource
+     */
+    protected function connect()
+    {
+        // Try to connect to LDAP and die if we can't; note that some LDAP setups
+        // will successfully return a resource from ldap_connect even if the server
+        // is unavailable -- we need to check for bad return values again at search
+        // time!
+        $host = $this->getSetting('host');
+        $port = $this->getSetting('port');
+        $this->debug("LDAP: connecting to host=$host, port=$port");
+        $connection = @ldap_connect($host, $port);
+        if (!$connection) {
+            $this->debug('LDAP: connection failed');
+            throw new AuthException('authentication_error_technical');
+        }
+
+        // Set LDAP options -- use protocol version 3
+        if (!@ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3)) {
+            $this->debug('LDAP: Failed to set protocol version 3');
+        }
+
+        // if the host parameter is not specified as ldaps://
+        // then we need to initiate TLS so we
+        // can have a secure connection over the standard LDAP port.
+        if (stripos($host, 'ldaps://') === false) {
+            $this->debug('LDAP: Starting TLS');
+            if (!@ldap_start_tls($connection)) {
+                $this->debug('LDAP: TLS failed');
+                throw new AuthException('authentication_error_technical');
+            }
+        }
+
+        return $connection;
+    }
+
+    /**
+     * If configured, bind an administrative user in order to perform a search
+     *
+     * @param resource $connection LDAP connection
+     *
+     * @return void
+     */
+    protected function bindForSearch($connection)
+    {
+        // If bind_username and bind_password were supplied in the config file, use
+        // them to access LDAP before proceeding.  In some LDAP setups, these
+        // settings can be excluded in order to skip this step.
+        $user = $this->getSetting('bind_username');
+        $pass = $this->getSetting('bind_password');
+        if ($user != '' && $pass != '') {
+            $this->debug("LDAP: binding as $user");
+            $ldapBind = @ldap_bind($connection, $user, $pass);
+            if (!$ldapBind) {
+                $this->debug('LDAP: bind failed -- ' . ldap_error($connection));
+                throw new AuthException('authentication_error_technical');
+            }
+        }
+    }
+
+    /**
+     * Find the specified username in the directory
+     *
+     * @param resource $connection LDAP connection
+     * @param string   $username   Username
+     *
+     * @return array
+     */
+    protected function findUsername($connection, $username)
+    {
+        $ldapFilter = $this->getSetting('username') . '=' . $username;
+        $basedn = $this->getSetting('basedn');
+        $this->debug("LDAP: search for $ldapFilter using basedn=$basedn");
+        $ldapSearch = @ldap_search($connection, $basedn, $ldapFilter);
+        if (!$ldapSearch) {
+            $this->debug('LDAP: search failed -- ' . ldap_error($connection));
+            throw new AuthException('authentication_error_technical');
+        }
+
+        return ldap_get_entries($connection, $ldapSearch);
+    }
+
+    /**
+     * Validate credentials
+     *
+     * @param resource $connection LDAP connection
+     * @param array    $info       Data from findUsername()
+     * @param string   $password   Password to try
+     *
+     * @return bool|array Array of user data on success, false otherwise
+     */
+    protected function validateCredentialsInLdap($connection, $info, $password)
+    {
+        // Validate the user credentials by attempting to bind to LDAP:
+        $dn = $info[0]['dn'];
+        $this->debug("LDAP: binding as $dn");
+        $ldapBind = @ldap_bind($connection, $dn, $password);
+        if (!$ldapBind) {
+            $this->debug('LDAP: bind failed -- ' . ldap_error($connection));
+            return false;
+        }
+        // If the bind was successful, we can look up the full user info:
+        $this->debug('LDAP: bind successful; reading details');
+        $ldapSearch = ldap_read($connection, $dn, 'objectclass=*');
+        $data = ldap_get_entries($connection, $ldapSearch);
+        if ($data === false) {
+            $this->debug('LDAP: Read failed -- ' . ldap_error($connection));
+            throw new AuthException('authentication_error_technical');
+        }
+        return $data;
+    }
+
+    /**
      * Build a User object from details obtained via LDAP.
      *
-     * @param array $data Details from ldap_get_entries call.
+     * @param string $username Username
+     * @param array  $data     Details from ldap_get_entries call.
      *
      * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
-    protected function processLDAPUser($data)
+    protected function processLDAPUser($username, $data)
     {
         // Database fields that we may be able to load from LDAP:
         $fields = array(
@@ -205,7 +264,7 @@ class LDAP extends AbstractBase
         );
 
         // User object to populate from LDAP:
-        $user = $this->getUserTable()->getByUsername($this->username);
+        $user = $this->getUserTable()->getByUsername($username);
 
         // Variable to hold catalog password (handled separately from other
         // attributes since we need to use saveCredentials method to store it):
@@ -218,10 +277,12 @@ class LDAP extends AbstractBase
                 foreach ($fields as $field) {
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
+                        $value = $data[$i][$configValue][0];
+                        $this->debug("LDAP: found $field = $value");
                         if ($field != "cat_password" ) {
-                            $user->$field = $data[$i][$data[$i][$j]][0];
+                            $user->$field = $value;
                         } else {
-                            $catPassword = $data[$i][$data[$i][$j]][0];
+                            $catPassword = $value;
                         }
                     }
                 }

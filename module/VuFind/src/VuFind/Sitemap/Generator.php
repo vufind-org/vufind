@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind;
+namespace VuFind\Sitemap;
 use VuFindSearch\Backend\Solr\Backend, VuFind\Search\BackendManager,
     VuFindSearch\ParamBag, Zend\Config\Config;
 
@@ -38,7 +38,7 @@ use VuFindSearch\Backend\Solr\Backend, VuFind\Search\BackendManager,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Sitemap
+class Generator
 {
     /**
      * Search backend manager.
@@ -138,14 +138,14 @@ class Sitemap
         // Store other key config settings:
         $this->frequency = $this->config->Sitemap->frequency;
         $this->countPerPage = $this->config->Sitemap->countPerPage;
-        $this->fileStart = $this->config->Sitemap->fileLocation . "/" .
+        $this->fileStart = $this->config->Sitemap->fileLocation . '/' .
             $this->config->Sitemap->fileName;
         if (isset($this->config->Sitemap->retrievalMode)) {
             $this->retrievalMode = $this->config->Sitemap->retrievalMode;
         }
         if (isset($this->config->SitemapIndex->indexFileName)) {
-            $this->indexFile = $this->config->Sitemap->fileLocation . "/" .
-                $this->config->SitemapIndex->indexFileName. ".xml";
+            $this->indexFile = $this->config->Sitemap->fileLocation . '/' .
+                $this->config->SitemapIndex->indexFileName. '.xml';
         }
     }
 
@@ -206,18 +206,19 @@ class Sitemap
             }
 
             // Write the current entry:
-            $filename = $this->getFilenameForPage($currentPage);
-            $smf = $this->openSitemapFile($filename, 'urlset');
+            $smf = $this->getNewSitemap();
             foreach ($ids as $item) {
                 $loc = htmlspecialchars($recordUrl . urlencode($item));
                 if (strpos($loc, 'http') === false) {
                     $loc = 'http://'.$loc;
                 }
-                $this->writeSitemapEntry($smf, $loc);
+                $smf->addUrl($loc);
                 $lastTerm = $item;
             }
-            fwrite($smf, '</urlset>');
-            fclose($smf);
+            $filename = $this->getFilenameForPage($currentPage);
+            if (false === $smf->write($filename)) {
+                throw new \Exception("Problem writing $filename.");
+            }
 
             // Update counters:
             $count += $this->countPerPage;
@@ -303,39 +304,59 @@ class Sitemap
     {
         // Only build index file if requested:
         if ($this->indexFile !== false) {
-            $smf = $this->openSitemapFile($this->indexFile, 'sitemapindex');
+            $smf = $this->getNewSitemapIndex();
+            $baseUrl = $this->getBaseSitemapIndexUrl();
 
             // Add a <sitemap /> group for a static sitemap file.
             // See sitemap.ini for more information on this option.
             if (isset($this->config->SitemapIndex->baseSitemapFileName)) {
-                $baseSitemapFile = $this->config->Sitemap->fileLocation . "/" .
-                    $this->config->SitemapIndex->baseSitemapFileName . ".xml";
+                $baseSitemapFile = $this->config->Sitemap->fileLocation . '/' .
+                    $this->config->SitemapIndex->baseSitemapFileName . '.xml';
                 // Only add the <sitemap /> group if the file exists
                 // in the directory where the other sitemap files
                 // are saved, i.e. ['Sitemap']['fileLocation']
                 if (file_exists($baseSitemapFile)) {
-                    $this->writeSitemapIndexLine(
-                        $smf, $this->config->SitemapIndex->baseSitemapFileName
-                    );
+                    $file = "{$this->config->SitemapIndex->baseSitemapFileName}.xml";
+                    $smf->addUrl($baseUrl . '/' . $file);
                 } else {
                     $this->warnings[] = "WARNING: Can't open file "
                         . $baseSitemapFile . '. '
                         . 'The sitemap index will be generated '
-                        . "without this sitemap file.";
+                        . 'without this sitemap file.';
                 }
             }
 
             // Add <sitemap /> group for each sitemap file generated.
             for ($i = 1; $i <= $totalPages; $i++) {
                 $sitemapNumber = ($i == 1) ? "" : "-" . $i;
-                $this->writeSitemapIndexLine(
-                    $smf, $this->config->Sitemap->fileName . $sitemapNumber
-                );
+                $file = $this->config->Sitemap->fileName . $sitemapNumber . '.xml';
+                $smf->addUrl($baseUrl . '/' . $file);
             }
 
-            fwrite($smf, '</sitemapindex>');
-            fclose($smf);
+            if (false === $smf->write($this->indexFile)) {
+                throw new \Exception("Problem writing $this->indexFile.");
+            }
         }
+    }
+
+    /**
+     * Get a fresh SitemapIndex object.
+     *
+     * @return IndexWriter
+     */
+    protected function getNewSitemapIndex()
+    {
+        return new SitemapIndex();
+    }
+
+    /**
+     * Get a fresh Sitemap object.
+     *
+     * @return SitemapWriter
+     */
+    protected function getNewSitemap()
+    {
+        return new Sitemap($this->frequency);
     }
 
     /**
@@ -351,81 +372,18 @@ class Sitemap
     }
 
     /**
-     * Start writing a sitemap file (including the top-level open tag).
+     * Get the base URL for sitemap index files
      *
-     * @param string $filename Filename to open.
-     * @param string $startTag Top-level tag in file.
-     *
-     * @return int             File handle of open file.
+     * @return string
      */
-    protected function openSitemapFile($filename, $startTag)
-    {
-        // if a subfolder was specified that does not exist, make one
-        $dirname = dirname($filename);
-        if (!is_dir($dirname)) {
-            mkdir($dirname, 0755, true);
-        }
-        // open/create new file
-        $smf = fopen($filename, 'w');
-
-        if (!$smf) {
-            throw new \Exception("Can't open file - " . $filename);
-        }
-        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-            '<' . $startTag . "\n" .
-            '   xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n" .
-            '   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n" .
-            "   xsi:schemaLocation=\"http://www.sitemaps.org/schemas/sitemap/0.9\n" .
-            '   http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">' . "\n\n";
-        fwrite($smf, $xml);
-
-        return $smf;
-    }
-
-    /**
-     * Write an entry to a sitemap.
-     *
-     * @param int    $smf File handle to write to.
-     * @param string $loc URL to write.
-     *
-     * @return void
-     */
-    protected function writeSitemapEntry($smf, $loc)
-    {
-        fwrite($smf, '<url>' . "\n");
-        fwrite($smf, '  <loc>' . $loc . '</loc>' . "\n");
-        fwrite(
-            $smf,
-            '  <changefreq>'.htmlspecialchars($this->frequency)
-            .'</changefreq>'."\n"
-        );
-        fwrite($smf, '</url>' . "\n");
-    }
-
-    /**
-     * Write a line to the sitemap index file.
-     *
-     * @param int    $smf      File handle to write to.
-     * @param string $filename Filename (not including path) to store.
-     *
-     * @return void
-     */
-    protected function writeSitemapIndexLine($smf, $filename)
+    protected function getBaseSitemapIndexUrl()
     {
         // Pick the appropriate base URL based on the configuration files:
         if (!isset($this->config->SitemapIndex->baseSitemapUrl)
             || empty($this->config->SitemapIndex->baseSitemapUrl)
         ) {
-            $baseUrl = $this->baseUrl;
-        } else {
-            $baseUrl = $this->config->SitemapIndex->baseSitemapUrl;
+            return $this->baseUrl;
         }
-
-        $loc = htmlspecialchars($baseUrl.'/'.$filename.'.xml');
-        $lastmod = htmlspecialchars(date("Y-m-d"));
-        fwrite($smf, '  <sitemap>' . "\n");
-        fwrite($smf, '    <loc>' . $loc . '</loc>' . "\n");
-        fwrite($smf, '    <lastmod>' . $lastmod . '</lastmod>' . "\n");
-        fwrite($smf, '  </sitemap>' . "\n");
+        return $this->config->SitemapIndex->baseSitemapUrl;
     }
 }

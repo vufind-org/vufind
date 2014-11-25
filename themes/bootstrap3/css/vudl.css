@@ -18,6 +18,7 @@
 
 .panel {border:1px solid #DDD}
 .panel .panel-heading {background:#EEE}
+.panel-collapse {max-height:500px;overflow-y:auto}
 
 .details {text-align:center}
 .details .copyright {margin-bottom:1em}
@@ -45,6 +46,8 @@
 
 #view #preview {max-width:100%}
 .front {position:absolute;left:10%;top:150px;width:80%;z-index:5}
+
+#zoomy {background:#F0F0F0}
 
 #allFiles .btn {display:block;margin:auto;max-width:400px}
 #download-button .details {font-size:14px}

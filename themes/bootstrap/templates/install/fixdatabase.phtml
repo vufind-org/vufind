@@ -51,6 +51,12 @@
     </div>
   </div>
   <div class="control-group">
+    <label class="control-label" for="vufindhost">VuFind IP/Host (if different from SQL Host):</label>
+    <div class="controls">
+      <input type="text" name="vufindhost" value="<?=$this->escapeHtmlAttr($this->vufindhost)?>"/>
+    </div>
+  </div>
+  <div class="control-group">
     <label class="control-label" for="dbrootuser">SQL Root User:</label>
     <div class="controls">
       <input type="text" name="dbrootuser" value="<?=$this->escapeHtmlAttr($this->dbrootuser)?>"/>
