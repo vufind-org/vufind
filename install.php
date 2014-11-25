@@ -47,7 +47,7 @@ try {
            'Use VuFind Defaults to Configure (ignores any other arguments passed)',
         'overridedir=s' => 
            "Where would you like to store your local settings? [{$baseDir}/local]",
-        'module-name=w' => 
+        'module-name=s' => 
            'What module name would you like to use? Use disabled, to not use',
         'basepath=s' => 
            'What base path should be used in VuFind\'s URL? [/vufind]',
@@ -82,7 +82,7 @@ if (!$opts->getOption('use-defaults')) {
     if ($opts->getOption('module-name')) {
         if ($opts->getOption('module-name') !== 'disabled') {
             $module = $opts->getOption('module-name');
-            if (($result = validateModule($module)) !== true) {
+            if (($result = validateModules($module)) !== true) {
                 die($result . "\n");
             }
         }
@@ -142,6 +142,9 @@ if (!$opts->getOption('use-defaults')) {
 // here is harmless if it was already initialized in interactive mode):
 initializeOverrideDir($overrideDir, true);
 
+// Normalize the module setting to remove whitespace:
+$module = preg_replace('/\s/', '', $module);
+
 // Build the Windows start file in case we need it:
 buildWindowsConfig($baseDir, $overrideDir, $module);
 
@@ -151,7 +154,7 @@ buildImportConfig($baseDir, $overrideDir, 'import_auth.properties');
 
 // Build the custom module, if necessary:
 if (!empty($module)) {
-    buildModule($baseDir, $module);
+    buildModules($baseDir, $module);
 }
 
 // Build the final configuration:
@@ -335,6 +338,25 @@ function getOverrideDir($overrideDir)
 }
 
 /**
+ * Validate a comma-separated list of module names. Returns true on success, message
+ * on failure.
+ *
+ * @param string $modules Module name to validate.
+ *
+ * @return bool|string
+ */
+function validateModules($modules)
+{
+    foreach (explode(',', $modules) as $module) {
+        $result = validateModule(trim($module));
+        if ($result !== true) {
+            return $result;
+        }
+    }
+    return true;
+}
+
+/**
  * Validate the custom module name. Returns true on success, message on failure.
  *
  * @param string $module Module name to validate.
@@ -376,7 +398,7 @@ function getModule()
                 "\nWhat module name would you like to use? [blank for none] "
             )
         );
-        if (($result = validateModule($moduleInput)) === true) {
+        if (($result = validateModules($moduleInput)) === true) {
             return $moduleInput;
         }
         echo "\n$result\n";
@@ -570,6 +592,25 @@ function buildDirs($dirs)
         }
     }
     return true;
+}
+
+/**
+ * Make sure all modules exist (and create them if they do not.
+ *
+ * @param string $baseDir The VuFind base directory
+ * @param string $modules The comma-separated list of modules (assumed valid!)
+ *
+ * @return void
+ */
+function buildModules($baseDir, $modules)
+{
+    foreach (explode(',', $modules) as $module) {
+        $moduleDir = $baseDir . '/module/' . $module;
+        // Is module missing? If so, create it from the template:
+        if (!file_exists($moduleDir . '/Module.php')) {
+            buildModule($baseDir, $module);
+        }
+    }
 }
 
 /**

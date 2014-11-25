@@ -1,6 +1,11 @@
 @import "bootstrap/bootstrap";
 @import "a11y";
 
+.btn.disabled {
+  &:active,&:focus,&:hover {
+    color:#000;
+  }
+}
 [data-toggle~=dropdown] {cursor:pointer}
 .fa {cursor:default}
 .form-control {
@@ -9,6 +14,16 @@
   }
 }
 .group [class^=col-] {padding-left:0}
+.has-error {margin-bottom:0;}
+.help-block.with-errors {
+  padding:@padding-base-vertical 0;
+  &:empty {
+    padding:0;
+  }
+  &,.list-unstyled {
+    margin:0;
+  }
+}
 .highlight{&:extend(mark);}
 .icon-bar {background-color:#888}
 img {max-width:100%}

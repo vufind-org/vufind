@@ -477,7 +477,7 @@ class MultiBackend extends AbstractBase
      */
     public function renewMyItems($renewDetails)
     {
-        $source = $this->getSource($renewDetails['patron']['id']);
+        $source = $this->getSource($renewDetails['patron']['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver) {
             $details = $driver->renewMyItems(
@@ -705,7 +705,7 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($bibId);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($this->getSource($patron['id']) != $source
+            if ($this->getSource($patron['cat_username'], 'login') != $source
                 || !$this->methodSupported($driver, 'getRequestGroups')
             ) {
                 // Return empty array since the sources don't match or the method
@@ -852,7 +852,7 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($details['patron']['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver
-            && is_callable(driver($driver, 'placeStorageRetrievalRequest'))
+            && is_callable(array($driver, 'placeStorageRetrievalRequest'))
         ) {
             if ($this->getSource($details['id']) != $source) {
                 return array(
@@ -969,6 +969,7 @@ class MultiBackend extends AbstractBase
                 $patron
             );
         }
+        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -996,6 +997,7 @@ class MultiBackend extends AbstractBase
                 $patron
             );
         }
+        throw new ILSException('No suitable backend driver found');
     }
 
     /**
@@ -1107,15 +1109,15 @@ class MultiBackend extends AbstractBase
      * Function which specifies renew, hold and cancel settings.
      *
      * @param string $function The name of the feature to be checked
-     * @param string $id       Optional record id
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function, $id = null)
+    public function getConfig($function, $params = null)
     {
         $source = null;
-        if (!empty($id)) {
-            $source = $this->getSource($id);
+        if (!empty($params)) {
+            $source = $this->getSourceFromParams($params);
         }
         if (!$source) {
             $patron = $this->ilsAuth->storedCatalogLogin();
@@ -1124,13 +1126,13 @@ class MultiBackend extends AbstractBase
             }
         }
 
-        $driver = $this->getDriver(
-            $source, empty($id) ? null : $this->getLocalId($id)
-        );
+        $driver = $this->getDriver($source);
 
         // If we have resolved the needed driver, just getConfig and return.
         if ($driver && $this->methodSupported($driver, 'getConfig')) {
-            return $driver->getConfig($function);
+            return $driver->getConfig(
+                $function, $this->stripIdPrefixes($params, $source)
+            );
         }
 
         // If driver not available, return an empty array
@@ -1353,16 +1355,9 @@ class MultiBackend extends AbstractBase
         if (!isset($this->isInitialized[$source])
             || !$this->isInitialized[$source]
         ) {
-            try
-            {
-                $driver->init();
-                $this->isInitialized[$source] = true;
-                $this->cache[$source] = $driver;
-            } catch (Exception $e) {
-                $this->error(
-                    "Driver init for '$source' failed: " . $e->getMessage()
-                );
-            }
+            $driver->init();
+            $this->isInitialized[$source] = true;
+            $this->cache[$source] = $driver;
         }
     }
 

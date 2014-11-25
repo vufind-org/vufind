@@ -100,6 +100,24 @@ function setupOrFacets() {
  * This is a default open action, so it runs every time changeContent
  * is called and the 'shown' lightbox event is triggered
  */
+function bulkActionSubmit($form) {
+  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
+  var checks = $form.find('input.checkbox-select-item:checked');
+  if(checks.length == 0 && submit != 'empty') {
+    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+  }
+  if (submit == 'print') {
+    //redirect page
+    var url = path+'/Records/Home?print=true';
+    for(var i=0;i<checks.length;i++) {
+      url += '&id[]='+checks[i].value;
+    }
+    document.location.href = url;
+  } else {
+    Lightbox.submit($form, Lightbox.changeContent);
+  }
+  return false;
+}
 function registerLightboxEvents() {
   var modal = $("#modal");
   // New list
@@ -355,6 +373,18 @@ $(document).ready(function() {
 
   // Advanced facets
   setupOrFacets();
+
+  $('[name=bulkActionForm]').submit(function() {
+    return bulkActionSubmit($(this));
+  });
+  $('[name=bulkActionForm]').find("input[type=submit]").click(function() {
+    // Abort requests triggered by the lightbox
+    $('#modal .fa-spinner').remove();
+    // Remove other clicks
+    $(this).closest('form').find('input[type="submit"][clicked=true]').attr('clicked', false);
+    // Add useful information
+    $(this).attr("clicked", "true");
+  });
 
   /******************************
    * LIGHTBOX DEFAULT BEHAVIOUR *

@@ -98,19 +98,21 @@ class Loader
         foreach ($providers as $provider) {
             $parts = explode(':', trim($provider));
             $provider = $parts[0];
-            $key = isset($parts[1]) ? $parts[1] : '';
-            try {
-                $plugin = $this->loader->get($provider);
-                $results[$provider] = $plugin->loadByIsbn($key, $isbnObj);
+            if (!empty($provider)) {
+                $key = isset($parts[1]) ? $parts[1] : '';
+                try {
+                    $plugin = $this->loader->get($provider);
+                    $results[$provider] = $plugin->loadByIsbn($key, $isbnObj);
 
-                // If the current provider had no valid data, store nothing:
-                if (empty($results[$provider])) {
+                    // If the current provider had no valid data, store nothing:
+                    if (empty($results[$provider])) {
+                        unset($results[$provider]);
+                    }
+                } catch (\Exception $e) {
+                    // Ignore exceptions:
+                    error_log($e->getMessage());
                     unset($results[$provider]);
                 }
-            } catch (\Exception $e) {
-                // Ignore exceptions:
-                error_log($e->getMessage());
-                unset($results[$provider]);
             }
         }
 

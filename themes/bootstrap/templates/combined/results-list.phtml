@@ -11,7 +11,7 @@
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
   $params->setLimit($limit);
 ?>
-<? if ($currentSearch['more_link']): ?>
+<? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
   <div class="pull-right">
     <a href="<?=$moreUrl?>" class="btn btn-link"><i class="icon-gears"></i> <?=$this->transEsc('More options')?></a>
   </div>
@@ -75,7 +75,7 @@
     }
   ?>
   <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
-  <? if ($currentSearch['more_link']): ?>
+  <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
     <p class="pad text-right"><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?> <i class="icon-long-arrow-right"></i></a></p>
   <? endif; ?>
 <? endif; ?>

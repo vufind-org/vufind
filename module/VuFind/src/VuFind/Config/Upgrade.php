@@ -445,11 +445,21 @@ class Upgrade
      */
     protected function isDefaultBulkExportOptions($eo)
     {
-        return
-            ($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
-            || ($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
-            || ($this->from == '1.2' && $eo == 'MARC:EndNote:BibTeX')
-            || ($this->from == '1.1' && $eo == 'MARC:EndNote');
+        $from = (float)$this->from;
+        if ($from >= 2.4) {
+            $default = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS';
+        } else if ($from >= 2.0) {
+            $default = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX';
+        } else if ($from >= 1.4) {
+            $default = 'MARC:MARCXML:EndNote:RefWorks:BibTeX';
+        } else if ($from >= 1.3) {
+            $default = 'MARC:EndNote:RefWorks:BibTeX';
+        } else if ($from >= 1.2) {
+            $default = 'MARC:EndNote:BibTeX';
+        } else {
+            $default = 'MARC:EndNote';
+        }
+        return $eo == $default;
     }
 
     /**
@@ -503,7 +513,7 @@ class Upgrade
         // reflect the fact that we now support more options.
         if ($this->isDefaultBulkExportOptions($newConfig['BulkExport']['options'])) {
             $newConfig['BulkExport']['options']
-                = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX';
+                = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX:RIS';
         }
 
         // Warn the user about Amazon configuration issues:

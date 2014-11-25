@@ -136,7 +136,6 @@ class LessCompiler
             return;
         }
         $this->logMessage("Processing " . $theme);
-        $this->logMessage("Processing " . $theme);
         foreach ($lessFiles as $less) {
             if (is_string($less)) {
                 $this->compileFile($theme, $less);
