@@ -251,14 +251,18 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             $this->getUniqueId(), $this->getResourceSource(), true, $this
         );
 
-        
-        $recordTable = $this->getDbTable('Record');
-        $record = $recordTable->findRecord($resource->record_id, $this->getRawData(), true, $resource->source, $user->id, $listId);
-        
+        // Persist record in the database for "offline" use
+        if ($this->mainConfig->Social->cache === 'enabled') {
+            $recordTable = $this->getDbTable('Record');
+            $record = $recordTable->findRecord(
+                $resource->record_id, $this->getRawData(), true, 
+                $resource->source, $user->id, $listId
+            );
+        }
         
         // Add the information to the user's account:
         $user->saveResource(
-            $resource, $list, 
+            $resource, $list,
             isset($params['mytags']) ? $params['mytags'] : array(),
             isset($params['notes']) ? $params['notes'] : ''
         );
