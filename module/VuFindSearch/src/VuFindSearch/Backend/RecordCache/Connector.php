@@ -17,7 +17,8 @@ class Connector
     public function retrieve($id, ParamBag $params = null)
     {
         $recordTable = $this->databaseManager->get('record');
-        $record = $recordTable->findRecord($id, null, null, null, $params->get($id)['userId'], $params->get($id)['listId'] );
+        $recordDetails = $params->get('id');
+        $record = $recordTable->findRecord($id, null, null, null, $recordDetails['userId'], $recordDetails['listId'] );
         $response = $this->buildResponse($record);
         
         return $response;
@@ -29,7 +30,8 @@ class Connector
         
         $recordTable = $this->databaseManager->get('record');
         foreach ($ids as $id) {
-            $record = $recordTable->findRecord($id, null, null, null, $params->get($id)['userId'], $params->get($id)['listId'] );
+            $recordDetails = $params->get('id');
+            $record = $recordTable->findRecord($id, null, null, null, $recordDetails['userId'], $recordDetails['listId'] );
             $response[] = $this->buildResponse($record);
         }
         
