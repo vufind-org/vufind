@@ -61,7 +61,7 @@ class HMAC
      * @param array $keysToHash    A list of keys to hash
      * @param array $keyValueArray A keyed array
      *
-     * @return sting A hash_hmac string using md5
+     * @return string A hash_hmac string using md5
      */
     public function generate($keysToHash, $keyValueArray)
     {

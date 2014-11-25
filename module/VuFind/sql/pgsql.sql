@@ -97,7 +97,7 @@ PRIMARY KEY (id)
 
 CREATE TABLE "user"(
 id SERIAL,
-username varchar(30) NOT NULL DEFAULT '',
+username varchar(50) NOT NULL DEFAULT '',
 password varchar(32) NOT NULL DEFAULT '',
 pass_hash varchar(60) DEFAULT NULL,
 firstname varchar(50) NOT NULL DEFAULT '',

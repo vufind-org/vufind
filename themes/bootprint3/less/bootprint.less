@@ -101,6 +101,9 @@ input[type=checkbox] {
   }
   & > p {padding:0 1em;}
 }
+.search .row {
+  padding:2px 0;
+}
 .sub-breadcrumb {
   padding:0 5px;
 }
@@ -183,6 +186,7 @@ header {
     font-size:14px;
     height:32px;
     padding:5px 8px;
+    &[multiple] {height:auto}
   }
   .search-query {
     @media (min-width: 768px) {

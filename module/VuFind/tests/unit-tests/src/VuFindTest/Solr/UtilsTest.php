@@ -60,4 +60,34 @@ class UtilsTest extends \VuFindTest\Unit\TestCase
         $this->assertFalse(Utils::parseRange('1 TO 100'));
         $this->assertFalse(Utils::parseRange('[not a range to me]'));
     }
+
+    /**
+     * Test sanitizeDate functionality.
+     *
+     * @return void
+     */
+    public function testSanitizeDate()
+    {
+        $tests = array(
+            '[2014]' => '2014-01-01',
+            'n.d.' => null,
+            'may 7, 1981' => '1981-05-07',
+            'July 1570' => '1570-07-01',
+            'incomprehensible garbage' => null,
+            '1930/12/21' => '1930-12-21',
+            '1964?' => '1964-01-01',
+            '1947-3' => '1947-03-01',
+            '1973-02-31' => '1973-02-01',       // illegal day
+            '1973-31-31' => '1973-01-01',       // illegal month
+            '1964-zz' => '1964-01-01',
+            '1964-01-zz' => '1964-01-01',
+        );
+        
+        foreach ($tests as $in => $out) {
+            $this->assertEquals(
+                $out === null ? null : $out . 'T00:00:00Z', // append standard time value unless null
+                Utils::sanitizeDate($in)
+            );
+        }
+    }
 }

@@ -248,6 +248,16 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getPasswordPolicy()
+    {
+        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args());
+    }
+
+    /**
      * Update a user's password from the request.
      *
      * @param Request $request Request object containing password change details.

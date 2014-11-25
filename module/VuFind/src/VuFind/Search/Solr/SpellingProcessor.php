@@ -166,6 +166,7 @@ class SpellingProcessor
      * @param AbstractQuery $query      Query for which info should be retrieved
      *
      * @return array
+     * @throws \Exception
      */
     public function getSuggestions(Spellcheck $spellcheck, AbstractQuery $query)
     {
@@ -177,6 +178,13 @@ class SpellingProcessor
             // Term is not part of the query
             if (!$query->containsTerm($term)) {
                 continue;
+            }
+            // Validate response format
+            if (isset($info['suggestion'][0]) && !is_array($info['suggestion'][0])) {
+                throw new \Exception(
+                    'Unexpected suggestion format; spellcheck.extendedResults'
+                    . ' must be set to true.'
+                );
             }
             // Filter out suggestions that are already part of the query
             $suggestionLimit = $this->getSpellingLimit();
