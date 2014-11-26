@@ -270,12 +270,15 @@ abstract class AbstractRequestBase extends AbstractPlugin
         }
 
         // If the driver setting is active, try it out:
-        if ($useDriver && $catalog
-            && $catalog->checkCapability('getHoldDefaultRequiredDate')
-        ) {
-            $result = $catalog->getHoldDefaultRequiredDate($patron, $holdInfo);
-            if (!empty($result)) {
-                return $result;
+        if ($useDriver && $catalog) {
+            $check = $catalog->checkCapability(
+                'getHoldDefaultRequiredDate', array($patron, $holdInfo)
+            );
+            if ($check) {
+                $result = $catalog->getHoldDefaultRequiredDate($patron, $holdInfo);
+                if (!empty($result)) {
+                    return $result;
+                }
             }
         }
 

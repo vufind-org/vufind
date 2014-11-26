@@ -130,7 +130,16 @@ class ChoiceAuth extends AbstractBase
      */
     public function authenticate($request)
     {
-        return $this->proxyUserLoad($request, 'authenticate', func_get_args());
+        try {
+            return $this->proxyUserLoad($request, 'authenticate', func_get_args());
+        } catch (AuthException $e) {
+            // If an exception was thrown during login, we need to clear the
+            // stored strategy to ensure that we display the full ChoiceAuth
+            // form rather than the form for only the method that the user
+            // attempted to use.
+            $this->strategy = false;
+            throw $e;
+        }
     }
 
     /**
@@ -239,6 +248,16 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getPasswordPolicy()
+    {
+        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args());
+    }
+
+    /**
      * Update a user's password from the request.
      *
      * @param Request $request Request object containing password change details.
@@ -297,14 +316,9 @@ class ChoiceAuth extends AbstractBase
     protected function proxyUserLoad($request, $method, $params)
     {
         $this->setStrategyFromRequest($request);
-        try {
-            $user = $this->proxyAuthMethod($method, $params);
-            if (!$user) {
-                throw new AuthException('Unexpected return value');
-            }
-        } catch (AuthException $e) {
-            $this->strategy = false;
-            throw $e;
+        $user = $this->proxyAuthMethod($method, $params);
+        if (!$user) {
+            throw new AuthException('Unexpected return value');
         }
         $this->session->auth_method = $this->strategy;
         return $user;

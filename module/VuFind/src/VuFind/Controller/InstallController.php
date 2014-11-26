@@ -324,6 +324,7 @@ class InstallController extends AbstractBase
         $view->dbname = $this->params()->fromPost('dbname', 'vufind');
         $view->dbuser = $this->params()->fromPost('dbuser', 'vufind');
         $view->dbhost = $this->params()->fromPost('dbhost', 'localhost');
+        $view->vufindhost = $this->params()->fromPost('vufindhost', 'localhost');
         $view->dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
         $view->driver = $this->params()->fromPost('driver', 'mysql');
 
@@ -453,7 +454,7 @@ class InstallController extends AbstractBase
         // Default: MySQL:
         $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
             . $view->dbname
-            . ".* TO '{$view->dbuser}'@'{$view->dbhost}' "
+            . ".* TO '{$view->dbuser}'@'{$view->vufindhost}' "
             . "IDENTIFIED BY {$escapedPass} WITH GRANT OPTION";
         return array($create, $grant, 'FLUSH PRIVILEGES');
     }

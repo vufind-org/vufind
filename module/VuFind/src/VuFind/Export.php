@@ -54,6 +54,13 @@ class Export
     protected $exportConfig;
 
     /**
+     * Bulk options (initialized to boolean false, populated later)
+     *
+     * @var array|bool
+     */
+    protected $bulkOptions = false;
+
+    /**
      * Constructor
      *
      * @param Config $mainConfig   Main VuFind configuration
@@ -72,10 +79,8 @@ class Export
      */
     public function getBulkOptions()
     {
-        static $options = false;
-
-        if ($options === false) {
-            $options = array();
+        if ($this->bulkOptions === false) {
+            $this->bulkOptions = array();
             if (isset($this->mainConfig->BulkExport->enabled)
                 && isset($this->mainConfig->BulkExport->options)
                 && $this->mainConfig->BulkExport->enabled
@@ -85,13 +90,13 @@ class Export
                     if (isset($this->mainConfig->Export->$option)
                         && $this->mainConfig->Export->$option == true
                     ) {
-                            $options[] = $option;
+                            $this->bulkOptions[] = $option;
                     }
                 }
             }
         }
 
-        return $options;
+        return $this->bulkOptions;
     }
 
     /**
@@ -131,13 +136,12 @@ class Export
      */
     public function getRedirectUrl($format, $callback)
     {
-        // Fill in special tokens in template:/*
+        // Fill in special tokens in template:
         $template = $this->exportConfig->$format->redirectUrl;
         preg_match_all('/\{([^}]+)\}/', $template, $matches);
         foreach ($matches[1] as $current) {
             $parts = explode('|', $current);
             switch ($parts[0]) {
-                
             case 'config':
             case 'encodedConfig':
                 if (isset($this->mainConfig->{$parts[1]}->{$parts[2]})) {
