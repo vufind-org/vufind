@@ -153,7 +153,7 @@ class Backend extends AbstractBackend
         $results = false;
         while (count($ids) > 0) {
             $currentPage = array_splice($ids, 0, $pageSize, array());
-            $currentPage = array_map($formatIds, $currentPage);
+            //$currentPage = array_map($formatIds, $currentPage);
             $params = new ParamBag(
                 array(
                     'q' => 'id:(' . implode(' OR ', $currentPage) . ')',
