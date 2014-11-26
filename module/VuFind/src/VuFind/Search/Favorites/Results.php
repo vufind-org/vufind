@@ -169,7 +169,11 @@ class Results extends BaseResults
                 'userId' => $userId
             );
         }
-        $this->results = $this->getServiceLocator()->get('VuFind\RecordCache')
+        
+        $cache = $this->getServiceLocator()->get('VuFind\Config')->get('config')->Social->cache;
+        $recordLoader = ($cache === 'enabled') ? 'VuFind\RecordCache' : 'VuFind\RecordLoader';
+        
+        $this->results = $this->getServiceLocator()->get($recordLoader)
             ->loadBatch($recordsToRequest);
     }
 
