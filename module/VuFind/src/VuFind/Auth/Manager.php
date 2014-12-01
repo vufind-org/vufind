@@ -27,7 +27,7 @@
  */
 namespace VuFind\Auth;
 use VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
-    VuFind\Exception\Auth as AuthException, VuFind\ILS\Connection as ILSConnection,
+    VuFind\Exception\Auth as AuthException,
     Zend\Config\Config, Zend\Session\SessionManager;
 
 /**
@@ -42,25 +42,25 @@ use VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
 class Manager
 {
     /**
-     * Authentication module (false if uninitialized)
+     * Authentication modules
      *
-     * @var \VuFind\Auth\AbstractBase|bool
+     * @var \VuFind\Auth\AbstractBase[]
      */
-    protected $auth = false;
+    protected $auth = array();
 
     /**
-     * Authentication module currently proxied (false if uninitialized)
+     * Currently selected authentication module
      *
-     * @var \VuFind\Auth\AbstractBase|bool
+     * @var string
      */
-    protected $authProxied = false;
+    protected $activeAuth;
 
     /**
-     * Authentication module to proxy (false if uninitialized)
+     * Whitelist of values allowed to be set into $activeAuth
      *
-     * @var string|bool
+     * @var array
      */
-    protected $authToProxy = false;
+    protected $legalAuthOptions;
 
     /**
      * VuFind configuration
@@ -115,31 +115,37 @@ class Manager
     public function __construct(Config $config, UserTable $userTable,
         SessionManager $sessionManager, PluginManager $pm
     ) {
+        // Store dependencies:
         $this->config = $config;
         $this->userTable = $userTable;
         $this->sessionManager = $sessionManager;
         $this->pluginManager = $pm;
+
+        // Set up session:
         $this->session = new \Zend\Session\Container('Account');
+
+        // Initialize active authentication setting (defaulting to Database
+        // if no setting passed in):
+        $method = isset($config->Authentication->method)
+            ? $config->Authentication->method : 'Database';
+        $this->legalAuthOptions = array($method);   // mark it as legal
+        $this->setAuthMethod($method);              // load it
     }
 
     /**
      * Get the authentication handler.
      *
+     * @param string $name Auth module to load (null for currently active one)
+     *
      * @return AbstractBase
      */
-    protected function getAuth()
+    protected function getAuth($name = null)
     {
-        if ($this->authToProxy == false) {
-            if (!$this->auth) {
-                $this->auth = $this->makeAuth($this->config->Authentication->method);
-            }
-            return $this->auth;
-        } else {
-            if (!$this->authProxied) {
-                $this->authProxied = $this->makeAuth($this->authToProxy);
-            }
-            return $this->authProxied;
+        $name = empty($name) ? $this->activeAuth : $name;
+        if (!isset($this->auth[$name])) {
+            $this->auth[$name] = $this->makeAuth($name);
         }
+        return $this->auth[$name];
     }
 
     /**
@@ -151,6 +157,10 @@ class Manager
      */
     protected function makeAuth($method)
     {
+        // If an illegal option was passed in, don't allow the object to load:
+        if (!in_array($method, $this->legalAuthOptions)) {
+            throw new \Exception("Illegal authentication method: $method");
+        }
         $auth = $this->pluginManager->get($method);
         $auth->setConfig($this->config);
         return $auth;
@@ -166,10 +176,7 @@ class Manager
      */
     public function supportsCreation($authMethod=null)
     {
-        if ($authMethod != null) {
-            $this->setActiveAuthClass($authMethod);
-        }
-        return $this->getAuth()->supportsCreation();
+        return $this->getAuth($authMethod)->supportsCreation();
     }
 
     /**
@@ -182,10 +189,7 @@ class Manager
      */
     public function supportsRecovery($authMethod=null)
     {
-        if ($authMethod != null) {
-            $this->setActiveAuthClass($authMethod);
-        }
-        if ($this->getAuth()->supportsPasswordChange()) {
+        if ($this->getAuth($authMethod)->supportsPasswordChange()) {
             return isset($this->config->Authentication->recover_password)
                 && $this->config->Authentication->recover_password;
         }
@@ -202,14 +206,24 @@ class Manager
      */
     public function supportsPasswordChange($authMethod=null)
     {
-        if ($authMethod != null) {
-            $this->setActiveAuthClass($authMethod);
-        }
-        if ($this->getAuth()->supportsPasswordChange()) {
+        if ($this->getAuth($authMethod)->supportsPasswordChange()) {
             return isset($this->config->Authentication->change_password)
                 && $this->config->Authentication->change_password;
         }
         return false;
+    }
+
+    /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return array
+     */
+    public function getPasswordPolicy($authMethod=null)
+    {
+        return $this->getAuth($authMethod)->getPasswordPolicy();
     }
 
     /**
@@ -227,30 +241,41 @@ class Manager
     }
 
     /**
-     * Get the name of the current authentication class.
+     * In VuFind, views are tied to the name of the active authentication class.
+     * This method returns that name so that an appropriate template can be
+     * selected. It supports authentication methods that proxy other authentication
+     * methods (see ChoiceAuth for an example).
      *
      * @return string
      */
-    public function getAuthClass()
+    public function getAuthClassForTemplateRendering()
     {
-        return get_class($this->getAuth());
+        $auth = $this->getAuth();
+        if (is_callable(array($auth, 'getSelectedAuthOption'))) {
+            $selected = $auth->getSelectedAuthOption();
+            if ($selected) {
+                $auth = $this->getAuth($selected);
+            }
+        }
+        return get_class($auth);
     }
 
     /**
-     * Does the current auth class allow for authentication from more than
-     * one auth method? (e.g. choiceauth)
-     * If so return an array that lists the classes for the methods allowed.
+     * Return an array of all of the authentication options supported by the
+     * current auth class. In most cases (except for ChoiceAuth), this will
+     * just contain a single value.
      *
      * @return array
      */
-    public function getAuthClasses()
+    public function getSelectableAuthOptions()
     {
-        $classes = $this->getAuth()->getClasses();
-        if ($classes) {
-            return $classes;
-        } else {
-            return array($this->getAuthClass());
+        $auth = $this->getAuth();
+        if (is_callable(array($auth, 'getSelectableAuthOptions'))) {
+            if ($methods = $auth->getSelectableAuthOptions()) {
+                return $methods;
+            }
         }
+        return array($this->getAuthMethod());
     }
 
     /**
@@ -288,9 +313,7 @@ class Manager
      */
     public function getAuthMethod()
     {
-        $className = $this->getAuthClass();
-        $classParts = explode('\\', $className);
-        return array_pop($classParts);
+        return $this->activeAuth;
     }
 
     /**
@@ -416,16 +439,13 @@ class Manager
      * Update a user's password from the request.
      *
      * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
-     * new account details.
+     * password change details.
      *
      * @throws AuthException
      * @return UserRow New user row.
      */
     public function updatePassword($request)
     {
-        if (($authMethod = $request->getPost()->get('auth_method')) != null) {
-            $this->setActiveAuthClass($authMethod);
-        }
         $user = $this->getAuth()->updatePassword($request);
         $this->updateSession($user);
         return $user;
@@ -474,9 +494,40 @@ class Manager
      *
      * @return void
      */
-    public function setActiveAuthClass($method)
+    public function setAuthMethod($method)
     {
-        $this->authToProxy = $method;
-        $this->authProxied = false;
+        // Change the setting:
+        $this->activeAuth = $method;
+
+        // If this method supports switching to a different method and we haven't
+        // already initialized it, add those options to the whitelist. If the object
+        // is already initialized, that means we've already gone through this step
+        // and can save ourselves the trouble.
+
+        // This code also has the side effect of validating $method, since if an
+        // invalid value was passed in, the call to getSelectableAuthOptions will
+        // throw an exception.
+        if (!isset($this->auth[$method])) {
+            $this->legalAuthOptions = array_unique(
+                array_merge(
+                    $this->legalAuthOptions, $this->getSelectableAuthOptions()
+                )
+            );
+        }
+    }
+    /**
+     * Validate the credentials in the provided request, but do not change the state
+     * of the current logged-in user. Return true for valid credentials, false
+     * otherwise.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * account credentials.
+     *
+     * @throws AuthException
+     * @return bool
+     */
+    public function validateCredentials($request)
+    {
+        return $this->getAuth()->validateCredentials($request);
     }
 }

@@ -421,6 +421,20 @@ class Summon extends SolrDefault
     public function getThumbnail($size = 'small')
     {
         $params = parent::getThumbnail($size);
+
+        // Support thumbnails embedded in the Summon record when no unique identifier
+        // is found... (We don't use them in cases where we have an identifier, since
+        // we want to allow these to be passed to configured external services).
+        if (!isset($params['oclc']) && !isset($params['issn'])
+            && !isset($params['isbn']) && !isset($params['upc'])
+        ) {
+            if ($size === 'small' && isset($this->fields['thumbnail_s'][0])) {
+                return array('proxy' => $this->fields['thumbnail_s'][0]);
+            } else if (isset($this->fields['thumbnail_m'][0])) {
+                return array('proxy' => $this->fields['thumbnail_m'][0]);
+            }
+        }
+
         $formats = $this->getFormats();
         if (!empty($formats)) {
             $params['contenttype'] = $formats[0];

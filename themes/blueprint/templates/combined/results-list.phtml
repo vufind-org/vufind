@@ -11,12 +11,14 @@
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
   $params->setLimit($limit);
 ?>
-<? if ($currentSearch['more_link']): ?>
+<? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
   <div style="float: right;">
     <a href="<?=$moreUrl?>"><?=$this->transEsc('More options')?></a>
   </div>
+  <h2><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['label'])?></a></h2>
+<? else: ?>
+  <h2><?=$this->transEsc($currentSearch['label'])?></h2>
 <? endif; ?>
-<h2><?=$this->transEsc($currentSearch['label'])?></h2>
 <? if (isset($currentSearch['sublabel'])): ?>
   <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
 <? endif; ?>
@@ -64,9 +66,19 @@
     <?=$this->recommend($current)?>
   <? endforeach; ?>
 <? else: ?>
-  <? $viewType = in_array('list', array_keys($params->getViewList())) ? 'list' : $params->getView(); ?>
-  <?=$this->render('search/list-' . $viewType . '.phtml', array('results' => $results, 'params' => $params))?>
-  <? if ($currentSearch['more_link']): ?>
+  <?
+    $viewType = in_array('list', array_keys($params->getViewList()))
+      ? 'list' : $params->getView();
+    $viewParams = array(
+      'results' => $results,
+      'params' => $params
+    );
+    if(isset($this->showCartControls) && !$this->showCartControls) {
+      $viewParams['hideCartControls'] = true;
+    }
+  ?>
+  <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
+  <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
     <p class="more_link"><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?></a></p>
   <? endif; ?>
 <? endif; ?>

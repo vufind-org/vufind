@@ -49,7 +49,7 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams = new ParamBag();
 
         // The "relevance" sort option is a VuFind reserved word; we need to make
-        // this null in order to achieve the desired effect with Summon:
+        // this null in order to achieve the desired effect with Primo:
         $sort = $this->getSort();
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);

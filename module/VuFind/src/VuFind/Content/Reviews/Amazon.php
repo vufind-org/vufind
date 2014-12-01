@@ -44,14 +44,14 @@ class Amazon extends \VuFind\Content\AbstractAmazon
      * This method is responsible for connecting to Amazon AWS and abstracting
      * customer reviews for the specific ISBN
      *
-     * @param string            $key     API key
-     * @param \VuFind\Code\ISBN $isbnObj ISBN object
+     * @param string           $key     API key
+     * @param \VuFindCode\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
      * @return array     Returns array with review data.
      * @author Andrew Nagy <vufind-tech@lists.sourceforge.net>
      */
-    public function loadByIsbn($key, \VuFind\Code\ISBN $isbnObj)
+    public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         // TODO: rewrite this to use ZendService\Amazon.
 

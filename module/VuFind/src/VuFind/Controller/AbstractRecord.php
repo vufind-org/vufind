@@ -119,12 +119,7 @@ class AbstractRecord extends AbstractBase
         // Save comment:
         $comment = $this->params()->fromPost('comment');
         if (empty($comment)) {
-            // No comment?  Try to restore from session:
-            $session = $this->followup()->retrieve();
-            if (isset($session->comment)) {
-                $comment = $session->comment;
-                unset($session->comment);
-            }
+            $comment = $this->followup()->retrieveAndClear('comment');
         }
 
         // At this point, we should have a comment to save; if we do not,

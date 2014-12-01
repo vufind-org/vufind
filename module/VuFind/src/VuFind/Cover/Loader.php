@@ -27,9 +27,7 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFind\Code\ISBN,
-    VuFind\Content\Covers\PluginManager as ApiManager,
-    Zend\Log\LoggerInterface;
+use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
 
 /**
  * Book Cover Generator
@@ -41,7 +39,7 @@ use VuFind\Code\ISBN,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
-class Loader implements \Zend\Log\LoggerAwareInterface
+class Loader extends \VuFind\ImageLoader
 {
     /**
      * filename constructed from ISBN
@@ -128,34 +126,6 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     protected $type;
 
     /**
-     * Property for storing raw image data; may be null if image is unavailable
-     *
-     * @var string
-     */
-    protected $image = null;
-
-    /**
-     * Content type of data in $image property
-     *
-     * @var string
-     */
-    protected $contentType = null;
-
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Theme tools
-     *
-     * @var \VuFindTheme\ThemeInfo
-     */
-    protected $themeTools;
-
-    /**
      * Constructor
      *
      * @param \Zend\Config\Config    $config  VuFind configuration
@@ -168,67 +138,15 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     public function __construct($config, ApiManager $manager,
         \VuFindTheme\ThemeInfo $theme, \Zend\Http\Client $client, $baseDir = null
     ) {
+        $this->setThemeInfo($theme);
         $this->config = $config;
+        $this->configuredFailImage = isset($config->Content->noCoverAvailableImage)
+            ? $config->Content->noCoverAvailableImage : null;
         $this->apiManager = $manager;
-        $this->themeTools = $theme;
         $this->client = $client;
         $this->baseDir = (null === $baseDir)
             ? rtrim(sys_get_temp_dir(), '\\/') . '/covers'
             : rtrim($baseDir, '\\/');
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
-
-    /**
-     * Get the image data (usually called after loadImage)
-     *
-     * @return string
-     */
-    public function getImage()
-    {
-        // No image loaded?  Use "unavailable" as default:
-        if (null === $this->image) {
-            $this->loadUnavailable();
-        }
-        return $this->image;
-    }
-
-    /**
-     * Get the content type of the current image (usually called after loadImage)
-     *
-     * @return string
-     */
-    public function getContentType()
-    {
-        // No content type loaded?  Use "unavailable" as default:
-        if (null === $this->contentType) {
-            $this->loadUnavailable();
-        }
-        return $this->contentType;
     }
 
     /**
@@ -447,93 +365,6 @@ class Loader implements \Zend\Log\LoggerAwareInterface
 
         // If we got this far, no icon was found:
         return false;
-    }
-
-    /**
-     * Find a file in the themes (return false if no file exists).
-     *
-     * @param string $path    Relative path of file to find.
-     * @param array  $formats Optional array of suffixes to add to $path while
-     * searching theme (used to check multiple extensions in each theme).
-     *
-     * @return string|bool
-     */
-    protected function searchTheme($path, $formats = array(''))
-    {
-        // Check all supported image formats:
-        $filenames = array();
-        foreach ($formats as $format) {
-            $filenames[] =  $path . $format;
-        }
-        $fileMatch = $this->themeTools->findContainingTheme($filenames, true);
-        return empty($fileMatch) ? false : $fileMatch;
-    }
-
-    /**
-     * Load the user-specified "cover unavailable" graphic (or default if none
-     * specified).
-     *
-     * @return void
-     * @author Thomas Schwaerzler <vufind-tech@lists.sourceforge.net>
-     */
-    public function loadUnavailable()
-    {
-        // No setting -- use default, and don't log anything:
-        if (!isset($this->config->Content->noCoverAvailableImage)) {
-            return $this->loadDefaultFailImage();
-        }
-
-        // Setting found -- get "no cover" image from config.ini:
-        $configuredImage = $this->config->Content->noCoverAvailableImage;
-        $noCoverImage = $this->searchTheme($configuredImage);
-
-        // If file is blank/inaccessible, log error and display default:
-        if (empty($noCoverImage) || !file_exists($noCoverImage)
-            || !is_readable($noCoverImage)
-        ) {
-            $this->debug("Cannot access '{$configuredImage}'");
-            return $this->loadDefaultFailImage();
-        }
-
-        // Array containing map of allowed file extensions to mimetypes
-        // (to be extended)
-        $allowedFileExtensions = array(
-            "gif" => "image/gif",
-            "jpeg" => "image/jpeg", "jpg" => "image/jpeg",
-            "png" => "image/png",
-            "tiff" => "image/tiff", "tif" => "image/tiff"
-        );
-
-        // Log error and bail out if file lacks a known image extension:
-        $parts = explode('.', $noCoverImage);
-        $fileExtension = strtolower(end($parts));
-        if (!array_key_exists($fileExtension, $allowedFileExtensions)) {
-            $this->debug(
-                "Illegal file-extension '$fileExtension' for image '$noCoverImage'"
-            );
-            return $this->loadDefaultFailImage();
-        }
-
-        // Get mime type from file extension:
-        $this->contentType = $allowedFileExtensions[$fileExtension];
-
-        // Load the image data:
-        $this->image = file_get_contents($noCoverImage);
-    }
-
-    /**
-     * Display the default "cover unavailable" graphic.
-     *
-     * @return void
-     */
-    protected function loadDefaultFailImage()
-    {
-        $this->contentType = 'image/gif';
-        $file = $this->searchTheme('images/noCover2.gif');
-        if (!file_exists($file)) {
-            throw new \Exception('Could not load default fail image.');
-        }
-        $this->image = file_get_contents($file);
     }
 
     /**

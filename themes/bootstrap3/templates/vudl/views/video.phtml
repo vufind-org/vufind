@@ -26,13 +26,6 @@
     </a>
   </li>
   <li class="active"><a>Player and Downloads</a></li>
-  <? if($this->counts[0] > 1): ?>
-    <li class="pull-right static hidden-xs">
-      <a class="pull-left" href="javascript:prevPage()">Prev Page</a>
-      <a class="pull-left" href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>"><i class="fa fa-th"></i></a>
-      <a class="pull-left" href="javascript:nextPage()">Next Page</a>
-    </li>
-  <? endif; ?>
 </ul>
 <div class="tab-container text-center tab-content">
   <video controls>
