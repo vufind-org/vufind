@@ -95,6 +95,34 @@ bibSearch:
         query: cats
         startIndex: 10
         dbIds: 638
+    bibSearchSortRelevance:
+        query: cats
+        sortBy: relevance
+        dbIds: 638
+    bibSearchSortDate:
+        query: cats
+        sortBy: date
+        dbIds: 638
+    bibSearchSortYear:
+        query: cats
+        sortBy: year
+        dbIds: 638
+    bibSearchSortTitle:
+        query: cats
+        sortBy: title
+        dbIds: 638
+    bibSearchSortCreator:
+        query: cats
+        sortBy: creator
+        dbIds: 638
+    bibSearchSortLanguage:
+        query: cats
+        sortBy: language
+        dbIds: 638
+    bibSearchSortLibraryCount:
+        query: cats
+        sortBy: librarycount
+        dbIds: 638            
     bibSearchSuccessKeyword:
         query: cats
         dbIds: 638
@@ -192,9 +220,8 @@ viaf:
         prod: http://viaf.org/viaf/239072486/rdf.xml
         qa: http://rdap02pxdu.dev.oclc.org:8080/viaf/239072486/rdf.xml
 authority:
-    authoritySuccess:
-        compound: http://id.loc.gov/authorities/subjects/sh2008124372.rdf
-        topic: http://id.loc.gov/authorities/subjects/sh85149296.rdf
-        geographic: http://id.loc.gov/authorities/names/n82068148.rdf
+    compoundAuthority: http://id.loc.gov/authorities/subjects/sh2008124372.rdf
+    topicAuthority: http://id.loc.gov/authorities/subjects/sh85149296.rdf
+    geographicAuthority: http://id.loc.gov/authorities/names/n82068148.rdf
             
     

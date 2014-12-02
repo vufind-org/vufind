@@ -68,7 +68,7 @@
         "symfony/yaml": "*",
         "vufind-org/vufindcode": "*",
         "vufind-org/vufindhttp": "*",
-        "worldcat/discovery" : ">=0.12.0",
+        "worldcat/discovery" : ">=0.13.0",
         "zendframework/zendframework": "2.2.7",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",

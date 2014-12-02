@@ -21,7 +21,7 @@ use OCLC\Auth\AccessToken;
 use OCLC\User;
 use WorldCat\Discovery\Bib;
 
-class SearchResultsWithFacetQueriesTest extends \PHPUnit_Framework_TestCase
+class SearchResultsSortByLibraryCountTest extends \PHPUnit_Framework_TestCase
 {
 
     function setUp()
@@ -36,15 +36,15 @@ class SearchResultsWithFacetQueriesTest extends \PHPUnit_Framework_TestCase
                     ->method('getValue')
                     ->will($this->returnValue('tk_12345'));
     }
-    
+
     /**
-     * @vcr bibSearchFacetQueries
-     * can parse set of Bibs from a Search Result with Facet Query*/
+     * @vcr bibSearchSortLibraryCount
+     * can parse set of Bibs from a Search Result */
     
-    function testSearchFacets(){
+    function testSearchByKeyword(){
         $query = 'cats';
-        $facetQueries = array('creator:10', 'inLanguage:10');
-        $search = Bib::Search($query, $this->mockAccessToken, array('facetQueries' => $facets));
+        $search = Bib::Search($query, $this->mockAccessToken, array('sortBy' => 'librarycount'));
+    
         $this->assertInstanceOf('WorldCat\Discovery\BibSearchResults', $search);
         $this->assertEquals('0', $search->getStartIndex());
         $this->assertEquals('10', $search->getItemsPerPage());
@@ -57,36 +57,8 @@ class SearchResultsWithFacetQueriesTest extends \PHPUnit_Framework_TestCase
             $i++;
             $this->assertEquals($i, $searchResult->getDisplayPosition());
         }
-        $facetList = $search->getFacets();
-        $this->assertNotEmpty($facetList);
-        return $facetList;
+        $results = $search->getSearchResults();
+        $this->assertEquals('247646572', $results[1]->getOclcNumber());
     }
     
-    /**
-     * 
-     * @depends testSearchFacets
-     */
-    function testFacetList($facetList){
-        foreach ($facetList as $facet){
-            $this->assertInstanceOf('WorldCat\Discovery\Facet', $facet); 
-            $this->assertNotEmpty($facet->getFacetIndex());
-            $this->assertNotEmpty($facet->getFacetItems());
-        }
-        return current($facetList);
-    }
-    
-    /**
-     * 
-     * @depends testFacetList
-     */
-    function testFacetValue($facet){
-        $previousCount = current($facet->getFacetItems())->getCount();
-        foreach ($facet->getFacetItems() as $facetItem){
-            $this->assertInstanceOf('WorldCat\Discovery\FacetItem', $facetItem);
-            $this->assertNotEmpty($facetItem->getName());
-            $this->assertNotEmpty($facetItem->getCount());
-            $this->assertGreaterThanOrEqual($facetItem->getCount(), $previousCount);
-            $previousCount = $facetItem->getCount();
-        }
-    }
 }

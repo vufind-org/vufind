@@ -46,9 +46,9 @@ trait Helpers {
     
     private static function getRequestOptions($options, $validRequestOptions){
             $requestOptions = array();
-            foreach ($options as $option) {
-                if (in_array($option, $validRequestOptions)){
-                    $requestOptions[] = $option;
+            foreach ($options as $optionName => $option) {
+                if (in_array($optionName, $validRequestOptions)){
+                    $requestOptions[$optionName] = $option;
                 }
             }
             return $requestOptions;

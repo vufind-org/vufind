@@ -18,13 +18,14 @@ namespace WorldCat\Discovery;
 use Guzzle\Http\StaticClient;
 use OCLC\Auth\WSKey;
 use OCLC\Auth\AccessToken;
+use OCLC\User;
 use WorldCat\Discovery\Bib;
 
-class ProductModel extends \PHPUnit_Framework_TestCase
+class SearchResultsSortByRelevanceTest extends \PHPUnit_Framework_TestCase
 {
 
     function setUp()
-    {     
+    {
         $options = array(
             'authenticatingInstitutionId' => 128807,
             'contextInstitutionId' => 128807,
@@ -37,31 +38,27 @@ class ProductModel extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *@vcr bibSuccess
-     */
-    function testGetBib(){
-        $bib = Bib::find(7977212, $this->mockAccessToken);
-        $this->assertInstanceOf('WorldCat\Discovery\Book', $bib);
-        $this->assertNotEmpty($bib->getManifestations());
-        $manifestations = $bib->getManifestations();
-        return $manifestations;
-    }
-
-    /**
-     * can parse Manifestation aka ProductModel data
-     * @depends testGetBib
-     */
-    function testParseManifestations($manifestations){
-        foreach ($manifestations as $manifestation){
-            $this->assertInstanceOf('WorldCat\Discovery\ProductModel', $manifestation);
-            $this->assertNotEmpty($manifestation->getISBNs());
-            $this->assertNotEmpty($manifestation->getISBN());
-            if ($manifestation->getURI() == 'http://worldcat.org/isbn/9780156685689'){
-                $this->assertNotEmpty($manifestation->getBookFormat());
-            }
+     * @vcr bibSearchSortRelevance
+     * can parse set of Bibs from a Search Result */
+    
+    function testSearchByKeyword(){
+        $query = 'cats';
+        $search = Bib::Search($query, $this->mockAccessToken, array('sortBy' => 'language'));
+    
+        $this->assertInstanceOf('WorldCat\Discovery\BibSearchResults', $search);
+        $this->assertEquals('0', $search->getStartIndex());
+        $this->assertEquals('10', $search->getItemsPerPage());
+        $this->assertInternalType('integer', $search->getTotalResults());
+        $this->assertEquals('10', count($search->getSearchResults()));
+        $results = $search->getSearchResults();
+        $i = $search->getStartIndex();
+        foreach ($search->getSearchResults() as $searchResult){
+            $this->assertFalse(get_class($searchResult) == 'EasyRdf_Resource');
+            $i++;
+            $this->assertEquals($i, $searchResult->getDisplayPosition());
         }
-        
+        $results = $search->getSearchResults();
+        $this->assertEquals('7977212', $results[1]->getOclcNumber());
     }
     
-    /* Need a test for $manifestation->getDescription() */
 }

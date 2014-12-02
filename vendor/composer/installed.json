@@ -392,18 +392,18 @@
     },
     {
         "name": "symfony/event-dispatcher",
-        "version": "v2.5.6",
-        "version_normalized": "2.5.6.0",
+        "version": "v2.6.0",
+        "version_normalized": "2.6.0.0",
         "target-dir": "Symfony/Component/EventDispatcher",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/EventDispatcher.git",
-            "reference": "804eb28dbbfba9ffdab21fe2066744906cea2212"
+            "reference": "697331d4ac78668cf6d21a2bb009b3faae92814f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/804eb28dbbfba9ffdab21fe2066744906cea2212",
-            "reference": "804eb28dbbfba9ffdab21fe2066744906cea2212",
+            "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/697331d4ac78668cf6d21a2bb009b3faae92814f",
+            "reference": "697331d4ac78668cf6d21a2bb009b3faae92814f",
             "shasum": ""
         },
         "require": {
@@ -412,18 +412,19 @@
         "require-dev": {
             "psr/log": "~1.0",
             "symfony/config": "~2.0",
-            "symfony/dependency-injection": "~2.0,<2.6.0",
+            "symfony/dependency-injection": "~2.6",
+            "symfony/expression-language": "~2.6",
             "symfony/stopwatch": "~2.2"
         },
         "suggest": {
             "symfony/dependency-injection": "",
             "symfony/http-kernel": ""
         },
-        "time": "2014-10-01 15:43:05",
+        "time": "2014-11-28 10:00:40",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "2.5-dev"
+                "dev-master": "2.6-dev"
             }
         },
         "installation-source": "dist",
@@ -545,12 +546,12 @@
     },
     {
         "name": "OCLC/Auth",
-        "version": "1.2.5",
-        "version_normalized": "1.2.5.0",
+        "version": "1.3",
+        "version_normalized": "1.3.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/OCLC-Developer-Network/oclc-auth-php.git",
-            "reference": "7b5755179c73046feae275c451ae00eaa65832e8"
+            "reference": "735ee8b475fd7b9cf6f3f5f1b6eac6a30163d5ae"
         },
         "require": {
             "ext-curl": "*",
@@ -564,9 +565,10 @@
         "require-dev": {
             "php-vcr/php-vcr": "dev-master",
             "php-vcr/phpunit-testlistener-vcr": "*",
-            "phpunit/phpunit": "~3"
+            "phpunit/phpunit": "~3",
+            "zendframework/zend-log": "2.0.*"
         },
-        "time": "2014-09-15 19:19:22",
+        "time": "2014-11-26 19:21:38",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -648,12 +650,12 @@
     },
     {
         "name": "worldcat/discovery",
-        "version": "0.12.0",
-        "version_normalized": "0.12.0.0",
+        "version": "0.13.0",
+        "version_normalized": "0.13.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/OCLC-Developer-Network/worldcat-discovery-php.git",
-            "reference": "c824a9d6941e19950e573bcb1ce158d8355eb29d"
+            "reference": "d727baf39e9237bccf59c67399811edca5383b4d"
         },
         "require": {
             "easyrdf/easyrdf": "*",
@@ -673,7 +675,7 @@
             "phpunit/phpunit": "~3",
             "zendframework/zend-log": "2.0.*"
         },
-        "time": "2014-11-18 15:39:31",
+        "time": "2014-11-26 19:18:44",
         "type": "library",
         "installation-source": "source",
         "autoload": {
@@ -691,28 +693,28 @@
     },
     {
         "name": "symfony/process",
-        "version": "v2.5.6",
-        "version_normalized": "2.5.6.0",
+        "version": "v2.6.0",
+        "version_normalized": "2.6.0.0",
         "target-dir": "Symfony/Component/Process",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/Process.git",
-            "reference": "9bbacbb3a7a27b17c0d51e2f126f59e0e588ad3a"
+            "reference": "dc88f75d1c07791e5733f90be747961dce26cf05"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Process/zipball/9bbacbb3a7a27b17c0d51e2f126f59e0e588ad3a",
-            "reference": "9bbacbb3a7a27b17c0d51e2f126f59e0e588ad3a",
+            "url": "https://api.github.com/repos/symfony/Process/zipball/dc88f75d1c07791e5733f90be747961dce26cf05",
+            "reference": "dc88f75d1c07791e5733f90be747961dce26cf05",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2014-10-01 05:50:18",
+        "time": "2014-11-04 14:29:39",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "2.5-dev"
+                "dev-master": "2.6-dev"
             }
         },
         "installation-source": "dist",
@@ -740,28 +742,28 @@
     },
     {
         "name": "symfony/css-selector",
-        "version": "v2.5.6",
-        "version_normalized": "2.5.6.0",
+        "version": "v2.6.0",
+        "version_normalized": "2.6.0.0",
         "target-dir": "Symfony/Component/CssSelector",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/CssSelector.git",
-            "reference": "7cdf543a3f31935aae58de4e6e607d4bdeb3f5dc"
+            "reference": "41953ad30ffc5cd710d106cf01eff79f6effa117"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/7cdf543a3f31935aae58de4e6e607d4bdeb3f5dc",
-            "reference": "7cdf543a3f31935aae58de4e6e607d4bdeb3f5dc",
+            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/41953ad30ffc5cd710d106cf01eff79f6effa117",
+            "reference": "41953ad30ffc5cd710d106cf01eff79f6effa117",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2014-10-09 16:00:03",
+        "time": "2014-10-26 07:46:28",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "2.5-dev"
+                "dev-master": "2.6-dev"
             }
         },
         "installation-source": "dist",
@@ -1272,28 +1274,28 @@
     },
     {
         "name": "symfony/yaml",
-        "version": "v2.5.6",
-        "version_normalized": "2.5.6.0",
+        "version": "v2.6.0",
+        "version_normalized": "2.6.0.0",
         "target-dir": "Symfony/Component/Yaml",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/Yaml.git",
-            "reference": "2d9f527449cabfa8543dd7fa3a466d6ae83d6726"
+            "reference": "51c845cf3e4bfc182d1d5c05ed1c7338361d86f8"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Yaml/zipball/2d9f527449cabfa8543dd7fa3a466d6ae83d6726",
-            "reference": "2d9f527449cabfa8543dd7fa3a466d6ae83d6726",
+            "url": "https://api.github.com/repos/symfony/Yaml/zipball/51c845cf3e4bfc182d1d5c05ed1c7338361d86f8",
+            "reference": "51c845cf3e4bfc182d1d5c05ed1c7338361d86f8",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2014-10-01 05:50:18",
+        "time": "2014-11-20 13:24:23",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "2.5-dev"
+                "dev-master": "2.6-dev"
             }
         },
         "installation-source": "dist",

@@ -67,23 +67,25 @@ Basic Example Reading a Bibliographic Record looks like this
    $secret = 'api-key-secret';
    $options = array('services' => array('WorldCatDiscoveryAPI', 'refresh_token'));
    $wskey = new WSKey($key, $secret, $options);
-   $accessToken = $wskey->getAccessTokenWithClientCredentials('128807', '128807'));
-   
+   $accessToken = $wskey->getAccessTokenWithClientCredentials('128807', '128807');
+
    $bib = Bib::Find(7977212, $accessToken);
-   
+
    if (is_a($bib, 'WorldCat\Discovery\Error')) {
-   		echo $bib->getErrorCode();
-   		echo $bib->getErrorMessage();
+       echo $bib->getErrorCode();
+       echo $bib->getErrorMessage();
    } else {
-   		echo $bib->getName();
-   		print_r($bib->getID());
-   		echo $bib->getID()
-   		print_r($bib->type();
-   		echo $bib->type();
-   		print_r($bib->getAuthor());
-   		echo $bib->getAuthor->getName();
-   		$contributors = array_map($bib->getContributors(), function($contributor){return $contributor->getName();});
-   		print_r($contributors);
+       echo $bib->getName();
+       print_r($bib->getID());
+       echo $bib->getID();
+       print_r($bib->type());
+       echo $bib->type();
+       print_r($bib->getAuthor());
+       echo $bib->getAuthor()->getName();
+       $contributors = array_map(function ($contributor) {
+           return $contributor->getName();
+       }, $bib->getContributors());
+       print_r($contributors);
    }
 ```
 

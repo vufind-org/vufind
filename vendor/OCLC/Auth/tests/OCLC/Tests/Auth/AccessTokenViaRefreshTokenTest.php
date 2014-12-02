@@ -162,4 +162,16 @@ class AccessTokenViaRefreshTokenTest extends \PHPUnit_Framework_TestCase
         );
         $this->accessToken = new AccessToken('refresh_token', $options);
     }
+    
+    /**
+     * @expectedException LogicException
+     * @expectedExceptionMessage You must pass the option refreshToken to construct an Access Token using the refresh_token grant type
+     */
+    function testInvalidRefreshToken()
+    {
+        $options = array(
+            'refreshToken' => 'rt_123456'
+        );
+        $this->accessToken = new AccessToken('refresh_token', $options);
+    }
 }

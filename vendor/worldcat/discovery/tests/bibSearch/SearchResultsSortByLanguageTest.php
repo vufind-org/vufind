@@ -18,13 +18,14 @@ namespace WorldCat\Discovery;
 use Guzzle\Http\StaticClient;
 use OCLC\Auth\WSKey;
 use OCLC\Auth\AccessToken;
+use OCLC\User;
 use WorldCat\Discovery\Bib;
 
-class PersonTest extends \PHPUnit_Framework_TestCase
+class SearchResultsSortByLanguageTest extends \PHPUnit_Framework_TestCase
 {
 
     function setUp()
-    {     
+    {
         $options = array(
             'authenticatingInstitutionId' => 128807,
             'contextInstitutionId' => 128807,
@@ -37,43 +38,27 @@ class PersonTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     *@vcr personSuccess
-     */
-    function testGetBib(){
-        $bib = Bib::find(24503247, $this->mockAccessToken);
-        $this->assertInstanceOf('WorldCat\Discovery\CreativeWork', $bib);
-        return $bib;
-    }
-
-    /**
-     * can parse Single Bibs Resources
-     * @depends testGetBib
-     */
-    function testParseResources($bib){
-        $this->assertThat($bib->getAuthor(), $this->logicalOr(
-            $this->isInstanceOf('WorldCat\Discovery\Person'),
-            $this->isInstanceOf('WorldCat\Discovery\Organization')
-        ));
-    }
-
-    /**
-     * can parse and return Person information
-     * @depends testGetBib
-     */
-    function testPerson($bib){
-        $this->assertNotEmpty($bib->getAuthor()->getName());
-        $this->assertNotEmpty($bib->getAuthor()->getBirthDate());
-        $this->assertNotEmpty($bib->getAuthor()->getDeathDate());
-        $this->assertNotEmpty($bib->getAuthor()->getDbpediaUri());
-    }
+     * @vcr bibSearchSortLanguage
+     * can parse set of Bibs from a Search Result */
     
-    /**
-     *@vcr personVIAFSuccess
-     */
-    function testGetPerson(){
-        $person = Person::findByVIAFID('105372100');
-        $this->assertInstanceOf('WorldCat\Discovery\Person', $person);
-    }
+    function testSearchByKeyword(){
+        $query = 'cats';
+        $search = Bib::Search($query, $this->mockAccessToken, array('sortBy' => 'language'));
     
+        $this->assertInstanceOf('WorldCat\Discovery\BibSearchResults', $search);
+        $this->assertEquals('0', $search->getStartIndex());
+        $this->assertEquals('10', $search->getItemsPerPage());
+        $this->assertInternalType('integer', $search->getTotalResults());
+        $this->assertEquals('10', count($search->getSearchResults()));
+        $results = $search->getSearchResults();
+        $i = $search->getStartIndex();
+        foreach ($search->getSearchResults() as $searchResult){
+            $this->assertFalse(get_class($searchResult) == 'EasyRdf_Resource');
+            $i++;
+            $this->assertEquals($i, $searchResult->getDisplayPosition());
+        }
+        $results = $search->getSearchResults();
+        $this->assertEquals('7894171', $results[1]->getOclcNumber());
+    }
     
 }

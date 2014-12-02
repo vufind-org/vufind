@@ -21,7 +21,7 @@ use OCLC\Auth\AccessToken;
 use OCLC\User;
 use WorldCat\Discovery\Bib;
 
-class DatabaseSearchResultsTest extends \PHPUnit_Framework_TestCase
+class SearchResultsSortByTitleTest extends \PHPUnit_Framework_TestCase
 {
 
     function setUp()
@@ -36,17 +36,16 @@ class DatabaseSearchResultsTest extends \PHPUnit_Framework_TestCase
                     ->method('getValue')
                     ->will($this->returnValue('tk_12345'));
     }
-    
-    /** 
-     * @vcr bibSearchDatabaseSuccessKeyword
+
+    /**
+     * @vcr bibSearchSortTitle
      * can parse set of Bibs from a Search Result */
     
     function testSearchByKeyword(){
-        $query = 'gdp policy';
-        $options = array('dbIds' => '2662');
-        $search = Bib::Search($query, $this->mockAccessToken, $options);
-        
-        $this->assertInstanceOf('WorldCat\Discovery\SearchResults', $search);
+        $query = 'cats';
+        $search = Bib::Search($query, $this->mockAccessToken, array('sortBy' => 'title'));
+    
+        $this->assertInstanceOf('WorldCat\Discovery\BibSearchResults', $search);
         $this->assertEquals('0', $search->getStartIndex());
         $this->assertEquals('10', $search->getItemsPerPage());
         $this->assertInternalType('integer', $search->getTotalResults());
@@ -54,9 +53,12 @@ class DatabaseSearchResultsTest extends \PHPUnit_Framework_TestCase
         $results = $search->getSearchResults();
         $i = $search->getStartIndex();
         foreach ($search->getSearchResults() as $searchResult){
-            $this->assertInstanceOf('WorldCat\Discovery\Article', $searchResult);
+            $this->assertFalse(get_class($searchResult) == 'EasyRdf_Resource');
             $i++;
             $this->assertEquals($i, $searchResult->getDisplayPosition());
         }
+        $results = $search->getSearchResults();
+        $this->assertEquals('4798718812', $results[1]->getOclcNumber());
     }
+    
 }

@@ -18,13 +18,14 @@ namespace WorldCat\Discovery;
 use Guzzle\Http\StaticClient;
 use OCLC\Auth\WSKey;
 use OCLC\Auth\AccessToken;
+use OCLC\User;
 use WorldCat\Discovery\Bib;
 
-class MusicAlbumTest extends \PHPUnit_Framework_TestCase
+class SearchResultsSortByCreatorTest extends \PHPUnit_Framework_TestCase
 {
 
     function setUp()
-    {     
+    {
         $options = array(
             'authenticatingInstitutionId' => 128807,
             'contextInstitutionId' => 128807,
@@ -35,23 +36,28 @@ class MusicAlbumTest extends \PHPUnit_Framework_TestCase
                     ->method('getValue')
                     ->will($this->returnValue('tk_12345'));
     }
-
-    /**
-     * @vcr cdSuccess
-     */
-    function testGetBibCD(){
-        $bib = Bib::find(38027615, $this->mockAccessToken);
-        $this->assertInstanceOf('WorldCat\Discovery\MusicAlbum', $bib);
-        $this->assertNotEmpty($bib->getFormat());
-    }
-
-    /**
-     * @vcr lpSuccess
-     */
-    function testGetBibLP(){
-        $bib = Bib::find(5791214, $this->mockAccessToken);
-        $this->assertInstanceOf('WorldCat\Discovery\MusicAlbum', $bib);
-        $this->assertNotEmpty($bib->getFormat());
-    }
+    
+    /** 
+     * @vcr bibSearchSortCreator
+     * can parse set of Bibs from a Search Result */
+    
+    function testSearchByKeyword(){
+        $query = 'cats';
+        $search = Bib::Search($query, $this->mockAccessToken, array('sortBy' => 'creator'));
+        
+        $this->assertInstanceOf('WorldCat\Discovery\BibSearchResults', $search);
+        $this->assertEquals('0', $search->getStartIndex());
+        $this->assertEquals('10', $search->getItemsPerPage());
+        $this->assertInternalType('integer', $search->getTotalResults());
+        $this->assertEquals('10', count($search->getSearchResults()));
+        $results = $search->getSearchResults();
+        $i = $search->getStartIndex();
+        foreach ($search->getSearchResults() as $searchResult){
+            $this->assertFalse(get_class($searchResult) == 'EasyRdf_Resource');
+            $i++;
+            $this->assertEquals($i, $searchResult->getDisplayPosition());
+        }
+        $results = $search->getSearchResults();
+        $this->assertEquals('210105081', $results[1]->getOclcNumber());
+    }    
 }
-

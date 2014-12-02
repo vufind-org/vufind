@@ -110,19 +110,6 @@ class WSKeyTest extends \PHPUnit_Framework_TestCase
     function testGetLoginURL()
     {
         $url = 'https://authn.sd00.worldcat.org/oauth2/authorizeCode?client_id=test&authenticatingInstitutionId=1&contextInstitutionId=1&redirect_uri=' . urlencode(static::$redirect_uri) . '&response_type=code&scope=WMS_NCIP WMS_ACQ';
-        $authCodeArgs = array(
-            $this->wskey->getKey(),
-            1,
-            1,
-            $this->wskey->getRedirectUri(),
-            $this->wskey->getServices()
-        );
-        $authCode = $this->getMock('OCLC\Auth\AuthCode', array(
-            'getLoginURL'
-        ), $authCodeArgs);
-        $authCode->expects($this->any())
-            ->method('getLoginURL')
-            ->will($this->returnValue($url));
         $this->assertEquals($this->wskey->getLoginURL(1, 1), $url);
     }
 

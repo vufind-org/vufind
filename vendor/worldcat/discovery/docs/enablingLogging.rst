@@ -3,6 +3,12 @@ Logging
 
 The library allows logging to be added via Guzzle's Log Plugin [http://guzzle3.readthedocs.org/plugins/log-plugin.html] which supports logs via a variety of adapters.
 
+Log Message Format
+==================
+We use the follow message logging for our testing purposes
+
+{host} {method} {resource} {req_header_Authorization} \n {code} {reason} {res_header_X-OCLC-RequestId} {res_header_X-OCLC-SelfId}
+
 Example: 
 ==================================================
 

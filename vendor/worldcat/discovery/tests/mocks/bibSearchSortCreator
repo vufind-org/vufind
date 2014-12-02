@@ -1,0 +1,23 @@
+
+-
+    request:
+        method: GET
+        url: 'https://beta.worldcat.org/discovery/bib/search?q=cats&dbIds=638&sortBy=creator'
+        headers:
+            Host: beta.worldcat.org
+            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.34, WorldCat Discovery API PHP Client'
+            Authorization: 'Bearer tk_12345'
+            Accept: application/rdf+xml
+            Content-Length: '0'
+    response:
+        status: 500
+        headers:
+            Date: 'Tue, 25 Nov 2014 20:54:52 GMT'
+            X-OCLC-RequestId: 9c0ab3de-3c67-4068-9685-8a2e833cfc86
+            X-OCLC-SelfId: 713e6672-063e-43a8-9e20-a1dbd78b7c66
+            Content-Location: 'http://beta.worldcat.org/discovery/bib/search.rdf?q=cats&dbIds=638&sortBy=creator'
+            Cache-Control: 'must-revalidate,no-cache,no-store'
+            Content-Type: 'text/html; charset=ISO-8859-1'
+            Content-Length: '660'
+            Connection: close
+        body: "<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html;charset=ISO-8859-1\"/>\n<title>Error 500 </title>\n</head>\n<body>\n<h2>HTTP ERROR: 500</h2>\n<p>Problem accessing /discovery/bib/search. Reason:\n<pre>    org.springframework.web.util.NestedServletException: Request processing failed; nested exception is com.hp.hpl.jena.shared.BadURIException: Only well-formed absolute URIrefs can be included in RDF/XML output: &lt;http://dx.doi.org/10.1641/0006-3568(2006)56[825:DITSOC]2.0.CO;2&gt; Code: 0/ILLEGAL_CHARACTER in PATH: The character violates the grammar rules for URIs/IRIs.</pre></p>\n<hr /><i><small>Powered by Jetty://</small></i>\n</body>\n</html>\n"

@@ -18,13 +18,14 @@ namespace WorldCat\Discovery;
 use Guzzle\Http\StaticClient;
 use OCLC\Auth\WSKey;
 use OCLC\Auth\AccessToken;
+use OCLC\User;
 use WorldCat\Discovery\Bib;
 
-class PlaceTest extends \PHPUnit_Framework_TestCase
+class SearchResultsSortByYearTest extends \PHPUnit_Framework_TestCase
 {
 
     function setUp()
-    {     
+    {
         $options = array(
             'authenticatingInstitutionId' => 128807,
             'contextInstitutionId' => 128807,
@@ -36,41 +37,28 @@ class PlaceTest extends \PHPUnit_Framework_TestCase
                     ->will($this->returnValue('tk_12345'));
     }
 
-    /**
-     *@vcr placeSuccess
-     */
-    function testGetBib(){
-        $bib = Bib::find(1942036, $this->mockAccessToken);
-        $this->assertInstanceOf('WorldCat\Discovery\CreativeWork', $bib);
-        return $bib;
-    }
-
-    /**
-     * can parse Single Bibs Resources
-     * @depends testGetBib
-     */
-    function testParseResources($bib){
-        $this->assertThat($bib->getAuthor(), $this->logicalOr(
-            $this->isInstanceOf('WorldCat\Discovery\Place'),
-            $this->isInstanceOf('WorldCat\Discovery\Organization')
-        ));
-    }
-
-    /**
-     * can parse and return Place information
-     * @depends testGetBib
-     */
-    function testPerson($bib){
-        $this->assertNotEmpty($bib->getAuthor()->getName());
-    }
+    /** 
+     * @vcr bibSearchSortYear
+     * can parse set of Bibs from a Search Result */
     
-    
-    /**
-     *@vcr placeVIAFSuccess
-     */
-    function testGetPlace(){
-        $place = Place::findByVIAFID('239072486');
-        $this->assertInstanceOf('WorldCat\Discovery\Place', $place);
+    function testSearchByKeyword(){
+        $query = 'cats';
+        $search = Bib::Search($query, $this->mockAccessToken, array('sortBy' => 'year'));
+        
+        $this->assertInstanceOf('WorldCat\Discovery\BibSearchResults', $search);
+        $this->assertEquals('0', $search->getStartIndex());
+        $this->assertEquals('10', $search->getItemsPerPage());
+        $this->assertInternalType('integer', $search->getTotalResults());
+        $this->assertEquals('10', count($search->getSearchResults()));
+        $results = $search->getSearchResults();
+        $i = $search->getStartIndex();
+        foreach ($search->getSearchResults() as $searchResult){
+            $this->assertFalse(get_class($searchResult) == 'EasyRdf_Resource');
+            $i++;
+            $this->assertEquals($i, $searchResult->getDisplayPosition());
+        }
+        $results = $search->getSearchResults();
+        $this->assertEquals('5692503192', $results[1]->getOclcNumber());
     }
     
 }

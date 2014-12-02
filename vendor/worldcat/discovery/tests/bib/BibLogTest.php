@@ -49,7 +49,7 @@ class BibLogTest extends \PHPUnit_Framework_TestCase
         $logger = new Logger();
         $logger->addWriter($logMock);
         $adapter = new Zf2LogAdapter($logger);
-        $logPlugin = new LogPlugin($adapter, MessageFormatter::DEBUG_FORMAT);
+        $logPlugin = new LogPlugin($adapter, "{host} {method} {resource} {req_header_Authorization} \n {code} {reason} {res_header_X-OCLC-RequestId} {res_header_X-OCLC-SelfId}");
         $options = array(
             'logger' => $logPlugin
         );

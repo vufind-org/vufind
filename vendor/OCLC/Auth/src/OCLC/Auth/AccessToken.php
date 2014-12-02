@@ -82,7 +82,8 @@ class AccessToken
         'code',
         'refreshToken',
         'accessTokenString',
-        'expiresAt'
+        'expiresAt',
+        'logger'
     );
 
     public static $validGrantTypes = array(
@@ -98,6 +99,8 @@ class AccessToken
     private $redirectUri;
 
     private $scope;
+    
+    private $logger = null;
     
     private $headers;
 
@@ -280,6 +283,7 @@ class AccessToken
      *            - refreshToken - refreshToken object
      *            - accessTokenString
      *            - expiresAt
+     *            - logger
      */
     function __construct($grantType, $options)
     {
@@ -289,6 +293,8 @@ class AccessToken
             throw new \BadMethodCallException('You must pass at least one option to construct an Access Token');
         }elseif (!empty($options['accessTokenString']) && empty($options['expiresAt'])){
             throw new \BadMethodCallException('You must pass an expires_at when passing an Access Token string');
+        }elseif (isset($options['logger']) && !is_a($options['logger'], 'Guzzle\Plugin\Log\LogPlugin')){
+            Throw new \BadMethodCallException('The logger must be a valid Guzzle\Plugin\Log\LogPlugin object');
         }
         
         $this->grantType = $grantType;
@@ -300,12 +306,11 @@ class AccessToken
         }
         
         if (empty($this->accessTokenString)){
-        
             if ($this->grantType == 'authorization_code' && (empty($options['code']) || empty($options['authenticatingInstitutionId']) || empty($options['contextInstitutionId']))) {
                 throw new \BadMethodCallException('You must pass the options: code, authenticatingInstitutionId, contextInstitutionId, to construct an Access Token using the authorization_code grant type');
             } elseif ($this->grantType == 'client_credentials' && (empty($options['authenticatingInstitutionId']) || empty($options['contextInstitutionId']) || empty($options['scope']))) {
                 throw new \BadMethodCallException('You must pass the options: scope, authenticatingInstitutionId, contextInstitutionId, to construct an Access Token using the client_credential grant type');
-            } elseif ($this->grantType == 'refresh_token' && empty($options['refreshToken'])) {
+            } elseif ($this->grantType == 'refresh_token' && (empty($options['refreshToken']) || (! is_a($options['refreshToken'], 'OCLC\Auth\RefreshToken')))) {
                 throw new \BadMethodCallException('You must pass the option refreshToken to construct an Access Token using the refresh_token grant type');
             }
             
@@ -340,7 +345,7 @@ class AccessToken
             $options['user'] = $this->user;
         }
         $authorization = $wskey->getHMACSignature('POST', $this->accessTokenUrl, $options);
-        self::requestAccessToken($authorization, $this->accessTokenUrl);
+        self::requestAccessToken($authorization, $this->accessTokenUrl, $this->logger);
     }
 
     public function refresh()
@@ -357,10 +362,10 @@ class AccessToken
         $this->expiresAt = null;
         $this->errorCode = null;
         $this->errorMessage = null;
-        self::requestAccessToken($authorization, $this->accessTokenUrl);
+        self::requestAccessToken($authorization, $this->accessTokenUrl, $this->logger);
     }
 
-    private function requestAccessToken($authorization, $url)
+    private function requestAccessToken($authorization, $url, $logger = null)
     {   
         $guzzleOptions = array(
             'headers' => array(
@@ -376,6 +381,10 @@ class AccessToken
         
         if (static::$testServer){
             $guzzleOptions['verify'] = false;
+        }
+        
+        if (isset($logger)){
+            $guzzleOptions['plugins'] = array($logger);
         }
         
         if (!class_exists('Guzzle')) {
