@@ -1,6 +1,6 @@
 /*global hierarchySettings, html_entity_decode, jqEscape, path, vufindString*/
 
-var hierarchyID, recordID, htmlID;
+var hierarchyID, recordID, htmlID, hierarchyContext;
 var baseTreeSearchFullURL;
 
 function getRecord(recordID)
@@ -91,37 +91,13 @@ function doTreeSearch()
   }
 }
 
-function buildJSONNodes(xml)
-{
-  var jsonNode = [];
-  $(xml).children('item').each(function() {
-    var content = $(this).children('content');
-    var id = content.children("name[class='JSTreeID']");
-    var name = content.children('name[href]');
-    jsonNode.push({
-      'id': htmlEncodeId(id.text()),
-      'text': name.text(),
-      'li_attr': {
-        'recordid': id.text()
-      },
-      'a_attr': {
-        'href': name.attr('href'),
-        'title': name.text()
-      },
-      'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
-      children: buildJSONNodes(this)
-    });
-  });
-  return jsonNode;
-}
-
 $(document).ready(function()
 {
   // Code for the search button
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
   recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
   htmlID = htmlEncodeId(recordID);
-  var context = $("#hierarchyTree").find(".hiddenContext")[0].value;
+  hierarchyContext = $("#hierarchyTree").find(".hiddenContext")[0].value;
 
   $("#hierarchyTree")
     .bind("ready.jstree", function (event, data) {
@@ -129,12 +105,12 @@ $(document).ready(function()
       tree.select_node(htmlID);
       tree._open_to(htmlID);
 
-      if (context == "Collection") {
+      if (hierarchyContext == "Collection") {
         getRecord(recordID);
       }
 
       $("#hierarchyTree").bind('select_node.jstree', function(e, data) {
-        if (context == "Record") {
+        if (hierarchyContext == "Record") {
           window.location.href = data.node.a_attr.href;
         } else {
           getRecord(data.node.li_attr.recordid);
@@ -145,7 +121,7 @@ $(document).ready(function()
       if ($('#hierarchyTree').parents('#modal').length > 0) {
         var hTree = $('#hierarchyTree');
         var offsetTop = hTree.offset().top;
-        var maxHeight = Math.max($(window).height() - offsetTop - 50, 200);
+        var maxHeight = Math.max($(window).height() - offsetTop, 200);
         hTree.css('max-height', maxHeight + 'px').css('overflow', 'auto');
         hTree.animate({
           scrollTop: $('.jstree-clicked').offset().top - offsetTop + hTree.scrollTop() - 50
@@ -161,16 +137,17 @@ $(document).ready(function()
       'core' : {
         'data' : function (obj, cb) {
           $.ajax({
-            'url': path + '/Hierarchy/GetTree',
+            'url': path + '/Hierarchy/GetTreeJSON',
             'data': {
               'hierarchyID': hierarchyID,
-              'id': recordID,
-              'context': context,
-              'mode': 'Tree'
+              'id': recordID
             },
-            'success': function(xml) {
-              var nodes = buildJSONNodes($(xml).find('root'));
-              cb.call(this, nodes);
+            'success': function(json, status, request) {
+              if(request.getResponseHeader('Content-Type') == 'text/xml') {
+                buildTreeWithXml();
+              } else {
+                cb.call(this, json);
+              }
             }
           });
         },
@@ -197,3 +174,42 @@ $(document).ready(function()
     }
   });
 });
+
+function buildTreeWithXml()
+{
+  $.ajax({'url': path + '/Hierarchy/GetTree',
+    'data': {
+      'hierarchyID': hierarchyID,
+      'id': recordID,
+      'context': hierarchyContext,
+      'mode': 'Tree'
+    },
+    'success': function(xml) {
+      var nodes = buildJSONNodes($(xml).find('root'));
+      cb.call(this, nodes);
+    }
+  });
+}
+function buildJSONNodes(xml)
+{
+  var jsonNode = [];
+  $(xml).children('item').each(function() {
+    var content = $(this).children('content');
+    var id = content.children("name[class='JSTreeID']");
+    var name = content.children('name[href]');
+    jsonNode.push({
+      'id': htmlEncodeId(id.text()),
+      'text': name.text(),
+      'li_attr': {
+        'recordid': id.text()
+      },
+      'a_attr': {
+        'href': name.attr('href'),
+        'title': name.text()
+      },
+      'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
+      children: buildJSONNodes(this)
+    });
+  });
+  return jsonNode;
+}
