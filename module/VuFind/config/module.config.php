@@ -95,6 +95,10 @@ $config = array(
             'primorecord' => 'VuFind\Controller\PrimorecordController',
             'qrcode' => 'VuFind\Controller\QRCodeController',
             'records' => 'VuFind\Controller\RecordsController',
+            'rdsindex' => 'VuFind\Controller\RDSIndexController',
+            'rdsindexrecord' => 'VuFind\Controller\RDSIndexrecordController',
+            'rdsproxy' => 'VuFind\Controller\RDSProxyController',
+            'rdsproxyrecord' => 'VuFind\Controller\RDSProxyrecordController',
             'search' => 'VuFind\Controller\SearchController',
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
@@ -429,6 +433,8 @@ $config = array(
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
                 'factories' => array(
+		    'solrrdsindex' => 'VuFind\RecordDriver\Factory::getRDSIndex',
+                    'solrrdsproxy' => 'VuFind\RecordDriver\Factory::getRDSProxy',
                     'eds' => 'VuFind\RecordDriver\Factory::getEDS',
                     'eit' => 'VuFind\RecordDriver\Factory::getEIT',
                     'missing' => 'VuFind\RecordDriver\Factory::getMissing',
@@ -454,6 +460,7 @@ $config = array(
                     'excerpt' => 'VuFind\RecordTab\Factory::getExcerpt',
                     'hierarchytree' => 'VuFind\RecordTab\Factory::getHierarchyTree',
                     'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
+		    'holdingslinkresolver' => 'VuFind\RecordTab\Factory::getHoldingsLinkResolver',
                     'holdingsworldcat' => 'VuFind\RecordTab\Factory::getHoldingsWorldCat',
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
@@ -493,6 +500,8 @@ $config = array(
                     'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
                     'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
+		    'RDSIndex' => 'VuFind\Search\Factory\RDSIndexBackendFactory',
+                    'RDSProxy' => 'VuFind\Search\Factory\RDSProxyBackendFactory',
                     'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
@@ -589,6 +598,22 @@ $config = array(
                  ),
                 'defaultTab' => null,
             ),
+            'VuFind\RecordDriver\RDSIndex' => array(
+                'tabs' => array (
+		    'Holdings' => 'HoldingsILS', 
+                    'Description' => 'Description',
+                    'Details' => 'StaffViewArray',
+                 ),
+	         'defaultTab' => null,
+	    ),
+            'VuFind\RecordDriver\RDSProxy' => array(
+                'tabs' => array (
+                    'Holdings' => 'HoldingsLinkResolver',
+                    'Description' => 'Description',
+                    'Details' => 'StaffViewArray',
+                 ),
+                 'defaultTab' => null,
+            ),
             'VuFind\RecordDriver\Primo' => array(
                 'tabs' => array(
                     'Description' => 'Description',
@@ -657,6 +682,8 @@ $recordRoutes = array(
     'edsrecord' => 'EdsRecord',
     'eitrecord' => 'EITRecord',
     'missingrecord' => 'MissingRecord',
+    'rdsindexrecord' => 'RDSIndexrecord',
+    'rdsproxyrecord' => 'RDSProxyrecord',
     'primorecord' => 'PrimoRecord',
     'solrauthrecord' => 'Authority',
     'summonrecord' => 'SummonRecord',
@@ -703,6 +730,8 @@ $staticRoutes = array(
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
+    'RDSIndex/Advanced', 'RDSIndex/Home', 'RDSIndex/Search',
+    'RDSProxy/Advanced', 'RDSProxy/Home', 'RDSProxy/Search',
     'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',
     'Search/NewItem', 'Search/OpenSearch', 'Search/Reserves', 'Search/Results',
     'Search/Suggest',

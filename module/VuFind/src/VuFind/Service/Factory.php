@@ -734,6 +734,14 @@ class Factory
             APPLICATION_PATH  . '/languages',
             LOCAL_OVERRIDE_DIR . '/languages'
         );
+        
+        // Use wordings from theme specific language files:
+        if (isset($config->Site->useThemeLanguage)) {
+            $themes = preg_split('/[,\s]+/', $config->Site->useThemeLanguage);
+            foreach ($themes as $theme)
+                $pathStack[] = APPLICATION_PATH  . '/themes/' . $theme . '/languages';
+        }
+        
         $fallbackLocales = $config->Site->language == 'en'
             ? 'en'
             : array($config->Site->language, 'en');

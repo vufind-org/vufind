@@ -41,6 +41,40 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for RDSsolrindex record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return RDSsolrindex
+     */
+    public static function getRDSIndex(ServiceManager $sm)
+    {
+        $rdsindex = $sm->getServiceLocator()->get('VuFind\Config')->get('RDSIndex');
+        return new RDSIndex(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $rdsindex, $rdsindex
+        );
+    }
+
+    /**
+     * Factory for RDSsolrproxy record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return RDSsolrproxy
+     */
+    public static function getRDSProxy(ServiceManager $sm)
+    {
+        $rdsproxy = $sm->getServiceLocator()->get('VuFind\Config')->get('RDSProxy');
+        return new RDSProxy(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $rdsproxy, $rdsproxy
+        );
+    }
+
+
+
+    /**
      * Factory for EDS record driver.
      *
      * @param ServiceManager $sm Service manager.

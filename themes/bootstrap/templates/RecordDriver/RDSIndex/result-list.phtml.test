@@ -1,0 +1,19 @@
+<div class="row-fluid result<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
+  <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
+  <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" class="hiddenSource" />
+  <div class="span2 text-center left">
+  </div>
+  <div class="span7 middle">
+    <div>
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+      <?
+        $summTitle = $this->driver->getShortTitle();
+        if (!empty($summTitle)) {
+          echo $this->escapeHtml($this->truncate($summTitle, 180));
+        } else {
+          echo $this->transEsc('Title not available');
+        }
+      ?>
+      </a>
+    </div>
+
