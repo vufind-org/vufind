@@ -189,7 +189,7 @@ class Manager
      */
     public function supportsRecovery($authMethod=null)
     {
-        if ($this->getAuth($authMethod)->supportsPasswordChange()) {
+        if ($this->getAuth($authMethod)->supportsPasswordRecovery()) {
             return isset($this->config->Authentication->recover_password)
                 && $this->config->Authentication->recover_password;
         }
