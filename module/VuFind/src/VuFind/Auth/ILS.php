@@ -133,7 +133,7 @@ class ILS extends AbstractBase
      */
     public function supportsPasswordChange()
     {
-        return $this->getCatalog()->checkFunction(
+        return false !== $this->getCatalog()->checkFunction(
             'changePassword',
             array('patron' => $this->getLoggedInPatron())
         );
