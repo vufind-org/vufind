@@ -76,7 +76,7 @@ class Utils
         // Special case -- first four characters are not a year:
         if (!preg_match('/^[0-9]{4}/', $date)) {
             // 'n.d.' means no date known -- give up!
-            if (preg_match('/n\.?\s*d\.?/', $date)) {
+            if (preg_match('/^n\.?\s*d\.?$/', $date)) {
                 return null;
             }
 
