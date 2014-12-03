@@ -167,6 +167,16 @@ class Factory
     }
 
     /**
+     * Factory for HoldingsWorldCatDiscovery tab plugin.
+     *
+     * @return HoldingsWorldCatDiscovery
+     */
+    public static function getHoldingsWorldCatDiscovery()
+    {
+        return new HoldingsWorldCatDiscovery();
+    }
+
+    /**
      * Factory for Map tab plugin.
      *
      * @param ServiceManager $sm Service manager.
