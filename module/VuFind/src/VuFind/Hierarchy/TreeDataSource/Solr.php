@@ -137,40 +137,6 @@ class Solr extends AbstractBase
     }
 
     /**
-     * Get JSON for the specified hierarchy ID.
-     *
-     * Build the JSON file from the Solr fields
-     *
-     * @param string $id      Hierarchy ID.
-     * @param array  $options Additional options for XML generation.  (Currently one
-     * option is supported: 'refresh' may be set to true to bypass caching).
-     *
-     * @return string
-     */
-    public function getJSON($id, $options = array())
-    {
-        $top = $this->searchService->retrieve('Solr', $id)->getRecords();
-        if (!isset($top[0])) {
-            return '';
-        }
-        $top = $top[0];
-        $cacheFile = (null !== $this->cacheDir)
-            ? $this->cacheDir . '/tree_' . urlencode($id) . '.json'
-            : false;
-
-        $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
-        $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
-
-        if ($useCache && file_exists($cacheFile)
-            && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
-        ) {
-            $this->debug("Using cached data from $cacheFile");
-            return file_get_contents($cacheFile);
-        }
-        return null;
-    }
-
-    /**
      * Get Solr Children
      *
      * @param string $parentID The starting point for the current recursion
