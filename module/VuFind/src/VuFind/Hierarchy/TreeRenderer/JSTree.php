@@ -132,12 +132,75 @@ class JSTree extends AbstractBase
      */
     public function render($context, $mode, $hierarchyID, $recordID = false)
     {
-        if (!empty($context) && !empty($mode)) {
+        $json = $this->getJSON($hierarchyID);
+        if (!is_null($json)) {
+            $json = json_decode($json);
+            return '<ul>' . $this->jsonToHTML($json) . '</ul>';
+        } elseif (!empty($context) && !empty($mode)) {
             return $this->transformCollectionXML(
                 $context, $mode, $hierarchyID, $recordID
             );
         }
         return false;
+    }
+
+    protected function jsonToHTML($op)
+    {
+        $name = strlen($op->text) > 100
+            ? substr($op->text, 0, 100) . '...'
+            : $op->text;
+        $html = '<li><a href="' . $op->a_attr->href
+            . '" title="' . $op->text . '">'
+            . $name . '</a>';
+        if (isset($op->children)) {
+            $html .= '<ul>';
+            foreach ($op->children as $child) {
+                $html .= $this->jsonToHTML($child);
+            }
+            $html .= '</ul>';
+        }
+        return $html . '</li>';
+    }
+
+    /**
+     * Render the Hierarchy Tree
+     *
+     * @param string $hierarchyID The hierarchy ID of the tree to fetch
+     *
+     * @return mixed The desired hierarchy tree output (or false on error)
+     */
+    public function getJSON($hierarchyID)
+    {
+        $json = $this->getDataSource()->getJSON($hierarchyID);
+        return json_encode($this->formatJSON(json_decode($json)));
+    }
+
+    protected function formatJSON($json)
+    {
+        $ret = $this->transformNode($json);
+        if (isset($json->children)) {
+            $ret['children'] = array();
+            for ($i=0;$i<count($json->children);$i++) {
+                $ret['children'][$i] = $this->formatJSON($json->children[$i]);
+            }
+        }
+        return $ret;
+    }
+
+    protected function transformNode($node)
+    {
+        return array(
+            'id' => preg_replace('/\W/', '-', $node->id),
+            'text' => $node->title,
+            'li_attr' => array(
+                'recordid' => $node->id
+            ),
+            'a_attr' => array(
+                'href' =>  '%%%%VUFIND-BASE-URL%%%%/Record/' . $node->id,
+                'title' => $node->title
+            ),
+            'type' => $node->type
+        );
     }
 
     /**

@@ -146,6 +146,41 @@ class HierarchyController extends AbstractBase
     }
 
     /**
+     * Gets a Hierarchy Tree
+     *
+     * @return mixed
+     */
+    public function gettreejsonAction()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        // Retrieve the record from the index
+        $id = $this->params()->fromQuery('id');
+        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        try {
+            if ($recordDriver = $loader->load($id)) {
+                $results = $recordDriver->getHierarchyDriver()
+                    ->getTreeRenderer($recordDriver)->getJSON(
+                    $this->params()->fromQuery('hierarchyID')
+                );
+                if ($results) {
+                    $baseUrl = $this->url()->fromRoute('home');
+                    $results = str_replace(
+                        '%%%%VUFIND-BASE-URL%%%%', rtrim($baseUrl, '/'), $results
+                    );
+                    return $this->outputJSON($results);
+                }
+            }
+        } catch (\Exception $e) {
+            // Let exceptions fall through to error condition below:
+        }
+
+        // If we got this far, something went wrong:
+        return $this->output(
+            "<error>" . $this->translate("hierarchy_tree_error") . "</error>"
+        );
+    }
+
+    /**
      * Get a record for display within a tree
      *
      * @return mixed

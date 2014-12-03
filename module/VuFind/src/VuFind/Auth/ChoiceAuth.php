@@ -257,7 +257,6 @@ class ChoiceAuth extends AbstractBase
         return $this->proxyAuthMethod('supportsPasswordRecovery', func_get_args());
     }
 
-
     /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
