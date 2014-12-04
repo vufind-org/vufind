@@ -55,6 +55,7 @@ class HoldingsWorldCatDiscovery extends AbstractBase
      */
     public function isActive()
     {
-        return true;
+        $offers = $this->getRecordDriver()->tryMethod('getOffers');
+        return !empty($offers);
     }
 }
