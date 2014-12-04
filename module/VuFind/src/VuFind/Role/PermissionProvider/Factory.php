@@ -41,6 +41,18 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for IpRange
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return IpRange
+     */
+    public static function getIpRange(ServiceManager $sm)
+    {
+        return new IpRange($sm->getServiceLocator()->get('Request'));
+    }
+
+    /**
      * Factory for IpRegEx
      *
      * @param ServiceManager $sm Service manager.

@@ -665,6 +665,7 @@ $config = array(
         ),
         'vufind_permission_provider_manager' => array(
             'factories' => array(
+                'ipRange' => 'VuFind\Role\PermissionProvider\Factory::getIpRange',
                 'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
                 'username' => 'VuFind\Role\PermissionProvider\Factory::getUsername',
             ),
