@@ -39,9 +39,11 @@
   <table class="alphabrowse table table-striped">
     <thead>
       <tr>
-        <th class="<?=$this->source ?>"></th>
+        <th class="<?=$this->source ?>">
+          <?=$this->transEsc("browse_" . $this->source) ?>
+        </th>
         <? foreach ($this->extras as $e): ?>
-          <th></th>
+          <th><?=$this->transEsc("browse_" . $e) ?></th>
         <? endforeach; ?>
         <th class="titles"><?=$this->transEsc("alphabrowse_matches") ?></th>
       </tr>

@@ -19,7 +19,12 @@
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
-  <property name="version" value="2.3" />
+  <property name="version" value="2.3.1" />
+
+  <!-- We only need the -p switch if the password is non-blank -->
+  <if><not><equals arg1="${mysqlrootpass}" arg2="" /></not><then>
+    <property name="mysqlpwswitch" value="-p" />
+  </then></if>
 
   <!-- Main Target -->
   <target name="main" description="main target">
@@ -136,11 +141,11 @@
       </then>
       <else>
         <!-- build database -->
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} drop ${vufinddb}" />
-        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
-        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
         <!-- configure VuFind -->
         <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
@@ -186,7 +191,7 @@
         <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
       </then>
       <else>
-        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} ${mysqlpwswitch}${mysqlrootpass} drop ${vufinddb}" />
       </else>
     </if>
 
@@ -222,15 +227,15 @@
     <mkdir dir="${builddir}/packages" />
 
     <!-- build the standard tar.gz archive -->
-    <exec command="git archive master --format=tar --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.tar" />
+    <exec command="git archive HEAD --format=tar --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.tar" />
     <exec command="gzip ${builddir}/packages/vufind-${version}.tar" />
 
     <!-- build the a zip archive -->
-    <exec command="git archive master --format=zip --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.zip" />
+    <exec command="git archive HEAD --format=zip --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.zip" />
 
     <!-- build the DEB package -->
     <mkdir dir="${builddir}/export/vufind/usr/local/vufind2" />
-    <exec command="git archive master --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
+    <exec command="git archive HEAD --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
     <move file="${builddir}/export/vufind/usr/local/vufind2/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
     <exec command="chmod 0775 ${builddir}/export/vufind/DEBIAN/postinst" />
     <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />

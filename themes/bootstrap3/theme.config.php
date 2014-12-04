@@ -16,6 +16,7 @@ return array(
         'vendor/bootstrap-accessibility.min.js',
         //'vendor/bootlint.min.js',
         'vendor/typeahead.js',
+        'vendor/validator.min.js',
         'vendor/rc4.js',
         'common.js',
         'lightbox.js',

@@ -165,13 +165,14 @@ class Solr extends AbstractBase
             ++$count;
             if ($sorting) {
                 $positions = $current->getHierarchyPositionsInParents();
-                $titles = $current->getTitlesInHierarchy();
                 if (isset($positions[$parentID])) {
                     $sequence = $positions[$parentID];
                 }
-                $title = isset($titles[$parentID])
-                    ? $titles[$parentID] : $current->getTitle();
             }
+
+            $titles = $current->getTitlesInHierarchy();
+            $title = isset($titles[$parentID])
+                ? $titles[$parentID] : $current->getTitle();
 
             $this->debug("$parentID: " . $current->getUniqueID());
             $xmlNode = '';

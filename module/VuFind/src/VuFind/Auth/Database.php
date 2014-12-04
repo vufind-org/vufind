@@ -218,6 +218,8 @@ class Database extends AbstractBase
         if ($params['password'] != $params['password2']) {
             throw new AuthException('Passwords do not match');
         }
+        // Password policy
+        $this->validatePasswordAgainstPolicy($params['password']);
     }
 
     /**
@@ -299,5 +301,30 @@ class Database extends AbstractBase
     public function supportsPasswordChange()
     {
         return true;
+    }
+
+    /**
+     * Does this authentication method support password recovery
+     *
+     * @return bool
+     */
+    public function supportsPasswordRecovery()
+    {
+        return true;
+    }
+
+    /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getPasswordPolicy()
+    {
+        $policy = parent::getPasswordPolicy();
+        // Limit maxLength to the database limit
+        if (!isset($policy['maxLength']) || $policy['maxLength'] > 32) {
+            $policy['maxLength'] = 32;
+        }
+        return $policy;
     }
 }

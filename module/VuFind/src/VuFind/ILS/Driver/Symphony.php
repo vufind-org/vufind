@@ -368,7 +368,7 @@ class Symphony extends AbstractBase
      * called when an error happens that might be correctable by upgrading
      * SymWS. In such a case it will produce a potentially more helpful error
      * message than the original error would have.
-     * 
+     *
      * @throws Exception if the SymWS version is too old
      * @return void
      */
@@ -1089,18 +1089,28 @@ class Symphony extends AbstractBase
             'cat_password' => $password,
         );
 
-        $resp = $this->makeRequest(
-            'patron',
-            'lookupMyAccountInfo',
-            array(
-                'includePatronInfo' => 'true',
-                'includePatronAddressInfo' => 'true'
-            ),
-            array(
-                'login' => $username,
-                'password' => $password,
-            )
-        );
+        try {
+            $resp = $this->makeRequest(
+                'patron',
+                'lookupMyAccountInfo',
+                array(
+                    'includePatronInfo' => 'true',
+                    'includePatronAddressInfo' => 'true'
+                ),
+                array(
+                    'login' => $username,
+                    'password' => $password,
+                )
+            );
+        } catch (SoapFault $e) {
+            $unableToLogin = 'ns0:com.sirsidynix.symws.service.'
+                . 'exceptions.SecurityServiceException.unableToLogin';
+            if ($e->faultcode == $unableToLogin) {
+                return null;
+            } else {
+                throw $e;
+            }
+        }
 
         $patron['id']      = $resp->patronInfo->$usernameField;
         $patron['library'] = $resp->patronInfo->patronLibraryID;
@@ -1442,10 +1452,12 @@ class Symphony extends AbstractBase
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         if (isset($this->config[$function]) ) {
             $functionConfig = $this->config[$function];
