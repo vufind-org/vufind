@@ -1,0 +1,91 @@
+<?
+  // Convert WorldCat Discovery formats to VuFind formats so icons display correctly:
+  switch ($this->format) {
+  	case 'ArchiveMaterial':
+  		echo 'archives';
+  		break;
+  	case 'Article':
+  		echo 'journal';
+  		break;
+  	case 'Audiobook':
+  		echo 'audio';
+  		break;
+  	case 'AudioObject':
+  		echo 'audio';
+  		break;
+    case 'Book':
+    	echo 'book';
+    	break;
+  	case 'Cassette tape':
+  		echo 'audio';
+  		break;  		
+  	case 'CD':
+  		echo 'cd';
+  		break;
+  	case 'Compact Disk':
+  		echo 'cd';
+  		break;
+  	case 'Computer File':
+  		echo 'electronic';
+  		break;
+  	case 'DVD':
+  		echo 'dvd';
+  		break;
+  	case 'eBook':
+  		echo 'ebook';
+  		break;
+	case 'Image':
+		echo 'photo';
+		break;
+	case 'InteractiveMultimedia':
+		echo 'photo';
+		break;
+  	case 'Journal':
+  		echo 'journal';
+  	case 'Kit':
+  		echo 'kit';
+  		break;	
+  	case 'LP record':
+  		echo 'cd';
+  		break;
+  	case 'Map':
+  		echo 'map';
+  		break;
+  	case 'MediaObject':	
+  		echo 'photo';
+  		break;
+  	case 'Movie':
+        echo 'video';
+        break; 	 		
+    case 'MusicAlbum':
+        echo 'cd';
+        break; 
+    case 'Newspaper':
+    	echo 'newspaper';
+    	break;
+    case 'Score':
+    	echo 'musicalscore';
+    	break;    	
+    case 'Series': 
+    	echo 'series';
+    	break;    		
+    case 'SoundRecording':
+    	echo 'audio';
+    	break;
+    case 'Sheet Music':
+    	echo 'musicalscore';
+    	break;
+    case 'Thesis':
+    	echo 'dissertation';
+    	break;
+    case 'VHS':
+    	echo 'video';
+    	break;	
+    case 'VisualMaterial':
+    	echo '';
+    	break;
+	default:
+		echo 'journal';
+		break;
+  }
+?>
