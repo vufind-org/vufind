@@ -165,7 +165,7 @@ CREATE TABLE `tags` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(30) NOT NULL DEFAULT '',
+  `username` varchar(50) NOT NULL DEFAULT '',
   `password` varchar(32) NOT NULL DEFAULT '',
   `pass_hash` varchar(60) DEFAULT NULL,
   `firstname` varchar(50) NOT NULL DEFAULT '',
