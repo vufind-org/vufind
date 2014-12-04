@@ -108,7 +108,7 @@ class Backend extends AbstractBackend
      */
     protected function getAccessToken()
     {
-        if (empty($this->session->accessToken)){
+        if (empty($this->session->accessToken) || $this->session->accessToken->isExpired()){
             $options = array(
                     'services' => array('WorldCatDiscoveryAPI refresh_token')
             );

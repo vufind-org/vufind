@@ -1,2 +1,8 @@
-<h3>Your Heading</h3>
-<p>Content goes here.</p>
+<? $holdings = $this->driver->getOffers(); if ($holdings && count($holdings) > 0): ?>
+<h3><?=$this->transEsc('Holdings at Libraries')?></h3>
+<ul>
+<? foreach ($holdings as $holding): ?>
+<li><?= $holding->getSeller()->getName()?></li>
+<? endforeach; ?>
+</ul>
+<? endif; ?>

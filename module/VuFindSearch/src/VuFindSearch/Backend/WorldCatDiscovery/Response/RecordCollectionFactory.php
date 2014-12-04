@@ -93,14 +93,16 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         
         if (is_a($response, 'WorldCat\Discovery\BibSearchResults')){
         	$results = $response->getSearchResults();
+        	$offers = null;
         } elseif (is_a($response, 'WorldCat\Discovery\OfferSet')){
         	$results = $response->getCreativeWorks();
+        	$offers = $response->getOffers();
         } else {
         	echo 'Error';
         }
         
         foreach ($results as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc));
+            $collection->add(call_user_func($this->recordFactory, array('doc' => $doc, 'offers' => $offers)));
         }
         return $collection;
     }

@@ -55,6 +55,7 @@ class WorldCatDiscovery extends SolrDefault
         $this->fields = array();
         $this->rawObject = $data;
     }
+    
 
     public function getRawObject()
     {
@@ -62,6 +63,16 @@ class WorldCatDiscovery extends SolrDefault
             throw new \Exception('Data not initialized.');
         }
         return $this->rawObject;
+    }
+    
+    public function setOffers($offers)
+    {
+    	$this->offers = $offers;
+    }
+    
+    public function getOffers()
+    {
+    	return $this->offers;
     }
 
     /**
@@ -122,6 +133,12 @@ class WorldCatDiscovery extends SolrDefault
             } else {
                 $format = substr(strchr($format, ':'), 1);
             }
+            
+            if (strchr($format, '_')) {
+            	$format = str_replace("_", " ", $format);
+            }
+            
+            
         });
         return $formats;
     }

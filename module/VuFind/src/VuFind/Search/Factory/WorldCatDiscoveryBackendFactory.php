@@ -119,7 +119,8 @@ class WorldCatDiscoveryBackendFactory implements FactoryInterface
         $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
         $callback = function ($data) use ($manager) {
             $driver = $manager->get('WorldCatDiscovery');
-            $driver->setRawData($data);
+            $driver->setRawData($data['doc']);
+            $driver->setOffers($data['offers']);
             return $driver;
         };
         return new RecordCollectionFactory($callback);
