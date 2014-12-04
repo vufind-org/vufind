@@ -3193,29 +3193,25 @@ EOT;
         $error = $result->xpath("//ser:message[@type='error']");
         if (!empty($error)) {
             $error = reset($error);
-            if ($error->attributes()->errorCode
-                == 'com.endinfosys.voyager.patronpin.PatronPIN.ValidateException'
-            ) {
+            $code = $error->attributes()->errorCode;
+            $exceptionNamespace = 'com.endinfosys.voyager.patronpin.PatronPIN.';
+            if ($code == $exceptionNamespace . 'ValidateException') {
                 return array(
                     'success' => false, 'status' => 'authentication_error_invalid'
                 );
             }
-            if ($error->attributes()->errorCode
-                ==
-                'com.endinfosys.voyager.patronpin.PatronPIN.ValidateUniqueException'
-            ) {
+            if ($code == $exceptionNamespace . 'ValidateUniqueException') {
                 return array(
                     'success' => false, 'status' => 'password_error_not_unique'
                 );
             }
-            if ($error->attributes()->errorCode
-                ==
-                'com.endinfosys.voyager.patronpin.PatronPIN.ValidateLengthException'
-            ) {
+            if ($code == $exceptionNamespace . 'ValidateLengthException') {
                 // This issue should not be encountered if the settings are correct.
                 // Log an error and let through for an exception
-                $this->error('ValidateLengthException encountered when trying to'
-                    . ' change patron PIN. Verify PIN length settings.');
+                $this->error(
+                    'ValidateLengthException encountered when trying to'
+                    . ' change patron PIN. Verify PIN length settings.'
+                );
             }
             throw new ILSException((string)$error);
         }
