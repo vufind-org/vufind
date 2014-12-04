@@ -248,6 +248,26 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Does this authentication method support password recovery
+     *
+     * @return bool
+     */
+    public function supportsPasswordRecovery()
+    {
+        return $this->proxyAuthMethod('supportsPasswordRecovery', func_get_args());
+    }
+
+    /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getPasswordPolicy()
+    {
+        return $this->proxyAuthMethod('getPasswordPolicy', func_get_args());
+    }
+
+    /**
      * Update a user's password from the request.
      *
      * @param Request $request Request object containing password change details.

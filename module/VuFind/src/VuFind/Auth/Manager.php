@@ -189,7 +189,7 @@ class Manager
      */
     public function supportsRecovery($authMethod=null)
     {
-        if ($this->getAuth($authMethod)->supportsPasswordChange()) {
+        if ($this->getAuth($authMethod)->supportsPasswordRecovery()) {
             return isset($this->config->Authentication->recover_password)
                 && $this->config->Authentication->recover_password;
         }
@@ -211,6 +211,19 @@ class Manager
                 && $this->config->Authentication->change_password;
         }
         return false;
+    }
+
+    /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return array
+     */
+    public function getPasswordPolicy($authMethod=null)
+    {
+        return $this->getAuth($authMethod)->getPasswordPolicy();
     }
 
     /**

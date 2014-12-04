@@ -13,7 +13,7 @@ function addSearch(group, term, field, op)
 
   // Build the new search
   var inputIndex = $('#group'+group+' input').length;
-  var inputID = group+'_'+$('#group'+group+' input').length;
+  var inputID = group+'_'+inputIndex;
   var newSearch ='<div class="search row" id="search'+inputID+'"><div class="col-sm-3">';
   if (typeof groupSearches[group] == "undefined") {
     groupSearches[group] = 0;
@@ -40,12 +40,18 @@ function addSearch(group, term, field, op)
     }
     newSearch += ">" + searchFields[key] + "</option>";
   }
-  newSearch += '</select></div> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="col-sm-1 help-block delete">&times;</a></div>';
+  newSearch += '</select></div> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="col-sm-1 help-block delete';
+  if(inputIndex == 0) {
+    newSearch += ' hidden';
+  }
+  newSearch += '">&times;</a></div>';
 
   // Insert it
   $("#group" + group + "Holder").before(newSearch);
   // Show x
-  $('#group'+group+' .search .delete').removeClass('hidden');
+  if(inputIndex > 0) {
+    $('#group'+group+' .search .delete').removeClass('hidden');
+  }
   groupSearches[group]++;
 }
 

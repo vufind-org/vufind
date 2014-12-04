@@ -154,6 +154,9 @@ class MyResearchController extends AbstractBase
 
         // Make view
         $view = $this->createViewModel();
+        // Password policy
+        $view->passwordPolicy = $this->getAuthManager()
+            ->getPasswordPolicy($method);
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('newAccount');
         // Pass request to view so we can repopulate user parameters in form:
@@ -843,7 +846,7 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelStatus = $catalog->checkFunction('cancelHolds');
+        $cancelStatus = $catalog->checkFunction('cancelHolds', compact('patron'));
         $view = $this->createViewModel();
         $view->cancelResults = $cancelStatus
             ? $this->holds()->cancelHolds($catalog, $patron) : array();
@@ -902,7 +905,9 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelSRR = $catalog->checkFunction('cancelStorageRetrievalRequests');
+        $cancelSRR = $catalog->checkFunction(
+            'cancelStorageRetrievalRequests', compact('patron')
+        );
         $view = $this->createViewModel();
         $view->cancelResults = $cancelSRR
             ? $this->storageRetrievalRequests()->cancelStorageRetrievalRequests(
@@ -965,7 +970,9 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelStatus = $catalog->checkFunction('cancelILLRequests');
+        $cancelStatus = $catalog->checkFunction(
+            'cancelILLRequests', compact('patron')
+        );
         $view = $this->createViewModel();
         $view->cancelResults = $cancelStatus
             ? $this->ILLRequests()->cancelILLRequests(
@@ -1021,7 +1028,7 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Get the current renewal status and process renewal form, if necessary:
-        $renewStatus = $catalog->checkFunction('Renewals');
+        $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));
         $renewResult = $renewStatus
             ? $this->renewals()->processRenewals(
                 $this->getRequest()->getPost(), $catalog, $patron
@@ -1266,8 +1273,10 @@ class MyResearchController extends AbstractBase
         $userFromHash = isset($post->hash)
             ? $this->getTable('User')->getByVerifyHash($post->hash)
             : false;
-        // View and reCaptcha
+        // View, password policy and reCaptcha
         $view = $this->createViewModel($post);
+        $view->passwordPolicy = $this->getAuthManager()
+            ->getPasswordPolicy();
         $view->useRecaptcha = $this->recaptcha()->active('changePassword');
         // Check reCaptcha
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
@@ -1346,6 +1355,9 @@ class MyResearchController extends AbstractBase
         // Display username
         $user = $this->getUser();
         $view->username = $user->username;
+        // Password policy
+        $view->passwordPolicy = $this->getAuthManager()
+            ->getPasswordPolicy();
         // Identification
         $user->updateHash();
         $view->hash = $user->verify_hash;

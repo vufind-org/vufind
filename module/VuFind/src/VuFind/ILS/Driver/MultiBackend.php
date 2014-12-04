@@ -1106,18 +1106,42 @@ class MultiBackend extends AbstractBase
     }
 
     /**
+     * Change Password
+     *
+     * Attempts to change patron password (PIN code)
+     *
+     * @param array $details An array of patron id and old and new password
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function changePassword($details)
+    {
+        $source = $this->getSource($details['patron']['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported($driver, 'changePassword')
+        ) {
+            return $driver->changePassword(
+                $this->stripIdPrefixes($details, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Function which specifies renew, hold and cancel settings.
      *
      * @param string $function The name of the feature to be checked
-     * @param string $id       Optional record id
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
      */
-    public function getConfig($function, $id = null)
+    public function getConfig($function, $params = null)
     {
         $source = null;
-        if (!empty($id)) {
-            $source = $this->getSource($id);
+        if (!empty($params)) {
+            $source = $this->getSourceFromParams($params);
         }
         if (!$source) {
             $patron = $this->ilsAuth->storedCatalogLogin();
@@ -1126,14 +1150,12 @@ class MultiBackend extends AbstractBase
             }
         }
 
-        $driver = $this->getDriver(
-            $source, empty($id) ? null : $this->getLocalId($id)
-        );
+        $driver = $this->getDriver($source);
 
         // If we have resolved the needed driver, just getConfig and return.
         if ($driver && $this->methodSupported($driver, 'getConfig')) {
             return $driver->getConfig(
-                $function, $this->stripIdPrefixes($id, $source)
+                $function, $this->stripIdPrefixes($params, $source)
             );
         }
 
