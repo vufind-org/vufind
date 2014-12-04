@@ -50,6 +50,13 @@ class Server
     protected $baseURL;
 
     /**
+     * Base URL of host containing VuFind.
+     *
+     * @var string
+     */
+    protected $baseHostURL;
+
+    /**
      * Incoming request parameters
      *
      * @var array
@@ -148,6 +155,20 @@ class Server
     protected $tableManager;
 
     /**
+     * Record link helper (optional)
+     *
+     * @var \VuFind\View\Helper\Root\RecordLink
+     */
+    protected $recordLinkHelper = null;
+
+    /**
+     * Set queries
+     *
+     * @var array
+     */
+    protected $setQueries = array();
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
@@ -168,9 +189,27 @@ class Server
         $this->recordLoader = $loader;
         $this->tableManager = $tables;
         $this->baseURL = $baseURL;
+        $parts = parse_url($baseURL);
+        $this->baseHostURL = $parts['scheme'] . '://' . $parts['host'];
+        if (isset($parts['port'])) {
+            $this->baseHostURL .= $parts['port'];
+        }
         $this->params = isset($params) && is_array($params) ? $params : array();
         $this->initializeMetadataFormats(); // Load details on supported formats
         $this->initializeSettings($config); // Load config.ini settings
+    }
+
+    /**
+     * Add a record link helper (optional -- allows enhancement of some metadata
+     * with VuFind-specific links).
+     *
+     * @param \VuFind\View\Helper\Root\RecordLink $helper Helper to set
+     *
+     * @return void
+     */
+    public function setRecordLinkHelper($helper)
+    {
+        $this->recordLinkHelper = $helper;
     }
 
     /**
@@ -266,7 +305,8 @@ class Server
         if ($format === false) {
             $xml = '';      // no metadata if in header-only mode!
         } else {
-            $xml = $record->getXML($format);
+            $xml = $record
+                ->getXML($format, $this->baseHostURL, $this->recordLinkHelper);
             if ($xml === false) {
                 return false;
             }
@@ -438,6 +478,11 @@ class Server
         if (isset($config->OAI->set_field)) {
             $this->setField = $config->OAI->set_field;
         }
+
+        // Initialize custom sets queries:
+        if (isset($config->OAI->set_query)) {
+            $this->setQueries = $config->OAI->set_query->toArray();
+        }
     }
 
     /**
@@ -585,30 +630,44 @@ class Server
         }
 
         // If no set field is enabled, we can't provide a set list:
-        if (is_null($this->setField)) {
+        if (null === $this->setField && empty($this->setQueries)) {
             return $this->showError('noSetHierarchy', 'Sets not supported');
         }
 
-        // If we got this far, we can load all available set values.  For now,
-        // we'll assume that this list is short enough to load in a single response;
-        // it may be necessary to implement a resumption token mechanism if this
-        // proves not to be the case:
-        $results = $this->resultsManager->get($this->searchClassId);
-        try {
-            $facets = $results->getFullFieldFacets(array($this->setField));
-        } catch (\Exception $e) {
-            $facets = null;
-        }
-        if (empty($facets) || !isset($facets[$this->setField]['data']['list'])) {
-            $this->unexpectedError('Cannot find sets');
+        // Begin building XML:
+        $xml = new SimpleXMLElement('<ListSets />');
+
+        // Load set field if applicable:
+        if (null !== $this->setField) {
+            // If we got this far, we can load all available set values.  For now,
+            // we'll assume that this list is short enough to load in one response;
+            // it may be necessary to implement a resumption token mechanism if this
+            // proves not to be the case:
+            $results = $this->resultsManager->get($this->searchClassId);
+            try {
+                $facets = $results->getFullFieldFacets(array($this->setField));
+            } catch (\Exception $e) {
+                $facets = null;
+            }
+            if (empty($facets) || !isset($facets[$this->setField]['data']['list'])) {
+                $this->unexpectedError('Cannot find sets');
+            }
+    
+            // Extract facet values from the Solr response:
+            foreach ($facets[$this->setField]['data']['list'] as $x) {
+                $set = $xml->addChild('set');
+                $set->setSpec = $x['value'];
+                $set->setName = $x['displayText'];
+            }
         }
 
-        // Extract facet values from the Solr response:
-        $xml = new SimpleXMLElement('<ListSets />');
-        foreach ($facets[$this->setField]['data']['list'] as $x) {
-            $set = $xml->addChild('set');
-            $set->setSpec = $x['value'];
-            $set->setName = $x['displayText'];
+        // Iterate over custom sets:
+        if (!empty($this->setQueries)) {
+            foreach ($this->setQueries as $setName => $solrQuery) {
+                $set = $xml->addChild('set');
+                $set->setSpec = $solrQuery;
+                $set->setName = $setName;
+            }
         }
 
         // Display the list:
@@ -661,10 +720,14 @@ class Server
         );
 
         // Apply filters as needed.
-        if (!empty($set) && !is_null($this->setField)) {
-            $params->addFilter(
-                $this->setField . ':"' . addcslashes($set, '"') . '"'
-            );
+        if (!empty($set)) {
+            if (isset($this->setQueries[$set])) {
+                $params->addFilter($this->setQueries[$set]);
+            } else if (null !== $this->setField) {
+                $params->addFilter(
+                    $this->setField . ':"' . addcslashes($set, '"') . '"'
+                );
+            }
         }
 
         // Perform a Solr search:
@@ -959,4 +1022,3 @@ class Server
         throw new \Exception("Unexpected fatal error -- {$msg}.");
     }
 }
-?>
