@@ -1,8 +1,13 @@
-<? $holdings = $this->driver->getOffers(); if ($holdings && count($holdings) > 0): ?>
+<? $holdings = $this->driver->getOffers(); 
+$eholding = $this->tab->getEHoldings($this->driver->getOpenURL()); 
+if (($holdings && count($holdings) > 0) || ($eholding && count($eholding) > 0)): ?>
 <h3><?=$this->transEsc('Holdings at Libraries')?></h3>
 <ul>
 <? foreach ($holdings as $holding): ?>
 <li><?= $holding->getSeller()->getName()?></li>
 <? endforeach; ?>
+<?if ($eholding):?>
+<li><a href="<?= $eholding?>">Get Electronic Copy</a></li>
+<? endif;?>
 </ul>
 <? endif; ?>

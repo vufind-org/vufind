@@ -39,6 +39,13 @@ namespace VuFind\RecordTab;
 class HoldingsWorldCatDiscovery extends AbstractBase
 {
     /**
+     * Constructor
+     */
+	public function __construct($config){
+		$this->config = $config;
+	}
+    
+    /**
      * Get the on-screen description for this tab.
      *
      * @return string
@@ -58,4 +65,24 @@ class HoldingsWorldCatDiscovery extends AbstractBase
         $offers = $this->getRecordDriver()->tryMethod('getOffers');
         return !empty($offers);
     }
+    
+    /**
+     * Get the EHoldings
+     * 
+     */
+    public function getEHoldings($openURLParameters)
+    {
+    	//if (isset($this->config->eHoldings->active) && $this->config->eHoldings->active) {
+    		$kbrequest = "http://worldcat.org/webservices/kb/openurl/resolve?";
+    		$kbrequest .= $openURLParameters;
+    		$kbrequest .= '&wskey=' . $this->config->General->wskey;
+			
+    		$kbresponse = json_decode(file_get_contents($kbrequest), true);
+    		
+    		if (isset($kbresponse[0]['url'])){
+    			return $kbresponse[0]['url'];
+    		}
+    	//}
+    }
+    
 }

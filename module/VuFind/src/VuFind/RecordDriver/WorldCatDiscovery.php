@@ -220,7 +220,25 @@ class WorldCatDiscovery extends SolrDefault
      */
     public function getOpenURL()
     {
-
+    	$kbrequest = '';
+    	if (is_a($this->getRawObject(), 'WorldCat\Discovery\Article')){
+    		if ($this->getRawObject()->getSameAs()){
+    			$doi = str_replace("http://dx.doi.org/", "info:doi:", $record->getSameAs());
+    			$kbrequest .= 'rft_id=' . $doi;
+    		} else {
+    			$kbrequest .= "rft.issn=" . $this->getRawObject()->getIsPartOf()->getVolume()->getPeriodical()->getIssn();
+    			$kbrequest .= "&rft.volume=" . $this->getRawObject()->getIsPartOf()->getVolume()->getVolumeNumber();
+    			$kbrequest .= "&rft.issue=" . $this->getRawObject()->getIsPartOf()->getIssueNumber();
+    			$kbrequest .= "&rft.spage=" . $this->getRawObject()->getPageStart();
+    			$kbrequest .= "&rft.atitle=" . $this->getRawObject()->getName();
+    		}
+    	} elseif (get_class($this->getRawObject()) == "Book" && $this->getRawObject()->getManifestations()) {
+    		$manifestations = $this->getRawObject()->getManifestations();
+    		$kbrequest .= "rft.isbn=" . $manifestations[0]->getISBN();
+    	}else {
+    		$kbrequest .= "rft.oclcnum=" . $this->getRawObject()->getOCLCNumber();
+    	}
+    	return $kbrequest;
     }
 
 

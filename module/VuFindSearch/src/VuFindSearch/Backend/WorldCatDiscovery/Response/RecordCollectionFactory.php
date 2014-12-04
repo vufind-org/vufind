@@ -89,7 +89,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         
         $collection = new $this->collectionClass($response);
         
-        //Determind if its an OfferSet or BibSearchResults object and get the results accordingly
+        //Determine if its an OfferSet or BibSearchResults object and get the results accordingly
         
         if (is_a($response, 'WorldCat\Discovery\BibSearchResults')){
         	$results = $response->getSearchResults();

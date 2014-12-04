@@ -171,9 +171,9 @@ class Factory
      *
      * @return HoldingsWorldCatDiscovery
      */
-    public static function getHoldingsWorldCatDiscovery()
+    public static function getHoldingsWorldCatDiscovery(ServiceManager $sm)
     {
-        return new HoldingsWorldCatDiscovery();
+        return new HoldingsWorldCatDiscovery($sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery'));
     }
 
     /**
@@ -240,6 +240,16 @@ class Factory
             $loader = null;
         }
         return new Reviews($loader, static::getHideSetting($config, 'reviews'));
+    }
+    
+    /**
+     * Factory for HoldingsWorldCatDiscovery tab plugin.
+     *
+     * @return TurtleWorldCatDiscovery
+     */
+    public static function getTurtleWorldCatDiscovery()
+    {
+    	return new TurtleWorldCatDiscovery();
     }
 
     /**
