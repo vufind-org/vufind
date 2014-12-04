@@ -72,7 +72,31 @@ $config = array(
                     'natlibfi' => 'Finna\Content\Covers\NatLibFi'
                 ),
             ),
-        )
+            'recorddriver' => array(
+                'factories' => array(
+                    'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
+                ),
+            ),
+            'recordtab' => array(
+                'invokables' => array(
+                    'componentparts' => 'Finna\RecordTab\ComponentParts',
+                ),
+            ),
+        ),
+        'recorddriver_tabs' => array(
+            'Finna\RecordDriver\SolrMarc' => array(
+                'tabs' => array(
+                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
+                    'ComponentParts' => 'ComponentParts',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
+                    'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
+                    'Details' => 'StaffViewMARC',
+                ),
+                'defaultTab' => null,
+            ),
+        ),
     )
 );
 
