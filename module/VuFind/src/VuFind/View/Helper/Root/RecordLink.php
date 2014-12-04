@@ -217,4 +217,23 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
             $escapeHelper($truncateHelper($driver->getBreadcrumb(), 30))
             . '</a>';
     }
+
+    /**
+     * Given a record driver, generate a URL to fetch all child records for it.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Host Record.
+     *
+     * @return string
+     */
+    public function getChildRecordSearchUrl($driver)
+    {
+        $urlHelper = $this->getView()->plugin('url');
+        $url = $urlHelper('search-results')
+            . '?lookfor=hierarchy_parent_id:"'
+            . urlencode(addcslashes($driver->getUniqueID(), '"'))
+            . '"';
+        // Make sure everything is properly HTML encoded:
+        $escaper = $this->getView()->plugin('escapehtml');
+        return $escaper($url);
+    }
 }
