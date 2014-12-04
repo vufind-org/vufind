@@ -50,43 +50,50 @@ class HierarchicalFacetHelperTest extends TestCase
             'value' => '0/Book/',
             'displayText' => 'Book',
             'count' => 1000,
-            'operator' => 'OR'
+            'operator' => 'OR',
+            'isApplied' => false
         ),
         array(
             'value' => '0/AV/',
             'displayText' => 'Audiovisual',
             'count' => 600,
-            'operator' => 'OR'
+            'operator' => 'OR',
+            'isApplied' => false
         ),
         array(
             'value' => '0/Audio/',
             'displayText' => 'Sound',
             'count' => 400,
-            'operator' => 'OR'
+            'operator' => 'OR',
+            'isApplied' => false
         ),
         array(
             'value' => '1/Book/BookPart/',
             'displayText' => 'Book Part',
             'count' => 300,
-            'operator' => 'OR'
+            'operator' => 'OR',
+            'isApplied' => false
         ),
         array(
             'value' => '1/Book/Section/',
             'displayText' => 'Book Section',
             'count' => 200,
-            'operator' => 'OR'
+            'operator' => 'OR',
+            'isApplied' => false
         ),
         array(
             'value' => '1/Audio/Spoken/',
             'displayText' => 'Spoken Text',
             'count' => 100,
-            'operator' => 'OR'
+            'operator' => 'OR',
+            'isApplied' => false
         ),
         array(
             'value' => '1/Audio/Music/',
             'displayText' => '1/Audio/Music/',
             'count' => 50,
-            'operator' => 'OR'
+            'operator' => 'OR',
+            'isApplied' => false
         )
     );
 
@@ -107,6 +114,9 @@ class HierarchicalFacetHelperTest extends TestCase
         $this->helper = new HierarchicalFacetHelper();
     }
 
+    /**
+     * Tests for sortFacetList (top level only)
+     */
     public function testSortFacetListTopLevel()
     {
         $facetList = $this->facetList;
@@ -120,6 +130,9 @@ class HierarchicalFacetHelperTest extends TestCase
         $this->assertEquals($facetList[6]['value'], '1/Audio/Music/');
     }
 
+    /**
+     * Tests for sortFacetList (all levels)
+     */
     public function testSortFacetListAllLevels()
     {
         $facetList = $this->facetList;
@@ -133,21 +146,22 @@ class HierarchicalFacetHelperTest extends TestCase
         $this->assertEquals($facetList[6]['value'], '1/Audio/Spoken/');
     }
 
+    /**
+     * Tests for buildFacetArray
+     */
     public function testBuildFacetArray()
     {
         // Test without active filters
-        $facetList = $this->helper->buildFacetArray(
-            'format', $this->facetList, array()
-        );
+        $facetList = $this->helper->buildFacetArray('format', $this->facetList);
         $this->assertEquals($facetList[0]['value'], '0/Book/');
         $this->assertEquals($facetList[0]['level'], 0);
-        $this->assertTrue(!$facetList[0]['selected']);
-        $this->assertTrue(!$facetList[0]['state']['opened']);
+        $this->assertFalse($facetList[0]['isApplied']);
+        $this->assertFalse($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
             $facetList[0]['children'][0]['value'], '1/Book/BookPart/'
         );
         $this->assertEquals($facetList[0]['children'][0]['level'], 1);
-        $this->assertTrue(!$facetList[0]['children'][0]['selected']);
+        $this->assertFalse($facetList[0]['children'][0]['isApplied']);
         $this->assertEquals($facetList[1]['value'], '0/AV/');
         $this->assertEquals($facetList[2]['value'], '0/Audio/');
         $this->assertEquals(
@@ -158,31 +172,26 @@ class HierarchicalFacetHelperTest extends TestCase
         // Test with active filter
         $facetList = $this->helper->buildFacetArray(
             'format',
-            $this->facetList,
-            array(
-                array(
-                    array(
-                        'field' => 'format',
-                        'value' => '1/Book/BookPart/'
-                    )
-                )
-            )
+            $this->setApplied('1/Book/BookPart/', $this->facetList)
         );
         $this->assertEquals($facetList[0]['value'], '0/Book/');
-        $this->assertTrue(!$facetList[0]['selected']);
-        $this->assertTrue($facetList[0]['state']['opened']);
+        $this->assertFalse($facetList[0]['isApplied']);
+        $this->assertTrue($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
             $facetList[0]['children'][0]['value'], '1/Book/BookPart/'
         );
-        $this->assertEquals($facetList[0]['children'][0]['selected'], true);
+        $this->assertEquals($facetList[0]['children'][0]['isApplied'], true);
 
     }
 
+    /**
+     * Tests for flattenFacetHierarchy
+     */
     public function testFlattenFacetHierarchy()
     {
         $facetList = $this->helper->flattenFacetHierarchy(
             $this->helper->buildFacetArray(
-                'format', $this->facetList, array()
+                'format', $this->facetList
             )
         );
         $this->assertEquals($facetList[0]['value'], '0/Book/');
@@ -194,6 +203,9 @@ class HierarchicalFacetHelperTest extends TestCase
         $this->assertEquals($facetList[6]['value'], '1/Audio/Music/');
     }
 
+    /**
+     * Tests for formatDisplayText
+     */
     public function testFormatDisplayText()
     {
         $this->assertEquals(
@@ -212,5 +224,23 @@ class HierarchicalFacetHelperTest extends TestCase
             $this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
             'Sound - Noisy'
         );
+    }
+
+    /**
+     * Set 'isApplied' to true in facet item with the given value
+     *
+     * @param string $facetValue Value to search for
+     * @param string $facetList  Facet list
+     *
+     * @return array Facet list
+     */
+    protected function setApplied($facetValue, $facetList)
+    {
+        foreach ($facetList as &$facetItem) {
+            if ($facetItem['value'] == $facetValue) {
+                $facetItem['isApplied']  = true;
+            }
+        }
+        return $facetList;
     }
 }
