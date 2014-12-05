@@ -547,7 +547,7 @@ class AjaxController extends AbstractBase
      *
      * @param string $errno   Error code number
      * @param string $errstr  Error message
-     * @param string $errfile File where error occured
+     * @param string $errfile File where error occurred
      * @param string $errline Line number of error
      *
      * @return bool           Always true to cancel default error handling

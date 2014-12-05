@@ -84,7 +84,7 @@ cd %VUFIND_HOME%\import
 for %%a in (%BASEPATH%\*.xml) do (
   echo Processing %%a...
   php import-xsl.php %%a %2
-  rem Unfortunately, PHP doesn't seem to set apropriate errorlevels, so error
+  rem Unfortunately, PHP doesn't seem to set appropriate errorlevels, so error
   rem detection doesn't work under Windows like it does under Linux... however,
   rem this code is retained in case PHP's behavior improves in the future!
   if errorlevel 0 (

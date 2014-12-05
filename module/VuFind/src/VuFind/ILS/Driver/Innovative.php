@@ -157,7 +157,7 @@ class Innovative extends AbstractBase implements
             '/1%2C1%2C1%2CB/holdings~' . $id_ . '&FF=&1%2C0%2C'
         );
 
-        // strip out html before the first occurance of 'bibItems', should be
+        // strip out html before the first occurrence of 'bibItems', should be
         // '<table class="bibItems" '
         $r = substr($result, stripos($result, 'bibItems'));
         // strip out the rest of the first table tag.
@@ -384,7 +384,7 @@ class Innovative extends AbstractBase implements
             // search for successful response of "RETCOD=0"
             if (stripos($result, "RETCOD=0") == -1) {
                 // pin did not match, can look up specific error to return
-                // more usefull info.
+                // more useful info.
                 return null;
             }
 
