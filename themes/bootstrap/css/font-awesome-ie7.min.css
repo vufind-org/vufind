@@ -355,7 +355,7 @@ a [class^="icon-"],a [class*=" icon-"]{cursor:pointer;}
 .icon-stackexchange{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf16c;');}
 .icon-instagram{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf16d;');}
 .icon-flickr{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf16e;');}
-.icon-adn{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf170;');}
+.icon-and{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf170;');}
 .icon-bitbucket{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf171;');}
 .icon-bitbucket-sign{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf172;');}
 .icon-tumblr{*zoom:expression( this.runtimeStyle['zoom'] = '1', this.innerHTML = '&#xf173;');}

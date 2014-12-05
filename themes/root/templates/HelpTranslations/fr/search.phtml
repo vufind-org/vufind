@@ -38,14 +38,14 @@
   
   <dt><a name="Fuzzy Searches"></a>Recherches floues</dt>
   <dd>
-    <p>Utilisez le tilde <strong>~</strong> à la fin d'un mot. Par exemple, pour
+    <p>Utilisez le tilde <strong>~</strong> à la fin d'un mot. Par example, pour
        chercher un mot semblable à "amant" vous utilisez la recherche floue:
        <pre class="code">amant~</pre>
        <p>Cette recherche trouvera des termes comme diamant ou aimant</p>
        <p>Un paramètre suplémentaire définit le niveau de similarité. La
           valeur du paramètre peut être entre 0 et 1. Plus le chiffre est proche
           de 1, plus les mots utilisés pour la recherche sont similaire au mot
-          de départ. Exemple:</p>
+          de départ. Example:</p>
     <pre class="code">amant~0.8</pre>
     <p>La valeur du paramètre par défaut est 0.5</p>
   </dd>
@@ -53,7 +53,7 @@
   <dt><a name="Proximity Searches"></a>Recherche par proximité</dt>
   <dd>
     <p>
-      Ajoutez le tilde <strong>~</strong> après plusieurs mots. Par exemple:
+      Ajoutez le tilde <strong>~</strong> après plusieurs mots. Par example:
       Pour rechercher "pain" et "boulangerie" avec une distance entre les termes
       de recherche de 10 mots vous tapez dans le champ de recherche:</p>
     <pre class="code">"pain boulangerie"~10</pre>
@@ -63,12 +63,12 @@
   <dd>
     <p>
       Pour faire une recherche plage (range search) vous devez utiliser les
-      parenthèses <strong>{ }</strong>. Par exemple pour chercher un terme qui
+      parenthèses <strong>{ }</strong>. Par example pour chercher un terme qui
       débute par A, B ou C vous tapez:
     </p>
     <pre class="code">{A TO C}</pre>
     <p>
-      La même chose peut être appliqué sur des nombres comme par exemple
+      La même chose peut être appliqué sur des nombres comme par example
       sur l'année:
     </p>
     <pre class="code">[2002 TO 2003]</pre>
@@ -78,7 +78,7 @@
   <dd>
     <p>
       Pour donner à un terme une importance plus élevé dans la recheche utilisez
-      l'accent circonflexe<strong>^</strong>. Par exemple, si vous essayez la
+      l'accent circonflexe<strong>^</strong>. Par example, si vous essayez la
       recherche suivante,
     </p>
     <pre class="code">pain boulangerie^5</pre>
@@ -118,7 +118,7 @@
             termes dans une recherche, utilisez le signe plus <strong>+</strong>.
             Placez le signe plus devant le mot que vous voulez rechercher.
         </p>
-        <p>Par exemple, si vous voulez des resultats qui contiennent "miau" et
+        <p>Par example, si vous voulez des resultats qui contiennent "miau" et
             peut être "chat", utilisez la recherche suivante:
         </p>
         <pre class="code">+miau chat</pre>
@@ -140,7 +140,7 @@
             "laveur", utilisez la recherche suivantes: </p>
         <pre class="code">"raton" NOT "laveur"</pre>
         <p>Notez: L'opérateur NOT ne peut pas être utilisé avec un seul terme.
-           L'exemple suivant donne aucun resultat:</p>
+           L'example suivant donne aucun resultat:</p>
         <pre class="code">NOT inconnus</pre>
       </dd>
       <dt><a name="-"></a>-</dt>
