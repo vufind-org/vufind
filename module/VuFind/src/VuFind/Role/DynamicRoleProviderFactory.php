@@ -134,6 +134,15 @@ class DynamicRoleProviderFactory implements FactoryInterface
             }
             $permissions['legacy.AdminModule']['permission'] = 'access.AdminModule';
         }
+
+        // Add EIT settings if they are absent:
+        if (!$this->permissionDefined($permissions, 'access.EITModule')) {
+            $permissions['legacy.EITModule'] = [
+                'role' => 'loggedin',
+                'permission' => 'access.EITModule',
+            ];
+        }
+
         return $permissions;
     }
 
