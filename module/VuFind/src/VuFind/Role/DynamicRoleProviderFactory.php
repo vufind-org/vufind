@@ -143,6 +143,29 @@ class DynamicRoleProviderFactory implements FactoryInterface
             ];
         }
 
+        // Add Summon settings if they are absent:
+        // Check based on login status
+        $defined = $this
+            ->permissionDefined($permissions, 'access.SummonExtendedResults');
+        if (!$defined) {
+            $config = $loader->get('Summon');
+            $permissions['legacy.SummonExtendedResults'] = [];
+            if (isset($config->Auth->check_login) && $config->Auth->check_login) {
+                $permissions['legacy.SummonExtendedResults']['role'] = ['loggedin'];
+            }
+            if (isset($config->Auth->ip_range)) {
+                $permissions['legacy.SummonExtendedResults']['ipRegEx']
+                    = $config->Auth->ip_range;
+            }
+            if (!empty($permissions['legacy.SummonExtendedResults'])) {
+                $permissions['legacy.SummonExtendedResults']['boolean'] = 'OR';
+                $permissions['legacy.SummonExtendedResults']['permission']
+                    = 'access.SummonExtendedResults';
+            } else {
+                unset($permissions['legacy.SummonExtendedResults']);
+            }
+        }
+
         return $permissions;
     }
 
