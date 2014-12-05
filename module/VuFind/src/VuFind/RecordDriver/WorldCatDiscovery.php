@@ -232,7 +232,7 @@ class WorldCatDiscovery extends SolrDefault
     			$kbrequest .= "&rft.spage=" . $this->getRawObject()->getPageStart();
     			$kbrequest .= "&rft.atitle=" . $this->getRawObject()->getName();
     		}
-    	} elseif (get_class($this->getRawObject()) == "Book" && $this->getRawObject()->getManifestations()) {
+    	} elseif (get_class($this->getRawObject()) == "WorldCat\Discovery\Book" && $this->getRawObject()->getManifestations()) {
     		$manifestations = $this->getRawObject()->getManifestations();
     		$kbrequest .= "rft.isbn=" . $manifestations[0]->getISBN();
     	}else {
