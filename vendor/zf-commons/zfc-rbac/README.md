@@ -36,7 +36,7 @@ ZfcRbac only officially supports installation through Composer. For Composer doc
 Install the module:
 
 ```sh
-$ php composer.phar require zf-commons/zfc-rbac:~2.3
+$ php composer.phar require zf-commons/zfc-rbac:~2.4
 ```
 
 Enable the module by adding `ZfcRbac` key to your `application.config.php` file. Customize the module by copy-pasting

@@ -18,7 +18,7 @@
 
 namespace ZfcRbac\View\Strategy;
 
-use Zend\Authentication\AuthenticationService;
+use Zend\Authentication\AuthenticationServiceInterface;
 use Zend\Http\Response as HttpResponse;
 use Zend\Mvc\MvcEvent;
 use ZfcRbac\Exception\UnauthorizedExceptionInterface;
@@ -38,17 +38,17 @@ class RedirectStrategy extends AbstractStrategy
     protected $options;
 
     /**
-     * @var AuthenticationService
+     * @var AuthenticationServiceInterface
      */
     protected $authenticationService;
 
     /**
      * Constructor
      *
-     * @param RedirectStrategyOptions $options
-     * @param AuthenticationService   $authenticationService
+     * @param RedirectStrategyOptions        $options
+     * @param AuthenticationServiceInterface $authenticationService
      */
-    public function __construct(RedirectStrategyOptions $options, AuthenticationService $authenticationService)
+    public function __construct(RedirectStrategyOptions $options, AuthenticationServiceInterface $authenticationService)
     {
         $this->options               = $options;
         $this->authenticationService = $authenticationService;
@@ -62,9 +62,9 @@ class RedirectStrategy extends AbstractStrategy
     public function onError(MvcEvent $event)
     {
         // Do nothing if no error or if response is not HTTP response
-        if (!($exception = $event->getParam('exception') instanceof UnauthorizedExceptionInterface)
-            || ($result = $event->getResult() instanceof HttpResponse)
-            || !($response = $event->getResponse() instanceof HttpResponse)
+        if (!($event->getParam('exception') instanceof UnauthorizedExceptionInterface)
+            || ($event->getResult() instanceof HttpResponse)
+            || !($event->getResponse() instanceof HttpResponse)
         ) {
             return;
         }
