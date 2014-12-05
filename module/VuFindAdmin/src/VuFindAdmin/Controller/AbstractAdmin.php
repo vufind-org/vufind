@@ -26,11 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindAdmin\Controller;
-use VuFind\Exception\Forbidden as ForbiddenException,
-    Zend\Mvc\MvcEvent,
-    Zend\Stdlib\Parameters;
-use ZfcRbac\Service\AuthorizationServiceAwareInterface;
-use ZfcRbac\Service\AuthorizationServiceAwareTrait;
+use Zend\Mvc\MvcEvent;
 
 /**
  * VuFind Admin Controller Base
@@ -42,9 +38,15 @@ use ZfcRbac\Service\AuthorizationServiceAwareTrait;
  * @link     http://www.vufind.org  Main Page
  */
 class AbstractAdmin extends \VuFind\Controller\AbstractBase
-    implements AuthorizationServiceAwareInterface
 {
-    use AuthorizationServiceAwareTrait;
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->accessPermission = 'access.AdminModule';
+    }
 
     /**
      * preDispatch -- block access when appropriate.
@@ -74,28 +76,10 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
             return $redirectPlugin->toRoute('admin/disabled');
         }
 
-        // Make sure the current user has permission to access admin:
-        if (!$this->getAuthorizationService()->isGranted('access.AdminModule')) {
-            if (!$this->getUser()) {
-                $e->setResponse($this->forceLogin(null, array(), false));
-                return;
-            }
-            throw new ForbiddenException('Access denied.');
-        }
+        // Call parent method to do permission checking:
+        parent::preDispatch($e);
     }
 
-    /**
-     * Register the default events for this controller
-     *
-     * @return void
-     */
-    protected function attachDefaultListeners()
-    {
-        parent::attachDefaultListeners();
-        $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
-    }
-    
     /**
      * Display disabled message.
      *
