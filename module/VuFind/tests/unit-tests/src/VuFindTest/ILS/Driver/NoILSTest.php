@@ -80,4 +80,49 @@ class NoILSTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('ils-offline', $this->driver->getOfflineMode());
     }
+
+    /**
+     * Test that driver defaults to visible login mode when no config is provided.
+     *
+     * @return void
+     */
+    public function testDefaultLoginVisibility()
+    {
+        $this->assertFalse($this->driver->loginIsHidden());
+    }
+
+    /**
+     * Test that driver defaults to hidden holdings mode when no config is provided.
+     *
+     * @return void
+     */
+    public function testDefaultHoldingsVisibility()
+    {
+        $this->assertFalse($this->driver->hasHoldings('foo'));
+    }
+
+    /**
+     * Test that driver makes holdings visible when in MARC mode.
+     *
+     * @return void
+     */
+    public function testMarcHoldingsVisibility()
+    {
+        $this->driver
+            ->setConfig(array('settings' => array('useHoldings' => 'marc')));
+        $this->assertTrue($this->driver->hasHoldings('foo'));
+    }
+
+    /**
+     * Test various methods that aren't expected to actually do anything.
+     *
+     * @return void
+     */
+    public function testUnsupportedFunctions()
+    {
+        $this->assertEquals(array(), $this->driver->getPurchaseHistory('foo'));
+        $this->assertEquals(null, $this->driver->patronLogin('foo', 'bar'));
+        $this->assertEquals(array(), $this->driver->getNewItems(1, 20, 30));
+        $this->assertFalse($this->driver->getConfig('Holds'));
+    }
 }

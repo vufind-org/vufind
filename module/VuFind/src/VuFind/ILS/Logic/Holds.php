@@ -169,7 +169,9 @@ class Holds
             $patron = $this->ilsAuth->storedCatalogLogin();
 
             // Does this ILS Driver handle consortial holdings?
-            $config = $this->catalog->getConfig('Holds');
+            $config = $this->catalog->checkFunction(
+                'Holds', compact('id', 'patron')
+            );
             if (isset($config['consortium']) && $config['consortium'] == true) {
                 $result = $this->catalog->getConsortialHoldings(
                     $id, $patron ? $patron : null, $ids
@@ -181,15 +183,17 @@ class Holds
             $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {
-                 $holdings = $this->standardHoldings($result);
+                $holdings = $this->standardHoldings($result);
             } else if ($mode == "driver") {
-                $holdings = $this->driverHoldings($result, $id);
+                $holdings = $this->driverHoldings($result, $config);
             } else {
-                $holdings = $this->generateHoldings($result, $mode);
+                $holdings = $this->generateHoldings($result, $mode, $config);
             }
 
-            $holdings = $this->processStorageRetrievalRequests($holdings, $id);
-            $holdings = $this->processILLRequests($holdings, $id);
+            $holdings = $this->processStorageRetrievalRequests(
+                $holdings, $id, $patron
+            );
+            $holdings = $this->processILLRequests($holdings, $id, $patron);
         }
         return $this->formatHoldings($holdings);
     }
@@ -219,23 +223,20 @@ class Holds
     /**
      * Protected method for driver defined holdings
      *
-     * @param array  $result A result set returned from a driver
-     * @param string $id     Record ID
+     * @param array $result     A result set returned from a driver
+     * @param array $holdConfig Hold configuration from driver
      *
      * @return array A sorted results set
      */
-    protected function driverHoldings($result, $id)
+    protected function driverHoldings($result, $holdConfig)
     {
         $holdings = array();
 
         if (count($result)) {
-            // Are holds allowed?
-            $checkHolds = $this->catalog->checkFunction("Holds", $id);
-
             foreach ($result as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
-                    if ($checkHolds) {
+                    if ($holdConfig) {
                         // Is this copy holdable / linkable
                         if (isset($copy['addLink']) && $copy['addLink']) {
                             // If the hold is blocked, link to an error page
@@ -243,7 +244,7 @@ class Holds
                             $copy['link'] = $copy['addLink'] === 'block'
                                 ? $this->getBlockedDetails($copy)
                                 : $this->getRequestDetails(
-                                    $copy, $checkHolds['HMACKeys'], 'Hold'
+                                    $copy, $holdConfig['HMACKeys'], 'Hold'
                                 );
                             // If we are unsure whether hold options are available,
                             // set a flag so we can check later via AJAX:
@@ -262,13 +263,14 @@ class Holds
     /**
      * Protected method for vufind (i.e. User) defined holdings
      *
-     * @param array  $result A result set returned from a driver
-     * @param string $type   The holds mode to be applied from:
+     * @param array  $result     A result set returned from a driver
+     * @param string $type       The holds mode to be applied from:
      * (all, holds, recalls, availability)
+     * @param array  $holdConfig Hold configuration from driver
      *
      * @return array A sorted results set
      */
-    protected function generateHoldings($result, $type)
+    protected function generateHoldings($result, $type, $holdConfig)
     {
         $holdings = array();
         $any_available = false;
@@ -289,10 +291,7 @@ class Holds
                 }
             }
 
-            // Are holds allowed?
-            $checkHolds = $this->catalog->checkFunction("Holds");
-
-            if ($checkHolds && is_array($holdings)) {
+            if ($holdConfig && is_array($holdings)) {
                 // Generate Links
                 // Loop through each holding
                 foreach ($holdings as $location_key => $location) {
@@ -327,7 +326,7 @@ class Holds
                             ? ($addlink && $copy['is_holdable']) : $addlink;
 
                         if ($addlink) {
-                            if ($checkHolds['function'] == "getHoldLink") {
+                            if ($holdConfig['function'] == "getHoldLink") {
                                 /* Build opac link */
                                 $holdings[$location_key][$copy_key]['link']
                                     = $this->catalog->getHoldLink(
@@ -337,7 +336,7 @@ class Holds
                                 /* Build non-opac link */
                                 $holdings[$location_key][$copy_key]['link']
                                     = $this->getRequestDetails(
-                                        $copy, $checkHolds['HMACKeys'], 'Hold'
+                                        $copy, $holdConfig['HMACKeys'], 'Hold'
                                     );
                             }
                         }
@@ -352,11 +351,13 @@ class Holds
      * Process storage retrieval request information in holdings and set the links
      * accordingly.
      *
-     * @param array $holdings Holdings
+     * @param array  $holdings Holdings
+     * @param string $id       Record ID
+     * @param array  $patron   Patron
      *
      * @return array Modified holdings
      */
-    protected function processStorageRetrievalRequests($holdings)
+    protected function processStorageRetrievalRequests($holdings, $id, $patron)
     {
         if (!is_array($holdings)) {
             return $holdings;
@@ -364,7 +365,7 @@ class Holds
 
         // Are storage retrieval requests allowed?
         $requestConfig = $this->catalog->checkFunction(
-            'StorageRetrievalRequests'
+            'StorageRetrievalRequests', compact('id', 'patron')
         );
 
         if (!$requestConfig) {
@@ -405,11 +406,13 @@ class Holds
     /**
      * Process ILL request information in holdings and set the links accordingly.
      *
-     * @param array $holdings Holdings
+     * @param array  $holdings Holdings
+     * @param string $id       Record ID
+     * @param array  $patron   Patron
      *
      * @return array Modified holdings
      */
-    protected function processILLRequests($holdings)
+    protected function processILLRequests($holdings, $id, $patron)
     {
         if (!is_array($holdings)) {
             return $holdings;
@@ -417,7 +420,7 @@ class Holds
 
         // Are storage retrieval requests allowed?
         $requestConfig = $this->catalog->checkFunction(
-            'ILLRequests'
+            'ILLRequests', compact('id', 'patron')
         );
 
         if (!$requestConfig) {

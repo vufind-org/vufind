@@ -693,7 +693,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $holding = array();
         foreach ($xml->xpath('/publish-avail/OAI-PMH') as $rec) {
             $identifier = $rec->xpath(".//identifier/text()");
-            $id = "$bib" . "-"
+            $id = ((count($this->bib) > 1) ? $bib . "-" : "")
                 . substr($identifier[0], strrpos($identifier[0], ':') + 1);
             $temp = array();
             foreach ($rec->xpath(".//datafield[@tag='AVA']") as $datafield) {
@@ -1628,7 +1628,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
         } else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) {
             // 13/7/2012
-            return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
+            return $this->dateConverter->convertToDisplayDate('d/m/Y', $date);
         } else {
             throw new \Exception("Invalid date: $date");
         }
@@ -1638,11 +1638,13 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * Public Function which retrieves renew, hold and cancel settings from the
      * driver ini file.
      *
-     * @param string $func The name of the feature to be checked
+     * @param string $func   The name of the feature to be checked
+     * @param array  $params Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($func)
+    public function getConfig($func, $params = null)
     {
         if ($func == "Holds") {
             if (isset($this->config['Holds'])) {

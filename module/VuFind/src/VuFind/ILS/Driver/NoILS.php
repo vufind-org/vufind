@@ -85,10 +85,12 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         return isset($this->config[$function]) ? $this->config[$function] : false;
     }
@@ -100,7 +102,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public function getSolrRecord($id)
+    protected function getSolrRecord($id)
     {
         return $this->recordLoader->load($id);
     }
@@ -267,8 +269,11 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     public function hasHoldings($id)
     {
         $useHoldings = isset($this->config['settings']['useHoldings'])
-            ? $this->config['settings']['useHoldings'] : 'none';
-        return $useHoldings == 'none';
+            ? $this->config['settings']['useHoldings'] : '';
+
+        // "none" will be processed differently in the config depending
+        // on whether it's in or out of quotes; handle both cases.
+        return $useHoldings != 'none' && !empty($useHoldings);
     }
 
 

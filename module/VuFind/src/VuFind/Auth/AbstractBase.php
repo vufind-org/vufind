@@ -27,7 +27,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Exception\Auth as AuthException;
+use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
+use Zend\Log\LoggerInterface;
 
 /**
  * Abstract authentication base class
@@ -39,7 +40,8 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
+abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
+    \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     /**
      * Has the configuration been validated?
@@ -61,6 +63,58 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      * @var \VuFind\Db\Table\PluginManager
      */
     protected $tableManager;
+
+    /**
+     * Translator
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator;
+
+    /**
+     * Logger (or false for none)
+     *
+     * @var LoggerInterface|bool
+     */
+    protected $logger = false;
+
+    /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug($msg);
+        }
+    }
+
+    /**
+     * Set a translator
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator
+     *
+     * @return TranslatorAwareInterface
+     */
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    {
+        $this->translator = $translator;
+    }
 
     /**
      * Get configuration (load automatically if not previously set).  Throw an
@@ -112,9 +166,30 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return User Object representing logged-in user.
      */
     abstract public function authenticate($request);
+
+    /**
+     * Validate the credentials in the provided request, but do not change the state
+     * of the current logged-in user. Return true for valid credentials, false
+     * otherwise.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * account credentials.
+     *
+     * @throws AuthException
+     * @return bool
+     */
+    public function validateCredentials($request)
+    {
+        try {
+            $user = $this->authenticate($request);
+        } catch (AuthException $e) {
+            return false;
+        }
+        return isset($user) && $user instanceof User;
+    }
 
     /**
      * Has the user's login expired?
@@ -134,7 +209,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      * new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function create($request)
@@ -151,7 +226,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      * new account details.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User New user row.
+     * @return User New user row.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function updatePassword($request)
@@ -213,6 +288,37 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     }
 
     /**
+     * Does this authentication method support password recovery
+     *
+     * @return bool
+     */
+    public function supportsPasswordRecovery()
+    {
+        // By default, password recovery is not supported.
+        return false;
+    }
+
+    /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @return array
+     */
+    public function getPasswordPolicy()
+    {
+        $policy = array();
+        $config = $this->getConfig();
+        if (isset($config->Authentication->minimum_password_length)) {
+            $policy['minLength']
+                = $config->Authentication->minimum_password_length;
+        }
+        if (isset($config->Authentication->maximum_password_length)) {
+            $policy['maxLength']
+                = $config->Authentication->maximum_password_length;
+        }
+        return $policy;
+    }
+
+    /**
      * Get access to the user table.
      *
      * @return \VuFind\Db\Table\User
@@ -246,5 +352,65 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
     {
         $this->tableManager = $manager;
+    }
+
+    /**
+     * Verify that a password fulfills the password policy. Throws exception if
+     * the password is invalid.
+     *
+     * @param string $password Password to verify
+     *
+     * @return void
+     * @throws AuthException
+     */
+    protected function validatePasswordAgainstPolicy($password)
+    {
+        $policy = $this->getPasswordPolicy();
+        if (isset($policy['minLength'])
+            && strlen($password) < $policy['minLength']
+        ) {
+            throw new AuthException(
+                $this->translate(
+                    'password_minimum_length',
+                    array('%%minlength%%' => $policy['minLength'])
+                )
+            );
+        }
+        if (isset($policy['maxLength'])
+            && strlen($password) > $policy['maxLength']
+        ) {
+            throw new AuthException(
+                $this->translate(
+                    'password_maximum_length',
+                    array('%%maxlength%%' => $policy['maxLength'])
+                )
+            );
+        }
+    }
+
+    /**
+     * Translate a string
+     *
+     * @param string $str    String to translate
+     * @param array  $tokens Tokens to inject into the translated string
+     *
+     * @return string
+     * @todo Use TranslatorAwareTrait instead when it's implemented
+     */
+    public function translate($str, $tokens = array())
+    {
+        $msg = $this->translator->translate($str);
+
+        // Do we need to perform substitutions?
+        if (!empty($tokens)) {
+            $in = $out = array();
+            foreach ($tokens as $key => $value) {
+                $in[] = $key;
+                $out[] = $value;
+            }
+            $msg = str_replace($in, $out, $msg);
+        }
+
+        return $msg;
     }
 }

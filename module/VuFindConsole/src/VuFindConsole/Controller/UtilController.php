@@ -26,9 +26,10 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFindConsole\Controller;
-use File_MARC, File_MARCXML, VuFind\Sitemap, Zend\Console\Console;
+use File_MARC, File_MARCXML, VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
+use Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -468,6 +469,9 @@ class UtilController extends AbstractBase
     {
         $argv = $this->consoleOpts->getRemainingArgs();
         $compiler = new \VuFindTheme\LessCompiler(true);
+        $cacheManager = $this->getServiceLocator()->get('VuFind\CacheManager');
+        $cacheDir = $cacheManager->getCacheDir() . 'less/';
+        $compiler->setTempPath($cacheDir);
         $compiler->compile($argv);
         return $this->getSuccessResponse();
     }

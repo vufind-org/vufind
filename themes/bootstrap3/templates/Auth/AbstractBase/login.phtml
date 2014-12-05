@@ -9,7 +9,7 @@
         <? if ($account->supportsCreation()): ?>
           <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
         <? endif; ?>
-        <input class="btn btn-primary" type="submit" name="processLogin" value="Login">
+        <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
         <? if ($account->supportsRecovery()): ?>
           <br/>
           <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>

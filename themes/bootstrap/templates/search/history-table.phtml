@@ -10,6 +10,7 @@
     <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
       <td><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime("U", $info->getStartTime()))?></td>
       <td>
+        <?=$this->historylabel($info->getParams()->getSearchClassId())?>
         <a href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>"><?
           $desc = $info->getParams()->getDisplayQuery();
           echo empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc);

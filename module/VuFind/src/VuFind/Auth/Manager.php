@@ -189,7 +189,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function supportsRecovery($authMethod=null)
     {
-        if ($this->getAuth($authMethod)->supportsPasswordChange()) {
+        if ($this->getAuth($authMethod)->supportsPasswordRecovery()) {
             return isset($this->config->Authentication->recover_password)
                 && $this->config->Authentication->recover_password;
         }
@@ -211,6 +211,19 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
                 && $this->config->Authentication->change_password;
         }
         return false;
+    }
+
+    /**
+     * Password policy for a new password (e.g. minLength, maxLength)
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     * the one in config file
+     *
+     * @return array
+     */
+    public function getPasswordPolicy($authMethod=null)
+    {
+        return $this->getAuth($authMethod)->getPasswordPolicy();
     }
 
     /**
@@ -511,5 +524,20 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
                 )
             );
         }
+    }
+    /**
+     * Validate the credentials in the provided request, but do not change the state
+     * of the current logged-in user. Return true for valid credentials, false
+     * otherwise.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * account credentials.
+     *
+     * @throws AuthException
+     * @return bool
+     */
+    public function validateCredentials($request)
+    {
+        return $this->getAuth()->validateCredentials($request);
     }
 }
