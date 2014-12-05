@@ -115,7 +115,7 @@ class CAS_Tests_CookieJarTest extends PHPUnit_Framework_TestCase
         );
 
         // Add service cookies as if we just made are request to serviceUrl_1
-        // and recieved responseHeaders_1 as the header to the response.
+        // and received responseHeaders_1 as the header to the response.
         $this->object
             ->storeCookies($this->serviceUrl_1, $this->responseHeaders_1);
     }

@@ -303,7 +303,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
     }
 
     /**
-     * Ensures that teh RDN attributes are correctly set.
+     * Ensures that the RDN attributes are correctly set.
      *
      * @param  bool $overwrite True to overwrite the RDN attributes
      * @return void

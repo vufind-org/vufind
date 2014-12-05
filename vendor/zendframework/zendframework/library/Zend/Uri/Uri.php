@@ -509,7 +509,7 @@ class Uri implements UriInterface
 
 
     /**
-     * Convert the link to a relative link by substracting a base URI
+     * Convert the link to a relative link by subtracting a base URI
      *
      *  This is the opposite of resolving a relative link - i.e. creating a
      *  relative reference link from an original URI and a base URI.

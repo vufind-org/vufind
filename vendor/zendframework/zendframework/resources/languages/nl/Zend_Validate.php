@@ -88,13 +88,13 @@ return array(
 
     // Zend\Validator\EmailAddress
     "Invalid type given. String expected" => "Ongeldig type opgegeven, waarde moet een string zijn",
-    "The input is not a valid email address. Use the basic format local-part@hostname" => "De input is geen geldig e-mail adres in het basis formaat lokaal-gedeelte@hostname",
-    "'%hostname%' is not a valid hostname for the email address" => "'%hostname%' is geen geldige hostnaam voor het e-mail adres",
-    "'%hostname%' does not appear to have any valid MX or A records for the email address" => "'%hostname%' lijkt geen geldig MX of A record te hebben voor het e-mail adres",
-    "'%hostname%' is not in a routable network segment. The email address should not be resolved from public network" => "'%hostname%' bevindt zich niet in een routeerbaar netwerk segment. Het e-mail adres zou niet naar mogen worden verwezen vanaf een publiek netwerk",
+    "The input is not a valid email address. Use the basic format local-part@hostname" => "De input is geen geldig e-mail address in het basis formaat lokaal-gedeelte@hostname",
+    "'%hostname%' is not a valid hostname for the email address" => "'%hostname%' is geen geldige hostnaam voor het e-mail address",
+    "'%hostname%' does not appear to have any valid MX or A records for the email address" => "'%hostname%' lijkt geen geldig MX of A record te hebben voor het e-mail address",
+    "'%hostname%' is not in a routable network segment. The email address should not be resolved from public network" => "'%hostname%' bevindt zich niet in een routeerbaar netwerk segment. Het e-mail address zou niet naar mogen worden verwezen vanaf een publiek netwerk",
     "'%localPart%' can not be matched against dot-atom format" => "'%localPart%' kan niet worden gematched met het dot-atom formaat",
     "'%localPart%' can not be matched against quoted-string format" => "'%localPart%' kan niet worden gematched met het quoted-string formaat",
-    "'%localPart%' is not a valid local part for the email address" => "'%localPart%' is geen geldig lokaal gedeelte voor het e-mail adres",
+    "'%localPart%' is not a valid local part for the email address" => "'%localPart%' is geen geldig lokaal gedeelte voor het e-mail address",
     "The input exceeds the allowed length" => "De input overschrijdt de toegestane lengte",
 
     // Zend\Validator\Explode
@@ -216,7 +216,7 @@ return array(
     "The input appears to be a DNS hostname but cannot match against hostname schema for TLD '%tld%'" => "De input lijkt een DNS hostnaam te zijn, maar past niet in het hostnaam-schema voor TLD '%tld%'",
     "The input does not appear to be a valid local network name" => "De input lijkt geen geldige lokale netwerknaam te zijn",
     "The input does not appear to be a valid URI hostname" => "De input blijkt geen geldige URI hostnaam te bevatten",
-    "The input appears to be an IP address, but IP addresses are not allowed" => "De input lijkt een IP adres te zijn, maar IP adressen zijn niet toegestaan",
+    "The input appears to be an IP address, but IP addresses are not allowed" => "De input lijkt een IP address te zijn, maar IP adressen zijn niet toegestaan",
     "The input appears to be a local network name but local network names are not allowed" => "De input lijkt een lokale netwerknaam te zijn, welke niet zijn toegestaan",
     "The input appears to be a DNS hostname but cannot extract TLD part" => "De input lijkt een DNS hostnaam te zijn, maar kan niet het TLD gedeelte bepalen",
     "The input appears to be a DNS hostname but cannot match TLD against known list" => "De input lijkt een DNS hostnaam te zijn, maar het TLD bestaat niet in de lijst met bekende TLD's",
@@ -236,7 +236,7 @@ return array(
 
     // Zend\Validator\Ip
     "Invalid type given. String expected" => "Ongeldig type gegeven, waarde moet een string zijn",
-    "The input does not appear to be a valid IP address" => "De input lijkt geen geldig IP adres te zijn",
+    "The input does not appear to be a valid IP address" => "De input lijkt geen geldig IP address te zijn",
 
     // Zend\Validator\IsInstanceOf
     "The input is not an instance of '%className%'" => "De input is geen instantie van '%className%'",

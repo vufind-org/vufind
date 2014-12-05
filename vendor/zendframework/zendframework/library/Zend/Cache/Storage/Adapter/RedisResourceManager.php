@@ -154,7 +154,7 @@ class RedisResourceManager
             //with connect function:
             //1) pinging server
             //2) checking undocummented property socket which is available only
-            //after successfull connect
+            //after successful connect
             $resource = array_merge($defaults, array(
                     'resource' => $resource,
                     'initialized' => isset($resource->socket),

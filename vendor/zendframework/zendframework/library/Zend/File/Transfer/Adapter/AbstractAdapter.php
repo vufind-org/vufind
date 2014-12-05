@@ -1341,7 +1341,7 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
             }
 
             if (empty($this->tmpDir)) {
-                // Attemp to detect by creating a temporary file
+                // Attempt to detect by creating a temporary file
                 $tempFile = tempnam(md5(uniqid(rand(), true)), '');
                 if ($tempFile) {
                     $this->tmpDir = realpath(dirname($tempFile));

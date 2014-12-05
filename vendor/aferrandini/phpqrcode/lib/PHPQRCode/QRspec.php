@@ -352,7 +352,7 @@ class QRspec {
     }
 
     // Format information --------------------------------------------------
-    // See calcFormatInfo in tests/test_qrspec.c (orginal qrencode c lib)
+    // See calcFormatInfo in tests/test_qrspec.c (original qrencode c lib)
 
     public static $formatInfo = array(
         array(0x77c4, 0x72f3, 0x7daa, 0x789d, 0x662f, 0x6318, 0x6c41, 0x6976),

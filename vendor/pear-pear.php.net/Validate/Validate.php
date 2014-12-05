@@ -648,7 +648,7 @@ class Validate
      *         However, as '-' is not used in any known TLD, it is invalid
      * NOTE 2: As double shlashes // are allowed in the path part, only full URIs
      *         including an authority can be valid, no relative URIs
-     *         the // are mandatory (optionally preceeded by the 'sheme:' )
+     *         the // are mandatory (optionally preceded by the 'sheme:' )
      * NOTE 3: the full complience to rfc2396 is not achieved by default
      *         the characters ';/?:@$,' will not be accepted in the query part
      *         if not urlencoded, refer to the option "strict'"
@@ -869,7 +869,7 @@ class Validate
                 }
             }
         }
-        // there is remaing data, we don't want it
+        // there is remaining data, we don't want it
         if (strlen($date) && (strtolower($format) != 'rfc822_compliant')) {
             return false;
         }

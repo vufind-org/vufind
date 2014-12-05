@@ -41,7 +41,7 @@
 - [5438: fix typo](https://github.com/zendframework/zf2/pull/5438)
 - [5444: fix indentation](https://github.com/zendframework/zf2/pull/5444)
 - [5445: Fixing issue with ModuleAutoloader on Windows](https://github.com/zendframework/zf2/pull/5445)
-- [5447: Di circular dependancies](https://github.com/zendframework/zf2/pull/5447)
+- [5447: Di circular dependencies](https://github.com/zendframework/zf2/pull/5447)
 - [5451: Remove duplicate: zend-stdlib is already required](https://github.com/zendframework/zf2/pull/5451)
 - [5452: update master's resources/ja Zend&#95;Validate.php message for 2.2](https://github.com/zendframework/zf2/pull/5452)
 - [5453: add resources/languages/ja/Zend&#95;Captcha.php with Japanese translated](https://github.com/zendframework/zf2/pull/5453)
@@ -1154,7 +1154,7 @@ translator instance into your validators.
   (https://github.com/zendframework/zf2/issues/2439)
 - 2486: The Upload validator might be broken
   (https://github.com/zendframework/zf2/issues/2486)
-- 2506: Throwing exception in template (and/or layout) doesnt fails gracefully
+- 2506: Throwing exception in template (and/or layout) doesn't fails gracefully
   (https://github.com/zendframework/zf2/issues/2506)
 - 2524: Throws exception when trying to generate bcrypt
   (https://github.com/zendframework/zf2/issues/2524)
@@ -1922,7 +1922,7 @@ class.
   (https://github.com/zendframework/zf2/issues/3204)
 - 3207: dead code clean up.
   (https://github.com/zendframework/zf2/issues/3207)
-- 3208: Zend\Mime\Part: Added EOL paramter to getEncodedStream()
+- 3208: Zend\Mime\Part: Added EOL parameter to getEncodedStream()
   (https://github.com/zendframework/zf2/issues/3208)
 - 3213: [#3173] Incorrect creating instance
   Zend/Code/Generator/ClassGenerator.php by fromArray
@@ -1933,7 +1933,7 @@ class.
   writing the... (https://github.com/zendframework/zf2/issues/3217)
 - 3220: [2.0] Log Writer support for MongoClient driver class
   (https://github.com/zendframework/zf2/issues/3220)
-- 3226: Licence is not accessable via web
+- 3226: Licence is not accessible via web
   (https://github.com/zendframework/zf2/issues/3226)
 - 3229: fixed bug in DefinitionList::hasMethod()
   (https://github.com/zendframework/zf2/issues/3229)
@@ -2092,7 +2092,7 @@ class.
   (https://github.com/zendframework/zf2/issues/2426)
 - 2432: Prevent space before end of tag with HTML5 doctype
   (https://github.com/zendframework/zf2/issues/2432)
-- 2433: fix for setJsonpCallback not called when recieved JsonModel + test
+- 2433: fix for setJsonpCallback not called when received JsonModel + test
   (https://github.com/zendframework/zf2/issues/2433)
 - 2434: added phpdoc in Zend\Db
   (https://github.com/zendframework/zf2/issues/2434)
@@ -2136,7 +2136,7 @@ class.
   not shown (https://github.com/zendframework/zf2/issues/2641)
 - 2642: Fix Travis build for CS issue
   (https://github.com/zendframework/zf2/issues/2642)
-- 2643: fix for setJsonpCallback not called when recieved JsonModel + test
+- 2643: fix for setJsonpCallback not called when received JsonModel + test
   (https://github.com/zendframework/zf2/issues/2643)
 - 2644: Add fluidity to the prepare() function for a form
   (https://github.com/zendframework/zf2/issues/2644)

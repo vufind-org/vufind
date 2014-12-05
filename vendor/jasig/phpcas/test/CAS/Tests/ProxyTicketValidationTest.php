@@ -231,7 +231,7 @@ class CAS_Tests_ProxyTicketValidationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test that our list of proxies is not availible on ticket failure.
+     * Test that our list of proxies is not available on ticket failure.
      *
      * @return void
      */

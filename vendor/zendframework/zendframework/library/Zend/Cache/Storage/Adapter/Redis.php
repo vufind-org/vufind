@@ -135,7 +135,7 @@ class Redis extends AbstractAdapter implements
      * Internal method to get an item.
      *
      * @param string  &$normalizedKey Key where to store data
-     * @param bool &$success       If the operation was successfull
+     * @param bool &$success       If the operation was successful
      * @param mixed   &$casToken      Token
      * @return mixed Data on success, false on key not found
      * @throws Exception\RuntimeException

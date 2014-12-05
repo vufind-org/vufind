@@ -161,7 +161,7 @@ class Row
             $colNum += $colSpan;
         }
 
-        // If the row doesnt contain enough columns to fill the entire row, fill
+        // If the row doesn't contain enough columns to fill the entire row, fill
         // it with an empty column
         if ($colNum < count($columnWidths)) {
             $remainingWidth = (count($columnWidths) - $colNum - 1) +

@@ -465,7 +465,7 @@ class phpCAS
 
                 $indent_str .= '|    ';
             }
-            // allow for multiline output with proper identing. Usefull for
+            // allow for multiline output with proper identing. Useful for
             // dumping cas answers etc.
             $str2 = str_replace("\n", "\n" . self::$_PHPCAS_DEBUG['unique_id'] . ' ' . $indent_str, $str);
             error_log(self::$_PHPCAS_DEBUG['unique_id'] . ' ' . $indent_str . $str2 . "\n", 3, self::$_PHPCAS_DEBUG['filename']);
@@ -1723,7 +1723,7 @@ class phpCAS
     }
 
     /**
-     * Checks of a proxy client aready exists
+     * Checks of a proxy client already exists
      *
      * @throws CAS_OutOfSequenceBeforeProxyException
      *

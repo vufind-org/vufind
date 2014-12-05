@@ -217,7 +217,7 @@ class CAS_CookieJar
                     $cookie['expires'] = time() + $cookie['max-age'];
                 } else {
                     // If max-age is zero, then the cookie should be removed
-                    // imediately so set an expiry before now.
+                    // immediately so set an expiry before now.
                     $cookie['expires'] = time() - 1;
                 }
                 break;

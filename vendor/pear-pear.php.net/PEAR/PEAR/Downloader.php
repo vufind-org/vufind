@@ -153,7 +153,7 @@ class PEAR_Downloader extends PEAR_Common
         $this->_preferredState = $this->config->get('preferred_state');
         $this->ui = &$ui;
         if (!$this->_preferredState) {
-            // don't inadvertantly use a non-set preferred_state
+            // don't inadvertently use a non-set preferred_state
             $this->_preferredState = null;
         }
 
@@ -767,7 +767,7 @@ class PEAR_Downloader extends PEAR_Common
         $this->config->set($key, $value, $layer, $channel);
         $this->_preferredState = $this->config->get('preferred_state', null, $channel);
         if (!$this->_preferredState) {
-            // don't inadvertantly use a non-set preferred_state
+            // don't inadvertently use a non-set preferred_state
             $this->_preferredState = null;
         }
     }

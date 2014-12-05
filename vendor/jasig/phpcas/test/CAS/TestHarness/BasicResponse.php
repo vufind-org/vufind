@@ -175,7 +175,7 @@ class CAS_TestHarness_BasicResponse implements CAS_TestHarness_ResponseInterface
      * Ensure that the request has a given cookie
      *
      * @param string $name  name of cookie
-     * @param string $value If null, the presense of the cookie will be checked,
+     * @param string $value If null, the presence of the cookie will be checked,
      *  but not its value.
      *
      * @return void

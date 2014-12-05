@@ -183,7 +183,7 @@ class sip2
     
     function msgSCStatus($status = 0, $width = 80, $version = 2) 
     {
-        /* selfcheck status message, this should be sent immediatly after login  - untested */
+        /* selfcheck status message, this should be sent immediately after login  - untested */
         /* status codes, from the spec:
             * 0 SC unit is OK
             * 1 SC printer is out of paper
@@ -744,7 +744,7 @@ class sip2
     /* Core local utility functions */	
     function _datestamp($timestamp = '') 
     {
-        /* generate a SIP2 compatable datestamp */
+        /* generate a SIP2 compatible datestamp */
         /* From the spec:
         * YYYYMMDDZZZZHHMMSS. 
         * All dates and times are expressed according to the ANSI standard X3.30 for date and X3.43 for time. 
@@ -771,7 +771,7 @@ class sip2
         foreach ($result['Raw'] as $item) {
             $field = substr($item,0,2);
             $value = substr($item,2);
-            /* SD returns some odd values on ocassion, Unable to locate the purpose in spec, so I strip from 
+            /* SD returns some odd values on occasion, Unable to locate the purpose in spec, so I strip from 
             * the parsed array. Orig values will remain in ['raw'] element
             */
             $clean = trim($value, "\x00..\x1F");
@@ -821,7 +821,7 @@ class sip2
     
     function _check_crc($message) 
     {
-        /* test the recieved message's CRC by generating our own CRC from the message */
+        /* test the received message's CRC by generating our own CRC from the message */
         $test = preg_split('/(.{4})$/',trim($message),2,PREG_SPLIT_DELIM_CAPTURE);
 
         if ($this->_crc($test[0]) == $test[1]) {
@@ -851,7 +851,7 @@ class sip2
     
     function _addVarOption($field, $value, $optional = false) 
     {
-        /* adds a varaiable length option to the message, and also prevents adding addtional fixed fields */
+        /* adds a varaiable length option to the message, and also prevents adding additional fixed fields */
         if ($optional == true && $value == '') {
             /* skipped */
             $this->_debugmsg( "SIP2: Skipping optional field {$field}");

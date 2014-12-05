@@ -52,9 +52,9 @@ $auth = phpCAS::checkAuthentication();
   <body>
 <?php
 if ($auth) {
-    // for this test, simply print that the authentication was successfull
+    // for this test, simply print that the authentication was successful
         ?>
-    <h1>Successfull Authentication!</h1>
+    <h1>Successful Authentication!</h1>
     <?php include 'script_info.php' ?>
     <p>the user's login is <b><?php echo phpCAS::getUser(); ?></b>.</p>
     <p><a href="?logout=">Logout</a></p><?php

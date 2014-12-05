@@ -169,7 +169,7 @@ return array(
     "File '%value%' exceeds the defined form size" => "Filen '%value%' överskrider den definerade formulär-storleken",
     "File '%value%' was only partially uploaded" => "Filen '%value%' blev enbart delvis uppladdad",
     "File '%value%' was not uploaded" => "Filen '%value%' laddades inte upp",
-    "No temporary directory was found for file '%value%'" => "Ingen temporär mapp hittades för filen '%value%'",
+    "No temporary directory was found for file '%value%'" => "Ingen temporär map hittades för filen '%value%'",
     "File '%value%' can't be written" => "Filen '%value%' kan inte skrivas",
     "A PHP extension returned an error while uploading the file '%value%'" => "Ett PHP-tillägg returnerade ett fel när filen '%value%' laddades upp",
     "File '%value%' was illegally uploaded. This could be a possible attack" => "Filen '%value%' laddades upp olagligt. Det här kan vara en möjlig attack",
@@ -181,7 +181,7 @@ return array(
     "File exceeds the defined form size" => "Filen överskrider den definerade formulär-storleken",
     "File was only partially uploaded" => "Filen blev enbart delvis uppladdad",
     "File was not uploaded" => "Filen laddades inte upp",
-    "No temporary directory was found for file" => "Ingen temporär mapp hittades för filen",
+    "No temporary directory was found for file" => "Ingen temporär map hittades för filen",
     "File can't be written" => "Filen kan inte skrivas",
     "A PHP extension returned an error while uploading the file" => "Ett PHP-tillägg returnerade ett fel när filen laddades upp",
     "File was illegally uploaded. This could be a possible attack" => "Filen laddades upp olagligt. Det här kan vara en möjlig attack",
@@ -209,7 +209,7 @@ return array(
     "The input appears to be a DNS hostname but cannot match against hostname schema for TLD '%tld%'" => "Indatan tycks vara ett DNS-värdnamn men kan inte matcha mot värdnamnsschemat för TLDn '%tld%'",
     "The input does not appear to be a valid local network name" => "Indatan tycks inte vara ett giltigt lokalt nätverksnamn",
     "The input does not appear to be a valid URI hostname" => "'%value%' tycks inte vara ett giltigt URI-värdnamn",
-    "The input appears to be an IP address, but IP addresses are not allowed" => "Indatan tycks vara en IP-adress, men IP-adresses är inte tillåtna",
+    "The input appears to be an IP address, but IP addresses are not allowed" => "Indatan tycks vara en IP-address, men IP-adresses är inte tillåtna",
     "The input appears to be a local network name but local network names are not allowed" => "Indatan tycks vara ett lokalt nätverksnamn men lokala nätverksnamn är inte tillåtna",
     "'%value%' appears to be a DNS hostname but cannot extract TLD part" => "Indatan tycks vara ett DNS-värdnamn men kan inte extrahera TLD-delen",
     "'%value%' appears to be a DNS hostname but cannot match TLD against known list" => "Indatan tycks vara ett DNS-värdnamn men kan inte matcha TLDn mot listan med kända",
@@ -229,7 +229,7 @@ return array(
 
     // Zend_Validator_Ip
     "Invalid type given. String expected" => "Ogiltig typ given. Sträng förväntad",
-    "The input does not appear to be a valid IP address" => "Indatan tycks inte vara en giltig IP-adress",
+    "The input does not appear to be a valid IP address" => "Indatan tycks inte vara en giltig IP-address",
 
     // Zend_Validator_Isbn
     "Invalid type given. String or integer expected" => "Ogiltig typ given. Sträng eller heltal förväntat",

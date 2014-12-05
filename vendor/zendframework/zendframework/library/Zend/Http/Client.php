@@ -1298,9 +1298,9 @@ class Client implements Stdlib\DispatchableInterface
     /**
      * Convert an array of parameters into a flat array of (key, value) pairs
      *
-     * Will flatten a potentially multi-dimentional array of parameters (such
+     * Will flatten a potentially multi-dimensional array of parameters (such
      * as POST parameters) into a flat array of (key, value) paris. In case
-     * of multi-dimentional arrays, square brackets ([]) will be added to the
+     * of multi-dimensional arrays, square brackets ([]) will be added to the
      * key to indicate an array.
      *
      * @since 1.9

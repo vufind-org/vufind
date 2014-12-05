@@ -26,7 +26,7 @@ class Decode
      */
     public static function splitMime($body, $boundary)
     {
-        // TODO: we're ignoring \r for now - is this function fast enough and is it safe to assume noone needs \r?
+        // TODO: we're ignoring \r for now - is this function fast enough and is it safe to assume no one needs \r?
         $body = str_replace("\r", '', $body);
 
         $start = 0;
@@ -108,7 +108,7 @@ class Decode
         $firstline = strtok($message, "\n");
         if (!preg_match('%^[^\s]+[^:]*:%', $firstline)) {
             $headers = array();
-            // TODO: we're ignoring \r for now - is this function fast enough and is it safe to assume noone needs \r?
+            // TODO: we're ignoring \r for now - is this function fast enough and is it safe to assume no one needs \r?
             $body = str_replace(array("\r", "\n"), array('', $EOL), $message);
             return;
         }

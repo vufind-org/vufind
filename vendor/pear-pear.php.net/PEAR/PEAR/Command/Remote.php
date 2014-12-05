@@ -590,7 +590,7 @@ parameter.
 
         // eliminate error messages for preferred_state-related errors
         /* TODO: Should be an option, but until now download does respect
-           prefered state */
+           preferred state */
         /* $options['ignorepreferred_state'] = 1; */
         // eliminate error messages for preferred_state-related errors
 

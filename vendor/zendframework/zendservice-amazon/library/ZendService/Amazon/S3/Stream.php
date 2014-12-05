@@ -175,7 +175,7 @@ class Stream
         $range_start = $this->_position;
         $range_end = $this->_position+$count;
 
-        // Only fetch more data from S3 if we haven't fetched any data yet (postion=0)
+        // Only fetch more data from S3 if we haven't fetched any data yet (position=0)
         // OR, the range end position is greater than the size of the current object
         // buffer AND if the range end position is less than or equal to the object's
         // size returned by S3

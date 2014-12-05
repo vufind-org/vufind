@@ -59,14 +59,14 @@ phpCAS::forceAuthentication();
 // at this step, the user has been authenticated by the CAS server
 // and the user's login name can be read with phpCAS::getUser().
 
-// for this test, simply print that the authentication was successfull
+// for this test, simply print that the authentication was successful
 ?>
 <html>
   <head>
     <title>phpCAS simple client with HTML output customization</title>
   </head>
   <body>
-    <h1>Successfull Authentication!</h1>
+    <h1>Successful Authentication!</h1>
     <?php require 'script_info.php' ?>
     <p>the user's login is <b><?php echo phpCAS::getUser(); ?></b>.</p>
     <p>phpCAS version is <b><?php echo phpCAS::getVersion(); ?></b>.</p>

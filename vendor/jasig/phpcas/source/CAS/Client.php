@@ -1488,7 +1488,7 @@ class CAS_Client
     /**
      * This method tells if the current session is authenticated.
      *
-     * @return true if authenticated based soley on $_SESSION variable
+     * @return true if authenticated based solely on $_SESSION variable
      */
     public function isSessionAuthenticated ()
     {
@@ -1885,7 +1885,7 @@ class CAS_Client
     /**
      * Set the CA certificate of the CAS server.
      *
-     * @param string $cert        the PEM certificate file name of the CA that emited
+     * @param string $cert        the PEM certificate file name of the CA that emitted
      * the cert of the server
      * @param bool   $validate_cn valiate CN of the CAS server certificate
      *
@@ -1924,7 +1924,7 @@ class CAS_Client
      * @param string &$tree_response reference to the response of the CAS
      * server, as a DOM XML tree.
      *
-     * @return bool true when successfull and issue a CAS_AuthenticationException
+     * @return bool true when successful and issue a CAS_AuthenticationException
      * and false on an error
      */
     public function validateCAS10(&$validate_url,&$text_response,&$tree_response)
@@ -1998,7 +1998,7 @@ class CAS_Client
      * @param string &$tree_response reference to the response of the CAS
      * server, as a DOM XML tree.
      *
-     * @return bool true when successfull and issue a CAS_AuthenticationException
+     * @return bool true when successful and issue a CAS_AuthenticationException
      * and false on an error
      */
     public function validateSA(&$validate_url,&$text_response,&$tree_response)
@@ -2091,7 +2091,7 @@ class CAS_Client
      *
      * @param string $text_response the SAML payload.
      *
-     * @return bool true when successfull and false if no attributes a found
+     * @return bool true when successful and false if no attributes a found
      */
     private function _setSessionAttributes($text_response)
     {
@@ -2342,7 +2342,7 @@ class CAS_Client
                 echo '<p>Storing PGT `'.$pgt.'\' (id=`'.$pgt_iou.'\').</p>';
                 $this->_storePGT($pgt, $pgt_iou);
                 $this->printHTMLFooter();
-                phpCAS::traceExit("Successfull Callback");
+                phpCAS::traceExit("Successful Callback");
             } else {
                 phpCAS::error('PGT format invalid' . $_GET['pgtId']);
                 phpCAS::traceExit('PGT format invalid' . $_GET['pgtId']);
@@ -2531,7 +2531,7 @@ class CAS_Client
     * @param string $tree_response the response of the CAS server, as a DOM XML
     * tree; result of CAS_Client::validateCAS10() or CAS_Client::validateCAS20().
     *
-    * @return bool true when successfull and issue a CAS_AuthenticationException
+    * @return bool true when successful and issue a CAS_AuthenticationException
     * and false on an error
     */
     private function _validatePGT(&$validate_url,$text_response,$tree_response)
@@ -2539,7 +2539,7 @@ class CAS_Client
         phpCAS::traceBegin();
         if ( $tree_response->getElementsByTagName("proxyGrantingTicket")->length == 0) {
             phpCAS::trace('<proxyGrantingTicket> not found');
-            // authentication succeded, but no PGT Iou was transmitted
+            // authentication succeeded, but no PGT Iou was transmitted
             throw new CAS_AuthenticationException(
                 $this, 'Ticket validated but no PGT Iou transmitted',
                 $validate_url, false/*$no_response*/, false/*$bad_response*/,
@@ -2655,7 +2655,7 @@ class CAS_Client
             if ( $root->getElementsByTagName("proxySuccess")->length != 0) {
                 $proxy_success_list = $root->getElementsByTagName("proxySuccess");
 
-                // authentication succeded, look for a proxyTicket tag
+                // authentication succeeded, look for a proxyTicket tag
                 if ( $proxy_success_list->item(0)->getElementsByTagName("proxyTicket")->length != 0) {
                     $err_code = PHPCAS_SERVICE_OK;
                     $err_msg = '';
@@ -2708,7 +2708,7 @@ class CAS_Client
      */
 
     /**
-     * This method is used to acces a remote URL.
+     * This method is used to access a remote URL.
      *
      * @param string $url      the URL to access.
      * @param string &$headers an array containing the HTTP header lines of the
@@ -3033,7 +3033,7 @@ class CAS_Client
     }
 
     /**
-     * Set the Proxy array, probably from persistant storage.
+     * Set the Proxy array, probably from persistent storage.
      *
      * @param array $proxies An array of proxies
      *
@@ -3088,11 +3088,11 @@ class CAS_Client
      * This method is used to validate a cas 2.0 ST or PT; halt on failure
      * Used for all CAS 2.0 validations
      *
-     * @param string &$validate_url  the url of the reponse
+     * @param string &$validate_url  the url of the response
      * @param string &$text_response the text of the repsones
      * @param string &$tree_response the domxml tree of the respones
      *
-     * @return bool true when successfull and issue a CAS_AuthenticationException
+     * @return bool true when successful and issue a CAS_AuthenticationException
      * and false on an error
      */
     public function validateCAS20(&$validate_url,&$text_response,&$tree_response)
@@ -3157,7 +3157,7 @@ class CAS_Client
             );
             $result = false;
         } else if ($tree_response->getElementsByTagName("authenticationSuccess")->length != 0) {
-            // authentication succeded, extract the user name
+            // authentication succeeded, extract the user name
             $success_elements = $tree_response
                 ->getElementsByTagName("authenticationSuccess");
             if ( $success_elements->item(0)->getElementsByTagName("user")->length == 0) {
@@ -3197,7 +3197,7 @@ class CAS_Client
                 }
             }
         } else if ( $tree_response->getElementsByTagName("authenticationFailure")->length != 0) {
-            // authentication succeded, extract the error code and message
+            // authentication succeeded, extract the error code and message
             $auth_fail_list = $tree_response
                 ->getElementsByTagName("authenticationFailure");
             throw new CAS_AuthenticationException(
@@ -3232,7 +3232,7 @@ class CAS_Client
      *
      * @param string $success_elements payload of the response
      *
-     * @return bool true when successfull, halt otherwise by calling
+     * @return bool true when successful, halt otherwise by calling
      * CAS_Client::_authError().
      */
     private function _readExtraAttributesCas20($success_elements)
@@ -3590,7 +3590,7 @@ class CAS_Client
                 $_SESSION = $old_session;
             } else {
                 phpCAS :: error(
-                    'Session should only be renamed after successfull authentication'
+                    'Session should only be renamed after successful authentication'
                 );
             }
         } else {
@@ -3609,7 +3609,7 @@ class CAS_Client
     * This method is used to print the HTML output when the user was not
     * authenticated.
     *
-    * @param string $failure      the failure that occured
+    * @param string $failure      the failure that occurred
     * @param string $cas_url      the URL the CAS server was asked for
     * @param bool   $no_response  the response from the CAS server (other
     * parameters are ignored if true)

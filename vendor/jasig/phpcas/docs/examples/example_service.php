@@ -82,7 +82,7 @@ print '<h1>I am a service that can be proxied.</h1>';
 // and the user's login name can be read with phpCAS::getUser().
 require 'script_info.php';
 
-// for this test, simply print that the authentication was successfull
+// for this test, simply print that the authentication was successful
 echo '<p>The user\'s login is <b>' . phpCAS::getUser() . '</b>.</p>';
 
 // increment the number of requests of the session and print it

@@ -195,7 +195,7 @@ if (strtolower($_SERVER['REQUEST_METHOD']) == 'post') {
             echo '</div>';
         }
     } catch (AmazonException $e) {
-        echo '<p style="color: red; font-weight: bold">An error occured, please try again later. (' .$e->getMessage(). ')</p>';
+        echo '<p style="color: red; font-weight: bold">An error occurred, please try again later. (' .$e->getMessage(). ')</p>';
     }
 }
 ?>

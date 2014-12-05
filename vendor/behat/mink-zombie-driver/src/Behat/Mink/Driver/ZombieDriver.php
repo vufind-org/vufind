@@ -693,7 +693,7 @@ JS;
         $this->triggerBrowserEvent('click', $xpath);
         // Resets the cached references as the click action can go to a different page
         // This ensures we don't have outdated refs on the new page if the same XPath is requested
-        // at the expense of loosing the know reference in case the click does not change page
+        // at the expense of losing the know reference in case the click does not change page
         $this->nativeRefs = array();
     }
 

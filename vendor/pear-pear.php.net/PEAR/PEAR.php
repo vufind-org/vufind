@@ -400,7 +400,7 @@ class PEAR
     }
 
     /**
-     * This method deletes all occurences of the specified element from
+     * This method deletes all occurrences of the specified element from
      * the expected error codes stack.
      *
      * @param  mixed $error_code error code that should be deleted

@@ -77,9 +77,9 @@ return array(
 
     // Zend\Validator\EmailAddress
     "The input is not a valid email address. Use the basic format local-part@hostname" => "Podana wartość nie jest poprawnym adresem email w formacie nazwa@serwer",
-    "'%hostname%' is not a valid hostname for the email address" => "Adres email zawiera niepoprawną nazwę serwera '%hostname%'",
+    "'%hostname%' is not a valid hostname for the email address" => "Address email zawiera niepoprawną nazwę serwera '%hostname%'",
     "'%hostname%' does not appear to have any valid MX or A records for the email address" => "Serwer '%hostname%' nie posiada poprawnie zdefiniowanego rekordu MX dla adresu email",
-    "'%hostname%' is not in a routable network segment. The email address should not be resolved from public network" => "'%hostname%' nie rutowalnym segmentem sieci. Adres email nie powinien być wykrywany z sieci publiczej",
+    "'%hostname%' is not in a routable network segment. The email address should not be resolved from public network" => "'%hostname%' nie rutowalnym segmentem sieci. Address email nie powinien być wykrywany z sieci publiczej",
     "'%localPart%' can not be matched against dot-atom format" => "'%localPart%' nie jest w formacie dot-atom",
     "'%localPart%' can not be matched against quoted-string format" => "'%localPart%' nie jest w formacie quoted-string",
     "'%localPart%' is not a valid local part for the email address" => "'%localPart%' nie jest poprawną nazwą.",

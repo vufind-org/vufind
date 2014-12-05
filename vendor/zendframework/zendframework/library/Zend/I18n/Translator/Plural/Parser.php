@@ -212,7 +212,7 @@ class Parser
     protected function getSymbol($id)
     {
         if (!isset($this->symbolTable[$id])) {
-            // Unkown symbol exception
+            // Unknown symbol exception
         }
 
         return clone $this->symbolTable[$id];

@@ -40,7 +40,7 @@ class Mbox extends Storage\Mbox implements FolderInterface
      *   - filename use \Zend\Mail\Storage\Mbox for a single file
      * Supported parameters are:
      *   - dirname rootdir of mbox structure
-     *   - folder intial selected folder, default is 'INBOX'
+     *   - folder initial selected folder, default is 'INBOX'
      *
      * @param  $params array mail reader specific parameters
      * @throws \Zend\Mail\Storage\Exception\InvalidArgumentException

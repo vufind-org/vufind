@@ -218,7 +218,7 @@ return array(
     "The input does not appear to be a valid URI hostname" => "L'input non sembra essere un hostname URI valido",
     "The input appears to be an IP address, but IP addresses are not allowed" => "L'input sembra essere un indirizzo IP, ma gli indirizzi IP non sono consentiti",
     "The input appears to be a local network name but local network names are not allowed" => "L'input sembra essere un nome di una rete locale e queste non sono consentite",
-    "The input appears to be a DNS hostname but cannot extract TLD part" => "L'input sembra essere un hostname DNS ma non è possibile estrarne il TLD",
+    "The input appears to be a DNS hostname but cannot extract TLD part" => "L'input sembra essere un hostname DNS ma non è possible estrarne il TLD",
     "The input appears to be a DNS hostname but cannot match TLD against known list" => "L'input sembra essere un hostname DNS ma il suo TLD è sconosciuto",
 
     // Zend\Validator\Iban

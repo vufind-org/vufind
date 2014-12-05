@@ -343,7 +343,7 @@ class Validate_ISPN
      * and can be used for as base for similar kind of calculations
      *
      * @param int $data number (only numeric chars will be considered)
-     * @param int $lenght required length of number string
+     * @param int $length required length of number string
      * @param int $modulo (optionsl) number
      * @param int $subtract (optional) numbier
      * @param array $weights holds the weight that will be used in calculations for the validation

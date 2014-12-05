@@ -7,7 +7,7 @@
 go to the utils/ dir and copy build-example.properties to a
 build.properties file and adjust the path for all needed binaries. You need
 at least php and doxygen for package creation. Git is needed as a developer with
-commit priviledges and upload right for the distribution package.
+commit privileges and upload right for the distribution package.
 
 2. Install necessary php packages:
 

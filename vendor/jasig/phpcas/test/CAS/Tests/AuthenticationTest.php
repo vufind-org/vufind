@@ -136,7 +136,7 @@ class CAS_Tests_AuthenticationTest extends PHPUnit_Framework_TestCase
             );
         } catch (CAS_GracefullTerminationException $e) {
             ob_end_clean();
-            // It would be great to test for the existance of headers here, but
+            // It would be great to test for the existence of headers here, but
             // the don't get set properly due to output before the test.
         }
     }

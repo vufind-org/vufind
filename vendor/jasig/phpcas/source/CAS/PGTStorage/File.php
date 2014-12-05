@@ -156,7 +156,7 @@ class CAS_PGTStorage_File extends CAS_PGTStorage_AbstractStorage
     function init()
     {
         phpCAS::traceBegin();
-        // if the storage has already been initialized, return immediatly
+        // if the storage has already been initialized, return immediately
         if ($this->isInitialized()) {
             return;
         }

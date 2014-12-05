@@ -484,7 +484,7 @@ class Factory
 
         if (!$factoryOrName instanceof Factory) {
             throw new Exception\DomainException(sprintf(
-                '%s expects a valid extention of Zend\Form\Factory; received "%s"',
+                '%s expects a valid extension of Zend\Form\Factory; received "%s"',
                 $method,
                 $factoryOrName
             ));

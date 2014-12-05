@@ -54,7 +54,7 @@ implements CAS_Request_MultiRequestInterface
      * Note, implementations will likely restrict requests to their own concrete
      * class hierarchy.
      *
-     * @param CAS_Request_RequestInterface $request reqest to add
+     * @param CAS_Request_RequestInterface $request request to add
      *
      * @return void
      * @throws CAS_OutOfSequenceException If called after the Request has been sent.

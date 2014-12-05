@@ -56,7 +56,7 @@ class Postgresql implements PlatformInterface
     }
 
     /**
-     * Get quote indentifier symbol
+     * Get quote identifier symbol
      *
      * @return string
      */

@@ -84,7 +84,7 @@ implements CAS_ProxiedService, CAS_ProxiedService_Testable
     {
         if (empty($this->_proxyTicket)) {
             throw new CAS_OutOfSequenceException(
-                'No proxy ticket yet. Call $this->initializeProxyTicket() to aquire the proxy ticket.'
+                'No proxy ticket yet. Call $this->initializeProxyTicket() to acquire the proxy ticket.'
             );
         }
 

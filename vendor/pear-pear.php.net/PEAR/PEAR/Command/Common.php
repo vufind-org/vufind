@@ -145,14 +145,14 @@ class PEAR_Command_Common extends PEAR
 
         reset($this->commands[$command]['options']);
         while (list($option, $info) = each($this->commands[$command]['options'])) {
-            $larg = $sarg = '';
+            $large = $sarg = '';
             if (isset($info['arg'])) {
                 if ($info['arg']{0} == '(') {
-                    $larg = '==';
+                    $large = '==';
                     $sarg = '::';
                     $arg = substr($info['arg'], 1, -1);
                 } else {
-                    $larg = '=';
+                    $large = '=';
                     $sarg = ':';
                     $arg = $info['arg'];
                 }
@@ -162,7 +162,7 @@ class PEAR_Command_Common extends PEAR
                 $short_args .= $info['shortopt'] . $sarg;
             }
 
-            $long_args[] = $option . $larg;
+            $long_args[] = $option . $large;
         }
     }
 

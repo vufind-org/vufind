@@ -46,11 +46,11 @@ phpCAS::forceAuthentication();
 // moreover, a PGT was retrieved from the CAS server that will
 // permit to gain accesses to new services.
 
-// for this test, simply print that the authentication was successfull
+// for this test, simply print that the authentication was successful
 ?>
 <html>
   <head>
-    <title>Exemple d'internationalisation de phpCAS</title>
+    <title>Example d'internationalisation de phpCAS</title>
   </head>
   <body>
     <h1>Authentification r&eacute;ussie&nbsp;!</h1>

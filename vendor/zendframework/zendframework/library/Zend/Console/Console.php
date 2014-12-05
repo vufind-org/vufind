@@ -190,7 +190,7 @@ abstract class Console
     }
 
     /**
-     * Pass-thru static call to current AdapterInterface instance.
+     * Pass-through static call to current AdapterInterface instance.
      *
      * @param $funcName
      * @param $arguments

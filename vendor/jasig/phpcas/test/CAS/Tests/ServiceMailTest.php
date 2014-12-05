@@ -139,7 +139,7 @@ class CAS_Tests_ServiceMailTest extends PHPUnit_Framework_TestCase
         );
         $response->matchQueryParameters(
             array(
-                'targetService' => 'imap://mail.example.edu/path/that/doesnt/exist',
+                'targetService' => 'imap://mail.example.edu/path/that/doesn't/exist',
                 'pgt' => 'PGT-clientapp-abc123',
             )
         );
@@ -236,7 +236,7 @@ class CAS_Tests_ServiceMailTest extends PHPUnit_Framework_TestCase
     public function testServiceMailPtError()
     {
         $stream = $this->object->serviceMail(
-            'mailbox_name', 'imap://mail.example.edu/path/that/doesnt/exist',
+            'mailbox_name', 'imap://mail.example.edu/path/that/doesn't/exist',
             OP_READONLY, $err_code, $err_msg, $pt
         );
         $this->assertFalse(
@@ -308,7 +308,7 @@ class CAS_Tests_ServiceMailTest extends PHPUnit_Framework_TestCase
     {
         $service = $this->object->getProxiedService(PHPCAS_PROXIED_SERVICE_IMAP);
         $service->setServiceUrl(
-            'imap://mail.example.edu/path/that/doesnt/exist'
+            'imap://mail.example.edu/path/that/doesn't/exist'
         );
         $service->setMailbox('mailbox_name');
         $service->setOptions(OP_READONLY);
