@@ -216,29 +216,12 @@ function ajaxLogin(form) {
   Lightbox.ajax({
     url: path + '/AJAX/JSON?method=getSalt',
     dataType: 'json',
-    success: function(response) {
-      if (response.status == 'OK') {
-        var salt = response.data;
-
-        // get the user entered password
-        var password = form.password.value;
-
+    success: function(salt) {
+      if (salt.status == 'OK') {
+        var params = Lightbox.getFormData($(form));
         // base-64 encode the password (to allow support for Unicode)
         // and then encrypt the password with the salt
-        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
-
-        // hex encode the encrypted password
-        password = hexEncode(password);
-
-        var params = {password:password};
-
-        // get any other form values
-        for (var i = 0; i < form.length; i++) {
-          if (form.elements[i].name == 'password') {
-            continue;
-          }
-          params[form.elements[i].name] = form.elements[i].value;
-        }
+        params.password = hexEncode(rc4Encrypt(salt.data, btoa(unescape(encodeURIComponent(params.password)))));
 
         // login via ajax
         Lightbox.ajax({
@@ -246,27 +229,23 @@ function ajaxLogin(form) {
           url: path + '/AJAX/JSON?method=login',
           dataType: 'json',
           data: params,
-          success: function(response) {
-            if (response.status == 'OK') {
+          success: function(login) {
+            if (login.status == 'OK') {
               updatePageForLogin();
               // and we update the modal
               var params = deparam(Lightbox.lastURL);
               if (params['subaction'] == 'UserLogin') {
                 Lightbox.close();
               } else {
-                Lightbox.getByUrl(
-                  Lightbox.lastURL,
-                  Lightbox.lastPOST,
-                  Lightbox.changeContent
-                );
+                Lightbox.getByUrl(Lightbox.lastURL, Lightbox.lastPOST, Lightbox.changeContent);
               }
             } else {
-              Lightbox.displayError(response.data);
+              Lightbox.displayError(login.data);
             }
           }
         });
       } else {
-        Lightbox.displayError(response.data);
+        Lightbox.displayError(salt.data);
       }
     }
   });
