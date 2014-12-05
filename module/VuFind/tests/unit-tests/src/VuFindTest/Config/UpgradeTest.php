@@ -227,6 +227,42 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test permission upgrade
+     *
+     * @return void
+     */
+    public function testPermissionUpgrade()
+    {
+        $upgrader = $this->getUpgrader('permissions');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config.ini']['AdminAuth']));
+        $this->assertFalse(isset($results['Summon.ini']['Auth']));
+        $adminConfig = [
+            'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
+            'username' => ['username1', 'username2'],
+            'permission' => 'access.AdminModule'
+        ];
+        $this->assertEquals(
+            $adminConfig, $results['permissions.ini']['access.AdminModule']
+        );
+        $summonConfig = [
+            'role' => ['loggedin'],
+            'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
+            'boolean' => 'OR',
+            'permission' => 'access.SummonExtendedResults'
+        ];
+        $this->assertEquals(
+            $summonConfig,
+            $results['permissions.ini']['access.SummonExtendedResults']
+        );
+        $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
+        $this->assertEquals(
+            $eitConfig, $results['permissions.ini']['default.EITModule']
+        );
+    }
+
+    /**
      * Test Google-related warnings.
      *
      * @return void
