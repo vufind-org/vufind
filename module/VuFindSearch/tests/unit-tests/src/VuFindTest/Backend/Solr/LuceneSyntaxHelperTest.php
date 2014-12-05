@@ -97,7 +97,7 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
         $this->assertFalse(
             $lh->containsBooleans('something that has no operators in it')
         );
-        $this->assertFalse($lh->containsBooleans('this ANDD that'));
+        $this->assertFalse($lh->containsBooleans('this AND that'));
         $this->assertFalse($lh->containsBooleans('this NOR that'));
     }
 
