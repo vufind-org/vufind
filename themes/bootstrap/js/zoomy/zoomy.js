@@ -119,7 +119,7 @@
         }
         state.loading.show();
         state.img.attr('src', src);
-        // If we have a seperate thumbnail
+        // If we have a separate thumbnail
         if(thumb) {
           state.minimap.attr('src', thumb);
         } else {

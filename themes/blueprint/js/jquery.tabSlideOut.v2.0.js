@@ -9,7 +9,7 @@
     example:
     
         $('.slide-out-div').tabSlideOut({
-                tabHandle: '.handle',                         //class of the element that will be your tab -doesnt have to be an anchor
+                tabHandle: '.handle',                         //class of the element that will be your tab -doesn't have to be an anchor
                 pathToTabImage: 'images/contact_tab.gif',     //relative path to the image for the tab *required*
                 imageHeight: '133px',                         //height of tab image *required*
                 imageWidth: '44px',                           //width of tab image *required*    

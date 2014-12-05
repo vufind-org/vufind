@@ -79,7 +79,7 @@ function hexEncode(data){
 	return result.join('');
 }
 
-//Decodes Hex(base16) formated data
+//Decodes Hex(base16) formatted data
 function hexDecode(data){
 	var b16_digits = '0123456789abcdef';
 	var b16_map = new Array();
