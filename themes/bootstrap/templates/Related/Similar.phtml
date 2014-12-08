@@ -1,0 +1,23 @@
+<h4><?=$this->transEsc('Similar Items')?></h4>
+<? $similarRecords = $this->related->getResults(); ?>
+<? if (!empty($similarRecords)): ?>
+  <ul class="nav nav-list">
+    <? foreach ($similarRecords as $data): ?>
+      <li>
+        <a href="<?=$this->recordLink()->getUrl($data)?>">
+          <?=$this->escapeHtml($data->getTitle())?>
+          <span class="small">
+            <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
+              <?=$this->transEsc('by')?>: <?=$this->escapeHtml($author);?>
+            <? endif; ?>
+            <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
+              <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+            <? endif; ?>
+          </span>
+        </a>
+      </li>
+    <? endforeach; ?>
+  </ul>
+<? else: ?>
+  <p><?=$this->transEsc('Cannot find similar records')?></p>
+<? endif; ?>

@@ -1,0 +1,16 @@
+.inspector_container #side-nav { margin:auto 0 }
+.inspector_container #view { margin:auto 0 auto 1% }
+.inspector_container .grid-view { margin-left:1% }
+.item-list { height:600px }
+.nav>li.opener>a { display:none }
+#view.wide { width:100% }
+
+.page-grid,.page-link {
+  display:block;
+  margin:1em 0;
+  text-align:center;
+  width:100%;
+}
+.page-link.active { cursor:pointer }
+.page-link.loading { color:#059 }
+.page-link.selected { background:#DEF }

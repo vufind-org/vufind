@@ -1,0 +1,29 @@
+<div class="mapInfoWrapper">
+  <h4><?=$this->transEsc('map_results_label')?></h4>
+  <div class="mapInfoResults">
+    <? $i = 0; ?>
+    <? foreach($this->recordSet as $record): ?>
+    <? $i++; ?>
+      <div class="mapInfoResult <? if ($i % 2 == 0): ?>alt <? endif; ?>record<?=$i ?>">
+        <div class="mapInfoResultThumb">
+          <? if ($thumb = $this->record($record)->getThumbnail()): ?><img class="mapInfoResultThumbImg" src="<?=$this->escapeHtmlAttr($thumb) ?>"/><? endif; ?>
+        </div>
+
+        &bull; <a href="<?=$this->recordLink()->getUrl($record)?>"><?=$record->getTitle() ?></a>
+        <? if(strlen($record->getPrimaryAuthor()) > 0): ?>
+          <span class="small">
+            <?=$this->transEsc('by') ?> <a href="<?=$this->url('author-home')?>?author=<?=urlencode($record->getPrimaryAuthor())?>"><?=$this->escapeHtml($record->getPrimaryAuthor())?></a>
+          </span><br/>
+        <? endif; ?>
+
+      </div>
+      <div class="clearfix"></div>
+    <? if ($i == 5) break; ?>
+    <? endforeach; ?>
+  </div>
+  <? if ($this->recordCount > 5): ?>
+    <div class="mapSeeAllDiv">
+      <a href="<?=$this->url('search-results') ?><?=$this->results->getUrlQuery()->getParams() ?>"><?=$this->transEsc('see all') ?> <?=$this->escapeHtml($this->recordCount) ?>...</a>
+    </div>
+  <? endif; ?>
+</div>

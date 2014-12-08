@@ -1,0 +1,72 @@
+<div id="contact_form" class="modal hide fade text-left">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3 id="myModalLabel"><?=$this->transEsc("Send us your feedback!")?></h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal" method="post" action="<?=$this->url('feedback-email')?>">
+      <input type="hidden" id="formSuccess" value="<?=$this->transEsc("Form Submitted!")?>"/>
+      <input type="hidden" id="feedbackSuccess" value="<?=$this->transEsc("Thank you for your feedback.")?>"/>
+      <input type="hidden" id="feedbackFailure" value="<?=$this->transEsc("An error has occurred")?>"/>
+      <div class="control-group">
+        <label class="control-label" for="name"><?=$this->transEsc("feedback_name")?></label>
+        <div class="controls">
+          <input type="text" id="name"/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="email"><?=$this->transEsc("Email")?></label>
+        <div class="controls">
+          <input type="email" id="email"/>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="comments"><?=$this->transEsc("Comments")?></label>
+        <div class="controls">
+          <textarea id="comments"></textarea>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="controls">
+          <input type="submit" class="btn btn-primary" value="<?=$this->transEsc("Send")?>" />
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#contact_form form').unbind('submit').submit(function() {
+      // validate and process form here
+      var name = $("input#name").val();
+      var email = $("input#email").val();
+      var comments = $("textarea#comments").val();
+      if (name.length == 0 && comments.length == 0
+      && email.length == 0 && email.match(/^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/)) {
+        return false;
+      }
+
+      var dataString = 'name='+ encodeURIComponent(name) + '&email='
+          + encodeURIComponent(email) + '&comments=' + encodeURIComponent(comments);
+
+      // Grabs hidden inputs
+      var formSuccess = $("input#formSuccess").val();
+      var feedbackSuccess = $("input#feedbackSuccess").val();
+      var feedbackFailure = $("input#feedbackFailure").val();
+
+      $.ajax({
+        type: "POST",
+        url: $(this).attr('action'),
+        data: dataString,
+        success: function() {
+          $('#myModalLabel').html('Thank you!');
+          $('#contact_form .modal-body').html(formSuccess);
+        },
+        error: function() {
+          alert(feedbackFailure);
+        }
+      });
+      return false;
+    });
+  });
+</script>

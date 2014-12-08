@@ -1,0 +1,24 @@
+<? $holdings = $this->tab->getHoldings(); if ($holdings && count($holdings) > 0): ?>
+<h3><?=$this->transEsc('Holdings at Other Libraries')?></h3>
+<table class="table table-striped">
+<? foreach ($holdings as $holding): ?>
+  <tr>
+    <th colspan="2">
+      <? if (isset($holding->electronicAddress->text) && !empty($holding->electronicAddress->text)): ?>
+      <a href="<?=$this->escapeHtmlAttr($holding->electronicAddress->text)?>"><?=$this->escapeHtml($holding->physicalLocation)?></a>
+      <? else: ?>
+      <?=$this->escapeHtml($holding->physicalLocation)?>
+      <? endif; ?>
+    </th>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Address')?>: </th>
+    <td><?=$this->escapeHtml($holding->physicalAddress->text)?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Copies')?>: </th>
+    <td><?=$this->escapeHtml($holding->holdingSimple->copiesSummary->copiesCount)?></td>
+  </tr>
+<? endforeach; ?>
+</table>
+<? endif; ?>
