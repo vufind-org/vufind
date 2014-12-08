@@ -93,6 +93,8 @@ class AlphabrowseController extends AbstractBase
         $page   = intval($this->params()->fromQuery('page', 0));
         $limit  = isset($config->AlphaBrowse->page_size)
             ? $config->AlphaBrowse->page_size : 20;
+        // TODO: move to config
+        $offset = 3;
 
         // Set up any extra parameters to pass
         $extraParams = new ParamBag(); 
@@ -108,14 +110,14 @@ class AlphabrowseController extends AbstractBase
         if ($source && $from !== false) {
             // Load Solr data or die trying:
             $result = $db
-                ->alphabeticBrowse($source, $from, $page, $limit, $extraParams);
+                ->alphabeticBrowse($source, $from, $page, $limit, -$offset, $extraParams);
 
             // No results?    Try the previous page just in case we've gone past
             // the end of the list....
             if ($result['Browse']['totalCount'] == 0) {
                 $page--;
                 $result = $db
-                    ->alphabeticBrowse($source, $from, $page, $limit, $extraParams);
+                    ->alphabeticBrowse($source, $from, $page, $limit, 0, $extraParams);
             }
 
             // Only display next/previous page links when applicable:
@@ -126,6 +128,31 @@ class AlphabrowseController extends AbstractBase
                 $view->prevpage = $page - 1;
             }
             $view->result = $result;
+        }
+        // page 0 is the page containing the match location
+        if ($page == 0) {
+            // normal case: somewhere in the middle of the browse list
+            $highlight_row = $offset;
+            // special case: match row is < offset (i.e. at beginning of list)
+            // solr counts rows from 1; adjust to array position style
+            $startRow = $result['Browse']['startRow'] - 1;
+            if ($startRow < $offset) {
+                $highlight_row =  $startRow;
+            }
+            // special case: we've gone past the end
+            // only the offset records will have been returned
+            if ($result['Browse']['totalCount'] == $offset) {
+                $view->highlight_end = true;
+            }
+            // Is the start row an exact match?
+            // TODO: would be ideal to pass these through the
+            //       browse handler normalizer
+            //       very simple normalization for now
+            $match = strtoupper(str_replace(' ', '', $result['Browse']['items'][$highlight_row]['heading']));
+            if (strtoupper(str_replace(' ','',$from)) != $match){
+                $view->no_exact_match = true;
+            }
+            $view->highlight_row = $highlight_row;
         }
 
         $view->alphaBrowseTypes = $types;
