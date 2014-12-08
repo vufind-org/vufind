@@ -27,6 +27,7 @@
  */
 namespace VuFind\Recommend;
 use VuFind\Solr\Utils as SolrUtils;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 /**
  * SideFacets Recommendations Module
@@ -91,6 +92,42 @@ class SideFacets extends AbstractFacets
     protected $collapsedFacets = false;
 
     /**
+     * Hierarchical facet setting
+     *
+     * @var array
+     */
+    protected $hierarchicalFacets = array();
+
+    /**
+     * Hierarchical facet sort options
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetSortOptions = array();
+
+    /**
+     * Hierarchical facet helper
+     *
+     * @var HierarchicalFacetHelper
+     */
+    protected $hierarchicalFacetHelper;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param HierarchicalFacetHelper      $facetHelper  Helper for handling
+     * hierarchical facets
+     */
+    public function __construct(
+        \VuFind\Config\PluginManager $configLoader,
+        HierarchicalFacetHelper $facetHelper
+    ) {
+        $this->configLoader = $configLoader;
+        $this->hierarchicalFacetHelper = $facetHelper;
+    }
+
+    /**
      * setConfig
      *
      * Store the configuration of the recommendation module.
@@ -150,6 +187,18 @@ class SideFacets extends AbstractFacets
         if (isset($config->Results_Settings->collapsedFacets)) {
             $this->collapsedFacets = $config->Results_Settings->collapsedFacets;
         }
+
+        // Hierarchical facets:
+        if (isset($config->SpecialFacets->hierarchical)) {
+            $this->hierarchicalFacets
+                = $config->SpecialFacets->hierarchical->toArray();
+        }
+
+        // Hierarchical facet sort options:
+        if (isset($config->SpecialFacets->hierarchicalFacetSortOptions)) {
+            $this->hierarchicalFacetSortOptions
+                = $config->SpecialFacets->hierarchicalFacetSortOptions->toArray();
+        }
     }
 
     /**
@@ -186,7 +235,20 @@ class SideFacets extends AbstractFacets
      */
     public function getFacetSet()
     {
-        return $this->results->getFacetList($this->mainFacets);
+        $facetSet = $this->results->getFacetList($this->mainFacets);
+
+        foreach ($this->hierarchicalFacets as $hierarchicalFacet) {
+            if (isset($facetSet[$hierarchicalFacet])) {
+                $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
+                    $hierarchicalFacet, $facetSet[$hierarchicalFacet]['list']
+                );
+                $facetSet[$hierarchicalFacet]['list']
+                    = $this->hierarchicalFacetHelper
+                        ->flattenFacetHierarchy($facetArray);
+            }
+        }
+
+        return $facetSet;
     }
 
     /**
@@ -341,4 +403,25 @@ class SideFacets extends AbstractFacets
         }
         return $result;
     }
+
+    /**
+     * Return the list of facets configured to be hierarchical
+     *
+     * @return array
+     */
+    public function getHierarchicalFacets()
+    {
+        return $this->hierarchicalFacets;
+    }
+
+    /**
+     * Return the list of configured hierarchical facet sort options
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetSortOptions()
+    {
+        return $this->hierarchicalFacetSortOptions;
+    }
+
 }
