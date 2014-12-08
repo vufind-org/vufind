@@ -832,7 +832,7 @@ class Server
      * @param int $from  String for start date.
      * @param int $until String for end date.
      *
-     * @return bool      True if valid, false if not.
+     * @return bool      True if invalid, false if not.
      */
     protected function isBadDate($from, $until) {
         $dt = \DateTime::createFromFormat("Y-m-d", substr($until,0,10));
