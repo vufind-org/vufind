@@ -69,7 +69,7 @@ class OpenLibrary
      * @param bool   $details        Whether to return full details
      * @param int    $limit          The number of works to return
      * @param int    $offset         Paging offset
-     * @param bool   $publicFullText Only return publically available, full-text
+     * @param bool   $publicFullText Only return publicly available, full-text
      * works
      *
      * @return array
@@ -117,7 +117,7 @@ class OpenLibrary
      *
      * @param string $url            URL to request
      * @param int    $limit          The number of works to return
-     * @param bool   $publicFullText Only return publically available, full-text
+     * @param bool   $publicFullText Only return publicly available, full-text
      * works
      *
      * @return array

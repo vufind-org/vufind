@@ -239,7 +239,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         // Less common case -- yes:
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('supportsPasswordChange')->will($this->returnValue(true));
+        $db->expects($this->once())->method('supportsPasswordRecovery')->will($this->returnValue(true));
         $config = array('Authentication' => array('recover_password' => true));
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsRecovery());
     }

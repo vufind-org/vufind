@@ -693,7 +693,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $holding = array();
         foreach ($xml->xpath('/publish-avail/OAI-PMH') as $rec) {
             $identifier = $rec->xpath(".//identifier/text()");
-            $id = "$bib" . "-"
+            $id = ((count($this->bib) > 1) ? $bib . "-" : "")
                 . substr($identifier[0], strrpos($identifier[0], ':') + 1);
             $temp = array();
             foreach ($rec->xpath(".//datafield[@tag='AVA']") as $datafield) {
@@ -1628,7 +1628,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
         } else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) {
             // 13/7/2012
-            return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
+            return $this->dateConverter->convertToDisplayDate('d/m/Y', $date);
         } else {
             throw new \Exception("Invalid date: $date");
         }
