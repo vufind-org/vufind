@@ -8,5 +8,10 @@ return array(
     'js' => array(
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js'
-    )
+    ),
+    'helpers' => array(
+        'invokables' => array(
+            'safemoneyformat' => 'Finna\View\Helper\Finna\SafeMoneyFormat',
+        )
+    ),
 );
