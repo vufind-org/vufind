@@ -27,7 +27,7 @@
  */
 namespace VuFind\OAI;
 use SimpleXMLElement,
-    VuFind\Exception\RecordMissing as RecordMissingException;
+    VuFind\Exception\RecordMissing as RecordMissingException, VuFind\SimpleXML;
 
 /**
  * OAI Server class
@@ -336,33 +336,11 @@ class Server
         // Inject metadata if necessary:
         if (!$headerOnly && !empty($xml)) {
             $metadata = $recXml->addChild('metadata');
-            $this->appendXML($metadata, $xml);
+            SimpleXML::appendElement($metadata, $xml);
         }
 
         return true;
     }
-
-    /**
-     * Attach $xml to $parent.
-     *
-     * @param SimpleXMLElement $parent Parent element to modify
-     * @param String $xml data to attach
-     *
-     * @return void
-     */
-    protected function appendXML($metadata, $xml)
-    {
-        // strip off xml header
-        $mark = strpos($xml,'?'.'>');
-        if ($mark>0 && $mark<40) {
-            $xml = substr($xml, $mark + 2);
-        }
-        $parent = dom_import_simplexml($metadata);
-        $fragment = $parent->ownerDocument->createDocumentFragment();
-        $fragment->appendXML($xml);
-        $parent->appendChild($fragment);
-    }
-
 
     /**
      * Respond to a GetRecord request.
@@ -574,7 +552,7 @@ class Server
         // they come from the OAI-PMH request or the database, the format may be
         // slightly different; this ensures they are reduced to a consistent value!
         $from = $this->normalizeDate($params['from']);
-        $until = $this->normalizeDate($params['until']);
+        $until = $this->normalizeDate($params['until'], "23:59:59");
         if (!$this->listRecordsValidateDates($from, $until)) {
             return;
         }
@@ -791,13 +769,13 @@ class Server
             if (empty($params['from'])) {
                 $params['from'] = $this->earliestDatestamp;
                 if (strlen($params['from'])>strlen($params['until'])) {
-                    $params['from'] = substr($params['from'],0,10);
+                    $params['from'] = substr($params['from'], 0, 10);
                 }
             }
             if (empty($params['until'])) {
                 $params['until'] = date($this->iso8601);
                 if (strlen($params['until'])>strlen($params['from'])) {
-                    $params['until'] = substr($params['until'],0,10);
+                    $params['until'] = substr($params['until'], 0, 10);
                 }
             }
             if ($this->isBadDate($params['from'], $params['until'])) {
@@ -834,12 +812,13 @@ class Server
      *
      * @return bool      True if invalid, false if not.
      */
-    protected function isBadDate($from, $until) {
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($until,0,10));
+    protected function isBadDate($from, $until)
+    {
+        $dt = \DateTime::createFromFormat("Y-m-d", substr($until, 0, 10));
         if ($dt === false || array_sum($dt->getLastErrors())) {
             return true;
         }
-        $dt = \DateTime::createFromFormat("Y-m-d", substr($from,0,10));
+        $dt = \DateTime::createFromFormat("Y-m-d", substr($from, 0, 10));
         if ($dt === false || array_sum($dt->getLastErrors())) {
             return true;
         }
@@ -946,11 +925,15 @@ class Server
      *
      * @return integer     Unix timestamp (or false if $date invalid)
      */
-    protected function normalizeDate($date)
+    protected function normalizeDate($date, $time = "00:00:00")
     {
         // Remove timezone markers -- we don't want PHP to outsmart us by adjusting
         // the time zone!
-        $date = str_replace(array('T', 'Z'), array(' ', ''), $date);
+        if (strlen($date)==10) {
+            $date = $date . ' ' . $time;
+        } else {
+            $date = str_replace(array('T', 'Z'), array(' ', ''), $date);
+        }
 
         // Translate to a timestamp:
         return strtotime($date);
@@ -1052,7 +1035,7 @@ class Server
         }
 
         // Attach main body:
-        $this->appendXML($xml, $body->asXml());
+        SimpleXML::appendElement($xml, $body);
 
         return $xml->asXml();
     }
