@@ -53,7 +53,7 @@ function uniqueValues(array) {
 
 function getCartCookieParams() {
     if (cartCookieDomain) {
-        return { path: '/', domain: cartCookieDomain }
+        return { path: '/', domain: cartCookieDomain };
     } else {
         return { path: '/' };
     }
