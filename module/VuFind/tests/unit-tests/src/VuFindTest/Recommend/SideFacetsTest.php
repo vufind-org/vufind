@@ -100,6 +100,66 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test getVisibleFilters
+     *
+     * @return void
+     */
+    public function testGetVisibleFilters()
+    {
+        $filters = array(
+            'format' => array(
+                array('value' => 'foo'),
+                array('value' => 'bar', 'suppressDisplay' => true),
+            ),
+        );
+        $results = $this->getMockResults();
+        $results->getParams()->expects($this->once())->method('getFilterList')
+            ->with($this->equalTo(true))->will($this->returnValue($filters));
+        $sf = $this->getSideFacets(null, $results);
+        $this->assertEquals(
+            array(
+                'format' => array(array('value' => 'foo')),
+                'extra' => array(array('value' => 'baz')),
+            ),
+            $sf->getVisibleFilters(array('extra' => array(array('value' => 'baz'))))
+        );
+    }
+
+    /**
+     * Test getAllRangeFacets()
+     *
+     * @return void
+     */
+    public function testGetAllRangeFacets()
+    {
+        $config = array(
+            'SpecialFacets' => array(
+                'dateRange' => array('date'),
+                'fullDateRange' => array('fullDate'),
+                'genericRange' => array('generic'),
+                'numericRange' => array('numeric'),
+            )
+        );
+        $filters = array(
+            'date' => array('[1900 TO 1905]'),
+            'fullDate' => array('[1900-01-01 TO 1905-12-31]'),
+            'generic' => array('[A TO Z]'),
+            'numeric' => array('[1 TO 9]'),
+        );
+        $results = $this->getMockResults();
+        $results->getParams()->expects($this->any())->method('getFilters')
+            ->will($this->returnValue($filters));
+        $sf = $this->getSideFacets($this->getMockConfigLoader($config), $results);
+        $expected = array(
+            'date' => array('type' => 'date', 'values' => array('1900', '1905')),
+            'fullDate' => array('type' => 'fulldate', 'values' => array('1900-01-01', '1905-12-31')),
+            'generic' => array('type' => 'generic', 'values' => array('A', 'Z')),
+            'numeric' => array('type' => 'numeric', 'values' => array('1', '9')),
+        );
+        $this->assertEquals($expected, $sf->getAllRangeFacets());
+    }
+
+    /**
      * Get a fully configured module
      *
      * @param \VuFind\Config\PluginManager                $configLoader config loader
