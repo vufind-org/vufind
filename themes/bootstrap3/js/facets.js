@@ -1,3 +1,4 @@
+/*global htmlEncode, path */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];
