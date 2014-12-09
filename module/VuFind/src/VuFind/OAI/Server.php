@@ -552,7 +552,7 @@ class Server
         // they come from the OAI-PMH request or the database, the format may be
         // slightly different; this ensures they are reduced to a consistent value!
         $from = $this->normalizeDate($params['from']);
-        $until = $this->normalizeDate($params['until']);
+        $until = $this->normalizeDate($params['until'], "23:59:59");
         if (!$this->listRecordsValidateDates($from, $until)) {
             return;
         }
@@ -925,11 +925,15 @@ class Server
      *
      * @return integer     Unix timestamp (or false if $date invalid)
      */
-    protected function normalizeDate($date)
+    protected function normalizeDate($date, $time = "00:00:00")
     {
         // Remove timezone markers -- we don't want PHP to outsmart us by adjusting
         // the time zone!
-        $date = str_replace(array('T', 'Z'), array(' ', ''), $date);
+        if (strlen($date)==10) {
+            $date = $date . ' ' . $time;
+        } else {
+            $date = str_replace(array('T', 'Z'), array(' ', ''), $date);
+        }
 
         // Translate to a timestamp:
         return strtotime($date);
