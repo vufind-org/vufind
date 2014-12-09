@@ -164,6 +164,37 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 		return($details['ilslink']);
 	}
 
+        /**
+         * Get Status of JSON Result
+         */
+        protected function getNewJSONStatus($id)
+        {
+	   // get daia json request for id and decode it
+           $daia=json_decode($this->doHTTPRequest($id,"json"), true);
+           $result = array();
+	   if(array_key_exists("message",$daia)) {
+	      // analyse the message for the error handling and debugging
+           }
+	   if(array_key_exists("instituion",$daia)) {
+	      // information about the institution that grants or knows about services and their availability
+           }
+           if(array_key_exists("document",$daia)) {
+	      // analyse the items 
+	      $dummy_item = array("id"=>"0815",
+                                  "availability"=>true,
+                                  "status"=>"Available",
+        		          "location"=>"physical location no HTML",
+                                  "reserve"=>"N",
+                                  "callnumber"=>"UB 007",
+                                  "number"=>"1",
+                                  "item_id"=>"0815",
+                                  "barcode"=>"1");
+              $result[]=$dummy_item;                          
+	   }
+	   return $result;
+	}
+
+
 	/**
 	 * Get Status of JSON Result
 	 */
