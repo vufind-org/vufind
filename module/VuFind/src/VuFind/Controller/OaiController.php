@@ -95,11 +95,15 @@ class OaiController extends AbstractBase
 
         // Build OAI response or die trying:
         try {
+            $params = array_merge(
+                $this->getRequest()->getQuery()->toArray(),
+                $this->getRequest()->getPost()->toArray()
+            );
             $server = new $serverClass(
                 $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
                 $this->getServiceLocator()->get('VuFind\RecordLoader'),
                 $this->getServiceLocator()->get('VuFind\DbTablePluginManager'),
-                $config, $baseURL, $this->getRequest()->getQuery()->toArray()
+                $config, $baseURL, $params
             );
             $xml = $server->getResponse();
         } catch (\Exception $e) {

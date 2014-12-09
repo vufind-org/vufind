@@ -91,7 +91,8 @@ class Utils
                 // strtotime can only handle a limited range of dates; let's extract
                 // a year from the string and temporarily replace it with a known
                 // good year; we'll swap it back after the conversion.
-                $year = preg_match('/[0-9]{4}/', $date, $matches) ? $matches[0] : false;
+                $year = preg_match('/[0-9]{4}/', $date, $matches)
+                    ? $matches[0] : false;
                 if ($year) {
                     $date = str_replace($year, '1999', $date);
                 }

@@ -220,7 +220,7 @@ class Server
     public function getResponse()
     {
         if (!$this->hasParam('verb')) {
-            return $this->showError('badArgument', 'Missing Verb Argument');
+            return $this->showError('badVerb', 'Missing Verb Argument');
         } else {
             switch($this->params['verb']) {
             case 'GetRecord':
@@ -334,9 +334,9 @@ class Server
         );
 
         // Inject metadata if necessary:
-        if (!$headerOnly) {
+        if (!$headerOnly && !empty($xml)) {
             $metadata = $recXml->addChild('metadata');
-            SimpleXML::appendElement($metadata, simplexml_load_string($xml));
+            SimpleXML::appendElement($metadata, $xml);
         }
 
         return true;
@@ -408,10 +408,10 @@ class Server
         $xml->repositoryName = $this->repositoryName;
         $xml->baseURL = $this->baseURL;
         $xml->protocolVersion = '2.0';
+        $xml->adminEmail = $this->adminEmail;
         $xml->earliestDatestamp = $this->earliestDatestamp;
         $xml->deletedRecord = 'transient';
         $xml->granularity = 'YYYY-MM-DDThh:mm:ssZ';
-        $xml->adminEmail = $this->adminEmail;
         if (!empty($this->idNamespace)) {
             $xml->addChild('description');
             $id = $xml->description->addChild(
@@ -768,9 +768,18 @@ class Server
             // Set default date range if not already provided:
             if (empty($params['from'])) {
                 $params['from'] = $this->earliestDatestamp;
+                if (strlen($params['from'])>strlen($params['until'])) {
+                    $params['from'] = substr($params['from'], 0, 10);
+                }
             }
             if (empty($params['until'])) {
                 $params['until'] = date($this->iso8601);
+                if (strlen($params['until'])>strlen($params['from'])) {
+                    $params['until'] = substr($params['until'], 0, 10);
+                }
+            }
+            if ($this->isBadDate($params['from'], $params['until'])) {
+                throw new \Exception('badArgument:Bad Date Format');
             }
         }
 
@@ -782,6 +791,10 @@ class Server
             throw new \Exception('noSetHierarchy:Sets not supported');
         }
 
+        if (!isset($params['metadataPrefix'])) {
+            throw new \Exception('badArgument:Missing metadataPrefix');
+        }
+
         // Validate requested metadata format:
         $prefixes = array_keys($this->metadataFormats);
         if (!in_array($params['metadataPrefix'], $prefixes)) {
@@ -789,6 +802,46 @@ class Server
         }
 
         return $params;
+    }
+
+    /**
+     * Validate the from and until parameters for the listRecords method.
+     *
+     * @param int $from  String for start date.
+     * @param int $until String for end date.
+     *
+     * @return bool      True if invalid, false if not.
+     */
+    protected function isBadDate($from, $until)
+    {
+        $dt = \DateTime::createFromFormat("Y-m-d", substr($until, 0, 10));
+        if ($dt === false || array_sum($dt->getLastErrors())) {
+            return true;
+        }
+        $dt = \DateTime::createFromFormat("Y-m-d", substr($from, 0, 10));
+        if ($dt === false || array_sum($dt->getLastErrors())) {
+            return true;
+        }
+        //check for different date granularity
+        if (strpos($from, 'T') && strpos($from, 'Z')) {
+            if (strpos($until, 'T') && strpos($until, 'Z')) {
+                //this is good
+            } else {
+                return true;
+            }
+        } else if (strpos($until, 'T') && strpos($until, 'Z')) {
+            return true;
+        }
+        
+        $from_time = $this->normalizeDate($from);
+        $until_time = $this->normalizeDate($until);
+        if ($from_time > $until_time) {
+            throw new \Exception('noRecordsMatch:from vs. until');
+        }
+        if ($from_time < $this->normalizeDate($this->earliestDatestamp)) {
+            return true;
+        }
+        return false;
     }
 
     /**
