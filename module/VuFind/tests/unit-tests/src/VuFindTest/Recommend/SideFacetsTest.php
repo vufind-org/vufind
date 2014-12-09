@@ -160,6 +160,58 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test default getCollapsedFacets behavior.
+     *
+     * @return void
+     */
+    public function testGetCollapsedFacetsDefault()
+    {
+        $this->assertEquals(array(), $this->getSideFacets()->getCollapsedFacets());
+    }
+
+    /**
+     * Test asterisk support in getCollapsedFacets
+     *
+     * @return void
+     */
+    public function testGetCollapsedFacetsDelimitedList()
+    {
+        $config = array(
+            'Results_Settings' => array('collapsedFacets' => '   foo, bar,baz   '),
+        );
+        $sf = $this->getSideFacets($this->getMockConfigLoader($config));
+        $this->assertEquals(array('foo', 'bar', 'baz'), $sf->getCollapsedFacets());
+    }
+
+    /**
+     * Test delimited list support in getCollapsedFacets
+     *
+     * @return void
+     */
+    public function testGetCollapsedFacetsWildcard()
+    {
+        $config = array(
+            'Results' => array(
+                'format' => 'Format',
+            ),
+           'Results_Settings' => array('collapsedFacets' => '*'),
+        );
+        $filters = array(
+            'format' => array(
+                array('value' => 'foo'),
+                array('value' => 'bar', 'suppressDisplay' => true),
+            ),
+        );
+        $results = $this->getMockResults();
+        $response = array('format' => array('dummy'));
+        $results->expects($this->once())->method('getFacetList')
+            ->with($this->equalTo(array('format' => 'Format')))
+            ->will($this->returnValue($response));
+        $sf = $this->getSideFacets($this->getMockConfigLoader($config), $results);
+        $this->assertEquals(array('format'), $sf->getCollapsedFacets());
+    }
+
+    /**
      * Get a fully configured module
      *
      * @param \VuFind\Config\PluginManager                $configLoader config loader
