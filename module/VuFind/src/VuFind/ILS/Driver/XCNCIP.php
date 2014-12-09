@@ -458,7 +458,7 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 '</UserElementType>';
         }
 
-        // Add relevent empty elements:
+        // Add relevant empty elements:
         if (!is_array($otherElements)) {
             $otherElements = array($otherElements);
         }

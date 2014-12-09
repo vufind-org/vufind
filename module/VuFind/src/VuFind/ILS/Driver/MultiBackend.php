@@ -92,7 +92,7 @@ class MultiBackend extends AbstractBase
     protected $config = array();
 
     /**
-     * The seperating values to be used for each ILS.
+     * The separating values to be used for each ILS.
      * Not yet implemented
      * @var object
      */
@@ -1099,6 +1099,30 @@ class MultiBackend extends AbstractBase
             && $this->methodSupported($driver, 'getCancelILLRequestDetails')
         ) {
             return $driver->getCancelILLRequestDetails(
+                $this->stripIdPrefixes($details, $source)
+            );
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
+     * Change Password
+     *
+     * Attempts to change patron password (PIN code)
+     *
+     * @param array $details An array of patron id and old and new password
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function changePassword($details)
+    {
+        $source = $this->getSource($details['patron']['cat_username']);
+        $driver = $this->getDriver($source);
+        if ($driver
+            && $this->methodSupported($driver, 'changePassword')
+        ) {
+            return $driver->changePassword(
                 $this->stripIdPrefixes($details, $source)
             );
         }

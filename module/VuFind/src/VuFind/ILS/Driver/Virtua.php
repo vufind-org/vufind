@@ -626,7 +626,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                             if ($item_stat_code !== null) {
                                 // ... but has a status, so it can't be requested.
                             } else {
-                                // ... can the user borrow avilable items at this
+                                // ... can the user borrow available items at this
                                 // location?
                                 if (in_array(
                                     $location, $available_locs[$item_loc_code]
@@ -920,7 +920,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     /**
      * Renders individual holdings against a pattern
      *   Note fields and prediction patterns are handled
-     *   seperately
+     *   separately
      *
      * @param array $patterns Pattern data
      * @param array $field    Field data
