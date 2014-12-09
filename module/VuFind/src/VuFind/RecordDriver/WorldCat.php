@@ -50,6 +50,11 @@ class WorldCat extends SolrMarc
      */
     public function setRawData($data)
     {
+        // Ensure that $driver->setRawData($driver->getRawData()) doesn't blow up:
+        if (isset($data['fullrecord'])) {
+            $data = $data['fullrecord'];
+        }
+
         // Make sure the XML has an appropriate header:
         if (strlen($data) > 2 && substr($data, 0, 2) != '<?') {
             $data = '<?xml version="1.0"?>' . $data;

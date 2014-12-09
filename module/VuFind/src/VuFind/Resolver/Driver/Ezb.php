@@ -222,7 +222,7 @@ class Ezb implements DriverInterface
                 "Result[@state={$state}]/AccessURL";
             $record['href'] = $xpath->query($urlXP, $result)->item($i)->nodeValue;
             // Service type needs to be hard-coded for calling code to properly
-            // categorize links. The commented out code below picks a more appropiate
+            // categorize links. The commented code below picks a more appropriate
             // value but won't work for now -- retained for future reference.
             //$service_typeXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/"
             //    . "Result[@state={$state}]/AccessLevel";
@@ -257,7 +257,7 @@ class Ezb implements DriverInterface
             $urlXP = "/OpenURLResponseXML/Full/PrintData/References/Reference/URL";
             $record['href'] = $xpath->query($urlXP, $result)->item($i)->nodeValue;
             // Service type needs to be hard-coded for calling code to properly
-            // categorize links. The commented out code below picks a more appropiate
+            // categorize links. The commented code below picks a more appropriate
             // value but won't work for now -- retained for future reference.
             //$service_typeXP = "/OpenURLResponseXML/Full/PrintData/References"
             //    . "/Reference/Label";

@@ -534,6 +534,29 @@ class Connection implements TranslatorAwareInterface
     }
 
     /**
+     * Check Password Change
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports changing
+     * password.
+     *
+     * @param array $functionConfig The password change configuration values
+     * @param array $params         Patron data
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values either for cancelling requests via a form or a URL;
+     * on failure, false.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodchangePassword($functionConfig, $params)
+    {
+        if ($this->checkCapability('changePassword', array($params ?: array()))) {
+            return array('function' => 'changePassword');
+        }
+        return false;
+    }
+
+    /**
      * Get proper help text from the function config
      *
      * @param string|array $helpText Help text(s)
@@ -739,6 +762,21 @@ class Connection implements TranslatorAwareInterface
         return isset($this->config->holdings_text_fields)
             ? $this->config->holdings_text_fields->toArray()
             : array('notes', 'summary', 'supplements', 'indexes');
+    }
+
+    /**
+     * Get the password policy from the driver
+     *
+     * @param array $patron Patron data
+     *
+     * @return bool|array Password policy array or false if unsupported
+     */
+    public function getPasswordPolicy($patron)
+    {
+        return $this->checkCapability(
+            'getConfig', array('changePassword', compact('patron'))
+        ) ? $this->getDriver()->getConfig('changePassword', compact('patron'))
+            : false;
     }
 
     /**
