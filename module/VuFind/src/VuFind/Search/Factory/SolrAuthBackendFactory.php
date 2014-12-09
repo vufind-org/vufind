@@ -50,6 +50,7 @@ class SolrAuthBackendFactory extends AbstractSolrBackendFactory
         $this->solrCore = 'authority';
         $this->searchConfig = 'authority';
         $this->searchYaml = 'authsearchspecs.yaml';
+        $this->facetConfig = 'authority';
     }
 
     /**

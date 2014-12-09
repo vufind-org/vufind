@@ -427,9 +427,6 @@
   </requestHandler>
 
   <requestHandler name="/browse" class="org.vufind.solr.handler.BrowseRequestHandler">
-    <str name="authIndexPath">${solr.solr.home:./solr}/authority/index</str>
-    <str name="bibIndexPath">${solr.solr.home:./solr}/biblio/index</str>
-
     <!-- These definitions should match the field names used in the authority index. -->
     <str name="preferredHeadingField">heading</str>
     <str name="useInsteadHeadingField">use_for</str>

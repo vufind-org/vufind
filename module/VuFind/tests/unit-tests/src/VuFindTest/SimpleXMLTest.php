@@ -48,7 +48,9 @@ class SimpleXMLTest extends \PHPUnit_Framework_TestCase
         $parent = simplexml_load_string('<top><children></children></top>');
         $child = simplexml_load_string('<child attr="true" />');
         $expected = simplexml_load_string(
-            '<top><children><child attr="true" /></children></top>'
+            '<top><children>
+<child attr="true" />
+</children></top>'
         );
         \VuFind\SimpleXML::appendElement($parent->children, $child);
         $this->assertEquals($expected->asXML(), $parent->asXML());
