@@ -70,6 +70,19 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test lowercase booleans with case insensitive setting (should be skipped)
+     *
+     * @return void
+     */
+    public function testLowercaseBooleansAndCaseInsensitivity()
+    {
+        $results = $this->getMockResults('a or b');
+        $bm = $this->getMockBackendManager(false);
+        $sq = $this->getSwitchQuery($results, ':unwantedbools,wildcard', $bm);
+        $this->assertEquals(array(), $sq->getSuggestions());
+    }
+
+    /**
      * Test id query
      *
      * @return void
@@ -152,20 +165,35 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test transform unwanted character on phrase (should omit suggestion)
+     *
+     * @return void
+     */
+    public function testTransformUnwantedCharacterOnPhrase()
+    {
+        $results = $this->getMockResults('"my phrase"');
+        $sq = $this->getSwitchQuery($results, ':unwantedquotes:truncatechar');
+        $this->assertEquals(array(), $sq->getSuggestions());
+    }
+
+    /**
      * Get a fully configured module
      *
-     * @param \VuFind\Search\Solr\Results $results  results object
-     * @param string                      $settings settings
+     * @param \VuFind\Search\Solr\Results   $results  results object
+     * @param string                        $settings settings
+     * @param \VuFind\Search\BackendManager $bm       backend manager
      *
      * @return SwitchQuery
      */
-    protected function getSwitchQuery($results = null, $settings = '')
+    protected function getSwitchQuery($results = null, $settings = '', $bm = null)
     {
         if (null === $results) {
             $results = $this->getMockResults();
         }
-        $backendManager = $this->getMockBackendManager();
-        $sq = new SwitchQuery($backendManager);
+        if (null === $bm) {
+            $bm = $this->getMockBackendManager();
+        }
+        $sq = new SwitchQuery($bm);
         $sq->setConfig($settings);
         $sq->init($results->getParams(), new \Zend\StdLib\Parameters(array()));
         $sq->process($results);
@@ -175,11 +203,14 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a mock backend manager.
      *
+     * @param bool|string $csBools  Case sensitive Booleans setting
+     * @param bool        $csRanges Case sensitive ranges setting
+     *
      * @return \VuFind\Search\BackendManager
      */
-    protected function getMockBackendManager()
+    protected function getMockBackendManager($csBools = true, $csRanges = true)
     {
-        $helper = new \VuFindSearch\Backend\Solr\LuceneSyntaxHelper();
+        $helper = new \VuFindSearch\Backend\Solr\LuceneSyntaxHelper($csBools, $csRanges);
         $queryBuilder = $this->getMockBuilder('VuFindSearch\Backend\Solr\QueryBuilder')
             ->disableOriginalConstructor()->getMock();
         $queryBuilder->expects($this->any())->method('getLuceneHelper')
