@@ -46,7 +46,7 @@
         <? if ($this->related()->getList($this->driver) != null ): ?>
         <li>
         <a id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>" onclick='ajaxFLLoadTab("similar_<?=escapeJSAttr($this->driver->getUniqueId())?>")' data-toogle="tab" data-target="#similar-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-<?=$this->transEsc("Similar Items")?>
+<?=$this->transEsc("Related Items")?>
         </a>
         </li>
         <? endif; ?>
