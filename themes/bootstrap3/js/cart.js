@@ -181,7 +181,7 @@ $(document).ready(function() {
   // Setup lightbox behavior
   // Cart lightbox
   $('#cartItems').click(function() {
-    return Lightbox.get('Cart','Cart');
+    return Lightbox.open({controller:'Cart', action:'Cart'});
   });
   // Overwrite
   Lightbox.addFormCallback('accountForm', function(html) {
@@ -199,14 +199,13 @@ $(document).ready(function() {
     return false;
   });
   Lightbox.addFormCallback('bulkEmail', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
+    Lightbox.open({confirm:vufindString['bulk_email_success']});
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
     // After we close the lightbox, redirect to list view
-    Lightbox.addCloseAction(function() {
+    Lightbox.open({html:vufindString['bulk_save_success'], title:'', onClose:function() {
       document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
-    });
-    Lightbox.confirm(vufindString['bulk_save_success']);
+    }});
   });
   Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({

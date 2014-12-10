@@ -110,20 +110,36 @@ function registerAjaxCommentRecord() {
       data: data,
       dataType: 'json',
       success: function(response) {
+        console.log(response);
         var form = 'form[name="commentRecord"]';
         if (response.status == 'OK') {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
           $(form).find('input[type="submit"]').button('loading');
+          window.location.hash = 'tabnav';
         } else {
-          Lightbox.displayError(response.data);
+          Lightbox.open({
+            controller:'MyResearch',
+            action:'UserLogin',
+            title:'Login',
+            onClose:function() {
+              Lightbox.submit($(form), function() {
+                Lightbox.close();
+                refreshCommentList(id, recordSource);
+                window.location.hash = 'tabnav';
+              });
+            }
+          });
         }
       }
     });
     return false;
   });
   // Delete links
-  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
+  $('.delete').click(function() {
+    deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));
+    return false;
+  });
 }
 
 function registerTabEvents() {
@@ -142,14 +158,17 @@ function registerTabEvents() {
     var params = deparam($(this).attr('href'));
     params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', parts[parts.length-1], params);
+    return Lightbox.open({controller:'Record', action:parts[parts.length-1], get:params});
   });
 }
 
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
   // Grab the part of the url that is the Controller and Record ID
-  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id+'/'));
+  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id+'(/|\\b)'));
+  if(urlroot[0].substring(-1) != '/') {
+    urlroot[0] += '/';
+  }
   $.ajax({
     url: path + urlroot[0] + 'AjaxTab',
     type: 'POST',
@@ -193,22 +212,22 @@ $(document).ready(function(){
   // Cite lightbox
   $('#cite-record').click(function() {
     var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Cite', {id:id});
+    return Lightbox.open({controller:params['controller'], action:'Cite', get:{id:id}});
   });
   // Mail lightbox
   $('#mail-record').click(function() {
     var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Email', {id:id});
+    return Lightbox.open({controller:params['controller'], action:'Email', get:{id:id}});
   });
   // Save lightbox
   $('#save-record').click(function() {
     var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Save', {id:id});
+    return Lightbox.open({controller:params['controller'], action:'Save', get:{id:id}});
   });
   // SMS lightbox
   $('#sms-record').click(function() {
     var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'SMS', {id:id});
+    return Lightbox.open({controller:params['controller'], action:'SMS', get:{id:id}});
   });
   // Tag lightbox
   $('#tagRecord').click(function() {
@@ -240,13 +259,17 @@ $(document).ready(function(){
         });
       }
     });
-    return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
+    return Lightbox.open({controller:parts[parts.length-3], action:'AddTag', get:{id:id}});
   });
   // Form handlers
-  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
-  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
+  Lightbox.addFormCallback('saveRecord', function() {
+    Lightbox.open({confirm:vufindString['bulk_save_success']})
+  });
+  Lightbox.addFormCallback('smsRecord', function() {
+    Lightbox.open({confirm:vufindString['sms_success']})
+  });
   Lightbox.addFormCallback('emailRecord', function(){
-    Lightbox.confirm(vufindString['bulk_email_success']);
+    Lightbox.open({confirm:vufindString['bulk_email_success']});
   });
   Lightbox.addFormCallback('placeHold', function() {
     document.location.href = path+'/MyResearch/Holds';
