@@ -121,7 +121,7 @@ class SideFacets extends AbstractFacets
      */
     public function __construct(
         \VuFind\Config\PluginManager $configLoader,
-        HierarchicalFacetHelper $facetHelper
+        HierarchicalFacetHelper $facetHelper = null
     ) {
         $this->configLoader = $configLoader;
         $this->hierarchicalFacetHelper = $facetHelper;
@@ -232,6 +232,7 @@ class SideFacets extends AbstractFacets
      * Get facet information from the search results.
      *
      * @return array
+     * @throws \Exception
      */
     public function getFacetSet()
     {
@@ -239,6 +240,12 @@ class SideFacets extends AbstractFacets
 
         foreach ($this->hierarchicalFacets as $hierarchicalFacet) {
             if (isset($facetSet[$hierarchicalFacet])) {
+                if (!$this->hierarchicalFacetHelper) {
+                    throw new \Exception(
+                        get_class($this). ': hierarchical facet helper unavailable'
+                    );
+                }
+
                 $facetArray = $this->hierarchicalFacetHelper->buildFacetArray(
                     $hierarchicalFacet, $facetSet[$hierarchicalFacet]['list']
                 );

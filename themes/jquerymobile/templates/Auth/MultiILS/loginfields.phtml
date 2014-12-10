@@ -1,0 +1,11 @@
+<label for="login_target"><?=$this->transEsc('login_target')?>:</label>
+<?$currentTarget = $this->request->get('target'); if (!$currentTarget) $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();?>
+<select id="login_target" name="target">
+  <?foreach ($this->auth()->getManager()->getLoginTargets() as $target):?>
+  <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+  <? endforeach ?>
+</select>
+<label for="login_username"><?=$this->transEsc('Username')?>:</label>
+<input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>"/>
+<label for="login_password"><?=$this->transEsc('Password')?>:</label>
+<input id="login_password" type="password" name="password"/>
