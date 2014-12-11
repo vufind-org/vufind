@@ -70,12 +70,24 @@ class CartTest extends \PHPUnit_Framework_TestCase
      *
      * @return \VuFind\Cart
      */
-    protected function getCart($maxSize = 100, $active = true, $cookies = array())
-    {
+    protected function getCart($maxSize = 100, $active = true, $cookies = array(),
+        $domain = null
+    ) {
         return $this->getMock(
             'VuFind\Cart', array('setCookie'),
-            array($this->loader, $maxSize, $active, $cookies)
+            array($this->loader, $maxSize, $active, $cookies, $domain)
         );
+    }
+
+    /**
+     * Test cookie domain setting.
+     *
+     * @return void
+     */
+    public function testCookieDomain()
+    {
+        $cart = $this->getCart(100, true, array(), '.example.com');
+        $this->assertEquals('.example.com', $cart->getCookieDomain());
     }
 
     /**
