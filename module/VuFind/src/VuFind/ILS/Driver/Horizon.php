@@ -1053,7 +1053,7 @@ class Horizon extends AbstractBase
             $hzVersionFound = $row['database_revision'];
         }
 
-        /* The Horizon database version is made up of 4 numbers seperated by periods.
+        /* The Horizon database version is made up of 4 numbers separated by periods.
          * Explode the string and check each segment against the required version.
          */
         $foundVersionParts    = explode('.', $hzVersionFound);

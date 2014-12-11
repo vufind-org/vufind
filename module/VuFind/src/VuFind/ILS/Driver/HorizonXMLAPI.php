@@ -771,7 +771,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     /**
      * Process Renewals
      *
-     * This is responsible for processing renewals and is neccessary
+     * This is responsible for processing renewals and is necessary
      * as result of renew attempt is not returned
      *
      * @param array $renewIDs  A list of the items being renewed
@@ -780,7 +780,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param array $renewData A Simple XML array of loan data after the
      * renewal attempt
      *
-     * @return array        An Array specifiying the results of each renewal attempt
+     * @return array        An Array specifying the results of each renewal attempt
      */
     protected function processRenewals($renewIDs, $origData, $renewData)
     {

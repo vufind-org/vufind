@@ -92,7 +92,7 @@ class MultiBackend extends AbstractBase
     protected $config = array();
 
     /**
-     * The seperating values to be used for each ILS.
+     * The separating values to be used for each ILS.
      * Not yet implemented
      * @var object
      */
