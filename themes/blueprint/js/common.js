@@ -436,7 +436,7 @@ $(document).ready(function(){
     });
     $('#ribbon-print').unbind('click').click(function(){
       //redirect page
-      var url = path+'/Records/Home?print=true'
+      var url = path+'/Records/Home?print=true';
       var checks = $('.recordNumber [type=checkbox]:checked');
       $('.bulkActionButtons .error').remove();
       if(checks.length == 0) {
