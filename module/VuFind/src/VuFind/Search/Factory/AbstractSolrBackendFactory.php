@@ -35,6 +35,7 @@ use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
 use VuFind\Search\Solr\DeduplicationListener;
+use VuFind\Search\Solr\HierarchicalFacetListener;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
@@ -79,6 +80,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * @var string
      */
     protected $searchConfig;
+
+    /**
+     * Facet configuration file identifier.
+     *
+     * @var string
+     */
+    protected $facetConfig;
 
     /**
      * YAML searchspecs filename.
@@ -202,6 +210,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         ) {
             $this->getDeduplicationListener($backend)->attach($events);
         }
+
+        // Attach hierarchical facet listener:
+        $this->getHierarchicalFacetListener($backend)->attach($events);
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
@@ -337,12 +348,12 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         return $this->serviceLocator->get('VuFind\SearchSpecsReader')
             ->get($this->searchYaml);
     }
-    
+
     /**
      * Get a deduplication listener for the backend
-     * 
+     *
      * @param BackendInterface $backend Search backend
-     * 
+     *
      * @return DeduplicationListener
      */
     protected function getDeduplicationListener(BackendInterface $backend)
@@ -355,8 +366,24 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
+     * Get a hierarchical facet listener for the backend
+     *
+     * @param BackendInterface $backend Search backend
+     *
+     * @return HierarchicalFacetListener
+     */
+    protected function getHierarchicalFacetListener(BackendInterface $backend)
+    {
+        return new HierarchicalFacetListener(
+            $backend,
+            $this->serviceLocator,
+            $this->facetConfig
+        );
+    }
+
+    /**
      * Get a highlighting listener for the backend
-     * 
+     *
      * @param BackendInterface $backend Search backend
      * @param Config           $search  Search configuration
      *
