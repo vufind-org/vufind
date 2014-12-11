@@ -46,7 +46,7 @@ var Lightbox = {
   close: function() {
     Lightbox.shown = false;
     console.log('hide');
-    $('#modal').modal('hide');
+    $('#modal').removeClass('in');
     $('#modal .modal-body').html('Loading...');
     $('#modal .modal-title').html('');
     if(isset(Lightbox.callOptions.onClose)) {
