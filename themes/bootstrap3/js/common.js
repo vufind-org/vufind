@@ -236,10 +236,10 @@ function ajaxLogin(form) {
             if (login.status == 'OK') {
               updatePageForLogin();
               // and we update the modal
-              var params = deparam(Lightbox.lastURL);
-              if (params['subaction'] == 'UserLogin') {
+              if (Lightbox.callOptions.action == 'UserLogin') {
                 Lightbox.close();
               } else {
+                console.log(Lightbox.callOptions);
                 Lightbox.getByUrl(Lightbox.callOptions.url, Lightbox.callOptions);
               }
             } else {

@@ -181,7 +181,7 @@ $(document).ready(function() {
   // Setup lightbox behavior
   // Cart lightbox
   $('#cartItems').click(function() {
-    return Lightbox.get('Cart','Cart');
+    return Lightbox.open({controller:'Cart', action:'Cart'});
   });
   // Overwrite
   Lightbox.addFormCallback('accountForm', function(html) {
