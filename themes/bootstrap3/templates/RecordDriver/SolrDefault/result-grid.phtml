@@ -10,7 +10,8 @@ $urls = $this->record($this->driver)->getLinkDetails();
 
 <div class="result <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-  <? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
+  <? if ((isset($this->showCartControls) && $this->showCartControls)
+      || (isset($this->showBulkOptions) && $this->showBulkOptions)): ?>
     <?=$this->record($this->driver)->getCheckbox() ?></br>
   <? endif; ?>
   <div class="text-center">
