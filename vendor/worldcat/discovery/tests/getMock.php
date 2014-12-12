@@ -84,6 +84,9 @@ $mockBuilder = Yaml::parse(__DIR__ . '/mockBuilder.yml');
 
     // load the YAML for config
     $config = Yaml::parse(__DIR__ . '/config.yml');
+    if (empty($config['institution'])) {
+    	Throw new \Exception('No valid config file present');
+    }
     if (isset($scriptOptions['environment'])){
         $mockFolder .= $scriptOptions['environment'] . '/';
         $environment = $scriptOptions['environment'];

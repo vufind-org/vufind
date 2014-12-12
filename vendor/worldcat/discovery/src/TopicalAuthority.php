@@ -77,7 +77,7 @@ class TopicalAuthority extends Authority
         $closeExternalAuthorities = $this->all('madsrdf:hasCloseExternalAuthority');
         if (empty($closeExternalAuthorities)){
             $this->load();
-            $closeExternalAuthorities = $this->get('madsrdf:hasCloseExternalAuthority');
+            $closeExternalAuthorities = $this->all('madsrdf:hasCloseExternalAuthority');
         }
         return $closeExternalAuthorities;
     }

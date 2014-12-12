@@ -27,6 +27,11 @@ use \EasyRdf_TypeMapper;
  */
 class Thing extends EasyRdf_Resource
 {
+	use Helpers;
+	
+	public static $testServer = FALSE;
+    public static $userAgent = 'WorldCat Discovery API PHP Client';
+	
     /**
      * Get ID
      * @return string
@@ -55,34 +60,30 @@ class Thing extends EasyRdf_Resource
      * @return \EasyRdf_Graph | WorldCat\Discovery\Error
      */
     
-    public static function findByURI($uri, $returnGraph = false) {
-        EasyRdf_Namespace::set('schema', 'http://schema.org/');
-        EasyRdf_Namespace::set('owl', 'http://www.w3.org/2002/07/owl#');
-        EasyRdf_Namespace::set('rdfs', 'http://www.w3.org/2000/01/rdf-schema#');
-        EasyRdf_Namespace::set('foaf', 'http://xmlns.com/foaf/0.1/');
-        EasyRdf_Namespace::set('madsrdf', 'http://www.loc.gov/mads/rdf/v1#');
-        EasyRdf_TypeMapper::set('schema:Organization', 'WorldCat\Discovery\Organization');
-        EasyRdf_TypeMapper::set('foaf:Organization', 'WorldCat\Discovery\Organization'); // will be deprecated
-        EasyRdf_TypeMapper::set('schema:Person', 'WorldCat\Discovery\Person');
-        EasyRdf_TypeMapper::set('foaf:Person', 'WorldCat\Discovery\Person'); // will be deprecated
-        EasyRdf_TypeMapper::set('schema:Place', 'WorldCat\Discovery\Place');
-        EasyRdf_TypeMapper::set('http://dbpedia.org/ontology/Place', 'WorldCat\Discovery\Place'); // will be deprecated
-        EasyRdf_TypeMapper::set('schema:CreativeWork', 'WorldCat\Discovery\CreativeWork');
-        EasyRdf_TypeMapper::set('madsrdf:Topic', 'WorldCat\Discovery\TopicalAuthority');
-        EasyRdf_TypeMapper::set('madsrdf:Geographic', 'WorldCat\Discovery\GeographicAuthority');
-        EasyRdf_TypeMapper::set('madsrdf:Authority', 'WorldCat\Discovery\Authority');
-    
-        $guzzleOptions = array(
-            'headers' => array(
-                'Accept' => 'application/rdf+xml'
-            )
-        );
+    public static function findByURI($uri, $options = null) {
+    	if (!isset($options)){
+    		$options = array();
+    	}
+    	
+    	static::requestSetup();
+    	
+    	if (strpos($uri, 'viaf')){
+    		$options['accept'] = 'application/rdf+xml';
+    	} else {
+    		$options['accept'] = null;
+    	}
+    	if (isset($options['logger'])){
+    		$logger = $options['logger'];
+    	} else {
+    		$logger = null;
+    	}
+    	$guzzleOptions = static::getGuzzleOptions($options);
         
         try {
             $response = \Guzzle::get($uri, $guzzleOptions);
             $graph = new EasyRdf_Graph();
             $graph->parse($response->getBody(true));
-            if ($returnGraph){
+            if (isset($options['returnGraph'])){
                 return $graph;
             } else {
                 $resource = $graph->resource($uri);

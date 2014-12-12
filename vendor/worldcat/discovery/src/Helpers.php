@@ -17,13 +17,14 @@ namespace WorldCat\Discovery;
 
 use \EasyRdf_Namespace;
 use \EasyRdf_TypeMapper;
+use \EasyRdf_Format;
 
 trait Helpers {
 
     /**
      * Parse the $options array in parts
      */
-    private static function parseOptions($options, $validRequestOptions)
+    protected static function parseOptions($options, $validRequestOptions)
     {
         if (empty($options) || !is_array($options)){
             Throw new \BadMethodCallException('Options must be a valid array');
@@ -44,7 +45,7 @@ trait Helpers {
         return $optionParts;
     }
     
-    private static function getRequestOptions($options, $validRequestOptions){
+    protected static function getRequestOptions($options, $validRequestOptions){
             $requestOptions = array();
             foreach ($options as $optionName => $option) {
                 if (in_array($optionName, $validRequestOptions)){
@@ -57,7 +58,7 @@ trait Helpers {
     /**
      * Perform the appropriate namespace setting and type mapping in EasyRdf before parsing the graph
      */
-    private static function requestSetup()
+    protected static function requestSetup()
     {
         EasyRdf_Namespace::set('schema', 'http://schema.org/');
         EasyRdf_Namespace::set('discovery', 'http://worldcat.org/vocab/discovery/');
@@ -78,6 +79,7 @@ trait Helpers {
         }
         EasyRdf_Namespace::set('dcmi', 'http://purl.org/dc/dcmitype/');
         EasyRdf_Namespace::set('rdaGr2', 'http://rdvocab.info/ElementsGr2/');
+        EasyRdf_Namespace::set('madsrdf', 'http://www.loc.gov/mads/rdf/v1#');
     
         EasyRdf_TypeMapper::set('http://www.w3.org/2006/gen/ont#InformationResource', 'WorldCat\Discovery\Bib');
     
@@ -87,12 +89,15 @@ trait Helpers {
         EasyRdf_TypeMapper::set('schema:Periodical', 'WorldCat\Discovery\Periodical');
         EasyRdf_TypeMapper::set('productontology:Thesis', 'WorldCat\Discovery\Thesis');
         EasyRdf_TypeMapper::set('library:Kit', 'WorldCat\Discovery\Kit');
+        EasyRdf_TypeMapper::set('bgn:Kit', 'WorldCat\Discovery\Kit');
         EasyRdf_TypeMapper::set('schema:Movie', 'WorldCat\Discovery\Movie');
         EasyRdf_TypeMapper::set('schema:Book', 'WorldCat\Discovery\Book');
         EasyRdf_TypeMapper::set('schema:Series', 'WorldCat\Discovery\Series');
+        
         EasyRdf_TypeMapper::set('bgn:ComputerFile', 'WorldCat\Discovery\CreativeWork');
         EasyRdf_TypeMapper::set('schema:Map', 'WorldCat\Discovery\CreativeWork');
         EasyRdf_TypeMapper::set('bgn:Newspaper', 'WorldCat\Discovery\CreativeWork');
+        EasyRdf_TypeMapper::set('bgn:MusicScore', 'WorldCat\Discovery\CreativeWork');
         EasyRdf_TypeMapper::set('schema:CreativeWork', 'WorldCat\Discovery\CreativeWork');
     
         EasyRdf_TypeMapper::set('schema:Country', 'WorldCat\Discovery\Country');
@@ -111,6 +116,10 @@ trait Helpers {
         EasyRdf_TypeMapper::set('foaf:Person', 'WorldCat\Discovery\Person'); // will be deprecated
         EasyRdf_TypeMapper::set('schema:Place', 'WorldCat\Discovery\Place');
         EasyRdf_TypeMapper::set('http://dbpedia.org/ontology/Place', 'WorldCat\Discovery\Place'); // will be deprecated
+        
+        EasyRdf_TypeMapper::set('madsrdf:Topic', 'WorldCat\Discovery\TopicalAuthority');
+        EasyRdf_TypeMapper::set('madsrdf:Geographic', 'WorldCat\Discovery\GeographicAuthority');
+        EasyRdf_TypeMapper::set('madsrdf:Authority', 'WorldCat\Discovery\Authority');
     
         if (__CLASS__ == 'WorldCat\Discovery\Bib') {
             EasyRdf_TypeMapper::set('discovery:SearchResults', 'WorldCat\Discovery\BibSearchResults');
@@ -136,21 +145,29 @@ trait Helpers {
     /**
      * Get the relevant Guzzle options for the request
      */
-    private static function getGuzzleOptions($accessToken, $logger = null){
+    protected static function getGuzzleOptions($options = null){
+    	if (isset($options['accept'])){
+    		$accept = $options['accept'];
+    	} else{
+    		$accept = 'text/plain';
+    	}
         $guzzleOptions = array(
             'headers' => array(
-                'Authorization' => 'Bearer ' . $accessToken->getValue(),
-                'Accept' => 'application/rdf+xml',
+                'Accept' => $accept,
                 'User-Agent' => static::$userAgent
             )
         );
+        
+        if (isset($options['accessToken'])){
+        	$guzzleOptions['headers']['Authorization'] = 'Bearer ' . $options['accessToken']->getValue();
+        }
     
         if (static::$testServer){
             $guzzleOptions['verify'] = false;
         }
     
-        if (isset($logger)){
-            $guzzleOptions['plugins'] = array($logger);
+        if (isset($options['logger'])){
+            $guzzleOptions['plugins'] = array($options['logger']);
         }
         return $guzzleOptions;
     }
@@ -162,7 +179,7 @@ trait Helpers {
      * @param array $options
      * @return string
      */
-    private static function buildParameters($query = null, $options = null)
+    protected static function buildParameters($query = null, $options = null)
     {
         $parameters = array();
         

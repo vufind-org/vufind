@@ -37,6 +37,31 @@
 <? if (isset($facetList) && is_array($facetList)): ?>
   <div class="row">
     <? foreach ($facetList as $field => $details): ?>
+      <? if (in_array($field, $this->hierarchicalFacets)): ?>
+        <? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
+        <? $this->headScript()->appendFile('facets.js'); ?>
+        <? $sort = isset($this->hierarchicalFacetSortOptions[$field]) ? $this->hierarchicalFacetSortOptions[$field] : ''; ?>
+        <?
+        $script = <<<JS
+$(document).ready(function() {
+  initFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
+});
+JS;
+        ?>
+        <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+        <div class="facet <?=$field=='callnumber-first' ? 'col-sm-6' : 'col-sm-3' ?>">
+          <p class="lead"><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></p>
+          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
+              data-facet="<?=$this->escapeHtml($field)?>"
+              data-path="<?=$this->url($basicSearch)?>"
+              data-exclude="0"
+              data-operator="AND"
+              data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+              data-sort="all">
+          </div>
+        </div>
+        <noscript>
+      <? endif; ?>
       <? $sortedList = $this->sortFacetList($this->results, $field, $details['list'], $basicSearch); ?>
       <div class="<?=$field=='callnumber-first' ? 'col-sm-6' : 'col-sm-3' ?>">
         <p class="lead"><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></p>
@@ -77,6 +102,9 @@
           </ul>
         </div>
       </div>
+      <? if (in_array($field, $this->hierarchicalFacets)): ?>
+        </noscript>
+      <? endif; ?>
     <? endforeach; ?>
   </div>
 <? endif; ?>

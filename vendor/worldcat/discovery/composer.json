@@ -1,6 +1,6 @@
 {
 	"name" : "worldcat/discovery",
-	"version" : "0.13.0",
+	"version" : "0.14.0",
 	"license" : "Apache-2.0",
 	"repositories" : [{
 			"type" : "git",
@@ -22,8 +22,8 @@
 		"phpunit/phpunit" : "~3",
 		"php-vcr/php-vcr" : "dev-master",
 		"php-vcr/phpunit-testlistener-vcr" : "*",
-		"zendframework/zend-log": "2.0.*",
-		"phpdocumentor/phpdocumentor": "2.*"
+		"zendframework/zend-log" : "2.0.*",
+		"phpdocumentor/phpdocumentor" : "2.*"
 	},
 	"autoload" : {
 		"psr-4" : {

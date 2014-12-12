@@ -106,10 +106,13 @@ class CombinedController extends AbstractSearch
             $general = $this->getServiceLocator()->get('VuFind\Config')
                 ->get('config');
             $viewParams = array(
-              'searchClassId' => $searchClassId,
-              'currentSearch' => $settings,
-              'showCartControls' => $currentOptions->supportsCart()
-                && $cart->isActive()
+                'searchClassId' => $searchClassId,
+                'currentSearch' => $settings,
+                'showCartControls' => $currentOptions->supportsCart()
+                    && $cart->isActive(),
+                'showBulkOptions' => $currentOptions->supportsCart()
+                    && isset($general->Site->showBulkOptions)
+                    && $general->Site->showBulkOptions
             );
             $html = $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
@@ -191,6 +194,9 @@ class CombinedController extends AbstractSearch
             $placement = 'distributed';
         }
 
+        // Get default config for showBulkOptions
+        $settings = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+
         // Build view model:
         return $this->createViewModel(
             array(
@@ -201,7 +207,9 @@ class CombinedController extends AbstractSearch
                 'placement' => $placement,
                 'results' => $results,
                 'supportsCart' => $supportsCart,
-                'supportsCartOptions' => $supportsCartOptions
+                'supportsCartOptions' => $supportsCartOptions,
+                'showBulkOptions' => isset($settings->Site->showBulkOptions)
+                    && $settings->Site->showBulkOptions
             )
         );
     }

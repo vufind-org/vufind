@@ -18,6 +18,7 @@ namespace WorldCat\Discovery;
 use \EasyRdf_Graph;
 use \EasyRdf_Resource;
 use \EasyRdf_Format;
+use \EasyRdf_TypeMapper;
 
 /**
  * A class that represents a Bibliographic Resource in WorldCat
@@ -49,7 +50,24 @@ class Bib extends EasyRdf_Resource
      */
     public function getCreativeWork()
     {
-        return $this->creativeWork;
+		/* Commenting this out but might need to come back
+		 * 
+		 * if (!$this->creativeWork->type()){
+			$this->graph->addType($this->creativeWork->getUri(), 'schema:CreativeWork');
+		}
+		
+		if (get_class($this->creativeWork) == 'EasyRdf_Resource'){
+			if ($this->creativeWork->type()){
+				$type = $this->creativeWork->type();
+			} else {
+				$type = 'schema:CreativeWork';
+			}
+			EasyRdf_TypeMapper::set($type, 'WorldCat\Discovery\CreativeWork');
+			$creativeWorkGraph = new EasyRdf_Graph();
+			$creativeWorkGraph->parse($this->graph->serialise('ntriples'));
+			$this->creativeWork = $creativeWorkGraph->resource($this->creativeWork->getUri());
+		}  */
+			return $this->creativeWork;
     }
     
     
@@ -81,7 +99,9 @@ class Bib extends EasyRdf_Resource
         
         static::requestSetup();
         
-        $guzzleOptions = static::getGuzzleOptions($accessToken, $logger);
+        
+        
+        $guzzleOptions = static::getGuzzleOptions(array('accessToken' => $accessToken, 'logger' => $logger));
         
         $bibURI = Bib::$serviceUrl . '/bib/data/' . $id;
         
@@ -154,7 +174,7 @@ class Bib extends EasyRdf_Resource
         
         static::requestSetup();
                 
-        $guzzleOptions = static::getGuzzleOptions($accessToken, $logger);
+        $guzzleOptions = static::getGuzzleOptions(array('accessToken' => $accessToken, 'logger' => $logger));
         
         if (empty($requestOptions['dbIds'])){
             $requestOptions['dbIds'] = 638;

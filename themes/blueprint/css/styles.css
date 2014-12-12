@@ -120,9 +120,6 @@ div.bulkActionButtons {
     border-bottom: 1px solid #eee;
     padding: 1em 0;
 }
-div.bulkActionButtons input, div.bulkActionButtons label, div.bulkActionButtons span {
-    margin-right: 10px;
-}
 
 div.bulkActionButtons a {
     padding-bottom: 0.2em;

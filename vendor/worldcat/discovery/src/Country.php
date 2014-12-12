@@ -33,7 +33,6 @@ class Country extends EasyRdf_Resource
      */
     function getName()
     {   
-        EasyRdf_Namespace::set('madsrdf', 'http://www.loc.gov/mads/rdf/v1#');
         $this->load();
         return $this->get('madsrdf:authoritativeLabel')->getValue();
     }

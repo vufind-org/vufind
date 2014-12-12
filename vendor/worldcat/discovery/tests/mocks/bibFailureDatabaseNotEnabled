@@ -5,17 +5,17 @@
         url: 'https://beta.worldcat.org/discovery/bib/search?q=gdp%20policy&dbIds=2663'
         headers:
             Host: beta.worldcat.org
-            User-Agent: 'Guzzle/3.8.1 curl/7.21.4 PHP/5.3.28'
+            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.33, WorldCat Discovery API PHP Client'
+            Accept: text/plain
             Authorization: 'Bearer tk_12345'
-            Accept: application/rdf+xml
             Content-Length: '0'
     response:
         status: 403
         headers:
-            Date: 'Tue, 04 Nov 2014 21:23:00 GMT'
-            X-OCLC-RequestId: 887666b0-2b62-4eda-ad59-3c46467f1cfc
-            X-OCLC-SelfId: 4c23fe55-cf63-4b51-8a81-51c70802b144
-            Content-Type: 'application/rdf+xml; charset=UTF-8'
-            Content-Location: 'http://beta.worldcat.org/discovery/bib/search.rdf?q=gdp%20policy&dbIds=2663'
+            Date: 'Thu, 04 Dec 2014 16:21:48 GMT'
+            X-OCLC-RequestId: 72b3fcfc-f933-4fcc-b7f5-7e3d169b7b96
+            X-OCLC-SelfId: d7baed0d-db4e-4c92-b282-2c34d46bd488
+            Content-Type: 'text/plain; charset=UTF-8'
+            Content-Location: 'http://beta.worldcat.org/discovery/bib/search.txt?q=gdp%20policy&dbIds=2663'
             Transfer-Encoding: chunked
-        body: "<rdf:RDF\n    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\n    xmlns:discovery=\"http://worldcat.org/vocab/discovery/\"\n    xmlns:j.0=\"http://worldcat.org/xmlschemas/response/\" > \n  <rdf:Description rdf:about=\"http://beta.worldcat.org/discovery/bib/search?q=gdp%20policy&amp;dbIds=2663\">\n    <j.0:returnsError rdf:nodeID=\"A0\"/>\n  </rdf:Description>\n  <rdf:Description rdf:nodeID=\"A0\">\n    <rdf:type rdf:resource=\"http://worldcat.org/xmlschemas/response/ClientRequestError\"/>\n    <discovery:errorMessage>Your query included one or more databases for which you do not have access rights. [2663]</discovery:errorMessage>\n    <discovery:errorCode rdf:datatype=\"http://www.w3.org/2001/XMLSchema#positiveInteger\">403</discovery:errorCode>\n    <discovery:errorType>http</discovery:errorType>\n  </rdf:Description>\n</rdf:RDF>\n"
+        body: "_:BX2D51882ff3X3A14a15bac686X3AX2D4082 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://worldcat.org/xmlschemas/response/ClientRequestError> .\n_:BX2D51882ff3X3A14a15bac686X3AX2D4082 <http://worldcat.org/vocab/discovery/errorMessage> \"Your query included one or more databases for which you do not have access rights. [2663]\" .\n_:BX2D51882ff3X3A14a15bac686X3AX2D4082 <http://worldcat.org/vocab/discovery/errorCode> \"403\"^^<http://www.w3.org/2001/XMLSchema#positiveInteger> .\n_:BX2D51882ff3X3A14a15bac686X3AX2D4082 <http://worldcat.org/vocab/discovery/errorType> \"http\" .\n<http://beta.worldcat.org/discovery/bib/search?q=gdp%20policy&dbIds=2663> <http://worldcat.org/xmlschemas/response/returnsError> _:BX2D51882ff3X3A14a15bac686X3AX2D4082 .\n"

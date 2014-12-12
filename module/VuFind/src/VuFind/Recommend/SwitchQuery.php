@@ -258,7 +258,7 @@ class SwitchQuery implements RecommendInterface
         // Remove escaped quotes as they are of no consequence:
         $query = str_replace('\"', ' ', $query);
         return (strpos($query, '"') === false)
-            ? false : str_replace('"', ' ', $query);
+            ? false : trim(str_replace('"', ' ', $query));
     }
 
     /**
@@ -320,7 +320,7 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
-     * Get the new search handler, or false if it does not apply.
+     * Get an array of suggestion messages.
      *
      * @return array
      */

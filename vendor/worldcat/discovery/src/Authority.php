@@ -25,21 +25,17 @@ use \EasyRdf_Format;
 */
 class Authority extends Thing
 {   
-    /**
-     * Load the Authority from the URI
-     * @param string $format
-     */ 
-    public function load($format = null)
-    {
-        $formats = EasyRdf_Format::getNames();
-        foreach ($formats as $format){
-            if ($format != 'rdfxml'){
-                EasyRdf_Format::unregister($format);
-            }
-        }
-        parent::load($format = null);
-    }
-    
+	/**
+	 * Load the Authority from the URI
+	 * @param string $format
+	 */
+	public function load($format = null)
+	{
+		$guzzleOptions = static::getGuzzleOptions(array('accept' => 'application/rdf+xml'));
+		$responseBody = \Guzzle::get($this->getURI(), $guzzleOptions)->getBody(true);
+		$this->graph->parse($responseBody);
+	}
+	
     /**
      * Get the Label 
      * @param string $lang the language you want the label in

@@ -73,6 +73,9 @@ bibSearch:
     bibSearchByOclcNumber:
         query: no:7977212
         dbIds: 638
+    bibSearchMultiField:
+        query: name:hunger+games+AND+author:collins
+        dbIds: 638
     bibSearchFacets:
         query: cats
         facetFields:

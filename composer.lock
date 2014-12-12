@@ -329,16 +329,16 @@
         },
         {
             "name": "ocramius/proxy-manager",
-            "version": "0.5.2",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/ProxyManager.git",
-                "reference": "0ac0eb3e8e04c7fa75caaf1a43c5405623abf8f5"
+                "reference": "a80a39fac4fbd771aea7d3871929933a3a1bbf3e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/0ac0eb3e8e04c7fa75caaf1a43c5405623abf8f5",
-                "reference": "0ac0eb3e8e04c7fa75caaf1a43c5405623abf8f5",
+                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/a80a39fac4fbd771aea7d3871929933a3a1bbf3e",
+                "reference": "a80a39fac4fbd771aea7d3871929933a3a1bbf3e",
                 "shasum": ""
             },
             "require": {
@@ -360,7 +360,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.6.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -388,7 +388,7 @@
                 "proxy pattern",
                 "service proxies"
             ],
-            "time": "2014-09-28 14:18:11"
+            "time": "2014-12-12 10:59:05"
         },
         {
             "name": "oyejorge/less.php",
@@ -704,17 +704,17 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.6.0",
+            "version": "v2.6.1",
             "target-dir": "Symfony/Component/EventDispatcher",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher.git",
-                "reference": "697331d4ac78668cf6d21a2bb009b3faae92814f"
+                "reference": "720fe9bca893df7ad1b4546649473b5afddf0216"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/697331d4ac78668cf6d21a2bb009b3faae92814f",
-                "reference": "697331d4ac78668cf6d21a2bb009b3faae92814f",
+                "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/720fe9bca893df7ad1b4546649473b5afddf0216",
+                "reference": "720fe9bca893df7ad1b4546649473b5afddf0216",
                 "shasum": ""
             },
             "require": {
@@ -758,21 +758,21 @@
             ],
             "description": "Symfony EventDispatcher Component",
             "homepage": "http://symfony.com",
-            "time": "2014-11-28 10:00:40"
+            "time": "2014-12-02 20:19:20"
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.6.0",
+            "version": "v2.6.1",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "51c845cf3e4bfc182d1d5c05ed1c7338361d86f8"
+                "reference": "3346fc090a3eb6b53d408db2903b241af51dcb20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/51c845cf3e4bfc182d1d5c05ed1c7338361d86f8",
-                "reference": "51c845cf3e4bfc182d1d5c05ed1c7338361d86f8",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/3346fc090a3eb6b53d408db2903b241af51dcb20",
+                "reference": "3346fc090a3eb6b53d408db2903b241af51dcb20",
                 "shasum": ""
             },
             "require": {
@@ -805,7 +805,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2014-11-20 13:24:23"
+            "time": "2014-12-02 20:19:20"
         },
         {
             "name": "vufind-org/vufindcode",
@@ -891,11 +891,11 @@
         },
         {
             "name": "worldcat/discovery",
-            "version": "0.13.0",
+            "version": "0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/OCLC-Developer-Network/worldcat-discovery-php.git",
-                "reference": "d727baf39e9237bccf59c67399811edca5383b4d"
+                "reference": "05f15ed456f2f8a04415879b2d6fa1dfcc417c5a"
             },
             "require": {
                 "easyrdf/easyrdf": "*",
@@ -928,7 +928,7 @@
             "keywords": [
                 "OCLC"
             ],
-            "time": "2014-11-26 19:18:44"
+            "time": "2014-12-04 18:34:21"
         },
         {
             "name": "zendframework/zendframework",
@@ -1359,17 +1359,17 @@
         },
         {
             "name": "symfony/css-selector",
-            "version": "v2.6.0",
+            "version": "v2.6.1",
             "target-dir": "Symfony/Component/CssSelector",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/CssSelector.git",
-                "reference": "41953ad30ffc5cd710d106cf01eff79f6effa117"
+                "reference": "93eb315b545b60a908271762fb4bfa1f9954b851"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/CssSelector/zipball/41953ad30ffc5cd710d106cf01eff79f6effa117",
-                "reference": "41953ad30ffc5cd710d106cf01eff79f6effa117",
+                "url": "https://api.github.com/repos/symfony/CssSelector/zipball/93eb315b545b60a908271762fb4bfa1f9954b851",
+                "reference": "93eb315b545b60a908271762fb4bfa1f9954b851",
                 "shasum": ""
             },
             "require": {
@@ -1406,21 +1406,21 @@
             ],
             "description": "Symfony CssSelector Component",
             "homepage": "http://symfony.com",
-            "time": "2014-10-26 07:46:28"
+            "time": "2014-12-02 20:19:20"
         },
         {
             "name": "symfony/process",
-            "version": "v2.6.0",
+            "version": "v2.6.1",
             "target-dir": "Symfony/Component/Process",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Process.git",
-                "reference": "dc88f75d1c07791e5733f90be747961dce26cf05"
+                "reference": "bf0c9bd625f13b0b0bbe39919225cf145dfb935a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Process/zipball/dc88f75d1c07791e5733f90be747961dce26cf05",
-                "reference": "dc88f75d1c07791e5733f90be747961dce26cf05",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/bf0c9bd625f13b0b0bbe39919225cf145dfb935a",
+                "reference": "bf0c9bd625f13b0b0bbe39919225cf145dfb935a",
                 "shasum": ""
             },
             "require": {
@@ -1453,7 +1453,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "http://symfony.com",
-            "time": "2014-11-04 14:29:39"
+            "time": "2014-12-02 20:19:20"
         }
     ],
     "aliases": [],

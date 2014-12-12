@@ -75,7 +75,7 @@ class Offer extends EasyRdf_Resource
         
         static::requestSetup();
         
-        $guzzleOptions = static::getGuzzleOptions($accessToken, $logger);
+        $guzzleOptions = static::getGuzzleOptions(array('accessToken' => $accessToken, 'logger' => $logger));
         
         $bibURI = Bib::$serviceUrl . '/offer/oclc/' . $id . '?' . static::buildParameters(null, $requestOptions);
         

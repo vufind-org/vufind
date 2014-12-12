@@ -128,9 +128,13 @@ class Person extends Thing
      * @param string $id
      * @return WorldCat\Discovery\Person
      */
-    public static function findByVIAFID($id){
+    public static function findByVIAFID($id, $logger = null){
+    	$options = array();
         $uri = static::$viafServiceUrl . '/' . $id;
-        return static::findByURI($uri);
+        if (isset($logger)){
+        	$options['logger'] = $logger;
+        }
+        return static::findByURI($uri, $options);
     }
     
 }

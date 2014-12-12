@@ -103,7 +103,9 @@ class KitTest extends \PHPUnit_Framework_TestCase
      */
     function testParseTypes($bib)
     {
-        $this->assertContains('library:Kit', $bib->types());
+        $this->assertContains('bgn:Kit', $bib->types());
+        $this->assertContains('schema:MediaObject', $bib->types());
+        $this->assertContains('schema:Movie', $bib->types());
         $this->assertContains('schema:CreativeWork', $bib->types());
     }
 }

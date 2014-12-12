@@ -106,7 +106,7 @@ class Database extends EasyRdf_Resource
         
         static::requestSetup();
         
-        $guzzleOptions = static::getGuzzleOptions($accessToken, $logger);
+        $guzzleOptions = static::getGuzzleOptions(array('accessToken' => $accessToken, 'logger' => $logger));
         
         $databaseURI = static::$serviceUrl . '/database/data/' . $id;
         
@@ -148,7 +148,7 @@ class Database extends EasyRdf_Resource
         
         static::requestSetup();
                 
-        $guzzleOptions = static::getGuzzleOptions($accessToken, $logger);
+        $guzzleOptions = static::getGuzzleOptions(array('accessToken' => $accessToken, 'logger' => $logger));
         
         $databaseListURI = static::$serviceUrl . '/database/list';
         

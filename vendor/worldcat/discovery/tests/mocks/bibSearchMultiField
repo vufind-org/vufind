@@ -1,0 +1,22 @@
+
+-
+    request:
+        method: GET
+        url: 'https://beta.worldcat.org/discovery/bib/search?q=name%3Ahunger%2Bgames%2BAND%2Bauthor%3Acollins&dbIds=638'
+        headers:
+            Host: beta.worldcat.org
+            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.33, WorldCat Discovery API PHP Client'
+            Accept: text/plain
+            Authorization: 'Bearer tk_12345'
+            Content-Length: '0'
+    response:
+        status: 200
+        headers:
+            Date: 'Thu, 04 Dec 2014 16:21:36 GMT'
+            X-OCLC-RequestId: 70d580bb-48ab-4314-93cc-a40bc7bad7b1
+            X-OCLC-SelfId: 37f1d1fe-7fcb-4994-b45d-4b3082b39c2d
+            Content-Type: 'text/plain; charset=UTF-8'
+            Content-Location: 'http://beta.worldcat.org/discovery/bib/search.txt?q=name%3Ahunger%2Bgames%2BAND%2Bauthor%3Acollins&dbIds=638'
+            Vary: 'Accept-Encoding, User-Agent'
+            Transfer-Encoding: chunked
+        body: "<https://beta.worldcat.org/discovery/bib/search?dbIds=638&itemsPerPage=10&q=name:hunger+games+AND+author:collins&sortBy=relevance&startIndex=0> <http://worldcat.org/vocab/discovery/itemsPerPage> \"10\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n<https://beta.worldcat.org/discovery/bib/search?dbIds=638&itemsPerPage=10&q=name:hunger+games+AND+author:collins&sortBy=relevance&startIndex=0> <http://worldcat.org/vocab/discovery/startIndex> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n<https://beta.worldcat.org/discovery/bib/search?dbIds=638&itemsPerPage=10&q=name:hunger+games+AND+author:collins&sortBy=relevance&startIndex=0> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://worldcat.org/vocab/discovery/SearchResults> .\n<https://beta.worldcat.org/discovery/bib/search?dbIds=638&itemsPerPage=10&q=name:hunger+games+AND+author:collins&sortBy=relevance&startIndex=0> <http://worldcat.org/vocab/discovery/totalResults> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n"
