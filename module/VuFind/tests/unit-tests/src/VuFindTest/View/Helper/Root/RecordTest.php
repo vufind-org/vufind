@@ -136,6 +136,20 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test getCollectionMetadata.
+     *
+     * @return void
+     */
+    public function testGetCollectionMetadata()
+    {
+        $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
+        $record->getView()->expects($this->at(0))->method('render')
+            ->with($this->equalTo('RecordDriver/SolrMarc/collection-info.phtml'))
+            ->will($this->returnValue('success'));
+        $this->assertEquals('success', $record->getCollectionMetadata());
+    }
+
+    /**
      * Test getSearchResult.
      *
      * @return void
@@ -311,15 +325,113 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test various ways of making getQrCode() fail.
+     *
+     * @return void
+     */
+    public function testGetQrCodeFailures()
+    {
+        // Disabled by default:
+        $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
+        $this->assertFalse($record->getQrCode('core'));
+
+        // Disabled mode:
+        $config = array('QRCode' => array('showInCore' => false));
+        $record = $this->getRecord($this->loadRecordFixture('testbug1.json'), $config);
+        $this->assertFalse($record->getQrCode('core'));
+
+        // Invalid mode:
+        $this->assertFalse($record->getQrCode('bad-bad-bad'));
+    }
+
+    /**
+     * Test successful getQrCode() call.
+     *
+     * @return void
+     */
+    public function testGetQrCodeSuccess()
+    {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $context = $this->getMockContext();
+        $context->expects($this->once())->method('apply')
+            ->with($this->equalTo(array('driver' => $driver, 'extra' => 'xyzzy')))
+            ->will($this->returnValue(array('bar' => 'baz')));
+        $context->expects($this->once())->method('restore')
+            ->with($this->equalTo(array('bar' => 'baz')));
+        $config = array('QRCode' => array('showInCore' => true));
+        $record = $this->getRecord($driver, $config, $context, '2:qrcode-show');
+        $record->getView()->expects($this->at(0))->method('render')
+            ->with($this->equalTo('RecordDriver/SolrMarc/core-qrcode.phtml'))
+            ->will($this->returnValue('success'));
+        $this->assertEquals('http://foo/bar?text=success&level=L&size=3&margin=4', $record->getQrCode('core', array('extra' => 'xyzzy')));
+    }
+
+    /**
+     * Test getThumbnail() - no thumbnail case
+     *
+     * @return void
+     */
+    public function testGetThumbnailNone()
+    {
+        // No thumbnail:
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $driver->setRawData(array('Thumbnail' => false));
+        $record = $this->getRecord($driver);
+        $this->assertFalse($record->getThumbnail());
+    }
+
+    /**
+     * Test getThumbnail() - hardcoded thumbnail case
+     *
+     * @return void
+     */
+    public function testGetThumbnailHardCoded()
+    {
+        // Hard-coded thumbnail:
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $driver->setRawData(array('Thumbnail' => 'http://foo/this.jpg'));
+        $record = $this->getRecord($driver);
+        $this->assertEquals('http://foo/this.jpg', $record->getThumbnail());
+    }
+
+    /**
+     * Test getThumbnail() - dynamic thumbnail case
+     *
+     * @return void
+     */
+    public function testGetThumbnailDynamic()
+    {
+        // Hard-coded thumbnail:
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $driver->setRawData(array('Thumbnail' => array('bar' => 'baz')));
+        $record = $this->getRecord($driver, array(), null, '1:cover-show');
+        $this->assertEquals('http://foo/bar?bar=baz', $record->getThumbnail());
+    }
+
+    /**
+     * Test getLinkDetails with an empty list
+     *
+     * @return void
+     */
+    public function testGetLinkDetailsEmpty()
+    {
+        // Hard-coded thumbnail:
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $record = $this->getRecord($driver);
+        $this->assertEquals(array(), $record->getLinkDetails());
+    }
+
+    /**
      * Get a Record object ready for testing.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver  Record driver
      * @param array|Config                      $config  Configuration
      * @param \VuFind\View\Helper\Root\Context  $context Context helper
+     * @param bool|string                       $url     Should we add a URL helper? False if no, expected timing + : + expected route if yes.
      *
      * @return Record
      */
-    protected function getRecord($driver, $config = array(), $context = null)
+    protected function getRecord($driver, $config = array(), $context = null, $url = false)
     {
         if (null === $context) {
             $context = $this->getMockContext();
@@ -328,6 +440,12 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $view->expects($this->at(0))->method('plugin')
             ->with($this->equalTo('context'))
             ->will($this->returnValue($context));
+        if ($url) {
+            list($at, $route) = explode(':', $url);
+            $view->expects($this->at($at))->method('plugin')
+                ->with($this->equalTo('url'))
+                ->will($this->returnValue($this->getMockUrl($route)));
+        }
         $config = is_array($config) ? new \Zend\Config\Config($config) : $config;
         $record = new Record($config);
         $record->setView($view);
@@ -345,6 +463,22 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $context->expects($this->any())->method('__invoke')
             ->will($this->returnValue($context));
         return $context;
+    }
+
+    /**
+     * Get a mock URL helper
+     *
+     * @param string $expectedRoute Route expected by mock helper
+     *
+     * @return \Zend\View\Helper\Url
+     */
+    protected function getMockUrl($expectedRoute)
+    {
+        $url = $this->getMock('Zend\View\Helper\Url');
+        $url->expects($this->once())->method('__invoke')
+            ->with($this->equalTo($expectedRoute))
+            ->will($this->returnValue('http://foo/bar'));
+        return $url;
     }
 
     /**
