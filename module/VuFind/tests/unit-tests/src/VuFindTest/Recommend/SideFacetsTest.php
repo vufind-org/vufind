@@ -100,6 +100,77 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test facet initialization.
+     *
+     * @return void
+     */
+    public function testFacetInit()
+    {
+        $configLoader = $this->getMockConfigLoader(
+            array(
+                'Results' => array(
+                    'format' => 'Format',
+                ),
+                'Results_Settings' => array(
+                    'orFacets' => '*',  // test or facet support
+                ),
+                'Checkboxes' => array(
+                    'description' => 'filter',
+                )
+            )
+        );
+        $results = $this->getMockResults();
+        $params = $results->getParams();
+        $params->expects($this->once())->method('addFacet')->with($this->equalTo('format'), $this->equalTo('Format'), $this->equalTo(true));
+        $params->expects($this->once())->method('addCheckboxFacet')->with($this->equalTo('filter'), $this->equalTo('description'));
+        $this->getSideFacets($configLoader, $results, ':~Checkboxes');  // test ~ checkbox flip function
+    }
+
+    /**
+     * Test getFacetOperator
+     *
+     * @return void
+     */
+    public function testGetFacetOperator()
+    {
+        $this->assertEquals('AND', $this->getSideFacets()->getFacetOperator('format')); // default
+        $configLoader = $this->getMockConfigLoader(
+            array(
+                'Results' => array(
+                    'format' => 'Format',
+                ),
+                'Results_Settings' => array(
+                    'orFacets' => '*',  // test or facet support
+                ),
+            )
+        );
+        $sf = $this->getSideFacets($configLoader);
+        $this->assertEquals('OR', $sf->getFacetOperator('format'));
+    }
+
+    /**
+     * Test excludeAllowed
+     *
+     * @return void
+     */
+    public function testExcludeAllowed()
+    {
+        $this->assertFalse($this->getSideFacets()->excludeAllowed('format')); // default
+        $configLoader = $this->getMockConfigLoader(
+            array(
+                'Results' => array(
+                    'format' => 'Format',
+                ),
+                'Results_Settings' => array(
+                    'exclude' => '*',  // test or facet support
+                ),
+            )
+        );
+        $sf = $this->getSideFacets($configLoader);
+        $this->assertTrue($sf->excludeAllowed('format'));
+    }
+
+    /**
      * Test getVisibleFilters
      *
      * @return void
