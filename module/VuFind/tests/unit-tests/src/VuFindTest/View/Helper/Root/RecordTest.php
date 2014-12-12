@@ -422,16 +422,88 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test getLinkDetails with valid details
+     *
+     * @return void
+     */
+    public function testGetLinkDetailsSuccess()
+    {
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $driver->setRawData(
+            array(
+                'URLs' => array(
+                    array('route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link')
+                )
+            )
+        );
+        $record = $this->getRecord($driver, array(), null, '1:fake-route', 2);
+        $this->assertEquals(
+            array(
+                array('route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link', 'url' => 'http://proxy?_=http://server-foo/baz')
+            ),
+            $record->getLinkDetails()
+        );
+    }
+
+    /**
+     * Test getLinkDetails with invalid details
+     *
+     * @return void
+     * @expectedException Exception
+     * @expectedExceptionMessage Invalid URL array.
+     */
+    public function testGetLinkDetailsFailure()
+    {
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $driver->setRawData(
+            array(
+                'URLs' => array(
+                    array('bad' => 'junk')
+                )
+            )
+        );
+        $record = $this->getRecord($driver);
+        $this->assertEquals(
+            array(
+                array('route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link', 'url' => 'http://proxy?_=http://server-foo/baz')
+            ),
+            $record->getLinkDetails()
+        );
+    }
+
+    /**
+     * Test getUrlList
+     *
+     * @return void
+     */
+    public function testGetUrlList()
+    {
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $driver->setRawData(
+            array(
+                'URLs' => array(
+                    array('route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link')
+                )
+            )
+        );
+        $record = $this->getRecord($driver, array(), null, '1:fake-route', 2);
+        $this->assertEquals(
+            array('http://proxy?_=http://server-foo/baz'), $record->getUrlList()
+        );
+    }
+
+    /**
      * Get a Record object ready for testing.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver  Record driver
-     * @param array|Config                      $config  Configuration
-     * @param \VuFind\View\Helper\Root\Context  $context Context helper
-     * @param bool|string                       $url     Should we add a URL helper? False if no, expected timing + : + expected route if yes.
+     * @param \VuFind\RecordDriver\AbstractBase $driver    Record driver
+     * @param array|Config                      $config    Configuration
+     * @param \VuFind\View\Helper\Root\Context  $context   Context helper
+     * @param bool|string                       $url       Should we add a URL helper? False if no, expected timing + : + expected route if yes.
+     * @param bool|int                          $serverurl Should we add a ServerURL helper? False if no, expected timing if yes.
      *
      * @return Record
      */
-    protected function getRecord($driver, $config = array(), $context = null, $url = false)
+    protected function getRecord($driver, $config = array(), $context = null, $url = false, $serverurl = false)
     {
         if (null === $context) {
             $context = $this->getMockContext();
@@ -445,6 +517,11 @@ class RecordTest extends \PHPUnit_Framework_TestCase
             $view->expects($this->at($at))->method('plugin')
                 ->with($this->equalTo('url'))
                 ->will($this->returnValue($this->getMockUrl($route)));
+        }
+        if (false !== $serverurl) {
+            $view->expects($this->at($serverurl))->method('plugin')
+                ->with($this->equalTo('serverurl'))
+                ->will($this->returnValue($this->getMockServerUrl()));
         }
         $config = is_array($config) ? new \Zend\Config\Config($config) : $config;
         $record = new Record($config);
@@ -478,6 +555,21 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $url->expects($this->once())->method('__invoke')
             ->with($this->equalTo($expectedRoute))
             ->will($this->returnValue('http://foo/bar'));
+        return $url;
+    }
+
+    /**
+     * Get a mock server URL helper
+     *
+     * @param string $expectedRoute Route expected by mock helper
+     *
+     * @return \Zend\View\Helper\ServerUrl
+     */
+    protected function getMockServerUrl()
+    {
+        $url = $this->getMock('Zend\View\Helper\ServerUrl');
+        $url->expects($this->once())->method('__invoke')
+            ->will($this->returnValue('http://server-foo/baz'));
         return $url;
     }
 
