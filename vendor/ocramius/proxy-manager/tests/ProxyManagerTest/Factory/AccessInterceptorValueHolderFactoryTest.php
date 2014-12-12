@@ -29,6 +29,8 @@ use stdClass;
  *
  * @author Marco Pivetta <ocramius@gmail.com>
  * @license MIT
+ *
+ * @group Coverage
  */
 class AccessInterceptorValueHolderFactoryTest extends PHPUnit_Framework_TestCase
 {
@@ -36,6 +38,16 @@ class AccessInterceptorValueHolderFactoryTest extends PHPUnit_Framework_TestCase
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
     protected $inflector;
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    protected $signatureChecker;
+
+    /**
+     * @var \ProxyManager\Signature\ClassSignatureGeneratorInterface|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $classSignatureGenerator;
 
     /**
      * @var \ProxyManager\Configuration|\PHPUnit_Framework_MockObject_MockObject
@@ -47,13 +59,28 @@ class AccessInterceptorValueHolderFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->config    = $this->getMock('ProxyManager\\Configuration');
-        $this->inflector = $this->getMock('ProxyManager\\Inflector\\ClassNameInflectorInterface');
+        $this->config                  = $this->getMock('ProxyManager\\Configuration');
+        $this->inflector               = $this->getMock('ProxyManager\\Inflector\\ClassNameInflectorInterface');
+        $this->signatureChecker        = $this->getMock('ProxyManager\\Signature\\SignatureCheckerInterface');
+        $this->classSignatureGenerator = $this->getMock('ProxyManager\\Signature\\ClassSignatureGeneratorInterface');
+
         $this
             ->config
             ->expects($this->any())
             ->method('getClassNameInflector')
             ->will($this->returnValue($this->inflector));
+
+        $this
+            ->config
+            ->expects($this->any())
+            ->method('getSignatureChecker')
+            ->will($this->returnValue($this->signatureChecker));
+
+        $this
+            ->config
+            ->expects($this->any())
+            ->method('getClassSignatureGenerator')
+            ->will($this->returnValue($this->classSignatureGenerator));
     }
 
     /**
@@ -155,6 +182,9 @@ class AccessInterceptorValueHolderFactoryTest extends PHPUnit_Framework_TestCase
             ->method('getUserClassName')
             ->with('stdClass')
             ->will($this->returnValue('ProxyManagerTestAsset\\LazyLoadingMock'));
+
+        $this->signatureChecker->expects($this->atLeastOnce())->method('checkSignature');
+        $this->classSignatureGenerator->expects($this->once())->method('addSignature')->will($this->returnArgument(0));
 
         $factory     = new AccessInterceptorValueHolderFactory($this->config);
         /* @var $proxy \ProxyManagerTestAsset\AccessInterceptorValueHolderMock */
