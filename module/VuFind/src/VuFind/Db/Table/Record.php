@@ -75,13 +75,7 @@ class Record extends Gateway
         if (empty($record) && $create == true) {
             $record = $this->createRow();
             $record->record_id = $recordId;
-            
-            if ($source === 'WorldCat') {
-                $record->data = $rawData['fullrecord'];
-            } else {
-                $record->data = json_encode($rawData);
-            }
-            
+            $record->data = json_encode($rawData);
             $record->source = $source;
             $record->user_id = $userId;
             $record->list_id = $listId;

@@ -80,19 +80,10 @@ class Connector
     {
         $response = array();
         
-        if ($record['source'] === "VuFind") {
-            $response[] = array(
-                'source' => $record['source'],
-                'data' => json_decode($record['data'], true)
-            );
-        }
-        
-        if ($record['source'] === "WorldCat") {
-            $response[] = array(
-                'source' => $record['source'],
-                'data' => $record['data']
-            );
-        }
+        $response[] = array(
+            'source' => $record['source'],
+            'data' => json_decode($record['data'], true)
+        );
         return $response;
     }
 
