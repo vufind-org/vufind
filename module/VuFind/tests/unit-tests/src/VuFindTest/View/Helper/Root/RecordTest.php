@@ -122,10 +122,199 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test getToolbar.
+     *
+     * @return void
+     */
+    public function testGetToolbar()
+    {
+        $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
+        $record->getView()->expects($this->at(0))->method('render')
+            ->with($this->equalTo('RecordDriver/SolrMarc/toolbar.phtml'))
+            ->will($this->returnValue('success'));
+        $this->assertEquals('success', $record->getToolbar());
+    }
+
+    /**
+     * Test getSearchResult.
+     *
+     * @return void
+     */
+    public function testGetSearchResult()
+    {
+        $record = $this->getRecord($this->loadRecordFixture('testbug1.json'));
+        $record->getView()->expects($this->at(0))->method('render')
+            ->with($this->equalTo('RecordDriver/SolrMarc/result-foo.phtml'))
+            ->will($this->returnValue('success'));
+        $this->assertEquals('success', $record->getSearchResult('foo'));
+    }
+
+    /**
+     * Test getListEntry.
+     *
+     * @return void
+     */
+    public function testGetListEntry()
+    {
+        $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
+        $driver->expects($this->once())->method('getContainingLists')
+            ->with($this->equalTo(42))
+            ->will($this->returnValue(array(1, 2, 3)));
+        $user = new \StdClass;
+        $user->id = 42;
+        $expected = array(
+            'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => array(1, 2, 3)
+        );
+        $context = $this->getMockContext();
+        $context->expects($this->once())->method('apply')
+            ->with($this->equalTo($expected))
+            ->will($this->returnValue(array('bar' => 'baz')));
+        $context->expects($this->once())->method('restore')
+            ->with($this->equalTo(array('bar' => 'baz')));
+        $record = $this->getRecord($driver, array(), $context);
+        $record->getView()->expects($this->at(0))->method('render')
+            ->will($this->throwException(new RuntimeException('boom')));
+        $record->getView()->expects($this->at(1))->method('render')
+            ->with($this->equalTo('RecordDriver/AbstractBase/list-entry.phtml'))
+            ->will($this->returnValue('success'));
+        $this->assertEquals('success', $record->getListEntry(null, $user));
+    }
+
+    /**
+     * Test getPreviewIds.
+     *
+     * @return void
+     */
+    public function testGetPreviewIds()
+    {
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $driver->setRawData(
+            array(
+                'CleanISBN' => '0123456789',
+                'LCCN' => '12345',
+                'OCLC' => array('1', '2'),
+            )
+        );
+        $record = $this->getRecord($driver);
+        $this->assertEquals(
+            array('ISBN0123456789', 'LCCN12345', 'OCLC1', 'OCLC2'),
+            $record->getPreviewIds()
+        );
+    }
+
+    /**
+     * Test getController.
+     *
+     * @return void
+     */
+    public function testGetController()
+    {
+        // Default (Solr) case:
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
+        $record = $this->getRecord($driver);
+        $this->assertEquals('Record', $record->getController());
+
+        // Custom source case:
+        $driver->setSourceIdentifier('Foo');
+        $this->assertEquals('Foorecord', $record->getController());
+    }
+
+    /**
+     * Test getPreviews.
+     *
+     * @return void
+     */
+    public function testGetPreviews()
+    {
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $config = new \Zend\Config\Config(array('foo' => 'bar'));
+        $context = $this->getMockContext();
+        $context->expects($this->exactly(2))->method('apply')
+            ->with($this->equalTo(compact('driver', 'config')))
+            ->will($this->returnValue(array('bar' => 'baz')));
+        $context->expects($this->exactly(2))->method('restore')
+            ->with($this->equalTo(array('bar' => 'baz')));
+        $record = $this->getRecord($driver, $config, $context);
+        $record->getView()->expects($this->at(0))->method('render')
+            ->with($this->equalTo('RecordDriver/SolrMarc/previewdata.phtml'))
+            ->will($this->returnValue('success1'));
+        $record->getView()->expects($this->at(1))->method('render')
+            ->with($this->equalTo('RecordDriver/SolrMarc/previewlink.phtml'))
+            ->will($this->returnValue('success2'));
+        $this->assertEquals('success1success2', $record->getPreviews());
+    }
+
+    /**
+     * Test getLink.
+     *
+     * @return void
+     */
+    public function testGetLink()
+    {
+        $context = $this->getMockContext();
+        $context->expects($this->once())->method('apply')
+            ->with($this->equalTo(array('lookfor' => 'foo')))
+            ->will($this->returnValue(array('bar' => 'baz')));
+        $context->expects($this->once())->method('restore')
+            ->with($this->equalTo(array('bar' => 'baz')));
+        $record = $this->getRecord(
+            $this->loadRecordFixture('testbug1.json'), array(), $context
+        );
+        $record->getView()->expects($this->at(0))->method('render')
+            ->with($this->equalTo('RecordDriver/SolrMarc/link-bar.phtml'))
+            ->will($this->returnValue('success'));
+        $this->assertEquals('success', $record->getLink('bar', 'foo'));
+    }
+
+    /**
+     * Test getCheckbox.
+     *
+     * @return void
+     */
+    public function testGetCheckbox()
+    {
+        $context = $this->getMockContext();
+        $context->expects($this->at(1))->method('renderInContext')
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(array('id' => 'VuFind|000105196', 'count' => 0, 'prefix' => 'bar')))
+            ->will($this->returnValue('success'));
+        $context->expects($this->at(2))->method('renderInContext')
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(array('id' => 'VuFind|000105196', 'count' => 1, 'prefix' => 'bar')))
+            ->will($this->returnValue('success'));
+        $record = $this->getRecord(
+            $this->loadRecordFixture('testbug1.json'), array(), $context
+        );
+        // We run the test twice to ensure that checkbox incrementing works properly:
+        $this->assertEquals('success', $record->getCheckbox('bar', 'foo'));
+        $this->assertEquals('success', $record->getCheckbox('bar', 'foo'));
+    }
+
+    /**
+     * Test getTab.
+     *
+     * @return void
+     */
+    public function testGetTab()
+    {
+        $tab = new \VuFind\RecordTab\Description();
+        $driver = $this->loadRecordFixture('testbug1.json');
+        $context = $this->getMockContext();
+        $context->expects($this->once())->method('apply')
+            ->with($this->equalTo(compact('driver', 'tab')))
+            ->will($this->returnValue(array('bar' => 'baz')));
+        $context->expects($this->once())->method('restore')
+            ->with($this->equalTo(array('bar' => 'baz')));
+        $record = $this->getRecord($driver, array(), $context);
+        $record->getView()->expects($this->at(0))->method('render')
+            ->with($this->equalTo('RecordTab/description.phtml'))
+            ->will($this->returnValue('success'));
+        $this->assertEquals('success', $record->getTab($tab));
+    }
+
+    /**
      * Get a Record object ready for testing.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver  Record driver
-     * @param array                             $config  Configuration
+     * @param array|Config                      $config  Configuration
      * @param \VuFind\View\Helper\Root\Context  $context Context helper
      *
      * @return Record
@@ -139,7 +328,8 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $view->expects($this->at(0))->method('plugin')
             ->with($this->equalTo('context'))
             ->will($this->returnValue($context));
-        $record = new Record(new \Zend\Config\Config($config));
+        $config = is_array($config) ? new \Zend\Config\Config($config) : $config;
+        $record = new Record($config);
         $record->setView($view);
         return $record->__invoke($driver);
     }
