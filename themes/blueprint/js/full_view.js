@@ -62,6 +62,14 @@ $(document).ready(function() {
             $('.search_tabs .recordTabs a').unbind('click').click(function() {
               return ajaxFLLoadTab($(this).attr('id'));
             });
+            $('.accordion_group dt').click(function() {
+              if($(this).parent().hasClass('open')) {
+                $(this).closest('.navmenu').removeClass('open');
+              } else {
+                $(this).closest('.accordion_group').find('.navmenu.open').removeClass('open');
+                $(this).parent().addClass('open');
+              }
+            });
           }
         }
       });
