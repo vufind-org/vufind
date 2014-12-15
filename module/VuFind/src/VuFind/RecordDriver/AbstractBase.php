@@ -42,7 +42,8 @@ use VuFind\Exception\LoginRequired as LoginRequiredException,
  */
 abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \VuFindSearch\Response\RecordInterface
+    \VuFindSearch\Response\RecordInterface,
+    \VuFind\Record\Cache\RecordCacheAwareInterface
 {
     /**
      * Used for identifying search backends
@@ -93,6 +94,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     protected $translator = null;
 
+    
+    protected $recordCache = null;
+    
     /**
      * Constructor
      *
@@ -250,15 +254,10 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         $resource = $resourceTable->findResource(
             $this->getUniqueId(), $this->getResourceSource(), true, $this
         );
-
+        
         // Persist record in the database for "offline" use
-        if ($this->mainConfig->Social->cache === 'enabled') {
-            $recordTable = $this->getDbTable('Record');
-            $record = $recordTable->findRecord(
-                $resource->record_id, $this->getRawData(), true, 
-                $resource->source, $user->id, $listId
-            );
-        }
+        $this->recordCache->update($resource->record_id, $this->getRawData(), 
+            $resource->source, $user->id, null, $listId);
         
         // Add the information to the user's account:
         $user->saveResource(
@@ -569,5 +568,13 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         return null !== $this->translator
             ? $this->translator->translate($msg) : $msg;
+    }
+    
+    public function getRecordCache() {
+        return $this->recordCache;
+    }
+    
+    public function setRecordCache(\VuFind\Record\Cache $recordCache) {
+       $this->recordCache = $recordCache;   
     }
 }
