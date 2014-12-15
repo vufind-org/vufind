@@ -142,7 +142,9 @@ function registerTabEvents() {
     var params = deparam($(this).attr('href'));
     params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', parts[parts.length-1], params);
+    return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
+    });
   });
 }
 
@@ -251,8 +253,8 @@ $(document).ready(function(){
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('placeHold', function() {
-    document.location.href = path+'/MyResearch/Holds';
+  Lightbox.addFormCallback('placeHold', function(html) {
+    Lightbox.checkForError(html, Lightbox.changeContent, 'info');
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = path+'/MyResearch/StorageRetrievalRequests';
