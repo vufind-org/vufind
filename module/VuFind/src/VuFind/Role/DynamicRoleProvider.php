@@ -161,12 +161,12 @@ class DynamicRoleProvider implements RoleProviderInterface
      */
     protected function getRolesForSettings($settings)
     {
-        // Extract boolean setting:
-        if (isset($settings['boolean'])) {
-            $mode = strtoupper(trim($settings['boolean']));
-            unset($settings['boolean']);
+        // Extract require setting:
+        if (isset($settings['require'])) {
+            $mode = strtoupper(trim($settings['require']));
+            unset($settings['require']);
         } else {
-            $mode = 'AND';
+            $mode = 'ALL';
         }
 
         // Extract permission setting:
@@ -181,7 +181,7 @@ class DynamicRoleProvider implements RoleProviderInterface
             $currentRoles = $providerObj->getPermissions($options);
             if ($roles === null) {
                 $roles = $currentRoles;
-            } else if ($mode == 'OR') {
+            } else if ($mode == 'ANY') {
                 $roles = array_merge($roles, $currentRoles);
             } else {
                 $roles = array_intersect($roles, $currentRoles);
