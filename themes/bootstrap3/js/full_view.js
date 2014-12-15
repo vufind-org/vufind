@@ -1,7 +1,7 @@
 /*global path, registerTabEvents*/
 
 function showhideTabs(tabid) {
-  console.log(tabid);
+  //console.log(tabid);
   $('#'+tabid).parents('.search_tabs').find('.tab-pane.active').removeClass('active');
   $('#'+tabid+'-tab').addClass('active');
   $('#'+tabid).tab('show');
@@ -33,6 +33,7 @@ function ajaxFLLoadTab(tabid) {
   } else {
     showhideTabs(tabid);
   }
+  return false;
 }
 
 $(document).ready(function() {
@@ -55,6 +56,9 @@ $(document).ready(function() {
             longNode.html(response.data);
             longNode.addClass("ajaxItem");
             longNode.removeClass("hidden");
+            $('.search_tabs .recordTabs a').unbind('click').click(function() {
+              return ajaxFLLoadTab($(this).attr('id'));
+            });
           }
         }
       });
