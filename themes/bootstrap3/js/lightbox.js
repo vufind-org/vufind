@@ -211,7 +211,6 @@ var Lightbox = {
    * Default callback is changeContent
    */
   getByUrl: function(url, post, callback) {
-    console.log(url);
     if(typeof callback == "undefined") {
       // No custom handler: display return in lightbox
       callback = this.changeContent;
