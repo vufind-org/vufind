@@ -27,6 +27,7 @@ var Lightbox = {
       Lightbox.changeContent(this.formatMessage(options.confirm, 'info', options), options.onOpen);
     } else if(isset(options.error) || isset(options.flash)) {
       if(isset(options.flash)) {
+        console.log(options.flash);
         options.error = options.flash;
         options.html = true;
       }
@@ -58,7 +59,7 @@ var Lightbox = {
   },
   formatMessage: function(message, type, options) {
     var content = '<div class="alert alert-'+type+'">'+message+'</div>';
-    if(isset(options.html)) {
+    if(isset(options.html) && !($('#modal .modal-body').html() == vufindString.loading + "...")) {
       if(true == options.html) {
         content += $('#modal .modal-body').html();
       } else {
@@ -176,11 +177,15 @@ var Lightbox = {
    *
    * If one is not found, return html to a success callback function
    */
-  checkForError: function(html, success) {
-    var fi = html.indexOf('<div class="alert alert-danger">');
+  checkForError: function(html, success, type) {
+    if(typeof type === "undefined") {
+      type = "danger";
+    }
+    var divPattern = '<div class="alert alert-'+type+'">';
+    var fi = html.indexOf(divPattern);
     if(fi > -1) {
-      var li = html.indexOf('</div>', fi+31);
-      Lightbox.on({flash:html.substring(fi+31, li).replace(/^[\s<>]+|[\s<>]+$/g, '')});
+      var li = html.indexOf('</div>', fi+divPattern.length);
+      Lightbox.open({flash:html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, '')});
     } else {
       success(html);
     }
