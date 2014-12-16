@@ -61,7 +61,7 @@ class HierarchicalFacetHelper
         }
         // Avoid problems having the reference set further below
         unset($facetItem);
-        $sortFunc = function($a, $b) use ($topLevel) {
+        $sortFunc = function ($a, $b) use ($topLevel) {
             if ($a['level'] == $b['level'] && (!$topLevel || $a['level'] == 0)) {
                 $aText = $a['displayText'] == $a['value']
                     ? $this->formatDisplayText($a['displayText'])
@@ -82,9 +82,9 @@ class HierarchicalFacetHelper
      * Helper method for building hierarchical facets:
      * Convert facet list to a hierarchical array
      *
-     * @param string    $facet            Facet name
-     * @param array     $facetList        Facet list
-     * @param UrlHelper $urlHelper        Query URL helper for building facet URLs
+     * @param string    $facet     Facet name
+     * @param array     $facetList Facet list
+     * @param UrlHelper $urlHelper Query URL helper for building facet URLs
      *
      * @return array Facet hierarchy
      *
@@ -173,9 +173,9 @@ class HierarchicalFacetHelper
     /**
      * Create an item for the hierarchical facet array
      *
-     * @param string         $facet            Facet name
-     * @param array          $item             Facet item received from Solr
-     * @param UrlQueryHelper $urlHelper        UrlQueryHelper for creating facet
+     * @param string         $facet     Facet name
+     * @param array          $item      Facet item received from Solr
+     * @param UrlQueryHelper $urlHelper UrlQueryHelper for creating facet
      * url's
      * active children
      *

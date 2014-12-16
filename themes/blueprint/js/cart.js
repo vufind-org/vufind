@@ -1,4 +1,4 @@
-/*global contextHelp, vufindString*/
+/*global cartCookieDomain, contextHelp, vufindString*/
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -51,11 +51,19 @@ function uniqueValues(array) {
     return r;
 }
 
+function getCartCookieParams() {
+    if (cartCookieDomain) {
+        return { path: '/', domain: cartCookieDomain };
+    } else {
+        return { path: '/' };
+    }
+}
+
 function saveCartCookie(items) {
     // No items?  Clear cookies:
     if (items.length == 0) {
-        $.cookie(_CART_COOKIE, null, { path: '/' });
-        $.cookie(_CART_COOKIE_SOURCES, null, { path: '/' });
+        $.cookie(_CART_COOKIE, null, getCartCookieParams());
+        $.cookie(_CART_COOKIE_SOURCES, null, getCartCookieParams());
         return;
     }
 
@@ -83,8 +91,8 @@ function saveCartCookie(items) {
     }
 
     // Save the cookies:
-    $.cookie(_CART_COOKIE, ids.join(_CART_COOKIE_DELIM), { path: '/' });
-    $.cookie(_CART_COOKIE_SOURCES, sources.join(_CART_COOKIE_DELIM), { path: '/' });
+    $.cookie(_CART_COOKIE, ids.join(_CART_COOKIE_DELIM), getCartCookieParams());
+    $.cookie(_CART_COOKIE_SOURCES, sources.join(_CART_COOKIE_DELIM), getCartCookieParams());
 }
 
 function addItemToCartCookie(item) {
