@@ -81,6 +81,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'import import-xsl' => 'XSLT importer',
             'import webcrawl' => 'Web crawler',
             'language copystring' => 'Copy one language string to another',
+            'language delete' => 'Remove a language string from all files',
             'language normalize' => 'Normalize a directory of language files',
             'util createHierarchyTrees' => 'Cache populator for hierarchies',
             'util cssBuilder' => 'LESS compiler',
