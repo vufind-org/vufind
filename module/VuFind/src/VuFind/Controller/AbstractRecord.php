@@ -537,7 +537,17 @@ class AbstractRecord extends AbstractBase
     {
         $details = $this->getRecordRouter()
             ->getTabRouteDetails($this->loadRecord(), $tab);
-        $target = $this->url()->fromRoute($details['route'], $details['params']);
+        $target = $this->getLightboxAwareUrl($details['route'], $details['params']);
+
+        // Special case: don't use anchors in jquerymobile theme, since they
+        // mess things up!
+        if (strlen($params) && substr($params, 0, 1) == '#') {
+            $themeInfo = $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
+            if ($themeInfo->getTheme() == 'jquerymobile') {
+                $params = '';
+            }
+        }
+
         return $this->redirect()->toUrl($target . $params);
     }
 

@@ -163,16 +163,13 @@ class ILS extends AbstractBase
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
-        $params = array(
-            'oldpwd' => '', 'password' => '', 'password2' => ''
-        );
-        foreach ($params as $param => $default) {
-            $params[$param] = $request->getPost()->get($param, $default);
+        $params = array();
+        foreach (array('oldpwd', 'password', 'password2') as $param) {
+            $params[$param] = $request->getPost()->get($param, '');
         }
 
         // Connect to catalog:
-        $patron = $this->authenticator->storedCatalogLogin();
-        if (!$patron) {
+        if (!($patron = $this->authenticator->storedCatalogLogin())) {
             throw new AuthException('authentication_error_technical');
         }
 
@@ -191,13 +188,8 @@ class ILS extends AbstractBase
         }
 
         // Update the user and send it back to the caller:
-        $table = $this->getUserTable();
-        $user = $table->getByUsername($patron['cat_username']);
-        $user['cat_password'] = $params['password'];
-        $user->saveCredentials(
-            !isset($user['cat_username']) ? " " : $user['cat_username'],
-            !isset($user['cat_password']) ? " " : $user['cat_password']
-        );
+        $user = $this->getUserTable()->getByUsername($patron['cat_username']);
+        $user->saveCredentials($patron['cat_username'], $params['password']);
         return $user;
     }
 
@@ -224,19 +216,18 @@ class ILS extends AbstractBase
         $user = $this->getUserTable()->getByUsername($info[$usernameField]);
 
         // No need to store the ILS password in VuFind's main password field:
-        $user->password = "";
+        $user->password = '';
 
         // Update user information based on ILS data:
-        $user->firstname = !isset($info['firstname']) ? " " : $info['firstname'];
-        $user->lastname = !isset($info['lastname']) ? " " : $info['lastname'];
-        $user->email = !isset($info['email']) ? " " : $info['email'];
-        $user->major = !isset($info['major']) ? " " : $info['major'];
-        $user->college = !isset($info['college']) ? " " : $info['college'];
+        $fields = array('firstname', 'lastname', 'email', 'major', 'college');
+        foreach ($fields as $field) {
+            $user->$field = isset($info[$field]) ? $info[$field] : ' ';
+        }
 
         // Update the user in the database, then return it to the caller:
         $user->saveCredentials(
-            !isset($info['cat_username']) ? " " : $info['cat_username'],
-            !isset($info['cat_password']) ? " " : $info['cat_password']
+            isset($info['cat_username']) ? $info['cat_username'] : ' ',
+            isset($info['cat_password']) ? $info['cat_password'] : ' '
         );
 
         return $user;

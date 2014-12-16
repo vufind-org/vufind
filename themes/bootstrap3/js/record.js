@@ -278,8 +278,13 @@ $(document).ready(function(){
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.open({confirm:vufindString['bulk_email_success']});
   });
-  Lightbox.addFormCallback('placeHold', function() {
-    document.location.href = path+'/MyResearch/Holds';
+  Lightbox.addFormCallback('placeHold', function(html) {
+    Lightbox.checkForError(html, function(html) {
+      var divPattern = '<div class="alert alert-info">';
+      var fi = html.indexOf(divPattern);
+      var li = html.indexOf('</div>', fi+divPattern.length);
+      Lightbox.confirm(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
+    });
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = path+'/MyResearch/StorageRetrievalRequests';
