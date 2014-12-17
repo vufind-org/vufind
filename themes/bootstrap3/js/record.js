@@ -280,10 +280,8 @@ $(document).ready(function(){
   });
   Lightbox.addFormCallback('placeHold', function(html) {
     Lightbox.checkForError(html, function(html) {
-      var divPattern = '<div class="alert alert-info">';
-      var fi = html.indexOf(divPattern);
-      var li = html.indexOf('</div>', fi+divPattern.length);
-      Lightbox.confirm(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
+      var success = $(html).find('.alert.alert-info');
+      Lightbox.open({confirm:success.text()});
     });
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {

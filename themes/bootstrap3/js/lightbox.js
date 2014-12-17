@@ -27,7 +27,6 @@ var Lightbox = {
       Lightbox.changeContent(this.formatMessage(options.confirm, 'info', options), options.onOpen);
     } else if(isset(options.error) || isset(options.flash)) {
       if(isset(options.flash)) {
-        console.log(options.flash);
         options.error = options.flash;
         options.html = true;
       }
@@ -38,7 +37,6 @@ var Lightbox = {
       return true;
     }
     if(this.shown == false) {
-      console.log('show');
       $('#modal').modal('show');
       this.shown = true;
     }
@@ -46,7 +44,6 @@ var Lightbox = {
   },
   close: function() {
     Lightbox.shown = false;
-    console.log('hide');
     $('#modal').removeClass('in');
     $('#modal .modal-body').html('Loading...');
     $('#modal .modal-title').html('');
@@ -142,6 +139,7 @@ var Lightbox = {
         } else {
           Lightbox.changeContent(html, options.onOpen);
         }
+        $('#modal .modal-body .fa.fa-spinner').remove();
       },
       error:function(d,e) {
         var error = "";
@@ -301,8 +299,7 @@ var Lightbox = {
     var data = this.getFormData($form);
     // If we have an action: parse
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
-    var options = POST ? {post:data, onOpen:callback} : {onOpen:callback};
-    console.log('submit', $form.attr('name'));
+    var options = POST ? {post:data, onResponse:callback} : {onResponse:callback};
     if($form.attr('action')) {
       // Parse action location
       var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
