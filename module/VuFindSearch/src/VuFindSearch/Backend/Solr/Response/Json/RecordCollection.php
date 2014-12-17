@@ -99,14 +99,9 @@ class RecordCollection extends AbstractRecordCollection
     public function getSpellcheck()
     {
         if (!$this->spellcheck) {
-            $params = isset($this->response['responseHeader']['params'])
-                ? $this->response['responseHeader']['params'] : array();
-            $sq = isset($params['spellcheck.q'])
-                ? $params['spellcheck.q']
-                : (isset($params['q']) ? $params['q'] : '');
-            $sugg = isset($this->response['spellcheck']['suggestions'])
-                ? $this->response['spellcheck']['suggestions'] : array();
-            $this->spellcheck = new Spellcheck($sugg, $sq);
+            $this->spellcheck = new Spellcheck(
+                $this->getRawSpellcheckSuggestions(), $this->getSpellcheckQuery()
+            );
         }
         return $this->spellcheck;
     }
@@ -154,5 +149,40 @@ class RecordCollection extends AbstractRecordCollection
     {
         return isset($this->response['highlighting'])
             ? $this->response['highlighting'] : array();
+    }
+
+    /**
+     * Get raw Solr input parameters from the response.
+     *
+     * @return array
+     */
+    protected function getSolrParameters()
+    {
+        return isset($this->response['responseHeader']['params'])
+            ? $this->response['responseHeader']['params'] : array();
+    }
+
+    /**
+     * Extract the best matching Spellcheck query from the raw Solr input parameters.
+     *
+     * @return string
+     */
+    protected function getSpellcheckQuery()
+    {
+        $params = $this->getSolrParameters();
+        return isset($params['spellcheck.q'])
+            ? $params['spellcheck.q']
+            : (isset($params['q']) ? $params['q'] : '');
+    }
+
+    /**
+     * Get raw Solr Spellcheck suggestions.
+     *
+     * @return array
+     */
+    protected function getRawSpellcheckSuggestions()
+    {
+        return isset($this->response['spellcheck']['suggestions'])
+            ? $this->response['spellcheck']['suggestions'] : array();
     }
 }
