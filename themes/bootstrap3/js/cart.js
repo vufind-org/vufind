@@ -183,30 +183,38 @@ $(document).ready(function() {
   $('#cartItems').click(function() {
     return Lightbox.open({controller:'Cart', action:'Cart'});
   });
+});
+function cartLoginFollowup(html) {
+  alert('cart account overwrite');
+  updatePageForLogin();
+  if (lastCartSubmit !== false) {
+    bulkActionSubmit(lastCartSubmit);
+    lastCartSubmit = false;
+  } else {
+    newAccountHandler(html);
+  }
+}
+
+document.addEventListener('Lightbox.init', function() {
   // Overwrite
-  Lightbox.addFormCallback('accountForm', function(html) {
-    updatePageForLogin();
-    if (lastCartSubmit !== false) {
-      bulkActionSubmit(lastCartSubmit);
-      lastCartSubmit = false;
-    } else {
-      newAccountHandler(html);
-    }
-  });
+  Lightbox.addFormCallback('loginForm', cartLoginFollowup);
+  Lightbox.addFormCallback('accountForm', cartLoginFollowup);
   Lightbox.addFormHandler('cartForm', function(evt) {
     lastCartSubmit = $(evt.target);
     bulkActionSubmit($(evt.target));
     return false;
   });
   Lightbox.addFormCallback('bulkEmail', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
+    Lightbox.open({confirm:vufindString['bulk_email_success']});
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
-    // After we close the lightbox, redirect to list view
-    Lightbox.addCloseAction(function() {
-      document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
+    Lightbox.open({
+      confirm:vufindString['bulk_save_success'],
+      onClose:function() {
+        // After we close the lightbox, redirect to list view
+        document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
+      }
     });
-    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({
@@ -218,7 +226,7 @@ $(document).ready(function() {
         if(data.data.needs_redirect) {
           document.location.href = data.data.result_url;
         } else {
-          Lightbox.changeContent(data.data.result_additional);
+          Lightbox.open({html:data.data.result_additional});
         }
       },
       error:function(d,e) {
@@ -227,22 +235,22 @@ $(document).ready(function() {
     });
     return false;
   });
-  $('#modal').on('hidden.bs.modal', function() {
-    // Update cart items (add to cart, remove from cart, cart lightbox interface)
-    var cartCount = $('#cartItems strong');
-    if(cartCount.length > 0) {
-      var cart = getFullCartItems();
-      var id = $('#cartId');
-      if(id.length > 0) {
-        id = id.val();
-        $('#cart-add,#cart-remove').addClass('hidden');
-        if(cart.indexOf(id) > -1) {
-          $('#cart-remove').removeClass('hidden');
-        } else {
-          $('#cart-add').removeClass('hidden');
-        }
+}, false);
+document.addEventListener('Lightbox.close',  function() {
+  // Update cart items (add to cart, remove from cart, cart lightbox interface)
+  var cartCount = $('#cartItems strong');
+  if(cartCount.length > 0) {
+    var cart = getFullCartItems();
+    var id = $('#cartId');
+    if(id.length > 0) {
+      id = id.val();
+      $('#cart-add,#cart-remove').addClass('hidden');
+      if(cart.indexOf(id) > -1) {
+        $('#cart-remove').removeClass('hidden');
+      } else {
+        $('#cart-add').removeClass('hidden');
       }
-      cartCount.html(cart.length);
     }
-  });
-});
+    cartCount.html(cart.length);
+  }
+}, false);

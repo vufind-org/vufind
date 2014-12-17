@@ -12,10 +12,16 @@ var Lightbox = {
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
   callOptions: false,
 
+  init: function() {
+    this.elem = $('#modal');
+    this.body = $('#modal .modal-body');
+    this.header = $('#modal .modal-title');
+    this.dispatch('Lightbox.init');
+  },
   open: function(options) {
     //console.log(options);
     if(isset(options.title)) {
-      $('#modal .modal-title').text(options.title);
+      this.header.text(options.title);
     }
     if(isset(options.url)) {
       this.callOptions = options;
@@ -37,16 +43,16 @@ var Lightbox = {
       return true;
     }
     if(this.shown == false) {
-      $('#modal').modal('show');
+      this.elem.modal('show');
       this.shown = true;
     }
     return false;
   },
   close: function() {
     Lightbox.shown = false;
-    $('#modal').removeClass('in');
-    $('#modal .modal-body').html('Loading...');
-    $('#modal .modal-title').html('');
+    Lightbox.elem.removeClass('in');
+    Lightbox.body.html('Loading...');
+    Lightbox.header.html('');
     if(isset(Lightbox.callOptions.onClose)) {
       Lightbox.callOptions.onClose();
       delete Lightbox.callOptions.onClose;
@@ -56,9 +62,9 @@ var Lightbox = {
   },
   formatMessage: function(message, type, options) {
     var content = '<div class="alert alert-'+type+'">'+message+'</div>';
-    if(isset(options.html) && !($('#modal .modal-body').html() == vufindString.loading + "...")) {
+    if(isset(options.html) && !(this.body.html() == vufindString.loading + "...")) {
       if(true == options.html) {
-        content += $('#modal .modal-body').html();
+        content += this.body.html();
       } else {
         content += options.html;
       }
@@ -86,23 +92,22 @@ var Lightbox = {
    */
   titleSet: true,
   changeContent: function(html, callback) {
-    var header = $('#modal .modal-header');
-    if(!(Lightbox.titleSet || isset(this.callOptions.title))) {
+    if(!(Lightbox.titleSet || isset(Lightbox.callOptions.title))) {
       var h2 = html.match(/<h2>([^<]*)<\/h2>/);
       var pLead = html.match(/<p class="lead[^>]*>([^<]*)<\/p>/);
       if(h2) {
-        header.find('.modal-title').html(h2[1]);
+        Lightbox.header.html(h2[1]);
       } else if(pLead) {
-        header.find('.modal-title').html(pLead[1]);
+        Lightbox.header.html(pLead[1]);
       }
       Lightbox.titleSet = false;
     }
-    if(header.find('.modal-title').text().length == 0) {
-      header.css('border-bottom-width', '0');
+    if(Lightbox.header.text().length == 0) {
+      Lightbox.header.css('border-bottom-width', '0');
     } else {
-      header.css('border-bottom-width', '1px');
+      Lightbox.header.css('border-bottom-width', '1px');
     }
-    $('#modal .modal-body').html(html);
+    Lightbox.body.html(html);
     if(isset(callback)) {
       callback(html);
     }
@@ -139,7 +144,7 @@ var Lightbox = {
         } else {
           Lightbox.changeContent(html, options.onOpen);
         }
-        $('#modal .modal-body .fa.fa-spinner').remove();
+        Lightbox.body.find('.fa.fa-spinner').remove();
       },
       error:function(d,e) {
         var error = "";
@@ -249,7 +254,7 @@ var Lightbox = {
    * is called and the 'shown' lightbox event is triggered
    */
   registerForms: function() {
-    var $form = $("#modal").find('form');
+    var $form = Lightbox.elem.find('form');
     $form.validator();
     var name = $form.attr('name');
     // Assign form handler based on name
@@ -311,7 +316,7 @@ var Lightbox = {
     } else {
       this.getByUrl(this.callOptions.url, options);
     }
-    $(this).find('.modal-body').html(vufindString.loading + "...");
+    this.body.html(vufindString.loading + "...");
   },
   /**
    * For when you want to handle that form all by yourself
@@ -346,12 +351,13 @@ var Lightbox = {
  * This is where you add click events to open the lightbox.
  * We do it here so that non-JS users still have a good time.
  */
-$(document).ready(function() {
+$.fn.ready(function() {
   /**
    * Hook into the Bootstrap close event
    *
    * Yes, the secret's out, our beloved Lightbox is a modal
    */
+  Lightbox.init();
   $('#modal').on('hidden.bs.modal', Lightbox.close);
   /**
    * If a link with the class .modal-link triggers the lightbox,
