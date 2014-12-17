@@ -1241,9 +1241,9 @@ class Symphony extends AbstractBase
                     $transactions;
 
                 foreach ($transactions as $transaction) {
-                    if (!empty($transaction->unseenRenewalsRemaining)) {
-                        $renewable = true;
-                    } elseif (!empty($transaction->unseenRenewalsRemainingUnlimited)) {
+                    if (!empty($transaction->unseenRenewalsRemaining)
+                        || !empty($transaction->unseenRenewalsRemainingUnlimited)
+                    ) {
                         $renewable = true;
                     } else {
                         $renewable = false;
