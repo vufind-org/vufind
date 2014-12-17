@@ -172,7 +172,9 @@ class Clickatell extends AbstractBase
     {
         // Clickatell expects UCS-2 encoding:
         if (!function_exists('iconv')) {
+            // @codeCoverageIgnoreStart
             throw new MailException('Clickatell requires iconv PHP extension.');
+            // @codeCoverageIgnoreEnd
         }
         // Normalize UTF-8 if intl extension is installed:
         if (class_exists('Normalizer')) {
