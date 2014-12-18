@@ -1729,6 +1729,34 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Change Password
+     *
+     * Attempts to change patron password (PIN code)
+     *
+     * @param array $details An array of patron id and old and new password:
+     *
+     * 'patron'      The patron array from patronLogin
+     * 'oldPassword' Old password
+     * 'newPassword' New password
+     *
+     * @return array An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function changePassword($details)
+    {
+        if (rand() % 3) {
+            return array('success' => true, 'status' => 'change_password_ok');
+        }
+        return array(
+            'success' => false,
+            'status' => 'An error has occurred',
+            'sysMessage' =>
+                'Demonstrating failure; keep trying and it will work eventually.'
+        );
+    }
+
+    /**
      * Public Function which specifies renew, hold and cancel settings.
      *
      * @param string $function The name of the feature to be checked
@@ -1766,6 +1794,12 @@ class Demo extends AbstractBase
                 'defaultRequiredDate' => '0:1:0',
                 'helpText' => 'This is an ILL request help text'
                     . ' with some <span style="color: red">styling</span>.'
+            );
+        }
+        if ($function == 'changePassword') {
+            return array(
+                'minLength' => 4,
+                'maxLength' => 20
             );
         }
         return array();

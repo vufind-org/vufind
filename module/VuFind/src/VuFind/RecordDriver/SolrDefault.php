@@ -1451,8 +1451,8 @@ class SolrDefault extends AbstractBase
      *
      * @param string $hierarchyID The hierarchy to get the tree for
      *
-     * @return mixed An associative array of hierachy trees on success (id => title),
-     * false if no hierarchies found
+     * @return mixed An associative array of hierarchy trees on success
+     * (id => title), false if no hierarchies found
      */
     public function getHierarchyTrees($hierarchyID = false)
     {

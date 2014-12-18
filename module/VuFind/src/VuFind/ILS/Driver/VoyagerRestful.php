@@ -3132,4 +3132,109 @@ EOT;
         // exist in the wild, we can make this method more sophisticated.
         return substr($institution, -5) == 'LOCAL';
     }
+
+    /**
+     * Change Password
+     *
+     * Attempts to change patron password (PIN code)
+     *
+     * @param array $details An array of patron id and old and new password:
+     *
+     * 'patron'      The patron array from patronLogin
+     * 'oldPassword' Old password
+     * 'newPassword' New password
+     *
+     * @return array An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function changePassword($details)
+    {
+        $patron = $details['patron'];
+        $id = htmlspecialchars($patron['id'], ENT_COMPAT, 'UTF-8');
+        $lastname = htmlspecialchars($patron['lastname'], ENT_COMPAT, 'UTF-8');
+        $ubId = htmlspecialchars($this->ws_patronHomeUbId, ENT_COMPAT, 'UTF-8');
+        $oldPIN = trim(
+            htmlspecialchars($details['oldPassword'], ENT_COMPAT, 'UTF-8')
+        );
+        if ($oldPIN === '') {
+            // Voyager requires the PIN code to be set even if it was empty
+            $oldPIN = '     ';
+        }
+        $newPIN = trim(
+            htmlspecialchars($details['newPassword'], ENT_COMPAT, 'UTF-8')
+        );
+        $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
+
+        $xml =  <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<ser:serviceParameters
+xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+   <ser:parameters>
+      <ser:parameter key="oldPatronPIN">
+         <ser:value>$oldPIN</ser:value>
+      </ser:parameter>
+      <ser:parameter key="newPatronPIN">
+         <ser:value>$newPIN</ser:value>
+      </ser:parameter>
+   </ser:parameters>
+   <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId" patronId="$id">
+      <ser:authFactor type="B">$barcode</ser:authFactor>
+   </ser:patronIdentifier>
+</ser:serviceParameters>
+EOT;
+
+        $result = $this->makeRequest(
+            array('ChangePINService' => false), array(), 'POST', $xml
+        );
+
+        $result->registerXPathNamespace(
+            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+        );
+        $error = $result->xpath("//ser:message[@type='error']");
+        if (!empty($error)) {
+            $error = reset($error);
+            $code = $error->attributes()->errorCode;
+            $exceptionNamespace = 'com.endinfosys.voyager.patronpin.PatronPIN.';
+            if ($code == $exceptionNamespace . 'ValidateException') {
+                return array(
+                    'success' => false, 'status' => 'authentication_error_invalid'
+                );
+            }
+            if ($code == $exceptionNamespace . 'ValidateUniqueException') {
+                return array(
+                    'success' => false, 'status' => 'password_error_not_unique'
+                );
+            }
+            if ($code == $exceptionNamespace . 'ValidateLengthException') {
+                // This issue should not be encountered if the settings are correct.
+                // Log an error and let through for an exception
+                $this->error(
+                    'ValidateLengthException encountered when trying to'
+                    . ' change patron PIN. Verify PIN length settings.'
+                );
+            }
+            throw new ILSException((string)$error);
+        }
+        return array('success' => true, 'status' => 'change_password_ok');
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        // Special case: change password is only available if properly configured.
+        if ($method == 'changePassword') {
+            return isset($this->config['changePassword']);
+        }
+        return is_callable(array($this, $method));
+    }
 }

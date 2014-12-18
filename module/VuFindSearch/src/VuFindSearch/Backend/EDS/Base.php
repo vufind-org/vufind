@@ -339,7 +339,7 @@ abstract class EdsApi_REST_Base
             );
         }
         if (!isset($result)) {
-            throw new EbscoEdsApiException('Unknown error processing reponse');
+            throw new EbscoEdsApiException('Unknown error processing response');
         }
         return $result;
     }

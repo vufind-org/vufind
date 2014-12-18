@@ -153,13 +153,9 @@ class ExpandFacets implements RecommendInterface
     }
 
     /**
-     * process
+     * Get the facet data
      *
-     * Called after the SearchObject has performed its main search.  This may be
-     * used to extract necessary information from the SearchObject or to perform
-     * completely unrelated processing.
-     *
-     * @return void
+     * @return array
      */
     public function getExpandedSet()
     {
