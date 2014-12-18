@@ -114,9 +114,9 @@ class SolrDefault extends AbstractBase
     /**
      * Search results plugin manager
      *
-     * @var \VuFind\Search\Results\PluginManager
+     * @var \VuFindSearch\Service
      */
-    protected $resultsManager;
+    protected $searchService;
 
     /**
      * Should we use hierarchy fields for simple container-child records linking?
@@ -1769,15 +1769,14 @@ class SolrDefault extends AbstractBase
      * Attach a Search Results Plugin Manager connection and related logic to
      * the driver
      *
-     * @param \VuFind\Search\Results\PluginManager $manager Search Results Plugin
+     * @param \VuFindSearch\Service $manager Search Results Plugin
      * Manager
      *
      * @return void
      */
-    public function attachResultsManager(
-        \VuFind\Search\Results\PluginManager $manager
-    ) {
-        $this->resultsManager = $manager;
+    public function attachSearchService(\VuFindSearch\Service $service)
+    {
+        $this->searchService = $service;
     }
 
     /**
@@ -1791,26 +1790,16 @@ class SolrDefault extends AbstractBase
         // count. This assumes that contained records cannot contain more records.
         if (!$this->containerLinking
             || empty($this->fields['is_hierarchy_id'])
-            || is_null($this->resultsManager)
+            || null === $this->searchService
         ) {
             return 0;
         }
 
-        $solr = $this->resultsManager->get('Solr');
-        $params = $solr->getParams();
-        $options = $params->getOptions();
-        $options->spellcheckEnabled(false);
-        $options->disableHighlighting();
-        $params->resetFacetConfig();
-        $params->setLimit(0);
-        $params->setSort('', true);
-        $params->setBasicSearch(
-            'hierarchy_parent_id:"'
-            . addcslashes($this->fields['is_hierarchy_id'], '"') . '"'
+        $safeId = addcslashes($this->fields['is_hierarchy_id'], '"');
+        $query = new \VuFindSearch\Query\Query(
+            'hierarchy_parent_id:"' . $safeId . '"'
         );
-        $solr->performAndProcessSearch();
-
-        return $solr->getResultTotal();
+        return $this->searchService->search('Solr', $query, 0, 0)->getTotal();
     }
 
     /**

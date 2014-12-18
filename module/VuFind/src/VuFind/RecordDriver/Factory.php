@@ -146,9 +146,7 @@ class Factory
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
-        $driver->attachResultsManager(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-        );
+        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
         return $driver;
     }
 
@@ -171,9 +169,7 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\ILSHoldLogic'),
             $sm->getServiceLocator()->get('VuFind\ILSTitleHoldLogic')
         );
-        $driver->attachResultsManager(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-        );
+        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
         return $driver;
     }
 
