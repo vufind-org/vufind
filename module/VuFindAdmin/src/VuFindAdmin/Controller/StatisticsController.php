@@ -53,25 +53,18 @@ class StatisticsController extends AbstractAdmin
 
         // Search statistics
         $search = $this->getServiceLocator()->get('VuFind\SearchStats');
-        $view->searchesBySource
-            = $config->Statistics->searchesBySource
-            ?: false;
-        $searchSummary = $search->getStatsSummary(
-            7, $config->Statistics->searchesBySource
-        );
-        $view->topSearches = isset($searchSummary['top'])
-            ? $searchSummary['top'] : null;
-        $view->emptySearches = isset($searchSummary['empty'])
-            ? $searchSummary['empty'] : null;
-        $view->totalSearches = isset($searchSummary['total'])
-            ? $searchSummary['total'] : null;
+        $view->searchesBySource = $config->Statistics->searchesBySource ?: false;
+        $searchSummary = $search->getStatsSummary(7, $view->searchesBySource);
+        foreach (array('top', 'empty', 'total') as $section) {
+            $key = $section . 'Searches';
+            $view->$key = isset($searchSummary[$section])
+                ? $searchSummary[$section] : null;
+        }
 
         // Record statistics
         $records = $this->getServiceLocator()->get('VuFind\RecordStats');
         $view->recordsBySource = $config->Statistics->recordsBySource ?: false;
-        $recordSummary = $records->getStatsSummary(
-            5, $config->Statistics->recordsBySource
-        );
+        $recordSummary = $records->getStatsSummary(5, $view->recordsBySource);
         $view->topRecords = isset($recordSummary['top'])
             ? $recordSummary['top'] : null;
         $view->totalRecordViews = isset($recordSummary['total'])

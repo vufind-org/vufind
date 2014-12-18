@@ -98,8 +98,6 @@ class Converter
      */
     public function convert($inputFormat, $outputFormat, $dateString)
     {
-        $errors = "Date/time problem: Details: ";
-
         // These are date formats that we definitely know how to handle, and some
         // benefit from special processing. However, items not found in this list
         // will still be attempted in a generic fashion before giving up.
@@ -120,43 +118,49 @@ class Converter
                 $regEx = '/0*([0-9]+)(-|\/)0*([0-9]+)(-|\/)0*([0-9]+)/';
                 $dateString = trim(preg_replace($regEx, '$1/$3/$5', $dateString));
             }
-            $getErrors = array(
+            $errors = array(
                 'warning_count' => 0, 'error_count' => 0, 'errors' => array()
             );
             try {
                 $date = new DateTime($dateString, $this->timezone);
             } catch (\Exception $e) {
-                $getErrors['error_count']++;
-                $getErrors['errors'][] = $e->getMessage();
+                $errors['error_count']++;
+                $errors['errors'][] = $e->getMessage();
             }
         } else {
             $date = DateTime::createFromFormat(
                 $inputFormat, $dateString, $this->timezone
             );
-            $getErrors = DateTime::getLastErrors();
+            $errors = DateTime::getLastErrors();
         }
 
-        if (isset($date) && $date instanceof DateTime) {
+        if ($errors['warning_count'] == 0 && $errors['error_count'] == 0 && $date) {
             $date->setTimeZone($this->timezone);
-        }
-
-        if ($getErrors['warning_count'] == 0
-            && $getErrors['error_count'] == 0 && $date
-        ) {
             return $date->format($outputFormat);
-        } else {
-            if (is_array($getErrors['errors']) && $getErrors['error_count'] > 0) {
-                foreach ($getErrors['errors'] as $error) {
-                    $errors .= $error . " ";
-                }
-            } else if (is_array($getErrors['warnings'])) {
-                foreach ($getErrors['warnings'] as $warning) {
-                    $errors .= $warning . " ";
-                }
-            }
-
-            throw new DateException($errors);
         }
+        throw new DateException($this->getDateExceptionMessage($errors));
+    }
+
+    /**
+     * Build an exception message from a detailed error array.
+     *
+     * @param array $details Error details
+     *
+     * @return string
+     */
+    protected function getDateExceptionMessage($details)
+    {
+        $errors = "Date/time problem: Details: ";
+        if (is_array($details['errors']) && $details['error_count'] > 0) {
+            foreach ($details['errors'] as $error) {
+                $errors .= $error . " ";
+            }
+        } else if (is_array($details['warnings'])) {
+            foreach ($details['warnings'] as $warning) {
+                $errors .= $warning . " ";
+            }
+        }
+        return $errors;
     }
 
     /**

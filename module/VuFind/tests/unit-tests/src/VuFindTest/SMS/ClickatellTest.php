@@ -88,6 +88,27 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test unexpected response
+     *
+     * @return void
+     * @expectedException VuFind\Exception\Mail
+     * @expectedExceptionMessage badbadbad
+     */
+    public function testUnexpectedResponse()
+    {
+        $client = $this->getMockClient();
+        $expectedUri = 'https://api.clickatell.com/http/sendmsg?api_id=api_id&user=user&password=password&to=1234567890&text=hello';
+        $response = new \Zend\Http\Response();
+        $response->setStatusCode(200);
+        $response->setContent('badbadbad');
+        $client->expects($this->once())->method('setMethod')->with($this->equalTo('GET'))->will($this->returnValue($client));
+        $client->expects($this->once())->method('setUri')->with($this->equalTo($expectedUri))->will($this->returnValue($client));
+        $client->expects($this->once())->method('send')->will($this->returnValue($response));
+        $obj = $this->getClickatell($client);
+        $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
+    }
+
+    /**
      * Test unsuccessful query
      *
      * @return void
