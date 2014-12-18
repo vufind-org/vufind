@@ -112,6 +112,20 @@ class SolrDefault extends AbstractBase
     protected $highlightDetails = array();
 
     /**
+     * Search results plugin manager
+     *
+     * @var \VuFind\Search\Results\PluginManager
+     */
+    protected $resultsManager;
+
+    /**
+     * Should we use hierarchy fields for simple container-child records linking?
+     *
+     * @var bool
+     */
+    protected $containerLinking = false;
+
+    /**
      * Constructor
      *
      * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
@@ -137,6 +151,12 @@ class SolrDefault extends AbstractBase
                 $this->snippetCaptions[$key] = $value;
             }
         }
+
+        // Container-contents linking
+        $this->containerLinking
+            = !isset($mainConfig->Hierarchy->simpleContainerLinks)
+            ? false : $mainConfig->Hierarchy->simpleContainerLinks;
+
         parent::__construct($mainConfig, $recordConfig);
     }
 
@@ -1307,8 +1327,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the absolute parent title(s) associated with this item
-     * (empty if none).
+     * Get the absolute parent title(s) associated with this item (empty if none).
      *
      * @return array
      */
@@ -1316,6 +1335,28 @@ class SolrDefault extends AbstractBase
     {
         return isset($this->fields['hierarchy_top_title'])
             ? $this->fields['hierarchy_top_title'] : array();
+    }
+
+    /**
+     * Get the hierarchy_parent_id(s) associated with this item (empty if none).
+     *
+     * @return array
+     */
+    public function getHierarchyParentID()
+    {
+        return isset($this->fields['hierarchy_parent_id'])
+            ? $this->fields['hierarchy_parent_id'] : array();
+    }
+
+    /**
+     * Get the parent title(s) associated with this item (empty if none).
+     *
+     * @return array
+     */
+    public function getHierarchyParentTitle()
+    {
+        return isset($this->fields['hierarchy_parent_title'])
+            ? $this->fields['hierarchy_parent_title'] : array();
     }
 
     /**
@@ -1744,5 +1785,53 @@ class SolrDefault extends AbstractBase
         return isset($this->fields['dedup_data'])
             ? $this->fields['dedup_data']
             : array();
+    }
+
+    /**
+     * Attach a Search Results Plugin Manager connection and related logic to
+     * the driver
+     *
+     * @param \VuFind\Search\Results\PluginManager $manager Search Results Plugin
+     * Manager
+     *
+     * @return void
+     */
+    public function attachResultsManager(
+        \VuFind\Search\Results\PluginManager $manager
+    ) {
+        $this->resultsManager = $manager;
+    }
+
+    /**
+     * Get the number of child records belonging to this record
+     *
+     * @return int Number of records
+     */
+    public function getChildRecordCount()
+    {
+        // Shortcut: if this record is not the top record, let's not find out the
+        // count. This assumes that contained records cannot contain more records.
+        if (!$this->containerLinking
+            || empty($this->fields['is_hierarchy_id'])
+            || is_null($this->resultsManager)
+        ) {
+            return 0;
+        }
+
+        $solr = $this->resultsManager->get('Solr');
+        $params = $solr->getParams();
+        $options = $params->getOptions();
+        $options->spellcheckEnabled(false);
+        $options->disableHighlighting();
+        $params->resetFacetConfig();
+        $params->setLimit(0);
+        $params->setSort('', true);
+        $params->setBasicSearch(
+            'hierarchy_parent_id:"'
+            . addcslashes($this->fields['is_hierarchy_id'], '"') . '"'
+        );
+        $solr->performAndProcessSearch();
+
+        return $solr->getResultTotal();
     }
 }
