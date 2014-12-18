@@ -146,119 +146,6 @@ class Solr extends AbstractBase
     }
 
     /**
-     * Get JSON for the specified hierarchy ID.
-     *
-     * Build the JSON file from the Solr fields
-     *
-     * @param string $id      Hierarchy ID.
-     * @param array  $options Additional options for XML generation.  (Currently one
-     * option is supported: 'refresh' may be set to true to bypass caching).
-     *
-     * @return string
-     */
-    public function getJSON($id, $options = array())
-    {
-        $top = $this->searchService->retrieve('Solr', $id)->getRecords();
-        if (!isset($top[0])) {
-            return null;
-        }
-        $top = $top[0];
-        $cacheFile = (null !== $this->cacheDir)
-            ? $this->cacheDir . '/tree_' . urlencode($id) . '.json'
-            : false;
-
-        $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
-        $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
-
-        if ($useCache && file_exists($cacheFile)
-            && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
-        ) {
-            $this->debug("Using cached data from $cacheFile");
-            return file_get_contents($cacheFile);
-        } else {
-            // Recursive child tree building
-            $limit = isset($options['limit']) ? $options['limit'] : 999999;
-            $json = $this->createJsonNode($id, $limit);
-            $encoded = json_encode($json);
-            // Write file
-            if (!file_exists($this->cacheDir)) {
-                mkdir($this->cacheDir);
-            }
-            file_put_contents($cacheFile, $encoded);
-            return $encoded;
-        }
-        return null;
-    }
-
-    /**
-     * Tool to auto-fill hierarchy cache.
-     *
-     * @param string  $id    Record id
-     * @param integer $limit Limit to number of responses
-     *
-     * @return \Zend\Console\Response
-     */
-    protected function createJsonNode($id, $limit)
-    {
-        $json = $this->getInitialJson($id);
-        $paramBag = new ParamBag(
-            array(
-                'fl' => 'id,title,is_hierarchy_id',
-                'q' => 'hierarchy_parent_id:"'.$id.'"',
-                'rows' => $limit,
-                'wt' => 'json'
-            )
-        );
-        $response = $this->connector->search($paramBag);
-        $records = json_decode($response);
-        if ($records->response->numFound > 0) {
-            foreach ($records->response->docs as $child) {
-                if (isset($child->is_hierarchy_id)) {
-                    $cjson = $this->createJsonNode($child->id, $limit);
-                } else {
-                    $cjson = array(
-                        'id' => $child->id,
-                        'title' => $child->title,
-                        'type' => 'record'
-                    );
-                }
-                $json['children'][] = $cjson;
-            }
-        }
-        return $json;
-    }
-
-    /**
-     * Get the title of a record from solr
-     *
-     * @param string $id Record id
-     *
-     * @return string
-     */
-    protected function getInitialJson($id)
-    {
-        $paramBag = new ParamBag(
-            array(
-                'rows' => 1,
-                'wt' => 'json',
-                'fl' => 'title, modeltype_str_mv',
-                'q' => 'id:"'.$id.'"',
-            )
-        );
-        $response = $this->connector->search($paramBag);
-        $details = json_decode($response);
-        $details = $details->response->docs[0];
-        $details->type = strtolower(implode($details->modeltype_str_mv));
-        return array(
-            'id' => $id,
-            'type' => strpos($details->type, 'collection')
-                ? 'collection'
-                : 'record',
-            'title' => $details->title,
-        );
-    }
-
-    /**
      * Get Solr Children
      *
      * @param string $parentID The starting point for the current recursion
@@ -308,7 +195,7 @@ class Solr extends AbstractBase
         }
 
         if ($sorting) {
-            $this->sortNodes($xml, 0);
+            $this->sortNodes($xml, 0, 1);
         }
 
         $xmlReturnString = '';
@@ -329,7 +216,7 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getJsonFromRecordDriver($id, $options = array())
+    public function getJSON($id, $options = array())
     {
         $top = $this->searchService->retrieve('Solr', $id)->getRecords();
         if (!isset($top[0])) {
@@ -348,6 +235,7 @@ class Solr extends AbstractBase
         ) {
             $this->debug("Using cached data from $cacheFile");
             $json = file_get_contents($cacheFile);
+            return $json;
         } else {
             $starttime = microtime(true);
             $json = array(
@@ -370,8 +258,8 @@ class Solr extends AbstractBase
                 "Hierarchy of $count records built in " .
                 abs(microtime(true) - $starttime)
             );
+            return $encoded;
         }
-        return $json;
     }
 
     /**
@@ -397,6 +285,7 @@ class Solr extends AbstractBase
             return '';
         }
         $json = array();
+        $sorting = $this->getHierarchyDriver()->treeSorting();
 
         foreach ($results->getRecords() as $current) {
             ++$count;
@@ -419,7 +308,20 @@ class Solr extends AbstractBase
                     $count
                 );
             }
-            array_push($json, $childNode);
+
+            if ($sorting) {
+                $positions = $current->getHierarchyPositionsInParents();
+                if (isset($positions[$parentID])) {
+                    $sequence = $positions[$parentID];
+                }
+                array_push($json, array((isset($sequence) ? $sequence : 0), $childNode));
+            } else {
+                array_push($json, $childNode);
+            }
+        }
+
+        if ($sorting) {
+            $this->sortNodes($json, 0, 1);
         }
 
         return $json;
@@ -433,19 +335,19 @@ class Solr extends AbstractBase
      *
      * @return void
      */
-    protected function sortNodes(&$array, $key)
+    protected function sortNodes(&$array, $sortKey, $valueKey)
     {
         $sorter=array();
-        $ret=array();
         reset($array);
         foreach ($array as $ii => $va) {
-            $sorter[$ii]=$va[$key];
+            $sorter[$ii] = $va[$sortKey];
         }
         asort($sorter);
+        $ret=array();
         foreach ($sorter as $ii => $va) {
-            $ret[$ii]=$array[$ii];
+            $ret[] = $array[$ii][$valueKey];
         }
-        $array=$ret;
+        $array = $ret;
     }
 
     /**

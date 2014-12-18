@@ -463,13 +463,13 @@ class UtilController extends AbstractBase
                 continue;
             }
             Console::writeLine(
-                "\tBuilding tree (the slow way) for " . $topIDs[$i] . '... '
+                "\tBuilding tree for " . $topIDs[$i] . '... '
                 . number_format($topIDs[$i+1]) . ' records'
             );
             $driver = $recordLoader->load($topIDs[$i]);
             if ($driver->getHierarchyType()) {
                 // Only do this if the record is actually a hierarchy type record
-                $driver->getHierarchyDriver()->getTreeSource()->getJsonFromRecordDriver(
+                $driver->getHierarchyDriver()->getTreeSource()->getJSON(
                     $topIDs[$i],
                     array('refresh' => true, 'limit' => $topIDs[$i+1])
                 );
