@@ -133,11 +133,90 @@ class JSTree extends AbstractBase
     public function render($context, $mode, $hierarchyID, $recordID = false)
     {
         if (!empty($context) && !empty($mode)) {
-            return $this->transformCollectionXML(
-                $context, $mode, $hierarchyID, $recordID
-            );
+            if ($mode == 'List') {
+                return $this->jsonToHTML(json_decode($this->getJSON($hierarchyID)), $recordID);
+            } else {
+                return $this->transformCollectionXML(
+                    $context, $mode, $hierarchyID, $recordID
+                );
+            }
         }
         return false;
+    }
+
+    /**
+     * Convert JSTree JSON structure to HTML
+     *
+     * @param JSON $node JSON object of a the JSTree
+     *
+     * @return string
+     */
+    public function jsonToHTML($node)
+    {
+        $name = strlen($node->text) > 100
+            ? substr($node->text, 0, 100) . '...'
+            : $node->text;
+        $icon = $node->type == 'record' ? 'file-o' : 'folder-open';
+        $html = '<li>'
+            . '<i class="fa fa-li fa-' . $icon . '"></i> '
+            . '<a href="' . $node->a_attr->href
+            . '" title="' . $node->text . '">'
+            . $name . '</a>';
+        if (isset($node->children)) {
+            $html .= '<ul class="fa-ul">';
+            foreach ($node->children as $child) {
+                $html .= $this->jsonToHTML($child);
+            }
+            $html .= '</ul>';
+        }
+        return $html . '</li>';
+    }
+
+    /**
+     * Render the Hierarchy Tree
+     *
+     * @param string $hierarchyID The hierarchy ID of the tree to fetch
+     *
+     * @return mixed The desired hierarchy tree output (or false on error)
+     */
+    public function getJSON($hierarchyID)
+    {
+        $json = $this->getDataSource()->getJSON($hierarchyID);
+        if ($json == null) {
+            return false;
+        }
+        return json_encode($this->formatJSON(json_decode($json)));
+    }
+
+    /**
+     * Recursive function to convert the json to the right format
+     *
+     * @param JSON $node JSON object of a node/top node
+     *
+     * @return array/object
+     */
+    protected function formatJSON($node)
+    {
+        $ret = array(
+            'id' => preg_replace('/\W/', '-', $node->id),
+            'text' => $node->title,
+            'li_attr' => array(
+                'recordid' => $node->id
+            ),
+            'a_attr' => array(
+                'href' =>  '%%%%VUFIND-BASE-URL%%%%/' . ucfirst($node->type)
+                    . '/' . $node->id,
+                'title' => $node->title
+            ),
+            'type' => $node->type
+        );
+        if (isset($node->children)) {
+            $ret['children'] = array();
+            for ($i=0;$i<count($node->children);$i++) {
+                $ret['children'][$i] = $this->formatJSON($node->children[$i]);
+            }
+        }
+        return $ret;
     }
 
     /**

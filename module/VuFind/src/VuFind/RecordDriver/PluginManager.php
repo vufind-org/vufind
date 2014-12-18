@@ -89,8 +89,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     public function getSolrRecord($data)
     {
-        $key = 'Solr' . ucwords($data['recordtype']);
-        $recordType = $this->has($key) ? $key : 'SolrDefault';
+        if(isset($data['recordtype'])) {
+            $key = 'Solr' . ucwords($data['recordtype']);
+            $recordType = $this->has($key) ? $key : 'SolrDefault';
+        } else {
+            $recordType = 'SolrDefault';
+        }
 
         // Build the object:
         $driver = $this->get($recordType);

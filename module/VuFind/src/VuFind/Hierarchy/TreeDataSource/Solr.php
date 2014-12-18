@@ -51,6 +51,13 @@ class Solr extends AbstractBase
     protected $searchService;
 
     /**
+     * Solr Connector
+     *
+     * @var Connector
+     */
+    protected $connector;
+
+    /**
      * Cache directory
      *
      * @var string
@@ -68,13 +75,15 @@ class Solr extends AbstractBase
      * Constructor.
      *
      * @param SearchService $search   Search service
+     * @param Connector     $solr     Solr Backend Connector
      * @param string        $cacheDir Directory to hold cache results (optional)
      * @param array         $filters  Filters to apply to Solr tree queries
      */
-    public function __construct(SearchService $search, $cacheDir = null,
+    public function __construct(SearchService $search, $solr, $cacheDir = null,
         $filters = array()
     ) {
         $this->searchService = $search;
+        $this->connector = $solr;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');
         }
@@ -134,6 +143,116 @@ class Solr extends AbstractBase
             );
         }
         return $xml;
+    }
+
+    /**
+     * Get JSON for the specified hierarchy ID.
+     *
+     * Build the JSON file from the Solr fields
+     *
+     * @param string $id      Hierarchy ID.
+     * @param array  $options Additional options for XML generation.  (Currently one
+     * option is supported: 'refresh' may be set to true to bypass caching).
+     *
+     * @return string
+     */
+    public function getJSON($id, $options = array())
+    {
+        $top = $this->searchService->retrieve('Solr', $id)->getRecords();
+        if (!isset($top[0])) {
+            return null;
+        }
+        $top = $top[0];
+        $cacheFile = (null !== $this->cacheDir)
+            ? $this->cacheDir . '/tree_' . urlencode($id) . '.json'
+            : false;
+
+        $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
+        $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
+
+        if ($useCache && file_exists($cacheFile)
+            && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
+        ) {
+            $this->debug("Using cached data from $cacheFile");
+            return file_get_contents($cacheFile);
+        } else {
+            // Recursive child tree building
+            $limit = isset($options['limit']) ? $options['limit'] : 999999;
+            $json = $this->createJsonNode($id, $limit);
+            $encoded = json_encode($json);
+            // Write file
+            file_put_contents($cacheFile, $encoded);
+            return $encoded;
+        }
+        return null;
+    }
+
+    /**
+     * Tool to auto-fill hierarchy cache.
+     *
+     * @param string  $id    Record id
+     * @param integer $limit Limit to number of responses
+     *
+     * @return \Zend\Console\Response
+     */
+    protected function createJsonNode($id, $limit)
+    {
+        $json = $this->getInitialJson($id);
+        $paramBag = new ParamBag(
+            array(
+                'fl' => 'id,title,is_hierarchy_id',
+                'q' => 'hierarchy_parent_id:"'.$id.'"',
+                'rows' => $limit,
+                'wt' => 'json'
+            )
+        );
+        $response = $this->connector->search($paramBag);
+        $records = json_decode($response);
+        if ($records->response->numFound > 0) {
+            foreach ($records->response->docs as $child) {
+                if (isset($child->is_hierarchy_id)) {
+                    $cjson = $this->createJsonNode($child->id, $limit);
+                } else {
+                    $cjson = array(
+                        'id' => $child->id,
+                        'title' => $child->title,
+                        'type' => 'record'
+                    );
+                }
+                $json['children'][] = $cjson;
+            }
+        }
+        return $json;
+    }
+
+    /**
+     * Get the title of a record from solr
+     *
+     * @param string $id Record id
+     *
+     * @return string
+     */
+    protected function getInitialJson($id)
+    {
+        $paramBag = new ParamBag(
+            array(
+                'rows' => 1,
+                'wt' => 'json',
+                'fl' => 'title, modeltype_str_mv',
+                'q' => 'id:"'.$id.'"',
+            )
+        );
+        $response = $this->connector->search($paramBag);
+        $details = json_decode($response);
+        $details = $details->response->docs[0];
+        $details->type = strtolower(implode($details->modeltype_str_mv));
+        return array(
+            'id' => $id,
+            'type' => strpos($details->type, 'collection')
+                ? 'collection'
+                : 'record',
+            'title' => $details->title,
+        );
     }
 
     /**

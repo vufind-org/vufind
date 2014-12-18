@@ -29,6 +29,7 @@ namespace VuFindConsole\Controller;
 use File_MARC, File_MARCXML, VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
+use VuFindSearch\ParamBag;
 use Zend\Console\Console;
 
 /**
@@ -442,21 +443,40 @@ class UtilController extends AbstractBase
     public function createhierarchytreesAction()
     {
         $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        $hierarchies = $this->getServiceLocator()
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr')
-            ->getFullFieldFacets(array('hierarchy_top_id'));
-        foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
-            if (empty($hierarchy['value'])) {
+        $paramBag = new ParamBag(
+            array(
+                'rows' => 0,
+                'q' => '*:*',
+                'wt' => 'json',
+                'facet' => 'true',
+                'facet.field' => 'hierarchy_top_id'
+            )
+        );
+        $solr = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
+            ->get('Solr')->getConnector();
+        // Search
+        $response = $solr->search($paramBag);
+        $hierarchies = json_decode($response);
+        $topIDs = $hierarchies->facet_counts->facet_fields->hierarchy_top_id;
+        for ($i=0;$i<count($topIDs);$i+=2) {
+            if (empty($topIDs[$i])) {
                 continue;
             }
-            Console::writeLine("Building tree for {$hierarchy['value']}...");
-            $driver = $recordLoader->load($hierarchy['value']);
+            Console::writeLine(
+                "\tBuilding tree for " . $topIDs[$i] . '... '
+                . number_format($topIDs[$i+1]) . ' records'
+            );
+            $driver = $recordLoader->load($topIDs[$i]);
             if ($driver->getHierarchyType()) {
                 // Only do this if the record is actually a hierarchy type record
-                $driver->getHierarchyDriver()->getTreeSource()
-                    ->getXML($hierarchy['value'], array('refresh' => true));
+                $driver->getHierarchyDriver()->getTreeSource()->getJSON(
+                    $topIDs[$i],
+                    array('refresh' => true, 'limit' => $topIDs[$i+1])
+                );
             }
         }
+        Console::writeLine(count($topIDs)/2 . ' files');
+
         return $this->getSuccessResponse();
     }
 
