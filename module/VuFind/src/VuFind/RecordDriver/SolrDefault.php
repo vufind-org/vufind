@@ -1338,28 +1338,6 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the hierarchy_parent_id(s) associated with this item (empty if none).
-     *
-     * @return array
-     */
-    public function getHierarchyParentID()
-    {
-        return isset($this->fields['hierarchy_parent_id'])
-            ? $this->fields['hierarchy_parent_id'] : array();
-    }
-
-    /**
-     * Get the parent title(s) associated with this item (empty if none).
-     *
-     * @return array
-     */
-    public function getHierarchyParentTitle()
-    {
-        return isset($this->fields['hierarchy_parent_title'])
-            ? $this->fields['hierarchy_parent_title'] : array();
-    }
-
-    /**
      * Get an associative array (id => title) of collections containing this record.
      *
      * @return array
@@ -1833,5 +1811,17 @@ class SolrDefault extends AbstractBase
         $solr->performAndProcessSearch();
 
         return $solr->getResultTotal();
+    }
+
+    /**
+     * Get the container record id.
+     *
+     * @return string Container record id (empty string if none)
+     */
+    public function getContainerRecordID()
+    {
+        return $this->containerLinking
+            && !empty($this->fields['hierarchy_parent_id'])
+            ? $this->fields['hierarchy_parent_id'][0] : '';
     }
 }
