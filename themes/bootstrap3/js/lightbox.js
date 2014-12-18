@@ -18,6 +18,28 @@ var Lightbox = {
     this.header = $('#modal .modal-title');
     this.dispatch('Lightbox.init');
   },
+
+  /**
+   * The unified call function, takes an object with these properites
+   *
+   * 'url':string - save current options, get Lightbox content by URL
+   *
+   * 'controller':string - used with action to get Lightbox content
+   * 'action':string     - used with controller to get Lightbox content
+   *
+   * 'get':object  - GET parameters
+   * 'post':object - POST parameters
+   *
+   * 'html':string - Replace the content of the Lightbox with this HTML
+   *
+   * 'error':string   - replace Lightbox content with closeable error message
+   * 'confirm':string - replace Lightbox content with closeable info message
+   * 'flash':string   - add error to top of Ligthbox content
+   *
+   * 'onOpen':function(html)     - call function when Lightbox content changes
+   * 'onClose':function()        - call function when Lightbox closes
+   * 'onResponse':function(html) - call function when Lightbox receives response for 'url' call
+   */
   open: function(options) {
     //console.log(options);
     if(isset(options.title)) {
