@@ -116,7 +116,7 @@ class SolrDefault extends AbstractBase
      *
      * @var \VuFindSearch\Service
      */
-    protected $searchService;
+    protected $searchService = null;
 
     /**
      * Should we use hierarchy fields for simple container-child records linking?
