@@ -38,7 +38,7 @@
         <a id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toolge="tab" data-target="#<?=strtolower($tab)?>-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
       </li>
       <? endforeach; ?>
-        <li class="hidden">
+        <li>
         <a id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toogle="tab" data-target="#tools-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
         <?=$this->translate('ajaxview_label_tools') ?>
         </a>
