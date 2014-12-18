@@ -311,7 +311,8 @@ var Lightbox = {
       var params = action.split('?');
       action = action.split('/');
       var get = params.length > 1 ? deparam(params[1]) : data['id'] ? {id:data['id']} : {};
-      this.getByUrl(this.convertToUrl(action[0], action[action.length-1], get), options);
+      options.url = this.convertToUrl(action[0], action[action.length-1], get);
+      this.open(options);
     // If not: fake context by using the previous action
     } else {
       this.getByUrl(this.callOptions.url, options);
