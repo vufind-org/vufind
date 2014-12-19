@@ -52,7 +52,7 @@
     <? foreach ($this->tabs as $tab => $obj): ?>
       <? if ($tab == 'HierarchyTree') continue; ?>
       <div class="navmenu">
-        <dt><?=$this->transEsc($tab)?></dt>
+        <dt><?=$this->transEsc($obj->getDescription())?></dt>
         <dd><?=$this->record($this->driver)->getTab($obj) ?></dd>
       </div>
     <? endforeach; ?>
