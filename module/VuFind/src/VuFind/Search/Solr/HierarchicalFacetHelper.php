@@ -95,12 +95,13 @@ class HierarchicalFacetHelper
      */
     public function buildFacetArray($facet, $facetList, $urlHelper = false)
     {
+        // getParamArray() is expensive, so call it just once and pass it on
+        $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = array();
-        $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper
+                $facet, $item, $urlHelper, $paramArray
             );
         }
 
@@ -173,15 +174,16 @@ class HierarchicalFacetHelper
     /**
      * Create an item for the hierarchical facet array
      *
-     * @param string         $facet     Facet name
-     * @param array          $item      Facet item received from Solr
-     * @param UrlQueryHelper $urlHelper UrlQueryHelper for creating facet
+     * @param string         $facet      Facet name
+     * @param array          $item       Facet item received from Solr
+     * @param UrlQueryHelper $urlHelper  UrlQueryHelper for creating facet
      * url's
+     * @param array          $paramArray URL parameters
      * active children
      *
      * @return array Facet item
      */
-    protected function createFacetItem($facet, $item, $urlHelper)
+    protected function createFacetItem($facet, $item, $urlHelper, $paramArray)
     {
         $href = '';
         $exclude = '';

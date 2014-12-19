@@ -83,6 +83,13 @@ class SwitchQuery implements RecommendInterface
     protected $transforms = array();
 
     /**
+     * Search results object.
+     *
+     * @var \VuFind\Search\Base\Results
+     */
+    protected $results;
+
+    /**
      * Constructor
      *
      * @param BackendManager $backendManager Search backend plugin manager
