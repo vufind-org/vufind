@@ -104,9 +104,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     		);
     		$wskey = new WSKey($this->wskey, $this->secret, $options);
     		$accessToken = $wskey->getAccessTokenWithClientCredentials($this->institution, $this->institution);
-    		$this->session->accessToken = $accessToken;
+    		$this->accessToken = $accessToken;
     	}
-    	return $this->session->accessToken;
+    	return $this->accessToken;
     }
 
     /**
@@ -131,6 +131,8 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 	    	try {
 	    		$client = $this->httpService
 	    		->createClient($wmsAvailabilityRequest);
+	    		$adapter = new \Zend\Http\Client\Adapter\Curl();
+	    		$client->setAdapter($adapter);
 	    		$client->setHeaders(array(
 	    				"Authorization" => 'Bearer ' . $this->getAccessToken()->getValue()
 	    			));
@@ -138,7 +140,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 	    	} catch (\Exception $e) {
 	    		throw new ILSException($e->getMessage());
 	    	}
-	    	$availabilityXML = $response->xml();
+	    	$availabilityXML = simplexml_load_string($wmsAvailabilityResponse->getContent());
 	    	$copies = $availabilityXML->xpath('//holdings/holding');
 	    	foreach ($copies as $copy){
 	    		$holding[] = array('availability' => $copy->circulations->circulation->availableNow->attributes()->value,
