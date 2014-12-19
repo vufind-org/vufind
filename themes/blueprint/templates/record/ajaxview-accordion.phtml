@@ -22,12 +22,9 @@
 
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
-<!--
-    <?=$this->record($this->driver)->getCoreMetadata()?>
--->
   </div>
 <div class="accordion_group" id="accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>">
-  <div class="navmenu">
+  <div class="navmenu open">
     <dt><?=$this->translate('ajaxview_label_information') ?></dt>
     <dd><?=$this->record($this->driver)->getCoreMetadata()?></dd>
   </div>
