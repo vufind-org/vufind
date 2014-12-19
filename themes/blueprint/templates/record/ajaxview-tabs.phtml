@@ -20,7 +20,6 @@
 
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
   <?=$this->flashmessages()?>
-<!--   <?=$this->record($this->driver)->getCoreMetadata()?> -->
 
   <div id="<?=escapeJSAttr($this->driver->getUniqueId()) ?>_tabs" class="recordTabs tabnav">
     <ul>
@@ -37,7 +36,7 @@
           <a id="<?=strtolower($tab)?>_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toolge="tab" data-target="#<?=strtolower($tab)?>-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>"><?=$this->transEsc($desc)?></a>
         </li>
       <? endforeach; ?>
-      <li class="hidden">
+      <li>
         <a id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toogle="tab" data-target="#tools-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
           <?=$this->translate('ajaxview_label_tools') ?>
         </a>
@@ -53,14 +52,14 @@
     <div class="clear"></div>
   </div>
   <div class="recordsubcontent">
-    <div id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
+    <div class="active" id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
       <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>
-    <div id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
+    <div style="display:none" id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
       <?=$this->record($this->driver)->getToolbar()?>
     </div>
     <? if ($this->related()->getList($this->driver) != null): ?>
-      <div id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
+      <div style="display:none" id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
         <? foreach ($this->related()->getList($this->driver) as $current): ?>
           <?=$this->related()->render($current)?>
         <? endforeach; ?>
