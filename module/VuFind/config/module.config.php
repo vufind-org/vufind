@@ -463,7 +463,7 @@ $config = array(
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
-                	'staffturtle' => 'VuFind\RecordTab\Factory::getTurtleWorldCatDiscovery',
+                    'staffturtle' => 'VuFind\RecordTab\Factory::getTurtleWorldCatDiscovery',
                     'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
                 ),
                 'invokables' => array(
@@ -655,13 +655,15 @@ $config = array(
             ),
             'VuFind\RecordDriver\WorldCatDiscovery' => array(
                 'tabs' => array (
-                    'Holdings' => 'HoldingsWorldCatDiscovery', 'Description' => 'Description',
+                    'Holdings (ILS)' => 'HoldingsILS',
+                    'Holdings (WCD)' => 'HoldingsWorldCatDiscovery',
+                    'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
                     'Details' => 'TurtleWorldCatDiscovery',
                 ),
-                'defaultTab' => 'Holdings',
+                'defaultTab' => 'Holdings (ILS)',
             ),
         ),
     ),

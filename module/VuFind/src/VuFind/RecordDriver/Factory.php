@@ -245,9 +245,15 @@ class Factory
      */
     public static function getWorldCatDiscovery(ServiceManager $sm)
     {
-        return new WorldCatDiscovery(
+        $driver = new WorldCatDiscovery(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery')
         );
+        $driver->attachILS(
+            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
+            $sm->getServiceLocator()->get('VuFind\ILSHoldLogic'),
+            $sm->getServiceLocator()->get('VuFind\ILSTitleHoldLogic')
+        );
+        return $driver;
     }
 }

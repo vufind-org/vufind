@@ -38,6 +38,8 @@ namespace VuFind\RecordDriver;
  */
 class WorldCatDiscovery extends SolrDefault
 {
+    use IlsAwareTrait;
+
     /**
      * Raw WorldCatDiscovery response object.
      *
