@@ -239,6 +239,12 @@ class OAI
     protected $endDate = 0;
 
     /**
+     * Harvest records individually (first a ListIdentifiers then one GetRecord 
+     * request per record)
+     */
+    protected $harvest_individually = false;
+
+    /**
      * Constructor.
      *
      * @param string            $target   Target directory for harvest.
@@ -860,21 +866,48 @@ class OAI
      */
     protected function getRecords($params)
     {
-        // Make the OAI-PMH request:
-        $response = $this->sendRequest('ListRecords', $params);
+        $resumptionToken = null;
+        $list_response = null;
+        $records = array();
 
-        // Save the records from the response:
-        if ($response->ListRecords->record) {
-            $this->processRecords($response->ListRecords->record);
+        if ($this->harvest_individually) {
+
+            // Request the identifiers only
+            $params['metadataPrefix'] = 'oai_dc';
+            $response = $this->sendRequest('ListIdentifiers', $params);
+            $params['metadataPrefix'] = $this->metadataPrefix;
+
+            $list_response = $response->ListIdentifiers;
+
+            foreach ($list_response->header as $header) {
+                $getRecordParams = array(
+                    'identifier' => (string)$header->identifier,
+                    'metadataPrefix' => $params['metadataPrefix']
+                );
+                $record_resp = $this->sendRequest('GetRecord', $getRecordParams);
+                $records[] = $record_resp->GetRecord->record;
+            }
+        } else {
+            // Make the OAI-PMH request:
+            $response = $this->sendRequest('ListRecords', $params);
+            $list_response = $response->ListRecords;
+
+            // Save the records from the response:
+            if ($list_response->record) {
+                $records = $list_response->record;
+            }
         }
+
+        $this->processRecords($records);
 
         // If we have a resumption token, keep going; otherwise, we're done -- save
         // the end date.
-        if (isset($response->ListRecords->resumptionToken)
-            && !empty($response->ListRecords->resumptionToken)
+        if (isset($list_response->resumptionToken)
+            && !empty($list_response->resumptionToken)
         ) {
-            return $response->ListRecords->resumptionToken;
-        } else if ($this->endDate > 0) {
+            return $list_response->resumptionToken;
+        } 
+        if ($this->endDate > 0) {
             $dateFormat = ($this->granularity == 'YYYY-MM-DD') ?
                 'Y-m-d' : 'Y-m-d\TH:i:s\Z';
             $this->saveLastHarvestedDate(date($dateFormat, $this->endDate));
@@ -940,6 +973,7 @@ class OAI
             'harvestedIdLog', 'injectId', 'injectSetSpec', 'injectSetName',
             'injectDate', 'injectHeaderElements', 'verbose', 'sanitize', 'badXMLLog',
             'httpUser', 'httpPass', 'timeout', 'combineRecords', 'combineRecordsTag',
+            'harvest_individually'
         );
         foreach ($mappableSettings as $current) {
             if (isset($settings[$current])) {
