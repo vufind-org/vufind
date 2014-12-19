@@ -38,7 +38,6 @@ class Offer extends EasyRdf_Resource
      * @param $accessToken OCLC/Auth/AccessToken
      * @param $options array All the optional parameters are valid
      * - heldBy array which is a limiter to restrict search results to items held by a given institution(s)
-     * - notHeldBy array which is imiter to restrict search results to items that are not held by a given institution(s).
      * - heldByGroup array which is a limiter to restrict search results to items held by a given group(s)
      * - heldInCountry string which is a limiter to restrict search results to items held by institutions within a specific ISO country code
      * - useFRBRGrouping boolean whether or not the reponse returns the representative record for the FRBR group.
@@ -55,7 +54,7 @@ class Offer extends EasyRdf_Resource
     
     public static function findByOclcNumber($id, $accessToken, $options = null)
     {
-        $validRequestOptions = array('heldBy', 'notHeldBy', 'heldByGroup', 'heldInCountry', 'useFRBRGrouping', 'startIndex', 'itemsPerPage', 'lat', 'lon', 'distance', 'unit');
+        $validRequestOptions = array('heldBy', 'heldByGroup', 'heldInCountry', 'useFRBRGrouping', 'startIndex', 'itemsPerPage', 'lat', 'lon', 'distance', 'unit');
         if (isset($options)){
             $parsedOptions = static::parseOptions($options, $validRequestOptions);
             $requestOptions = $parsedOptions['requestOptions'];

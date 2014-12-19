@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "df7ec1c1bf8feb582a829ca2d67d600a",
+    "hash": "e4d1c5b47548998aa951bf8e63575db0",
     "packages": [
         {
             "name": "OCLC/Auth",
@@ -891,11 +891,11 @@
         },
         {
             "name": "worldcat/discovery",
-            "version": "0.14.0",
+            "version": "0.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/OCLC-Developer-Network/worldcat-discovery-php.git",
-                "reference": "05f15ed456f2f8a04415879b2d6fa1dfcc417c5a"
+                "reference": "c087cf71d83e2a96644f68784a9536916df53c66"
             },
             "require": {
                 "easyrdf/easyrdf": "*",
@@ -928,7 +928,7 @@
             "keywords": [
                 "OCLC"
             ],
-            "time": "2014-12-04 18:34:21"
+            "time": "2014-12-18 21:04:36"
         },
         {
             "name": "zendframework/zendframework",

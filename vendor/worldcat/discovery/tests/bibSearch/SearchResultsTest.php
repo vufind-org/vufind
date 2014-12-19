@@ -73,6 +73,29 @@ class SearchResultsTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($i, $searchResult->getDisplayPosition());
         }
     }
+    
+    
+    /**
+     * @vcr bibSearchTypeMapIssue
+     * can parse set of Bibs from a Search Result */
+    
+    function testSearchTypeMapIssues(){
+    	$query = 'world aids day';
+    	$search = Bib::Search($query, $this->mockAccessToken);
+    
+    	$this->assertInstanceOf('WorldCat\Discovery\BibSearchResults', $search);
+    	$this->assertEquals('0', $search->getStartIndex());
+    	$this->assertEquals('10', $search->getItemsPerPage());
+    	$this->assertInternalType('integer', $search->getTotalResults());
+    	$this->assertEquals('10', count($search->getSearchResults()));
+    	$results = $search->getSearchResults();
+    	$i = $search->getStartIndex();
+    	foreach ($search->getSearchResults() as $searchResult){
+    		$this->assertFalse(get_class($searchResult) == 'EasyRdf_Resource');
+    		$i++;
+    		$this->assertEquals($i, $searchResult->getDisplayPosition());
+    	}
+    }
 
     /**
      * @expectedException BadMethodCallException

@@ -15,6 +15,7 @@
 
 namespace WorldCat\Discovery;
 
+use \EasyRdf_Graph;
 use \EasyRdf_Namespace;
 use \EasyRdf_TypeMapper;
 use \EasyRdf_Format;
@@ -81,6 +82,7 @@ trait Helpers {
         EasyRdf_Namespace::set('rdaGr2', 'http://rdvocab.info/ElementsGr2/');
         EasyRdf_Namespace::set('madsrdf', 'http://www.loc.gov/mads/rdf/v1#');
     
+        EasyRdf_TypeMapper::delete('schema:MediaObject'); // I do not know why I need this.
         EasyRdf_TypeMapper::set('http://www.w3.org/2006/gen/ont#InformationResource', 'WorldCat\Discovery\Bib');
     
         EasyRdf_TypeMapper::set('schema:Article', 'WorldCat\Discovery\Article');
@@ -93,12 +95,6 @@ trait Helpers {
         EasyRdf_TypeMapper::set('schema:Movie', 'WorldCat\Discovery\Movie');
         EasyRdf_TypeMapper::set('schema:Book', 'WorldCat\Discovery\Book');
         EasyRdf_TypeMapper::set('schema:Series', 'WorldCat\Discovery\Series');
-        
-        EasyRdf_TypeMapper::set('bgn:ComputerFile', 'WorldCat\Discovery\CreativeWork');
-        EasyRdf_TypeMapper::set('schema:Map', 'WorldCat\Discovery\CreativeWork');
-        EasyRdf_TypeMapper::set('bgn:Newspaper', 'WorldCat\Discovery\CreativeWork');
-        EasyRdf_TypeMapper::set('bgn:MusicScore', 'WorldCat\Discovery\CreativeWork');
-        EasyRdf_TypeMapper::set('schema:CreativeWork', 'WorldCat\Discovery\CreativeWork');
     
         EasyRdf_TypeMapper::set('schema:Country', 'WorldCat\Discovery\Country');
         EasyRdf_TypeMapper::set('schema:Event', 'WorldCat\Discovery\Event');
@@ -203,5 +199,66 @@ trait Helpers {
         $queryString =  http_build_query($parameters) . $repeatingQueryParms;
     
         return $queryString;
+    }
+    
+    /**
+     * Find out if graph has resources which need type mapping
+     * @param EasyRDF_Graph $graph
+     * @return array
+     */
+    protected static function getAdditionalTypesToMap($graph)
+    {
+        $additionalTypes = array();
+        foreach ($graph->allOfType('http://www.w3.org/2006/gen/ont#InformationResource') as $resource) {
+            if (get_class($resource->getResource('schema:about')) == 'EasyRdf_Resource'){
+                foreach ($resource->getResource('schema:about')->types() as $type){
+                    if (isset($type) && !EasyRdf_TypeMapper::get($type)){
+                        $additionalTypes[] = $type;
+                    }
+                }
+            }
+        }
+        return array_unique($additionalTypes);
+    }
+    
+    /**
+     * Map types
+     * @param array $types
+     * @param string $class
+     */
+    protected static function mapTypes($types, $class = 'WorldCat\Discovery\CreativeWork')
+    {
+        foreach ($types as $type){
+            if (isset($type) && !EasyRdf_TypeMapper::get($type)){
+                EasyRdf_TypeMapper::set($type, $class);
+            }
+        }
+    }
+    
+    /**
+     * Delete type mapping
+     * @param array $types
+     * @param string $class
+     */
+    protected static function deleteTypeMapping($types)
+    {
+        foreach ($types as $type){
+            if (isset($type) && !EasyRdf_TypeMapper::get($type)){
+                EasyRdf_TypeMapper::delete($type);
+            }
+        }
+    }
+    
+    /**
+     * Reload a graph
+     * @param EasyRDF_Graph $graph
+     * @return EasyRDF_Graph
+     */
+    protected static function reloadGraph($graph)
+    {
+        $newGraph = new EasyRdf_Graph();
+        $newGraph->parse($graph->serialise('turtle'));
+        
+        return $newGraph;
     }
 }

@@ -16,7 +16,6 @@
 namespace WorldCat\Discovery;
 
 use \EasyRdf_Resource;
-use \EasyRdf_Format;
 
 /**
  * A class that represents Bibliographic Search Results in WorldCat
@@ -31,10 +30,18 @@ class BibSearchResults extends SearchResults
      * @return array
      */
     function getSearchResults(){
-        $searchResults = $this->graph->allOfType('http://www.w3.org/2006/gen/ont#InformationResource');
         $sortedSearchResults = array();
-        foreach ($searchResults as $result){
-            $sortedSearchResults[(int)$result->getCreativeWork()->getDisplayPosition()] = $result->getCreativeWork();
+        $errors = array();
+        foreach ($this->searchResults as $result){
+            if (method_exists($result->getCreativeWork(), 'getDisplayPosition')) {
+                $sortedSearchResults[(int)$result->getCreativeWork()->getDisplayPosition()] = $result->getCreativeWork();
+            } else {
+                $errors[] = $result->getCreativeWork()->get('library:oclcnum');
+            }
+        }
+        
+        if (count($errors) > 0){
+            Throw new Exception('Type mapping errors on these records: ' . implode(', ', $errors));
         }
         ksort($sortedSearchResults);
         return $sortedSearchResults;

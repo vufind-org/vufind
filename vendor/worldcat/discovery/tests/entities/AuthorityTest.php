@@ -46,6 +46,7 @@ class AuthorityTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @vcr authoritySuccess
      * can parse and return topical authority information
      * @depends testGetAuthority
      */
@@ -63,6 +64,7 @@ class AuthorityTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * @vcr authoritySuccess
      * can parse and return geographic authority information
      * @depends testGetAuthority
      */

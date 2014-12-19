@@ -25,6 +25,30 @@ use \EasyRdf_Format;
  */
 class SearchResults extends EasyRdf_Resource
 { 
+    use Helpers;
+    
+    protected $searchResults;
+    
+    /**
+     * Construct the SearchResults object and set the results property
+     *
+     * @param string $uri
+     * @param string $graph
+     */
+    public function __construct($uri, $graph = null){
+        parent::__construct($uri, $graph);
+    
+        $additionalTypes = static::getAdditionalTypesToMap($this->graph);
+        if ($additionalTypes){
+            static::mapTypes($additionalTypes);
+            $newGraph = static::reloadGraph($this->graph);
+            $this->searchResults = $newGraph->allOfType('http://www.w3.org/2006/gen/ont#InformationResource');
+            static::deleteTypeMapping($additionalTypes);
+        } else {
+            $this->searchResults = $this->graph->allOfType('http://www.w3.org/2006/gen/ont#InformationResource');
+        }
+    }
+    
     /**
      * Get Start Index
      *

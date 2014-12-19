@@ -117,4 +117,12 @@ class ComputerFileTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('schema:MediaObject', $bib->types());
     }
     
+    /**
+     *@vcr bibCompfile2
+     */
+    function testGetBibComputerFile(){
+    	$bib = Bib::find(835523324, $this->mockAccessToken);
+    	$this->assertInstanceOf('WorldCat\Discovery\CreativeWork', $bib);
+    }
+    
 }

@@ -19,6 +19,7 @@ use Guzzle\Http\StaticClient;
 use OCLC\Auth\WSKey;
 use OCLC\Auth\AccessToken;
 use WorldCat\Discovery\Bib;
+use \EasyRdf_TypeMapper;
 
 class KitTest extends \PHPUnit_Framework_TestCase
 {
