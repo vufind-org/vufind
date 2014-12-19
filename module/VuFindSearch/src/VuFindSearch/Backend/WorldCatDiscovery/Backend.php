@@ -109,8 +109,9 @@ class Backend extends AbstractBackend
     protected function getAccessToken()
     {
         if (empty($this->session->accessToken) || $this->session->accessToken->isExpired()){
+        	// need an if/else statement here about the WMS ILS Driver
             $options = array(
-                    'services' => array('WorldCatDiscoveryAPI refresh_token')
+                    'services' => array('WorldCatDiscoveryAPI', 'WMS_Availability', 'WMS_NCIP','refresh_token')
             );
             $wskey = new WSKey($this->wskey, $this->secret, $options);
             $accessToken = $wskey->getAccessTokenWithClientCredentials($this->institution, $this->institution);
@@ -149,7 +150,6 @@ class Backend extends AbstractBackend
         if (!empty($sort)) {
             $options['sortBy'] = current($sort);
         }
-        //$options['facetQueries'] = $facetQueries;
         $options['startIndex'] = $offset;
         $options['itemsPerPage'] = $limit;
 

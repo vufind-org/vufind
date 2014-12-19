@@ -371,6 +371,7 @@ $config = array(
                     'unicorn' => 'VuFind\ILS\Driver\Factory::getUnicorn',
                     'voyager' => 'VuFind\ILS\Driver\Factory::getVoyager',
                     'voyagerrestful' => 'VuFind\ILS\Driver\Factory::getVoyagerRestful',
+                	'wms' => 'VuFind\ILS\Driver\Factory::getWMS',
                 ),
                 'invokables' => array(
                     'amicus' => 'VuFind\ILS\Driver\Amicus',

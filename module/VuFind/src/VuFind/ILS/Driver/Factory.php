@@ -162,4 +162,19 @@ class Factory
             $ils->getHoldsMode(), $ils->getTitleHoldsMode()
         );
     }
+    
+    /**
+     * Factory for WMS driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return WMS
+     */
+    public static function getWMS(ServiceManager $sm)
+    {
+    	return new WMS(
+    			$sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery'),
+    			$sm->getServiceLocator()->get('VuFind\Record\Loader')
+    	);
+    }
 }

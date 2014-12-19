@@ -76,6 +76,17 @@ class WorldCatDiscovery extends SolrDefault
     {
     	return $this->offers;
     }
+    
+    public function getOffer($id){
+    	$offers = $this->getOffers();
+    	
+    	$offersAtInstitution = array_filter($offers, function($offer) use ($id)
+	    {
+
+	        return($offer->getSeller()->getURI() == 'http://worldcat.org/wcr/organization/resource/' . $id);
+	    });
+    	return $offersAtInstitution;
+    }
 
     /**
      * Get Subjects
