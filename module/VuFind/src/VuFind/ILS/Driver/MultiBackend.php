@@ -1277,7 +1277,7 @@ class MultiBackend extends AbstractBase
                 if ($source) {
                     return $source;
                 }
-            } elseif ($key === 0 || $key === 'id' || $key === 'cat_username') {
+            } elseif ($key === 0 || $key === 'id' || $key === 'item_id' || $key === 'cat_username') {
                 $source = $this->getSource(
                     $value, $key === 'cat_username' ? 'login' : ''
                 );
