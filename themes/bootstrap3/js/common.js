@@ -74,6 +74,50 @@ function deparam(url) {
   return request;
 }
 
+// Returns all the input values from a form as an associated array
+function getFormData($form) {
+  if(typeof $form === "string") {
+    $form = $('[name='+$form+']');
+  } else if(typeof $form.innerHTML === "string") {
+    $form = $($form);
+  }
+  // Gather all the data
+  var inputs = $form.find('*[name]');
+  var data = {};
+  for(var i=0;i<inputs.length;i++) {
+    var currentName = inputs[i].name;
+    var array = currentName.substring(currentName.length-2) == '[]';
+    if(array && !data[currentName.substring(0,currentName.length-2)]) {
+      data[currentName.substring(0,currentName.length-2)] = [];
+    }
+    // Submit buttons
+    if(inputs[i].type == 'submit') {
+      if($(inputs[i]).attr('clicked') == 'true') {
+        data[currentName] = inputs[i].value;
+      }
+    // Radio buttons
+    } else if(inputs[i].type == 'radio') {
+      if(inputs[i].checked) {
+        if(array) {
+          var n = currentName.substring(0,currentName.length-2);
+          data[n].push(inputs[i].value);
+        } else {
+          data[currentName] = inputs[i].value;
+        }
+      }
+    // Checkboxes
+    } else if($(inputs[i]).attr('type') != 'checkbox' || inputs[i].checked) {
+      if(array) {
+        var f = currentName.substring(0,currentName.length-2);
+        data[f].push(inputs[i].value);
+      } else {
+        data[currentName] = inputs[i].value;
+      }
+    }
+  }
+  return data;
+}
+
 // Sidebar
 function moreFacets(id) {
   $('.'+id).removeClass('hidden');
@@ -221,7 +265,7 @@ function ajaxLogin(form) {
     dataType: 'json',
     success: function(salt) {
       if (salt.status == 'OK') {
-        var params = Lightbox.getFormData($(form));
+        var params = getFormData(form);
         // base-64 encode the password (to allow support for Unicode)
         // and then encrypt the password with the salt
         params.password = hexEncode(rc4Encrypt(salt.data, btoa(unescape(encodeURIComponent(params.password)))));
@@ -236,11 +280,11 @@ function ajaxLogin(form) {
             if (login.status == 'OK') {
               updatePageForLogin();
               // and we update the modal
-              if (Lightbox.callOptions.action == 'UserLogin') {
+              if (Lightbox.LAST.action == 'UserLogin') {
                 Lightbox.close();
               } else {
-                console.log(Lightbox.callOptions);
-                Lightbox.getByUrl(Lightbox.callOptions.url, Lightbox.callOptions);
+                console.log(Lightbox.LAST);
+                Lightbox.getByUrl(Lightbox.LAST.url, Lightbox.LAST);
               }
             } else {
               Lightbox.open({flash:login.data});

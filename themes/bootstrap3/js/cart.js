@@ -1,4 +1,4 @@
-/*global bulkActionSubmit, cartCookieDomain, Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
+/*global bulkActionSubmit, cartCookieDomain, Cookies, getFormData, Lightbox, newAccountHandler, path, updatePageForLogin, vufindString */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -212,16 +212,17 @@ document.addEventListener('Lightbox.init', function() {
       confirm:vufindString['bulk_save_success'],
       onClose:function() {
         // After we close the lightbox, redirect to list view
-        document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
+        document.location.href = path+'/MyResearch/MyList/'+Lightbox.LAST.post['list'];
       }
     });
   });
   Lightbox.addFormHandler('exportForm', function(evt) {
+    console.log(typeof evt.target);
     $.ajax({
       url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
-      data:Lightbox.getFormData($(evt.target)),
+      data:getFormData(evt.target),
       success:function(data) {
         if(data.data.needs_redirect) {
           document.location.href = data.data.result_url;

@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, isset, path, Recaptcha, vufindString */
+/*global checkSaveStatuses, console, deparam, getFormData, isset, path, Recaptcha, vufindString */
 
 var Lightbox = {
   /**
@@ -10,7 +10,7 @@ var Lightbox = {
   XHR: false,        // Used for current in-progress XHR lightbox request
   formHandlers: [],  // Full custom handlers for forms; by name
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
-  callOptions: false,
+  LAST: false,
 
   init: function() {
     this.elem = $('#modal');
@@ -46,7 +46,7 @@ var Lightbox = {
       this.header.text(options.title);
     }
     if(isset(options.url)) {
-      this.callOptions = options;
+      this.LAST = options;
       this.getByUrl(options.url, options);
     } else if(isset(options.controller) && isset(options.action)) {
       options.url = this.convertToUrl(options.controller, options.action, options.get);
@@ -75,27 +75,13 @@ var Lightbox = {
     Lightbox.elem.removeClass('in');
     Lightbox.body.html('Loading...');
     Lightbox.header.html('');
-    if(isset(Lightbox.callOptions.onClose)) {
-      Lightbox.callOptions.onClose();
-      delete Lightbox.callOptions.onClose;
+    if(isset(Lightbox.LAST.onClose)) {
+      Lightbox.LAST.onClose();
+      delete Lightbox.LAST.onClose;
     }
     Lightbox.dispatch('Lightbox.close');
-    Lightbox.callOptions = false;
+    Lightbox.LAST = false;
   },
-  formatMessage: function(message, type, options) {
-    var content = '<div class="alert alert-'+type+'">'+message+'</div>';
-    if(isset(options.html) && !(this.body.html() == vufindString.loading + "...")) {
-      if(true == options.html) {
-        content += this.body.html();
-      } else {
-        content += options.html;
-      }
-    } else {
-      content += '<button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>';
-    }
-    return content;
-  },
-
   /**
    * We store all the ajax calls in case we need to cancel.
    * This function cancels the previous call and creates a new one.
@@ -106,15 +92,16 @@ var Lightbox = {
     }
     this.XHR = $.ajax(obj);
   },
+
   /**
    * Change the content of the lightbox.
    *
    * Hide the header if it's empty to make more
    * room for content and avoid double headers.
    */
-  titleSet: true,
+  titleSet: false,
   changeContent: function(html, callback) {
-    if(!(Lightbox.titleSet || isset(Lightbox.callOptions.title))) {
+    if(!(Lightbox.titleSet || isset(Lightbox.LAST.title))) {
       var h2 = html.match(/<h2>([^<]*)<\/h2>/);
       var pLead = html.match(/<p class="lead[^>]*>([^<]*)<\/p>/);
       if(h2) {
@@ -147,6 +134,20 @@ var Lightbox = {
     var evt = document.createEvent("Event");
     evt.initEvent(str, true, false);
     document.dispatchEvent(evt);
+  },
+  // Create a bootstrap alert
+  formatMessage: function(message, type, options) {
+    var content = '<div class="alert alert-'+type+'">'+message+'</div>';
+    if(isset(options.html) && !(this.body.html() == vufindString.loading + "...")) {
+      if(true == options.html) {
+        content += this.body.html();
+      } else {
+        content += options.html;
+      }
+    } else {
+      content += '<button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>';
+    }
+    return content;
   },
   /**
    * This function creates an XHR request to the URL
@@ -187,9 +188,7 @@ var Lightbox = {
     if(this.openingURL === false) {
       this.openingURL = url;
     }
-    this.lastURL = url;
-    this.lastPOST = options.post;
-    //this.openActions();
+    this.LAST = options;
     return false;
   },
 
@@ -215,66 +214,34 @@ var Lightbox = {
       success(html);
     }
   },
-  /**********************************/
-  /* ====== FORM SUBMISSIONS ====== */
-  /**********************************/
+  /***********************/
+  /* ====== FORMS ====== */
+  /***********************/
   /**
-   * Returns all the input values from a form as an associated array
+   * For when you want to handle that form all by yourself
    *
-   * This function takes a jQuery wrapped form
-   * $(event.target) for example
+   * If your handler doesn't return false, the form will submit the normal way,
+   * with all normal behavior that goes with: redirection, etc.
    */
-  getFormData: function($form) {
-    // Gather all the data
-    var inputs = $form.find('*[name]');
-    var data = {};
-    for(var i=0;i<inputs.length;i++) {
-      var currentName = inputs[i].name;
-      var array = currentName.substring(currentName.length-2) == '[]';
-      if(array && !data[currentName.substring(0,currentName.length-2)]) {
-        data[currentName.substring(0,currentName.length-2)] = [];
-      }
-      // Submit buttons
-      if(inputs[i].type == 'submit') {
-        if($(inputs[i]).attr('clicked') == 'true') {
-          data[currentName] = inputs[i].value;
-        }
-      // Radio buttons
-      } else if(inputs[i].type == 'radio') {
-        if(inputs[i].checked) {
-          if(array) {
-            var n = currentName.substring(0,currentName.length-2);
-            data[n].push(inputs[i].value);
-          } else {
-            data[currentName] = inputs[i].value;
-          }
-        }
-      // Checkboxes
-      } else if($(inputs[i]).attr('type') != 'checkbox' || inputs[i].checked) {
-        if(array) {
-          var f = currentName.substring(0,currentName.length-2);
-          data[f].push(inputs[i].value);
-        } else {
-          data[currentName] = inputs[i].value;
-        }
-      }
-    }
-    return data;
+  addFormHandler: function(formName, func) {
+    this.formHandlers[formName] = func;
   },
   /**
-   * This function adds submission events to forms loaded inside the lightbox
+   * Register a function to be called when a form submission succeeds
    *
-   * First, it will check for custom handlers, for those who want to handle everything.
-   *
-   * Then, it will check for custom form callbacks. These will be added to an anonymous
-   * function that will call Lightbox.submit with the form and the callback.
-   *
-   * Finally, if nothing custom is setup, it will add the default function which
-   * calls Lightbox.submit with a callback to close if there are no errors to display.
-   *
-   * This is a default open action, so it runs every time changeContent
-   * is called and the 'shown' lightbox event is triggered
+   * We add error checking by default, you never know when error blocks will strike.
+   * Passing false to expectsError turns this off. Errors are inserted above *current* content.
    */
+  addFormCallback: function(formName, func, expectsError) {
+    if(!isset(expectsError) || expectsError) {
+      this.formCallbacks[formName] = function(html) {
+        Lightbox.checkForError(html, func);
+      };
+    } else {
+      this.formCallbacks[formName] = func;
+    }
+  },
+  // This function adds submission events to forms loaded inside the lightbox
   registerForms: function() {
     var $form = Lightbox.elem.find('form');
     $form.validator();
@@ -316,14 +283,14 @@ var Lightbox = {
    * In the wild, forms without an action="" are submitted to the current URL.
    * In the case where we have a form with no action in the lightbox,
    * we emulate that behaviour by submitting the last URL loaded through
-   * .getByUrl, stored in lastURL in the Lightbox object.
+   * .getByUrl, stored in LAST in the Lightbox object.
    */
   submit: function($form, callback) {
     // Default callback is to close
     if(!isset(callback)) {
       callback = this.close;
     }
-    var data = this.getFormData($form);
+    var data = getFormData($form);
     // If we have an action: parse
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
     var options = POST ? {post:data, onResponse:callback} : {onResponse:callback};
@@ -337,49 +304,12 @@ var Lightbox = {
       this.open(options);
     // If not: fake context by using the previous action
     } else {
-      this.getByUrl(this.callOptions.url, options);
+      this.getByUrl(this.LAST.url, options);
     }
-    this.body.html(vufindString.loading + "...");
-  },
-  /**
-   * For when you want to handle that form all by yourself
-   *
-   * We recommend using the getLightbox action in the AJAX Controller
-   * to ensure you get a lightbox formatted page.
-   *
-   * If your handler doesn't return false, the form will submit the normal way,
-   * with all normal behavior that goes with: redirection, etc.
-   */
-  addFormHandler: function(formName, func) {
-    this.formHandlers[formName] = func;
-  },
-  /**
-   * Register a function to be called when a form submission succeeds
-   *
-   * We add error checking by default, you never know when error blocks will strike.
-   * Passing false to expectsError turns this off. Errors are inserted above *current* content.
-   */
-  addFormCallback: function(formName, func, expectsError) {
-    if(!isset(expectsError) || expectsError) {
-      this.formCallbacks[formName] = function(html) {
-        Lightbox.checkForError(html, func);
-      };
-    } else {
-      this.formCallbacks[formName] = func;
-    }
-  },
+  }
 };
 
-/**
- * This is where you add click events to open the lightbox.
- * We do it here so that non-JS users still have a good time.
- */
 $.fn.ready(function() {
-  /**
-   * Hook into the Bootstrap close event
-   *
-   * Yes, the secret's out, our beloved Lightbox is a modal
-   */
   Lightbox.init();
   $('#modal').on('hidden.bs.modal', Lightbox.close);
   /**

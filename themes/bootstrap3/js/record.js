@@ -110,7 +110,6 @@ function registerAjaxCommentRecord() {
       data: data,
       dataType: 'json',
       success: function(response) {
-        console.log(response);
         var form = 'form[name="commentRecord"]';
         if (response.status == 'OK') {
           refreshCommentList(id, recordSource);
