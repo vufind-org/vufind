@@ -213,7 +213,7 @@ class Demo extends AbstractBase
     protected function getRecordSource()
     {
         return isset($this->config['Records']['source'])
-            ? $this->config['Records']['source'] : 'Solr';
+            ? $this->config['Records']['source'] : 'VuFind';
     }
 
     /**
@@ -230,6 +230,7 @@ class Demo extends AbstractBase
         $status = $this->getFakeStatus();
         return array(
             'id'           => $id,
+            'source'       => $this->getRecordSource(),
             'item_id'      => $number,
             'number'       => $number,
             'barcode'      => sprintf("%08d", rand()%50000),
