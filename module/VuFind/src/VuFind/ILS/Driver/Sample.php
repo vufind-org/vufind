@@ -67,14 +67,19 @@ class Sample extends AbstractBase
      */
     public function getStatus($id)
     {
-        $holding[] = array('availability' => 1,
-                           'status' => 'Available',
-                           'location' => '3rd Floor Main Library',
-                           'reserve' => 'No',
-                           'callnumber' => 'A1234.567',
-                           'duedate' => '',
-                           'number' => 1);
-        return $holding;
+        return array(
+            array(
+                'id' => $id,
+                'availability' => 1,
+                'status' => 'Available',
+                'location' => '3rd Floor Main Library',
+                'reserve' => 'N',
+                'callnumber' => 'A1234.567',
+                'duedate' => '',
+                'number' => 1,
+                'barcode' => '1234567890',
+            )
+        );
     }
 
     /**
@@ -91,16 +96,7 @@ class Sample extends AbstractBase
     {
         $items = array();
         foreach ($ids as $id) {
-            $holding = array();
-            $holding[] = array('availability' => 1,
-                               'id' => $id,
-                               'status' => 'Available',
-                               'location' => '3rd Floor Main Library',
-                               'reserve' => 'No',
-                               'callnumber' => 'A1234.567',
-                               'duedate' => '',
-                               'number' => 1);
-            $items[] = $holding;
+            $items[] = $this->getStatus($id);
         }
         return $items;
     }
