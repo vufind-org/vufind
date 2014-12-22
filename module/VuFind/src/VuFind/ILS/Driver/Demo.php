@@ -1741,6 +1741,7 @@ class Demo extends AbstractBase
      *
      * @return array An array of data on the request including
      * whether or not it was successful and a system message (if available)
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function changePassword($details)
     {

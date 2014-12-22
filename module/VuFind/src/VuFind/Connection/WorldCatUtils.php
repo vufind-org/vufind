@@ -400,6 +400,29 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Get the URL to perform a related identities query.
+     *
+     * @param string $query      Query
+     * @param int    $maxRecords Max # of records to read from API (more = slower).
+     *
+     * @return string
+     */
+    protected function getRelatedIdentitiesUrl($query, $maxRecords)
+    {
+        return "http://worldcat.org/identities/search/PersonalIdentities" .
+            "?query=" . urlencode($query) .
+            "&version=1.1" .
+            "&operation=searchRetrieve" .
+            "&recordSchema=info%3Asrw%2Fschema%2F1%2FIdentities" .
+            "&maximumRecords=" . intval($maxRecords) .
+            "&startRecord=1" .
+            "&resultSetTTL=300" .
+            "&recordPacking=xml" .
+            "&recordXPath=" .
+            "&sortKeys=holdingscount";
+    }
+
+    /**
      * Given a name string, get related identities.  Inspired by Eric Lease
      * Morgan's Name Finder demo (http://zoia.library.nd.edu/sandbox/name-finder/).
      * Return value is an associative array where key = author name and value =
@@ -413,27 +436,14 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     public function getRelatedIdentities($name, $maxRecords = 10)
     {
         // Build the WorldCat Identities API query:
-        $query = $this->getIdentitiesQuery($name);
-        if (!$query) {
+        if (!($query = $this->getIdentitiesQuery($name))) {
             return false;
         }
 
-        // Get the API response:
-        $url = "http://worldcat.org/identities/search/PersonalIdentities" .
-            "?query=" . urlencode($query) .
-            "&version=1.1" .
-            "&operation=searchRetrieve" .
-            "&recordSchema=info%3Asrw%2Fschema%2F1%2FIdentities" .
-            "&maximumRecords=" . intval($maxRecords) .
-            "&startRecord=1" .
-            "&resultSetTTL=300" .
-            "&recordPacking=xml" .
-            "&recordXPath=" .
-            "&sortKeys=holdingscount";
-        $xml = $this->retrieve($url);
-
-        // Translate XML to object:
-        $data = simplexml_load_string($xml);
+        // Get the API response and translate it into an object:
+        $data = simplexml_load_string(
+            $this->retrieve($this->getRelatedIdentitiesUrl($query, $maxRecords))
+        );
 
         // Give up if expected data is missing:
         if (!isset($data->records->record)) {

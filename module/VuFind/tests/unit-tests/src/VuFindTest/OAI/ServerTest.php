@@ -68,7 +68,7 @@ class ServerTest extends \VuFindTest\Unit\TestCase
     public function testEmptyInput()
     {
         $server = $this->getServer();
-        $this->assertTrue(false !== strpos($server->getResponse(), '<error code="badArgument">Missing Verb Argument</error>'));
+        $this->assertTrue(false !== strpos($server->getResponse(), '<error code="badVerb">Missing Verb Argument</error>'));
     }
 
     /**
