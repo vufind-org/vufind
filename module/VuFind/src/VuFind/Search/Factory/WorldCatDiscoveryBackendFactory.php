@@ -96,20 +96,15 @@ class WorldCatDiscoveryBackendFactory implements FactoryInterface
         		$configOptions['institution'] = $config->get('WorldCatDiscovery')->General->institution;
         		$configOptions['heldBy'] = explode(",", $config->get('WorldCatDiscovery')->General->heldBy);
         		$configOptions['databaseIDs'] = explode(",", $config->get('WorldCatDiscovery')->General->databaseIDs);
-        } elseif ($config->get('config')->Catalog->driver == 'WMS') {
-        	$configOptions['wskey'] = $config->get('config')->get('WMS')->General->wskey;
-        	$configOptions['secret'] = $config->get('config')->General->secret;
-        	$configOptions['institution'] = $config->get('config')->General->institution;
-        //TODO: want an elseif statement here for the MultiDriver backend
         } else {
-        	throw new Exception('You do not have the proper properties setup in either the WorldCatDiscovery or WMS ini files');
+        	throw new Exception('You do not have the proper properties setup in the WorldCatDiscovery ini file');
         }	
 		
         //TODO: need to deal with what happens if the MultiDriver is being used with WMS
         if ($config->get('config')->Catalog->driver == 'WMS'){
-        	$configOptions ['wmsEnabled'] = true;
+        	$configOptions['wmsEnabled'] = true;
         } else {
-        	$configOptions ['wmsEnabled'] = false;
+        	$configOptions['wmsEnabled'] = false;
         }
         $backend = new Backend(
             $this->createRecordCollectionFactory(), $configOptions);

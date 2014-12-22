@@ -55,14 +55,23 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 	 *
 	 */
 	public function __construct($config, $recordLoader) {
-		$this->config = $config;
+		$this->wcdiscoveryConfig = $config;
 	
 		$this->recordLoader = $recordLoader;
 		
-		// want to make the configuration able to be set from WorldCat Discovery or WMS ILS Driver
-		$this->wskey = $this->config->General->wskey;;
-		$this->secret = $this->config->General->secret;;
-		$this->institution = $this->config->General->institution;
+		if ($this->wcdiscoveryConfig){
+			$this->wskey = $this->wcdiscoveryConfig->General->wskey;
+			$this->secret = $this->wcdiscoveryConfig->General->secret;
+			$this->institution = $this->wcdiscoveryConfig->General->institution;
+		} elseif ($this->config) {
+			$this->wskey = $this->config->General->wskey;
+			$this->secret = $this->config->General->secret;
+			$this->institution = $this->config->General->institution;
+		//TODO: want an elseif statement here for the MultiDriver backend
+		} else {
+			throw new Exception('You do not have the proper properties setup in either the WorldCatDiscovery or WMS ini files');
+		}
+		
 		
 		$this->session = new Container('WorldCatDiscovery');
 	}
@@ -155,6 +164,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 	    				'duedate' => $copy->circulations->circulation->availabilityDate,
 	    				'number' => $copy->copyNumber,
 	    				'item_id' => $copy->circulations->circulation->itemId,
+	    				'barcode' => $copy->circulations->circulation->itemId,
 	    				'requests_placed' => $copy->circulations->circulation->onHold->attributes()->value
 	    		);
 	    	}
