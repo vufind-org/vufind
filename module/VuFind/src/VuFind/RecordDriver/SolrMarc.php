@@ -68,8 +68,7 @@ class SolrMarc extends SolrDefault
         $marc = trim($data['fullrecord']);
 
         // check if we are dealing with MARCXML
-        $xmlHead = '<?xml version';
-        if (strcasecmp(substr($marc, 0, strlen($xmlHead)), $xmlHead) === 0) {
+        if (substr($marc, 0, 1) == '<') {
             $marc = new \File_MARCXML($marc, \File_MARCXML::SOURCE_STRING);
         } else {
             // When indexing over HTTP, SolrMarc may use entities instead of certain
