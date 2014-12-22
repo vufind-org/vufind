@@ -1344,15 +1344,16 @@ class Demo extends AbstractBase
         }
         $this->session->holds->append(
             array(
-                "id"       => $holdDetails['id'],
-                "location" => $holdDetails['pickUpLocation'],
-                "expire"   => date("j-M-y", $expire),
-                "create"   => date("j-M-y"),
-                "reqnum"   => sprintf("%06d", $nextId),
-                "item_id" => $nextId,
-                "volume" => '',
-                "processed" => '',
-                "requestGroup" => $requestGroup
+                'id'       => $holdDetails['id'],
+                'source'   => $this->getRecordSource(),
+                'location' => $holdDetails['pickUpLocation'],
+                'expire'   => date('j-M-y', $expire),
+                'create'   => date('j-M-y'),
+                'reqnum'   => sprintf('%06d', $nextId),
+                'item_id' => $nextId,
+                'volume' => '',
+                'processed' => '',
+                'requestGroup' => $requestGroup
             )
         );
 
@@ -1443,13 +1444,14 @@ class Demo extends AbstractBase
 
         $this->session->storageRetrievalRequests->append(
             array(
-                "id"       => $details['id'],
-                "location" => $details['pickUpLocation'],
-                "expire"   => date("j-M-y", $expire),
-                "create"  => date("j-M-y"),
-                "processed" => rand()%3 == 0 ? date("j-M-y", $expire) : '',
-                "reqnum"   => sprintf("%06d", $nextId),
-                "item_id"  => $nextId
+                'id'       => $details['id'],
+                'source'   => $this->getRecordSource(),
+                'location' => $details['pickUpLocation'],
+                'expire'   => date('j-M-y', $expire),
+                'create'  => date('j-M-y'),
+                'processed' => rand()%3 == 0 ? date('j-M-y', $expire) : '',
+                'reqnum'   => sprintf('%06d', $nextId),
+                'item_id'  => $nextId
             )
         );
 
@@ -1491,15 +1493,15 @@ class Demo extends AbstractBase
     {
         if (!$this->ILLRequests) {
             return array(
-                "success" => false,
-                "sysMessage" => 'ILL requests are disabled.'
+                'success' => false,
+                'sysMessage' => 'ILL requests are disabled.'
             );
         }
         // Simulate failure:
         if (rand() % 2) {
             return array(
-                "success" => false,
-                "sysMessage" =>
+                'success' => false,
+                'sysMessage' =>
                     'Demonstrating failure; keep trying and ' .
                     'it will work eventually.'
             );
@@ -1517,11 +1519,11 @@ class Demo extends AbstractBase
         if (!isset($details['requiredBy'])
             || empty($details['requiredBy'])
         ) {
-            $expire = strtotime("now + 30 days");
+            $expire = strtotime('now + 30 days');
         } else {
             try {
                 $expire = $this->dateConverter->convertFromDisplayDate(
-                    "U", $details['requiredBy']
+                    'U', $details['requiredBy']
                 );
             } catch (DateException $e) {
                 // Expiration Date is invalid
@@ -1560,13 +1562,14 @@ class Demo extends AbstractBase
 
         $this->session->ILLRequests->append(
             array(
-                "id"       => $details['id'],
-                "location" => $pickupLocation,
-                "expire"   => date("j-M-y", $expire),
-                "create"  => date("j-M-y"),
-                "processed" => rand()%3 == 0 ? date("j-M-y", $expire) : '',
-                "reqnum"   => sprintf("%06d", $nextId),
-                "item_id"  => $nextId
+                'id'       => $details['id'],
+                'source'   => $this->getRecordSource(),
+                'location' => $pickupLocation,
+                'expire'   => date('j-M-y', $expire),
+                'create'  => date('j-M-y'),
+                'processed' => rand()%3 == 0 ? date('j-M-y', $expire) : '',
+                'reqnum'   => sprintf('%06d', $nextId),
+                'item_id'  => $nextId
             )
         );
 
