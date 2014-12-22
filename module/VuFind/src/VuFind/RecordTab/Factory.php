@@ -243,13 +243,13 @@ class Factory
     }
     
     /**
-     * Factory for HoldingsWorldCatDiscovery tab plugin.
+     * Factory for StaffViewTurtleWorldCatDiscovery tab plugin.
      *
-     * @return TurtleWorldCatDiscovery
+     * @return StaffViewTurtleWorldCatDiscovery
      */
-    public static function getTurtleWorldCatDiscovery()
+    public static function getStaffViewTurtleWorldCatDiscovery()
     {
-    	return new TurtleWorldCatDiscovery();
+    	return new StaffViewTurtleWorldCatDiscovery();
     }
 
     /**

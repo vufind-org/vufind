@@ -464,7 +464,7 @@ $config = array(
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
-                    'staffturtle' => 'VuFind\RecordTab\Factory::getTurtleWorldCatDiscovery',
+                    'staffviewturtleworldcatdiscovery' => 'VuFind\RecordTab\Factory::getStaffViewTurtleWorldCatDiscovery',
                     'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
                 ),
                 'invokables' => array(
@@ -662,7 +662,7 @@ $config = array(
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
-                    'Details' => 'TurtleWorldCatDiscovery',
+                    'Details' => 'StaffViewTurtleWorldCatDiscovery',
                 ),
                 'defaultTab' => 'Holdings (ILS)',
             ),
