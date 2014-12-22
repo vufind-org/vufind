@@ -1302,21 +1302,25 @@ class MultiBackend extends AbstractBase
     protected function getSourceFromParams($params)
     {
         if (!is_array($params)) {
-            return is_string($params) ? $this->getSource($params) : '';
-        }
-        foreach ($params as $key => $value) {
-            if (is_array($value)) {
-                $source = $this->getSourceFromParams($value);
-                if ($source) {
+            if (is_string($params)) {
+                $source = $this->getSource($params);
+                if ($source && isset($this->drivers[$source])) {
                     return $source;
                 }
+            }
+            return '';
+        }
+        foreach ($params as $key => $value) {
+            $source = false;
+            if (is_array($value) && (is_int($key) || $key === 'patron')) {
+                $source = $this->getSourceFromParams($value);
             } elseif ($key === 0 || $key === 'id' || $key === 'cat_username') {
                 $source = $this->getSource(
                     $value, $key === 'cat_username' ? 'login' : ''
                 );
-                if ($source) {
-                    return $source;
-                }
+            }
+            if ($source && isset($this->drivers[$source])) {
+                return $source;
             }
         }
         $this->debug(
