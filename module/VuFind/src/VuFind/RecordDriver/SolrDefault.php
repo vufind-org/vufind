@@ -1769,7 +1769,7 @@ class SolrDefault extends AbstractBase
      * Attach a Search Results Plugin Manager connection and related logic to
      * the driver
      *
-     * @param \VuFindSearch\Service $manager Search Results Plugin
+     * @param \VuFindSearch\Service $service Search Service
      * Manager
      *
      * @return void
