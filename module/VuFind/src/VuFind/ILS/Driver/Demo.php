@@ -195,11 +195,25 @@ class Demo extends AbstractBase
      */
     protected function getRandomBibId()
     {
-        $result = $this->searchService->random('Solr', new Query(''), 1);
+        $source = $this->getRecordSource();
+        $query = isset($this->config['Records']['query'])
+            ? $this->config['Records']['query'] : '*:*';
+        $result = $this->searchService->random($source, new Query($query), 1);
         if (count($result) === 0) {
-            throw new \Exception('Problem retrieving random record.');
+            throw new \Exception('Problem retrieving random record from $source.');
         }
         return current($result->getRecords())->getUniqueId();
+    }
+
+    /**
+     * Get the name of the search backend providing records.
+     *
+     * @return string
+     */
+    protected function getRecordSource()
+    {
+        return isset($this->config['Records']['source'])
+            ? $this->config['Records']['source'] : 'Solr';
     }
 
     /**
@@ -297,6 +311,7 @@ class Demo extends AbstractBase
             } else {
                 if ($this->idsInMyResearch) {
                     $currentItem['id'] = $this->getRandomBibId();
+                    $currentItem['source'] = $this->getRecordSource();
                 } else {
                     $currentItem['title'] = 'Demo Title ' . $i;
                 }
@@ -635,6 +650,7 @@ class Demo extends AbstractBase
                 if (rand() % 3 != 1) {
                     if ($this->idsInMyResearch) {
                         $fineList[$i]['id'] = $this->getRandomBibId();
+                        $fineList[$i]['source'] = $this->getRecordSource();
                     } else {
                         $fineList[$i]['title'] = 'Demo Title ' . $i;
                     }
@@ -782,6 +798,7 @@ class Demo extends AbstractBase
                     );
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();
+                        $transList[$i]['source'] = $this->getRecordSource();
                     } else {
                         $transList[$i]['title'] = 'Demo Title ' . $i;
                     }
