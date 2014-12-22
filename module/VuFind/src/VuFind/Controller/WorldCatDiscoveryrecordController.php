@@ -39,6 +39,10 @@ namespace VuFind\Controller;
 
 class WorldCatDiscoveryrecordController extends AbstractRecord
 {
+    use HoldsTrait;
+    use ILLRequestsTrait;
+    use StorageRetrievalRequestsTrait;
+
     /**
      * Constructor
      */
