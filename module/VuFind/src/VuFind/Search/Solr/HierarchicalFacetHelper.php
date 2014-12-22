@@ -107,7 +107,7 @@ class HierarchicalFacetHelper
 
         // Convert the keyed array to a hierarchical array
         $result = array();
-        foreach ($keyedList as $key => &$item) {
+        foreach ($keyedList as &$item) {
             if ($item['level'] > 0) {
                 $keyedList[$item['parent']]['children'][] = &$item;
             } else {
