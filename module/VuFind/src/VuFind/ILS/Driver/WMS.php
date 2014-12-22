@@ -30,6 +30,7 @@ namespace VuFind\ILS\Driver;
 use OCLC\Auth\WSKey;
 use OCLC\Auth\AccessToken;
 use VuFind\Exception\ILS as ILSException;
+use Zend\Session\Container;
 
 /**
  * WorldShare Management System Driver
@@ -62,6 +63,8 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 		$this->wskey = $this->config->General->wskey;;
 		$this->secret = $this->config->General->secret;;
 		$this->institution = $this->config->General->institution;
+		
+		$this->session = new Container('WorldCatDiscovery');
 	}
 	
 	/**
@@ -104,9 +107,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     		);
     		$wskey = new WSKey($this->wskey, $this->secret, $options);
     		$accessToken = $wskey->getAccessTokenWithClientCredentials($this->institution, $this->institution);
-    		$this->accessToken = $accessToken;
+    		$this->session->accessToken = $accessToken;
     	}
-    	return $this->accessToken;
+    	return $this->session->accessToken;
     }
 
     /**
