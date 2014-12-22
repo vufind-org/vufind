@@ -142,9 +142,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 	    	}
 	    	$availabilityXML = simplexml_load_string($wmsAvailabilityResponse->getContent());
 	    	$copies = $availabilityXML->xpath('//holdings/holding');
+
 	    	foreach ($copies as $copy){
-	    		$holding[] = array('availability' => $copy->circulations->circulation->availableNow->attributes()->value,
-	    				'status' => ($copy->circulations->circulation->availableNow->attributes()->value == true) ? 'On the shelf' : $copy->circulations->circulation->reasonUnavailable,
+	    		$holding[] = array('availability' => ($copy->circulations->circulation->availableNow->attributes()->value == "1") ? true : false,
+	    				'status' => ($copy->circulations->circulation->availableNow->attributes()->value == "1") ? 'On the shelf' : $copy->circulations->circulation->reasonUnavailable,
 	    				'location' => (isset($copy->temporaryLocation)) ? $copy->temporaryLocation : $copy->localLocation .  ' ' . $copy->shelvingLocation,
 	    				'reserve' => 'No',
 	    				'callnumber' => $copy->callNumber,
