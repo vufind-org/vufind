@@ -136,7 +136,8 @@ trait IlsAwareTrait
     {
         if ($this->hasILS() && $this->titleLevelHoldAllowed()) {
             if ($this->ils->getTitleHoldsMode() != 'disabled') {
-                return $this->titleHoldLogic->getHold($this->getUniqueID());
+                return $this->titleHoldLogic
+                    ->getHold($this->getUniqueID(), $this->getResourceSource());
             }
         }
 

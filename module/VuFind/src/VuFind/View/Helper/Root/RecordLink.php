@@ -148,8 +148,9 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
     {
         if (is_array($url)) {
             // Assemble URL string from array parts:
+            $source = isset($url['source']) ? $url['source'] : 'VuFind';
             $finalUrl
-                = $this->getActionUrl('VuFind|' . $url['record'], $url['action']);
+                = $this->getActionUrl("{$source}|" . $url['record'], $url['action']);
             if (isset($url['query'])) {
                 $finalUrl .= '?' . $url['query'];
             }

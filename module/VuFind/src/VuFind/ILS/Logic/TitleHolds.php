@@ -103,11 +103,12 @@ class TitleHolds
     /**
      * Public method for getting title level holds
      *
-     * @param string $id A Bib ID
+     * @param string $id     A Bib ID
+     * @param string $source Record source
      *
      * @return string|bool URL to place hold, or false if hold option unavailable
      */
-    public function getHold($id)
+    public function getHold($id, $source = 'VuFind')
     {
         // Get Holdings Data
         if ($this->catalog) {
@@ -119,11 +120,11 @@ class TitleHolds
                 if (!$patron) {
                     return false;
                 }
-                return $this->driverHold($id, $patron);
+                return $this->driverHold($id, $patron, $source);
             } else {
                 $patron = $this->ilsAuth->storedCatalogLogin();
                 $mode = $this->checkOverrideMode($id, $mode);
-                return $this->generateHold($id, $mode, $patron);
+                return $this->generateHold($id, $mode, $patron, $source);
             }
         }
         return false;
@@ -185,21 +186,18 @@ class TitleHolds
      *
      * @param string $id     A Bib ID
      * @param array  $patron An Array of patron data
+     * @param string $source Record source
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function driverHold($id, $patron)
+    protected function driverHold($id, $patron, $source)
     {
         // Get Hold Details
         $checkHolds = $this->catalog->checkFunction(
             'Holds', compact('id', 'patron')
         );
-        $data = array(
-            'id' => $id,
-            'level' => 'title'
-        );
-
         if ($checkHolds != false) {
+            $data = array('id' => $id, 'source' => $source, 'level' => 'title');
             $valid = $this->catalog->checkRequestIsValid($id, $data, $patron);
             if ($valid) {
                 return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
@@ -215,18 +213,14 @@ class TitleHolds
      * @param string $type   The holds mode to be applied from:
      * (disabled, always, availability, driver)
      * @param array  $patron Patron
+     * @param string $source Record source
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function generateHold($id, $type, $patron)
+    protected function generateHold($id, $type, $patron, $source)
     {
         $any_available = false;
         $addlink = false;
-
-        $data = array(
-            'id' => $id,
-            'level' => 'title'
-        );
 
         // Are holds allows?
         $checkHolds = $this->catalog->checkFunction(
@@ -250,6 +244,7 @@ class TitleHolds
             }
 
             if ($addlink) {
+                $data = array('id' => $id, 'source' => $source, 'level' => 'title');
                 if ($checkHolds['function'] == 'getHoldLink') {
                     // Return opac link
                     return $this->catalog->getHoldLink($id, $data);
@@ -292,6 +287,7 @@ class TitleHolds
         // Build Params
         return array(
             'action' => 'Hold', 'record' => $data['id'], 'query' => $queryString,
+            'source' => isset($data['source']) ? $data['source'] : 'VuFind',
             'anchor' => '#tabnav'
         );
     }
