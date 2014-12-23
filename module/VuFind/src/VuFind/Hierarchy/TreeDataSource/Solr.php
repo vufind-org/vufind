@@ -182,18 +182,16 @@ class Solr extends AbstractBase
                 htmlspecialchars($title) . '</name></content>';
             $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
             $xmlNode .= '</item>';
-            array_push($xml, array((isset($sequence) ? $sequence : 0), $xmlNode));
+
+            // If we're in sorting mode, we need to create key-value arrays;
+            // otherwise, we can just collect flat strings.
+            $xml[] = $sorting
+                ? array(isset($sequence) ? $sequence : 0, $xmlNode)
+                : $xmlNode;
         }
 
-        if ($sorting) {
-            $this->sortNodes($xml, 0, 1);
-        }
-
-        $xmlReturnString = '';
-        foreach ($xml as $node) {
-            $xmlReturnString .= $node[1];
-        }
-        return $xmlReturnString;
+        // Assemble the XML, sorting it first if necessary:
+        return implode('', $sorting ? $this->sortNodes($xml) : $xml);
     }
 
     /**
@@ -305,40 +303,35 @@ class Solr extends AbstractBase
                 if (isset($positions[$parentID])) {
                     $sequence = $positions[$parentID];
                 }
-                array_push($json, array((isset($sequence) ? $sequence : 0), $childNode));
+                $json[] = array((isset($sequence) ? $sequence : 0), $childNode);
             } else {
-                array_push($json, $childNode);
+                $json[] = $childNode;
             }
         }
 
-        if ($sorting) {
-            $this->sortNodes($json, 0, 1);
-        }
-
-        return $json;
+        return $sorting ? $this->sortNodes($json) : $json;
     }
 
     /**
      * Sort Nodes
      *
-     * @param array  &$array The Array to Sort
-     * @param string $key    The key to sort on
+     * @param array $array The array to sort
      *
      * @return void
      */
-    protected function sortNodes(&$array, $sortKey, $valueKey)
+    protected function sortNodes($array)
     {
-        $sorter=array();
-        reset($array);
-        foreach ($array as $ii => $va) {
-            $sorter[$ii] = $va[$sortKey];
-        }
-        asort($sorter);
-        $ret=array();
-        foreach ($sorter as $ii => $va) {
-            $ret[] = $array[$ii][$valueKey];
-        }
-        $array = $ret;
+        // Sort arrays based on first element
+        $sorter = function ($a, $b) {
+            return strcmp($a[0], $b[0]);
+        };
+        usort($array, $sorter);
+
+        // Collapse array to remove sort values
+        $mapper = function ($i) {
+            return $i[1];
+        };
+        return array_map($mapper, $array);
     }
 
     /**
