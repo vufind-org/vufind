@@ -51,13 +51,6 @@ class Solr extends AbstractBase
     protected $searchService;
 
     /**
-     * Solr Connector
-     *
-     * @var Connector
-     */
-    protected $connector;
-
-    /**
      * Cache directory
      *
      * @var string
@@ -75,15 +68,13 @@ class Solr extends AbstractBase
      * Constructor.
      *
      * @param SearchService $search   Search service
-     * @param Connector     $solr     Solr Backend Connector
      * @param string        $cacheDir Directory to hold cache results (optional)
      * @param array         $filters  Filters to apply to Solr tree queries
      */
-    public function __construct(SearchService $search, $solr, $cacheDir = null,
+    public function __construct(SearchService $search, $cacheDir = null,
         $filters = array()
     ) {
         $this->searchService = $search;
-        $this->connector = $solr;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');
         }

@@ -60,8 +60,6 @@ class Factory
           : array();
         return new Solr(
             $sm->getServiceLocator()->get('VuFind\Search'),
-            $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
-                ->get('Solr')->getConnector(),
             rtrim($cacheDir, '/') . '/hierarchy',
             $filters
         );
