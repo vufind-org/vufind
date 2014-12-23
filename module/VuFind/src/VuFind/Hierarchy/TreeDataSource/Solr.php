@@ -163,12 +163,6 @@ class Solr extends AbstractBase
 
         foreach ($results->getRecords() as $current) {
             ++$count;
-            if ($sorting) {
-                $positions = $current->getHierarchyPositionsInParents();
-                if (isset($positions[$parentID])) {
-                    $sequence = $positions[$parentID];
-                }
-            }
 
             $titles = $current->getTitlesInHierarchy();
             $title = isset($titles[$parentID])
@@ -185,9 +179,13 @@ class Solr extends AbstractBase
 
             // If we're in sorting mode, we need to create key-value arrays;
             // otherwise, we can just collect flat strings.
-            $xml[] = $sorting
-                ? array(isset($sequence) ? $sequence : 0, $xmlNode)
-                : $xmlNode;
+            if ($sorting) {
+                $positions = $current->getHierarchyPositionsInParents();
+                $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
+                $xml[] = array($sequence, $xmlNode);
+            } else {
+                $xml[] = $xmlNode;
+            }
         }
 
         // Assemble the XML, sorting it first if necessary:
@@ -195,11 +193,12 @@ class Solr extends AbstractBase
     }
 
     /**
-     * Sort Nodes
+     * Convert an unsorted array of [ key, value ] pairs into a sorted array
+     * of values.
      *
-     * @param array $array The array to sort
+     * @param array $array The array of arrays to sort
      *
-     * @return void
+     * @return array
      */
     protected function sortNodes($array)
     {
