@@ -208,8 +208,8 @@ ils_encryption_key = ""
 
 [ChoiceAuth]
 ; TODO: MozillaPersona not yet implemented:
-;choice_order = MozillaPersona,Shibboleth,ILS
-choice_order = Shibboleth,ILS
+;choice_order = MozillaPersona,Shibboleth,MultiILS
+choice_order = Shibboleth,MultiILS
 
 ; See the comments in library/VF/Auth/MultiAuth.php for full details
 ; on using multiple authentication methods.  Note that MultiAuth assumes login
