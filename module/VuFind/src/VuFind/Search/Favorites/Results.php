@@ -165,7 +165,6 @@ class Results extends BaseResults
                 'extra_fields' => array(
                     'title' => $row->title
                 ),
-                'listId' => $listId,
                 'userId' => $userId
             );
         }

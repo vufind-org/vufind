@@ -1,37 +1,51 @@
 <?php
 namespace VuFind\Record;
 
-use VuFind\Exception\RecordMissing as RecordMissingException, 
+use VuFindSearch\Service as SearchService,
     VuFind\RecordDriver\PluginManager as RecordFactory, 
-    VuFindSearch\Service as SearchService;
-use VuFindSearch\ParamBag;
+    VuFind\Db\Table\PluginManager as DbTableManager,
+    Zend\Config\Config as Config;
 use VuFind\Record\Loader;
+
 
 class Cache extends Loader
 {
-
-    protected $cacheIdentifiers = null;
+    protected $cacheIds = array();
+    
     protected $cachableSources = null;
-    protected $dbTableManager = null;
+    protected $recordFactories = array();
+    protected $recordTable = null;
     
     public function __construct(SearchService $searchService, 
-        RecordFactory $recordFactory, 
-        \Zend\Config\Config $config,
-        \VuFind\Db\Table\PluginManager $dbTableManager)
+        RecordFactory $recordFactoryManager, 
+        Config $config,
+        DbTableManager $dbTableManager)
     {
-        $this->dbTableManager = $dbTableManager;
+        $this->recordTable = $dbTableManager->get('record');
+        
         $this->cachableSources = preg_split("/[\s,]+/", $config->Social->cachableSources);
-        $this->cacheIdentifiers = new ParamBag();
-        parent::__construct($searchService, $recordFactory);
+        
+        $this->recordFactories['VuFind'] = array($recordFactoryManager, 'getSolrRecord');
+        $this->recordFactories['WorldCat'] = function ($data) use ($recordFactoryManager) {
+            $driver = $recordFactoryManager->get('WorldCat');
+            $driver->setRawData($data);
+            $driver->setSourceIdentifier('WorldCat');
+            return $driver;
+        };
+        
+        parent::__construct($searchService, $recordFactoryManager);
     }
 
     public function load($id, $source = 'VuFind', $tolerateMissing = false)
     {
-        // try to load the record from cache if source is cachable
+        $this->initCacheIds($id, $source);
+        
+        // try to load record from cache if source is cachable
+        $retVal = array();
         if (in_array($source, $this->cachableSources)) {
-            $results = $this->searchService->retrieve('RecordCache', $id)->getRecords();
-            if (count($results) > 0) {
-                return $results[0];
+            $cachedRecord = $this->loadFromCache(array($id));
+            if (!empty($cachedRecord)) {
+                return $cachedRecord[0];
             }
         }
         
@@ -39,16 +53,22 @@ class Cache extends Loader
         return parent::load($id, $source, $tolerateMissing = false);
     }
 
+    public function loadBatch($ids)
+    {
+        // remember ids for later use loadFromCache and loadBatchFromCache
+        $this->initCacheIds($ids);
+    
+        return parent::loadBatch($ids);
+    }
+    
     public function loadBatchForSource($ids, $source = 'VuFind')
     {
         $retVal = array();        
         
+        // try to load records from cache if source is cachable
         $cachedRecords = array();
-        // try to load the records from cache if source is cachable
         if (in_array($source, $this->cachableSources)) {
-            $cachedRecords = $this->searchService->retrieveBatch('RecordCache', $ids, 
-                $this->cacheIdentifiers)->getRecords();
-            
+            $cachedRecords = $this->loadFromCache($ids);
             // which records could not be loaded from the record cache?  
             foreach ($cachedRecords as $cachedRecord) {
                 $key = array_search($cachedRecord->getUniqueId(),$ids);
@@ -70,42 +90,72 @@ class Cache extends Loader
         
         return $retVal;
     }
-
-    public function loadBatch($ids)
-    {
-        // evaluate additional parameters to identify a cached record (e.g. userId, listId, sessionId )
-        foreach ($ids as $details) {
-            $tmp = array();
-            if (isset($details['listId'])) {
-                $tmp['listId'] = $details['listId'];
-            } else {
-                $tmp['listId'] = null;
-            }
-            if (isset($details['userId'])) {
-                $tmp['userId'] = $details['userId'];
-            } else {
-                $tmp['userId'] = null;
-            }
-            
-            $this->cacheIdentifiers->add($details['id'], $tmp);
-        }
-        
-        return parent::loadBatch($ids);
-    }
     
-    public function update($recordId, $rawData, $source, $userId, $sessionId, $listId) {
-        $recordTable = $this->dbTableManager->get('Record');
+    
+    
+    
+    public function createOrUpdate($recordId, $userId, $source, $rawData, $sessionId) {
+        $cId = $this->getCacheId($recordId, $source, $userId);
+        
         if (in_array($source, $this->cachableSources)) {
-            $recordTable->findRecord($recordId, $rawData, true, $source, $userId, $listId, $sessionId);
+            $this->recordTable->updateRecord($cId, $source, $rawData, $recordId, $userId, $sessionId);
         }
     }
-    
-    private function retrieve() {
+
+    protected function loadFromCache($ids) {
         
+        $cacheIds = array();
+        foreach ($ids as $id) {
+                $cacheIds[] = $this->cacheIds[$id];
+        }
+        
+        $cachedRecords = $this->recordTable->findRecord($cacheIds);
+        
+        $vufindRecords = array();
+        foreach($cachedRecords as $cachedRecord) {
+            $factory = $this->recordFactories[$cachedRecord['source']];
+            $doc = json_decode($cachedRecord['data'], true);
+            
+            $vufindRecords[] = call_user_func($factory, $doc);
+        }
+        
+        return $vufindRecords;
     }
     
-    private function retrieveBatch() {
-        
+    
+    
+    // $ids = recordId
+    // $ids = array(array(), array(), array());
+    protected function initCacheIds($ids, $source = null, $userId = null) {
+        if (!is_array($ids)) {
+            $recordId = $ids;
+            $source = ($source == 'Solr') ? 'VuFind' : $source;
+            $userId = isset($_SESSION['Account']) ? $_SESSION['Account']->userId : null;
+            $this->cacheIds[$recordId] = $this->getCacheId($recordId, $source, $userId);
+        } else {
+            foreach ($ids as $id) {
+                $recordId = $id['id'];
+                $source = isset($id['source']) ? $id['source'] : null;
+                $userId = isset($id['userId']) ? $id['userId'] : null;
+                
+                $this->cacheIds[$recordId] = $this->getCacheId($recordId, $source, $userId);
+            }
+        } 
+
     }
     
+    protected function getCacheId($recordId, $source = null, $userId = null) {
+        
+        $cIdHelper = array();
+        $cIdHelper['recordId'] = $recordId;
+        $cIdHelper['source']   = $source;
+        $cIdHelper['userId']   = $userId;
+        
+        $md5 = md5(json_encode($cIdHelper));
+        
+        $cacheIds[$recordId] = $md5;
+        
+        return $md5;
+    }
+   
 }

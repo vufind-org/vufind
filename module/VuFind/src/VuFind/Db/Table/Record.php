@@ -48,43 +48,47 @@ class Record extends Gateway
     {
         parent::__construct('record', 'VuFind\Db\Row\Record');
     }
-
-    public function findRecord($recordId, $rawData, $create = false, $source = null, 
-        $userId = null, $listId = null, $sessionId = null)
+    
+    public function findRecord($ids)
     {
-        if (empty($recordId)) {
+        
+        if (empty($ids)) {
             throw new \Exception('Record ID cannot be empty');
         }
         
         $where = array(
-            'record_id' => $recordId
+            'c_id' => $ids
         );
-        if ($listId) {
-            $where['list_id'] = $listId;
-        }
-        if ($listId) {
-            $where['user_id'] = $userId;
-        }
-        if ($listId) {
-            $where['session_id'] = $sessionId;
-        }
-        
-        $select = $this->select($where);
-        $record = $select->current();
-        
-        if (empty($record) && $create == true) {
-            $record = $this->createRow();
-            $record->record_id = $recordId;
-            $record->data = json_encode($rawData);
-            $record->source = $source;
-            $record->user_id = $userId;
-            $record->list_id = $listId;
-            $record->session_id = $sessionId;
-            $record->updated = date('Y-m-d H:i:s');
             
-            // Save the new row.
-            $record->save();
+        $select = $this->select($where);
+        
+        $records = array();
+        $count = $select->count();
+        for ($it = 0; $it < $count; $it++) {
+            $records[] = $select->current();
+            $select->next();
         }
+        
+        return $records;
+    }
+
+    public function updateRecord($id, $source, $rawData, $recordId, $userId, $sessionId) {
+        
+        $record = $this->findRecord(array($id));
+        if (empty($record)) {
+            $record = $this->createRow();
+        } 
+        
+        $record->c_id = $id;
+        $record->record_id = $recordId;
+        $record->data = str_replace("Katze", "CACHED_Katze_CACHED", json_encode($rawData));
+        $record->source = $source;
+        $record->user_id = $userId;
+        $record->session_id = $sessionId;
+        $record->updated = date('Y-m-d H:i:s');
+    
+        // Save the new row.
+        $record->save();
         
         return $record;
     }
