@@ -52,8 +52,8 @@
       <tr>
         <th><?=$this->transEsc('Published in')?>:</th>
         <td>
-          <? $parentIDs = $this->driver->getHierarchyParentID(); ?>
-          <a href="<?=($parentIDs ? $this->recordLink()->getUrl('VuFind|' . $parentIDs[0]) : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
+          <? $containerID = $this->driver->getContainerRecordID(); ?>
+          <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
           <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
         </td>
       </tr>
@@ -193,11 +193,11 @@
       </tr>
       <? endif; ?>
 
-      <? $componentPartCount = $this->driver->tryMethod('getComponentPartCount'); if ($componentPartCount): ?>
+      <? $childRecordCount = $this->driver->tryMethod('getChildRecordCount'); if ($childRecordCount): ?>
       <tr>
-        <th><?=$this->transEsc('contained_records')?>: </th>
+        <th><?=$this->transEsc('child_records')?>: </th>
         <td>
-          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('contained_record_count', array('%%count%%' => $componentPartCount))?></a>
+          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', array('%%count%%' => $childRecordCount))?></a>
         </td>
       </tr>
       <? endif; ?>

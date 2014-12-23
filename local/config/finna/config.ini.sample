@@ -1008,6 +1008,11 @@ search = true
 ; results can cause performance problems.  If treeSearchLimit is -1 or not set,
 ; results will be unlimited.
 treeSearchLimit = 100
+; Whether hierarchy fields are used for linking between container records and their
+; children (default = false). This is an alternative to the full collections support
+; (see the [Collections] section), so only one of them should be enabled
+; at a time e.g. unless custom record drivers are used.
+simpleContainerLinks = true
 
 ; This section will be used to configure the feedback module.
 ; Set "tab_enabled" to true in order to enable the feedback module.

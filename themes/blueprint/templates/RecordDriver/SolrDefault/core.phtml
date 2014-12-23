@@ -13,9 +13,10 @@
   <table cellpadding="2" cellspacing="0" border="0" class="citation" summary="<?=$this->transEsc('Bibliographic Details')?>">
     <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
     <tr valign="top">
-      <th><?=$this->transEsc('Journal Title')?>:</th>
+      <th><?=$this->transEsc('Published in')?>:</th>
       <td>
-        <a href="<?=$this->record($this->driver)->getLink('journaltitle', $journalTitle)?>"><?=$this->escapeHtml($journalTitle)?></a>
+        <? $containerID = $this->driver->getContainerRecordID(); ?>
+        <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
         <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
       </td>
     </tr>
@@ -151,6 +152,13 @@
         </div>
         <? endforeach; ?>
       </td>
+    </tr>
+    <? endif; ?>
+
+    <? $childRecordCount = $this->driver->tryMethod('getChildRecordCount'); if ($childRecordCount): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('child_records')?>: </th>
+      <td><a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', array('%%count%%' => $childRecordCount))?></a></td>
     </tr>
     <? endif; ?>
 
