@@ -72,9 +72,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 			$this->secret = $this->wcdiscoveryConfig->General->secret;
 			$this->institution = $this->wcdiscoveryConfig->General->institution;
 		} elseif ($this->config) {
-			$this->wskey = $this->config->General->wskey;
-			$this->secret = $this->config->General->secret;
-			$this->institution = $this->config->General->institution;
+			$this->wskey = $this->config['Catalog']['wskey'];
+			$this->secret = $this->config['Catalog']['secret'];
+			$this->institution = $this->config['Catalog']['institution'];
 		//TODO: want an elseif statement here for the MultiDriver backend
 		} else {
 			throw new Exception('You do not have the proper properties setup in either the WorldCatDiscovery or WMS ini files');
@@ -163,32 +163,37 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * Send an NCIP request.
      *
      * @param string $xml XML request document
+     * @param array $patron a patron array
      *
      * @return object     SimpleXMLElement parsed from response
      */
-    protected function sendRequest($xml)
+    protected function sendRequest($xml, $patron)
     {
     	$url = 'https://' . $this->institution . '.share.worldcat.org/ncip/circ-patron';
     	// Make the NCIP request:
     	try {
     		$client = $this->httpService
     		->createClient($url);
+    		$adapter = new \Zend\Http\Client\Adapter\Curl();
+    		$client->setAdapter($adapter);
     		// Set timeout value
     		$timeout = isset($this->config['Catalog']['http_timeout'])
     		? $this->config['Catalog']['http_timeout'] : 30;
     		$client->setOptions(array('timeout' => $timeout));
+    		$authorizationHeader = 'Bearer ' . $this->getAccessToken()->getValue() . ', principalID="' . $patron['principalID'] . '", principalIDNS="' . $patron['principalIDNS'] . '"';
     		$client->setHeaders(array(
-    				"Authorization" => 'Bearer ' . $this->getAccessToken()->getValue()
+    				"Authorization" => $authorizationHeader,
+    				"Accept" => 'application/xml'
     		));
     		$client->setRawBody($xml);
-    		$client->setEncType('application/xml; "charset=utf-8"');
+    		$client->setEncType('application/xml');
     		$result = $client->setMethod('POST')->send();
     	} catch (\Exception $e) {
     		throw new ILSException($e->getMessage());
     	}
     
     	if (!$result->isSuccess()) {
-    		throw new ILSException('HTTP error');
+    		throw new ILSException('HTTP error - ' . $result->getStatusCode() . ' ' . $result->getReasonPhrase());
     	}
     
     	// Process the NCIP response:
@@ -196,7 +201,14 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     	$result = @simplexml_load_string($response);
     	if (is_a($result, 'SimpleXMLElement')) {
     		$result->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
-    		return $result;
+    		
+    		if (count($result->xpath("ns1:Problem")) > 0 ) {
+    			$problemType = $result->xpath("ns1:Problem/ns1:ProblemType");
+    			$problemDetail = $result->xpath("ns1:Problem/ns1:ProblemDetail");
+    			throw new ILSException("NCIP Error - " . $problemType[0] . ' - ' . $problemDetail[0]);
+    		} else {
+    			return $result;
+    		}
     	} else {
     		throw new ILSException("Problem parsing XML");
     	}
@@ -323,8 +335,8 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function patronLogin($username, $password)
     {
     	$patronInfo = array(
-    			"principalID" => $this->config->Test->principalID,
-    			"principalIDNS" => $this->config->Test->principalIDNS,
+    			"principalID" => $this->config['Test']['principalID'],
+    			"principalIDNS" => $this->config['Test']['principalIDNS'],
     			"institution" => $this->institution
     	);
         return $patronInfo;
@@ -349,7 +361,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			$patron['principalID'],
     			$this->institution, $extras
     	);
-    	$response = $this->sendRequest($request);
+    	$response = $this->sendRequest($request, $patron);
     
     	$retVal = array();
     	$list = $response->xpath('ns1:LookupUserResponse/ns1:LoanedItem');
@@ -402,7 +414,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			$patron['principalID'],
     			$this->institution, $extras
     	);
-    	$response = $this->sendRequest($request);
+    	$response = $this->sendRequest($request, $patron);
     
     	$list = $response->xpath(
     			'ns1:LookupUserResponse/ns1:UserFiscalAccount/ns1:AccountDetails'
@@ -461,11 +473,11 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
     	$extras = array('<ns1:RequestedItemsDesired/>');
     	$request = $this->getLookupUserRequest(
-    			$patron['patron']['principalID'],
+    			$patron['principalID'],
     			$this->institution,
-    			$patron['patron_agency_id'], $extras
+    			$extras
     	);
-    	$response = $this->sendRequest($request);
+    	$response = $this->sendRequest($request, $patron);
     
     	$retVal = array();
     	$list = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
@@ -502,6 +514,21 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     	}
     
     	return $retVal;
+    }
+    
+    /**
+     * Get Patron Profile
+     *
+     * This is responsible for retrieving the profile for a specific patron.
+     *
+     * @param array $patron The patron array
+     *
+     * @throws ILSException
+     * @return array        Array of the patron's profile data on success.
+     */
+    public function getMyProfile($patron)
+    {
+    	return null;
     }
     
     /**
@@ -550,7 +577,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			$userId, $this->institution, $bibId, $itemId,
     			$holdType, "Item", $lastInterestDate, $pickUpLocation
     	);
-    	$response = $this->sendRequest($request);
+    	$response = $this->sendRequest($request, $patron);
     	$success = $response->xpath(
     			'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue'
     	);
@@ -591,7 +618,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     		$request = $this->getCancelRequest(
     				$userID, $this->institution, $requestId, "Hold"
     		);
-    		$cancelRequestResponse = $this->sendRequest($request);
+    		$cancelRequestResponse = $this->sendRequest($request, $details['patron']);
     		$userId = $cancelRequestResponse->xpath(
     				'ns1:CancelRequestItemResponse/' .
     				'ns1:UserId/ns1:UserIdentifierValue'
@@ -648,9 +675,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     	$details = array();
     	foreach ($renewDetails['details'] as $renewId) {
     		$request = $this->getRenewRequest(
-    				$userID, $this->institution, $renewId
+    				$renewDetails['patron']['principalID'], $this->institution, $renewId
     		);
-    		$response = $this->sendRequest($request);
+    		$response = $this->sendRequest($request, $renewDetails['patron']);
     		$dueDate = $response->xpath('ns1:RenewItemResponse/ns1:DateDue');
     		if ($dueDate) {
     			$tmp = $dueDate;
@@ -689,8 +716,24 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
     	return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
     			'<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-    			'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-    			'xsd/ncip_v2_0.xsd">' .
+    			'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' . 
+    			'xmlns:ncip="http://www.niso.org/2008/ncip" ' . 
+    			'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' . 
+    			'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' . 
+    			'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
+    			'<ns1:InitiationHeader>' .
+    			'<ns1:FromAgencyId>' .
+    			'<ns1:AgencyId>' .
+    			$institution .
+    			'</ns1:AgencyId>' .
+    			'</ns1:FromAgencyId>' .
+    			'<ns1:ToAgencyId>' .
+    			'<ns1:AgencyId>' .
+    			$institution .
+    			'</ns1:AgencyId>' .
+    			'</ns1:ToAgencyId>' .
+    			'<ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ApplicationProfileType>' .
+    			'</ns1:InitiationHeader>' .
     			'<ns1:CancelRequestItem>' .
     			'<ns1:UserId>' .
     			'<ns1:AgencyId>' .
@@ -731,8 +774,11 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     ) {
     	return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
     			'<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-    			'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-    			'xsd/ncip_v2_0.xsd">' .
+    			'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' . 
+    			'xmlns:ncip="http://www.niso.org/2008/ncip" ' . 
+    			'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' . 
+    			'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' . 
+    			'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
     			'<ns1:RequestItem>' .
     			'<ns1:InitiationHeader>' .
     			'<ns1:FromAgencyId>' .
@@ -745,6 +791,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			$institution .
     			'</ns1:AgencyId>' .
     			'</ns1:ToAgencyId>' .
+    			'<ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ApplicationProfileType>' .
     			'</ns1:InitiationHeader>' .
     			'<ns1:UserId>' .
     			'<ns1:AgencyId>' .
@@ -799,8 +846,11 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
     	return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
     			'<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-    			'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-    			'xsd/ncip_v2_0.xsd">' .
+    			'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' . 
+    			'xmlns:ncip="http://www.niso.org/2008/ncip" ' . 
+    			'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' . 
+    			'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' . 
+    			'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
     			'<ns1:RenewItem>' .
 		    	'<ns1:InitiationHeader>' .
 		    	'<ns1:FromAgencyId >' .
@@ -813,6 +863,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 		    	$institution .
 		    	'</ns1:AgencyId>' .
 		    	'</ns1:ToAgencyId>' .
+		    	'<ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ApplicationProfileType>' .
 		    	'</ns1:InitiationHeader>' .
 		    	'<ns1:UserId>' .
 		    	'<ns1:AgencyId>' .
@@ -843,22 +894,26 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected function getLookupUserRequest($userID, $institution, $extras) {
     	$ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
     			'<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-    			'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-    			'xsd/ncip_v2_0.xsd">' .
+    			'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' . 
+    			'xmlns:ncip="http://www.niso.org/2008/ncip" ' . 
+    			'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' . 
+    			'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' . 
+    			'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
     			'<ns1:LookupUser>';
     
     	$ret .=
     	'<ns1:InitiationHeader>' .
-    	'<ns1:FromAgencyId >' .
+    	'<ns1:FromAgencyId>' .
     	'<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
     	$institution .
     	'</ns1:AgencyId>' .
     	'</ns1:FromAgencyId>' .
-    	'<ns1:ToAgencyId >' .
+    	'<ns1:ToAgencyId>' .
     	'<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
     	$institution .
     	'</ns1:AgencyId>' .
     	'</ns1:ToAgencyId>' .
+    	'<ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ApplicationProfileType>' .
     	'</ns1:InitiationHeader>';
     
     	$ret .=
