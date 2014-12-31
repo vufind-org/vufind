@@ -174,7 +174,8 @@ class Factory
     {
     	return new WMS(
     			$sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery'),
-    			$sm->getServiceLocator()->get('VuFind\Record\Loader')
+    			$sm->getServiceLocator()->get('VuFind\Record\Loader'),
+    			$sm->getServiceLocator()->get('VuFind\DateConverter')
     	);
     }
 }
