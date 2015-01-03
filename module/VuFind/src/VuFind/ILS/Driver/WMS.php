@@ -202,10 +202,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     	if (is_a($result, 'SimpleXMLElement')) {
     		$result->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
     		
-    		if (count($result->xpath("ns1:Problem")) > 0 ) {
-    			$problemType = $result->xpath("ns1:Problem/ns1:ProblemType");
-    			$problemDetail = $result->xpath("ns1:Problem/ns1:ProblemDetail");
-    			throw new ILSException("NCIP Error - " . $problemType[0] . ' - ' . $problemDetail[0]);
+    		if (count($result->xpath("//ns1:Problem")) > 0 ) {
+    			$problemType = $result->xpath("//ns1:Problem/ns1:ProblemType");
+    			$problemDetail = $result->xpath("//ns1:Problem/ns1:ProblemDetail");
+    			throw new ILSException("NCIP Error - " . $problemType[0] . (isset($problemDetail[0]) ? ' - ' .$problemDetail[0]: ''));
     		} else {
     			return $result;
     		}
