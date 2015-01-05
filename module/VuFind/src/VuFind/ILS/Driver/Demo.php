@@ -189,34 +189,31 @@ class Demo extends AbstractBase
     }
 
     /**
-     * Set up the Solr index so we can retrieve some record data.
-     *
-     * @return void
-     */
-    protected function prepSolr()
-    {
-        // Get the total # of records in the system
-        $result = $this->searchService->search('Solr', new Query('*:*'));
-        $this->totalRecords = $result->getTotal();
-    }
-
-    /**
      * Get a random ID from the Solr index.
      *
      * @return string
      */
     protected function getRandomBibId()
     {
-        // Let's keep away from both ends of the index, but only take any of the
-        // first 500 000 records to avoid slow Solr queries.
-        $position = rand()%(min(array(500000, $this->totalRecords-1)));
-        $result = $this->searchService->search(
-            'Solr', new Query('*:*'), $position, 1
-        );
+        $source = $this->getRecordSource();
+        $query = isset($this->config['Records']['query'])
+            ? $this->config['Records']['query'] : '*:*';
+        $result = $this->searchService->random($source, new Query($query), 1);
         if (count($result) === 0) {
-            throw new \Exception('Solr index is empty!');
+            throw new \Exception('Problem retrieving random record from $source.');
         }
         return current($result->getRecords())->getUniqueId();
+    }
+
+    /**
+     * Get the name of the search backend providing records.
+     *
+     * @return string
+     */
+    protected function getRecordSource()
+    {
+        return isset($this->config['Records']['source'])
+            ? $this->config['Records']['source'] : 'VuFind';
     }
 
     /**
@@ -233,6 +230,7 @@ class Demo extends AbstractBase
         $status = $this->getFakeStatus();
         return array(
             'id'           => $id,
+            'source'       => $this->getRecordSource(),
             'item_id'      => $number,
             'number'       => $number,
             'barcode'      => sprintf("%08d", rand()%50000),
@@ -289,10 +287,6 @@ class Demo extends AbstractBase
         // 90% of 1-9 (give or take some odd maths)
         $items = rand()%10 - 1;
 
-        // Do some initial work in solr so we aren't repeating it inside this
-        // loop.
-        $this->prepSolr();
-
         $requestGroups = $this->getRequestGroups(null, null);
 
         $list = new ArrayObject();
@@ -318,6 +312,7 @@ class Demo extends AbstractBase
             } else {
                 if ($this->idsInMyResearch) {
                     $currentItem['id'] = $this->getRandomBibId();
+                    $currentItem['source'] = $this->getRecordSource();
                 } else {
                     $currentItem['title'] = 'Demo Title ' . $i;
                 }
@@ -633,10 +628,6 @@ class Demo extends AbstractBase
             // 90% of 1-18 (give or take some odd maths)
             $fines = rand()%20 - 2;
 
-            // Do some initial work in solr so we aren't repeating it inside this
-            // loop.
-            $this->prepSolr();
-
             $fineList = array();
             for ($i = 0; $i < $fines; $i++) {
                 // How many days overdue is the item?
@@ -660,6 +651,7 @@ class Demo extends AbstractBase
                 if (rand() % 3 != 1) {
                     if ($this->idsInMyResearch) {
                         $fineList[$i]['id'] = $this->getRandomBibId();
+                        $fineList[$i]['source'] = $this->getRecordSource();
                     } else {
                         $fineList[$i]['title'] = 'Demo Title ' . $i;
                     }
@@ -744,10 +736,6 @@ class Demo extends AbstractBase
             // 90% of 1-9 (give or take some odd maths)
             $trans = rand()%10 - 1;
 
-            // Do some initial work in solr so we aren't repeating it inside this
-            // loop.
-            $this->prepSolr();
-
             $transList = array();
             for ($i = 0; $i < $trans; $i++) {
                 // When is it due? +/- up to 15 days
@@ -811,6 +799,7 @@ class Demo extends AbstractBase
                     );
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();
+                        $transList[$i]['source'] = $this->getRecordSource();
                     } else {
                         $transList[$i]['title'] = 'Demo Title ' . $i;
                     }
@@ -1012,9 +1001,6 @@ class Demo extends AbstractBase
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        // Do some initial work in solr so we aren't repeating it inside this loop.
-        $this->prepSolr();
-
         // Pick a random number of results to return -- don't exceed limit or 30,
         // whichever is smaller (this can be pretty slow due to the random ID code).
         $count = rand(0, $limit > 30 ? 30 : $limit);
@@ -1048,9 +1034,6 @@ class Demo extends AbstractBase
      */
     public function findReserves($course, $inst, $dept)
     {
-        // Do some initial work in solr so we aren't repeating it inside this loop.
-        $this->prepSolr();
-
         // Pick a random number of results to return -- don't exceed 30.
         $count = rand(0, 30);
         $results = array();
@@ -1361,15 +1344,16 @@ class Demo extends AbstractBase
         }
         $this->session->holds->append(
             array(
-                "id"       => $holdDetails['id'],
-                "location" => $holdDetails['pickUpLocation'],
-                "expire"   => date("j-M-y", $expire),
-                "create"   => date("j-M-y"),
-                "reqnum"   => sprintf("%06d", $nextId),
-                "item_id" => $nextId,
-                "volume" => '',
-                "processed" => '',
-                "requestGroup" => $requestGroup
+                'id'       => $holdDetails['id'],
+                'source'   => $this->getRecordSource(),
+                'location' => $holdDetails['pickUpLocation'],
+                'expire'   => date('j-M-y', $expire),
+                'create'   => date('j-M-y'),
+                'reqnum'   => sprintf('%06d', $nextId),
+                'item_id' => $nextId,
+                'volume' => '',
+                'processed' => '',
+                'requestGroup' => $requestGroup
             )
         );
 
@@ -1460,13 +1444,14 @@ class Demo extends AbstractBase
 
         $this->session->storageRetrievalRequests->append(
             array(
-                "id"       => $details['id'],
-                "location" => $details['pickUpLocation'],
-                "expire"   => date("j-M-y", $expire),
-                "create"  => date("j-M-y"),
-                "processed" => rand()%3 == 0 ? date("j-M-y", $expire) : '',
-                "reqnum"   => sprintf("%06d", $nextId),
-                "item_id"  => $nextId
+                'id'       => $details['id'],
+                'source'   => $this->getRecordSource(),
+                'location' => $details['pickUpLocation'],
+                'expire'   => date('j-M-y', $expire),
+                'create'  => date('j-M-y'),
+                'processed' => rand()%3 == 0 ? date('j-M-y', $expire) : '',
+                'reqnum'   => sprintf('%06d', $nextId),
+                'item_id'  => $nextId
             )
         );
 
@@ -1508,15 +1493,15 @@ class Demo extends AbstractBase
     {
         if (!$this->ILLRequests) {
             return array(
-                "success" => false,
-                "sysMessage" => 'ILL requests are disabled.'
+                'success' => false,
+                'sysMessage' => 'ILL requests are disabled.'
             );
         }
         // Simulate failure:
         if (rand() % 2) {
             return array(
-                "success" => false,
-                "sysMessage" =>
+                'success' => false,
+                'sysMessage' =>
                     'Demonstrating failure; keep trying and ' .
                     'it will work eventually.'
             );
@@ -1534,11 +1519,11 @@ class Demo extends AbstractBase
         if (!isset($details['requiredBy'])
             || empty($details['requiredBy'])
         ) {
-            $expire = strtotime("now + 30 days");
+            $expire = strtotime('now + 30 days');
         } else {
             try {
                 $expire = $this->dateConverter->convertFromDisplayDate(
-                    "U", $details['requiredBy']
+                    'U', $details['requiredBy']
                 );
             } catch (DateException $e) {
                 // Expiration Date is invalid
@@ -1577,13 +1562,14 @@ class Demo extends AbstractBase
 
         $this->session->ILLRequests->append(
             array(
-                "id"       => $details['id'],
-                "location" => $pickupLocation,
-                "expire"   => date("j-M-y", $expire),
-                "create"  => date("j-M-y"),
-                "processed" => rand()%3 == 0 ? date("j-M-y", $expire) : '',
-                "reqnum"   => sprintf("%06d", $nextId),
-                "item_id"  => $nextId
+                'id'       => $details['id'],
+                'source'   => $this->getRecordSource(),
+                'location' => $pickupLocation,
+                'expire'   => date('j-M-y', $expire),
+                'create'  => date('j-M-y'),
+                'processed' => rand()%3 == 0 ? date('j-M-y', $expire) : '',
+                'reqnum'   => sprintf('%06d', $nextId),
+                'item_id'  => $nextId
             )
         );
 

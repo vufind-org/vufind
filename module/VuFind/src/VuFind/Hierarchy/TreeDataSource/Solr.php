@@ -172,12 +172,6 @@ class Solr extends AbstractBase
 
         foreach ($results->getRecords() as $current) {
             ++$count;
-            if ($sorting) {
-                $positions = $current->getHierarchyPositionsInParents();
-                if (isset($positions[$parentID])) {
-                    $sequence = $positions[$parentID];
-                }
-            }
 
             $titles = $current->getTitlesInHierarchy();
             $title = isset($titles[$parentID])
@@ -191,18 +185,13 @@ class Solr extends AbstractBase
                 htmlspecialchars($title) . '</name></content>';
             $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
             $xmlNode .= '</item>';
-            array_push($xml, array((isset($sequence) ? $sequence : 0), $xmlNode));
         }
-
         if ($sorting) {
             $this->sortNodes($xml, 0, 1);
         }
 
-        $xmlReturnString = '';
-        foreach ($xml as $node) {
-            $xmlReturnString .= $node[1];
-        }
-        return $xmlReturnString;
+        // Assemble the XML, sorting it first if necessary:
+        return implode('', $sorting ? $this->sortNodes($xml) : $xml);
     }
 
     /**
@@ -330,10 +319,9 @@ class Solr extends AbstractBase
     /**
      * Sort Nodes
      *
-     * @param array  &$array The Array to Sort
-     * @param string $key    The key to sort on
+     * @param array $array The array of arrays to sort
      *
-     * @return void
+     * @return array
      */
     protected function sortNodes(&$array, $sortKey, $valueKey)
     {
