@@ -51,13 +51,6 @@ class Solr extends AbstractBase
     protected $searchService;
 
     /**
-     * Solr Connector
-     *
-     * @var Connector
-     */
-    protected $connector;
-
-    /**
      * Cache directory
      *
      * @var string
@@ -75,15 +68,13 @@ class Solr extends AbstractBase
      * Constructor.
      *
      * @param SearchService $search   Search service
-     * @param Connector     $solr     Solr Backend Connector
      * @param string        $cacheDir Directory to hold cache results (optional)
      * @param array         $filters  Filters to apply to Solr tree queries
      */
-    public function __construct(SearchService $search, $solr, $cacheDir = null,
+    public function __construct(SearchService $search, $cacheDir = null,
         $filters = array()
     ) {
         $this->searchService = $search;
-        $this->connector = $solr;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');
         }
@@ -187,11 +178,20 @@ class Solr extends AbstractBase
             $xmlNode .= '</item>';
         }
         if ($sorting) {
-            $this->sortNodes($xml, 0, 1);
+            $this->sortNodes($xml);
+            // If we're in sorting mode, we need to create key-value arrays;
+            // otherwise, we can just collect flat strings.
+            if ($sorting) {
+                $positions = $current->getHierarchyPositionsInParents();
+                $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
+                $xml[] = array($sequence, $xmlNode);
+            } else {
+                $xml[] = $xmlNode;
+            }
         }
 
         // Assemble the XML, sorting it first if necessary:
-        return implode('', $sorting ? $this->sortNodes($xml) : $xml);
+        return implode('', $sorting ? $this->sortNodes($xml, 0, 1) : $xml);
     }
 
     /**
@@ -298,26 +298,23 @@ class Solr extends AbstractBase
                 );
             }
 
+            // If we're in sorting mode, we need to create key-value arrays;
+            // otherwise, we can just collect flat values.
             if ($sorting) {
                 $positions = $current->getHierarchyPositionsInParents();
-                if (isset($positions[$parentID])) {
-                    $sequence = $positions[$parentID];
-                }
-                array_push($json, array((isset($sequence) ? $sequence : 0), $childNode));
+                $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
+                $json[] = array($sequence, $childNode);
             } else {
-                array_push($json, $childNode);
+                $json[] = $childNode;
             }
         }
 
-        if ($sorting) {
-            $this->sortNodes($json, 0, 1);
-        }
-
-        return $json;
+        return $sorting ? $this->sortNodes($json) : $json;
     }
 
     /**
-     * Sort Nodes
+     * Convert an unsorted array of [ key, value ] pairs into a sorted array
+     * of values.
      *
      * @param array $array The array of arrays to sort
      *
