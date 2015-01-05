@@ -121,6 +121,7 @@ var Lightbox = {
       callback(html);
     }
     Lightbox.registerForms();
+    Lightbox.body.find('.fa.fa-spinner').remove();
     Lightbox.dispatch('Lightbox.open');
   },
   convertToUrl: function(controller, action, get) {
@@ -167,7 +168,6 @@ var Lightbox = {
         } else {
           Lightbox.changeContent(html, options.onOpen);
         }
-        Lightbox.body.find('.fa.fa-spinner').remove();
       },
       error:function(d,e) {
         var error = "";
