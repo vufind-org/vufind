@@ -109,6 +109,23 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 	
     public function init()
     {
+    	if (empty($this->config)) {
+    		throw new ILSException('Configuration needs to be set.');
+    	}
+    	
+    	if ($this->config['Catalog']['consortium']) {
+    		$this->consortium = true;
+    		foreach ($this->config['Catalog']['agency'] as $agency) {
+    			$this->agency[$agency] = 1;
+    		}
+    	} else {
+    		$this->consortium = false;
+    		if (is_array($this->config['Catalog']['agency'])) {
+    			$this->agency[$this->config['Catalog']['agency'][0]] = 1;
+    		} else {
+    			$this->agency[$this->config['Catalog']['agency']] = 1;
+    		}
+    	}
         $this->loadPickupLocations($this->config['Catalog']['pickupLocationsFile']);
     }
     
@@ -160,6 +177,40 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
     
     /**
+     * Get Pick Up Locations
+     *
+     * This is responsible get a list of valid library locations for holds / recall
+     * retrieval
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the pickup options
+     * or may be ignored.  The driver must not add new options to the return array
+     * based on this data or other areas of VuFind may behave incorrectly.
+     *
+     * @return array        An array of associative arrays with locationID and
+     * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getPickUpLocations($patron, $holdDetails = null)
+    {
+    	$locations = array();
+    	foreach (array_keys($this->agency) as $agency) {
+    		foreach ($this->pickupLocations[$agency] as $thisAgency) {
+    			$locations[]
+    			= array(
+    					'locationID' => $thisAgency['locationID'],
+    					'locationDisplay' => $thisAgency['locationDisplay'],
+    			);
+    		}
+    	}
+    	return $locations;
+    }
+    
+    
+    /**
      * Send an NCIP request.
      *
      * @param string $xml XML request document
@@ -205,7 +256,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     		if (count($result->xpath("//ns1:Problem")) > 0 ) {
     			$problemType = $result->xpath("//ns1:Problem/ns1:ProblemType");
     			$problemDetail = $result->xpath("//ns1:Problem/ns1:ProblemDetail");
-    			throw new ILSException("NCIP Error - " . $problemType[0] . (isset($problemDetail[0]) ? ' - ' .$problemDetail[0]: ''));
+    			throw new ILSException("NCIP Error - " . $problemType[0] . (isset($problemDetail[0]) ? ' - ' .$problemDetail[0]: '') . $xml);
     		} else {
     			return $result;
     		}
@@ -584,7 +635,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     					'title' => (string)$title[0],
     					'position' => (string)$pos[0],
     					'requestId' => (string)$requestId[0],
-    					//'item_id' => (string)$itemId[0],
+    					'item_id' =>  (isset($itemId[0])) ? (string)$itemId[0] : null,
     					'location' => (string)$pickupLocation[0],
     			);
     		}
@@ -686,8 +737,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function cancelHolds($cancelDetails)
     {
     	$count = 0;
-    	$userID = $details['patron']['principalID'];
     	$details = $cancelDetails['details'];
+    	$userID = $cancelDetails['patron']['principalID'];
+    	$patron = $cancelDetails['patron'];
     	$response = array();
     
     	foreach ($details as $cancelDetails) {
@@ -695,7 +747,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     		$request = $this->getCancelRequest(
     				$userID, $this->institution, $requestId, "Hold"
     		);
-    		$cancelRequestResponse = $this->sendRequest($request, $details['patron']);
+    		$cancelRequestResponse = $this->sendRequest($request, $patron);
     		$userId = $cancelRequestResponse->xpath(
     				'ns1:CancelRequestItemResponse/' .
     				'ns1:UserId/ns1:UserIdentifierValue'
@@ -798,6 +850,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' . 
     			'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' . 
     			'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
+    			'<ns1:CancelRequestItem>' .
     			'<ns1:InitiationHeader>' .
     			'<ns1:FromAgencyId>' .
     			'<ns1:AgencyId>' .
@@ -811,7 +864,6 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			'</ns1:ToAgencyId>' .
     			'<ns1:ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ns1:ApplicationProfileType>' .
     			'</ns1:InitiationHeader>' .
-    			'<ns1:CancelRequestItem>' .
     			'<ns1:UserId>' .
     			'<ns1:AgencyId>' .
     			$institution .
@@ -1007,5 +1059,26 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     	'</ns1:NCIPMessage>';
     
     	return $ret;
+    }
+    
+    /**
+     * Public Function which specifies renew, hold and cancel settings.
+     *
+     * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
+     *
+     * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getConfig($function, $params = null)
+    {
+    	if ($function == 'Holds') {
+    		return array(
+    				'HMACKeys' => 'id:item_id:level',
+    				'extraHoldFields' => 'pickUpLocation:requiredByDate',
+    				'defaultRequiredDate' => 'driver:0:2:0',
+    		);
+    	}
+    	return array();
     }
 }
