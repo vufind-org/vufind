@@ -178,7 +178,6 @@ class Solr extends AbstractBase
             $xmlNode .= '</item>';
         }
         if ($sorting) {
-            $this->sortNodes($xml);
             // If we're in sorting mode, we need to create key-value arrays;
             // otherwise, we can just collect flat strings.
             if ($sorting) {
@@ -309,7 +308,7 @@ class Solr extends AbstractBase
             }
         }
 
-        return $sorting ? $this->sortNodes($json) : $json;
+        return $sorting ? $this->sortNodes($json, 0, 1) : $json;
     }
 
     /**
@@ -332,7 +331,7 @@ class Solr extends AbstractBase
         foreach ($sorter as $ii => $va) {
             $ret[] = $array[$ii][$valueKey];
         }
-        $array = $ret;
+        return $ret;
     }
 
     /**
