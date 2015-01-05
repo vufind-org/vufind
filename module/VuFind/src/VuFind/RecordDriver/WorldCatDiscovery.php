@@ -183,7 +183,8 @@ class WorldCatDiscovery extends SolrDefault
             $manifestations = $response->getManifestations();
             array_walk($manifestations, function(&$manifestation)
             {
-                $manifestation = $manifestation->getISBN();
+                $manifestation = is_callable(array($manifestation, 'getISBN'))
+                    ? $manifestation->getISBN() : null;
             });
             return $manifestations;
         }
