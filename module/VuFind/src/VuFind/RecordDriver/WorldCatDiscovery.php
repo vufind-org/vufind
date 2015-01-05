@@ -69,23 +69,23 @@ class WorldCatDiscovery extends SolrDefault
     
     public function setOffers($offers)
     {
-    	$this->offers = $offers;
+        $this->offers = $offers;
     }
     
     public function getOffers()
     {
-    	return $this->offers;
+        return $this->offers;
     }
     
     public function getOffer($id){
-    	$offers = $this->getOffers();
-    	
-    	$offersAtInstitution = array_filter($offers, function($offer) use ($id)
-	    {
+        $offers = $this->getOffers();
+        
+        $offersAtInstitution = array_filter($offers, function($offer) use ($id)
+        {
 
-	        return($offer->getSeller()->getURI() == 'http://worldcat.org/wcr/organization/resource/' . $id);
-	    });
-    	return $offersAtInstitution;
+            return($offer->getSeller()->getURI() == 'http://worldcat.org/wcr/organization/resource/' . $id);
+        });
+        return $offersAtInstitution;
     }
 
     /**
@@ -148,7 +148,7 @@ class WorldCatDiscovery extends SolrDefault
             }
             
             if (strchr($format, '_')) {
-            	$format = str_replace("_", " ", $format);
+                $format = str_replace("_", " ", $format);
             }
             
             
@@ -233,25 +233,26 @@ class WorldCatDiscovery extends SolrDefault
      */
     public function getOpenURL()
     {
-    	$kbrequest = '';
-    	if (is_a($this->getRawObject(), 'WorldCat\Discovery\Article')){
-    		if ($this->getRawObject()->getSameAs()){
-    			$doi = str_replace("http://dx.doi.org/", "info:doi:", $record->getSameAs());
-    			$kbrequest .= 'rft_id=' . $doi;
-    		} else {
-    			$kbrequest .= "rft.issn=" . $this->getRawObject()->getIsPartOf()->getVolume()->getPeriodical()->getIssn();
-    			$kbrequest .= "&rft.volume=" . $this->getRawObject()->getIsPartOf()->getVolume()->getVolumeNumber();
-    			$kbrequest .= "&rft.issue=" . $this->getRawObject()->getIsPartOf()->getIssueNumber();
-    			$kbrequest .= "&rft.spage=" . $this->getRawObject()->getPageStart();
-    			$kbrequest .= "&rft.atitle=" . $this->getRawObject()->getName();
-    		}
-    	} elseif (get_class($this->getRawObject()) == "WorldCat\Discovery\Book" && $this->getRawObject()->getManifestations()) {
-    		$manifestations = $this->getRawObject()->getManifestations();
-    		$kbrequest .= "rft.isbn=" . $manifestations[0]->getISBN();
-    	}else {
-    		$kbrequest .= "rft.oclcnum=" . $this->getRawObject()->getOCLCNumber();
-    	}
-    	return $kbrequest;
+        $kbrequest = '';
+        $record = $this->getRawObject();
+        if (is_a($record, 'WorldCat\Discovery\Article')){
+            if ($record->getSameAs()){
+                $doi = str_replace("http://dx.doi.org/", "info:doi:", $record->getSameAs());
+                $kbrequest .= 'rft_id=' . $doi;
+            } else {
+                $kbrequest .= "rft.issn=" . $record->getIsPartOf()->getVolume()->getPeriodical()->getIssn();
+                $kbrequest .= "&rft.volume=" . $record->getIsPartOf()->getVolume()->getVolumeNumber();
+                $kbrequest .= "&rft.issue=" . $record->getIsPartOf()->getIssueNumber();
+                $kbrequest .= "&rft.spage=" . $record->getPageStart();
+                $kbrequest .= "&rft.atitle=" . $record->getName();
+            }
+        } elseif (get_class($record) == "WorldCat\Discovery\Book" && $record->getManifestations()) {
+            $manifestations = $record->getManifestations();
+            $kbrequest .= "rft.isbn=" . $manifestations[0]->getISBN();
+        }else {
+            $kbrequest .= "rft.oclcnum=" . $record->getOCLCNumber();
+        }
+        return $kbrequest;
     }
 
 
@@ -332,7 +333,7 @@ class WorldCatDiscovery extends SolrDefault
      */
     public function getShortTitle()
     {
-    	return $this->getRawObject()->getName();
+        return $this->getRawObject()->getName();
     }
 
     /**
