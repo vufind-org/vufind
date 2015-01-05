@@ -75,8 +75,10 @@
     <? endif; ?>
 
 
-    <div class="collectionDetails<?=$tree ? 'Tree' : ''?>">
-      <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+    <div class="collectionDetails<?=$tree ? 'Tree' : ''?> tab-content" id="record-tabs">
+      <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
+        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+      </div>
     </div>
 
     <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
