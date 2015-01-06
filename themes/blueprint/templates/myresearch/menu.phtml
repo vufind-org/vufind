@@ -5,16 +5,24 @@
       <li<?=$this->active == 'favorites' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-favorites')?>"><?=$this->transEsc('Favorites')?></a></li>
     <? endif; ?>
     <? if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
-      <li<?=$this->active == 'checkedout' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-checkedout')?>"><?=$this->transEsc('Checked Out Items')?></a></li>
-      <li<?=$this->active == 'holds' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-holds')?>"><?=$this->transEsc('Holds and Recalls')?></a></li>
+      <? if ($this->ils()->checkCapability('getMyTransactions')): ?>
+        <li<?=$this->active == 'checkedout' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-checkedout')?>"><?=$this->transEsc('Checked Out Items')?></a></li>
+      <? endif; ?>
+      <? if ($this->ils()->checkCapability('getMyHolds')): ?>
+        <li<?=$this->active == 'holds' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-holds')?>"><?=$this->transEsc('Holds and Recalls')?></a></li>
+      <? endif; ?>
       <? if ($this->ils()->checkFunction('StorageRetrievalRequests')): ?>
       <li<?=$this->active == 'storageRetrievalRequests' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-storageretrievalrequests')?>"><?=$this->transEsc('Storage Retrieval Requests')?></a></li>
       <? endif; ?>
       <? if ($this->ils()->checkFunction('ILLRequests')): ?>
       <li<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-illrequests')?>"><?=$this->transEsc('Interlibrary Loan Requests')?></a></li>
       <? endif; ?>
-      <li<?=$this->active == 'fines' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-fines')?>"><?=$this->transEsc('Fines')?></a></li>
-      <li<?=$this->active == 'profile' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-profile')?>"><?=$this->transEsc('Profile')?></a></li>
+      <? if ($this->ils()->checkCapability('getMyFines')): ?>
+        <li<?=$this->active == 'fines' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-fines')?>"><?=$this->transEsc('Fines')?></a></li>
+      <? endif; ?>
+      <? if ($this->ils()->checkCapability('getMyProfile')): ?>
+        <li<?=$this->active == 'profile' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-profile')?>"><?=$this->transEsc('Profile')?></a></li>
+      <? endif; ?>
     <? endif; ?>
     <li<?=$this->active == 'history' ? ' class="active"' : ''?>><a href="<?=$this->url('search-history')?>?require_login"><?=$this->transEsc('history_saved_searches')?></a></li>
   </ul>
