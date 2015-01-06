@@ -123,7 +123,7 @@ class Connector implements LoggerAwareInterface
     }
 
     /**
-     * Get records similiar to one record
+     * Get records similar to one record
      *
      * @param array  $record An associative array of the record data
      * @param string $id     The record id

@@ -6,7 +6,6 @@ tools:
         timeout: 600
     php_code_coverage:
         enabled: true
-        test_command: phpunit -c .scrutinizer-ci.phpunit.xml.dist
     php_code_sniffer:
         enabled: true
         config:
@@ -15,7 +14,7 @@ tools:
             paths: ["src/*", "tests/*"]
     php_cpd:
         enabled: true
-        excluded_dirs: ["build/*", "docs", "examples", "tests", "vendor"]
+        excluded_dirs: ["docs", "examples", "tests", "vendor"]
     php_cs_fixer:
         enabled: true
         config:
@@ -24,7 +23,7 @@ tools:
             paths: ["src/*", "tests/*"]
     php_loc:
         enabled: true
-        excluded_dirs: ["build", "docs", "examples", "tests", "vendor"]
+        excluded_dirs: ["docs", "examples", "tests", "vendor"]
     php_mess_detector:
         enabled: true
         config:
@@ -34,13 +33,13 @@ tools:
             paths: ["src/*"]
     php_pdepend:
         enabled: true
-        excluded_dirs: ["build", "docs", "examples", "tests", "vendor"]
+        excluded_dirs: ["docs", "examples", "tests", "vendor"]
     php_analyzer:
         enabled: true
         filter:
-            paths: ["src/*", "tests/*", "examples/*"]
+            paths: ["src/*", "tests/*"]
     php_hhvm:
         enabled: true
         filter:
-            paths: ["src/*", "tests/*", "examples/*"]
+            paths: ["src/*", "tests/*"]
     sensiolabs_security_checker: true

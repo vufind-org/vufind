@@ -102,7 +102,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->callMethod($driver, 'getLocalId', array('bad'));
         $this->assertEquals(
             'VuFind\ILS\Driver\MultiBackend: '
-                . "Cannot find local id in 'bad' using '.'",
+                . "Could not find local id in 'bad' using '.'",
             $writer->events[1]['message']
         );
     }
@@ -115,6 +115,9 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     public function testGetSourceFromParams()
     {
         $driver = $this->getDriver();
+
+        $drivers = array('d1' => 'Voyager', 'd2'=> 'Demo');
+        $this->setProperty($driver, 'drivers', $drivers);
 
         $result = $this->callMethod($driver, 'getSourceFromParams', array(''));
         $this->assertEquals('', $result);
@@ -142,7 +145,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
 
         $data = array(
             'test' => 'true',
-            'values' => array(
+            'patron' => array(
                 'id' => 'd2.record1',
                 'cat_username' => 'record2'
             )

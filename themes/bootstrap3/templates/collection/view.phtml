@@ -68,15 +68,17 @@
           }
         ?>
         <li<?=$isCurrent ? ' class="active"' : ''?>>
-          <a id="<?=$tab ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
         </li>
         <? endforeach; ?>
       </ul>
     <? endif; ?>
 
 
-    <div class="collectionDetails<?=$tree ? 'Tree' : ''?>">
-      <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+    <div class="collectionDetails<?=$tree ? 'Tree' : ''?> tab-content" id="record-tabs">
+      <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
+        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+      </div>
     </div>
 
     <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>

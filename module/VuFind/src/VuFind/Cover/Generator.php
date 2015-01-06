@@ -111,6 +111,7 @@ class Generator
      * @param string $callnumber Callnumber of the book
      *
      * @return string contents of image file
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function generateSolid($title, $author, $callnumber)
     {

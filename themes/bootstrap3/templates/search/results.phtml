@@ -32,6 +32,8 @@
 
   // Enable cart if appropriate:
   $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
+  // Enable bulk options if appropriate:
+  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");

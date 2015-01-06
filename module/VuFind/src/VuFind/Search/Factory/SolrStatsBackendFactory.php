@@ -56,6 +56,7 @@ class SolrStatsBackendFactory extends AbstractSolrBackendFactory
         $this->solrCore = 'stats';
         $this->searchConfig = 'searches';
         $this->searchYaml = 'searchspecs.yaml';
+        $this->facetConfig = 'facets';
     }
 
     /**

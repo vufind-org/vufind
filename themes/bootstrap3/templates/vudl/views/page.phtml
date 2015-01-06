@@ -52,7 +52,11 @@
       currTab = $(this).attr('id');
     });
     // Initialize the size of Zoomy
-    $('#zoom-tab').on('shown.bs.tab', resizeZoom);
+    $('#zoom-tab').on('shown.bs.tab', function() {
+      resizeZoom();
+      Zoomy.init(document.getElementById('zoomy'));
+      Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hidden'); });
+    });
     $(window).scroll(resizeZoom);
     $(window).resize(resizeZoom);
     resizeZoom();

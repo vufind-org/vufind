@@ -32,7 +32,6 @@ function ajaxGetView(pageObject) {
     });
   } else {
     updateFunction(pageObject);
-    $('#'+currTab).click();
   }
   updateTechInfo(pageObject);
   lastID = pageObject['id'];
@@ -144,9 +143,9 @@ $(document).ready(function() {
     $(this).addClass('selected');
     var list = parseInt($(this).parents('.item-list').attr('list-index'));
     if(counts[list] > 1) {
-      $('.siblings-form .turn-button').removeClass('hidden');
+      $('.sibling-form .turn-button').removeClass('hidden');
     } else {
-      $('.siblings-form .turn-button').addClass('hidden');
+      $('.sibling-form .turn-button').addClass('hidden');
     }
   });
   // Load clicked items
