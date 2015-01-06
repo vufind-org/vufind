@@ -92,7 +92,7 @@ class MultiBackend extends AbstractBase
     protected $config = array();
 
     /**
-     * The seperating values to be used for each ILS.
+     * The separating values to be used for each ILS.
      * Not yet implemented
      * @var object
      */
@@ -373,16 +373,17 @@ class MultiBackend extends AbstractBase
      *
      * This is responsible for retrieving the profile for a specific patron.
      *
-     * @param array $user The patron array
+     * @param array $patron The patron array
      *
      * @return mixed      Array of the patron's profile data
      */
-    public function getMyProfile($user)
+    public function getMyProfile($patron)
     {
-        $source = $this->getSource($user['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver) {
-            $profile = $driver->getMyProfile($this->stripIdPrefixes($user, $source));
+            $profile = $driver
+                ->getMyProfile($this->stripIdPrefixes($patron, $source));
             return $this->addIdPrefixes($profile, $source);
         }
         return array();
@@ -422,17 +423,17 @@ class MultiBackend extends AbstractBase
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
      *
-     * @param array $user The patron array from patronLogin
+     * @param array $patron The patron array from patronLogin
      *
      * @return mixed      Array of the patron's transactions
      */
-    public function getMyTransactions($user)
+    public function getMyTransactions($patron)
     {
-        $source = $this->getSource($user['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver) {
             $transactions = $driver->getMyTransactions(
-                $this->stripIdPrefixes($user, $source)
+                $this->stripIdPrefixes($patron, $source)
             );
             return $this->addIdPrefixes($transactions, $source);
         }
@@ -473,7 +474,7 @@ class MultiBackend extends AbstractBase
      * @param array $renewDetails An array of data required for renewing items
      * including the Patron ID and an array of renewal IDS
      *
-     * @return array              An array of renewal information keyed by item ID
+     * @return array An array of renewal information keyed by item ID
      */
     public function renewMyItems($renewDetails)
     {
@@ -493,16 +494,16 @@ class MultiBackend extends AbstractBase
      *
      * This is responsible for retrieving all fines by a specific patron.
      *
-     * @param array $user The patron array from patronLogin
+     * @param array $patron The patron array from patronLogin
      *
      * @return mixed      Array of the patron's fines
      */
-    public function getMyFines($user)
+    public function getMyFines($patron)
     {
-        $source = $this->getSource($user['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver) {
-            $fines = $driver->getMyFines($this->stripIdPrefixes($user, $source));
+            $fines = $driver->getMyFines($this->stripIdPrefixes($patron, $source));
             return $this->addIdPrefixes($fines, $source);
         }
         throw new ILSException('No suitable backend driver found');
@@ -513,16 +514,16 @@ class MultiBackend extends AbstractBase
      *
      * This is responsible for retrieving all holds by a specific patron.
      *
-     * @param array $user The patron array from patronLogin
+     * @param array $patron The patron array from patronLogin
      *
      * @return mixed      Array of the patron's holds
      */
-    public function getMyHolds($user)
+    public function getMyHolds($patron)
     {
-        $source = $this->getSource($user['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver) {
-            $holds = $driver->getMyHolds($this->stripIdPrefixes($user, $source));
+            $holds = $driver->getMyHolds($this->stripIdPrefixes($patron, $source));
             return $this->addIdPrefixes(
                 $holds, $source, array('id', 'item_id', 'cat_username')
             );
@@ -535,21 +536,23 @@ class MultiBackend extends AbstractBase
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
-     * @param array $user The patron array from patronLogin
+     * @param array $patron The patron array from patronLogin
      *
      * @return mixed      Array of the patron's holds
      */
-    public function getMyStorageRetrievalRequests($user)
+    public function getMyStorageRetrievalRequests($patron)
     {
-        $source = $this->getSource($user['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported($driver, 'getMyStorageRetrievalRequests')) {
+            if (!$this->methodSupported(
+                $driver, 'getMyStorageRetrievalRequests', compact('patron')
+            )) {
                 // Return empty array if not supported by the driver
                 return array();
             }
             $requests = $driver->getMyStorageRetrievalRequests(
-                $this->stripIdPrefixes($user, $source)
+                $this->stripIdPrefixes($patron, $source)
             );
             return $this->addIdPrefixes($requests, $source);
         }
@@ -693,27 +696,29 @@ class MultiBackend extends AbstractBase
     /**
      * Get request groups
      *
-     * @param integer $bibId  BIB ID
+     * @param integer $id     BIB ID
      * @param array   $patron Patron information returned by the patronLogin
      * method.
      *
      * @return array  An array of associative arrays with requestGroupId and
      * name keys
      */
-    public function getRequestGroups($bibId, $patron)
+    public function getRequestGroups($id, $patron)
     {
-        $source = $this->getSource($bibId);
+        $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($this->getSource($patron['cat_username'], 'login') != $source
-                || !$this->methodSupported($driver, 'getRequestGroups')
+                || !$this->methodSupported(
+                    $driver, 'getRequestGroups', compact('id', 'patron')
+                )
             ) {
                 // Return empty array since the sources don't match or the method
                 // isn't supported by the driver
                 return array();
             }
             $groups = $driver->getRequestGroups(
-                $this->stripIdPrefixes($bibId, $source),
+                $this->stripIdPrefixes($id, $source),
                 $this->stripIdPrefixes($patron, $source)
             );
             return $groups;
@@ -742,7 +747,10 @@ class MultiBackend extends AbstractBase
         if ($driver) {
             if (!empty($holdDetails)) {
                 if ($this->getSource($holdDetails['id']) != $source
-                    || !$this->methodSupported($driver, 'getDefaultRequestGroup')
+                    || !$this->methodSupported(
+                        $driver, 'getDefaultRequestGroup',
+                        compact('patron', 'holdDetails')
+                    )
                 ) {
                     // Return false since the sources don't match or the method
                     // isn't supported by the driver
@@ -837,9 +845,9 @@ class MultiBackend extends AbstractBase
     }
 
     /**
-     * Place Call Slip Request
+     * Place Storage Retrieval Request
      *
-     * Attempts to place a call slip request on a particular item and returns
+     * Attempts to place a storage retrieval request on a particular item and returns
      * an array with result details
      *
      * @param array $details An array of item and patron data
@@ -885,7 +893,9 @@ class MultiBackend extends AbstractBase
         );
         $driver = $this->getDriver($source);
         if ($driver
-            && $this->methodSupported($driver, 'cancelStorageRetrievalRequests')
+            && $this->methodSupported(
+                $driver, 'cancelStorageRetrievalRequests', compact('cancelDetails')
+            )
         ) {
             return $driver->cancelStorageRetrievalRequests(
                 $this->stripIdPrefixes($cancelDetails, $source)
@@ -912,7 +922,8 @@ class MultiBackend extends AbstractBase
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
-                $driver, 'getCancelStorageRetrievalRequestDetails'
+                $driver, 'getCancelStorageRetrievalRequestDetails',
+                compact('details')
             )
         ) {
             $details = $this->stripIdPrefixes($details, $source);
@@ -936,7 +947,11 @@ class MultiBackend extends AbstractBase
     {
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
-        if ($driver && $this->methodSupported($driver, 'checkILLRequestIsValid')) {
+        if ($driver
+            && $this->methodSupported(
+                $driver, 'checkILLRequestIsValid', compact('id', 'data', 'patron')
+            )
+        ) {
             // Patron is not stripped so that the correct library can be determined
             return $driver->checkILLRequestIsValid(
                 $this->stripIdPrefixes($id, $source),
@@ -962,7 +977,11 @@ class MultiBackend extends AbstractBase
     {
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
-        if ($driver && $this->methodSupported($driver, 'getILLPickupLibraries')) {
+        if ($driver
+            && $this->methodSupported(
+                $driver, 'getILLPickupLibraries', compact('id', 'patron')
+            )
+        ) {
             // Patron is not stripped so that the correct library can be determined
             return $driver->getILLPickupLibraries(
                 $this->stripIdPrefixes($id, $source, array('id')),
@@ -989,7 +1008,12 @@ class MultiBackend extends AbstractBase
     {
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
-        if ($driver && $this->methodSupported($driver, 'getILLPickupLocations')) {
+        if ($driver
+            && $this->methodSupported(
+                $driver, 'getILLPickupLocations',
+                compact('id', 'pickupLib', 'patron')
+            )
+        ) {
             // Patron is not stripped so that the correct library can be determined
             return $driver->getILLPickupLocations(
                 $this->stripIdPrefixes($id, $source, array('id')),
@@ -1016,7 +1040,9 @@ class MultiBackend extends AbstractBase
     {
         $source = $this->getSource($details['id']);
         $driver = $this->getDriver($source);
-        if ($driver && $this->methodSupported($driver, 'placeILLRequest')) {
+        if ($driver
+            && $this->methodSupported($driver, 'placeILLRequest', compact($details))
+        ) {
             $details = $this->stripIdPrefixes($details, $source, array('id'));
             return $driver->placeILLRequest($details);
         }
@@ -1028,21 +1054,23 @@ class MultiBackend extends AbstractBase
      *
      * This is responsible for retrieving all ILL Requests by a specific patron.
      *
-     * @param array $user The patron array from patronLogin
+     * @param array $patron The patron array from patronLogin
      *
      * @return mixed      Array of the patron's ILL requests
      */
-    public function getMyILLRequests($user)
+    public function getMyILLRequests($patron)
     {
-        $source = $this->getSource($user['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username'], 'login');
         $driver = $this->getDriver($source);
         if ($driver) {
-            if (!$this->methodSupported($driver, 'getMyILLRequests')) {
+            if (!$this->methodSupported(
+                $driver, 'getMyILLRequests', compact('patron')
+            )) {
                 // Return empty array if not supported by the driver
                 return array();
             }
             $requests = $driver->getMyILLRequests(
-                $this->stripIdPrefixes($user, $source)
+                $this->stripIdPrefixes($patron, $source)
             );
             return $this->addIdPrefixes(
                 $requests, $source, array('id', 'item_id', 'cat_username')
@@ -1069,7 +1097,11 @@ class MultiBackend extends AbstractBase
             $cancelDetails['patron']['cat_username'], 'login'
         );
         $driver = $this->getDriver($source);
-        if ($driver && $this->methodSupported($driver, 'cancelILLRequests')) {
+        if ($driver
+            && $this->methodSupported(
+                $driver, 'cancelILLRequests', compact('cancelDetails')
+            )
+        ) {
             return $driver->cancelILLRequests(
                 $this->stripIdPrefixes($cancelDetails, $source)
             );
@@ -1096,7 +1128,9 @@ class MultiBackend extends AbstractBase
         );
         $driver = $this->getDriver($source);
         if ($driver
-            && $this->methodSupported($driver, 'getCancelILLRequestDetails')
+            && $this->methodSupported(
+                $driver, 'getCancelILLRequestDetails', compact('details')
+            )
         ) {
             return $driver->getCancelILLRequestDetails(
                 $this->stripIdPrefixes($details, $source)
@@ -1120,7 +1154,7 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($details['patron']['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
-            && $this->methodSupported($driver, 'changePassword')
+            && $this->methodSupported($driver, 'changePassword', compact('details'))
         ) {
             return $driver->changePassword(
                 $this->stripIdPrefixes($details, $source)
@@ -1153,7 +1187,7 @@ class MultiBackend extends AbstractBase
         $driver = $this->getDriver($source);
 
         // If we have resolved the needed driver, just getConfig and return.
-        if ($driver && $this->methodSupported($driver, 'getConfig')) {
+        if ($driver && $this->methodSupported($driver, 'getConfig', $params)) {
             return $driver->getConfig(
                 $function, $this->stripIdPrefixes($params, $source)
             );
@@ -1168,7 +1202,7 @@ class MultiBackend extends AbstractBase
      * called on this driver.  Required method for any smart drivers.
      *
      * @param string $method The name of the called method.
-     * @param array  $params Array of passed parameters
+     * @param array  $params Array of passed parameters.
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
@@ -1188,7 +1222,7 @@ class MultiBackend extends AbstractBase
         }
 
         $driver = $this->getDriver($source);
-        return $driver && $this->methodSupported($driver, $method);
+        return $driver && $this->methodSupported($driver, $method, $params);
     }
 
     /**
@@ -1233,7 +1267,7 @@ class MultiBackend extends AbstractBase
         if ($pos > 0) {
             return substr($id, $pos + 1);
         }
-        $this->debug("Cannot find local id in '$id' using '$delimiter'");
+        $this->debug("Could not find local id in '$id' using '$delimiter'");
         return $id;
     }
 
@@ -1255,7 +1289,7 @@ class MultiBackend extends AbstractBase
             return substr($id, 0, $pos);
         }
 
-        $this->debug("Cannot find source id in '$id' using '$delimiter'");
+        $this->debug("Could not find source id in '$id' using '$delimiter'");
         return '';
     }
 
@@ -1269,23 +1303,30 @@ class MultiBackend extends AbstractBase
     protected function getSourceFromParams($params)
     {
         if (!is_array($params)) {
-            return is_string($params) ? $this->getSource($params) : '';
-        }
-        foreach ($params as $key => $value) {
-            if (is_array($value)) {
-                $source = $this->getSourceFromParams($value);
-                if ($source) {
+            if (is_string($params)) {
+                $source = $this->getSource($params);
+                if ($source && isset($this->drivers[$source])) {
                     return $source;
                 }
+            }
+            return '';
+        }
+        foreach ($params as $key => $value) {
+            $source = false;
+            if (is_array($value) && (is_int($key) || $key === 'patron')) {
+                $source = $this->getSourceFromParams($value);
             } elseif ($key === 0 || $key === 'id' || $key === 'cat_username') {
                 $source = $this->getSource(
                     $value, $key === 'cat_username' ? 'login' : ''
                 );
-                if ($source) {
-                    return $source;
-                }
+            }
+            if ($source && isset($this->drivers[$source])) {
+                return $source;
             }
         }
+        $this->debug(
+            'Could not find source id in params: ' . print_r($params, true)
+        );
         return '';
     }
 
@@ -1326,6 +1367,7 @@ class MultiBackend extends AbstractBase
             if ($driverInst) {
                 $this->initializeDriver($driverInst, $source);
             } else {
+                $this->debug("Could not initialize driver for source '$source'");
                 return null;
             }
         }
@@ -1491,14 +1533,15 @@ class MultiBackend extends AbstractBase
      *
      * @param object $driver ILS Driver
      * @param string $method Method name
+     * @param array  $params Array of passed parameters
      *
      * @return bool
      */
-    protected function methodSupported($driver, $method)
+    protected function methodSupported($driver, $method, $params = null)
     {
         if (is_callable(array($driver, $method))) {
             if (method_exists($driver, 'supportsMethod')) {
-                return $driver->supportsMethod($method);
+                return $driver->supportsMethod($method, $params ?: array());
             }
             return true;
         }

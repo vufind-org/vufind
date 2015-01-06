@@ -806,7 +806,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 continue;
             }
             $availability = false;
-            $reserve = ($item_status['request'] == 'C')?'N':'Y';
+            //$reserve = ($item_status['request'] == 'C')?'N':'Y';
             $collection = (string) $z30->{'z30-collection'};
             $collection_desc = array('desc' => $collection);
             if ($this->translator) {
@@ -1007,7 +1007,6 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     public function renewMyItems($details)
     {
         $patron = $details['patron'];
-        $error = false;
         $result = array();
         foreach ($details['details'] as $id) {
             try {
@@ -1183,7 +1182,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $z31 = $item->z31;
             $z13 = $item->z13;
             $z30 = $item->z30;
-            $delete = $item->xpath('@delete');
+            //$delete = $item->xpath('@delete');
             $title = (string) $z13->{'z13-title'};
             $transactiondate = date('d-m-Y', strtotime((string) $z31->{'z31-date'}));
             $transactiontype = (string) $z31->{'z31-credit-debit'};
@@ -1200,7 +1199,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 = (float)(preg_replace("/[\(\)]/", "", (string) $z31->{'z31-sum'}))
                 * $mult;
             $cashref = (string) $z31->{'z31-sequence'};
-            $cashdate = date('d-m-Y', strtotime((string) $z31->{'z31-date'}));
+            //$cashdate = date('d-m-Y', strtotime((string) $z31->{'z31-date'}));
             $balance = 0;
 
             $finesListSort["$cashref"]  = array(
@@ -1215,7 +1214,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             );
         }
         ksort($finesListSort);
-        foreach ($finesListSort as $key => $value) {
+        foreach (array_keys($finesListSort) as $key) {
             $title = $finesListSort[$key]["title"];
             $barcode = $finesListSort[$key]["barcode"];
             $amount = $finesListSort[$key]["amount"];
@@ -1336,8 +1335,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $address1 = (string)$address->{'z304-address-1'};
         $address2 = (string)$address->{'z304-address-2'};
         $address3 = (string)$address->{'z304-address-3'};
-        $address4 = (string)$address->{'z304-address-4'};
-        $address5 = (string)$address->{'z304-address-5'};
+        //$address4 = (string)$address->{'z304-address-4'};
+        //$address5 = (string)$address->{'z304-address-5'};
         $zip = (string)$address->{'z304-zip'};
         $phone = (string)$address->{'z304-telephone-1'};
         $email = (string)$address->{'z404-email-address'};
@@ -1460,7 +1459,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $requests = 0;
         $str = $xml->xpath('//item/queue/text()');
         if ($str != null) {
-            list($requests, $other) = explode(' ', trim($str[0]));
+            list($requests) = explode(' ', trim($str[0]));
         }
         $date = $xml->xpath('//last-interest-date/text()');
         $date = $date[0];
@@ -1554,7 +1553,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         }
         $body = 'post_xml=' . $body->asXML();
         try {
-            $result = $this->doRestDLFRequest(
+            $this->doRestDLFRequest(
                 array(
                     'patron', $patronId, 'record', $recordId, 'items', $itemId,
                     'hold'
@@ -1717,9 +1716,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             );
             $pickupLocations = $details['pickup-locations'];
             if (isset($this->preferredPickUpLocations)) {
-                foreach (
-                    $details['pickup-locations'] as $locationID => $locationDisplay
-                ) {
+                foreach (array_keys($details['pickup-locations']) as $locationID) {
                     if (in_array($locationID, $this->preferredPickUpLocations)) {
                         return $locationID;
                     }

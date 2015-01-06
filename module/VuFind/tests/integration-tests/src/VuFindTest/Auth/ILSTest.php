@@ -96,7 +96,8 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             new \VuFind\ILS\Connection(
                 new \Zend\Config\Config(array('driver' => 'Sample')),
                 $driverManager, $mockConfigReader
-            )
+            ),
+            $this->getMockILSAuthenticator()
         );
         $this->auth->setDbTableManager(
             $this->getServiceManager()->get('VuFind\DbTablePluginManager')
@@ -213,5 +214,17 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             throw new \Exception('Problem deleting expected user.');
         }
         $user->delete();
+    }
+
+    /**
+     * Get mock ILS authenticator
+     *
+     * @return \VuFind\Auth\ILSAuthenticator
+     */
+    protected function getMockILSAuthenticator()
+    {
+        return $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }
