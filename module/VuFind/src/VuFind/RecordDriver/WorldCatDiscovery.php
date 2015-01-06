@@ -98,9 +98,10 @@ class WorldCatDiscovery extends SolrDefault
         $subjects = $this->getRawObject()->getAbout();
         array_walk($subjects, function(&$subject)
         {
-            $subject = $subject->getName();
+            $subject = is_callable(array($subject, 'getName'))
+                ? $subject->getName() : null;
         });
-        $subjects = array_unique($subjects);
+        $subjects = array_unique(array_filter($subjects));
         array_walk($subjects, function(&$subject)
         {
             $subject = array($subject);
@@ -234,28 +235,35 @@ class WorldCatDiscovery extends SolrDefault
      */
     public function getOpenURL()
     {
-        $kbrequest = '';
+        $kbrequest = [];
         $record = $this->getRawObject();
-        if (is_a($record, 'WorldCat\Discovery\Article')){
+        if ($record instanceof \WorldCat\Discovery\Article) {
             if ($record->getSameAs()){
                 $doi = str_replace("http://dx.doi.org/", "info:doi:", $record->getSameAs());
-                $kbrequest .= 'rft_id=' . $doi;
+                $kbrequest[] = 'rft_id=' . $doi;
             } else {
                 if ($part = $record->getIsPartOf()) {
-                    $kbrequest .= "rft.issn=" . $part->getVolume()->getPeriodical()->getIssn();
-                    $kbrequest .= "&rft.volume=" . $part->getVolume()->getVolumeNumber();
-                    $kbrequest .= "&rft.issue=" . $part->getIssueNumber();
+                    if (is_callable(array($part, 'getVolume'))
+                        && ($vol = $part->getVolume())
+                    ) {
+                        $kbrequest[] = "rft.issn=" . $vol->getPeriodical()->getIssn();
+                        $kbrequest[] = "rft.volume=" . $vol->getVolumeNumber();
+                    }
+                    if (is_callable(array($part, 'getIssueNumber'))) {
+                        $kbrequest[] = "rft.issue=" . $part->getIssueNumber();
+                    }
                 }
-                $kbrequest .= "&rft.spage=" . $record->getPageStart();
-                $kbrequest .= "&rft.atitle=" . $record->getName();
+                $kbrequest[] = "rft.spage=" . $record->getPageStart();
+                $kbrequest[] = "rft.atitle=" . $record->getName();
             }
-        } elseif (get_class($record) == "WorldCat\Discovery\Book" && $record->getManifestations()) {
-            $manifestations = $record->getManifestations();
-            $kbrequest .= "rft.isbn=" . $manifestations[0]->getISBN();
+        } elseif ($record instanceof \WorldCat\Discovery\Book
+            && ($manifestations = $record->getManifestations())
+        ) {
+            $kbrequest[] = "rft.isbn=" . $manifestations[0]->getISBN();
         }else {
-            $kbrequest .= "rft.oclcnum=" . $record->getOCLCNumber();
+            $kbrequest[] = "rft.oclcnum=" . $record->getOCLCNumber();
         }
-        return $kbrequest;
+        return implode('&', $kbrequest);
     }
 
 
