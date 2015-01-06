@@ -241,9 +241,11 @@ class WorldCatDiscovery extends SolrDefault
                 $doi = str_replace("http://dx.doi.org/", "info:doi:", $record->getSameAs());
                 $kbrequest .= 'rft_id=' . $doi;
             } else {
-                $kbrequest .= "rft.issn=" . $record->getIsPartOf()->getVolume()->getPeriodical()->getIssn();
-                $kbrequest .= "&rft.volume=" . $record->getIsPartOf()->getVolume()->getVolumeNumber();
-                $kbrequest .= "&rft.issue=" . $record->getIsPartOf()->getIssueNumber();
+                if ($part = $record->getIsPartOf()) {
+                    $kbrequest .= "rft.issn=" . $part->getVolume()->getPeriodical()->getIssn();
+                    $kbrequest .= "&rft.volume=" . $part->getVolume()->getVolumeNumber();
+                    $kbrequest .= "&rft.issue=" . $part->getIssueNumber();
+                }
                 $kbrequest .= "&rft.spage=" . $record->getPageStart();
                 $kbrequest .= "&rft.atitle=" . $record->getName();
             }
