@@ -26,8 +26,7 @@ function extractClassParams(str) {
 function jqEscape(myid) {
   return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
 }
-function html_entity_decode(string, quote_style)
-{
+function html_entity_decode(string, quote_style) {
   var hash_map = {},
     symbol = '',
     tmp_str = '',
@@ -91,6 +90,28 @@ function updateOrFacets(url, op) {
 function setupOrFacets() {
   $('.facetOR').find('.icon-check').replaceWith('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
   $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
+}
+
+// Record
+function refreshCommentList(recordId, recordSource) {
+  var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  $.ajax({
+    dataType: 'json',
+    url: url,
+    success: function(response) {
+      // Update HTML
+      if (response.status == 'OK') {
+        $('#commentList').empty();
+        $('#commentList').append(response.data);
+        $('input[type="submit"]').button('reset');
+        $('.delete').unbind('click').click(function() {
+          var commentId = $(this).attr('id').substr('recordComment'.length);
+          deleteRecordComment(this, recordId, recordSource, commentId);
+          return false;
+        });
+      }
+    }
+  });
 }
 
 // Lightbox
@@ -195,9 +216,13 @@ function updatePageForLogin() {
 
   // Refresh tab content
   var recordTabs = $('.recordTabs');
-  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
+  if(typeof ajaxLoadTab == "function" && !summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
     var tab = recordTabs.find('.active a').attr('id');
     ajaxLoadTab(tab);
+  }
+  if(typeof ajaxFLLoadTab == "function") {
+    var $activeTab = $('.search_tabs .recordTabs li.active a');
+    ajaxFLLoadTab($activeTab.attr('id'), true);
   }
 }
 function newAccountHandler(html) {

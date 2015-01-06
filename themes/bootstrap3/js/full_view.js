@@ -7,7 +7,10 @@ function showhideTabs(tabid) {
   $('#'+tabid).tab('show');
 }
 
-function ajaxFLLoadTab(tabid) {
+function ajaxFLLoadTab(tabid, reload) {
+  if(typeof reload === "undefined") {
+    reload = false;
+  }
   var id = $('#'+tabid).parent().parent().parent().find(".hiddenId")[0].value;
   var source = $('#'+tabid).parent().parent().parent().find(".hiddenSource")[0].value;
   if (source == 'VuFind') {
@@ -17,7 +20,7 @@ function ajaxFLLoadTab(tabid) {
   }
   var tab = tabid.split('_');
   tab = tab[0];
-  if($('#'+tabid+'-tab').is(':empty')) {
+  if(reload || $('#'+tabid+'-tab').is(':empty')) {
     $.ajax({
       url: path + '/' + urlroot + '/' + id + '/AjaxTab',
       type: 'POST',
@@ -27,6 +30,36 @@ function ajaxFLLoadTab(tabid) {
         showhideTabs(tabid);
         if(typeof syn_get_widget === "function") {
           syn_get_widget();
+        }
+        if(tabid.substring(0, 12) == 'usercomments') {
+          $('#'+tabid+'-tab input[type=submit]').unbind('click').click(function() {
+            var form = $(this).closest('form')[0];
+            var id = form.id.value;
+            var recordSource = form.source.value;
+            var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+            var data = {
+              comment:form.comment.value,
+              id:id,
+              source:recordSource
+            };
+            $.ajax({
+              type: 'POST',
+              url:  url,
+              data: data,
+              dataType: 'json',
+              success: function(response) {
+                var $form = $('#'+tabid).closest('form');
+                if (response.status == 'OK') {
+                  refreshCommentList(id, recordSource);
+                  $form.find('textarea[name="comment"]').val('');
+                  $form.find('input[type="submit"]').button('loading');
+                } else {
+                  Lightbox.displayError(response.data);
+                }
+              }
+            })
+            return false;
+          });
         }
       }
     });
