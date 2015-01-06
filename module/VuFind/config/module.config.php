@@ -388,7 +388,6 @@ $config = array(
                     'sierra' => 'VuFind\ILS\Driver\Sierra',
                     'symphony' => 'VuFind\ILS\Driver\Symphony',
                     'virtua' => 'VuFind\ILS\Driver\Virtua',
-                    'xcncip' => 'VuFind\ILS\Driver\XCNCIP',
                     'xcncip2' => 'VuFind\ILS\Driver\XCNCIP2',
                 ),
             ),

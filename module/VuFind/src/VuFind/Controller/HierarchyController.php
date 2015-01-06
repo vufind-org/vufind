@@ -57,16 +57,18 @@ class HierarchyController extends AbstractBase
     /**
      * Output JSON
      *
-     * @param string $json A JSON string
+     * @param string $json   A JSON string
+     * @param int    $status Response status code
      *
      * @return \Zend\Http\Response
      */
-    protected function outputJSON($json)
+    protected function outputJSON($json, $status = 200)
     {
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Content-type', 'application/json');
         $response->setContent($json);
+        $response->setStatusCode($status);
         return $response;
     }
 
