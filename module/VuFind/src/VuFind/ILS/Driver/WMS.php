@@ -637,7 +637,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			$retVal[] = array(
     					'id' => (string)$id[0],
     					'source' => 'WorldCatDiscovery',
-    					'create' => (string)$created[0],
+    					'create' => (string)$created,
     					'expire' => $expireDate,
     					'title' => (string)$title[0],
     					'position' => (string)$pos[0],
