@@ -652,21 +652,6 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
     
     /**
-     * Get Patron Profile
-     *
-     * This is responsible for retrieving the profile for a specific patron.
-     *
-     * @param array $patron The patron array
-     *
-     * @throws ILSException
-     * @return array        Array of the patron's profile data on success.
-     */
-    public function getMyProfile($patron)
-    {
-    	return null;
-    }
-    
-    /**
      * Get Renew Details
      *
      * This function returns the item id as a string which is then used
