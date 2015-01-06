@@ -109,7 +109,8 @@ class Factory
     public static function getCollectionSideFacets(ServiceManager $sm)
     {
         return new CollectionSideFacets(
-            $sm->getServiceLocator()->get('VuFind\Config')
+            $sm->getServiceLocator()->get('VuFind\Config'),
+            $sm->getServiceLocator()->get('VuFind\HierarchicalFacetHelper')
         );
     }
 
@@ -202,7 +203,8 @@ class Factory
     public static function getSideFacets(ServiceManager $sm)
     {
         return new SideFacets(
-            $sm->getServiceLocator()->get('VuFind\Config')
+            $sm->getServiceLocator()->get('VuFind\Config'),
+            $sm->getServiceLocator()->get('VuFind\HierarchicalFacetHelper')
         );
     }
 

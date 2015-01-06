@@ -132,9 +132,9 @@ class RecordController extends AbstractRecord
 
         // Send various values to the view so we can build the form:
         $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
-        $requestGroups = $catalog->checkCapability('getRequestGroups')
-            ? $catalog->getRequestGroups($driver->getUniqueID(), $patron)
-            : array();
+        $requestGroups = $catalog->checkCapability(
+            'getRequestGroups', array($driver->getUniqueID(), $patron)
+        ) ? $catalog->getRequestGroups($driver->getUniqueID(), $patron) : array();
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(":", $checkHolds['extraHoldFields']) : array();
 
@@ -166,12 +166,15 @@ class RecordController extends AbstractRecord
 
                 // Success: Go to Display Holds
                 if (isset($results['success']) && $results['success'] == true) {
-                    $this->flashMessenger()->setNamespace('info')
-                        ->addMessage('hold_place_success');
-                    if ($this->inLightbox()) {
-                        return false;
-                    }
-                    return $this->redirect()->toRoute('myresearch-holds');
+                    $msg = array(
+                        'html' => true,
+                        'msg' => 'hold_place_success_html',
+                        'tokens' => array(
+                            '%%url%%' => $this->url()->fromRoute('myresearch-holds')
+                        ),
+                    );
+                    $this->flashMessenger()->setNamespace('info')->addMessage($msg);
+                    return $this->redirectToRecord('#top');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.

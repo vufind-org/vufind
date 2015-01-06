@@ -1,5 +1,6 @@
 var Zoomy = {
   mouseDown: false,
+  mouseOnMap: null,
   // Create
   init: function(canvas) {
     this.canvas  = canvas;
@@ -18,12 +19,14 @@ var Zoomy = {
     addEventListener('mousemove', Zoomy.mouseHandle, false);
     addEventListener('touchmove', Zoomy.mouseHandle, false);
     addEventListener('mouseup', function(e) {
-      Zoomy.mouseDown = false;
       Zoomy.mouse = undefined;
+      Zoomy.mouseDown = false;
+      Zoomy.mouseOnMap = null;
     }, false);
     addEventListener('touchend', function(e) {
-      Zoomy.mouseDown = false;
       Zoomy.mouse = undefined;
+      Zoomy.mouseDown = false;
+      Zoomy.mouseOnMap = null;
     }, false);
     this.canvas.addEventListener('mousedown', function(e) {
       Zoomy.mouseDown = true;
@@ -68,20 +71,25 @@ var Zoomy = {
     var mx = e.type.match("touch")
       ? e.targetTouches[0].pageX
       : e.pageX;
-    mx -= bounds.x;
+    mx -= bounds.left;
     var my = e.type.match("touch")
       ? e.targetTouches[0].pageY
       : e.pageY;
-    my -= bounds.y + window.scrollY;
+    my -= bounds.top + window.scrollY;
     if(typeof Zoomy.mouse !== "undefined") {
       var xdiff = mx - Zoomy.mouse.x;
       var ydiff = my - Zoomy.mouse.y;
-      if(Zoomy.minimap != null
-      && mx > Zoomy.minimap.rect.x
-      && mx < Zoomy.minimap.rect.x+Zoomy.minimap.rect.w
-      && my > Zoomy.minimap.rect.y
-      && my < Zoomy.minimap.rect.y+Zoomy.minimap.rect.h) {
+      if(Zoomy.mouseOnMap === null) {
+        Zoomy.mouseOnMap = Zoomy.minimap != null
+                        && mx > Zoomy.minimap.rect.x
+                        && mx < Zoomy.minimap.rect.x+Zoomy.minimap.rect.w
+                        && my > Zoomy.minimap.rect.y
+                        && my < Zoomy.minimap.rect.y+Zoomy.minimap.rect.h;
+      }
+      if(Zoomy.mouseOnMap) {
         var ratio = Zoomy.image.rwidth / Zoomy.minimap.width;
+        if(Zoomy.image.rwidth < Zoomy.width)   xdiff = 0;
+        if(Zoomy.image.rheight < Zoomy.height) ydiff = 0;
         switch(Zoomy.image.angle % Math.TWO_PI) {
           case 0:
             xdiff *= -ratio;

@@ -33,6 +33,7 @@ use ReflectionProperty;
  * @license MIT
  *
  * @covers \ProxyManager\ProxyGenerator\NullObjectGenerator
+ * @group Coverage
  */
 class NullObjectGeneratorTest extends PHPUnit_Framework_TestCase
 {
@@ -56,10 +57,6 @@ class NullObjectGeneratorTest extends PHPUnit_Framework_TestCase
 
         if ($originalClass->isInterface()) {
             $this->assertTrue($generatedReflection->implementsInterface($className));
-        } else {
-            $this->assertEmpty(
-                array_diff($originalClass->getInterfaceNames(), $generatedReflection->getInterfaceNames())
-            );
         }
 
         $this->assertSame($generatedClassName, $generatedReflection->getName());

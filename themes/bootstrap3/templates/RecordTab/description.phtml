@@ -162,6 +162,14 @@
     </tr>
   <? endif; ?>
 
+  <? $doi = $this->driver->tryMethod('getCleanDOI'); if (!empty($doi)): ?>
+    <? $contentDisplayed = true; ?>
+    <tr>
+      <th><?=$this->transEsc('DOI')?>: </th>
+      <td><?=$this->escapeHtml($doi)?></td>
+    </tr>
+  <? endif; ?>
+
   <? $related = $this->driver->getRelationshipNotes(); if (!empty($related)): ?>
     <? $contentDisplayed = true; ?>
     <tr>
