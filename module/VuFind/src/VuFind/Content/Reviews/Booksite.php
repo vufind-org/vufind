@@ -69,15 +69,15 @@ class BookSite extends \VuFind\Content\AbstractBase
      *
      * Connects to Booksite's API and retrieves reviews for the specific ISBN
      *
-     * @param string            $key     API key (unused here)
-     * @param \VuFind\Code\ISBN $isbnObj ISBN object
+     * @param string           $key     API key (unused here)
+     * @param \VuFindCode\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
      * @return array     Returns array with review data.
      * @author Joe Atzberger
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function loadByIsbn($key, \VuFind\Code\ISBN $isbnObj)
+    public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         $reviews = array(); // Initialize return value
 

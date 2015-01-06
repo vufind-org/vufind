@@ -44,15 +44,15 @@ class Guardian extends \VuFind\Content\AbstractBase
      * This method is responsible for connecting to the Guardian and abstracting
      * reviews for the specific ISBN.
      *
-     * @param string            $key     API key (unused here)
-     * @param \VuFind\Code\ISBN $isbnObj ISBN object
+     * @param string           $key     API key (unused here)
+     * @param \VuFindCode\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
      * @return array     Returns array with review data.
      * @author Eoghan Ó Carragáin <eoghan.ocarragain@gmail.com>
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function loadByIsbn($key, \VuFind\Code\ISBN $isbnObj)
+    public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         // Base request URL:
         $url

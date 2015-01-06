@@ -49,6 +49,27 @@ class OAI
     protected $client;
 
     /**
+     * HTTP client's timeout
+     *
+     * @var int
+     */
+    protected $timeout = 60;
+
+    /**
+     * Combine harvested records (per OAI chunk size) into one (collection) file?
+     *
+     * @var bool
+     */
+    protected $combineRecords = false;
+
+    /**
+     * The wrapping XML tag to be used if combinedRecords is set to true
+     *
+     * @var string
+     */
+    protected $combineRecordsTag = '<collection>';
+
+    /**
      * URL to harvest from
      *
      * @var string
@@ -407,8 +428,7 @@ class OAI
             // Set up the request:
             $this->client->resetParameters();
             $this->client->setUri($this->baseURL);
-            // TODO: make timeout configurable
-            $this->client->setOptions(array('timeout' => 60));
+            $this->client->setOptions(array('timeout' => $this->timeout));
 
             // Set authentication, if necessary:
             if ($this->httpUser && $this->httpPass) {
@@ -536,14 +556,15 @@ class OAI
     /**
      * Create a tracking file to record the deletion of a record.
      *
-     * @param string $id ID of deleted record.
+     * @param string|array $ids ID(s) of deleted record(s).
      *
      * @return void
      */
-    protected function saveDeletedRecord($id)
+    protected function saveDeletedRecords($ids)
     {
-        $filename = $this->getFilename($id, 'delete');
-        file_put_contents($filename, $id);
+        $ids = (array)$ids; // make sure input is array format
+        $filename = $this->getFilename($ids[0], 'delete');
+        file_put_contents($filename, implode("\n", $ids));
     }
 
     /**
@@ -554,7 +575,7 @@ class OAI
      *
      * @return void
      */
-    protected function saveRecord($id, $record)
+    protected function getRecordXML($id, $record)
     {
         if (!isset($record->metadata)) {
             throw new \Exception("Unexpected missing record metadata.");
@@ -613,6 +634,19 @@ class OAI
             isset($extractedNs[1]) ? $extractedNs[1] : ''
         );
 
+        return trim($xml);
+    }
+
+    /**
+     * Save a record to disk.
+     *
+     * @param string $id  Record ID to use for filename generation.
+     * @param string $xml XML to save.
+     *
+     * @return void
+     */
+    protected function saveFile($id, $xml)
+    {
         // Save our XML:
         file_put_contents($this->getFilename($id, 'xml'), trim($xml));
     }
@@ -738,6 +772,11 @@ class OAI
         // Array for tracking successfully harvested IDs:
         $harvestedIds = array();
 
+        // Array for tracking deleted IDs and string for tracking inner HTML
+        // (both of these variables are used only when in 'combineRecords' mode):
+        $deletedIds = array();
+        $innerXML = '';
+
         // Loop through the records:
         foreach ($records as $record) {
             // Die if the record is missing its header:
@@ -751,9 +790,17 @@ class OAI
             // Save the current record, either as a deleted or as a regular file:
             $attribs = $record->header->attributes();
             if (strtolower($attribs['status']) == 'deleted') {
-                $this->saveDeletedRecord($id);
+                if ($this->combineRecords) {
+                    $deletedIds[] = $id;
+                } else {
+                    $this->saveDeletedRecords($id);
+                }
             } else {
-                $this->saveRecord($id, $record);
+                if ($this->combineRecords) {
+                    $innerXML .= $this->getRecordXML($id, $record);
+                } else {
+                    $this->saveFile($id, $this->getRecordXML($id, $record));
+                }
                 $harvestedIds[] = $id;
             }
 
@@ -762,6 +809,16 @@ class OAI
             $date = $this->normalizeDate($record->header->datestamp);
             if ($date && $date > $this->endDate) {
                 $this->endDate = $date;
+            }
+        }
+
+        if ($this->combineRecords) {
+            if (!empty($harvestedIds)) {
+                $this->saveFile($harvestedIds[0], $this->getCombinedXML($innerXML));
+            }
+
+            if (!empty($deletedIds)) {
+                $this->saveDeletedRecords($deletedIds);
             }
         }
 
@@ -774,6 +831,24 @@ class OAI
             fputs($file, implode(PHP_EOL, $harvestedIds));
             fclose($file);
         }
+    }
+
+    /**
+     * Support method for building combined XML document.
+     *
+     * @param string $innerXML XML for inside of document.
+     *
+     * @return string
+     */
+    protected function getCombinedXML($innerXML)
+    {
+        // Determine start and end tags from configuration:
+        $start = $this->combineRecordsTag;
+        $tmp = explode(' ', $start);
+        $end = '</' . str_replace(array('<', '>'), '', $tmp[0]) . '>';
+
+        // Assemble the document:
+        return $start . $innerXML . $end;
     }
 
     /**
@@ -864,7 +939,7 @@ class OAI
             'set', 'metadataPrefix', 'idPrefix', 'idSearch', 'idReplace',
             'harvestedIdLog', 'injectId', 'injectSetSpec', 'injectSetName',
             'injectDate', 'injectHeaderElements', 'verbose', 'sanitize', 'badXMLLog',
-            'httpUser', 'httpPass',
+            'httpUser', 'httpPass', 'timeout', 'combineRecords', 'combineRecordsTag',
         );
         foreach ($mappableSettings as $current) {
             if (isset($settings[$current])) {

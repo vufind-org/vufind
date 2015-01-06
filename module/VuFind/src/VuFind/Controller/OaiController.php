@@ -95,11 +95,15 @@ class OaiController extends AbstractBase
 
         // Build OAI response or die trying:
         try {
+            $params = array_merge(
+                $this->getRequest()->getQuery()->toArray(),
+                $this->getRequest()->getPost()->toArray()
+            );
             $server = new $serverClass(
                 $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
                 $this->getServiceLocator()->get('VuFind\RecordLoader'),
                 $this->getServiceLocator()->get('VuFind\DbTablePluginManager'),
-                $config, $baseURL, $this->getRequest()->getQuery()->toArray()
+                $config, $baseURL, $params
             );
             $server->setRecordLinkHelper(
                 $this->getViewRenderer()->plugin('recordlink')
@@ -113,7 +117,7 @@ class OaiController extends AbstractBase
 
         // Return response:
         $headers = $response->getHeaders();
-        $headers->addHeaderLine('Content-type', 'text/xml');
+        $headers->addHeaderLine('Content-type', 'text/xml; charset=UTF-8');
         $response->setContent($xml);
         return $response;
     }

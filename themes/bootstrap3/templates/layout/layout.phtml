@@ -39,9 +39,14 @@
         if ($cart->isActive()) {
           $this->headScript()->appendFile("vendor/cookies.js");
           $this->headScript()->appendFile("cart.js");
+          $domain = $cart->getCookieDomain();
+          $this->headScript()->appendScript(
+            'var cartCookieDomain = ' . (!empty($domain) ? "'$domain'" : 'false') . ';'
+          );
           $this->jsTranslations()->addStrings(
             array(
               'bulk_noitems_advice' => 'bulk_noitems_advice',
+              'confirmDelete' => 'confirm_delete',
               'confirmEmpty' => 'bookbag_confirm_empty',
               'viewBookBag' => 'View Book Bag',
               'addBookBag' => 'Add to Book Bag',

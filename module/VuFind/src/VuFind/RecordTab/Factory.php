@@ -154,6 +154,19 @@ class Factory
     }
 
     /**
+     * Factory for HoldingsWorldCat tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HoldingsWorldCat
+     */
+    public static function getHoldingsWorldCat(ServiceManager $sm)
+    {
+        $bm = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
+        return new HoldingsWorldCat($bm->get('WorldCat')->getConnector());
+    }
+
+    /**
      * Factory for Map tab plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -165,41 +178,6 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $enabled = isset($config->Content->recordMap);
         return new Map($enabled);
-    }
-
-    /**
-     * Factory for Reviews tab plugin.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Reviews
-     */
-    public static function getReviews(ServiceManager $sm)
-    {
-        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        // Only instantiate the loader if the feature is enabled:
-        if (isset($config->Content->reviews)) {
-            $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
-                ->get('reviews');
-        } else {
-            $loader = null;
-        }
-        return new Reviews($loader, static::getHideSetting($config, 'reviews'));
-    }
-
-    /**
-     * Factory for UserComments tab plugin.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return UserComments
-     */
-    public static function getUserComments(ServiceManager $sm)
-    {
-        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = !isset($cfg->Social->comments)
-            || ($cfg->Social->comments && $cfg->Social->comments !== 'disabled');
-        return new UserComments($enabled);
     }
 
     /**
@@ -246,5 +224,40 @@ class Factory
         return new SimilarItemsCarousel(
             $sm->getServiceLocator()->get('VuFind\Search')
         );
+    }
+
+    /**
+     * Factory for Reviews tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Reviews
+     */
+    public static function getReviews(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        // Only instantiate the loader if the feature is enabled:
+        if (isset($config->Content->reviews)) {
+            $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+                ->get('reviews');
+        } else {
+            $loader = null;
+        }
+        return new Reviews($loader, static::getHideSetting($config, 'reviews'));
+    }
+
+    /**
+     * Factory for UserComments tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return UserComments
+     */
+    public static function getUserComments(ServiceManager $sm)
+    {
+        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $enabled = !isset($cfg->Social->comments)
+            || ($cfg->Social->comments && $cfg->Social->comments !== 'disabled');
+        return new UserComments($enabled);
     }
 }

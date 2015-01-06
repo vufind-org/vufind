@@ -291,20 +291,6 @@ class Factory
     }
 
     /**
-     * Construct the ProxyUrl helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return ProxyUrl
-     */
-    public static function getProxyUrl(ServiceManager $sm)
-    {
-        return new ProxyUrl(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
-    }
-
-    /**
      * Construct the OpenUrl helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -316,6 +302,20 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new OpenUrl(
             $sm->get('context'), isset($config->OpenURL) ? $config->OpenURL : null
+        );
+    }
+
+    /**
+     * Construct the ProxyUrl helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ProxyUrl
+     */
+    public static function getProxyUrl(ServiceManager $sm)
+    {
+        return new ProxyUrl(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
 
@@ -372,6 +372,21 @@ class Factory
         return new Related(
             $sm->getServiceLocator()->get('VuFind\RelatedPluginManager')
         );
+    }
+
+    /**
+     * Construct the SafeMoneyFormat helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SafeMoneyFormat
+     */
+    public static function getSafeMoneyFormat(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $defaultCurrency = isset($config->Site->defaultCurrency)
+            ? $config->Site->defaultCurrency : null;
+        return new SafeMoneyFormat($defaultCurrency);
     }
 
     /**
@@ -502,18 +517,5 @@ class Factory
             || ($cfg->Social->tags && $cfg->Social->tags !== 'disabled')
             ? 'enabled' : 'disabled';
         return new UserTags($mode);
-    }
-
-    /**
-     * Construct the WorldCat helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return WorldCat
-     */
-    public static function getWorldCat(ServiceManager $sm)
-    {
-        $bm = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
-        return new WorldCat($bm->get('WorldCat')->getConnector());
     }
 }

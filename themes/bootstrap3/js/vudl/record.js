@@ -23,8 +23,6 @@ function ajaxGetView(pageObject) {
         } else {
           currTab = $('.nav-tabs li a:eq(0)')[0].id;
         }
-        // Accordion size
-        resizeAccordions();
       },
       error: function(d,e){
         console.log(d.responseText);
@@ -34,7 +32,6 @@ function ajaxGetView(pageObject) {
     });
   } else {
     updateFunction(pageObject);
-    $('#'+currTab).click();
   }
   updateTechInfo(pageObject);
   lastID = pageObject['id'];
@@ -62,8 +59,9 @@ function findVisible() {
   var min = -1,max;
   // Flag pages on screen
   $('.page-link.unloaded').each(function(index, item) {
-    if($(item).offset().top > $('#collapse1').position().top-vudlSettings.scroll.top
-    && $(item).offset().top < $('#collapse1').position().top+$('#collapse1').height()+vudlSettings.scroll.bottom
+    var listID = '#collapse'+currentList;
+    if($(item).offset().top > $(listID).position().top-vudlSettings.scroll.top
+    && $(item).offset().top < $(listID).position().top+$(listID).height()+vudlSettings.scroll.bottom
     && $(item).hasClass('unloaded')) {
       $(item).addClass('loading');
       max = parseInt($(item).attr('title'));
@@ -119,30 +117,11 @@ function nextPage() {
   scrollToSelected();
 }
 function scrollToSelected() {
-  $('#collapse1').animate({
-    scrollTop: $('#collapse1 .selected').offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop()-12
-  });
-}
-function scrollAdjust() {
-  $('#collapse1').scrollTop($('#'+topScrollItem).offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop());
-}
-// Accordion size
-var vudlAccordionHeight
-function resizeAccordions(offset) {
-  vudlAccordionHeight = window.innerHeight // Window height
-    // Add scroll distance
-    + Math.min($('#side-nav').position().top, document.body.scrollTop)
-    // Minus the top of the accordion
-    - $('#side-nav').position().top
-    // Minus the target distance from the bottom
-    - vudlSettings.accordion.bottom
-    // Subtract height of the headers
-    - ($('#side-nav .accordion-heading').length*vudlSettings.accordion.headerHeight);
-  // All accordions
-  $('#side-nav .panel-collapse').css({
-    'max-height':vudlAccordionHeight,
-    'overflow-y':'auto'
-  });
+  if($('#collapse1').length > 0 && $('#collapse1 .selected').length > 0) {
+    $('#collapse1').animate({
+      scrollTop: $('#collapse1 .selected').offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop()-12
+    });
+  }
 }
 // Toggle side menu
 function toggleSideNav() {
@@ -151,11 +130,23 @@ function toggleSideNav() {
   opener.toggleClass('hidden');
   $('#view').toggleClass('col-sm-9').toggleClass('col-sm-12');
 }
+
+function resizeElements() {
+  var $height = $(window).height() + window.scrollY - $('.panel:last-child').offset().top - 50;
+  $('.panel-collapse').css('max-height', Math.max(300, Math.min($height, $(window).height() - 200)));
+}
+
 // Ready? Let's go
 $(document).ready(function() {
   $('.page-link').click(function() {
     $('.page-link.selected').removeClass('selected');
     $(this).addClass('selected');
+    var list = parseInt($(this).parents('.item-list').attr('list-index'));
+    if(counts[list] > 1) {
+      $('.sibling-form .turn-button').removeClass('hidden');
+    } else {
+      $('.sibling-form .turn-button').addClass('hidden');
+    }
   });
   // Load clicked items
   $('.unloaded').click(function() {
@@ -182,9 +173,14 @@ $(document).ready(function() {
       }
     }
   });
+  $('.panel-title a').click(function() {
+    if($(this).attr('href') == "#collapse_details") {
+      return;
+    }
+    currentList = parseInt($(this).attr('href').substring(9));
+  });
+  scrollToSelected();
+  resizeElements();
+  $( window ).resize( resizeElements );
+  $( window ).scroll( resizeElements );
 });
-// Initial alignment
-$( window ).load( scrollToSelected );
-// Accordion size
-$( window ).resize( resizeAccordions );
-$( document ).scroll( resizeAccordions );

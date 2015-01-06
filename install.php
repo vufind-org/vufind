@@ -47,7 +47,7 @@ try {
            'Use VuFind Defaults to Configure (ignores any other arguments passed)',
         'overridedir=s' => 
            "Where would you like to store your local settings? [{$baseDir}/local]",
-        'module-name=w' => 
+        'module-name=s' => 
            'What module name would you like to use? Use disabled, to not use',
         'basepath=s' => 
            'What base path should be used in VuFind\'s URL? [/vufind]',
@@ -82,7 +82,7 @@ if (!$opts->getOption('use-defaults')) {
     if ($opts->getOption('module-name')) {
         if ($opts->getOption('module-name') !== 'disabled') {
             $module = $opts->getOption('module-name');
-            if (($result = validateModule($module)) !== true) {
+            if (($result = validateModules($module)) !== true) {
                 die($result . "\n");
             }
         }
@@ -142,6 +142,9 @@ if (!$opts->getOption('use-defaults')) {
 // here is harmless if it was already initialized in interactive mode):
 initializeOverrideDir($overrideDir, true);
 
+// Normalize the module setting to remove whitespace:
+$module = preg_replace('/\s/', '', $module);
+
 // Build the Windows start file in case we need it:
 buildWindowsConfig($baseDir, $overrideDir, $module);
 
@@ -151,7 +154,7 @@ buildImportConfig($baseDir, $overrideDir, 'import_auth.properties');
 
 // Build the custom module, if necessary:
 if (!empty($module)) {
-    buildModule($baseDir, $module);
+    buildModules($baseDir, $module);
 }
 
 // Build the final configuration:
@@ -335,6 +338,25 @@ function getOverrideDir($overrideDir)
 }
 
 /**
+ * Validate a comma-separated list of module names. Returns true on success, message
+ * on failure.
+ *
+ * @param string $modules Module name to validate.
+ *
+ * @return bool|string
+ */
+function validateModules($modules)
+{
+    foreach (explode(',', $modules) as $module) {
+        $result = validateModule(trim($module));
+        if ($result !== true) {
+            return $result;
+        }
+    }
+    return true;
+}
+
+/**
  * Validate the custom module name. Returns true on success, message on failure.
  *
  * @param string $module Module name to validate.
@@ -346,8 +368,7 @@ function validateModule($module)
     $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
     $illegalModules = array(
         'VuDL', 'VuFind', 'VuFindAdmin', 'VuFindConsole', 'VuFindDevTools',
-        'VuFindHttp', 'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest',
-        'VuFindTheme',
+        'VuFindLocalTemplate', 'VuFindSearch', 'VuFindTest', 'VuFindTheme',
     );
     if (in_array($module, $illegalModules)) {
         return "{$module} is a reserved module name; please try another.";
@@ -377,7 +398,7 @@ function getModule()
                 "\nWhat module name would you like to use? [blank for none] "
             )
         );
-        if (($result = validateModule($moduleInput)) === true) {
+        if (($result = validateModules($moduleInput)) === true) {
             return $moduleInput;
         }
         echo "\n$result\n";
@@ -509,7 +530,13 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
         break;
     }
 
-    if (!@file_put_contents($overrideDir . '/httpd-vufind.conf', $config)) {
+    $target = $overrideDir . '/httpd-vufind.conf';
+    if (file_exists($target)) {
+        $bak = $target . '.bak.' . time();
+        copy($target, $bak);
+        echo "Backed up existing Apache configuration to $bak.\n";
+    }
+    if (!@file_put_contents($target, $config)) {
         die("Problem writing {$overrideDir}/httpd-vufind.conf.\n\n");
     }
 }
@@ -545,14 +572,19 @@ function buildWindowsConfig($baseDir, $overrideDir, $module)
  */
 function buildImportConfig($baseDir, $overrideDir, $filename)
 {
-    $import = @file_get_contents($baseDir . '/import/' . $filename);
-    $import = str_replace("/usr/local/vufind", $baseDir, $import);
-    $import = preg_replace(
-        "/^\s*solrmarc.path\s*=.*$/m",
-        "solrmarc.path = {$overrideDir}/import|{$baseDir}/import", $import
-    );
-    if (!@file_put_contents($overrideDir . '/import/' . $filename, $import)) {
-        die("Problem writing {$overrideDir}/import/{$filename}.\n\n");
+    $target = $overrideDir . '/import/' . $filename;
+    if (file_exists($target)) {
+        echo "Warning: $target already exists; skipping file creation.\n";
+    } else {
+        $import = @file_get_contents($baseDir . '/import/' . $filename);
+        $import = str_replace("/usr/local/vufind", $baseDir, $import);
+        $import = preg_replace(
+            "/^\s*solrmarc.path\s*=.*$/m",
+            "solrmarc.path = {$overrideDir}/import|{$baseDir}/import", $import
+        );
+        if (!@file_put_contents($target, $import)) {
+            die("Problem writing {$overrideDir}/import/{$filename}.\n\n");
+        }
     }
 }
 
@@ -571,6 +603,25 @@ function buildDirs($dirs)
         }
     }
     return true;
+}
+
+/**
+ * Make sure all modules exist (and create them if they do not.
+ *
+ * @param string $baseDir The VuFind base directory
+ * @param string $modules The comma-separated list of modules (assumed valid!)
+ *
+ * @return void
+ */
+function buildModules($baseDir, $modules)
+{
+    foreach (explode(',', $modules) as $module) {
+        $moduleDir = $baseDir . '/module/' . $module;
+        // Is module missing? If so, create it from the template:
+        if (!file_exists($moduleDir . '/Module.php')) {
+            buildModule($baseDir, $module);
+        }
+    }
 }
 
 /**

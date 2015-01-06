@@ -29,7 +29,7 @@ namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query;
-use VuFind\Search\QueryAdapter;
+use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
 
 /**
  * Abstract parameters search model.
@@ -1166,13 +1166,14 @@ class Params implements ServiceLocatorAwareInterface
     protected function initRangeFilters($request)
     {
         $this->initDateFilters($request);
+        $this->initFullDateFilters($request);
         $this->initGenericRangeFilters($request);
         $this->initNumericRangeFilters($request);
     }
 
     /**
-     * Support method for initDateFilters() -- normalize a year for use in a date
-     * range.
+     * Support method for initDateFilters() -- normalize a year for use in a
+     * year-based date range.
      *
      * @param string $year Value to check for valid year.
      *
@@ -1191,6 +1192,21 @@ class Params implements ServiceLocatorAwareInterface
         }
 
         return $year;
+    }
+
+    /**
+     * Support method for initFullDateFilters() -- normalize a date for use in a
+     * year/month/day date range.
+     *
+     * @param string $date Value to check for valid date.
+     *
+     * @return string      Formatted date.
+     */
+    protected function formatDateForFullDateRange($date)
+    {
+        // Make sure date is valid; default to wildcard otherwise:
+        $date = SolrUtils::sanitizeDate($date);
+        return $date === null ? '*' : $date;
     }
 
     /**
@@ -1309,7 +1325,7 @@ class Params implements ServiceLocatorAwareInterface
 
     /**
      * Support method for initDateFilters() -- build a filter query based on a range
-     * of dates.
+     * of 4-digit years.
      *
      * @param string $field field to use for filtering.
      * @param string $from  year for start of range.
@@ -1324,9 +1340,31 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Support method for initFilters() -- initialize date-related filters.  Factored
-     * out as a separate method so that it can be more easily overridden by child
-     * classes.
+     * Support method for initFullDateFilters() -- build a filter query based on a
+     * range of dates.
+     *
+     * @param string $field field to use for filtering.
+     * @param string $from  year for start of range.
+     * @param string $to    year for end of range.
+     *
+     * @return string       filter query.
+     */
+    protected function buildFullDateRangeFilter($field, $from, $to)
+    {
+        // Make sure that $to is less than $from:
+        if ($to != '*' && $from!= '*' && strtotime($to) < strtotime($from)) {
+            $tmp = $to;
+            $to = $from;
+            $from = $tmp;
+        }
+
+        return $this->buildGenericRangeFilter($field, $from, $to);
+    }
+
+    /**
+     * Support method for initFilters() -- initialize year-based date filters.
+     * Factored out as a separate method so that it can be more easily overridden
+     * by child classes.
      *
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
      * request.
@@ -1338,6 +1376,24 @@ class Params implements ServiceLocatorAwareInterface
         return $this->initGenericRangeFilters(
             $request, 'daterange', array($this, 'formatYearForDateRange'),
             array($this, 'buildDateRangeFilter')
+        );
+    }
+
+    /**
+     * Support method for initFilters() -- initialize year/month/day-based date
+     * filters. Factored out as a separate method so that it can be more easily
+     * overridden by child classes.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initFullDateFilters($request)
+    {
+        return $this->initGenericRangeFilters(
+            $request, 'fulldaterange', array($this, 'formatDateForFullDateRange'),
+            array($this, 'buildFullDateRangeFilter')
         );
     }
 

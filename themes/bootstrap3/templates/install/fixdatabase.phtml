@@ -52,6 +52,12 @@
     </div>
   </div>
   <div class="form-group">
+    <label class="col-sm-3 control-label" for="vufindhost">VuFind IP/Host (if different from SQL Host):</label>
+    <div class="col-sm-9">
+      <input type="text" name="vufindhost" value="<?=$this->escapeHtmlAttr($this->vufindhost)?>"/>
+    </div>
+  </div>
+  <div class="form-group">
     <label class="col-sm-3 control-label" for="dbrootuser">MySQL Root User:</label>
     <div class="col-sm-9">
       <input type="text" name="dbrootuser" value="<?=$this->escapeHtmlAttr($this->dbrootuser)?>" class="form-control"/>

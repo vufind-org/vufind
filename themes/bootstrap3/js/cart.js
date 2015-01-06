@@ -1,10 +1,11 @@
-/*global Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
+/*global bulkActionSubmit, cartCookieDomain, Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
 var _CART_COOKIE_DELIM = "\t";
 
 var currentId,currentSource;
+var lastCartSubmit = false;
 
 function getCartItems() {
   var items = Cookies.getItem(_CART_COOKIE);
@@ -44,11 +45,11 @@ function addItemToCart(id,source) {
     // Add source to source cookie
     cartItems[cartItems.length] = String.fromCharCode(65+cartSources.length) + id;
     cartSources[cartSources.length] = source;
-    Cookies.setItem(_CART_COOKIE_SOURCES, cartSources.join(_CART_COOKIE_DELIM), false, '/');
+    Cookies.setItem(_CART_COOKIE_SOURCES, cartSources.join(_CART_COOKIE_DELIM), false, '/', cartCookieDomain);
   } else {
     cartItems[cartItems.length] = String.fromCharCode(65+sIndex) + id;
   }
-  Cookies.setItem(_CART_COOKIE, $.unique(cartItems).join(_CART_COOKIE_DELIM), false, '/');
+  Cookies.setItem(_CART_COOKIE, $.unique(cartItems).join(_CART_COOKIE_DELIM), false, '/', cartCookieDomain);
   $('#cartItems strong').html(parseInt($('#cartItems strong').html(), 10)+1);
   return true;
 }
@@ -93,11 +94,11 @@ function removeItemFromCart(id,source) {
       }
     }
     if(cartItems.length > 0) {
-      Cookies.setItem(_CART_COOKIE, uniqueArray(cartItems).join(_CART_COOKIE_DELIM), false, '/');
-      Cookies.setItem(_CART_COOKIE_SOURCES, uniqueArray(cartSources).join(_CART_COOKIE_DELIM), false, '/');
+      Cookies.setItem(_CART_COOKIE, uniqueArray(cartItems).join(_CART_COOKIE_DELIM), false, '/', cartCookieDomain);
+      Cookies.setItem(_CART_COOKIE_SOURCES, uniqueArray(cartSources).join(_CART_COOKIE_DELIM), false, '/', cartCookieDomain);
     } else {
-      Cookies.removeItem(_CART_COOKIE, '/');
-      Cookies.removeItem(_CART_COOKIE_SOURCES, '/');
+      Cookies.removeItem(_CART_COOKIE, '/', cartCookieDomain);
+      Cookies.removeItem(_CART_COOKIE_SOURCES, '/', cartCookieDomain);
     }
     $('#cartItems strong').html(parseInt($('#cartItems strong').html(), 10)-1);
     return true;
@@ -154,28 +155,6 @@ function registerUpdateCart($form) {
   }
 }
 
-// Ajax cart submission for the lightbox
-var lastCartSubmit = false;
-function cartSubmit($form) {
-  lastCartSubmit = $form;
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
-  if (submit == 'print') {
-    //redirect page
-    var checks = $form.find('input.checkbox-select-item:checked');
-    if(checks.length > 0) {
-      var url = path+'/Records/Home?print=true';
-      for(var i=0;i<checks.length;i++) {
-        url += '&id[]='+checks[i].value;
-      }
-      document.location.href = url;
-    } else {
-      Lightbox.displayError(vufindString['bulk_noitems_advice']);
-    }
-  } else {
-    Lightbox.submit($form, Lightbox.changeContent);
-  }
-}
-
 $(document).ready(function() {
   // Record buttons
   var cartId = $('#cartId');
@@ -208,14 +187,15 @@ $(document).ready(function() {
   Lightbox.addFormCallback('accountForm', function(html) {
     updatePageForLogin();
     if (lastCartSubmit !== false) {
-      cartSubmit(lastCartSubmit);
+      bulkActionSubmit(lastCartSubmit);
       lastCartSubmit = false;
     } else {
       newAccountHandler(html);
     }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
-    cartSubmit($(evt.target));
+    lastCartSubmit = $(evt.target);
+    bulkActionSubmit($(evt.target));
     return false;
   });
   Lightbox.addFormCallback('bulkEmail', function(html) {
@@ -247,7 +227,7 @@ $(document).ready(function() {
     });
     return false;
   });
-  Lightbox.addCloseAction(function() {
+  $('#modal').on('hidden.bs.modal', function() {
     // Update cart items (add to cart, remove from cart, cart lightbox interface)
     var cartCount = $('#cartItems strong');
     if(cartCount.length > 0) {

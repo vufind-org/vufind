@@ -38,7 +38,7 @@ class FeedbackController extends AbstractBase
     }
 
     /**
-     * Recieves input from the user and sends an email to the recipient set in
+     * Receives input from the user and sends an email to the recipient set in
      * the config.ini
      *
      * @return void

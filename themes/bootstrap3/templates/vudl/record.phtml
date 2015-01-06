@@ -16,9 +16,9 @@
 
   // HEADER FILES
   $this->headLink()->appendStylesheet('vudl.css');
+  $this->headScript()->appendFile('vudl/canvas-zoomy.js');
   $this->headScript()->appendFile('vudl/config.js');
   $this->headScript()->appendFile('vudl/record.js');
-  $this->headScript()->appendFile('zoomy/canvas-zoomy.js');
 
   // Compact header
   $this->layout()->headerType = 'record';
@@ -38,40 +38,14 @@
 <script>
   var documentID = '<?=$this->id ?>';
   var initPage = $.parseJSON('<?=str_replace('\"', "\'", json_encode($this->outline['lists'][$this->initList][$this->initPage], JSON_HEX_APOS | JSON_HEX_AMP)) ?>');
+  var currentList = <?=$this->initList ?>;
 
   counts = $.parseJSON('<?=json_encode($this->outline['counts'], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
   <? if(count($this->outline['lists'][$this->initList]) >= $this->outline['counts'][$this->initList]): ?>
     loading_pages = false;
   <? endif; ?>
 </script>
-<form class="form-horizontal text-center siblings-form" action="<?=$this->url('vudl-sibling') ?>" method="get">
-  <input type="hidden" name="id" value="<?=$this->layout()->vudlID ?>"/>
-  <button class="btn btn-default" type="submit" name="prev_x" value="1" title="<?=$this->transEsc('Prev Item in Collection')?>">&larr; <?=$this->transEsc('Prev Item')?></button>
-  <? $parents = array(); ?>
-  <? $parentKeys = array(); ?>
-  <? foreach($this->parents as $trail): ?>
-    <? if(is_array($trail)): ?>
-      <? end($trail); ?>
-    <? endif; ?>
-    <? if(!in_array(key($trail), $parentKeys)): ?>
-      <? $uniqueParents[] = array(
-        'id'    => key($trail),
-        'title' => current($trail)
-      ); ?>
-      <? $parentKeys[] = key($trail); ?>
-    <? endif; ?>
-  <? endforeach; ?>
-  <? if(count($uniqueParents) > 1): ?>
-    <select class="form-control trail" name="trail">
-      <? foreach($uniqueParents as $trail): ?>
-        <option value="<?=$trail['id'] ?>"><?=$trail['title'] ?></option>
-      <? endforeach; ?>
-    </select>
-  <? else: ?>
-    <input type="hidden" name="trail" value="<?=$uniqueParents[0]['id'] ?>"/>
-  <? endif; ?>
-  <button class="btn btn-default" type="submit" name="next_x" value="1" title="<?=$this->transEsc('Next Item in Collection')?>"><?=$this->transEsc('Next Item')?> &rarr;</button>
-</form>
+<?=$this->context($this)->renderInContext('vudl/navigation.phtml', array()); ?>
 <div class="vudl row">
   <div class="panel-group col-sm-3" id="side-nav">
     <div class="panel">
@@ -96,7 +70,7 @@
           </h4>
         </div>
         <div id="collapse<?=$key ?>" class="panel-collapse collapse<? if($key==$this->initList): ?> in<? endif; ?>">
-          <div class="panel-body item-list" id="list<?=$key ?>">
+          <div class="panel-body item-list" id="list<?=$key ?>" list-index="<?=$key ?>">
             <!-- PRE LOADING PLACEHOLDERS -->
             <? for($i=0;$i<current(array_keys($list))-1;$i++): ?>
               <a class="page-link unloaded" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>

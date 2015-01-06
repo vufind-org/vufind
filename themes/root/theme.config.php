@@ -27,6 +27,7 @@ return array(
             'record' => 'VuFind\View\Helper\Root\Factory::getRecord',
             'recordlink' => 'VuFind\View\Helper\Root\Factory::getRecordLink',
             'related' => 'VuFind\View\Helper\Root\Factory::getRelated',
+            'safemoneyformat' => 'VuFind\View\Helper\Root\Factory::getSafeMoneyFormat',
             'searchbox' => 'VuFind\View\Helper\Root\Factory::getSearchBox',
             'searchoptions' => 'VuFind\View\Helper\Root\Factory::getSearchOptions',
             'searchparams' => 'VuFind\View\Helper\Root\Factory::getSearchParams',
@@ -35,7 +36,6 @@ return array(
             'systememail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
             'userlist' => 'VuFind\View\Helper\Root\Factory::getUserList',
             'usertags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
-            'worldcat' => 'VuFind\View\Helper\Root\Factory::getWorldCat',
         ),
         'invokables' => array(
             'addellipsis' => 'VuFind\View\Helper\Root\AddEllipsis',
@@ -49,7 +49,6 @@ return array(
             'recommend' => 'VuFind\View\Helper\Root\Recommend',
             'renderarray' => 'VuFind\View\Helper\Root\RenderArray',
             'resultfeed' => 'VuFind\View\Helper\Root\ResultFeed',
-            'safemoneyformat' => 'VuFind\View\Helper\Root\SafeMoneyFormat',
             'sortfacetlist' => 'VuFind\View\Helper\Root\SortFacetList',
             'summon' => 'VuFind\View\Helper\Root\Summon',
             'transesc' => 'VuFind\View\Helper\Root\TransEsc',

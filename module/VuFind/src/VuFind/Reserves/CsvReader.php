@@ -1,6 +1,6 @@
 <?php
 /**
- * CLI Controller Module
+ * Support class to build reserves data from CSV file(s).
  *
  * PHP version 5
  *
@@ -27,7 +27,7 @@
  */
 namespace VuFind\Reserves;
 
- /**
+/**
  * Support class to build reserves data from CSV file(s).
  *
  * @category VuFind2
@@ -95,6 +95,13 @@ class CsvReader
     protected $loaded = false;
 
     /**
+     * Error messages collected during loading.
+     *
+     * @var string
+     */
+    protected $errors = '';
+
+    /**
      * Constructor
      *
      * @param array|string $files     Array of files to load (or single filename).
@@ -150,12 +157,11 @@ class CsvReader
             throw new \Exception("Could not open $fn!");
         }
         $lineNo = $goodLines = 0;
-        $errors = '';
         while ($line = fgetcsv($fh, 0, $this->delimiter)) {
             $lineNo++;
 
             if (count($line) < count($this->template)) {
-                $errors .= "Skipping incomplete row: $fn, line $lineNo\n";
+                $this->errors .= "Skipping incomplete row: $fn, line $lineNo\n";
                 continue;
             }
 
@@ -176,7 +182,8 @@ class CsvReader
 
             $bibId = trim($line[$this->template['BIB_ID']]);
             if ($bibId == '') {
-                $errors .= "Skipping empty/missing Bib ID: $fn, line $lineNo\n";
+                $this->errors
+                    .= "Skipping empty/missing Bib ID: $fn, line $lineNo\n";
                 continue;
             }
 
@@ -191,7 +198,7 @@ class CsvReader
         fclose($fh);
         if ($goodLines == 0) {
             throw new \Exception(
-                "Could not find valid data. Details:\n" . trim($errors)
+                "Could not find valid data. Details:\n" . trim($this->errors)
             );
         }
     }
@@ -260,5 +267,15 @@ class CsvReader
     {
         $this->load();
         return $this->reserves;
+    }
+
+    /**
+     * Get collected error messages
+     *
+     * @return string
+     */
+    public function getErrors()
+    {
+        return $this->errors;
     }
 }

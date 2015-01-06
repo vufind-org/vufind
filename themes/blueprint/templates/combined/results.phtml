@@ -36,6 +36,8 @@
 
     // Enable cart if appropriate:
     $this->showCartControls = $this->supportsCart && $this->cart()->isActive();
+    // Enable bulk options if appropriate:
+    $this->showBulkOptions = $this->supportsCart && $this->showBulkOptions;
 
     // Load Javascript dependencies into header:
     $this->headScript()->appendFile("check_item_statuses.js");
@@ -52,15 +54,18 @@
     </div>
   <? endif; ?>
   <?=$this->flashmessages()?>
-  <?
-    $viewParams = array(
-      'searchClassId' => $searchClassId,
-      'combinedResults' => $this->combinedResults,
-      'supportsCartOptions' => $this->supportsCartOptions,
-      'showCartControls' => $this->showCartControls
-    );
-  ?>
-  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
+  <form method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+    <?
+      $viewParams = array(
+        'searchClassId' => $searchClassId,
+        'combinedResults' => $this->combinedResults,
+        'supportsCartOptions' => $this->supportsCartOptions,
+        'showCartControls' => $this->showCartControls
+      );
+    ?>
+    <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', $viewParams)?>
+  </form>
 </div>
 <? /* End Main Listing */ ?>
 

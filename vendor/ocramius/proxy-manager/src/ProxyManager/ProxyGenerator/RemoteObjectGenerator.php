@@ -18,17 +18,20 @@
 
 namespace ProxyManager\ProxyGenerator;
 
-use ProxyManager\ProxyGenerator\RemoteObject\MethodGenerator\RemoteObjectMethod;
-use ProxyManager\ProxyGenerator\RemoteObject\PropertyGenerator\AdapterProperty;
+use ProxyManager\Generator\Util\ClassGeneratorUtils;
+use ProxyManager\ProxyGenerator\Assertion\CanProxyAssertion;
 use ProxyManager\ProxyGenerator\RemoteObject\MethodGenerator\Constructor;
 use ProxyManager\ProxyGenerator\RemoteObject\MethodGenerator\MagicGet;
-use ProxyManager\ProxyGenerator\RemoteObject\MethodGenerator\MagicSet;
 use ProxyManager\ProxyGenerator\RemoteObject\MethodGenerator\MagicIsset;
+use ProxyManager\ProxyGenerator\RemoteObject\MethodGenerator\MagicSet;
 use ProxyManager\ProxyGenerator\RemoteObject\MethodGenerator\MagicUnset;
-
+use ProxyManager\ProxyGenerator\RemoteObject\MethodGenerator\RemoteObjectMethod;
+use ProxyManager\ProxyGenerator\RemoteObject\PropertyGenerator\AdapterProperty;
 use ProxyManager\ProxyGenerator\Util\ProxiedMethodsFilter;
 use ReflectionClass;
+use ReflectionMethod;
 use Zend\Code\Generator\ClassGenerator;
+use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Reflection\MethodReflection;
 
 /**
@@ -46,6 +49,8 @@ class RemoteObjectGenerator implements ProxyGeneratorInterface
      */
     public function generate(ReflectionClass $originalClass, ClassGenerator $classGenerator)
     {
+        CanProxyAssertion::assertClassCanBeProxied($originalClass);
+
         $interfaces = array('ProxyManager\\Proxy\\RemoteObjectInterface');
 
         if ($originalClass->isInterface()) {
@@ -57,28 +62,32 @@ class RemoteObjectGenerator implements ProxyGeneratorInterface
         $classGenerator->setImplementedInterfaces($interfaces);
         $classGenerator->addPropertyFromGenerator($adapter = new AdapterProperty());
 
-        $methods = ProxiedMethodsFilter::getProxiedMethods(
-            $originalClass,
-            array('__get', '__set', '__isset', '__unset')
-        );
-
-        foreach ($methods as $method) {
-            $classGenerator->addMethodFromGenerator(
-                RemoteObjectMethod::generateMethod(
-                    new MethodReflection(
-                        $method->getDeclaringClass()->getName(),
-                        $method->getName()
-                    ),
-                    $adapter,
-                    $originalClass
+        array_map(
+            function (MethodGenerator $generatedMethod) use ($originalClass, $classGenerator) {
+                ClassGeneratorUtils::addMethodIfNotFinal($originalClass, $classGenerator, $generatedMethod);
+            },
+            array_merge(
+                array_map(
+                    function (ReflectionMethod $method) use ($adapter, $originalClass) {
+                        return RemoteObjectMethod::generateMethod(
+                            new MethodReflection($method->getDeclaringClass()->getName(), $method->getName()),
+                            $adapter,
+                            $originalClass
+                        );
+                    },
+                    ProxiedMethodsFilter::getProxiedMethods(
+                        $originalClass,
+                        array('__get', '__set', '__isset', '__unset')
+                    )
+                ),
+                array(
+                    new Constructor($originalClass, $adapter),
+                    new MagicGet($originalClass, $adapter),
+                    new MagicSet($originalClass, $adapter),
+                    new MagicIsset($originalClass, $adapter),
+                    new MagicUnset($originalClass, $adapter),
                 )
-            );
-        }
-
-        $classGenerator->addMethodFromGenerator(new Constructor($originalClass, $adapter));
-        $classGenerator->addMethodFromGenerator(new MagicGet($originalClass, $adapter));
-        $classGenerator->addMethodFromGenerator(new MagicSet($originalClass, $adapter));
-        $classGenerator->addMethodFromGenerator(new MagicIsset($originalClass, $adapter));
-        $classGenerator->addMethodFromGenerator(new MagicUnset($originalClass, $adapter));
+            )
+        );
     }
 }

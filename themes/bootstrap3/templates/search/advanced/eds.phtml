@@ -13,7 +13,7 @@
       <? endforeach; ?>
 
       <label class="displayBlock" for="searchModes"><?=$this->transEsc('Search Mode')?></label>
-      <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]">
+      <select id="searchMode_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" class="form-control">
         <? foreach ($this->searchModes as $field => $searchMode):
           $value = $searchMode['Value'] ?>
           <option <?=(isset($searchMode['selected']) && $searchMode['selected'])?'selected="selected"':''?> value="SEARCHMODE:<?=$this->escapeHtmlAttr($value)?>">
@@ -31,7 +31,7 @@
         <? switch($facet['Type']){
             case 'multiselectvalue': ?>
               <label for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>"><?=$this->transEsc($facet['Label'])?></label><br/>
-              <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10">
+              <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" class="form-control">
                 <? foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
                   <? $value = $facetValue['Value']; ?>
                   <option value="<?='LIMIT|'.$this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($facetValue['Value'])?></option>

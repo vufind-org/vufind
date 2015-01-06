@@ -142,10 +142,12 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         if (isset($this->config[$function]) ) {
             $functionConfig = $this->config[$function];
@@ -1062,7 +1064,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $holdcount, $library_code, $library,
         $location_code, $location, $currLocCode, $current_location,
         $holdable,
-        $circulation_rule, $duedate, $date_recalled, $recall_period, 
+        $circulation_rule, $duedate, $date_recalled, $recall_period,
         $format, $title_holds) = explode("|", $line);
 
         // availability
@@ -1182,7 +1184,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $params[$key] = '';
             }
         }
-        
+
         $url = $this->url;
         if (empty($url)) {
             $url = $this->host;
@@ -1295,7 +1297,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * reflect local policies regarding interpretation of the a, b and
      * c subfields of  852.
      *
-     * @param File_Marc_Field $field Location field to be processed. 
+     * @param File_Marc_Field $field Location field to be processed.
      *
      * @return array Location information.
      */
