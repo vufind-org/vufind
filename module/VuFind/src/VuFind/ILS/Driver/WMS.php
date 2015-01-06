@@ -301,7 +301,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
 	    	foreach ($copies as $copy){
 	    		if ($copy->circulations->circulation) {
-		    		$holding[] = array('availability' => ($copy->circulations->circulation->availableNow->attributes()->value == "1") ? true : false,
+		    		$holding[] = array(
+		    				'id' => $id,
+		    				'availability' => ($copy->circulations->circulation->availableNow->attributes()->value == "1") ? true : false,
 		    				'status' => ($copy->circulations->circulation->availableNow->attributes()->value == "1") ? 'On the shelf' : (string) $copy->circulations->circulation->reasonUnavailable,
 		    				'location' => (isset($copy->temporaryLocation)) ? $copy->temporaryLocation : $copy->localLocation .  ' ' . $copy->shelvingLocation,
 		    				'reserve' => 'No',
@@ -442,9 +444,12 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     	foreach ($list as $current) {
     		$current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
     		$tmp = $current->xpath('ns1:DateDue');
-    		$due = strtotime((string)$tmp[0]);
-    		$due = date("l, d-M-y h:i a", $due);
-    		$title = $current->xpath('ns1:Title');
+    		$dueTimestamp = strtotime((string)$tmp[0]);
+    		$due = date("l, d-M-y h:i a", $dueTimestamp);
+    		$title = $current->xpath(
+    				'ns1:Ext/ns1:BibliographicDescription/' .
+    				'ns1:Title'
+    		);
     		$item_id = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
     		$bib_id = $current->xpath(
     				'ns1:Ext/ns1:BibliographicDescription/' .
@@ -461,9 +466,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     				'id' => $tmp,
     				'source' => 'WorldCatDiscovery',
     				'duedate' => $due,
-    				//'title' => (string)$title[0],
+    				'title' => (string)$title[0],
     				'item_id' => (string)$item_id[0],
     				'renewable' => true,
+    				'dueStatus' => ($dueTimestamp > time()) ? null: 'overdue',
     		);
     	}
     
@@ -603,9 +609,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     				'ns1:Ext/ns1:BibliographicDescription/' .
     				'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
     		);
-    		$created = $current->xpath('ns1:DatePlaced');
-    		if (!empty($created)){
-    			$created = $created[0];
+    		$createdTmp = $current->xpath('ns1:DatePlaced');
+    		if (!empty($createdTmp)){
+    			$createdTimestamp = strtotime((string)$createdTmp[0]);
+    			$created = date("l, d-M-y", $createdTimestamp);
     		} else {
     			$created = null;
     		}
@@ -691,11 +698,17 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function placeHold($details)
     {
-    	$userID = $details['patron']['principalID'];
-    	$bibId = $details['bib_id'];
+    	$patron = $details['patron'];
+    	$userId = $details['patron']['principalID'];
+    	$bibId = $details['id'];
     	$itemId = $details['item_id'];
     	$pickUpLocation = $details['pickUpLocation'];
-    	$holdType = $details['holdtype'];
+    	$holdType = $details['level'];
+    	if ($details['level'] == 'title'){
+    		$requestScope = 'Bibliographic Item';
+    	} else {
+    		$requestScope = 'Item';
+    	}
     	$lastInterestDate = $details['requiredBy'];
     	$lastInterestDate = substr($lastInterestDate, 6, 10) . '-'
     			. substr($lastInterestDate, 0, 5);
@@ -703,11 +716,11 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     
     	$request = $this->getRequest(
     			$userId, $this->institution, $bibId, $itemId,
-    			$holdType, "Item", $lastInterestDate, $pickUpLocation
+    			$holdType, $requestScope, $lastInterestDate, $pickUpLocation
     	);
     	$response = $this->sendRequest($request, $patron);
     	$success = $response->xpath(
-    			'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue'
+    			'ns1:RequestItemResponse/ns1:RequestId/ns1:RequestIdentifierValue'
     	);
     
     	if ($success) {
@@ -901,7 +914,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected function getRequest($userID, $institution, $bibId, $itemId,
     		$requestType, $requestScope, $lastInterestDate, $pickupLocation = null
     ) {
-    	return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+    	$request = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
     			'<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
     			'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' . 
     			'xmlns:ncip="http://www.niso.org/2008/ncip" ' . 
@@ -929,8 +942,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			'<ns1:UserIdentifierValue>' .
     			$userID .
     			'</ns1:UserIdentifierValue>' .
-    			'</ns1:UserId>' .
-    			'<ns1:BibliographicId>' .
+    			'</ns1:UserId>';
+    	
+    if ($requestScope = 'Bibliographic Item'){	
+    	$request .=	'<ns1:BibliographicId>' .
     			'<ns1:BibliographicRecordId>' .
     			'<ns1:AgencyId>' .
     			$institution .
@@ -939,13 +954,15 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			htmlspecialchars($bibId) .
     			'</ns1:BibliographicRecordIdentifier>' .
     			'</ns1:BibliographicRecordId>' .
-    			'</ns1:BibliographicId>' .
-    			'<ns1:ItemId>' .
+    			'</ns1:BibliographicId>';
+    } else {
+    	$request .=	'<ns1:ItemId>' .
     			'<ns1:ItemIdentifierValue>' .
     			htmlspecialchars($itemId) .
     			'</ns1:ItemIdentifierValue>' .
-    			'</ns1:ItemId>' .
-    			'<ns1:RequestType>' .
+    			'</ns1:ItemId>';
+    }			
+    	$request .=	'<ns1:RequestType>' .
     			htmlspecialchars($requestType) .
     			'</ns1:RequestType>' .
     			'<ns1:RequestScopeType ' .
@@ -961,6 +978,8 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     			'</ns1:PickupExpiryDate>' .
     			'</ns1:RequestItem>' .
     			'</ns1:NCIPMessage>';
+    	
+    	return $request;
     }
     
     /**
