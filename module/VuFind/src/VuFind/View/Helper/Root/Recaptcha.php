@@ -49,7 +49,7 @@ class Recaptcha extends AbstractHelper
     /**
      * Recaptcha config
      *
-     * @var Config
+     * @var bool
      */
     protected $active;
 
@@ -105,29 +105,12 @@ class Recaptcha extends AbstractHelper
         }
 
         $options = $this->recaptcha->getOptions();
-        if (!empty($options)) {
-            $encoded = \Zend\Json\Json::encode($options);
-        } else {
-            $encoded = "{}";
-        }
-        $challengeField = 'recaptcha_challenge_field';
-        $responseField  = 'recaptcha_response_field';
-        if (!empty($name)) {
-            $challengeField = $name . '[' . $challengeField . ']';
-            $responseField  = $name . '[' . $responseField . ']';
-        }
-
         return $this->view->render(
             'Service/recaptcha.phtml',
             array(
-                'challengeField'   => $challengeField,
-                'errorPart'        => $errorPart,
-                'host'             => $host,
-                'options'          => $encoded,
-                'publicKey'        => $this->recaptcha->getPublicKey(),
-                'responseField'    => $responseField,
-                'theme'            => $options['theme'],
-                'useRecaptcha'     => $useRecaptcha,
+                'sitekey'      => $this->recaptcha->getPublicKey(),
+                'theme'        => $options['theme'] ?: 'light',
+                'useRecaptcha' => $useRecaptcha,
             )
         );
     }
