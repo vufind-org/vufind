@@ -160,7 +160,7 @@ class Facebook extends AbstractBase implements
             . 'auth_method=Facebook';
         $this->session->lastUri = $target;
         return $base . '?client_id='
-            . urlencode($this->config->Facebook->appId)
+            . urlencode($this->getConfig()->Facebook->appId)
             . '&redirect_uri=' . urlencode($target)
             . '&scope=public_profile,email';
     }
@@ -175,9 +175,9 @@ class Facebook extends AbstractBase implements
     protected function getAccessTokenFromCode($code)
     {
         $requestUrl = 'https://graph.facebook.com/oauth/access_token?'
-            . 'client_id=' . urlencode($this->config->Facebook->appId)
+            . 'client_id=' . urlencode($this->getConfig()->Facebook->appId)
             . '&redirect_uri=' . urlencode($this->session->lastUri)
-            . '&client_secret=' . urlencode($this->config->Facebook->secret)
+            . '&client_secret=' . urlencode($this->getConfig()->Facebook->secret)
             . '&code=' . urlencode($code);
         $response = $this->httpService->get($requestUrl);
         $parts = explode('&', $response->getBody(), 2);
