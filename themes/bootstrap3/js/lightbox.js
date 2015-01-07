@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, path, Recaptcha, vufindString */
+/*global checkSaveStatuses, console, deparam, grecaptcha, path, vufindString */
 
 var Lightbox = {
   /**
@@ -191,8 +191,8 @@ var Lightbox = {
       $('#modal .modal-body').prepend('<div class="alert alert-'+type+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
     }
     $('.fa-spinner').remove();
-    if (typeof Recaptcha !== "undefined" && Recaptcha.widget) {
-      Recaptcha.reload();
+    if (typeof grecaptcha !== "undefined") {
+      grecaptcha.reset();
     }
     // If the lightbox isn't visible, fix that
     if(this.shown == false) {
