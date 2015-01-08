@@ -489,26 +489,10 @@ class AbstractBase extends AbstractActionController
     protected function formWasSubmitted($submitElement = 'submit',
         $useRecaptcha = false
     ) {
-        // Fail if the expected submission element was missing from the POST.
-        if ($this->params()->fromPost($submitElement, false)) {
-            // Form was submitted; if CAPTCHA is expected, validate it now.
-            if ($useRecaptcha) {
-                $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-                $client = new \Zend\Http\Client(
-                    'https://www.google.com/recaptcha/api/siteverify'
-                        . '?secret=' . $config->Captcha->privateKey
-                        . '&response=' . $this->params()->fromPost('g-recaptcha-response'),
-                    array('sslcapath' => '/etc/ssl/certs')
-                );
-                $response = $client->send();
-                $answer = \Zend\Json\Json::decode($response->getBody());
-                var_dump($answer);
-                return $answer->success;
-            } else {
-                return true;
-            }
-        }
-        return false;
+        // Fail if the expected submission element was missing from the POST:
+        // Form was submitted; if CAPTCHA is expected, validate it now.
+        return !empty($this->params()->fromPost($submitElement, false))
+            && (!$useRecaptcha || $this->recaptcha()->validate());
     }
 
     /**

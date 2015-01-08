@@ -87,32 +87,7 @@ class Recaptcha extends AbstractHelper
         if (!isset($useRecaptcha) || !$useRecaptcha) {
             return false;
         }
-
-        if ($this->recaptcha->getPublicKey() === null) {
-            throw new Exception('Missing public key');
-        }
-
-        $host = \ZendService\Recaptcha\Recaptcha::API_SERVER;
-
-        $params = $this->recaptcha->getParams();
-        if ((bool) $params['ssl'] === true) {
-            $host = \ZendService\Recaptcha\Recaptcha::API_SECURE_SERVER;
-        }
-
-        $errorPart = '';
-        if (!empty($params['error'])) {
-            $errorPart = '&error=' . urlencode($params['error']);
-        }
-
-        $options = $this->recaptcha->getOptions();
-        return $this->view->render(
-            'Service/recaptcha.phtml',
-            array(
-                'sitekey'      => $this->recaptcha->getPublicKey(),
-                'theme'        => $options['theme'] ?: 'light',
-                'useRecaptcha' => $useRecaptcha,
-            )
-        );
+        return $this->recaptcha->getHtml();
     }
 
     /**

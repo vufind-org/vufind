@@ -118,16 +118,11 @@ class Recaptcha extends AbstractPlugin
             return true;
         }
         $captchaPassed = false;
-        $recaptchaChallenge = $this->getController()->params()
-            ->fromPost('recaptcha_challenge_field');
-        $recaptchaResponse = $this->getController()->params()
-            ->fromPost('recaptcha_response_field', 'manual_challenge');
-        if (!empty($recaptchaChallenge)) {
+        $response = $this->getController()->params()
+            ->fromPost('g-recaptcha-response');
+        if (!empty($response)) {
             try {
-                $result = $this->recaptcha->verify(
-                    $recaptchaChallenge,
-                    $recaptchaResponse
-                );
+                $result = $this->recaptcha->verify($response);
             } catch (\ZendService\ReCaptcha\Exception $e) {
                 $result = false;
             }

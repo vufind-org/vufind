@@ -434,11 +434,10 @@ class Factory
     {
         $config = $sm->get('VuFind\Config')->get('config');
         $recaptcha = new \ZendService\ReCaptcha\ReCaptcha(
-            isset($config->Captcha->publicKey) ? $config->Captcha->publicKey : '',
-            isset($config->Captcha->privateKey) ? $config->Captcha->privateKey : ''
+            isset($config->Captcha->siteKey) ? $config->Captcha->siteKey : '',
+            isset($config->Captcha->secretKey) ? $config->Captcha->secretKey : ''
         );
         if (isset($config->Captcha->theme)) {
-            $recaptcha->setOption('sitekey', $config->Captcha->publicKey);
             $recaptcha->setOption('theme', $config->Captcha->theme);
         }
         return $recaptcha;

@@ -70,11 +70,7 @@ class Response
      */
     public function setStatus($status)
     {
-        if ($status === 'true') {
-            $this->status = true;
-        } else {
-            $this->status = false;
-        }
+        $this->status = $status;
 
         return $this;
     }
@@ -132,17 +128,12 @@ class Response
     {
         $body = $response->getBody();
 
-        $parts = explode("\n", $body, 2);
+        $parse = \Zend\Json\Json::decode($response->getBody());
 
-        if (count($parts) !== 2) {
-            $status = 'false';
-            $errorCode = '';
-        } else {
-            list($status, $errorCode) = $parts;
+        $this->setStatus($parse->success);
+        if (!$parse->success) {
+            $this->setErrorCode($parse->error-codes);
         }
-
-        $this->setStatus($status);
-        $this->setErrorCode($errorCode);
 
         return $this;
     }
