@@ -209,6 +209,25 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     	return $locations;
     }
     
+    /**
+     * checkRequestIsValid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+    	if ($this->recordLoader->load($id, 'WorldCatDiscovery')->getOffer($this->institution)){
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
     
     /**
      * Send an NCIP request.
