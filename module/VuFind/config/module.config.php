@@ -244,6 +244,7 @@ $config = array(
                     'multiauth' => 'VuFind\Auth\MultiAuth',
                     'shibboleth' => 'VuFind\Auth\Shibboleth',
                     'sip2' => 'VuFind\Auth\SIP2',
+                	'wordshare' => 'VuFind\Auth\WorldShare',	
                 ),
                 'aliases' => array(
                     // for legacy 1.x compatibility
