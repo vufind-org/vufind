@@ -1,6 +1,7 @@
 <?
   // Set page title.
   $this->headTitle($this->translate('Text this'));
+  echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/libphonenumber.js', 'SET');
 
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
