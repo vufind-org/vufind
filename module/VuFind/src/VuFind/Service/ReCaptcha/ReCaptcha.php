@@ -427,7 +427,7 @@ HTML;
         }
 
         /* Fetch an instance of the http client */
-        $httpClient = new \Zend\Http\Client(
+        $httpClient = new HttpClient(
             self::VERIFY_SERVER,
             array(
                 'adapter'   => 'Zend\Http\Client\Adapter\Socket',
