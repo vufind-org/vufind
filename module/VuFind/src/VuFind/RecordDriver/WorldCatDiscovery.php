@@ -258,9 +258,11 @@ class WorldCatDiscovery extends SolrDefault
             }
         } elseif ($record instanceof \WorldCat\Discovery\Book
             && ($manifestations = $record->getManifestations())
+            && isset($manifestations[0])
+            && is_callable(array($manifestations[0], 'getISBN'))
         ) {
             $kbrequest[] = "rft.isbn=" . $manifestations[0]->getISBN();
-        }else {
+        } else {
             $kbrequest[] = "rft.oclcnum=" . $record->getOCLCNumber();
         }
         return implode('&', $kbrequest);
