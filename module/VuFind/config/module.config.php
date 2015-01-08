@@ -234,6 +234,7 @@ $config = array(
                 'factories' => array(
                     'ils' => 'VuFind\Auth\Factory::getILS',
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
+                	'worldshare' => 'VuFind\Auth\Factory::getWorldShare',
                 ),
                 'invokables' => array(
                     'cas' => 'VuFind\Auth\CAS',
@@ -243,8 +244,7 @@ $config = array(
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
                     'shibboleth' => 'VuFind\Auth\Shibboleth',
-                    'sip2' => 'VuFind\Auth\SIP2',
-                	'wordshare' => 'VuFind\Auth\WorldShare',	
+                    'sip2' => 'VuFind\Auth\SIP2',	
                 ),
                 'aliases' => array(
                     // for legacy 1.x compatibility
