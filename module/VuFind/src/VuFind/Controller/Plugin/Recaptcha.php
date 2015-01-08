@@ -127,13 +127,13 @@ class Recaptcha extends AbstractPlugin
                 $result = false;
             }
             $captchaPassed = $result && $result->isValid();
-            if (!$captchaPassed) {
-                if ($this->errorMode == 'flash') {
-                    $this->getController()->flashMessenger()->setNamespace('error')
-                        ->addMessage('recaptcha_not_passed');
-                } else {
-                    throw new \Exception('recaptcha_not_passed');
-                }
+        }
+        if (!$captchaPassed) {
+            if ($this->errorMode == 'flash') {
+                $this->getController()->flashMessenger()->setNamespace('error')
+                    ->addMessage('recaptcha_not_passed');
+            } else {
+                throw new \Exception('recaptcha_not_passed');
             }
         }
         return $captchaPassed;
