@@ -130,6 +130,7 @@ class WorldShare extends AbstractBase implements
         $code = $request->getQuery()->get('code');
         if (empty($code)) {
             throw new AuthException('authentication_error_admin');
+            //throw new AuthException('Error ' . $request->getQuery()->get('error') . ' Error Description ' . $request->getQuery()->get('error_description'));
         }
         $accessToken = $this->getAccessTokenFromCode($code);
         if (empty($accessToken)) {
@@ -187,7 +188,7 @@ class WorldShare extends AbstractBase implements
      */
     protected function getAccessTokenFromCode($code)
     {
-        $accessToken = $this->wskey->$wskey->getAccessTokenWithAuthCode($code, $this->institution, $this->institution);
+        $accessToken = $this->wskey->getAccessTokenWithAuthCode($code, $this->institution, $this->institution);
         if ($accessToken->getValue()){
         	$this->session->accessToken = $accessToken;
         }
