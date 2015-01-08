@@ -132,4 +132,18 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
         );
     }
+    
+    /**
+     * Construct the WorldShare plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return WorldShare
+     */
+    public static function getWorldShare(ServiceManager $sm)
+    {
+    	return new WorldShare(
+    			$sm->getServiceLocator()->get('VuFind\Config')
+    	);
+    }    
 }

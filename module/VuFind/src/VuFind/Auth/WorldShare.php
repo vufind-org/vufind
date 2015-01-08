@@ -168,7 +168,7 @@ class WorldShare extends AbstractBase implements
     	$this->session->lastUri = $target;
     	$options = array(
     			'services' => array('WorldCatDiscoveryAPI', 'refresh_token'),
-    			'redirect_uri' => urlencode($target)
+    			'redirectUri' => $target
     	);
     	if ($this->wmsEnabled){
     		$options['services'][] = 'WMS_Availability';
