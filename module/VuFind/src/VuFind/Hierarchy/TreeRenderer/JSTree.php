@@ -298,7 +298,7 @@ class JSTree extends AbstractBase
             'titleText' => $this->translate('collection_view_record'),
             'collectionID' => $hierarchyID,
             'collectionTitle' => $hierarchyTitle,
-            'baseURL' => '%%%%VUFIND-BASE-URL%%%%',
+            'baseURL' => $this->router->fromRoute('home'),
             'context' => $context,
             'recordID' => $recordID
         );

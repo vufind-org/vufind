@@ -130,10 +130,6 @@ class HierarchyController extends AbstractBase
                     $this->params()->fromQuery('hierarchyID')
                 );
                 if ($results) {
-                    $baseUrl = $this->url()->fromRoute('home');
-                    $results = str_replace(
-                        '%%%%VUFIND-BASE-URL%%%%', rtrim($baseUrl, '/'), $results
-                    );
                     return $this->output($results);
                 }
             }
@@ -162,13 +158,10 @@ class HierarchyController extends AbstractBase
             if ($recordDriver = $loader->load($id)) {
                 $results = $recordDriver->getHierarchyDriver()
                     ->getTreeRenderer($recordDriver)->getJSON(
-                        $this->params()->fromQuery('hierarchyID')
+                        $this->params()->fromQuery('hierarchyID'),
+                        $this->params()->fromQuery('context')
                     );
                 if ($results) {
-                    $baseUrl = $this->url()->fromRoute('home');
-                    $results = str_replace(
-                        '%%%%VUFIND-BASE-URL%%%%', rtrim($baseUrl, '/'), $results
-                    );
                     return $this->outputJSON($results);
                 } else {
                     return $this->outputJSON($results, 204); // No Content
