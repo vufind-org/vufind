@@ -190,7 +190,7 @@ class Solr extends AbstractBase
         }
 
         // Assemble the XML, sorting it first if necessary:
-        return implode('', $sorting ? $this->sortNodes($xml, 0, 1) : $xml);
+        return implode('', $sorting ? $this->sortNodes($xml) : $xml);
     }
 
     /**
@@ -308,7 +308,7 @@ class Solr extends AbstractBase
             }
         }
 
-        return $sorting ? $this->sortNodes($json, 0, 1) : $json;
+        return $sorting ? $this->sortNodes($json) : $json;
     }
 
     /**
@@ -319,19 +319,19 @@ class Solr extends AbstractBase
      *
      * @return array
      */
-    protected function sortNodes(&$array, $sortKey, $valueKey)
+    protected function sortNodes($array)
     {
-        $sorter=array();
-        reset($array);
-        foreach ($array as $ii => $va) {
-            $sorter[$ii] = $va[$sortKey];
-        }
-        asort($sorter);
-        $ret=array();
-        foreach ($sorter as $ii => $va) {
-            $ret[] = $array[$ii][$valueKey];
-        }
-        return $ret;
+        // Sort arrays based on first element
+        $sorter = function ($a, $b) {
+            return strcmp($a[0], $b[0]);
+        };
+        usort($array, $sorter);
+
+        // Collapse array to remove sort values
+        $mapper = function ($i) {
+            return $i[1];
+        };
+        return array_map($mapper, $array);
     }
 
     /**
