@@ -13,6 +13,7 @@
         }
       ?>
       </a>
+<div id="loading_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"><p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p></div>
 <div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
 <? else: ?>
 <div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
