@@ -128,6 +128,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         // Validate configuration if not already validated:
         if (!$this->configValidated) {
             $this->validateConfig();
+            $this->configValidated = true;
         }
 
         return $this->config;
