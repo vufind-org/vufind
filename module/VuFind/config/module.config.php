@@ -614,7 +614,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                    'Details' => 'StaffViewArray', 'Similar' => 'SimilarItemsCarousel'
+                    'Details' => 'StaffViewArray' /* , 'Similar' => 'SimilarItemsCarousel' */
                 ),
                 'defaultTab' => null,
             ),
