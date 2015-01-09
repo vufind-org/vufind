@@ -151,13 +151,14 @@ function registerTabEvents() {
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
   // Grab the part of the url that is the Controller and Record ID
+
   var urlroot = document.URL.match(new RegExp('/[^/]+/'+id+'(/|\\b)'));
-  urlroot = urlroot.slice(-1);
-  if(urlroot.substring(-1) != '/') {
-    urlroot += '/';
+  var regexPath = Array.isArray(urlroot) ? urlroot[0] : urlroot;
+  if (regexPath[regexPath.length -1] != '/') {
+    regexPath += '/';
   }
   $.ajax({
-    url: path + urlroot + 'AjaxTab',
+    url: path + regexPath + 'AjaxTab' ,
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
