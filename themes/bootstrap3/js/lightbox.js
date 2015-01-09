@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, path, Recaptcha, vufindString */
+/*global checkSaveStatuses, console, deparam, path, vufindString */
 
 var Lightbox = {
   /**
@@ -7,43 +7,15 @@ var Lightbox = {
    * to replicate empty target behaviour by submitting to the current "page".
    */
   lastURL: false,
-  lastPOST: false,
   openingURL: false,
   shown: false,      // Is the lightbox deployed?
   XHR: false,        // Used for current in-progress XHR lightbox request
-  openStack: [],     // Array of functions to be called after changeContent or the lightbox event 'shown'
-  closeStack: [],    // Array of functions to be called and cleared after the lightbox event 'hidden'
   formHandlers: [],  // Full custom handlers for forms; by name
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
 
   /**********************************/
   /* ======    INTERFACE     ====== */
   /**********************************/
-  /**
-   * Register custom open event handlers
-   *
-   * Think of this as the $(document).ready() of the Lightbox
-   * There's actually an alias right below it.
-   *
-   * If your template has inline JS, $(document).ready() will not fire in the lightbox
-   * because it already fired before you opened the lightbox and won't fire again.
-   *
-   * You can use $.isReady to determine if ready() has already been called
-   * so you can trigger your function immediately in the inline JS.
-   */
-  addOpenAction: function(func) {
-    this.openStack.push(func);
-  },
-  // Alias for addOpenAction
-  ready: function(func) {
-    this.openStack.push(func);
-  },
-  /**
-   * Register custom close event handlers
-   */
-  addCloseAction: function(func) {
-    this.closeStack.push(func);
-  },
   /**
    * For when you want to handle that form all by yourself
    *
@@ -111,7 +83,8 @@ var Lightbox = {
       header.css('border-bottom-width', '1px');
     }
     $('#modal .modal-body').html(html).modal({'show':true,'backdrop':false});
-    Lightbox.openActions();
+
+    Lightbox.dispatch('Lightbox.ready');
   },
 
   /**
@@ -120,6 +93,11 @@ var Lightbox = {
   close: function(evt) {
     $('#modal').modal('hide'); // This event calls closeActions
   },
+  dispatch: function(str) {
+    var evt = document.createEvent("Event");
+    evt.initEvent(str, true, false);
+    document.dispatchEvent(evt);
+  },
   /**
    * This function is attached to the lightbox close event,
    * so it always runs when the lightbox is closed.
@@ -127,26 +105,13 @@ var Lightbox = {
   closeActions: function() {
     Lightbox.shown = false;
     Lightbox.openingURL = false;
-    // Clean out stack
-    while(Lightbox.closeStack.length > 0) {
-      var f = Lightbox.closeStack.pop();
-      f();
-    }
     if(this.XHR) { this.XHR.abort(); }
     // Reset content so we start fresh when we open a lightbox
     $('#modal').removeData('modal');
     $('#modal').find('.modal-title').html('');
     $('#modal').find('.modal-body').html(vufindString.loading + "...");
-  },
-  /**
-   * Call all the functions we need for when the modal loads
-   *
-   * Called by the 'shown' event and at the end of changeContent
-   */
-  openActions: function() {
-    for(var i=0;i<Lightbox.openStack.length;i++) {
-      Lightbox.openStack[i]();
-    }
+
+    Lightbox.dispatch('Lightbox.close');
   },
   /**
    * This function changes the content of the lightbox to a message with a close button
@@ -160,15 +125,11 @@ var Lightbox = {
    *
    * If one is not found, return html to a success callback function
    */
-  checkForError: function(html, success, type) {
-    if(typeof type === "undefined") {
-      type = "danger";
-    }
-    var divPattern = '<div class="alert alert-'+type+'">';
-    var fi = html.indexOf(divPattern);
+  checkForError: function(html, success) {
+    var fi = html.indexOf('<div class="alert alert-danger">');
     if(fi > -1) {
-      var li = html.indexOf('</div>', fi+divPattern.length);
-      Lightbox.displayError(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''), type);
+      var li = html.indexOf('</div>', fi+31);
+      Lightbox.displayError(html.substring(fi+31, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
     } else {
       success(html);
     }
@@ -176,19 +137,22 @@ var Lightbox = {
   /**
    * Insert an error alert element at the top of the lightbox
    */
-  displayError: function(message, type) {
-    if(typeof type === "undefined") {
-      type = "danger";
-    }
-    $('#modal .modal-body .alert').remove();
+  displayError: function(message) {
+    var alert = $('#modal .modal-body .alert');
     var html = $.parseHTML($('#modal .modal-body').html());
-     // Empty or alert only, change to message with button
-    if($('#modal .modal-body').html() == vufindString.loading+"..."
-      || (html.length == 1 && $(html).hasClass('alert-'+type))) {
-      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    // Page with dismissable alert already present
+    if(alert.find('.message').length > 0 && html.length > 1) {
+      $(alert).find('.message').html(message);
+    // Page with alert already present
+    } else if(alert.length > 0 && html.length > 1) {
+      $(alert).html(message);
+    // Empty or alert only, change to message with button
+    } else if($('#modal .modal-body').html() == vufindString.loading+"..."
+    || (html.length == 1 && $(html).hasClass('alert-danger'))) {
+      Lightbox.changeContent('<div class="alert alert-danger" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
     // Page without alert
     } else {
-      $('#modal .modal-body').prepend('<div class="alert alert-'+type+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
+      $('#modal .modal-body').prepend('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
     }
     $('.fa-spinner').remove();
     if (typeof Recaptcha !== "undefined" && Recaptcha.widget) {
@@ -248,8 +212,7 @@ var Lightbox = {
       this.openingURL = url;
     }
     this.lastURL = url;
-    this.lastPOST = post;
-    //this.openActions();
+
     return false;
   },
   /**
@@ -330,15 +293,15 @@ var Lightbox = {
    * is called and the 'shown' lightbox event is triggered
    */
   registerForms: function() {
-    var $form = $("#modal").find('form');
+    var form = $("#modal").find('form');
     $form.validator();
-    var name = $form.attr('name');
+    var name = $(form).attr('name');
     // Assign form handler based on name
     if(typeof name !== "undefined" && typeof Lightbox.formHandlers[name] !== "undefined") {
-      $form.submit(Lightbox.formHandlers[name]);
+      $(form).unbind('submit').submit(Lightbox.formHandlers[name]);
     // Default action, with custom callback
     } else if(typeof Lightbox.formCallbacks[name] !== "undefined") {
-      $form.submit(function(evt){
+      $(form).unbind('submit').submit(function(evt){
         if(evt.isDefaultPrevented()) {
           $('.fa.fa-spinner', evt.target).remove();
           return false;
@@ -348,7 +311,7 @@ var Lightbox = {
       });
     // Default
     } else {
-      $form.unbind('submit').submit(function(evt){
+      $(form).unbind('submit').submit(function(evt){
         if(evt.isDefaultPrevented()) {
           $('.fa.fa-spinner', evt.target).remove();
           return false;
@@ -407,12 +370,8 @@ var Lightbox = {
  */
 $(document).ready(function() {
   // Add handlers to the forms
-  Lightbox.addOpenAction(Lightbox.registerForms);
-  /**
-   * Hook into the Bootstrap close event
-   *
-   * Yes, the secret's out, our beloved Lightbox is a modal
-   */
+  document.addEventListener('Lightbox.ready', Lightbox.registerForms, false);
+  // Hook into the Bootstrap close event
   $('#modal').on('hidden.bs.modal', Lightbox.closeActions);
   /**
    * If a link with the class .modal-link triggers the lightbox,
@@ -426,4 +385,5 @@ $(document).ready(function() {
     $('#modal .modal-title').html(title);
     Lightbox.titleSet = true;
   });
+  Lightbox.dispatch('Lightbox.init');
 });
