@@ -312,26 +312,29 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 /* ----- HOVER OVERLAY ------ */
 /* - similar items carousel - */
 .hover-overlay {
-    display:table;
-    position:relative;
-    text-align:center;
-    margin:auto;
-    min-width:150px;
-    min-height:200px;
+  display:block;
+  position:relative;
+  text-align:center;
+  margin:auto;
+  min-width:150px;
+  min-height:200px;
+}
+.hover-overlay img {
+  max-width:100%;
 }
 .hover-overlay .content {
-    display:none;
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.5);
-    color:#FFF;
-    padding:.5em .5em 0;
+  display:none;
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,.5);
+  color:#FFF;
+  padding:.5em .5em 0;
 }
 .hover-overlay:hover .content {
-    display:block;
+  display:block;
 }
 
 /* --- Hierarchical facets --- */
