@@ -15,6 +15,8 @@ class Cache extends Loader
     protected $cachableSources = null;
     protected $recordFactories = array();
     protected $recordTable = null;
+    protected $resourceTable = null;
+    protected $userResourceTable = null;
     
     public function __construct(SearchService $searchService, 
         RecordFactory $recordFactoryManager, 
@@ -22,6 +24,8 @@ class Cache extends Loader
         DbTableManager $dbTableManager)
     {
         $this->recordTable = $dbTableManager->get('record');
+        $this->resourceTable = $dbTableManager->get('resource');
+        $this->userResourceTable = $dbTableManager->get('user_resource');
         
         $this->cachableSources = preg_split("/[\s,]+/", $config->Social->cachableSources);
         
@@ -41,7 +45,6 @@ class Cache extends Loader
         $this->initCacheIds($id, $source);
         
         // try to load record from cache if source is cachable
-        $retVal = array();
         if (in_array($source, $this->cachableSources)) {
             $cachedRecord = $this->loadFromCache(array($id));
             if (!empty($cachedRecord)) {
@@ -63,8 +66,6 @@ class Cache extends Loader
     
     public function loadBatchForSource($ids, $source = 'VuFind')
     {
-        $retVal = array();        
-        
         // try to load records from cache if source is cachable
         $cachedRecords = array();
         if (in_array($source, $this->cachableSources)) {
@@ -91,17 +92,27 @@ class Cache extends Loader
         return $retVal;
     }
     
-    
-    
-    
     public function createOrUpdate($recordId, $userId, $source, $rawData, $sessionId) {
-        $cId = $this->getCacheId($recordId, $source, $userId);
-        
         if (in_array($source, $this->cachableSources)) {
+            $cId = $this->getCacheId($recordId, $source, $userId);
             $this->recordTable->updateRecord($cId, $source, $rawData, $recordId, $userId, $sessionId);
         }
     }
 
+    public function delete($ids, $userId) {
+        
+        foreach ($ids as $id) {
+            $source = explode('|', $id)[0];
+            $recordId = explode('|', $id)[1];
+            
+            $isOrphaned = $this->recordTable->isOrphaned($recordId, $source, $userId);
+            if ($isOrphaned) {
+                $this->recordTable->delete($this->getCacheId($recordId, $source, $userId));
+            }
+        }
+    }
+    
+    
     protected function loadFromCache($ids) {
         
         $cacheIds = array();

@@ -28,6 +28,7 @@
 namespace VuFind\Db\Table;
 
 use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Sql;
 
 /**
  * Table Definition for user statistics
@@ -74,27 +75,54 @@ class Record extends Gateway
 
     public function updateRecord($id, $source, $rawData, $recordId, $userId, $sessionId) {
         
-        $record = $this->findRecord(array($id));
-        if (empty($record)) {
+        $records = $this->findRecord(array($id));
+        if (empty($records)) {
             $record = $this->createRow();
-        } 
+        } else {
+            $record = $records[0];
+        }
         
         $record->c_id = $id;
         $record->record_id = $recordId;
-        $record->data = str_replace("Katze", "CACHED_Katze_CACHED", json_encode($rawData));
+//        $record->data = str_replace("Katze", "CACHED_Katze_CACHED", json_encode($rawData));
+        $record->data = json_encode($rawData);
         $record->source = $source;
         $record->user_id = $userId;
         $record->session_id = $sessionId;
         $record->updated = date('Y-m-d H:i:s');
     
-        // Save the new row.
+        // Create or update record.
         $record->save();
+        
         
         return $record;
     }
-
-    protected function getCacheId($recordId, $listId, $userId, $sessionId)
-    {
-        return $recordId;
+    
+    public function delete($id) {
+        $records = $this->findRecord(array($id));
+        if (!empty($records)) {
+            $records[0]->delete();
+        }
     }
+    
+    
+    public function isOrphaned($recordId, $source, $userId) {
+        
+        $sql = new Sql($this->getAdapter());
+        $select = $sql->select();
+        $select->from(array('r' => 'resource'))
+            ->join(array('ur' => 'user_resource'),
+            'ur.resource_id = r.id'
+            );
+        $select->where->equalTo('user_id', $userId);
+        $select->where->equalTo('record_id', $recordId);
+        $select->where->equalTo('source', $source);
+            
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $results = $statement->execute();
+        
+        return ($results->count() == 0);        
+    }
+    
+    
 }
