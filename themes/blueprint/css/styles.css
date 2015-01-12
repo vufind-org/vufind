@@ -1019,6 +1019,10 @@ div.record img.qrcode {
 .holdsMessage {
     margin-top: 1em;
 }
+.phone-error {
+    color:red;
+    margin-left:80px;
+}
 
 /* hack to hide redundant titles introduced by syndetics plus */
 #syn_nyreview .syn_title,
