@@ -173,11 +173,6 @@ function updatePageForLogin() {
 
   var recordId = $('#record_id').val();
 
-  // Update user save statuses if the current context calls for it:
-  if (typeof(checkSaveStatuses) == 'function') {
-    checkSaveStatuses();
-  }
-
   // refresh the comment list so the "Delete" links will show
   $('.commentList').each(function(){
     var recordSource = extractSource($('#record'));
@@ -202,6 +197,11 @@ function updatePageForLogin() {
   }
 }
 function newAccountHandler(html) {
+  // Emit login event
+  var evt = document.createEvent("Event");
+  evt.initEvent(, true, false);
+  document.dispatchEvent(evt);
+  // Update Lightbox
   updatePageForLogin();
   var params = deparam(Lightbox.openingURL);
   if (params['subaction'] != 'UserLogin') {
@@ -247,17 +247,20 @@ function ajaxLogin(form) {
           data: params,
           success: function(response) {
             if (response.status == 'OK') {
-              updatePageForLogin();
-              // and we update the modal
+              // Emit login event
+              var evt = document.createEvent("Event");
+              evt.initEvent('vufind.login', true, false);
+              document.dispatchEvent(evt);
+              // Lightbox callback
               var params = deparam(Lightbox.lastURL);
-              if (params['subaction'] == 'UserLogin') {
-                Lightbox.close();
-              } else {
+              if (params['subaction'] != 'UserLogin') {
                 Lightbox.getByUrl(
                   Lightbox.lastURL,
                   Lightbox.lastPOST,
                   Lightbox.changeContent
                 );
+              } else {
+                Lightbox.close();
               }
             } else {
               Lightbox.displayError(response.data);
@@ -272,6 +275,9 @@ function ajaxLogin(form) {
 }
 
 $(document).ready(function() {
+  // On login
+  document.addEventListener('vufind.login', updatePageForLogin, false);
+
   // support "jump menu" dropdown boxes
   $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
