@@ -400,9 +400,23 @@ class AbstractBase extends AbstractActionController
      */
     public function getRecordLoader()
     {
-        return $this->getServiceLocator()->get('VuFind\RecordLoader');
+        if ($this->params()->fromQuery('useCache', false) == true) {
+            return $this->getServiceLocator()->get('VuFind\Record\Cache');
+        } else {
+            return $this->getServiceLocator()->get('VuFind\RecordLoader');
+        }
     }
 
+    /**
+     * Get the record cache
+     *
+     * @return \VuFind\Record\Cache
+     */
+    public function getRecordCache()
+    {
+        return $this->getServiceLocator()->get('VuFind\Record\Cache');
+    }
+    
     /**
      * Get the record router.
      *
