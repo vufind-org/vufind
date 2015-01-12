@@ -25,30 +25,30 @@ if ($marcProceedingsField) {
 echo '@' . $format . "{\n";
 
 // Citation key:
-echo $this->driver->getResourceSource() . '-' . $this->driver->getUniqueId() . "\n";
+echo $this->driver->getResourceSource() . '-' .  $this->driver->getUniqueId() . ",\n";
 
 $title = rtrim($this->driver->getTitle(), " /");
-echo "title = $title,\n";
+echo "title = {{$title}},\n";
 
 if (!empty($journalTitle)) {
-    echo "journal = $journalTitle,\n";
+    echo "journal = {{$journalTitle}},\n";
     $volume = $this->driver->tryMethod('getContainerVolume');
     if (!empty($volume)) {
-        echo "volume = $volume,\n";
+        echo "volume = {{$volume}},\n";
     }
     $number = $this->driver->tryMethod('getContainerIssue');
     if (!empty($number)) {
-        echo "number = $number,\n";
+        echo "number = {{$number}},\n";
     }
     $start = $this->driver->tryMethod('getContainerStartPage');
     $end = $this->driver->tryMethod('getContainerEndPage');
     if (!empty($start)) {
         // use page range if possible
         if (!empty($end)) {
-            echo "pages = $start-$end,\n";
+            echo "pages = {{$start}-{$end}},\n";
         } else {
             // use only start page
-            echo "pages = $start,\n";
+            echo "pages = {{$start}},\n";
         }
     }
 }
@@ -56,19 +56,19 @@ if (!empty($journalTitle)) {
 $series = $this->driver->tryMethod('getSeries');
 if (is_array($series)) {
     foreach ($series as $current) {
-        echo 'series = ' . (is_array($current) ? $current['name'] : $current) . ",\n";
+        echo "series = {" . (is_array($current) ? $current['name'] : $current) . "},\n";
     }
 }
 
 $author = $this->driver->tryMethod('getPrimaryAuthor');
 if (!empty($author)) {
-    echo "author = $author,\n";
+    echo "author = {{$author}},\n";
 }
 
 $secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
 if (is_array($secondaryAuthors)) {
     foreach ($secondaryAuthors as $current) {
-        echo "editor = $current,\n";
+        echo "editor = {{$current}},\n";
     }
 }
 
@@ -83,28 +83,28 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
     }
     for ($i = 0; $i < $total; $i++) {
         if (isset($pubPlaces[$i])) {
-            echo "address = " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). ",\n";
+            echo "address = {" . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': ') . "},\n";
         }
         if (isset($pubNames[$i])) {
-            echo "publisher = " . rtrim($pubNames[$i], ", ") . ",\n";
+            echo "publisher = {" . rtrim($pubNames[$i], ", ") . "},\n";
         }
         $date = trim($pubDates[$i], '[]. ');
         if (strlen($date) > 4) {
             $date = $this->dateTime()->extractYear($date);
         }
         if ($date) {
-            echo "year = $date,\n";
+            echo "year = {{$date}},\n";
         }
     }
 }
 
 $edition = $this->driver->tryMethod('getEdition');
 if (!empty($edition)) {
-    echo "edition = $edition,\n";
+    echo "edition = {{$edition}},\n";
 }
 
 if ($marcPhdField && $subfield = $marcPhdField->getSubfield('a')) {
-    echo 'school = ' . $subfield->getData() . ",\n";
+    echo "school = {" . $subfield->getData() . "},\n";
 }
 
 // Try to find a page count in the physical description:
@@ -112,7 +112,7 @@ $physical = $this->driver->tryMethod('getPhysicalDescriptions');
 if (is_array($physical)) {
     foreach ($physical as $current) {
         if (preg_match('/([0-9]+)\s*p/', $current, $matches)) {
-            echo "pages = {$matches[1]},\n";
+            echo "pages = {{$matches[1]}},\n";
             break;
         }
     }
@@ -121,15 +121,15 @@ if (is_array($physical)) {
 $notes = $this->driver->tryMethod('getGeneralNotes');
 if (is_array($notes)) {
     foreach ($notes as $note) {
-        echo "note = $note,\n";
+        echo "note = {{$note}},\n";
     }
 }
 
 foreach ($this->record($this->driver)->getUrlList() as $url) {
-    echo "url = $url,\n";
+    echo "url = {{$url}}\n";
 }
 
-echo "crossref = " . $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "\n";
+echo "crossref = {" . $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "},\n";
 
 // Record separator:
 echo "}\n\n";
