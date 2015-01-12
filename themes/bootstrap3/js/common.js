@@ -426,11 +426,11 @@ $(document).ready(function() {
     Lightbox.open({confirm:vufindString['bulk_email_success']});
   });
   Lightbox.addFormCallback('saveRecord', function(html) {
-    Lightbox.close();
+    Lightbox.open({confirm:vufindString['bulk_save_success']});
     checkSaveStatuses();
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
-    Lightbox.close();
+    Lightbox.open({confirm:vufindString['bulk_save_success']});
     checkSaveStatuses();
   });
   Lightbox.addFormHandler('feedback', function(evt) {
