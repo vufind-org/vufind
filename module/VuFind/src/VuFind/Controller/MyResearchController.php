@@ -92,7 +92,9 @@ class MyResearchController extends AbstractBase
             || $this->params()->fromQuery('auth_method')
         ) {
             try {
-                $this->getAuthManager()->login($this->getRequest());
+                if (!$this->getAuthManager()->isLoggedIn()) {
+                    $this->getAuthManager()->login($this->getRequest());
+                }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
             }
@@ -1091,8 +1093,8 @@ class MyResearchController extends AbstractBase
                     throw new \Exception();
                 }
                 $source = isset($row['source']) ? $row['source'] : 'VuFind';
-                $row['driver'] = $this->getServiceLocator()->get('VuFind\RecordLoader')
-                    ->load($row['id'], $source);
+                $row['driver'] = $this->getServiceLocator()
+                    ->get('VuFind\RecordLoader')->load($row['id'], $source);
                 $row['title'] = $row['driver']->getShortTitle();
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {
