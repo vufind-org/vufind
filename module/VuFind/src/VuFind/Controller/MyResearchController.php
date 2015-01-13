@@ -92,7 +92,9 @@ class MyResearchController extends AbstractBase
             || $this->params()->fromQuery('auth_method')
         ) {
             try {
-                $this->getAuthManager()->login($this->getRequest());
+                if (!$this->getAuthManager()->isLoggedIn()) {
+                    $this->getAuthManager()->login($this->getRequest());
+                }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
             }
