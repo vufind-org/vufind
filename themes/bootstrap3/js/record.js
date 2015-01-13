@@ -142,16 +142,22 @@ function registerTabEvents() {
     var params = deparam($(this).attr('href'));
     params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', parts[parts.length-1], params);
+    return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
+    });
   });
 }
 
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
   // Grab the part of the url that is the Controller and Record ID
-  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id+'/'));
+  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id+'(/|\\b)'));
+  urlroot = urlroot.slice(-1);
+  if(urlroot.substring(-1) != '/') {
+    urlroot += '/';
+  }
   $.ajax({
-    url: path + urlroot[0] + 'AjaxTab',
+    url: path + urlroot + 'AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
@@ -248,8 +254,13 @@ $(document).ready(function(){
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('placeHold', function() {
-    document.location.href = path+'/MyResearch/Holds';
+  Lightbox.addFormCallback('placeHold', function(html) {
+    Lightbox.checkForError(html, function(html) {
+      var divPattern = '<div class="alert alert-info">';
+      var fi = html.indexOf(divPattern);
+      var li = html.indexOf('</div>', fi+divPattern.length);
+      Lightbox.confirm(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
+    });
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = path+'/MyResearch/StorageRetrievalRequests';

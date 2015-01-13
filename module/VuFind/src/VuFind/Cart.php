@@ -68,6 +68,13 @@ class Cart
      */
     protected $recordLoader;
 
+    /**
+     * Domain context for cookies (null for default)
+     *
+     * @var string
+     */
+    protected $cookieDomain;
+
     const CART_COOKIE =  'vufind_cart';
     const CART_COOKIE_SOURCES = 'vufind_cart_src';
     const CART_COOKIE_DELIM = "\t";
@@ -75,18 +82,21 @@ class Cart
     /**
      * Constructor
      *
-     * @param \VuFind\Record\Loader $loader  Object for loading records
-     * @param int                   $maxSize Maximum size of cart contents
-     * @param bool                  $active  Is cart enabled?
-     * @param array                 $cookies Current cookie values (leave null
+     * @param \VuFind\Record\Loader $loader       Object for loading records
+     * @param int                   $maxSize      Maximum size of cart contents
+     * @param bool                  $active       Is cart enabled?
+     * @param array                 $cookies      Current cookie values (leave null
      * to use $_COOKIE superglobal)
+     * @param string                $cookieDomain Domain context for cookies
+     * (optional)
      */
     public function __construct(\VuFind\Record\Loader $loader,
-        $maxSize = 100, $active = true, $cookies = null
+        $maxSize = 100, $active = true, $cookies = null, $cookieDomain = null
     ) {
         $this->recordLoader = $loader;
         $this->maxSize = $maxSize;
         $this->active = $active;
+        $this->cookieDomain = $cookieDomain;
 
         // Initialize contents
         $this->init(null === $cookies ? $_COOKIE : $cookies);
@@ -282,9 +292,11 @@ class Cart
 
         // Save the cookies:
         $cookie = implode(self::CART_COOKIE_DELIM, $ids);
-        $this->setCookie(self::CART_COOKIE, $cookie, 0, '/');
+        $this->setCookie(self::CART_COOKIE, $cookie, 0, '/', $this->cookieDomain);
         $cookie = implode(self::CART_COOKIE_DELIM, $sources);
-        $this->setCookie(self::CART_COOKIE_SOURCES, $cookie, 0, '/');
+        $this->setCookie(
+            self::CART_COOKIE_SOURCES, $cookie, 0, '/', $this->cookieDomain
+        );
     }
 
     /**
@@ -298,6 +310,16 @@ class Cart
         // @codeCoverageIgnoreStart
         return call_user_func_array('setcookie', func_get_args());
         // @codeCoverageIgnoreEnd
+    }
+
+    /**
+     * Get cookie domain context (null if unset).
+     *
+     * @return string
+     */
+    public function getCookieDomain()
+    {
+        return $this->cookieDomain;
     }
 
     /**

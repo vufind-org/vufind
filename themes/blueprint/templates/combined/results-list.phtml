@@ -71,7 +71,9 @@
       ? 'list' : $params->getView();
     $viewParams = array(
       'results' => $results,
-      'params' => $params
+      'params' => $params,
+      'showCartControls' => $this->showCartControls,
+      'showBulkOptions' => $this->showBulkOptions
     );
     if(isset($this->showCartControls) && !$this->showCartControls) {
       $viewParams['hideCartControls'] = true;

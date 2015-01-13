@@ -61,7 +61,7 @@ class HierarchicalFacetHelper
         }
         // Avoid problems having the reference set further below
         unset($facetItem);
-        $sortFunc = function($a, $b) use ($topLevel) {
+        $sortFunc = function ($a, $b) use ($topLevel) {
             if ($a['level'] == $b['level'] && (!$topLevel || $a['level'] == 0)) {
                 $aText = $a['displayText'] == $a['value']
                     ? $this->formatDisplayText($a['displayText'])
@@ -82,9 +82,9 @@ class HierarchicalFacetHelper
      * Helper method for building hierarchical facets:
      * Convert facet list to a hierarchical array
      *
-     * @param string    $facet            Facet name
-     * @param array     $facetList        Facet list
-     * @param UrlHelper $urlHelper        Query URL helper for building facet URLs
+     * @param string    $facet     Facet name
+     * @param array     $facetList Facet list
+     * @param UrlHelper $urlHelper Query URL helper for building facet URLs
      *
      * @return array Facet hierarchy
      *
@@ -95,18 +95,19 @@ class HierarchicalFacetHelper
      */
     public function buildFacetArray($facet, $facetList, $urlHelper = false)
     {
+        // getParamArray() is expensive, so call it just once and pass it on
+        $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         // Create a keyed (for conversion to hierarchical) array of facet data
         $keyedList = array();
-        $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
-                $facet, $item, $urlHelper
+                $facet, $item, $urlHelper, $paramArray
             );
         }
 
         // Convert the keyed array to a hierarchical array
         $result = array();
-        foreach ($keyedList as $key => &$item) {
+        foreach ($keyedList as &$item) {
             if ($item['level'] > 0) {
                 $keyedList[$item['parent']]['children'][] = &$item;
             } else {
@@ -173,15 +174,16 @@ class HierarchicalFacetHelper
     /**
      * Create an item for the hierarchical facet array
      *
-     * @param string         $facet            Facet name
-     * @param array          $item             Facet item received from Solr
-     * @param UrlQueryHelper $urlHelper        UrlQueryHelper for creating facet
+     * @param string         $facet      Facet name
+     * @param array          $item       Facet item received from Solr
+     * @param UrlQueryHelper $urlHelper  UrlQueryHelper for creating facet
      * url's
+     * @param array          $paramArray URL parameters
      * active children
      *
      * @return array Facet item
      */
-    protected function createFacetItem($facet, $item, $urlHelper)
+    protected function createFacetItem($facet, $item, $urlHelper, $paramArray)
     {
         $href = '';
         $exclude = '';

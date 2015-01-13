@@ -234,12 +234,13 @@ $config = array(
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
                 ),
                 'invokables' => array(
+                    'cas' => 'VuFind\Auth\CAS',
                     'choiceauth' => 'VuFind\Auth\ChoiceAuth',
                     'database' => 'VuFind\Auth\Database',
+                    'facebook' => 'VuFind\Auth\Facebook',
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
                     'shibboleth' => 'VuFind\Auth\Shibboleth',
-                    'cas' => 'VuFind\Auth\CAS',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ),
                 'aliases' => array(
@@ -385,7 +386,6 @@ $config = array(
                     'sierra' => 'VuFind\ILS\Driver\Sierra',
                     'symphony' => 'VuFind\ILS\Driver\Symphony',
                     'virtua' => 'VuFind\ILS\Driver\Virtua',
-                    'xcncip' => 'VuFind\ILS\Driver\XCNCIP',
                     'xcncip2' => 'VuFind\ILS\Driver\XCNCIP2',
                 ),
             ),

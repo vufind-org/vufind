@@ -1,10 +1,10 @@
 <?php
 /**
- * ILS driver test
+ * SummonDatabasesDeferred recommendation module Test Class
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,27 +23,31 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFindTest\ILS\Driver;
-use VuFind\ILS\Driver\XCNCIP;
+namespace VuFindTest\Recommend;
 
 /**
- * ILS driver test
+ * SummonDatabasesDeferred recommendation module Test Class
  *
  * @category VuFind2
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-class XCNCIPTest extends \VuFindTest\Unit\ILSDriverTestCase
+class SummonDatabasesDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
-     * Constructor
+     * Test standard operation
+     *
+     * @return void
      */
-    public function __construct()
+    public function testStandardOperation()
     {
-        $this->driver = new XCNCIP();
+        $this->assertEquals(
+            'mod=SummonDatabases&params=lookfor&lookfor=foo',
+            $this->getRecommend('VuFind\Recommend\SummonDatabasesDeferred')->getUrlParams()
+        );
     }
 }

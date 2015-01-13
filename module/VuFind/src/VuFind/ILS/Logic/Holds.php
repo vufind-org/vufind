@@ -489,6 +489,7 @@ class Holds
         // Build Params
         return array(
             'action' => $action, 'record' => $details['id'],
+            'source' => isset($details['source']) ? $details['source'] : 'VuFind',
             'query' => $queryString, 'anchor' => "#tabnav"
         );
     }

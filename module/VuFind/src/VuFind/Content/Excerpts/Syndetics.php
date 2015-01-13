@@ -39,6 +39,19 @@ namespace VuFind\Content\Excerpts;
 class Syndetics extends \VuFind\Content\AbstractSyndetics
 {
     /**
+     * List of syndetic excerpts
+     *
+     * @var array
+     */
+    protected $sourceList = array(
+        'DBCHAPTER' => array(
+            'title' => 'First Chapter or Excerpt',
+            'file' => 'DBCHAPTER.XML',
+            'div' => '<div id="syn_dbchapter"></div>'
+        )
+    );
+
+    /**
      * This method is responsible for connecting to Syndetics and abstracting
      * excerpts.
      *
@@ -47,7 +60,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * retrieve the script. The script will then parse the excerpt according to
      * US MARC (I believe). It will provide a link to the URL master HTML page
      * for more information.
-     * Configuration:  Sources are processed in order - refer to $sourceList.
+     * Configuration:  Sources are processed in order - refer to $sourceList above.
      *
      * @param string           $key     API key
      * @param \VuFindCode\ISBN $isbnObj ISBN object
@@ -59,15 +72,6 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      */
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
-        // List of syndetic excerpts
-        $sourceList = array(
-            'DBCHAPTER' => array(
-                'title' => 'First Chapter or Excerpt',
-                'file' => 'DBCHAPTER.XML',
-                'div' => '<div id="syn_dbchapter"></div>'
-            )
-        );
-
         // Initialize return value:
         $excerpt = array();
 
@@ -85,7 +89,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         }
 
         $i = 0;
-        foreach ($sourceList as $source => $sourceInfo) {
+        foreach ($this->sourceList as $source => $sourceInfo) {
             $nodes = $xmldoc->getElementsByTagName($source);
             if ($nodes->length) {
                 // Load excerpts
