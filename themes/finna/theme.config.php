@@ -8,5 +8,8 @@ return array(
     'js' => array(
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js'
-    )
+    ),
+    'less' => array(
+        'active' => true
+    ),
 );
