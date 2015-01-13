@@ -253,15 +253,16 @@ DROP TABLE IF EXISTS "record";
 CREATE TABLE record
 (
   id serial NOT NULL,
-  record_id character varying,
+  c_id varchar(100),
+  record_id varchar,
   user_id integer,
-  list_id integer,
-  session_id character varying,
-  source character varying,
+  session_id varchar,
+  source varchar,
   data text,
   updated timestamp without time zone,
   expires timestamp without time zone,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE(c_id)
 );
 
 -- --------------------------------------------------------
