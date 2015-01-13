@@ -32,10 +32,12 @@
             </label>
           </div>
         </div>
+      </div>
+      <div class="form-group">
         <div id="storageRetrievalRequestReference" class="storageRetrievalRequestReference">
           <label class="col-sm-3 control-label"><?=$this->transEsc('storage_retrieval_request_volume')?>:</label>
           <div class="col-sm-9">
-            <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtmlAttr($this->gatheredDetails['volume']) : ''?>"/><br/>
+            <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtmlAttr($this->gatheredDetails['volume']) : ''?>" class="form-control"/><br/>
           </div>
           <label class="col-sm-3 control-label"><?=$this->transEsc('storage_retrieval_request_issue')?>:</label>
           <div class="col-sm-9">

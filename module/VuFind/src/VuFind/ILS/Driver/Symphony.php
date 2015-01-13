@@ -1241,11 +1241,11 @@ class Symphony extends AbstractBase
                     $transactions;
 
                 foreach ($transactions as $transaction) {
-                    if ($transaction->unseenRenewalsRemaining > 0) {
-                        $renewable = true;
-                    } else {
-                        $renewable = false;
-                    }
+                    $urr = !empty($transaction->unseenRenewalsRemaining)
+                        || !empty($transaction->unseenRenewalsRemainingUnlimited);
+                    $rr = !empty($transaction->renewalsRemaining)
+                        || !empty($transaction->renewalsRemainingUnlimited);
+                    $renewable = ($urr && $rr);
 
                     $transList[] = array(
                         'duedate' =>

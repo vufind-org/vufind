@@ -56,8 +56,8 @@
 #      QueryFields: ...
 #    # All the same settings as above, but for exact searches, i.e. search terms
 #    #     enclosed in quotes. Allows different fields or weights for exact
-#    #     searches. See below for commented-out examples.  
-#       
+#    #     searches. See below for commented-out examples.
+#
 # ...etc.
 #
 #-----------------------------------------------------------------------------------
@@ -442,6 +442,11 @@ AllFields:
 id:
   QueryFields:
     id:
+      - [onephrase, ~]
+
+ParentID:
+  QueryFields:
+    hierarchy_parent_id:
       - [onephrase, ~]
 
 # Fields for exact matches originating from alphabetic browse

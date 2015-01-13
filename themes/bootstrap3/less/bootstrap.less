@@ -1,6 +1,9 @@
 @import "bootstrap/bootstrap";
 @import "a11y";
 
+.alert.alert-info a {
+  text-decoration:underline;
+}
 .btn.disabled {
   &:active,&:focus,&:hover {
     color:#000;
@@ -180,7 +183,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 .result {
   a.title {font-weight:bold}
-  .left img {max-width:100%}
+  .left {
+    text-align:center;
+    img {max-width:100%}
+  }
   @media (max-width:767px) {
     a {text-decoration:underline}
     .middle,.right {padding:0}
@@ -196,6 +202,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   .alert {
     margin-bottom:0;
   }
+}
+.title-in-heading {
+  font-size: inherit;
+  font-style: italic;
 }
 
 /* --- Sidebar --- */

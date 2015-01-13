@@ -3227,6 +3227,7 @@ EOT;
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function supportsMethod($method, $params)
     {
