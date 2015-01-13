@@ -10,6 +10,6 @@ return array(
         'vendor/dataTables.bootstrap.js'
     ),
     'less' => array(
-        'active' => true
+        'active' => false
     ),
 );
