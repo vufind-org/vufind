@@ -71,27 +71,6 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
   });
 }
 
-function refreshCommentList(recordId, recordSource) {
-  var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
-  $.ajax({
-    dataType: 'json',
-    url: url,
-    success: function(response) {
-      // Update HTML
-      if (response.status == 'OK') {
-        $('#commentList').empty();
-        $('#commentList').append(response.data);
-        $('input[type="submit"]').button('reset');
-        $('.delete').unbind('click').click(function() {
-          var commentId = $(this).attr('id').substr('recordComment'.length);
-          deleteRecordComment(this, recordId, recordSource, commentId);
-          return false;
-        });
-      }
-    }
-  });
-}
-
 function registerAjaxCommentRecord() {
   // Form submission
   $('form[name="commentRecord"]').unbind('submit').submit(function(){
