@@ -105,9 +105,11 @@ class Cache extends Loader
             $source = explode('|', $id)[0];
             $recordId = explode('|', $id)[1];
             
-            $isOrphaned = $this->recordTable->isOrphaned($recordId, $source, $userId);
-            if ($isOrphaned) {
-                $this->recordTable->delete($this->getCacheId($recordId, $source, $userId));
+            if (in_array($source, $this->cachableSources)) {
+                $isOrphaned = $this->recordTable->isOrphaned($recordId, $source, $userId);
+                if ($isOrphaned) {
+                    $this->recordTable->delete($this->getCacheId($recordId, $source, $userId));
+                }
             }
         }
     }
