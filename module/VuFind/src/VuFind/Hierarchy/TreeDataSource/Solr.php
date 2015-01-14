@@ -176,8 +176,7 @@ class Solr extends AbstractBase
                 htmlspecialchars($title) . '</name></content>';
             $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
             $xmlNode .= '</item>';
-        }
-        if ($sorting) {
+
             // If we're in sorting mode, we need to create key-value arrays;
             // otherwise, we can just collect flat strings.
             if ($sorting) {
@@ -312,6 +311,7 @@ class Solr extends AbstractBase
     }
 
     /**
+     * Sort Nodes
      * Convert an unsorted array of [ key, value ] pairs into a sorted array
      * of values.
      *
