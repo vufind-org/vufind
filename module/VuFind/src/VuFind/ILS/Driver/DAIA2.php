@@ -167,7 +167,7 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
         /**
          * Get Status of JSON Result
          */
-        protected function getNewJSONStatus($id)
+        protected function getJSONStatus($id)
         {
 	   // get daia json request for id and decode it
            $daia=json_decode($this->doHTTPRequest($id,"json"), true);
@@ -177,6 +177,7 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
            }
 	   if(array_key_exists("instituion",$daia)) {
 	      // information about the institution that grants or knows about services and their availability
+              // this fields could be analyzed: href, content, id
            }
            if(array_key_exists("document",$daia)) {
 	      // analyse the items 
@@ -189,6 +190,9 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
                                   "number"=>"1",
                                   "item_id"=>"0815",
                                   "barcode"=>"1");
+              // each document may contain: id, href, message, item
+              foreach ($daia["document"] as $document) {
+              } // end iteration on document
               $result[]=$dummy_item;                          
 	   }
 	   return $result;
@@ -198,7 +202,7 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 	/**
 	 * Get Status of JSON Result
 	 */
-	protected function getJSONStatus($id) 
+	protected function getOldJSONStatus($id) 
 	{
 		// get daia json request for id and decode it
 		$daia=json_decode($this->doHTTPRequest($id,"json"), true);
