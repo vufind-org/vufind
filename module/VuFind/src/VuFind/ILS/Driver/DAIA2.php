@@ -186,17 +186,99 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
                                   "status"=>"Available",
         		          "location"=>"physical location no HTML",
                                   "reserve"=>"N",
-                                  "callnumber"=>"UB 007",
+                                  "callnumber"=>"007",
                                   "number"=>"1",
                                   "item_id"=>"0815",
                                   "barcode"=>"1");
               // each document may contain: id, href, message, item
               foreach ($daia["document"] as $document) {
+                $doc_id=null;
+                $doc_href=null;
+                $doc_message=null;
+                if(array_key_exists("id",$document)) {
+                   $doc_id=$document["id"];
+                }
+                if(array_key_exists("href",$document)) {
+                   // url of the document 
+                   $doc_href=$document["href"];
+                }
+                if(array_key_exists("message",$document)) {
+                   // array of messages with language code and content
+                   $doc_message=$document["message"];
+                }
+                // if one or more items exist, iterate and build result-item
+                if(array_key_exists("item",$document)) {
+                   $number=0;
+                   foreach ($document["item"] as $item) {
+                     $result_item=array();
+                     $result_item["id"]=$id;
+                     $result_item["item_id"]=$id;
+                     $number++; // count items
+                     $result_item["number"]=$number;
+                     // set default value for barcode
+                     $result_item["barcode"]="1";
+                     // set default value for reserve 
+                     $result_item["reserve"]="N";
+                     // get callnumber
+                     if(isset($item["label"])) {
+                        $result_item["callnumber"]=$item["label"];
+                     } else {
+                        $result_item["callnumber"]="Unknown";
+                     }
+                     // get location
+                     if(isset($item["storage"])) {
+                        $result_item["location"]=$item["storage"]["content"];
+                     } else {
+                        $result_item["location"]="Unknown";
+                     }
+                     // status and availability will be calculated in own function
+		     $result_item=$this->calculateStatus($item)+$result_item;
+                     // add result_item to the result array
+                     $result[]=$result_item;
+                   } // end iteration on item
+                }
               } // end iteration on document
-              $result[]=$dummy_item;                          
+              // $result[]=$dummy_item;                          
 	   }
 	   return $result;
 	}
+
+       /**
+        * Calaculate Status and Availability of an item
+        *
+        * If availability is false the string of status will be shown in vufind
+        *
+        * @param item 	json DAIA item
+        *
+        * @return array("status"=>"only for VIPs","availability"=>false, "duedate"=>duedate)
+        */
+        protected function calculateStatus($item) {
+           $availability=false;
+           $status=null;
+           $duedate=null;
+           if(array_key_exists("available",$item)) {
+              // check if item is loanable or presentation
+              foreach ($item["available"] as $available) {
+                 if($available["service"] == "loan") {
+                    $availability=true;
+                 }
+                 if ($available["service"] == "presentation") {
+                    $availability=true;
+                 }
+              }
+           } 
+           if(array_key_exists("unavailable",$item)) {
+              foreach ($item["unavailable"] as $unavailable) {
+                 if($unavailable["service"] == "loan") {
+                    if(isset($unavailable["expected"])) {
+                       $duedate=$unavailable["expected"];
+                    }
+		    $status="dummy text";
+                 }
+              }
+           }
+           return (array("status"=>$status,"availability"=>$availability,"duedate"=>$duedate));
+        }
 
 
 	/**
