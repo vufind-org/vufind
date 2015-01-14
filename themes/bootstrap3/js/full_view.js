@@ -7,6 +7,37 @@ function showhideTabs(tabid) {
   $('#'+tabid).tab('show');
 }
 
+function registerFLComments() {
+  $('#'+tabid+'-tab input[type=submit]').unbind('click').click(function() {
+    var form = $(this).closest('form')[0];
+    var id = form.id.value;
+    var recordSource = form.source.value;
+    var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+    var data = {
+      comment:form.comment.value,
+      id:id,
+      source:recordSource
+    };
+    $.ajax({
+      type: 'POST',
+      url:  url,
+      data: data,
+      dataType: 'json',
+      success: function(response) {
+        var $form = $('#'+tabid).closest('form');
+        if (response.status == 'OK') {
+          refreshCommentList(id, recordSource);
+          $form.find('textarea[name="comment"]').val('');
+          $form.find('input[type="submit"]').button('loading');
+        } else {
+          Lightbox.displayError(response.data);
+        }
+      }
+    })
+    return false;
+  });
+}
+
 function ajaxFLLoadTab(tabid, reload) {
   if(typeof reload === "undefined") {
     reload = false;
@@ -32,34 +63,7 @@ function ajaxFLLoadTab(tabid, reload) {
           syn_get_widget();
         }
         if(tabid.substring(0, 12) == 'usercomments') {
-          $('#'+tabid+'-tab input[type=submit]').unbind('click').click(function() {
-            var form = $(this).closest('form')[0];
-            var id = form.id.value;
-            var recordSource = form.source.value;
-            var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
-            var data = {
-              comment:form.comment.value,
-              id:id,
-              source:recordSource
-            };
-            $.ajax({
-              type: 'POST',
-              url:  url,
-              data: data,
-              dataType: 'json',
-              success: function(response) {
-                var $form = $('#'+tabid).closest('form');
-                if (response.status == 'OK') {
-                  refreshCommentList(id, recordSource);
-                  $form.find('textarea[name="comment"]').val('');
-                  $form.find('input[type="submit"]').button('loading');
-                } else {
-                  Lightbox.displayError(response.data);
-                }
-              }
-            })
-            return false;
-          });
+          registerFLComments();
         }
       }
     });
