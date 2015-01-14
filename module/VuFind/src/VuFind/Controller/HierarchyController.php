@@ -130,6 +130,10 @@ class HierarchyController extends AbstractBase
                     $this->params()->fromQuery('hierarchyID')
                 );
                 if ($results) {
+                    $baseUrl = $this->url()->fromRoute('home');
+                    $results = str_replace(
+                        '%%%%VUFIND-BASE-URL%%%%', rtrim($baseUrl, '/'), $results
+                    );
                     return $this->output($results);
                 }
             }
