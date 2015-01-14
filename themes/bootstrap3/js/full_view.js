@@ -37,6 +37,32 @@ function registerFLComments() {
     return false;
   });
 }
+function registerFLLightbox(div_html_id, div_id) {
+  // Cite lightbox
+  $('#long_'+div_html_id+' #cite-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Cite', {id:div_id});
+  });
+  // Mail lightbox
+  $('#long_'+div_html_id+' #mail-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Email', {id:div_id});
+  });
+  // Save lightbox
+  $('#long_'+div_html_id+' #save-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Save', {id:div_id});
+  });
+  // SMS lightbox
+  $('#long_'+div_html_id+' #sms-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'SMS', {id:div_id});
+  });
+  // Form handlers
+  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
+  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
+  Lightbox.addFormCallback('emailRecord', function(){Lightbox.confirm(vufindString['bulk_email_success']);});
+}
 
 function ajaxFLLoadTab(tabid, reload) {
   if(typeof reload === "undefined") {
@@ -94,8 +120,9 @@ $(document).ready(function() {
             shortNode.addClass("hidden");
             longNode.html(response.data);
             longNode.addClass("ajaxItem");
-	    loadingNode.addClass("hidden");
+            loadingNode.addClass("hidden");
             longNode.removeClass("hidden");
+            registerFLLightbox(div_html_id, div_id);
             $('.search_tabs .recordTabs a').unbind('click').click(function() {
               return ajaxFLLoadTab($(this).attr('id'));
             });
