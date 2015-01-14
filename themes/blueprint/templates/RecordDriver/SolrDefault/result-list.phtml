@@ -14,6 +14,7 @@
     ?>
   </a>
 <? endif;?>
+<div id="loading_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hide"><p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p></div>
   <div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />

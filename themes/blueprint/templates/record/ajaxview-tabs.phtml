@@ -55,11 +55,11 @@
     <div class="active" id="information_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
       <?=$this->record($this->driver)->getCoreMetadata()?>
     </div>
-    <div style="display:none" id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
+    <div class="hide" id="tools_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
       <?=$this->record($this->driver)->getToolbar()?>
     </div>
     <? if ($this->related()->getList($this->driver) != null): ?>
-      <div style="display:none" id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
+      <div class="hide" id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>-content">
         <? foreach ($this->related()->getList($this->driver) as $current): ?>
           <?=$this->related()->render($current)?>
         <? endforeach; ?>

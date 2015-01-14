@@ -46,9 +46,11 @@ $(document).ready(function() {
     var div_html_id = div_id.replace(/\W/g, "_");
     var viewType = $(this).attr("data-view");
     var shortNode = jQuery('#short_'+div_html_id);
+    var loadingNode = jQuery('#loading_'+div_html_id);
     var mainNode = shortNode.parent();
     var longNode = jQuery('#long_'+div_html_id);
     if (longNode.is(':empty')) {
+      loadingNode.show();
       var url = path + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
       $.ajax({
         dataType: 'json',
@@ -58,6 +60,7 @@ $(document).ready(function() {
             longNode.html(response.data);
             longNode.addClass("ajaxItem");
             longNode.show();
+            loadingNode.hide();
             shortNode.hide();
             $('.search_tabs .recordTabs a').unbind('click').click(function() {
               return ajaxFLLoadTab($(this).attr('id'));
