@@ -530,7 +530,13 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
         break;
     }
 
-    if (!@file_put_contents($overrideDir . '/httpd-vufind.conf', $config)) {
+    $target = $overrideDir . '/httpd-vufind.conf';
+    if (file_exists($target)) {
+        $bak = $target . '.bak.' . time();
+        copy($target, $bak);
+        echo "Backed up existing Apache configuration to $bak.\n";
+    }
+    if (!@file_put_contents($target, $config)) {
         die("Problem writing {$overrideDir}/httpd-vufind.conf.\n\n");
     }
 }
@@ -566,14 +572,19 @@ function buildWindowsConfig($baseDir, $overrideDir, $module)
  */
 function buildImportConfig($baseDir, $overrideDir, $filename)
 {
-    $import = @file_get_contents($baseDir . '/import/' . $filename);
-    $import = str_replace("/usr/local/vufind", $baseDir, $import);
-    $import = preg_replace(
-        "/^\s*solrmarc.path\s*=.*$/m",
-        "solrmarc.path = {$overrideDir}/import|{$baseDir}/import", $import
-    );
-    if (!@file_put_contents($overrideDir . '/import/' . $filename, $import)) {
-        die("Problem writing {$overrideDir}/import/{$filename}.\n\n");
+    $target = $overrideDir . '/import/' . $filename;
+    if (file_exists($target)) {
+        echo "Warning: $target already exists; skipping file creation.\n";
+    } else {
+        $import = @file_get_contents($baseDir . '/import/' . $filename);
+        $import = str_replace("/usr/local/vufind", $baseDir, $import);
+        $import = preg_replace(
+            "/^\s*solrmarc.path\s*=.*$/m",
+            "solrmarc.path = {$overrideDir}/import|{$baseDir}/import", $import
+        );
+        if (!@file_put_contents($target, $import)) {
+            die("Problem writing {$overrideDir}/import/{$filename}.\n\n");
+        }
     }
 }
 

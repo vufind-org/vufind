@@ -42,7 +42,7 @@ use Zend\Http\Client\Adapter\Curl as CurlAdapter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Zend2 extends EdsApi_REST_Base
+class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
 {
      /**
      * The HTTP Request object to execute EDS API transactions

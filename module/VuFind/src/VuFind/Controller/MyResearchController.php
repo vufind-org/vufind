@@ -92,7 +92,9 @@ class MyResearchController extends AbstractBase
             || $this->params()->fromQuery('auth_method')
         ) {
             try {
-                $this->getAuthManager()->login($this->getRequest());
+                if (!$this->getAuthManager()->isLoggedIn()) {
+                    $this->getAuthManager()->login($this->getRequest());
+                }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
             }
@@ -824,8 +826,9 @@ class MyResearchController extends AbstractBase
     protected function getDriverForILSRecord($current)
     {
         $id = isset($current['id']) ? $current['id'] : null;
+        $source = isset($current['source']) ? $current['source'] : 'VuFind';
         $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
-            ->load($id, 'VuFind', true);
+            ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
         return $record;
     }
@@ -1089,9 +1092,10 @@ class MyResearchController extends AbstractBase
                 if (!isset($row['id']) || empty($row['id'])) {
                     throw new \Exception();
                 }
-                $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
-                    ->load($row['id']);
-                $row['title'] = $record->getShortTitle();
+                $source = isset($row['source']) ? $row['source'] : 'VuFind';
+                $row['driver'] = $this->getServiceLocator()
+                    ->get('VuFind\RecordLoader')->load($row['id'], $source);
+                $row['title'] = $row['driver']->getShortTitle();
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {
                     $row['title'] = null;

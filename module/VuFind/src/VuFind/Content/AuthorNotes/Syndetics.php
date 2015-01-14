@@ -39,6 +39,19 @@ namespace VuFind\Content\AuthorNotes;
 class Syndetics extends \VuFind\Content\AbstractSyndetics
 {
     /**
+     * List of data sources for author notes.
+     *
+     * @var array
+     */
+    protected $sourceList = array(
+        'ANOTES' => array(
+            'title' => 'Author Notes',
+            'file' => 'ANOTES.XML',
+            'div' => '<div id="syn_anotes"></div>'
+        )
+    );
+
+    /**
      * This method is responsible for connecting to Syndetics and abstracting
      * author notes.
      *
@@ -47,7 +60,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * retrieve the script. The script will then parse the note according to
      * US MARC (I believe). It will provide a link to the URL master HTML page
      * for more information.
-     * Configuration:  Sources are processed in order - refer to $sourceList.
+     * Configuration:  Sources are processed in order - refer to $sourceList above.
      *
      * @param string           $key     API key
      * @param \VuFindCode\ISBN $isbnObj ISBN object
@@ -59,14 +72,6 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      */
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
-        $sourceList = array(
-            'ANOTES' => array(
-                'title' => 'Author Notes',
-                'file' => 'ANOTES.XML',
-                'div' => '<div id="syn_anotes"></div>'
-            )
-        );
-
         // Initialize return value
         $anotes = array();
 
@@ -84,7 +89,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
         }
 
         $i = 0;
-        foreach ($sourceList as $source => $sourceInfo) {
+        foreach ($this->sourceList as $source => $sourceInfo) {
             $nodes = $xmldoc->getElementsByTagName($source);
             if ($nodes->length) {
                 // Load notes

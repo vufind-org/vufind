@@ -53,32 +53,39 @@ class RandomRecommend implements RecommendInterface
     protected $results;
 
     /**
+     * Backend to use
+     *
+     * @var string
+     */
+    protected $backend = 'Solr';
+
+    /**
      * Results Limit
      *
      * @var number
      */
-    protected $limit;
+    protected $limit = 10;
 
     /**
      * Display Mode
      *
      * @var string
      */
-    protected $displayMode;
+    protected $displayMode = 'standard';
 
     /**
      * Mode
      *
      * @var string
      */
-    protected $mode;
+    protected $mode = 'retain';
 
     /**
      * Result Set Minimum
      *
      * @var number
      */
-    protected $minimum;
+    protected $minimum = 0;
 
     /**
      * Filters
@@ -135,17 +142,16 @@ class RandomRecommend implements RecommendInterface
         // Save the basic parameters:
         $this->settings = $settings;
 
-        // Parse the additional settings:
+        // Apply any settings that override the defaults by being non-empty:
+        $properties = array('backend', 'limit', 'displayMode', 'mode', 'minimum');
         $settings = explode(':', $settings);
-        $this->backend = !empty($settings[0]) ? $settings[0] : 'Solr';
-        $this->limit = isset($settings[1]) && !empty($settings[1])
-            ? $settings[1] : 10;
-        $this->displayMode = isset($settings[2]) && !empty($settings[2])
-            ? $settings[2] : "standard";
-        $this->mode = !empty($settings[3]) ? $settings[3] : 'retain';
-        $this->minimum = !empty($settings[4]) ? $settings[4] : 0;
+        foreach ($properties as $i => $property) {
+            if (!empty($settings[$i])) {
+                $this->$property = $settings[$i];
+            }
+        }
 
-        // all other params are filters and there values respectively
+        // all other params are filters and their values respectively
         for ($i = 5; $i < count($settings); $i += 2) {
             if (isset($settings[$i+1])) {
                 $this->filters[] = $settings[$i] . ':' . $settings[$i + 1];

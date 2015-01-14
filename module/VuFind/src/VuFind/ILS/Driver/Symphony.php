@@ -1121,7 +1121,32 @@ class Symphony extends AbstractBase
             $patron['lastname']  = $matches[1];
         }
 
-        // @TODO: email, major, college
+        // There may be an email address in any of three numbered addresses,
+        // so we search each one until we find an email address,
+        // starting with the one marked primary.
+        $addrinfo_check_order = array('1','2','3');
+        if (isset($resp->patronAddressInfo->primaryAddress)) {
+          $primary_addr_n = $resp->patronAddressInfo->primaryAddress;
+          array_unshift($addrinfo_check_order, $primary_addr_n);
+        }
+        foreach ($addrinfo_check_order as $n) {
+            $AddressNInfo = "Address{$n}Info";
+            if (isset($resp->patronAddressInfo->$AddressNInfo)) {
+                $addrinfos = is_array($resp->patronAddressInfo->$AddressNInfo)
+                    ? $resp->patronAddressInfo->$AddressNInfo
+                    : array($resp->patronAddressInfo->$AddressNInfo);
+                foreach ($addrinfos as $addrinfo) {
+                    if ($addrinfo->addressPolicyID == 'EMAIL'
+                        && !empty($addrinfo->addressValue)) {
+                        $patron['email'] = $addrinfo->addressValue;
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        // @TODO: major, college
 
         return $patron;
     }
@@ -1241,11 +1266,11 @@ class Symphony extends AbstractBase
                     $transactions;
 
                 foreach ($transactions as $transaction) {
-                    if ($transaction->unseenRenewalsRemaining > 0) {
-                        $renewable = true;
-                    } else {
-                        $renewable = false;
-                    }
+                    $urr = !empty($transaction->unseenRenewalsRemaining)
+                        || !empty($transaction->unseenRenewalsRemainingUnlimited);
+                    $rr = !empty($transaction->renewalsRemaining)
+                        || !empty($transaction->renewalsRemainingUnlimited);
+                    $renewable = ($urr && $rr);
 
                     $transList[] = array(
                         'duedate' =>
