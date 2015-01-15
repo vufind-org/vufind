@@ -1,4 +1,4 @@
-/*global path, registerTabEvents*/
+/*global path, registerAjaxCommentRecord, registerTabEvents*/
 
 function showhideTabs(tabid) {
   //console.log(tabid);
@@ -7,36 +7,6 @@ function showhideTabs(tabid) {
   $('#'+tabid).tab('show');
 }
 
-function registerFLComments() {
-  $('#'+tabid+'-tab input[type=submit]').unbind('click').click(function() {
-    var form = $(this).closest('form')[0];
-    var id = form.id.value;
-    var recordSource = form.source.value;
-    var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
-    var data = {
-      comment:form.comment.value,
-      id:id,
-      source:recordSource
-    };
-    $.ajax({
-      type: 'POST',
-      url:  url,
-      data: data,
-      dataType: 'json',
-      success: function(response) {
-        var $form = $('#'+tabid).closest('form');
-        if (response.status == 'OK') {
-          refreshCommentList(id, recordSource);
-          $form.find('textarea[name="comment"]').val('');
-          $form.find('input[type="submit"]').button('loading');
-        } else {
-          Lightbox.displayError(response.data);
-        }
-      }
-    })
-    return false;
-  });
-}
 function registerFLLightbox(div_html_id, div_id) {
   // Cite lightbox
   $('#long_'+div_html_id+' #cite-record').click(function() {
@@ -70,10 +40,11 @@ function ajaxFLLoadTab(tabid, reload) {
   }
   var id = $('#'+tabid).parent().parent().parent().find(".hiddenId")[0].value;
   var source = $('#'+tabid).parent().parent().parent().find(".hiddenSource")[0].value;
+  var urlroot;
   if (source == 'VuFind') {
-        urlroot = 'Record';
+    urlroot = 'Record';
   } else {
-	urlroot = source + 'record';
+    urlroot = source + 'record';
   }
   var tab = tabid.split('_');
   tab = tab[0];
@@ -88,9 +59,10 @@ function ajaxFLLoadTab(tabid, reload) {
         if(typeof syn_get_widget === "function") {
           syn_get_widget();
         }
-        if(tabid.substring(0, 12) == 'usercomments') {
-          registerFLComments();
-        }
+        refreshCommentList(id, source);
+        $('#'+tabid+'-tab').find('input[type=submit]').unbind('click').click(function() {
+          return registerAjaxCommentRecord('[name=bulkActionForm]');
+        });
       }
     });
   } else {
@@ -125,6 +97,9 @@ $(document).ready(function() {
             registerFLLightbox(div_html_id, div_id);
             $('.search_tabs .recordTabs a').unbind('click').click(function() {
               return ajaxFLLoadTab($(this).attr('id'));
+            });
+            longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
+              return registerAjaxCommentRecord('[name=bulkActionForm]');
             });
           }
         }

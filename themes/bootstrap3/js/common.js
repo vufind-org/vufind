@@ -113,6 +113,47 @@ function refreshCommentList(recordId, recordSource) {
     }
   });
 }
+function registerAjaxCommentRecord(form) {
+  // Form submission
+  var $form = $(form);
+  form = $form[0];
+  var id = form.id.value;
+  var recordSource = form.source.value;
+  var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+  var data = {
+    comment:form.comment.value,
+    id:id,
+    source:recordSource
+  };
+  $.ajax({
+    type: 'POST',
+    url:  url,
+    data: data,
+    dataType: 'json',
+    success: function(response) {
+      if (response.status == 'OK') {
+        refreshCommentList(id, recordSource);
+        $form.find('textarea[name="comment"]').val('');
+        $form.find('input[type="submit"]').button('loading');
+      } else {
+        Lightbox.displayError(response.data);
+      }
+    }
+  });
+  return false;
+}
+function deleteRecordComment(element, recordId, recordSource, commentId) {
+  var url = path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+  $.ajax({
+    dataType: 'json',
+    url: url,
+    success: function(response) {
+      if (response.status == 'OK') {
+        $($(element).parents('.comment')[0]).remove();
+      }
+    }
+  });
+}
 
 // Lightbox
 /*
