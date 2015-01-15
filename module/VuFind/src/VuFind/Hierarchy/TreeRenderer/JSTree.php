@@ -174,8 +174,11 @@ class JSTree extends AbstractBase
             ? substr($node->text, 0, 100) . '...'
             : $node->text;
         $icon = $node->type == 'record' ? 'file-o' : 'folder-open';
-        $html = '<li>'
-            . '<i class="fa fa-li fa-' . $icon . '"></i> '
+        $html = '<li';
+        if ($node->type == 'collection') {
+            $html .= ' class="hierarchy"';
+        }
+        $html .= '><i class="fa fa-li fa-' . $icon . '"></i> '
             . '<a name="tree-' . $node->id . '" href="' . $node->a_attr->href
             . '" title="' . $node->text . '">'
             . $name . '</a>';
