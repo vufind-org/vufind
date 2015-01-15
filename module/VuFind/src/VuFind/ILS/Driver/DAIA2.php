@@ -58,11 +58,11 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 	protected $daiaformat="json";
 
 	/**
-	 * daia query field 
+	 * daia query identifier prefix
 	 *
 	 * @var string
 	 */
-	protected $daiafield="ppn";
+	protected $daiaidprefix="ppn";
 
 	/**
 	 * daia query field 
@@ -104,7 +104,7 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 		$http_headers = array(
 				"Content-type: application/$this->daiaformat",
 				"Accept: application/$this->daiaformat");
-		$url = $this->daiaurl . "?id=" . $this->daiafield . ":" . $id . "&" . $format;
+		$url = $this->daiaurl . "?id=" . $this->daiaidprefix . $id . "&" . $format;
 		$adapter = new CurlAdapter();
 
 		try {
@@ -140,10 +140,10 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 		} else {
 			throw new ILSException('Global/daiaurl configuration needs to be set.');
 		}
-		if (isset($this->config['Global']['daiafield'])) {
-			$this->daiafield = $this->config['Global']['daiafield'];
+		if (isset($this->config['Global']['daiaidprefix'])) {
+			$this->daiaidprefix = $this->config['Global']['daiaidprefix'];
 		} else {
-			throw new ILSException('Global/daiafield configuration needs to be set.');
+            $this->daiaidprefix = "";
 		}
 	}
 
