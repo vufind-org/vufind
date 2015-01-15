@@ -51,26 +51,11 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 	protected $daiaurl;
 
 	/**
-	 * daia request format
-	 *
-	 * @var string
-	 */
-	protected $daiaformat="json";
-
-	/**
 	 * daia query identifier prefix
 	 *
 	 * @var string
 	 */
 	protected $daiaidprefix="ppn";
-
-	/**
-	 * daia query field 
-	 *
-	 * @var string
-	 */
-	protected $daiamethod="GET";
-
 
 	/**
 	 * HTTP service
@@ -100,17 +85,16 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 	 */
 	protected function doHTTPRequest($id)
 	{
-		$format = "format=" . $this->daiaformat;
 		$http_headers = array(
-				"Content-type: application/$this->daiaformat",
-				"Accept: application/$this->daiaformat");
-		$url = $this->daiaurl . "?id=" . $this->daiaidprefix . $id . "&" . $format;
+				"Content-type: application/json",
+				"Accept: application/json");
+        $url = $this->daiaurl . "?id=" . $this->daiaidprefix . $id . "&format=json";
 		$adapter = new CurlAdapter();
 
 		try {
 			$client = $this->httpService->createClient($url);
 			$client->setHeaders($http_headers);
-			$client->setMethod($this->daiamethod);
+            $client->setMethod("GET");
 			$client->setAdapter($adapter);
 			$result = $client->send();
 		} catch (\Exception $e) {
