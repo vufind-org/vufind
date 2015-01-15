@@ -230,9 +230,12 @@ class Solr extends AbstractBase
                 'type' => $top->isCollection()
                     ? 'collection'
                     : 'record',
-                'title' => $top->getTitle(),
-                'children' => $this->getChildrenJson($id, $count)
+                'title' => $top->getTitle()
             );
+            $children = $this->getChildrenJson($id, $count);
+            if(!empty($children)) {
+                $json['children'] = $children;
+            }
             if ($cacheFile) {
                 $encoded = json_encode($json);
                 // Write file
@@ -290,10 +293,13 @@ class Solr extends AbstractBase
                 'title' => htmlspecialchars($title)
             );
             if ($current->isCollection()) {
-                $childNode['children'] = $this->getChildrenJson(
+                $children = $this->getChildrenJson(
                     $current->getUniqueID(),
                     $count
                 );
+                if(!empty($children)) {
+                    $childNode['children'] = $children;
+                }
             }
 
             // If we're in sorting mode, we need to create key-value arrays;
