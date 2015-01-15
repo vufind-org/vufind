@@ -67,19 +67,6 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
         $this->recordLoader = $recordLoader;
 
-        if ($this->wcdiscoveryConfig){
-            $this->wskey = $this->wcdiscoveryConfig->General->wskey;
-            $this->secret = $this->wcdiscoveryConfig->General->secret;
-            $this->institution = $this->wcdiscoveryConfig->General->institution;
-        } elseif ($this->config) {
-            $this->wskey = $this->config['Catalog']['wskey'];
-            $this->secret = $this->config['Catalog']['secret'];
-            $this->institution = $this->config['Catalog']['institution'];
-        //TODO: want an elseif statement here for the MultiDriver backend
-        } else {
-            throw new Exception('You do not have the proper properties setup in either the WorldCatDiscovery or WMS ini files');
-        }
-
         $this->dateFormat = $dateConverter;
 
         $this->session = new Container('WorldCatDiscovery');
@@ -111,6 +98,19 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
+        }
+
+        if ($this->wcdiscoveryConfig){
+            $this->wskey = $this->wcdiscoveryConfig->General->wskey;
+            $this->secret = $this->wcdiscoveryConfig->General->secret;
+            $this->institution = $this->wcdiscoveryConfig->General->institution;
+        } elseif ($this->config) {
+            $this->wskey = $this->config['Catalog']['wskey'];
+            $this->secret = $this->config['Catalog']['secret'];
+            $this->institution = $this->config['Catalog']['institution'];
+            //TODO: want an elseif statement here for the MultiDriver backend
+        } else {
+            throw new Exception('You do not have the proper properties setup in either the WorldCatDiscovery or WMS ini files');
         }
 
         if ($this->config['Catalog']['consortium']) {
@@ -155,7 +155,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @throws ILSException
      * @return void
      */
-    public function loadPickupLocations($filename)
+    protected function loadPickupLocations($filename)
     {
         // Load pickup locations file:
         $pickupLocationsFile
