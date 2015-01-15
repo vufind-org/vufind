@@ -66,14 +66,14 @@ class SolrExtensionsListener
      * @var string
      */
     protected $searchConfig;
-    
+
     /**
      * Data source configuration file identifier.
      *
      * @var string
      */
     protected $dataSourceConfig;
-    
+
     /**
      * Constructor.
      *
@@ -87,7 +87,7 @@ class SolrExtensionsListener
     public function __construct(
         BackendInterface $backend,
         ServiceLocatorInterface $serviceLocator,
-        $searchConfig, $dataSourceConfig = 'datasources' 
+        $searchConfig, $dataSourceConfig = 'datasources'
     ) {
         $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
@@ -118,15 +118,19 @@ class SolrExtensionsListener
      */
     public function onSearchPre(EventInterface $event)
     {
-        /*$backend = $event->getTarget();
+        $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $this->addDataSourceFilter($event);
 
             $params = $event->getParam('params');
-            if ($params) {
-                $params->add('fq', '-merged_child_boolean:TRUE');
+            $context = $event->getParam('context');
+            $query = $event->getParam('query');
+            if ($params && ($context == 'search' || $context == 'similar')
+                && ($query === null || $query->getHandler() !== 'ParentID')
+            ) {
+                $params->add('fq', '-hidden_component_boolean:TRUE');
             }
-        }*/
+        }
         return $event;
     }
 
@@ -144,7 +148,7 @@ class SolrExtensionsListener
 
     /**
      * Add data source filter per search config.
-     * 
+     *
      * @param EventInterface $event Event
      *
      * @return void
@@ -153,12 +157,12 @@ class SolrExtensionsListener
     {
         $config = $this->serviceLocator->get('VuFind\Config');
         $searchConfig = $config->get($this->searchConfig);
-        if (isset($searchConfig->Records->sources) 
+        if (isset($searchConfig->Records->sources)
             && $searchConfig->Records->sources
         ) {
             $sources = array_map(
                 function ($input) {
-                    return '"' . addcslashes($input, '"') . '"'; 
+                    return '"' . addcslashes($input, '"') . '"';
                 },
                 explode(',', $searchConfig->Records->sources)
             );
