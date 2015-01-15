@@ -55,7 +55,7 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 	 *
 	 * @var string
 	 */
-	protected $daiaidprefix="ppn";
+	protected $daiaidprefix;
 
 	/**
 	 * HTTP service
