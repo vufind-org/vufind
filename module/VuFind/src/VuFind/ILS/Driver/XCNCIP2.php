@@ -128,7 +128,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return void
      */
-    public function loadPickupLocations($filename)
+    protected function loadPickupLocations($filename)
     {
         // Load pickup locations file:
         $pickupLocationsFile
