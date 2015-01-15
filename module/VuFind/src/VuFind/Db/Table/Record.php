@@ -73,7 +73,7 @@ class Record extends Gateway
         return $records;
     }
 
-    public function updateRecord($id, $source, $rawData, $recordId, $userId, $sessionId) {
+    public function updateRecord($id, $source, $rawData, $recordId, $userId, $sessionId, $resourceId) {
         
         $records = $this->findRecord(array($id));
         if (empty($records)) {
@@ -90,39 +90,35 @@ class Record extends Gateway
         $record->user_id = $userId;
         $record->session_id = $sessionId;
         $record->updated = date('Y-m-d H:i:s');
-    
+        $record->resource_id = $resourceId;
+        
         // Create or update record.
         $record->save();
-        
         
         return $record;
     }
     
+    public function cleanup($userId) {
+        $sql = new Sql($this->getAdapter());
+        $select = $sql->select();
+        $select->from('record');
+        $select->join('user_resource', 'record.resource_id = user_resource.resource_id', array(),$select::JOIN_LEFT);
+        $select->where->equalTo('record.user_id', $userId);
+        $select->where->isNull('user_resource.id');
+
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $results = $statement->execute();
+        
+        foreach($results as $result) {
+           $this->delete($result['c_id']);
+        }
+    }
+
     public function delete($id) {
         $records = $this->findRecord(array($id));
         if (!empty($records)) {
             $records[0]->delete();
         }
     }
-    
-    
-    public function isOrphaned($recordId, $source, $userId) {
-        
-        $sql = new Sql($this->getAdapter());
-        $select = $sql->select();
-        $select->from(array('r' => 'resource'))
-            ->join(array('ur' => 'user_resource'),
-            'ur.resource_id = r.id'
-            );
-        $select->where->equalTo('user_id', $userId);
-        $select->where->equalTo('record_id', $recordId);
-        $select->where->equalTo('source', $source);
-            
-        $statement = $sql->prepareStatementForSqlObject($select);
-        $results = $statement->execute();
-        
-        return ($results->count() == 0);        
-    }
-    
     
 }

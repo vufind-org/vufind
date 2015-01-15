@@ -92,28 +92,17 @@ class Cache extends Loader
         return $retVal;
     }
     
-    public function createOrUpdate($recordId, $userId, $source, $rawData, $sessionId) {
+    public function createOrUpdate($recordId, $userId, $source, $rawData, $sessionId, $resourceId) {
         if (in_array($source, $this->cachableSources)) {
             $cId = $this->getCacheId($recordId, $source, $userId);
-            $this->recordTable->updateRecord($cId, $source, $rawData, $recordId, $userId, $sessionId);
+            $this->recordTable->updateRecord($cId, $source, $rawData, $recordId, $userId, $sessionId, $resourceId);
         }
     }
 
-    public function delete($ids, $userId) {
-        
-        foreach ($ids as $id) {
-            $source = explode('|', $id)[0];
-            $recordId = explode('|', $id)[1];
-            
-            if (in_array($source, $this->cachableSources)) {
-                $isOrphaned = $this->recordTable->isOrphaned($recordId, $source, $userId);
-                if ($isOrphaned) {
-                    $this->recordTable->delete($this->getCacheId($recordId, $source, $userId));
-                }
-            }
-        }
+    public function cleanup($userId) {
+        $this->recordTable->cleanup($userId);
     }
-    
+
     
     protected function loadFromCache($ids) {
         

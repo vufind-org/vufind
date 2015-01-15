@@ -13,6 +13,7 @@ CREATE TABLE record
   session_id varchar,
   source varchar,
   data text,
+  resource_id integer,
   updated timestamp without time zone,
   expires timestamp without time zone,
   PRIMARY KEY (id),
