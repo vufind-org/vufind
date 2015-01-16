@@ -148,6 +148,8 @@ class WorldShare extends AbstractBase implements
         // If we made it this far, we should log in the user!
         $user = $this->getUserTable()->getByUsername($accessToken->getUser()->getPrincipalID());
 
+        $user->cat_username = 'placeholderUsername';
+        $user->cat_password = 'placeholderPassword';
         // Save and return the user object:
         $user->save();
         return $user;
