@@ -36,13 +36,32 @@ namespace VuFind\RecordTab;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
-class HoldingsWorldCatDiscovery extends AbstractBase
+class HoldingsWorldCatDiscovery extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+	/**
+	 * HTTP service
+	 *
+	 * @var \VuFindHttp\HttpServiceInterface
+	 */
+	protected $httpService = null;
+	
     /**
      * Constructor
      */
 	public function __construct($config){
 		$this->config = $config;
+	}
+	
+	/**
+	 * Set the HTTP service to be used for HTTP requests.
+	 *
+	 * @param HttpServiceInterface $service HTTP service
+	 *
+	 * @return void
+	 */
+	public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+	{
+		$this->httpService = $service;
 	}
     
     /**
@@ -77,11 +96,22 @@ class HoldingsWorldCatDiscovery extends AbstractBase
     		$kbrequest .= $openURLParameters;
     		$kbrequest .= '&wskey=' . $this->config->General->wskey;
 			
-    		$kbresponse = json_decode(file_get_contents($kbrequest), true);
+    		$client = $this->httpService
+    		->createClient($kbrequest);
+    		$adapter = new \Zend\Http\Client\Adapter\Curl();
+    		$client->setAdapter($adapter);
+    		$result = $client->setMethod('GET')->send();
     		
-    		if (isset($kbresponse[0]['url'])){
-    			return $kbresponse[0]['url'];
+    		if ($result->isSuccess()){
+	    		$kbresponse = json_decode($result->getBody(), true);
+	    		if (isset($kbresponse[0]['url'])){
+	    			return $kbresponse[0]['url'];
+	    		}
+    		} else {
+    			Throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
     		}
+    		
+    		
     	//}
     }
     
