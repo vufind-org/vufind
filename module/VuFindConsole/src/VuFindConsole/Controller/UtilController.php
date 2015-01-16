@@ -452,6 +452,13 @@ class UtilController extends AbstractBase
                 'facet.field' => 'hierarchy_top_id'
             )
         );
+        // Parse switches:
+        $this->consoleOpts->addRules(
+            array(
+                'skip-xml|sx' => 'Skip the XML cache',
+                'skip-json|sj' => 'Skip the JSON cache'
+            )
+        );
         $solr = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
             ->get('Solr')->getConnector();
         // Search
@@ -459,20 +466,38 @@ class UtilController extends AbstractBase
         $hierarchies = json_decode($response);
         $topIDs = $hierarchies->facet_counts->facet_fields->hierarchy_top_id;
         for ($i=0;$i<count($topIDs);$i+=2) {
-            if (empty($topIDs[$i])) {
+            $recordid = $topIDs[$i];
+            $count = $topIDs[$i+1];
+            if (empty($recordid)) {
                 continue;
             }
             Console::writeLine(
-                "\tBuilding tree for " . $topIDs[$i] . '... '
-                . number_format($topIDs[$i+1]) . ' records'
+                "\tBuilding tree for " . $recordid . '... '
+                . number_format($count) . ' records'
             );
-            $driver = $recordLoader->load($topIDs[$i]);
+            $driver = $recordLoader->load($recordid);
+            // Only do this if the record is actually a hierarchy type record
             if ($driver->getHierarchyType()) {
-                // Only do this if the record is actually a hierarchy type record
-                $driver->getHierarchyDriver()->getTreeSource()->getJSON(
-                    $topIDs[$i],
-                    array('refresh' => true, 'limit' => $topIDs[$i+1])
-                );
+                // JSON
+                if (!$this->consoleOpts->getOption('skip-json')) {
+                    Console::writeLine("\t\tJSON cache...");
+                    $driver->getHierarchyDriver()->getTreeSource()->getJSON(
+                        $recordid,
+                        array('refresh' => true, 'limit' => $count)
+                    );
+                } else {
+                    Console::writeLine("\t\tJSON skipped.");
+                }
+                // XML
+                if (!$this->consoleOpts->getOption('skip-xml')) {
+                    Console::writeLine("\t\tXML cache...");
+                    $driver->getHierarchyDriver()->getTreeSource()->getXML(
+                        $recordid,
+                        array('refresh' => true)
+                    );
+                } else {
+                    Console::writeLine("\t\tXML skipped.");
+                }
             }
         }
         Console::writeLine(count($topIDs)/2 . ' files');
