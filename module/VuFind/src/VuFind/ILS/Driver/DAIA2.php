@@ -51,26 +51,11 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 	protected $daiaurl;
 
 	/**
-	 * daia request format
+	 * daia query identifier prefix
 	 *
 	 * @var string
 	 */
-	protected $daiaformat="json";
-
-	/**
-	 * daia query field 
-	 *
-	 * @var string
-	 */
-	protected $daiafield="ppn";
-
-	/**
-	 * daia query field 
-	 *
-	 * @var string
-	 */
-	protected $daiamethod="GET";
-
+	protected $daiaidprefix;
 
 	/**
 	 * HTTP service
@@ -100,17 +85,16 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 	 */
 	protected function doHTTPRequest($id)
 	{
-		$format = "format=" . $this->daiaformat;
 		$http_headers = array(
-				"Content-type: application/$this->daiaformat",
-				"Accept: application/$this->daiaformat");
-		$url = $this->daiaurl . "?id=" . $this->daiafield . ":" . $id . "&" . $format;
+				"Content-type: application/json",
+				"Accept: application/json");
+        $url = $this->daiaurl . "?id=" . $this->daiaidprefix . $id . "&format=json";
 		$adapter = new CurlAdapter();
 
 		try {
 			$client = $this->httpService->createClient($url);
 			$client->setHeaders($http_headers);
-			$client->setMethod($this->daiamethod);
+            $client->setMethod("GET");
 			$client->setAdapter($adapter);
 			$result = $client->send();
 		} catch (\Exception $e) {
@@ -140,10 +124,10 @@ class DAIA2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfac
 		} else {
 			throw new ILSException('Global/daiaurl configuration needs to be set.');
 		}
-		if (isset($this->config['Global']['daiafield'])) {
-			$this->daiafield = $this->config['Global']['daiafield'];
+		if (isset($this->config['Global']['daiaidprefix'])) {
+			$this->daiaidprefix = $this->config['Global']['daiaidprefix'];
 		} else {
-			throw new ILSException('Global/daiafield configuration needs to be set.');
+            $this->daiaidprefix = "";
 		}
 	}
 
