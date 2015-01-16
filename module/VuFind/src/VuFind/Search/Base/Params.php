@@ -119,7 +119,7 @@ class Params implements ServiceLocatorAwareInterface
      *
      * @var bool
      */
-    protected $recommendationEnabled = false;
+    protected $recommendationEnabled = array();
 
     /**
      * Main facet configuration
@@ -670,13 +670,17 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getRecommendations($location = 'top')
     {
-        if (!$this->recommendationsEnabled()) {
-            return array();
+        $enabled = $this->recommendationsEnabled();
+        if (null === $location) {
+            $active = array();
+            foreach ($enabled as $current) {
+                if (isset($this->recommend[$current])) {
+                    $active[$current] = $this->recommend[$current];
+                }
+            }
+            return $active;
         }
-        if (is_null($location)) {
-            return $this->recommend;
-        }
-        return isset($this->recommend[$location])
+        return in_array($location, $enabled) && isset($this->recommend[$location])
             ? $this->recommend[$location] : array();
     }
 
@@ -685,14 +689,19 @@ class Params implements ServiceLocatorAwareInterface
      * off recommendations when retrieving results in a context other than standard
      * display of results.
      *
-     * @param bool $bool True to enable, false to disable (null to leave unchanged)
+     * @param bool|array $new New setting (true to enable all, false to disable all,
+     * array to set which areas are active, null to leave unchanged)
      *
-     * @return bool      Current state of recommendations
+     * @return array          Current active recommendation areas
      */
-    public function recommendationsEnabled($bool = null)
+    public function recommendationsEnabled($new = null)
     {
-        if (!is_null($bool)) {
-            $this->recommendationEnabled = $bool;
+        if (true === $new) {
+            $this->recommendationEnabled = array('top', 'side', 'noresults');
+        } else if (false === $new) {
+            $this->recommendationEnabled = array();
+        } else if (null !== $new) {
+            $this->recommendationEnabled = $new;
         }
         return $this->recommendationEnabled;
     }
@@ -708,7 +717,8 @@ class Params implements ServiceLocatorAwareInterface
     protected function getRecommendationSettings()
     {
         // Bypass settings if recommendations are disabled.
-        if (!$this->recommendationsEnabled()) {
+        $enabled = $this->recommendationsEnabled();
+        if (empty($enabled)) {
             return array();
         }
 
@@ -724,38 +734,45 @@ class Params implements ServiceLocatorAwareInterface
         // Load a type-specific recommendations setting if possible, or the default
         // otherwise:
         $recommend = array();
-        if (!is_null($handler)
-            && isset($searchSettings->TopRecommendations->$handler)
-        ) {
-            $recommend['top'] = $searchSettings->TopRecommendations
-                ->$handler->toArray();
-        } else {
-            $recommend['top']
-                = isset($searchSettings->General->default_top_recommend)
-                ? $searchSettings->General->default_top_recommend->toArray()
-                : false;
+
+        if (in_array('top', $enabled)) {
+            if (null !== $handler
+                && isset($searchSettings->TopRecommendations->$handler)
+            ) {
+                $recommend['top'] = $searchSettings->TopRecommendations
+                    ->$handler->toArray();
+            } else {
+                $recommend['top']
+                    = isset($searchSettings->General->default_top_recommend)
+                    ? $searchSettings->General->default_top_recommend->toArray()
+                    : false;
+            }
         }
-        if (!is_null($handler)
-            && isset($searchSettings->SideRecommendations->$handler)
-        ) {
-            $recommend['side'] = $searchSettings->SideRecommendations
-                ->$handler->toArray();
-        } else {
-            $recommend['side']
-                = isset($searchSettings->General->default_side_recommend)
-                ? $searchSettings->General->default_side_recommend->toArray()
-                : false;
+        if (in_array('side', $enabled)) {
+            if (null !== $handler
+                && isset($searchSettings->SideRecommendations->$handler)
+            ) {
+                $recommend['side'] = $searchSettings->SideRecommendations
+                    ->$handler->toArray();
+            } else {
+                $recommend['side']
+                    = isset($searchSettings->General->default_side_recommend)
+                    ? $searchSettings->General->default_side_recommend->toArray()
+                    : false;
+            }
         }
-        if (!is_null($handler)
-            && isset($searchSettings->NoResultsRecommendations->$handler)
-        ) {
-            $recommend['noresults'] = $searchSettings->NoResultsRecommendations
-                ->$handler->toArray();
-        } else {
-            $recommend['noresults']
-                = isset($searchSettings->General->default_noresults_recommend)
-                ? $searchSettings->General->default_noresults_recommend->toArray()
-                : false;
+        if (in_array('noresults', $enabled)) {
+            if (null !== $handler
+                && isset($searchSettings->NoResultsRecommendations->$handler)
+            ) {
+                $recommend['noresults'] = $searchSettings->NoResultsRecommendations
+                    ->$handler->toArray();
+            } else {
+                $recommend['noresults']
+                    = isset($searchSettings->General->default_noresults_recommend)
+                    ? $searchSettings->General->default_noresults_recommend->toArray()
+                    : false;
+            }
         }
 
         return $recommend;
