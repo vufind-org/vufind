@@ -709,7 +709,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $bibId = $details['id'];
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
-        $holdType = $details['level'];
+        $holdType = 'Hold';
         if ($details['level'] == 'title'){
             $requestScope = 'Bibliographic Item';
         } else {
@@ -862,45 +862,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected function getCancelRequest($userID, $institution, $requestId, $type)
     {
-        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-                '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-                'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
-                'xmlns:ncip="http://www.niso.org/2008/ncip" ' .
-                'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' .
-                'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' .
-                'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
-                '<ns1:CancelRequestItem>' .
-                '<ns1:InitiationHeader>' .
-                '<ns1:FromAgencyId>' .
-                '<ns1:AgencyId>' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '</ns1:FromAgencyId>' .
-                '<ns1:ToAgencyId>' .
-                '<ns1:AgencyId>' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '</ns1:ToAgencyId>' .
-                '<ns1:ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ns1:ApplicationProfileType>' .
-                '</ns1:InitiationHeader>' .
-                '<ns1:UserId>' .
-                '<ns1:AgencyId>' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '<ns1:UserIdentifierValue>' .
-                $userID .
-                '</ns1:UserIdentifierValue>' .
-                '</ns1:UserId>' .
-                '<ns1:RequestId>' .
-                '<ns1:RequestIdentifierValue>' .
-                htmlspecialchars($requestId) .
-                '</ns1:RequestIdentifierValue>' .
-                '</ns1:RequestId>' .
-                '<ns1:RequestType>' .
-                htmlspecialchars($type) .
-                '</ns1:RequestType>' .
-                '</ns1:CancelRequestItem>' .
-                '</ns1:NCIPMessage>';
+		return $this->buildNCIPMessage('CancelRequestItem', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . $this->getRequestIdXml($requestId, $type));
     }
 
     /**
@@ -920,55 +882,15 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected function getRequest($userID, $institution, $bibId, $itemId,
             $requestType, $requestScope, $lastInterestDate, $pickupLocation = null
     ) {
-        $request = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-                '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-                'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
-                'xmlns:ncip="http://www.niso.org/2008/ncip" ' .
-                'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' .
-                'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' .
-                'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
-                '<ns1:RequestItem>' .
-                '<ns1:InitiationHeader>' .
-                '<ns1:FromAgencyId>' .
-                '<ns1:AgencyId>' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '</ns1:FromAgencyId>' .
-                '<ns1:ToAgencyId>' .
-                '<ns1:AgencyId>' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '</ns1:ToAgencyId>' .
-                '<ns1:ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ns1:ApplicationProfileType>' .
-                '</ns1:InitiationHeader>' .
-                '<ns1:UserId>' .
-                '<ns1:AgencyId>' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '<ns1:UserIdentifierValue>' .
-                $userID .
-                '</ns1:UserIdentifierValue>' .
-                '</ns1:UserId>';
+       
+		$messageBody = $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID);                
 
-    if ($requestScope = 'Bibliographic Item'){
-        $request .= '<ns1:BibliographicId>' .
-                '<ns1:BibliographicRecordId>' .
-                '<ns1:AgencyId>' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '<ns1:BibliographicRecordIdentifier>' .
-                htmlspecialchars($bibId) .
-                '</ns1:BibliographicRecordIdentifier>' .
-                '</ns1:BibliographicRecordId>' .
-                '</ns1:BibliographicId>';
-    } else {
-        $request .= '<ns1:ItemId>' .
-                '<ns1:ItemIdentifierValue>' .
-                htmlspecialchars($itemId) .
-                '</ns1:ItemIdentifierValue>' .
-                '</ns1:ItemId>';
-    }
-        $request .= '<ns1:RequestType>' .
+	    if ($requestScope = 'Bibliographic Item'){
+	        $messageBody .= $this->getBibIdXml($institution, $bibId);
+	    } else {
+	        $messageBody .= $this->getItemIdXml($itemId);
+	    }
+        $messageBody .= '<ns1:RequestType>' .
                 htmlspecialchars($requestType) .
                 '</ns1:RequestType>' .
                 '<ns1:RequestScopeType ' .
@@ -981,11 +903,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 '</ns1:PickupLocation>' .
                 '<ns1:PickupExpiryDate>' .
                 htmlspecialchars($lastInterestDate) .
-                '</ns1:PickupExpiryDate>' .
-                '</ns1:RequestItem>' .
-                '</ns1:NCIPMessage>';
+                '</ns1:PickupExpiryDate>';
 
-        return $request;
+        return $this->buildNCIPMessage('RequestItem', $messageBody);
     }
 
     /**
@@ -998,42 +918,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected function getRenewRequest($userID, $institution, $itemId)
     {
-        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-                '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-                'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
-                'xmlns:ncip="http://www.niso.org/2008/ncip" ' .
-                'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' .
-                'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' .
-                'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
-                '<ns1:RenewItem>' .
-                '<ns1:InitiationHeader>' .
-                '<ns1:FromAgencyId >' .
-                '<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '</ns1:FromAgencyId>' .
-                '<ns1:ToAgencyId >' .
-                '<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '</ns1:ToAgencyId>' .
-                '<ns1:ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ns1:ApplicationProfileType>' .
-                '</ns1:InitiationHeader>' .
-                '<ns1:UserId>' .
-                '<ns1:AgencyId>' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '<ns1:UserIdentifierValue>' .
-                $userID .
-                '</ns1:UserIdentifierValue>' .
-                '</ns1:UserId>' .
-                '<ns1:ItemId>' .
-                '<ns1:ItemIdentifierValue>' .
-                htmlspecialchars($itemId) .
-                '</ns1:ItemIdentifierValue>' .
-                '</ns1:ItemId>' .
-                '</ns1:RenewItem>' .
-                '</ns1:NCIPMessage>';
+    	return $this->buildNCIPMessage('RenewItem', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . $this->getItemIdXml($itemId));
     }
 
     /**
@@ -1046,44 +931,86 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @return string          NCIP request XML
      */
     protected function getLookupUserRequest($userID, $userPrincipalIDNS, $institution, $extras) {
-        $ret = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-                '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-                'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
-                'xmlns:ncip="http://www.niso.org/2008/ncip" ' .
-                'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' .
-                'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' .
-                'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
-                '<ns1:LookupUser>';
-
-        $ret .=
-        '<ns1:InitiationHeader>' .
-        '<ns1:FromAgencyId>' .
-        '<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
-        $institution .
-        '</ns1:AgencyId>' .
-        '</ns1:FromAgencyId>' .
-        '<ns1:ToAgencyId>' .
-        '<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
-        $institution .
-        '</ns1:AgencyId>' .
-        '</ns1:ToAgencyId>' .
-        '<ns1:ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ns1:ApplicationProfileType>' .
-        '</ns1:InitiationHeader>';
-
-        $ret .=
-        '<ns1:UserId>' .
-        '<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
-        $institution .
-        '</ns1:AgencyId>' .
-        '<ns1:UserIdentifierValue>' .
-        $userID .
-        '</ns1:UserIdentifierValue>' .
-        '</ns1:UserId>' .
-        implode('', $extras) .
-        '</ns1:LookupUser>' .
-        '</ns1:NCIPMessage>';
-
-        return $ret;
+        return $this->buildNCIPMessage('LookupUser', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . implode('', $extras));
+    }
+    
+    protected function buildNCIPMessage($messageName, $messageBody){
+    	$ncipMessage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+    	'<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+    	'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
+    	'xmlns:ncip="http://www.niso.org/2008/ncip" ' .
+    	'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' .
+    	'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' .
+    	'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">';
+    	$ncipMessage .= '<ns1:' . $messageName . '>';
+    	$ncipMessage .= $messageBody;
+    	$ncipMessage .= '</ns1:' . $messageName . '>';
+    	$ncipMessage .= '</ns1:NCIPMessage>';
+    	return $ncipMessage;
+    }
+    
+    protected function getInitiationHeader($institution){
+    	$header = '<ns1:InitiationHeader>' .
+    	'<ns1:FromAgencyId>' .
+    	'<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
+    	$institution .
+    	'</ns1:AgencyId>' .
+    	'</ns1:FromAgencyId>' .
+    	'<ns1:ToAgencyId>' .
+    	'<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
+    	$institution .
+    	'</ns1:AgencyId>' .
+    	'</ns1:ToAgencyId>' .
+    	'<ns1:ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ns1:ApplicationProfileType>' .
+    	'</ns1:InitiationHeader>';
+    	return $header;
+    }
+    
+    protected function getUserIdXml($institution, $userID){
+    	$userIdXml = '<ns1:UserId>' .
+    	'<ns1:AgencyId>' .
+    	$institution .
+    	'</ns1:AgencyId>' .
+    	'<ns1:UserIdentifierValue>' .
+    	$userID .
+    	'</ns1:UserIdentifierValue>' .
+    	'</ns1:UserId>';
+    	return $userIdXml;
+    }
+    
+    protected function getItemIdXml($itemId){
+    	$itemIdXml = '<ns1:ItemId>' .
+    	'<ns1:ItemIdentifierValue>' .
+    	htmlspecialchars($itemId) .
+    	'</ns1:ItemIdentifierValue>' .
+    	'</ns1:ItemId>';
+    	return $itemIdXml;
+    }
+    
+    protected function getBibIdXML($institution, $bibId){
+    	$bibIdXml = '<ns1:BibliographicId>' .
+                '<ns1:BibliographicRecordId>' .
+                '<ns1:AgencyId>' .
+                $institution .
+                '</ns1:AgencyId>' .
+                '<ns1:BibliographicRecordIdentifier>' .
+                htmlspecialchars($bibId) .
+                '</ns1:BibliographicRecordIdentifier>' .
+                '</ns1:BibliographicRecordId>' .
+                '</ns1:BibliographicId>';
+    	return $bibIdXml;
+    }
+    
+    protected function getRequestIdXML($requestId, $type){
+    	$requestIdXml = '<ns1:RequestId>' .
+    	'<ns1:RequestIdentifierValue>' .
+    	htmlspecialchars($requestId) .
+    	'</ns1:RequestIdentifierValue>' .
+    	'</ns1:RequestId>' .
+    	'<ns1:RequestType>' .
+    	htmlspecialchars($type) .
+    	'</ns1:RequestType>';
+    	return $requestIdXml;
     }
 
     /**
