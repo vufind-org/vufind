@@ -770,7 +770,8 @@ class Params implements ServiceLocatorAwareInterface
             } else {
                 $recommend['noresults']
                     = isset($searchSettings->General->default_noresults_recommend)
-                    ? $searchSettings->General->default_noresults_recommend->toArray()
+                    ? $searchSettings->General->default_noresults_recommend
+                        ->toArray()
                     : false;
             }
         }

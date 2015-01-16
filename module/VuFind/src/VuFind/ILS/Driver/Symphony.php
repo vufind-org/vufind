@@ -1126,8 +1126,8 @@ class Symphony extends AbstractBase
         // starting with the one marked primary.
         $addrinfo_check_order = array('1','2','3');
         if (isset($resp->patronAddressInfo->primaryAddress)) {
-          $primary_addr_n = $resp->patronAddressInfo->primaryAddress;
-          array_unshift($addrinfo_check_order, $primary_addr_n);
+            $primary_addr_n = $resp->patronAddressInfo->primaryAddress;
+            array_unshift($addrinfo_check_order, $primary_addr_n);
         }
         foreach ($addrinfo_check_order as $n) {
             $AddressNInfo = "Address{$n}Info";
@@ -1137,7 +1137,8 @@ class Symphony extends AbstractBase
                     : array($resp->patronAddressInfo->$AddressNInfo);
                 foreach ($addrinfos as $addrinfo) {
                     if ($addrinfo->addressPolicyID == 'EMAIL'
-                        && !empty($addrinfo->addressValue)) {
+                        && !empty($addrinfo->addressValue)
+                    ) {
                         $patron['email'] = $addrinfo->addressValue;
                         break;
                     }
