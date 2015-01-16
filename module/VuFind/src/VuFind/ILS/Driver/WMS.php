@@ -409,8 +409,8 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function patronLogin($username, $password)
     {
     	$patronInfo = array(
-    			"principalID" => $this->config['Test']['principalID'],
-    			"principalIDNS" => $this->config['Test']['principalIDNS'],
+    			"principalID" => $this->session->accessToken->getUser()->getPrincipalID(),
+    			"principalIDNS" => $this->session->accessToken->getUser()->getPrincipalIDNS(),
     			"institution" => $this->institution
     	);
         return $patronInfo;
