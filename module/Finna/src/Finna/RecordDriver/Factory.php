@@ -61,4 +61,22 @@ class Factory
         );
         return $driver;
     }
+
+    /**
+     * Factory for SolrEAD record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SolrEAD
+     */
+    public static function getSolrEAD(ServiceManager $sm)
+    {
+        $driver = new SolrEAD(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            null,
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
+            $sm->getServiceLocator()->get('VuFind\Translator')
+        );
+        return $driver;
+    }
 }

@@ -905,10 +905,14 @@ presenter_roles[] = "joht."
 ; Arranger roles that are displayed separately from other authors in component parts
 arranger_roles[] = "sov."
 
-; Datasource specific EAD record link templates (PHP code)
-ead_external_link_template[narc] = "http://www.narc.fi:8080/VakkaWWW/Selaus.action?kuvailuTaso=AM&avain={$coreOriginationId|regex_replace:'/^.*?\-/':''|escape}"
-ead_document_order_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_checkout.php?id={$coreIdentifier|escape:'url'}"
-ead_usage_permission_request_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_askpermission.php?id={$coreIdentifier|escape:'url'}"
+; Datasource specific EAD record link templates
+; Currently supports the following placeholders for record data:
+; {id} Record ID
+; {originationId} Record origination ID
+; {nonPrefixedOriginationId} Only part after a dash of record origination ID
+ead_external_link_template[narc] = "http://www.narc.fi:8080/VakkaWWW/Selaus.action?kuvailuTaso=AM&avain={nonPrefixedOriginationId}"
+ead_document_order_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_checkout.php?id={id}"
+ead_usage_permission_request_link_template[narc] = "https://testavapaingest.narc.fi/astiaUi/palvelut/kdk_askpermission.php?id={id}"
 
 ; The following two sections control the Alphabetic Browse module.
 [AlphaBrowse]

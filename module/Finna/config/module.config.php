@@ -75,6 +75,7 @@ $config = array(
             'recorddriver' => array(
                 'factories' => array(
                     'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
+                    'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
                 ),
             ),
             'recordtab' => array(
@@ -93,6 +94,17 @@ $config = array(
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewMARC',
+                ),
+                'defaultTab' => null,
+            ),
+            'Finna\RecordDriver\SolrEad' => array(
+                'tabs' => array(
+                    'Description' => 'Description',
+                    'HierarchyTree' => 'HierarchyTree',
+                    'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews',
+                    'Map' => 'Map',
+                    'Details' => 'StaffViewArray',
                 ),
                 'defaultTab' => null,
             ),
