@@ -4,13 +4,8 @@
     <span class="sr-only">Toggle navigation</span>
     <i class="fa fa-bars"></i>
   </button>
-  <a role="logo" class="navbar-brand" href="<?=$this->url('home')?>">Finna</a>
+  <? if ($this->resolver('header-logo.phtml')): ?><a role="logo" class="navbar-brand" href="<?=$this->url('home')?>"><?=$this->render('header-logo.phtml')?><span class="sr-only"><?=$this->transEsc("Home")?></span></a><? endif ?>
 </div>
-<? if ($this->layout()->searchbox !== false): ?>
-  <section class="visible-lg">
-    <?=$this->layout()->searchbox ?>
-  </section>
-<? endif; ?>
 <? if (!isset($this->layout()->renderingError)): ?>
   <div class="collapse navbar-collapse" id="header-collapse">
     <ul role="navigation" class="nav navbar-nav navbar-right">
@@ -35,7 +30,7 @@
           <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
             <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
           <? else: ?>
-            <a href="<?=$this->url('myresearch-userlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
+            <a href="<?=$this->url('myresearch-userlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in fa-flip-horizontal"></i> <?=$this->transEsc("Login")?></a>
           <? endif; ?>
         </li>
       <? endif; ?>
