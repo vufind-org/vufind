@@ -261,8 +261,8 @@ class CombinedController extends AbstractSearch
         $query = $this->getRequest()->getQuery();
         $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
 
-        // Disable recommendations:
-        $query->noRecommend = 1;
+        // Disable top/side recommendations but leave noresults active:
+        $query->noRecommend = 'top,side';
     }
 }
 
