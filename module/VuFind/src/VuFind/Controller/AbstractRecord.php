@@ -516,7 +516,6 @@ class AbstractRecord extends AbstractBase
         // when determining record ID, we check both the route match (the most
         // common scenario) and the GET parameters (a fallback used by some
         // legacy routes).
-        
         if (!is_object($this->driver)) {
             $recordLoader = $this->getRecordLoader();
             $cachePolicy = $this->getRequest()->getQuery()->get('cachePolicy');
