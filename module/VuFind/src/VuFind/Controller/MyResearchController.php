@@ -403,7 +403,7 @@ class MyResearchController extends AbstractBase
 
         // Process the deletes if necessary:
         if ($this->formWasSubmitted('submit')) {
-            $this->favorites()->delete($ids, $listID, $user);         
+            $this->favorites()->delete($ids, $listID, $user);
             $this->getRecordCache()->cleanup($user->id);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('fav_delete_success');
