@@ -63,19 +63,38 @@ class Factory
     }
 
     /**
-     * Factory for SolrEAD record driver.
+     * Factory for SolrEad record driver.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return SolrEAD
+     * @return SolrEad
      */
-    public static function getSolrEAD(ServiceManager $sm)
+    public static function getSolrEad(ServiceManager $sm)
     {
-        $driver = new SolrEAD(
+        $driver = new SolrEad(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
             $sm->getServiceLocator()->get('VuFind\Translator')
+        );
+        return $driver;
+    }
+
+    /**
+     * Factory for SolrLido record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SolrLido
+     */
+    public static function getSolrLido(ServiceManager $sm)
+    {
+        $driver = new SolrLido(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            null,
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
+            $sm->getServiceLocator()->get('VuFind\Translator'),
+            $sm->getServiceLocator()->get('VuFind\DateConverter')
         );
         return $driver;
     }

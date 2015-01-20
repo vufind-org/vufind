@@ -60,9 +60,11 @@
       <? if (!empty($urls)): ?>
       <tr>
         <td colspan="2">
+          <div class="truncate-field">
           <? foreach ($urls as $current): ?>
             <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($this->translate('link_' . $current['desc'], array(), $current['desc']))?></a><br/>
           <? endforeach; ?>
+          </div>
         </td>
       </tr>
       <? endif; ?>
@@ -91,7 +93,7 @@
           <th><?=$this->transEsc('Archive')?>:</th>
           <td>
           <? foreach($topIds as $index => $parentId): ?>
-            <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
+            <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
           <? endforeach; ?>
           </td>
         </tr>
@@ -103,21 +105,10 @@
           <td>
           <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
           <? foreach ($parentIds as $index => $parentId): ?>
-            <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
+            <?=($index > 0 ? ', ' : '')?><a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a>
           <? endforeach; ?>
           </td>
         </tr>
-      <? endif; ?>
-
-      <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
-      <tr>
-        <th><?=$this->transEsc('Published in')?>:</th>
-        <td>
-          <? $containerID = $this->driver->getContainerRecordID(); ?>
-          <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
-          <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
-        </td>
-      </tr>
       <? endif; ?>
 
       <? $nextTitles = $this->driver->getNewerTitles(); $prevTitles = $this->driver->getPreviousTitles(); ?>
@@ -150,26 +141,15 @@
       </tr>
       <? endif; ?>
 
-      <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
-      <? if (isset($authors['main']) && !empty($authors['main'])): ?>
+      <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
       <tr>
-        <th><?=$this->transEsc('Main Author')?>: </th>
-        <td property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></td>
-      </tr>
-      <? endif; ?>
-
-      <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
-      <tr>
-        <th><?=$this->transEsc('Corporate Author')?>: </th>
-        <td property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></td>
-      </tr>
-      <? endif; ?>
-
-      <? if (isset($authors['secondary']) && !empty($authors['secondary'])): ?>
-      <tr>
-        <th><?=$this->transEsc('Other Authors')?>: </th>
-        <td>
-          <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
+        <th><?=$this->transEsc('Authors')?>:</th>
+        <td property="author">
+          <div class="truncate-field">
+          <? foreach($results as $index => $author): ?>
+            <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
+          <? endforeach; ?>
+          </div>
         </td>
       </tr>
       <? endif; ?>
@@ -239,17 +219,19 @@
       <tr>
         <th><?=$this->transEsc('Subjects')?>: </th>
         <td>
-          <? foreach ($subjects as $field): ?>
-          <div class="subjectLine" property="keywords">
-            <? $subject = ''; ?>
-            <? if(count($field) == 1) $field = explode('--', $field[0]); ?>
-            <? $i = 0; foreach ($field as $subfield): ?>
-              <?=($i++ == 0) ? '' : ' &gt; '?>
-              <? $subject = trim($subject . ' ' . $subfield); ?>
-              <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
+          <div class="truncate-field">
+            <? foreach ($subjects as $field): ?>
+            <div class="subjectLine" property="keywords">
+              <? $subject = ''; ?>
+              <? if(count($field) == 1) $field = explode('--', $field[0]); ?>
+              <? $i = 0; foreach ($field as $subfield): ?>
+                <?=($i++ == 0) ? '' : ' &gt; '?>
+                <? $subject = trim($subject . ' ' . $subfield); ?>
+                <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
+              <? endforeach; ?>
+            </div>
             <? endforeach; ?>
           </div>
-          <? endforeach; ?>
         </td>
       </tr>
       <? endif; ?>

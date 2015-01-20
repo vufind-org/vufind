@@ -53,7 +53,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     /**
      * Translator
      *
-     * @var \VuFind\Translator
+     * @var \Zend\I18n\Translator
      */
     protected $translator;
 
@@ -451,6 +451,26 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
             return (string)$unitId[0];
         }
         return '';
+    }
+
+    /**
+     * Get all authors apart from presenters
+     *
+     * @return array
+     */
+    public function getNonPresenterAuthors()
+    {
+        $authors = array();
+        if ($author = $this->getPrimaryAuthor()) {
+            $authors[] = array('name' => $author);
+        }
+        if ($author = $this->getCorporateAuthor()) {
+            $authors[] = array('name' => $author);
+        }
+        foreach ($this->getSecondaryAuthors() as $author) {
+            $authors[] = array('name' => $author);
+        }
+        return $authors;
     }
 
     /**
