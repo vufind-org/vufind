@@ -87,15 +87,31 @@
         <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
         <?=$this->render('header.phtml')?>
       </div>
+    </header>
+    <section role="search" class="searchLayout">
       <div class="container">
-        <nav class="nav searchbox hidden-lg hidden-print">
-          <?=$this->layout()->searchbox ?>
-        </nav>
+        <?if (isset($this->layout()->logosection)): ?>
+        <div class="row">
+          <div class="logo col-xs-12 clearfix">
+            <?=$this->render('search/logosection.phtml') ?>
+          </div>
+        </div>
+        <? endif; ?>
+        <?if (isset($this->layout()->introduction)): ?>
+        <div class="row">
+          <div class="col-xs-11 col-sm-10 col-md-8 col-lg-6 introduction clearfix">
+            <?=$this->render('search/introductiontext.phtml') ?>
+          </div>
+          <div class="col-xs-1"></div>
+        </div>    
+        <? endif; ?>
         <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
         ): ?>
-          <ul class="breadcrumb hidden-print">
+          <div class="row">
+          <div class="col-sm-10 col-md-8 col-lg-8 hidden-print">
+          <ul class="breadcrumb">
           <? if(is_array($this->layout()->breadcrumbs)): ?>
             <? if(count($this->layout()->breadcrumbs) > 1): ?>
               <?=$this->render('breadcrumbs/multi.phtml', array(
@@ -114,10 +130,19 @@
             <?=$this->layout()->breadcrumbs ?>
           <? endif; ?>
           </ul>
+          </div>
+          </div>
+        <? endif; ?>
+        <? if (!empty($this->layout()->searchbox) && $this->layout()->searchbox !== false): ?>
+        <div class="row">
+          <nav class="nav searchbox col-xs-12 hidden-print">
+            <?=$this->layout()->searchbox ?>
+          </nav>
+        </div>
         <? endif; ?>
       </div>
-    </header>
-    <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
+    </section>
+    <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
       <? if (!empty($this->layout()->finnaMainHeader)): ?>
       <div class="container-fluid finna-main-header">
         <div class="container">
@@ -135,7 +160,7 @@
       <div class="container">
         <?=$this->layout()->content ?>
       </div>
-    </div>
+    </section>
     <footer role="contentinfo" class="hidden-print">
       <div class="container">
         <?=$this->render('footer.phtml')?>
