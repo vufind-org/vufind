@@ -682,7 +682,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     public function setRawData($data)
     {
         parent::setRawData($data);
-        $xmlRecord = null;
+        $this->simpleXML = null;
     }
 
     /**
