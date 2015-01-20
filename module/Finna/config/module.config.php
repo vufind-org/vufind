@@ -76,6 +76,7 @@ $config = array(
                 'factories' => array(
                     'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
+                    'solrlido' => 'Finna\RecordDriver\Factory::getSolrLido',
                 ),
             ),
             'recordtab' => array(
@@ -101,6 +102,16 @@ $config = array(
                 'tabs' => array(
                     'Description' => 'Description',
                     'HierarchyTree' => 'HierarchyTree',
+                    'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews',
+                    'Map' => 'Map',
+                    'Details' => 'StaffViewArray',
+                ),
+                'defaultTab' => null,
+            ),
+            'Finna\RecordDriver\SolrLido' => array(
+                'tabs' => array(
+                    'Description' => 'Description',
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
                     'Map' => 'Map',
