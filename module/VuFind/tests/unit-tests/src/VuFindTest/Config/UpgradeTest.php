@@ -119,6 +119,39 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         // Make sure the obsolete Index/local setting is removed:
         $this->assertFalse(isset($results['config.ini']['Index']['local']));
 
+        // Make sure that spelling recommendations are set up appropriately:
+        $this->assertEquals(
+            array('TopFacets:ResultsTop', 'SpellingSuggestions'),
+            $results['searches.ini']['General']['default_top_recommend']
+        );
+        $this->assertTrue(
+            in_array(
+                'SpellingSuggestions',
+                $results['searches.ini']['General']['default_noresults_recommend']
+            )
+        );
+        $this->assertEquals(
+            array(
+                'Author' => array('AuthorFacets', 'SpellingSuggestions'),
+                'CallNumber' => array('TopFacets:ResultsTop')
+            ),
+            $results['searches.ini']['TopRecommendations']
+        );
+        $this->assertEquals(
+            array('SummonDatabases', 'SpellingSuggestions'),
+            $results['Summon.ini']['General']['default_top_recommend']
+        );
+        $this->assertTrue(
+            in_array(
+                'SpellingSuggestions',
+                $results['Summon.ini']['General']['default_noresults_recommend']
+            )
+        );
+        $this->assertEquals(
+            array(),
+            $results['Summon.ini']['TopRecommendations']
+        );
+
         return array('configs' => $results, 'warnings' => $warnings);
     }
 
