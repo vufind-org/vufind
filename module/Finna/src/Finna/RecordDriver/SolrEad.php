@@ -76,103 +76,6 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Set raw data to initialize the object.
-     *
-     * @param mixed $data Raw data representing the record; Record Model
-     * objects are normally constructed by Record Driver objects using data
-     * passed in from a Search Results object.  The exact nature of the data may
-     * vary depending on the data source -- the important thing is that the
-     * Record Driver + Search Results objects work together correctly.
-     *
-     * @return void
-     */
-    public function setRawData($data)
-    {
-        parent::setRawData($data);
-        $xmlRecord = null;
-    }
-
-    /**
-     * Check if record is part of an archive series.
-     *
-     * A record is assumed to be part of a series if it has a parent that's not
-     * the top-level record in the hierarchy.
-     *
-     * @return bool Whether the record is part of an archive series
-     */
-    public function isPartOfArchiveSeries()
-    {
-        return isset($this->fields['hierarchy_parent_id'][0])
-            && isset($this->fields['hierarchy_top_id'][0])
-            && $this->fields['hierarchy_parent_id'][0]
-                != $this->fields['hierarchy_top_id'][0]
-            && $this->fields['hierarchy_top_id'] != $this->fields['id'];
-    }
-
-    /**
-     * Get origination
-     *
-     * @return string
-     */
-    public function getOrigination()
-    {
-        $record = $this->getSimpleXML();
-        return isset($record->did->origination)
-            ? (string)$record->did->origination->corpname : '';
-    }
-
-    /**
-     * Get origination Id
-     *
-     * @return string
-     */
-    public function getOriginationId()
-    {
-        $record = $this->getSimpleXML();
-        return isset($record->did->origination->corpname)
-            ? (string)$record->did->origination->corpname
-                ->attributes()->authfilenumber
-            : '';
-    }
-
-    /**
-     * Return image rights.
-     *
-     * @return mixed array with keys:
-     *   'copyright'   Copyright (e.g. 'CC BY 4.0') (optional)
-     *   'description' Human readable description (array)
-     *   'link'        Link to copyright info
-     *   or false if the record contains no images
-     */
-    public function getImageRights()
-    {
-        if (!count($this->getAllImages())) {
-            return false;
-        }
-
-        $rights = array();
-
-        if ($type = $this->getAccessRestrictionsType()) {
-            $rights['copyright'] = $type['copyright'];
-            if (isset($type['link'])) {
-                $rights['link'] = $type['link'];
-            }
-        }
-
-        $desc = $this->getAccessRestrictions();
-        if ($desc && count($desc)) {
-            $description = array();
-            foreach ($desc as $p) {
-                $description[] = (string)$p;
-            }
-            $rights['description'] = $description;
-        }
-
-        return isset($rights['copyright']) || isset($rights['description'])
-            ? $rights : false;
-    }
-
-    /**
      * Get access restriction notes for the record.
      *
      * @return string[] Notes
@@ -232,20 +135,15 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get physical locations.
+     * Get data source id
      *
-     * @return string[] Physical Locations
+     * @return string
      */
-    public function getPhysicalLocations()
+    public function getDataSource()
     {
-        $record = $this->getSimpleXML();
-        $locations = array();
-        if (isset($record->did->physloc)) {
-            foreach ($record->did->physloc as $physloc) {
-                $locations[] = (string)$physloc;
-            }
-        }
-        return $locations;
+        return isset($this->fields['datasource_str_mv'])
+            ? $this->fields['datasource_str_mv'][0]
+            : '';
     }
 
     /**
@@ -279,6 +177,106 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return image rights.
+     *
+     * @return mixed array with keys:
+     *   'copyright'   Copyright (e.g. 'CC BY 4.0') (optional)
+     *   'description' Human readable description (array)
+     *   'link'        Link to copyright info
+     *   or false if the record contains no images
+     */
+    public function getImageRights()
+    {
+        if (!count($this->getAllImages())) {
+            return false;
+        }
+
+        $rights = array();
+
+        if ($type = $this->getAccessRestrictionsType()) {
+            $rights['copyright'] = $type['copyright'];
+            if (isset($type['link'])) {
+                $rights['link'] = $type['link'];
+            }
+        }
+
+        $desc = $this->getAccessRestrictions();
+        if ($desc && count($desc)) {
+            $description = array();
+            foreach ($desc as $p) {
+                $description[] = (string)$p;
+            }
+            $rights['description'] = $description;
+        }
+
+        return isset($rights['copyright']) || isset($rights['description'])
+            ? $rights : false;
+    }
+
+    /**
+     * Get all authors apart from presenters
+     *
+     * @return array
+     */
+    public function getNonPresenterAuthors()
+    {
+        $authors = array();
+        if ($author = $this->getPrimaryAuthor()) {
+            $authors[] = array('name' => $author);
+        }
+        if ($author = $this->getCorporateAuthor()) {
+            $authors[] = array('name' => $author);
+        }
+        foreach ($this->getSecondaryAuthors() as $author) {
+            $authors[] = array('name' => $author);
+        }
+        return $authors;
+    }
+
+    /**
+     * Get origination
+     *
+     * @return string
+     */
+    public function getOrigination()
+    {
+        $record = $this->getSimpleXML();
+        return isset($record->did->origination)
+            ? (string)$record->did->origination->corpname : '';
+    }
+
+    /**
+     * Get origination Id
+     *
+     * @return string
+     */
+    public function getOriginationId()
+    {
+        $record = $this->getSimpleXML();
+        return isset($record->did->origination->corpname)
+            ? (string)$record->did->origination->corpname
+                ->attributes()->authfilenumber
+            : '';
+    }
+
+    /**
+     * Get physical locations.
+     *
+     * @return string[] Physical Locations
+     */
+    public function getPhysicalLocations()
+    {
+        $record = $this->getSimpleXML();
+        $locations = array();
+        if (isset($record->did->physloc)) {
+            foreach ($record->did->physloc as $physloc) {
+                $locations[] = (string)$physloc;
+            }
+        }
+        return $locations;
+    }
+
+    /**
      * Get an array of physical descriptions of the item.
      *
      * @return array
@@ -290,6 +288,51 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
             $physDesc = array_merge($physDesc, $this->fields['material']);
         }
         return $physDesc;
+    }
+
+    /**
+     * Get an array of external service URLs
+     *
+     * @return array Array of urls with 'url' and 'desc' keys
+     */
+    public function getServiceURLs()
+    {
+        $urls = array();
+        $source = $this->getDataSource();
+        $config = $this->recordConfig->Record;
+        if (isset($config->ead_document_order_link_template[$source])
+            && !$this->isDigitized()
+            && in_array(
+                $this->translator->translate('1/Document/ArchiveItem/'),
+                $this->getFormats()
+            )
+        ) {
+            $urls[] = array(
+                'url' => $this->replaceURLPlaceholders(
+                    $config->ead_document_order_link_template[$source]
+                ),
+                'desc' => 'ead_document_order'
+            );
+        }
+        if (isset($config->ead_usage_permission_request_link_template[$source])
+            && $this->getAccessRestrictions()
+        ) {
+            $urls[] = array(
+                'url' => $this->replaceURLPlaceholders(
+                    $config->ead_usage_permission_request_link_template[$source]
+                ),
+                'desc' => 'ead_usage_permission_request'
+            );
+        }
+        if (isset($config->ead_external_link_template[$source])) {
+            $urls[] = array(
+                'url' => $this->replaceURLPlaceholders(
+                    $config->ead_external_link_template[$source]
+                ),
+                'desc' => 'ead_external_link_description'
+            );
+        }
+        return $urls;
     }
 
     /**
@@ -317,14 +360,17 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Check if record is digitized.
+     * Get unit ID (for reference)
      *
-     * @return boolean True if the record is digitized
+     * @return string Unit ID
      */
-    public function isDigitized()
+    public function getUnitID()
     {
-        $record = $this->getSimpleXML();
-        return $record->did->daogrp ? true : false;
+        $unitId = $this->getSimpleXML()->xpath('did/unitid');
+        if (count($unitId)) {
+            return (string)$unitId[0];
+        }
+        return '';
     }
 
     /**
@@ -383,94 +429,48 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get an array of external service URLs
+     * Check if record is digitized.
      *
-     * @return array Array of urls with 'url' and 'desc' keys
+     * @return boolean True if the record is digitized
      */
-    public function getServiceURLs()
+    public function isDigitized()
     {
-        $urls = array();
-        $source = $this->getDataSource();
-        $config = $this->recordConfig->Record;
-        if (isset($config->ead_document_order_link_template[$source])
-            && !$this->isDigitized()
-            && in_array(
-                $this->translator->translate('1/Document/ArchiveItem/'),
-                $this->getFormats()
-            )
-        ) {
-            $urls[] = array(
-                'url' => $this->replaceURLPlaceholders(
-                    $config->ead_document_order_link_template[$source]
-                ),
-                'desc' => 'ead_document_order'
-            );
-        }
-        if (isset($config->ead_usage_permission_request_link_template[$source])
-            && $this->getAccessRestrictions()
-        ) {
-            $urls[] = array(
-                'url' => $this->replaceURLPlaceholders(
-                    $config->ead_usage_permission_request_link_template[$source]
-                ),
-                'desc' => 'ead_usage_permission_request'
-            );
-        }
-        if (isset($config->ead_external_link_template[$source])) {
-            $urls[] = array(
-                'url' => $this->replaceURLPlaceholders(
-                    $config->ead_external_link_template[$source]
-                ),
-                'desc' => 'ead_external_link_description'
-            );
-        }
-        return $urls;
+        $record = $this->getSimpleXML();
+        return $record->did->daogrp ? true : false;
     }
 
     /**
-     * Get data source id
+     * Check if record is part of an archive series.
      *
-     * @return string
+     * A record is assumed to be part of a series if it has a parent that's not
+     * the top-level record in the hierarchy.
+     *
+     * @return bool Whether the record is part of an archive series
      */
-    public function getDataSource()
+    public function isPartOfArchiveSeries()
     {
-        return isset($this->fields['datasource_str_mv'])
-            ? $this->fields['datasource_str_mv'][0]
-            : '';
+        return isset($this->fields['hierarchy_parent_id'][0])
+            && isset($this->fields['hierarchy_top_id'][0])
+            && $this->fields['hierarchy_parent_id'][0]
+                != $this->fields['hierarchy_top_id'][0]
+            && $this->fields['hierarchy_top_id'] != $this->fields['id'];
     }
 
     /**
-     * Get unit ID (for reference)
+     * Set raw data to initialize the object.
      *
-     * @return string Unit ID
-     */
-    public function getUnitID()
-    {
-        $unitId = $this->getSimpleXML()->xpath('did/unitid');
-        if (count($unitId)) {
-            return (string)$unitId[0];
-        }
-        return '';
-    }
-
-    /**
-     * Get all authors apart from presenters
+     * @param mixed $data Raw data representing the record; Record Model
+     * objects are normally constructed by Record Driver objects using data
+     * passed in from a Search Results object.  The exact nature of the data may
+     * vary depending on the data source -- the important thing is that the
+     * Record Driver + Search Results objects work together correctly.
      *
-     * @return array
+     * @return void
      */
-    public function getNonPresenterAuthors()
+    public function setRawData($data)
     {
-        $authors = array();
-        if ($author = $this->getPrimaryAuthor()) {
-            $authors[] = array('name' => $author);
-        }
-        if ($author = $this->getCorporateAuthor()) {
-            $authors[] = array('name' => $author);
-        }
-        foreach ($this->getSecondaryAuthors() as $author) {
-            $authors[] = array('name' => $author);
-        }
-        return $authors;
+        parent::setRawData($data);
+        $xmlRecord = null;
     }
 
     /**
