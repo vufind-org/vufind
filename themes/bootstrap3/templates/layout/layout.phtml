@@ -114,7 +114,9 @@
             <?=$this->layout()->breadcrumbs ?>
           <? endif; ?>
             <span class="pull-right visible-xs">
-              <button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas"><?=$this->transEsc("Narrow Search") ?></button>
+              <button type="button" class="btn btn-primary btn-sm" data-toggle="offcanvas">
+                <?=$this->templateDir == 'search' ? $this->transEsc("Narrow Search") : $this->transEsc("Show Sidebar") ?>
+              </button>
             </span>
           </ul>
         <? endif; ?>

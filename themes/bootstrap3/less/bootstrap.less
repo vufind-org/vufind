@@ -373,7 +373,11 @@ li.jstree-facet .badge {
   html, body {
     overflow-x: hidden; /* Prevent scroll on narrow devices */
   }
+  .breadcrumb .btn-sm {
+    margin-top:-5px;
+  }
   .row-offcanvas {
+    background:#FFF;
     position: relative;
     -webkit-transition: all .25s ease-out;
          -o-transition: all .25s ease-out;
@@ -383,7 +387,7 @@ li.jstree-facet .badge {
   .row-offcanvas-right {
     right: 0;
     &.active {
-      right: 50%; /* 6 columns */
+      right: 52%; /* 6 columns */
     }
     .sidebar-offcanvas {
       right: -50%; /* 6 columns */
@@ -393,7 +397,7 @@ li.jstree-facet .badge {
   .row-offcanvas-left {
     left: 0;
     &.active {
-      left: 50%; /* 6 columns */
+      left: 52%; /* 6 columns */
     }
     .sidebar-offcanvas {
       left: -50%; /* 6 columns */
