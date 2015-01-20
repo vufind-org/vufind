@@ -305,6 +305,26 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test WorldCat-specific upgrades.
+     *
+     * @return void
+     */
+    public function testWorldCatUpgrades()
+    {
+        $upgrader = $this->getUpgrader('worldcatupgrades');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'Author',
+            $results['WorldCat.ini']['Basic_Searches']['srw.au']
+        );
+        $this->assertEquals(
+            'adv_search_author',
+            $results['WorldCat.ini']['Advanced_Searches']['srw.au']
+        );
+    }
+
+    /**
      * Test "meaningful line" detection in SolrMarc properties files.
      *
      * @return void
