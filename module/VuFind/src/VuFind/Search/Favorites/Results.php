@@ -27,7 +27,8 @@
  */
 namespace VuFind\Search\Favorites;
 use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Search\Base\Results as BaseResults;
+    VuFind\Search\Base\Results as BaseResults,
+    VuFind\Record\Cache;
 
 /**
  * Search Favorites Results
@@ -168,9 +169,12 @@ class Results extends BaseResults
                 'userId' => $userId
             );
         }
+
+        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $recordLoader->setCachePolicy(Cache::FAVORITE);
+        $this->results = $recordLoader->loadBatch($recordsToRequest); 
         
-        $this->results = $this->getServiceLocator()->get('VuFind\RecordCache')
-            ->loadBatch($recordsToRequest);
+            
     }
 
     /**

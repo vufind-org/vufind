@@ -1,25 +1,31 @@
 <?php
 namespace VuFind\Record;
 
-use VuFindSearch\Service as SearchService,
-    VuFind\RecordDriver\PluginManager as RecordFactory, 
+use VuFind\RecordDriver\PluginManager as RecordFactory, 
     VuFind\Db\Table\PluginManager as DbTableManager,
     Zend\Config\Config as Config;
-use VuFind\Record\Loader;
 
-
-class Cache extends Loader
+class Cache
 {
-    protected $cacheIds = array();
+    const FAVORITE      = 'favorite';
     
+    protected $cachePolicy = 0;
+    protected $DISABLED          = 0b000;
+    protected $PRIMARY           = 0b001;
+    protected $FALLBACK          = 0b010;
+    protected $INCLUDE_USER_ID   = 0b100;
+    
+    protected $cacheIds = array();
     protected $cachableSources = null;
+    
     protected $recordFactories = array();
     protected $recordTable = null;
     protected $resourceTable = null;
     protected $userResourceTable = null;
     
-    public function __construct(SearchService $searchService, 
-        RecordFactory $recordFactoryManager, 
+    protected $config;
+    
+    public function __construct(RecordFactory $recordFactoryManager, 
         Config $config,
         DbTableManager $dbTableManager)
     {
@@ -27,7 +33,7 @@ class Cache extends Loader
         $this->resourceTable = $dbTableManager->get('resource');
         $this->userResourceTable = $dbTableManager->get('user_resource');
         
-        $this->cachableSources = preg_split("/[\s,]+/", $config->Social->cachableSources);
+        $this->cachableSources = preg_split("/[\s,]+/", $config->RecordCache->cachableSources);
         
         $this->recordFactories['VuFind'] = array($recordFactoryManager, 'getSolrRecord');
         $this->recordFactories['WorldCat'] = function ($data) use ($recordFactoryManager) {
@@ -36,60 +42,30 @@ class Cache extends Loader
             $driver->setSourceIdentifier('WorldCat');
             return $driver;
         };
-        
-        parent::__construct($searchService, $recordFactoryManager);
+        $this->config = $config;
     }
 
-    public function load($id, $source = 'VuFind', $tolerateMissing = false)
+    public function load($id, $source = 'VuFind')
     {
-        $this->initCacheIds($id, $source);
-        
-        // try to load record from cache if source is cachable
-        if (in_array($source, $this->cachableSources)) {
-            $cachedRecord = $this->loadFromCache(array($id));
-            if (!empty($cachedRecord)) {
-                return $cachedRecord[0];
-            }
+        if (! in_array($source, $this->cachableSources) || $this->cachePolicy === 0 ) {
+            return array();
         }
         
-        // on cache miss try to load the record from the original $source
-        return parent::load($id, $source, $tolerateMissing = false);
+        $this->initCacheIds($id, $source);
+        // try to load record from cache if source is cachable
+        $cachedRecords = $this->read(array($id), $this->cachePolicy);
+        
+        return $cachedRecords;
     }
 
     public function loadBatch($ids)
     {
-        // remember ids for later use loadFromCache and loadBatchFromCache
         $this->initCacheIds($ids);
-    
-        return parent::loadBatch($ids);
     }
     
-    public function loadBatchForSource($ids, $source = 'VuFind')
-    {
-        // try to load records from cache if source is cachable
-        $cachedRecords = array();
-        if (in_array($source, $this->cachableSources)) {
-            $cachedRecords = $this->loadFromCache($ids);
-            // which records could not be loaded from the record cache?  
-            foreach ($cachedRecords as $cachedRecord) {
-                $key = array_search($cachedRecord->getUniqueId(),$ids);
-                unset($ids[$key]);
-            }
-        }         
-        
-        // try to load the missing records from the original $source 
-        $genuineRecords = array();
-        if (count($ids) > 0 ) {
-            $genuineRecords = parent::loadBatchForSource($ids, $source);
-        }
-          
-        // merge records found in cache and records loaded from original $source
-        $retVal = $genuineRecords;
-        foreach ($cachedRecords as $cachedRecord) {
-            $retVal[] = $cachedRecord;
-        }
-        
-        return $retVal;
+    public function loadBatchForSource($ids, $source = 'VuFind') {
+        $cachedRecords = $this->read($ids, $this->cachePolicy);
+        return $cachedRecords;
     }
     
     public function createOrUpdate($recordId, $userId, $source, $rawData, $sessionId, $resourceId) {
@@ -102,9 +78,12 @@ class Cache extends Loader
     public function cleanup($userId) {
         $this->recordTable->cleanup($userId);
     }
-
     
-    protected function loadFromCache($ids) {
+    protected function read($ids) {
+        
+        if ($this->cachePolicy === 0) {
+            return array();
+        }
         
         $cacheIds = array();
         foreach ($ids as $id) {
@@ -124,8 +103,6 @@ class Cache extends Loader
         return $vufindRecords;
     }
     
-    
-    
     // $ids = recordId
     // $ids = array(array(), array(), array());
     protected function initCacheIds($ids, $source = null, $userId = null) {
@@ -143,7 +120,6 @@ class Cache extends Loader
                 $this->cacheIds[$recordId] = $this->getCacheId($recordId, $source, $userId);
             }
         } 
-
     }
     
     protected function getCacheId($recordId, $source = null, $userId = null) {
@@ -151,7 +127,10 @@ class Cache extends Loader
         $cIdHelper = array();
         $cIdHelper['recordId'] = $recordId;
         $cIdHelper['source']   = $source;
-        $cIdHelper['userId']   = $userId;
+        
+        if (($this->cachePolicy & $this->INCLUDE_USER_ID) === $this->INCLUDE_USER_ID) {
+            $cIdHelper['userId']   = $userId;
+        }
         
         $md5 = md5(json_encode($cIdHelper));
         
@@ -159,5 +138,23 @@ class Cache extends Loader
         
         return $md5;
     }
+    
+    public function setPolicy($cachePolicy) {
+        $this->cachePolicy = $this->config->RecordCache->cachePolicy->$cachePolicy;
+                    
+        if (! isset($this->cachePolicy)) {
+            $this->cachePolicy = $cachePolicy;
+        }
+        
+    }
+    
+    public function isPrimary() {
+        return (($this->cachePolicy & $this->PRIMARY) === $this->PRIMARY);
+    }
+    
+    public function isFallback() {
+        return (($this->cachePolicy & $this->FALLBACK) === $this->FALLBACK);
+    }
+    
    
 }

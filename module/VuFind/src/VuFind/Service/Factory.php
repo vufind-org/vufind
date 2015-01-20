@@ -507,14 +507,14 @@ class Factory
     {
         return new \VuFind\Record\Loader(
             $sm->get('VuFind\Search'),
-            $sm->get('VuFind\RecordDriverPluginManager')
+            $sm->get('VuFind\RecordDriverPluginManager'),
+            static::getRecordCache($sm)
         );
     }
 
     public static function getRecordCache(ServiceManager $sm)
     {
         return new \VuFind\Record\Cache(
-            $sm->get('VuFind\Search'),
             $sm->get('VuFind\RecordDriverPluginManager'),
             $sm->get('VuFind\Config')->get('config'),
             $sm->get('VuFind\DbTablePluginManager')

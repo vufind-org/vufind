@@ -28,7 +28,8 @@
 namespace VuFind\Record;
 use VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\RecordDriver\PluginManager as RecordFactory,
-    VuFindSearch\Service as SearchService;
+    VuFindSearch\Service as SearchService,
+    VuFind\Record\Cache as Cache;
 
 /**
  * Record loader
@@ -62,10 +63,11 @@ class Loader
      * @param RecordFactory $recordFactory Record loader
      */
     public function __construct(SearchService $searchService,
-        RecordFactory $recordFactory
+        RecordFactory $recordFactory, Cache $recordCache
     ) {
         $this->searchService = $searchService;
         $this->recordFactory = $recordFactory;
+        $this->recordCache = $recordCache;
     }
 
     /**
@@ -81,7 +83,18 @@ class Loader
      */
     public function load($id, $source = 'VuFind', $tolerateMissing = false)
     {
-        $results = $this->searchService->retrieve($source, $id)->getRecords();
+        $results = array();
+        if ($this->recordCache->isPrimary()) {
+            $results = $this->recordCache->load($id, $source);
+        }
+        if (count($results) === 0) {
+            $results = $this->searchService->retrieve($source, $id)->getRecords();
+        }
+        if ($this->recordCache->isFallback() && count($results) === 0) {
+            $results = $this->recordCache->load($id, $source);
+        }
+
+        
         if (count($results) > 0) {
             return $results[0];
         }
@@ -108,7 +121,39 @@ class Loader
      */
     public function loadBatchForSource($ids, $source = 'VuFind')
     {
-        return $this->searchService->retrieveBatch($source, $ids)->getRecords();
+        $cachedRecords = array();
+        if ($this->recordCache->isPrimary()) {
+            // try to load records from cache if source is cachable
+            $cachedRecords = $this->recordCache->loadBatchForSource($ids, $source);
+            // which records could not be loaded from the record cache?
+            foreach ($cachedRecords as $cachedRecord) {
+                $key = array_search($cachedRecord->getUniqueId(),$ids);
+                unset($ids[$key]);
+            }
+        }
+            
+        // try to load the missing records from the original $source
+        $genuineRecords = array();
+        if (count($ids) > 0 ) {
+            $genuineRecords = $this->searchService->retrieveBatch($source, $ids)->getRecords();
+            foreach ($genuineRecords as $genuineRecord) {
+                $key = array_search($genuineRecord->getUniqueId(),$ids);
+                unset($ids[$key]);
+            }
+        }
+        
+        if ($this->recordCache->isFallback() && count($ids) > 0) {
+            // try to load missing records from cache if source is cachable
+            $cachedRecords = $this->recordCache->loadBatchForSource($ids, $source);
+        }
+        
+        // merge records found in cache and records loaded from original $source
+        $retVal = $genuineRecords;
+        foreach ($cachedRecords as $cachedRecord) {
+            $retVal[] = $cachedRecord;
+        }
+        
+        return $retVal;
     }
 
     /**
@@ -127,6 +172,9 @@ class Loader
      */
     public function loadBatch($ids)
     {
+
+        $this->recordCache->loadBatch($ids);
+        
         // Sort the IDs by source -- we'll create an associative array indexed by
         // source and record ID which points to the desired position of the indexed
         // record in the final return array:
@@ -168,5 +216,9 @@ class Loader
         // Send back the final array, with the keys in proper order:
         ksort($retVal);
         return $retVal;
+    }
+    
+    public function setCachePolicy($cachePolicy) {
+        $this->recordCache->setPolicy($cachePolicy);
     }
 }
