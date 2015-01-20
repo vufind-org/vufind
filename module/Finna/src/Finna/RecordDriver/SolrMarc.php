@@ -132,4 +132,59 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         return $this->marcRecord->getFields('979') ? true : false;
     }
 
+    /**
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
+     *
+     * @return array
+     */
+    public function getURLs()
+    {
+        $urls = array();
+        foreach (parent::getURLs() as $url) {
+            if (!$this->urlBlacklisted(
+                isset($url['url']) ? $url['url'] : '',
+                isset($url['desc']) ? $url['desc'] : ''
+            )) {
+                $urls[] = $url;
+            }
+        }
+        return $urls;
+    }
+
+    /**
+     * Check if a URL (typically from getURLs()) is blacklisted based on the URL
+     * itself and optionally its description.
+     *
+     * @param string $url  URL
+     * @param string $desc Optional description of the URL
+     *
+     * @return boolean Whether the URL is blacklisted
+     */
+    protected function urlBlacklisted($url, $desc = '')
+    {
+        if (!isset($this->recordConfig->Record->url_blacklist)) {
+            return false;
+        }
+        foreach ($this->recordConfig->Record->url_blacklist as $rule) {
+            if (substr($rule, 0, 1) == '/' && substr($rule, -1, 1) == '/') {
+                if (preg_match($rule, $url)
+                    || ($desc !== '' && preg_match($rule, $desc))
+                ) {
+                    return true;
+                }
+            } elseif ($rule == $url || $rule == $desc) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
