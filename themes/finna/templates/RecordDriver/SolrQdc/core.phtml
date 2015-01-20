@@ -82,34 +82,6 @@
       </tr>
       <? endif; ?>
 
-      <? if ($results = $this->driver->getSubjectDetails()): ?>
-      <tr>
-        <th><?=$this->transEsc('Subject Details')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
-      </tr>
-      <? endif; ?>
-
-      <? if ($results = $this->driver->getSubjectPlaces()): ?>
-      <tr>
-        <th><?=$this->transEsc('Subject Places')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
-      </tr>
-      <? endif; ?>
-
-      <? if ($results = $this->driver->getSubjectDates()): ?>
-      <tr>
-        <th><?=$this->transEsc('Subject Dates')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
-      </tr>
-      <? endif; ?>
-
-      <? if ($results = $this->driver->getSubjectActors()): ?>
-      <tr>
-        <th><?=$this->transEsc('Subject Actors')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
-      </tr>
-      <? endif; ?>
-
       <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
       <tr>
         <th><?=$this->transEsc('Authors')?>:</th>
@@ -123,45 +95,6 @@
       </tr>
       <? endif; ?>
 
-      <? if ($results = $this->driver->getInstitutions()): ?>
-      <tr>
-        <th><?=$this->transEsc('Organisation')?>:</th>
-        <td>
-        <? foreach($results as $index => $institution): ?>
-          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?>
-        <? endforeach; ?>
-        </td>
-      </tr>
-      <? endif; ?>
-
-      <? if ($results = $this->driver->getCollections()): ?>
-      <tr>
-        <th><?=$this->transEsc('Collection')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
-      </tr>
-      <? endif; ?>
-
-      <? if ($results = $this->driver->getIdentifier()): ?>
-      <tr>
-        <th><?=$this->transEsc('Inventory ID')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
-      </tr>
-      <? endif; ?>
-
-      <? if ($results = $this->driver->getMeasurements()): ?>
-      <tr>
-        <th><?=$this->transEsc('Measurements')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
-      </tr>
-      <? endif; ?>
-
-      <? if ($results = $this->driver->getInscriptions()): ?>
-      <tr>
-        <th><?=$this->transEsc('Inscriptions')?>:</th>
-        <td><div class="truncate-field"><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></div></td>
-      </tr>
-      <? endif; ?>
-
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <tr>
           <th><?=$this->transEsc('Format')?>: </th>
@@ -169,56 +102,33 @@
         </tr>
       <? endif; ?>
 
-      <? if ($results = $this->driver->getFormatClassifications()): ?>
-      <tr>
-        <th><?=$this->transEsc('Other Classification')?>:</th>
-        <td><div class="truncate-field"><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></div></td>
-      </tr>
-      <? endif; ?>
-
-      <? if ($results = $this->driver->getLocalIdentifiers()): ?>
-      <tr>
-        <th><?=$this->transEsc('Other ID')?>:</th>
-        <td><?=implode('<br/>', array_map(array($this, 'escapeHtml'), $results))?></td>
-      </tr>
-      <? endif; ?>
-
-      <? $mainFormat = reset($formats); ?>
-      <? foreach ($this->driver->getEvents() as $eventType => $events): ?>
-      <tr>
-        <th><?=$this->transEsc("lido_event_type_{$mainFormat}_$eventType")?>:</th>
-        <td>
-          <div class="truncate-field">
-          <? foreach ($events as $event): ?>
-            <? if ($event != $events[0]): ?><br/><? endif; ?>
-            <? if (!empty($event['name'])): ?><?=$this->escapeHtml($event['name'])?><br/><? endif; ?>
-            <? if (!empty($event['date'])): ?><?=$this->escapeHtml($event['date'])?><br/><? elseif ($event['type'] != 'käyttö' && $event['type'] != 'näyttely'): ?> <?=$this->transEsc('(undated)')?><? endif; ?>
-            <? if (!empty($event['method'])): ?><?=$this->escapeHtml($event['method'])?><br/><? endif; ?>
-            <? if (!empty($event['materials'])): ?>
-              <?=implode('<br/>', array_map(array($this, 'escapeHtml'), $event['materials']))?><br/>
-            <? endif; ?>
-            <? if (!empty($event['places'])): ?>
-              <?=implode('<br/>', array_map(array($this, 'escapeHtml'), $event['places']))?><br/>
-            <? endif; ?>
-            <? if (!empty($event['culture'])): ?><?=$this->escapeHtml($event['culture'])?><br/><? endif; ?>
-            <? if (!empty($event['actors'])): ?>
-              <? foreach ($event['actors'] as $actor): ?>
-                <?=$this->escapeHtml($actor['name'])?><? if (!empty($actor['role'])): ?>, <?=$this->escapeHtml($actor['role'])?><? endif; ?>
-              <? endforeach; ?>
-              <br/>
-            <? endif; ?>
-            <? if (!empty($event['description'])): ?><?=$this->escapeHtml($event['description'])?><br/><? endif; ?>
-          <? endforeach; ?>
-          </div>
-        </td>
-      </tr>
-      <? endforeach; ?>
-
       <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
         <tr>
           <th><?=$this->transEsc('Language')?>: </th>
           <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
         </tr>
+      <? endif; ?>
+
+      <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
+      <tr>
+        <th><?=$this->transEsc('Published')?>: </th>
+        <td>
+          <? foreach ($publications as $field): ?>
+            <span property="publisher" typeof="Organization">
+            <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+              <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
+            <? endif; ?>
+            <? $pubName = $field->getName(); if (!empty($pubName)): ?>
+              <span property="name"><?=$this->escapeHtml($pubName)?></span>
+            <? endif; ?>
+            </span>
+            <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+              <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
+            <? endif; ?>
+            <br/>
+          <? endforeach; ?>
+        </td>
+      </tr>
       <? endif; ?>
 
       <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
@@ -257,19 +167,41 @@
       <tr>
         <th><?=$this->transEsc('Subjects')?>: </th>
         <td>
-          <div class="truncate-field">
-            <? foreach ($subjects as $field): ?>
-            <div class="subjectLine" property="keywords">
-              <? $subject = ''; ?>
-              <? if(count($field) == 1) $field = explode('--', $field[0]); ?>
-              <? $i = 0; foreach ($field as $subfield): ?>
-                <?=($i++ == 0) ? '' : ' &gt; '?>
-                <? $subject = trim($subject . ' ' . $subfield); ?>
-                <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
-              <? endforeach; ?>
-            </div>
+          <? foreach ($subjects as $field): ?>
+          <div class="subjectLine" property="keywords">
+            <? $subject = ''; ?>
+            <? if(count($field) == 1) $field = explode('--', $field[0]); ?>
+            <? $i = 0; foreach ($field as $subfield): ?>
+              <?=($i++ == 0) ? '' : ' &gt; '?>
+              <? $subject = trim($subject . ' ' . $subfield); ?>
+              <a class="backlink" title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>"><?=trim($this->escapeHtml($subfield))?></a>
             <? endforeach; ?>
           </div>
+          <? endforeach; ?>
+        </td>
+      </tr>
+      <? endif; ?>
+
+      <? if ($abstracts = $this->driver->getAbstracts()): ?>
+      <tr>
+        <th><?=$this->transEsc('Abstract')?>:</th>
+        <td>
+          <div class="truncateField">
+          <? if (isset($abstracts[$this->layout()->userLang])): ?>
+            <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
+          <? else: ?>
+            <?=implode('<br/><br/>', array_map(array($this, 'escapeHtml'), $abstracts))?>
+          <? endif; ?>
+          </div>
+        </td>
+      </tr>
+      <? endif; ?>
+
+      <? $childRecordCount = $this->driver->tryMethod('getChildRecordCount'); if ($childRecordCount): ?>
+      <tr>
+        <th><?=$this->transEsc('child_records')?>: </th>
+        <td>
+          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', array('%%count%%' => $childRecordCount))?></a>
         </td>
       </tr>
       <? endif; ?>

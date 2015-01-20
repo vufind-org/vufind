@@ -1,0 +1,123 @@
+<?php
+/**
+ * Model for Qualified Dublin Core records in Solr.
+ *
+ * PHP version 5
+ *
+ * Copyright (C) The National Library of Finland 2013-2015.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  RecordDrivers
+ * @author   Anna Pienimäki <anna.pienimaki@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ */
+namespace Finna\RecordDriver;
+
+/**
+ * Model for Qualified Dublin Core records in Solr.
+ *
+ * @category VuFind2
+ * @package  RecordDrivers
+ * @author   Anna Pienimäki <anna.pienimaki@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ */
+class SolrQdc extends \VuFind\RecordDriver\SolrDefault
+{
+    /**
+     * Record metadata
+     *
+     * @var \SimpleXMLElement
+     */
+    protected $simpleXML;
+
+    /**
+     * Return an associative array of abstracts associated with this record,
+     * if available; false otherwise.
+     *
+     * @return array of abstracts using abstract languages as keys
+     */
+    public function getAbstracts()
+    {
+        $abstractValues = array();
+        $abstracts = array();
+        $abstract = '';
+        $lang = '';
+        foreach ($this->getSimpleXML()->xpath('/qualifieddc/abstract') as $node) {
+            $abstract = (string)$node;
+            $lang = (string)$node['lang'];
+            if ($lang == 'en') {
+                $lang = 'en-gb';
+            }
+            $abstracts[$lang] = $abstract;
+        }
+
+        return $abstracts;
+    }
+
+    /**
+     * Get all authors apart from presenters
+     *
+     * @return array
+     */
+    public function getNonPresenterAuthors()
+    {
+        $authors = array();
+        if ($author = $this->getPrimaryAuthor()) {
+            $authors[] = array('name' => $author);
+        }
+        if ($author = $this->getCorporateAuthor()) {
+            $authors[] = array('name' => $author);
+        }
+        foreach ($this->getSecondaryAuthors() as $author) {
+            $authors[] = array('name' => $author);
+        }
+        return $authors;
+    }
+
+    /**
+     * Set raw data to initialize the object.
+     *
+     * @param mixed $data Raw data representing the record; Record Model
+     * objects are normally constructed by Record Driver objects using data
+     * passed in from a Search Results object.  The exact nature of the data may
+     * vary depending on the data source -- the important thing is that the
+     * Record Driver + Search Results objects work together correctly.
+     *
+     * @return void
+     */
+    public function setRawData($data)
+    {
+        parent::setRawData($data);
+        $this->simpleXML = null;
+    }
+
+    /**
+     * Get the original record as a SimpleXML object
+     *
+     * @return SimpleXMLElement The record as SimpleXML
+     */
+    protected function getSimpleXML()
+    {
+        if ($this->simpleXML !== null) {
+            return $this->simpleXML;
+        }
+        return simplexml_load_string($this->fields['fullrecord']);
+    }
+}
