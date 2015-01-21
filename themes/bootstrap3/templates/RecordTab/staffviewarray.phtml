@@ -3,9 +3,9 @@
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
 <table class="citation table table-striped">
-  <? foreach ($this->driver->getRawData() as $field => $values): ?>
+  <? $fields = $this->driver->getRawData(); foreach ($fields as $field => $values): ?>
     <tr>
-      <th><?=$this->escapeHtml($field)?></th>
+      <th><? if (isset($fields["__unprocessed_$field"])): ?><?=$this->escapeHtml("__unprocessed_$field")?> => <? endif; ?><?=$this->escapeHtml($field)?></th>
       <td>
         <? if (!is_array($values)) { $values = array($values); } ?>
         <? foreach ($values as $value): ?>
