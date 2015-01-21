@@ -10,10 +10,12 @@ class Cache
     const FAVORITE      = 'favorite';
     
     protected $cachePolicy = 0;
-    protected $DISABLED          = 0b000;
-    protected $PRIMARY           = 0b001;
-    protected $FALLBACK          = 0b010;
-    protected $INCLUDE_USER_ID   = 0b100;
+    protected $DISABLED          = 0b00000; //  0
+    protected $PRIMARY           = 0b00001; //  1
+    protected $FALLBACK          = 0b00010; //  2
+    protected $INCLUDE_RECORD_ID = 0b00100; //  4
+    protected $INCLUDE_SOURCE    = 0b01000; //  8
+    protected $INCLUDE_USER_ID   = 0b10000; // 16
     
     protected $cacheIds = array();
     protected $cachableSources = null;
@@ -103,6 +105,22 @@ class Cache
         return $vufindRecords;
     }
     
+    public function setPolicy($cachePolicy) {
+        $this->cachePolicy = $this->config->RecordCache->cachePolicy->$cachePolicy;
+    
+        if (! isset($this->cachePolicy)) {
+            $this->cachePolicy = $cachePolicy;
+        }
+    }
+    
+    public function isPrimary() {
+        return (($this->cachePolicy & $this->PRIMARY) === $this->PRIMARY);
+    }
+    
+    public function isFallback() {
+        return (($this->cachePolicy & $this->FALLBACK) === $this->FALLBACK);
+    }
+    
     // $ids = recordId
     // $ids = array(array(), array(), array());
     protected function initCacheIds($ids, $source = null, $userId = null) {
@@ -123,38 +141,21 @@ class Cache
     }
     
     protected function getCacheId($recordId, $source = null, $userId = null) {
-        
         $cIdHelper = array();
-        $cIdHelper['recordId'] = $recordId;
-        $cIdHelper['source']   = $source;
+        if (($this->cachePolicy & $this->INCLUDE_RECORD_ID) === $this->INCLUDE_RECORD_ID) {
+            $cIdHelper['recordId'] = $recordId;
+        }
         
+        if (($this->cachePolicy & $this->INCLUDE_SOURCE) === $this->INCLUDE_SOURCE) {
+            $cIdHelper['source']   = $source;
+        }
+            
         if (($this->cachePolicy & $this->INCLUDE_USER_ID) === $this->INCLUDE_USER_ID) {
             $cIdHelper['userId']   = $userId;
         }
-        
         $md5 = md5(json_encode($cIdHelper));
-        
         $cacheIds[$recordId] = $md5;
         
         return $md5;
     }
-    
-    public function setPolicy($cachePolicy) {
-        $this->cachePolicy = $this->config->RecordCache->cachePolicy->$cachePolicy;
-                    
-        if (! isset($this->cachePolicy)) {
-            $this->cachePolicy = $cachePolicy;
-        }
-        
-    }
-    
-    public function isPrimary() {
-        return (($this->cachePolicy & $this->PRIMARY) === $this->PRIMARY);
-    }
-    
-    public function isFallback() {
-        return (($this->cachePolicy & $this->FALLBACK) === $this->FALLBACK);
-    }
-    
-   
 }
