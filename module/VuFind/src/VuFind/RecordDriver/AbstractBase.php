@@ -257,7 +257,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         );
         
         // Persist record in the database for "offline" use
-        $this->recordCache->setPolicy(Cache::FAVORITES);
+        $this->recordCache->setPolicy(Cache::FAVORITE);
         $this->recordCache->createOrUpdate($resource->record_id, $user->id, $resource->source, $this->getRawData(), null, $resource->id);
         
         // Add the information to the user's account:
