@@ -33,7 +33,7 @@ namespace Finna\Module\Configuration;
 $config = array(
     'router' => array(
         'routes' => array(
-            'content' => array(
+            'content-page' => array(
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
                     'route'    => '/Content/[:page]',
@@ -41,12 +41,17 @@ $config = array(
                         'page'     => '[a-zA-Z][a-zA-Z0-9_-]+',
                     ),
                     'defaults' => array(
-                        'controller' => 'Content',
+                        'controller' => 'Contentpage',
                         'action'     => 'Content',
                     )
                 ),
             ),
         )
+    ),
+    'controllers' => array(
+        'invokables' => array(
+            'contentpage' => 'Finna\Controller\ContentController',
+        ),
     ),
     'service_manager' => array(
         'allow_override' => true,
