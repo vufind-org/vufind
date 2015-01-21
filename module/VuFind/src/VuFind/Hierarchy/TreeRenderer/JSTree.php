@@ -151,7 +151,13 @@ class JSTree extends AbstractBase
     {
         if (!empty($context) && !empty($mode)) {
             if ($mode == 'List') {
-                return $this->jsonToHTML(json_decode($this->getJSON($hierarchyID, $context)));
+                $fields = $this->recordDriver->getRawData();
+                array_push($fields['hierarchy_parent_id'], $fields['hierarchy_top_id'][0]);
+                return $this->jsonToHTML(
+                    json_decode($this->getJSON($hierarchyID, $context)),
+                    $fields['id'],
+                    $fields['hierarchy_parent_id']
+                );
             } else {
                 return $this->transformCollectionXML(
                     $context, $mode, $hierarchyID, $recordID
@@ -168,7 +174,7 @@ class JSTree extends AbstractBase
      *
      * @return string
      */
-    public function jsonToHTML($node)
+    public function jsonToHTML($node, $recordID = false, $parents = false)
     {
         $name = strlen($node->text) > 100
             ? substr($node->text, 0, 100) . '...'
@@ -176,7 +182,13 @@ class JSTree extends AbstractBase
         $icon = $node->type == 'record' ? 'file-o' : 'folder-open';
         $html = '<li';
         if ($node->type == 'collection') {
-            $html .= ' class="hierarchy"';
+            $html .= ' class="hierarchy';
+            if (false !== array_search($node->li_attr->recordid, $parents)) {
+                $html .= ' currentHierarchy';
+            }
+            $html .= '"';
+        } elseif ($recordID && $recordID == $node->li_attr->recordid) {
+            $html .= ' class="currentRecord"';
         }
         $html .= '><i class="fa fa-li fa-' . $icon . '"></i> '
             . '<a name="tree-' . $node->id . '" href="' . $node->a_attr->href
@@ -185,7 +197,7 @@ class JSTree extends AbstractBase
         if (isset($node->children)) {
             $html .= '<ul class="fa-ul">';
             foreach ($node->children as $child) {
-                $html .= $this->jsonToHTML($child);
+                $html .= $this->jsonToHTML($child, $recordID, $parents);
             }
             $html .= '</ul>';
         }
