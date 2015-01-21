@@ -183,7 +183,9 @@ class JSTree extends AbstractBase
         $html = '<li';
         if ($node->type == 'collection') {
             $html .= ' class="hierarchy';
-            if (false !== array_search($node->li_attr->recordid, $parents)) {
+            if (false !== array_search($node->li_attr->recordid, $parents)
+                || $recordID && $recordID == $node->li_attr->recordid
+            ) {
                 $html .= ' currentHierarchy';
             }
             $html .= '"';
