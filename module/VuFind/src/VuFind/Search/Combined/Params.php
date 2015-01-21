@@ -48,15 +48,14 @@ class Params extends \VuFind\Search\Solr\Params
      */
     protected function getRecommendationSettings()
     {
-        // Bypass settings if recommendations are disabled.
-        if (!$this->recommendationsEnabled()) {
-            return array();
-        }
+        $enabled = $this->recommendationsEnabled();
         $recommend = array();
         $config = $this->getServiceLocator()->get('VuFind\Config')
             ->get('combined');
         foreach (array('top', 'bottom') as $location) {
-            if (isset($config->RecommendationModules->$location)) {
+            if (in_array($location, $enabled)
+                && isset($config->RecommendationModules->$location)
+            ) {
                 $recommend[$location]
                     = $config->RecommendationModules->$location->toArray();
             }
