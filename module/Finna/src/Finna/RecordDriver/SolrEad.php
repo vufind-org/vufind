@@ -53,6 +53,8 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     /**
      * Translator
      *
+     * @TODO Get rid of this and places where it's used when support for
+     * __unprocessed_* fields is merged
      * @var \Zend\I18n\Translator
      */
     protected $translator;
