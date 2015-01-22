@@ -469,8 +469,7 @@ class UtilController extends AbstractBase
                 if (!$this->consoleOpts->getOption('skip-json')) {
                     Console::writeLine("\t\tJSON cache...");
                     $driver->getHierarchyDriver()->getTreeSource()->getJSON(
-                        $recordid,
-                        array('refresh' => true, 'limit' => $count)
+                        $recordid, array('refresh' => true)
                     );
                 } else {
                     Console::writeLine("\t\tJSON skipped.");
@@ -479,8 +478,7 @@ class UtilController extends AbstractBase
                 if (!$this->consoleOpts->getOption('skip-xml')) {
                     Console::writeLine("\t\tXML cache...");
                     $driver->getHierarchyDriver()->getTreeSource()->getXML(
-                        $recordid,
-                        array('refresh' => true)
+                        $recordid, array('refresh' => true)
                     );
                 } else {
                     Console::writeLine("\t\tXML skipped.");
