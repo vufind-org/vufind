@@ -84,7 +84,8 @@ class SimilarItemsCarousel extends AbstractBase
     {
         return $this->searchService->similar(
             'Solr',
-            $this->getRecordDriver()->getUniqueId()
+            $this->getRecordDriver()->getUniqueId(),
+            new \VuFindSearch\ParamBag(array('rows' => 40))
         );
     }
 }
