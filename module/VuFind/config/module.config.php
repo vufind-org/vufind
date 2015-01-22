@@ -617,7 +617,8 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                    'Details' => 'StaffViewArray', /* 'Similar' => 'SimilarItemsCarousel', */
+                    'Similar' => 'SimilarItemsCarousel',
+                    'Details' => 'StaffViewArray',
                 ),
                 'defaultTab' => null,
             ),
@@ -628,7 +629,8 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                    'Details' => 'StaffViewMARC', /* 'Similar' => 'SimilarItemsCarousel', */
+                    'Similar' => 'SimilarItemsCarousel',
+                    'Details' => 'StaffViewMARC',
                 ),
                 'defaultTab' => null,
             ),
