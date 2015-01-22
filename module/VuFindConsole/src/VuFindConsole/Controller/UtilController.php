@@ -29,7 +29,6 @@ namespace VuFindConsole\Controller;
 use File_MARC, File_MARCXML, VuFind\Sitemap\Generator as Sitemap;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
-use VuFindSearch\ParamBag;
 use Zend\Console\Console;
 
 /**
@@ -443,15 +442,6 @@ class UtilController extends AbstractBase
     public function createhierarchytreesAction()
     {
         $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        $paramBag = new ParamBag(
-            array(
-                'rows' => 0,
-                'q' => '*:*',
-                'wt' => 'json',
-                'facet' => 'true',
-                'facet.field' => 'hierarchy_top_id'
-            )
-        );
         // Parse switches:
         $this->consoleOpts->addRules(
             array(
@@ -459,15 +449,12 @@ class UtilController extends AbstractBase
                 'skip-json|sj' => 'Skip the JSON cache'
             )
         );
-        $solr = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
-            ->get('Solr')->getConnector();
-        // Search
-        $response = $solr->search($paramBag);
-        $hierarchies = json_decode($response);
-        $topIDs = $hierarchies->facet_counts->facet_fields->hierarchy_top_id;
-        for ($i=0;$i<count($topIDs);$i+=2) {
-            $recordid = $topIDs[$i];
-            $count = $topIDs[$i+1];
+        $hierarchies = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Solr')
+            ->getFullFieldFacets(array('hierarchy_top_id'));
+        foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
+            $recordid = $hierarchy['value'];
+            $count = $hierarchy['count'];
             if (empty($recordid)) {
                 continue;
             }
@@ -500,7 +487,9 @@ class UtilController extends AbstractBase
                 }
             }
         }
-        Console::writeLine(count($topIDs)/2 . ' files');
+        Console::writeLine(
+            count($hierarchies['hierarchy_top_id']['data']['list']) . ' files'
+        );
 
         return $this->getSuccessResponse();
     }
