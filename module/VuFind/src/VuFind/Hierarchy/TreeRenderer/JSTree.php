@@ -155,8 +155,7 @@ class JSTree extends AbstractBase
                 array_push($fields['hierarchy_parent_id'], $fields['hierarchy_top_id'][0]);
                 return $this->jsonToHTML(
                     json_decode($this->getJSON($hierarchyID, $context)),
-                    $fields['id'],
-                    $fields['hierarchy_parent_id']
+                    $fields['id']
                 );
             } else {
                 return $this->transformCollectionXML(
@@ -174,7 +173,7 @@ class JSTree extends AbstractBase
      *
      * @return string
      */
-    public function jsonToHTML($node, $recordID = false, $parents = false)
+    public function jsonToHTML($node, $recordID = false)
     {
         $name = strlen($node->text) > 100
             ? substr($node->text, 0, 100) . '...'
@@ -183,9 +182,7 @@ class JSTree extends AbstractBase
         $html = '<li';
         if ($node->type == 'collection') {
             $html .= ' class="hierarchy';
-            if (false !== array_search($node->li_attr->recordid, $parents)
-                || $recordID && $recordID == $node->li_attr->recordid
-            ) {
+            if ($recordID && $recordID == $node->li_attr->recordid) {
                 $html .= ' currentHierarchy';
             }
             $html .= '"';
@@ -199,7 +196,7 @@ class JSTree extends AbstractBase
         if (isset($node->children)) {
             $html .= '<ul class="fa-ul">';
             foreach ($node->children as $child) {
-                $html .= $this->jsonToHTML($child, $recordID, $parents);
+                $html .= $this->jsonToHTML($child, $recordID);
             }
             $html .= '</ul>';
         }
