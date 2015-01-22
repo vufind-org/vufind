@@ -33,7 +33,7 @@
                 </div>
               </a>
             </div>
-            <? if(($index+1) % $perPage == 0): ?>
+            <? if(($index+1) % $perPage == 0 && $index < count($similarRecords)-1): ?>
           </div>
         </div>
         <div class="item">
