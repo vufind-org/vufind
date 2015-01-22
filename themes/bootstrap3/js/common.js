@@ -133,6 +133,10 @@ function registerLightboxEvents() {
     var get = deparam(parts[1]);
     return Lightbox.get('MyResearch', 'Account', get);
   });
+  $('.back-to-login').click(function() {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    return false;
+  });
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
     $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
