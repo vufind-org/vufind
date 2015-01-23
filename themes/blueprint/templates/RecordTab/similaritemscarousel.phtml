@@ -5,7 +5,6 @@
 <h4><?=$this->transEsc('Similar Items')?></h4>
 <? $similarRecords = $this->tab->getResults(); ?>
 <? if (!empty($similarRecords)): ?>
-  <? $perPage = 4 ?>
   <div id="similar-items-carousel">
     <? foreach ($similarRecords as $index=>$data): ?>
       <div>
