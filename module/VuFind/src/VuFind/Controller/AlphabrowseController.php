@@ -84,7 +84,6 @@ class AlphabrowseController extends AbstractBase
         }
 
         // Load remaining config parameters
-        // TODO: test invalid rows_before config string
         $rows_before = isset($config->AlphaBrowse->rows_before)
             && is_numeric($config->AlphaBrowse->rows_before)
             ? (int) $config->AlphaBrowse->rows_before : 0;
