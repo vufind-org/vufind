@@ -93,21 +93,6 @@ function doTreeSearch()
   }
 }
 
-function buildTreeWithXml(cb)
-{
-  $.ajax({'url': path + '/Hierarchy/GetTree',
-    'data': {
-      'hierarchyID': hierarchyID,
-      'id': recordID,
-      'context': hierarchyContext,
-      'mode': 'Tree'
-    },
-    'success': function(xml) {
-      var nodes = buildJSONNodes($(xml).find('root'));
-      cb.call(this, nodes);
-    }
-  });
-}
 function buildJSONNodes(xml)
 {
   var jsonNode = [];
@@ -130,6 +115,21 @@ function buildJSONNodes(xml)
     });
   });
   return jsonNode;
+}
+function buildTreeWithXml(cb)
+{
+  $.ajax({'url': path + '/Hierarchy/GetTree',
+    'data': {
+      'hierarchyID': hierarchyID,
+      'id': recordID,
+      'context': hierarchyContext,
+      'mode': 'Tree'
+    },
+    'success': function(xml) {
+      var nodes = buildJSONNodes($(xml).find('root'));
+      cb.call(this, nodes);
+    }
+  });
 }
 
 $(document).ready(function()
