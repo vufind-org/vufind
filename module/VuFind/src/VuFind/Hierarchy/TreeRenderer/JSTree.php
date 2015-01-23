@@ -167,7 +167,8 @@ class JSTree extends AbstractBase
     /**
      * Convert JSTree JSON structure to HTML
      *
-     * @param JSON $node JSON object of a the JSTree
+     * @param object $node     JSON object of a the JSTree
+     * @param string $recordID The currently active record
      *
      * @return string
      */
@@ -215,7 +216,9 @@ class JSTree extends AbstractBase
         if ($json == null) {
             return false;
         }
-        return json_encode($this->formatJSON(json_decode($json), $context, $hierarchyID));
+        return json_encode(
+            $this->formatJSON(json_decode($json), $context, $hierarchyID)
+        );
     }
 
     /**
@@ -244,7 +247,8 @@ class JSTree extends AbstractBase
         if (isset($node->children)) {
             $ret['children'] = array();
             for ($i=0;$i<count($node->children);$i++) {
-                $ret['children'][$i] = $this->formatJSON($node->children[$i], $context, $hierarchyID);
+                $ret['children'][$i] = $this
+                    ->formatJSON($node->children[$i], $context, $hierarchyID);
             }
         }
         return $ret;

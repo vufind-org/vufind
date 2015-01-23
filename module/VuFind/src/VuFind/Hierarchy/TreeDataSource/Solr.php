@@ -233,7 +233,7 @@ class Solr extends AbstractBase
                 'title' => $top->getTitle()
             );
             $children = $this->getChildrenJson($id, $count);
-            if(!empty($children)) {
+            if (!empty($children)) {
                 $json['children'] = $children;
             }
             if ($cacheFile) {
@@ -297,7 +297,7 @@ class Solr extends AbstractBase
                     $current->getUniqueID(),
                     $count
                 );
-                if(!empty($children)) {
+                if (!empty($children)) {
                     $childNode['children'] = $children;
                 }
             }
