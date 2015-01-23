@@ -86,11 +86,13 @@ class AlphabrowseController extends AbstractBase
         // Load remaining config parameters
         // TODO: test invalid rows_before config string
         $rows_before = isset($config->AlphaBrowse->rows_before)
+            && is_numeric($config->AlphaBrowse->rows_before)
             ? (int) $config->AlphaBrowse->rows_before : 0;
         $highlighting = isset($config->AlphaBrowse->highlighting)
             ? $config->AlphaBrowse->highlighting : false;
         $limit  = isset($config->AlphaBrowse->page_size)
-            ? $config->AlphaBrowse->page_size : 20;
+            && is_numeric($config->AlphaBrowse->page_size)
+            ? (int) $config->AlphaBrowse->page_size : 20;
 
         // Connect to Solr:
         $db = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
