@@ -151,11 +151,9 @@ class JSTree extends AbstractBase
     {
         if (!empty($context) && !empty($mode)) {
             if ($mode == 'List') {
-                $fields = $this->recordDriver->getRawData();
-                array_push($fields['hierarchy_parent_id'], $fields['hierarchy_top_id'][0]);
                 return $this->jsonToHTML(
                     json_decode($this->getJSON($hierarchyID, $context)),
-                    $fields['id']
+                    $this->recordDriver->getUniqueId()
                 );
             } else {
                 return $this->transformCollectionXML(
