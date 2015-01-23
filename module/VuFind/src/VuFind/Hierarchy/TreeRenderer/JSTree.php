@@ -224,7 +224,7 @@ class JSTree extends AbstractBase
     /**
      * Recursive function to convert the json to the right format
      *
-     * @param JSON   $node        JSON object of a node/top node
+     * @param object $node        JSON object of a node/top node
      * @param string $context     Record or Collection
      * @param string $hierarchyID Collection ID
      *
@@ -257,9 +257,9 @@ class JSTree extends AbstractBase
     /**
      * Use the router to build the appropriate URL based on context
      *
-     * @param JSON   $node        JSON object of a node/top node
-     * @param string $context     Record or Collection
-     * @param string $hierarchyID Collection ID
+     * @param object $node         JSON object of a node/top node
+     * @param string $context      Record or Collection
+     * @param string $collectionID Collection ID
      *
      * @return string
      */
