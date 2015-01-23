@@ -93,6 +93,45 @@ function doTreeSearch()
   }
 }
 
+function buildTreeWithXml(cb)
+{
+  $.ajax({'url': path + '/Hierarchy/GetTree',
+    'data': {
+      'hierarchyID': hierarchyID,
+      'id': recordID,
+      'context': hierarchyContext,
+      'mode': 'Tree'
+    },
+    'success': function(xml) {
+      var nodes = buildJSONNodes($(xml).find('root'));
+      cb.call(this, nodes);
+    }
+  });
+}
+function buildJSONNodes(xml)
+{
+  var jsonNode = [];
+  $(xml).children('item').each(function() {
+    var content = $(this).children('content');
+    var id = content.children("name[class='JSTreeID']");
+    var name = content.children('name[href]');
+    jsonNode.push({
+      'id': htmlEncodeId(id.text()),
+      'text': name.text(),
+      'li_attr': {
+        'recordid': id.text()
+      },
+      'a_attr': {
+        'href': name.attr('href'),
+        'title': name.text()
+      },
+      'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
+      children: buildJSONNodes(this)
+    });
+  });
+  return jsonNode;
+}
+
 $(document).ready(function()
 {
   // Code for the search button
@@ -148,9 +187,12 @@ $(document).ready(function()
               200: function(json, status, request) {
                 cb.call(this, json);
               },
-              204: buildTreeWithXml, // No Content
-              503: buildTreeWithXml  // Service Unavailable
-
+              204: function(json, status, request) { // No Content
+                buildTreeWithXml(cb);
+              },
+              503: function(json, status, request) { // Service Unavailable
+                buildTreeWithXml(cb);
+              }
             }
           });
         },
@@ -177,42 +219,3 @@ $(document).ready(function()
     }
   });
 });
-
-function buildTreeWithXml()
-{
-  $.ajax({'url': path + '/Hierarchy/GetTree',
-    'data': {
-      'hierarchyID': hierarchyID,
-      'id': recordID,
-      'context': hierarchyContext,
-      'mode': 'Tree'
-    },
-    'success': function(xml) {
-      var nodes = buildJSONNodes($(xml).find('root'));
-      cb.call(this, nodes);
-    }
-  });
-}
-function buildJSONNodes(xml)
-{
-  var jsonNode = [];
-  $(xml).children('item').each(function() {
-    var content = $(this).children('content');
-    var id = content.children("name[class='JSTreeID']");
-    var name = content.children('name[href]');
-    jsonNode.push({
-      'id': htmlEncodeId(id.text()),
-      'text': name.text(),
-      'li_attr': {
-        'recordid': id.text()
-      },
-      'a_attr': {
-        'href': name.attr('href'),
-        'title': name.text()
-      },
-      'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
-      children: buildJSONNodes(this)
-    });
-  });
-  return jsonNode;
-}
