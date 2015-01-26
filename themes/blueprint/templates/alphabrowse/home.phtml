@@ -43,7 +43,7 @@
 
         <? $highlight = (isset($this->highlight_row) && $i == $this->highlight_row) ? true : false ?>
         <div class="alphaBrowseEntry<? if ($i%2==1): echo ' alt'; endif; ?><?=$highlight ? ' browse-match' : '' ?>  alphaBrowseSource_<?=$this->escapeHtmlAttr($this->source)?>">
-        <? if (isset($this->match_type) && ($this->match_type == "NONE")): ?>
+        <? if ($highlight && isset($this->match_type) && ($this->match_type == "NONE")): ?>
           <?// this is the right row but query doesn't match value ?>
           <?=$this->transEsc('your_match_would_be_here') ?>
           </div>
