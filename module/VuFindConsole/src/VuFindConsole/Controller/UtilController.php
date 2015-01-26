@@ -442,21 +442,53 @@ class UtilController extends AbstractBase
     public function createhierarchytreesAction()
     {
         $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        // Parse switches:
+        $this->consoleOpts->addRules(
+            array(
+                'skip-xml|sx' => 'Skip the XML cache',
+                'skip-json|sj' => 'Skip the JSON cache'
+            )
+        );
         $hierarchies = $this->getServiceLocator()
             ->get('VuFind\SearchResultsPluginManager')->get('Solr')
             ->getFullFieldFacets(array('hierarchy_top_id'));
         foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
-            if (empty($hierarchy['value'])) {
+            $recordid = $hierarchy['value'];
+            $count = $hierarchy['count'];
+            if (empty($recordid)) {
                 continue;
             }
-            Console::writeLine("Building tree for {$hierarchy['value']}...");
-            $driver = $recordLoader->load($hierarchy['value']);
+            Console::writeLine(
+                "\tBuilding tree for " . $recordid . '... '
+                . number_format($count) . ' records'
+            );
+            $driver = $recordLoader->load($recordid);
+            // Only do this if the record is actually a hierarchy type record
             if ($driver->getHierarchyType()) {
-                // Only do this if the record is actually a hierarchy type record
-                $driver->getHierarchyDriver()->getTreeSource()
-                    ->getXML($hierarchy['value'], array('refresh' => true));
+                // JSON
+                if (!$this->consoleOpts->getOption('skip-json')) {
+                    Console::writeLine("\t\tJSON cache...");
+                    $driver->getHierarchyDriver()->getTreeSource()->getJSON(
+                        $recordid, array('refresh' => true)
+                    );
+                } else {
+                    Console::writeLine("\t\tJSON skipped.");
+                }
+                // XML
+                if (!$this->consoleOpts->getOption('skip-xml')) {
+                    Console::writeLine("\t\tXML cache...");
+                    $driver->getHierarchyDriver()->getTreeSource()->getXML(
+                        $recordid, array('refresh' => true)
+                    );
+                } else {
+                    Console::writeLine("\t\tXML skipped.");
+                }
             }
         }
+        Console::writeLine(
+            count($hierarchies['hierarchy_top_id']['data']['list']) . ' files'
+        );
+
         return $this->getSuccessResponse();
     }
 

@@ -353,10 +353,9 @@ $config = array(
                 ),
             ),
             'hierarchy_treerenderer' => array(
-                'invokables' => array(
-                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\JSTree',
-                    'fancytree' => 'VuFind\Hierarchy\TreeRenderer\FancyTree',
-                )
+                'factories' => array(
+                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\Factory::getJSTree'
+                ),
             ),
             'ils_driver' => array(
                 'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
