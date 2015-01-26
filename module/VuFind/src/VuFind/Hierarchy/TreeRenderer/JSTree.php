@@ -151,11 +151,9 @@ class JSTree extends AbstractBase
     {
         if (!empty($context) && !empty($mode)) {
             if ($mode == 'List') {
-                $fields = $this->recordDriver->getRawData();
-                array_push($fields['hierarchy_parent_id'], $fields['hierarchy_top_id'][0]);
                 return $this->jsonToHTML(
                     json_decode($this->getJSON($hierarchyID, $context)),
-                    $fields['id']
+                    $this->recordDriver->getUniqueId()
                 );
             } else {
                 return $this->transformCollectionXML(
@@ -169,7 +167,8 @@ class JSTree extends AbstractBase
     /**
      * Convert JSTree JSON structure to HTML
      *
-     * @param JSON $node JSON object of a the JSTree
+     * @param object $node     JSON object of a the JSTree
+     * @param string $recordID The currently active record
      *
      * @return string
      */
@@ -217,13 +216,15 @@ class JSTree extends AbstractBase
         if ($json == null) {
             return false;
         }
-        return json_encode($this->formatJSON(json_decode($json), $context, $hierarchyID));
+        return json_encode(
+            $this->formatJSON(json_decode($json), $context, $hierarchyID)
+        );
     }
 
     /**
      * Recursive function to convert the json to the right format
      *
-     * @param JSON   $node        JSON object of a node/top node
+     * @param object $node        JSON object of a node/top node
      * @param string $context     Record or Collection
      * @param string $hierarchyID Collection ID
      *
@@ -246,7 +247,8 @@ class JSTree extends AbstractBase
         if (isset($node->children)) {
             $ret['children'] = array();
             for ($i=0;$i<count($node->children);$i++) {
-                $ret['children'][$i] = $this->formatJSON($node->children[$i], $context, $hierarchyID);
+                $ret['children'][$i] = $this
+                    ->formatJSON($node->children[$i], $context, $hierarchyID);
             }
         }
         return $ret;
@@ -255,9 +257,9 @@ class JSTree extends AbstractBase
     /**
      * Use the router to build the appropriate URL based on context
      *
-     * @param JSON   $node        JSON object of a node/top node
-     * @param string $context     Record or Collection
-     * @param string $hierarchyID Collection ID
+     * @param object $node         JSON object of a node/top node
+     * @param string $context      Record or Collection
+     * @param string $collectionID Collection ID
      *
      * @return string
      */
