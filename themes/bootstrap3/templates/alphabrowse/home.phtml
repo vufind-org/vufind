@@ -55,7 +55,7 @@
           <tr class="browse-match">
           <? if (isset($this->match_type) && ($this->match_type == "NONE")): ?>
             <?// this is the right row but query doesn't match value ?>
-            <td colspan="<?=count($this->extras) + 2;?>">your_match_would_be_here</td>
+            <td colspan="<?=count($this->extras) + 2;?>"><?=$this->transEsc('your_match_would_be_here')?></td>
             </tr>
             <tr>
           <? endif; ?>
@@ -131,7 +131,7 @@
         <? endforeach; ?>
         <? if (isset($this->highlight_end)): ?>
           <tr class="browse-match">
-            <td colspan="<?=count($this->extras) + 2;?>">your_match_would_be_here</td>
+            <td colspan="<?=count($this->extras) + 2;?>"><?=$this->transEsc('your_match_would_be_here')?></td>
           </tr>
         <? endif; ?>
     </tbody>
