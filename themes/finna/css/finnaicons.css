@@ -1,0 +1,517 @@
+/* This is the file for using Finna font icons, use font icons for all icons and update this file when new icons are available */
+
+
+@font-face {
+	font-family: 'icomoon';
+	src:url('fonts/icomoon.eot?adcatf');
+	src:url('fonts/icomoon.eot?#iefixadcatf') format('embedded-opentype'),
+		url('fonts/icomoon.woff?adcatf') format('woff'),
+		url('fonts/icomoon.ttf?adcatf') format('truetype'),
+		url('fonts/icomoon.svg?adcatf#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+[class^="fa-"], [class*=" fa-"], .iconlabel:before {
+	font-family: 'icomoon';
+	speak: none;
+	text-transform: none;
+    font-size: inherit;
+    /* Make icon displayed always ========= */
+    min-width:14px;
+	/* Better Font Rendering =========== */
+	text-rendering: auto;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+[class^="fa-"]:hover, [class*=" fa-"]:hover, .iconlabel:hover {
+	cursor: pointer;
+}
+.iconlabel {
+    color: #464646;
+    background: none;
+    padding: 0px;
+    font-weight: 400;
+    margin-right:10px;
+	font-size: 14px;
+}
+.dateyeartype {
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  font-weight: 500;	
+  margin-bottom: 5px;
+}
+.template-name-results .iconlabel {
+	letter-spacing: 0px;
+	font-size: 13px;
+}
+.iconlabel:before {
+    padding-right: 3px;
+}
+.fa .checkboxFilter .checkbox {
+	padding:10px 15px;
+	line-height: 2.2em;	
+}
+.checkboxFilter .checkbox:hover {
+	cursor:pointer;	
+}
+.checkboxFilter .icon-checked, .checkboxFilter .icon- {
+	font-weight: bold;
+	text-transform: none;
+	line-height: 1.3em;
+	font-size: 1.3em;
+	border: 2px solid #00a3b5;
+	height: 20px;
+	display: block;
+	float:left;
+	width: 20px;
+	text-align: center;
+	border-radius: 2px;
+	margin-right: 4px;
+}
+.checkboxFilter .checkbox input[type="checkbox"] {
+	display:none;
+}
+
+.prefilterdropdown {
+	margin-left:10px;
+	margin-top:-2px;
+}
+.prefiltertext {
+	position: relative;
+	top: -4px;
+	margin-right: 5px
+}
+.green {
+	color:#090;	
+}
+.red {
+	color:red;	
+}
+.turquoise {
+	color:#00a2b5;	
+}
+.backtosearch {
+	padding: 3px 30px 2px 9px;	
+}
+.liststyletypeButton {
+	padding:4px 4px 2px 5px;
+	border-radius:5px;
+	background:transparent;
+	color:grey;
+	box-shadow:0px 0px 0px 2px grey inset;
+	transition:background 0.0533s ease-in;	
+}
+.radioButton {
+	background:white;
+	border:2px solid #00a2b5;
+	text-align:center;	
+	border-radius:15px;
+	padding:1px 2px;
+	line-height:1.1em;
+	font-size:1.1em;
+	font-weight:900;
+}
+.noactive {
+	color:transparent;	
+}
+.liststyletypeButton.active, .liststyletypeButton:hover {
+
+		background:#00a2b5;
+		box-shadow:0px 0px 0px -20px grey inset;
+		color:white;
+}
+.staricons span {
+	font-size:1.5em;
+	margin-right:2px;
+	color:grey;
+}
+.white {
+	color:#FFF;	
+}
+.turquoise {
+	color:#00A2b5;	
+}
+.lightgrey {
+	color:#999	
+}
+
+.bigger {
+	font-size:1.5em;
+	font-weight:500;
+	line-height:1.5em;	
+}
+.datevis {
+	font-size:1.5em;
+	border-radius:5px;
+	border:2px solid #00a2b5;
+	text-align:center;
+	padding:0px 10px;
+}
+.buttongradient {
+	background: rgba(255,255,255,1);
+	background: -moz-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+	background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(255,255,255,1)), color-stop(47%, rgba(246,246,246,1)), color-stop(100%, rgba(237,237,237,1)));
+	background: -webkit-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+	background: -o-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+	background: -ms-linear-gradient(top, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+	background: linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(246,246,246,1) 47%, rgba(237,237,237,1) 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#ededed', GradientType=0 );		
+}
+.bold {
+	font-weight:bold;	
+}
+.formaticons {
+	font-size:4em;
+	color:#CCC;
+}
+.fa-square-o:before {
+  font-family:'Fontawesome';
+  content: "\f096";
+  margin-top:-2px;
+}
+.fa-check-square-o:before {
+  font-family:'Fontawesome';
+  content: "\f14a";
+  margin-top:-2px;
+}
+.fa-finnalogo:before {
+    content: "\e60b";
+	font-weight:400;
+	min-width:110px;
+}
+.icon-ebook:before {
+	content: "\e617";
+}
+.iconlabel.kirja:before {
+	content: "\e616";
+}
+.icon-wwwlink:before {
+	content: "\e615";
+}
+.icon-handle-left:before {
+	content: "\e60a";
+}
+.icon-handle-right:before {
+	content: "\e611";
+}
+.icon-handle-close:before {
+	content: "\e612";
+}
+.icon-handle-open:before {
+	content: "\e613";
+}
+.icon-datevis:before {
+	content: "\e614";
+}
+.icon-ratehalf:before {
+	content: "\e607";
+}
+.icon-lock:before {
+	content: "\e602";
+}
+.icon-info:before {
+	content: "\e601";
+}
+.icon-zoomout:before {
+	content: "\e603";
+}
+.icon-zoomin:before {
+	content: "\e606";
+}
+.icon-infodatabase:before {
+	content: "\e608";
+}
+.icon-browsedatabase:before {
+	content: "\e609";
+}
+.fa-asterisk:before {
+	content: "\201d";
+	font-size: 19px;
+	vertical-align: text-top;	
+}
+.fa-heart:before, .fa-plus:before, .fa-plus-square:before {
+	content: "\e60c";
+}
+.iconlabel.ekausijulkaisu:before, .iconlabel.eartikkeli:before, .iconlabel.eaikakauslehti:before, .iconlabel.esanomalehti:before {
+	content: "\e60d";
+}
+.iconlabel.paikka:before, .iconlabel.rakennus:before, .iconlabel.arkeologinenkohde:before {
+	content: "\e60e";
+}
+.icon-ratenone:before {
+	content: "\e60f";
+}
+.icon-google+:before {
+	content: "\e50";
+}
+.icon-checked:before {
+	content: "\e49";
+}
+.icon-question:before {
+	content: "\e610";
+}
+.icon-newwindow:before {
+	content: "\e046";
+}
+.icon-close-big:before {
+	content: "\e045";
+}
+.icon-close:before {
+	content: "\e044";
+}
+.icon-uniE043:before {
+	content: "\e043";
+}
+.fa-ok:before {
+	content: "\e48";
+	/* ugly fix */
+	margin-left:14px; 
+}
+.fa-sign-in:before {
+    content: "\e042";
+}
+.fa-logout:before {
+	content: "\e042";
+}
+.fa-home:before {
+	content: "\e041";
+}
+.icon-public:before {
+	content: "\e040";
+}
+.icon-files:before {
+	content: "\e03f";
+}
+.icon-settings:before {
+	content: "\e03e";
+}
+.fa-bookmark:before {
+	content: "\e03d";
+}
+.icon-qrcode:before {
+	content: "\e03c";
+}
+.icon-uniE03B:before {
+	content: "\e03b";
+}
+.icon-expand:before {
+	content: "\e03a";
+}
+.fa-search-adv:before {
+	content: "\e600";
+	padding-right: 5px;
+	top: 2px;
+	font-size: 1.9em;
+	vertical-align: middle;
+}
+.icon-pinterest:before {
+	content: "\e038";
+}
+.icon-twitter:before {
+	content: "\e037";
+}
+.icon-facebook:before {
+	content: "\e036";
+}
+.fa-bell:before {
+	content: "\e035";
+}
+.icon-listview:before {
+	content: "\e034";
+}
+.icon-bag:before {
+	content: "\e033";
+}
+.icon-galleryview:before {
+	content: "\e032";
+}
+.fa-bars:before {
+	content: "\e031";
+}
+.icon-stop:before {
+	content: "\e030";
+}
+.icon-uniE02F:before {
+	content: "\e02f";
+}
+.fa-times {
+    margin-top:1px;   
+}
+.fa-times:before, .fa-remove:before {
+	content: "\e02e";
+}
+.icon-available:before {
+	content: "\e02d";
+}
+.icon-uniE02C:before {
+	content: "\e02c";
+}
+.icon-ratefull:before {
+	content: "\e02b";
+}
+.icon-uniE02A:before {
+	content: "\e02a";
+}
+.icon-leftarrow:before {
+	content: "\e029";
+}
+.icon-uniE028:before {
+	content: "\e028";
+}
+.icon-bottomarrow:before {
+	content: "\e027";
+}
+.icon-uniE026:before {
+	content: "\e026";
+}
+.icon-rightarrow:before {
+	content: "\e025";
+}
+.icon-uniE024:before {
+	content: "\e024";
+}
+.icon-toparrow:before {
+	content: "\e023";
+}
+.icon-uniE022:before {
+	content: "\e022";
+}
+.fa-list-alt:before {
+	content: "\e021";
+}
+.icon-sendfeedback:before {
+	content: "\e020";
+}
+.fa-envelope:before {
+	content: "\e01f";
+}
+.icon-uniE01E:before {
+	content: "\e01e";
+}
+.icon-bubble:before {
+	content: "\e01d";
+}
+.icon-search-small:before {
+	content: "\e01c";
+}
+.icon-uniE01B:before {
+	content: "\e01b";
+}
+.icon-reset:before {
+	content: "\e01a";
+}
+.icon-uniE019:before {
+	content: "\e019";
+}
+.icon-uniE018:before {
+	content: "\e018";
+}
+.icon-uniE017:before {
+	content: "\e017";
+}
+.icon-pen:before {
+	content: "\e016";
+}
+.icon-heart:before {
+	content: "\e015";
+}
+.icon-uniE014:before {
+	content: "\e014";
+}
+.icon-uniE013:before {
+	content: "\e013";
+}
+.icon-print:before {
+	content: "\e012";
+}
+.fa-search:before {
+	content: "\e011";
+}
+.icon-info2:before {
+	content: "\e010";
+}
+.icon-info-big:before {
+	content: "\e00f";
+}
+.icon-user:before {
+	content: "\e00e";
+}
+.icon-uniE00D:before {
+	content: "\e00d";
+}
+.iconlabel.opinnyte:before, .iconlabel.progradu:before, .iconlabel.vitskirja:before, .iconlabel.amk:before {
+	content: "\e00c";
+}
+.iconlabel.taideteos:before, .iconlabel.maalaus:before, .iconlabel.piirros:before, .iconlabel.grafiikka:before {
+	content: "\e00b";
+}
+.iconlabel.video:before, .iconlabel.dvd:before, .iconlabel.blueray:before {
+	content: "\e00a";
+}
+.iconlabel.nite:before, .iconlabel.cd:before, .iconlabel.nilevy:before {
+	content: "\e009";
+}
+.iconlabel.kuva:before, .iconlabel.valokuva:before {
+	content: "\e008";
+}
+.icon-smallpress:before {
+	content: "\e007";
+}
+.iconlabel.asiakirja:before, .iconlabel.arkistomateriaali:before {
+	content: "\e006";
+}
+.iconlabel.nuotti:before {
+	content: "\e005";
+}
+.iconlabel.tietokanta:before {
+	content: "\e004";
+}
+.iconlabel.esine:before, .iconlabel.kulttuurihistesine:before {
+	content: "\e003";
+}
+.iconlabel.kartta:before, .iconlabel.atlas:before, .iconlabel.karttapallo:before {
+	content: "\e002";
+}
+.iconlabel.lehtiartikkeli:before, .iconlabel.artikkeli:before, .iconlabel.aikakauslehti:before {
+	content: "\e001";
+}
+.icon-firstpage:before {
+	content: "\e604";
+}
+.icon-lastpage:before {
+	content: "\e605";
+}
+
+
+/* HIDING ICONS and custom styles for some occurences */
+.fa-ok {
+    color: #00B370;
+}
+.fa-remove {
+    color: #a94442;  
+}
+.sidebar .list-group-item i.fa.fa-square-o {
+display: none;
+}
+.jstree-container-ul>li.active i.fa.fa-check-square-o {
+       font-size: 15px;
+       margin-top: 2px;
+       float:right;
+       text-decoration:none;
+       transition: all 0.2s ease-in-out;
+}
+.jstree-container-ul>li.active .main.applied:hover {
+       text-decoration:line-through;
+}
+.jstree-container-ul>li.active i.fa.fa-check-square-o:before {
+       font-family: 'icomoon';
+       content: "\e02d";
+       color: white;
+}
+.slick-vertical .slick-slide img { max-width:40%; height:auto;max-height:180px; width:auto; }
+.slick-vertical .slick-slide { display: block; height: auto; border: 1px solid transparent; }
+.slick-vertical.slick-initialized .slick-slide { max-height:300px !important; padding: 5px 10px; }
+.slick-vertical .slick-slide .carouselSlideHeader p { left:40%; }
+.slick-vertical.slick-initialized .slick-slide .carouselText { left:40%; top:inherit; bottom: inherit; }
+.slick-vertical.slick-initialized .slick-slide .carouselText p { opacity:1; }
