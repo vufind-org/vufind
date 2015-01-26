@@ -296,7 +296,7 @@
  *
  * http://docs.jquery.com/UI/Autocomplete#theming
  */
-.ui-autocomplete { position: absolute; cursor: default; }	
+.ui-autocomplete { position: absolute; cursor: default; }
 
 /* workarounds */
 * html .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
@@ -349,9 +349,9 @@
  *
  * http://docs.jquery.com/UI/Dialog#theming
  */
-.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
+.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; z-index:2; }
 .ui-dialog .ui-dialog-titlebar { padding: .4em 1em; position: relative;  }
-.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .1em 0; } 
+.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .1em 0; }
 .ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
 .ui-dialog .ui-dialog-titlebar-close span { display: block; margin: 1px; }
 .ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0; }

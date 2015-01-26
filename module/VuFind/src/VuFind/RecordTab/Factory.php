@@ -213,6 +213,20 @@ class Factory
     }
 
     /**
+     * Factory for SimilarItems tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SimilarItems
+     */
+    public static function getSimilarItemsCarousel(ServiceManager $sm)
+    {
+        return new SimilarItemsCarousel(
+            $sm->getServiceLocator()->get('VuFind\Search')
+        );
+    }
+
+    /**
      * Factory for Reviews tab plugin.
      *
      * @param ServiceManager $sm Service manager.
