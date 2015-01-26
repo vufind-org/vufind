@@ -48,7 +48,14 @@
     <div class="alphaBrowseResult">
       <ul class="ui-listview" data-role="listview">
       <? foreach ($this->result['Browse']['items'] as $i => $item): ?>
-        <li class="ui-li-has-count">
+        <? $highlight = (isset($this->highlight_row) && $i == $this->highlight_row) ? true : false ?>
+        <li class="ui-li-has-count<?=$highlight ? ' info' : '' ?>">
+          <? if ($highlight && isset($this->match_type) && ($this->match_type == "NONE")): ?>
+            <?// this is the right row but query doesn't match value ?>
+              <?=$this->transEsc('your_match_would_be_here') ?>
+            </li>
+            <li class="ui-li-has-count">
+          <? endif; ?>
           <? if ($item['count'] > 0 || count($item['useInstead']) > 0): ?>
             <? if (count($item['useInstead']) > 0): ?>
               <? $query = array('from' => implode($item['useInstead'])) + $baseQuery; ?>
@@ -74,6 +81,11 @@
           <span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span>
         </li>
       <? endforeach; ?>
+      <? if (isset($this->highlight_end)): ?>
+        <li class="ui-li-has-count info">
+          <?=$this->transEsc('your_match_would_be_here') ?>
+        </li>
+      <? endif; ?>
       </ul>
     </div>
     <?=$pageLinks ?>
