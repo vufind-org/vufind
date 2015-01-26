@@ -353,10 +353,9 @@ $config = array(
                 ),
             ),
             'hierarchy_treerenderer' => array(
-                'invokables' => array(
-                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\JSTree',
-                    'fancytree' => 'VuFind\Hierarchy\TreeRenderer\FancyTree',
-                )
+                'factories' => array(
+                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\Factory::getJSTree'
+                ),
             ),
             'ils_driver' => array(
                 'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
@@ -421,6 +420,7 @@ $config = array(
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
                     'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
+                    'spellingsuggestions' => 'VuFind\Recommend\SpellingSuggestions',
                     'summonbestbetsdeferred' => 'VuFind\Recommend\SummonBestBetsDeferred',
                     'summondatabasesdeferred' => 'VuFind\Recommend\SummonDatabasesDeferred',
                     'summonresultsdeferred' => 'VuFind\Recommend\SummonResultsDeferred',
