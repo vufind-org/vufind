@@ -1,0 +1,90 @@
+{
+    "version": "0.5",
+    "schema": "http://ws.gbv.de/daia/",
+    "timestamp": "2015-01-26T09:23:19.984788",
+    "institution": {
+        "content": "Example Library",
+        "href": "http://www.example.edu/",
+        "id": "http://lobid.org/"
+    },
+    "document": [
+        {
+            "id": "adis:pr_isn:000000",
+            "href": "https://example.org/dummy",
+            "message": [
+                {
+                    "lang": "en",
+                    "content": "monograph"
+                }
+            ],
+            "item": [
+                {
+                    "id": "adis:auisn:12345",
+                    "department": {
+                        "content": "Library",
+                        "id": "123"
+                    },
+                    "label": "SW 2011/355,a",
+                    "storage": {
+                        "content": "Somewhere"
+                    },
+                    "message": [
+                        {
+                            "lang": "en",
+                            "content": "expected"
+                        }
+                    ],
+                    "unavailable": [
+                        {
+                            "service": "openaccess"
+                        },
+                        {
+                            "expected": "2115-02-09",
+                            "service": "loan"
+                        },
+                        {
+                            "expected": "2115-02-09",
+                            "service": "presentation"
+                        },
+                        {
+                            "service": "interloan"
+                        }
+                    ]
+                },
+                {
+                    "id": "adis:auisn:12346",
+                    "department": {
+                        "content": "Library",
+                        "id": "123"
+                    },
+                    "label": "SW 2011/355",
+                    "storage": {
+                        "content": "Somewhere"
+                    },
+                    "message": [
+                        {
+                            "lang": "en",
+                            "content": "available"
+                        }
+                    ],
+                    "available": [
+                        {
+                            "service": "loan"
+                        },
+                        {
+                            "service": "presentation"
+                        }
+                    ],
+                    "unavailable": [
+                        {
+                            "service": "openaccess"
+                        },
+                        {
+                            "service": "interloan"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
