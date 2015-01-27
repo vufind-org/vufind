@@ -1,6 +1,6 @@
 <?
   echo $this->headLink()->appendStylesheet('slick/slick.css');
-  echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'slick/slick.min.js', 'SET');
+  echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'slick/slick.js', 'SET');
 ?>
 <h4><?=$this->transEsc('Similar Items')?></h4>
 <? $similarRecords = $this->tab->getResults(); ?>

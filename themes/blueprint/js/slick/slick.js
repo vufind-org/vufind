@@ -911,10 +911,10 @@
         var _ = this;
 
         if (_.options.arrows === true && _.slideCount > _.options.slidesToShow) {
-            _.$prevArrow.on('click.slick', {
+            _.$prevArrow.bind('click.slick', {
                 message: 'previous'
             }, _.changeSlide);
-            _.$nextArrow.on('click.slick', {
+            _.$nextArrow.bind('click.slick', {
                 message: 'next'
             }, _.changeSlide);
         }
@@ -926,18 +926,18 @@
         var _ = this;
 
         if (_.options.dots === true && _.slideCount > _.options.slidesToShow) {
-            $('li', _.$dots).on('click.slick', {
+            $('li', _.$dots).bind('click.slick', {
                 message: 'index'
             }, _.changeSlide);
         }
 
         if (_.options.dots === true && _.options.pauseOnDotsHover === true && _.options.autoplay === true) {
             $('li', _.$dots)
-                .on('mouseenter.slick', function(){
+                .bind('mouseenter.slick', function(){
                     _.paused = true;
                     _.autoPlayClear();
                 })
-                .on('mouseleave.slick', function(){
+                .bind('mouseleave.slick', function(){
                     _.paused = false;
                     _.autoPlay();
                 });
@@ -953,46 +953,46 @@
 
         _.initDotEvents();
 
-        _.$list.on('touchstart.slick mousedown.slick', {
+        _.$list.bind('touchstart.slick mousedown.slick', {
             action: 'start'
         }, _.swipeHandler);
-        _.$list.on('touchmove.slick mousemove.slick', {
+        _.$list.bind('touchmove.slick mousemove.slick', {
             action: 'move'
         }, _.swipeHandler);
-        _.$list.on('touchend.slick mouseup.slick', {
+        _.$list.bind('touchend.slick mouseup.slick', {
             action: 'end'
         }, _.swipeHandler);
-        _.$list.on('touchcancel.slick mouseleave.slick', {
+        _.$list.bind('touchcancel.slick mouseleave.slick', {
             action: 'end'
         }, _.swipeHandler);
 
-        _.$list.on('click.slick', _.clickHandler);
+        _.$list.bind('click.slick', _.clickHandler);
 
         if (_.options.pauseOnHover === true && _.options.autoplay === true) {
-            _.$list.on('mouseenter.slick', function(){
+            _.$list.bind('mouseenter.slick', function(){
                 _.paused = true;
                 _.autoPlayClear();
             });
-            _.$list.on('mouseleave.slick', function(){
+            _.$list.bind('mouseleave.slick', function(){
                 _.paused = false;
                 _.autoPlay();
             });
         }
 
         if(_.options.accessibility === true) {
-            _.$list.on('keydown.slick', _.keyHandler);
+            _.$list.bind('keydown.slick', _.keyHandler);
         }
 
         if(_.options.focusOnSelect === true) {
-            $(_.options.slide, _.$slideTrack).on('click.slick', _.selectHandler);
+            $(_.options.slide, _.$slideTrack).bind('click.slick', _.selectHandler);
         }
 
-        $(window).on('orientationchange.slick.slick-' + _.instanceUid, function() {
+        $(window).bind('orientationchange.slick.slick-' + _.instanceUid, function() {
             _.checkResponsive();
             _.setPosition();
         });
 
-        $(window).on('resize.slick.slick-' + _.instanceUid, function() {
+        $(window).bind('resize.slick.slick-' + _.instanceUid, function() {
             if ($(window).width() !== _.windowWidth) {
                 clearTimeout(_.windowDelay);
                 _.windowDelay = window.setTimeout(function() {
@@ -1003,10 +1003,10 @@
             }
         });
 
-        $('*[draggable!=true]', _.$slideTrack).on('dragstart', function(e){ e.preventDefault(); })
+        $('*[draggable!=true]', _.$slideTrack).bind('dragstart', function(e){ e.preventDefault(); })
 
-        $(window).on('load.slick.slick-' + _.instanceUid, _.setPosition);
-        $(document).on('ready.slick.slick-' + _.instanceUid, _.setPosition);
+        $(window).bind('load.slick.slick-' + _.instanceUid, _.setPosition);
+        $(document).bind('ready.slick.slick-' + _.instanceUid, _.setPosition);
 
     };
 
@@ -1223,7 +1223,7 @@
         _.initDotEvents();
 
         if(_.options.focusOnSelect === true) {
-            $(_.options.slide, _.$slideTrack).on('click.slick', _.selectHandler);
+            $(_.options.slide, _.$slideTrack).bind('click.slick', _.selectHandler);
         }
 
         _.setSlideClasses(0);
