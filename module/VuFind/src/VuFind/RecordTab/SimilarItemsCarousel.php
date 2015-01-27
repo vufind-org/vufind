@@ -55,10 +55,10 @@ class SimilarItemsCarousel extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config   $config Configuration
      * @param \VuFindSearch\Service $search Search service
      */
-    public function __construct(\VuFindSearch\Service $search) {
+    public function __construct(\VuFindSearch\Service $search)
+    {
         $this->searchService = $search;
     }
 
