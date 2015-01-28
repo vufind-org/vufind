@@ -229,19 +229,15 @@ class Solr extends AbstractBase
     {
         $settings = $this->hierarchyDriver->getTreeSettings();
 
-        if (isset($settings['checkAvailability']) && $settings['checkAvailability']==1) {
-            $query = new Query(
-                'id:"' . addcslashes($id, '"') . '"'
-            );
-            $results = $this->searchService->search(
-                'Solr', $query, 0, 10000,
-                new ParamBag(array('fq' => $this->filters, 'hl' => 'false'))
+        if (!isset($settings['checkAvailability']) || $settings['checkAvailability']==1) {
+            $results = $this->searchService->retrieve(
+                'Solr', $id, new ParamBag(array('fq' => $this->filters))
             );
             if ($results->getTotal() < 1) {
                 return false;
             }
         }
-        // Assume all IDs are supported.
+        // If we got this far the support-check was positive in any case.
         return true;
     }
 }

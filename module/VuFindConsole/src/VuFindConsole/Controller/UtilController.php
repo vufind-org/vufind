@@ -449,11 +449,15 @@ class UtilController extends AbstractBase
                 continue;
             }
             Console::writeLine("Building tree for {$hierarchy['value']}...");
-            $driver = $recordLoader->load($hierarchy['value']);
-            if ($driver->getHierarchyType()) {
-                // Only do this if the record is actually a hierarchy type record
-                $driver->getHierarchyDriver()->getTreeSource()
-                    ->getXML($hierarchy['value'], array('refresh' => true));
+            try {
+                $driver = $recordLoader->load($hierarchy['value']);
+                if ($driver->getHierarchyType()) {
+                    // Only do this if the record is actually a hierarchy type record
+                    $driver->getHierarchyDriver()->getTreeSource()
+                        ->getXML($hierarchy['value'], array('refresh' => true));
+                }
+            } catch (\VuFind\Exception\RecordMissing $e) {
+                Console::writeLine("WARNING! - Caught exception: " . $e->getMessage() . "\n");
             }
         }
         return $this->getSuccessResponse();
