@@ -188,10 +188,14 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getTags($list_id = null, $user_id = null, $sort = 'count')
     {
         $tags = $this->getDbTable('Tags');
-        return $tags->getForResource(
+        $retTags = $tags->getForResource(
             $this->getUniqueId(), $this->getResourceSource(), 0, $list_id, $user_id,
             $sort
-        );
+        )->toArray();
+        foreach ($retTags as &$tag) {
+            $tag['user'] = array_map("intval", explode(',', $tag['user']));
+        }
+        return $retTags;
     }
 
     /**

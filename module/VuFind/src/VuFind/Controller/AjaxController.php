@@ -665,7 +665,11 @@ class AjaxController extends AbstractBase
         // Build data structure for return:
         $tagList = array();
         foreach ($tags as $tag) {
-            $tagList[] = array('tag'=>$tag->tag, 'cnt'=>$tag->cnt);
+            $tagList[] = array(
+                'tag'=>$tag->tag,
+                'cnt'=>$tag->cnt,
+                'user'=>array_map("intval", explode(',', $tag->user))
+            );
         }
 
         // If we don't have any tags, provide a user-appropriate message:

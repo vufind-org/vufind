@@ -99,7 +99,7 @@ class Tags extends Gateway
      */
     public function getForResource($id, $source = 'VuFind', $limit = 0,
         $list = null, $user = null, $sort = 'count'
-    ) {   
+    ) {
         return $this->select(
             function ($select) use ($id, $source, $limit, $list, $user, $sort) {
                 $select->columns(
@@ -112,7 +112,9 @@ class Tags extends Gateway
                     )
                 );
                 $select->join(
-                    array('rt' => 'resource_tags'), 'tags.id = rt.tag_id', array()
+                    array('rt' => 'resource_tags'),
+                    'tags.id = rt.tag_id',
+                    array('user' => new Expression("GROUP_CONCAT(DISTINCT user_id SEPARATOR ',')"))
                 );
                 $select->join(
                     array('r' => 'resource'), 'rt.resource_id = r.id', array()
