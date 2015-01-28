@@ -260,17 +260,18 @@
             <a id="tagRecord" class="btn btn-link modal-link pull-right" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" title="<?=$this->transEsc('Add Tag')?>">
               <i class="fa fa-plus"></i> <?=$this->transEsc('Add Tag')?></a>
             </a>
-            <div id="tagList"<?=$loggedin ? ' class="loggedin"' : ''?>">
+            <div id="tagList"<?=$loggedin ? ' class="loggedin"' : ''?>>
               <? if (count($tagList) > 0): ?>
                 <? $i = 0; foreach ($tagList as $tag): ?>
                   <? $selected = in_array($user_id, $tag['user']); ?>
                   <div class="tag<?=$selected ? ' selected' : ''?>">
                     <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
                     <? if($loggedin): ?>
+                      <a class="badge" onClick="ajaxTagUpdate('<?=urlencode($tag['tag'])?>', <?=$selected?'true':'false' ?>);return false;"><?=$this->escapeHtml($tag['cnt'])?>
                       <? if($selected): ?>
-                        <a class="badge" onClick="removeTag('<?=urlencode($tag['tag'])?>', <?=urlencode($user_id)?>);return false;"><?=$this->escapeHtml($tag['cnt'])?><i class="fa fa-close"></i></a>
+                        <i class="fa fa-close"></i></a>
                       <? else: ?>
-                        <a class="badge" onClick="addTag('<?=urlencode($tag['tag'])?>');return false;"><?=$this->escapeHtml($tag['cnt'])?><i class="fa fa-plus"></i></a>
+                        <i class="fa fa-plus"></i></a>
                       <? endif; ?>
                     <? else: ?>
                       <span class="badge"><?=$this->escapeHtml($tag['cnt'])?></span>

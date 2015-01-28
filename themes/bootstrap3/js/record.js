@@ -171,7 +171,10 @@ function ajaxLoadTab(tabid) {
   return false;
 }
 
-function addTag(tag) {
+function ajaxTagUpdate(tag, remove) {
+  if(typeof remove === "undefined") {
+    remove = false;
+  }
   var recordId = $('#record_id').val();
   var recordSource = $('.hiddenSource').val();
   $.ajax({
@@ -180,7 +183,8 @@ function addTag(tag) {
     data:{
       tag:tag,
       id:recordId,
-      source:recordSource
+      source:recordSource,
+      remove:remove
     },
     complete:refreshTagList
   });
@@ -204,23 +208,29 @@ function refreshTagList() {
             html += '<div class="tag';
             if(loggedin) {
               if(tag.user.indexOf(user_id) > -1) {
-                html += ' selected">\
-                  <a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
-                  <a class="badge" onClick="removeTag(\'' + htmlEncode(tag.tag) + '\', '+user_id+');return false;">'
-                  +htmlEncode(tag.cnt)
-                  +'<i class="fa fa-close"></i></a>';
+                html += ' selected">';
               } else {
-                html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
-                         <a class="badge" onClick="addTag(\'' + htmlEncode(tag.tag) + '\');return false;">'
-                         +htmlEncode(tag.cnt)
-                         +'<i class="fa fa-plus"></i></a>';
+                html += '">';
+              }
+              html += '<a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
+                       <a class="badge" onClick="ajaxTagUpdate(\'' + htmlEncode(tag.tag) + '\', '+(tag.user.indexOf(user_id)>-1)+');return false;">'
+                       +htmlEncode(tag.cnt);
+              if(tag.user.indexOf(user_id) > -1) {
+                html += '<i class="fa fa-close"></i></a>';
+              } else {
+                html += '<i class="fa fa-plus"></i></a>';
               }
             } else {
-              html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a>'+htmlEncode(tag.cnt)+'</a>';
+              html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a><span class="badge">'+htmlEncode(tag.cnt)+'</span>';
             }
             html += '</div>';
           }
           tagList.append(html);
+          if(loggedin) {
+            $('#tagList').addClass('loggedin');
+          } else {
+            $('#tagList').removeClass('loggedin');
+          }
         } else if (response.data && response.data.length > 0) {
           tagList.append(response.data);
         }

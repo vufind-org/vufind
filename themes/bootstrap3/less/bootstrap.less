@@ -188,11 +188,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   .tag {
     border-radius:4px;
     display:inline-block;
+    margin:0 1px 1px;
     .button-size(@padding-base-vertical; @padding-base-vertical; @font-size-base; @line-height-base; @border-radius-base);
     .badge .fa {width:12px;}
-    .loggedin & {
-      .badge:hover {background:@brand-success;}
-    }
     &.selected {
       background:@btn-primary-bg;
       a {color:#FFF;}
@@ -202,6 +200,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         &:hover {color:#A94442;}
       }
     }
+  }
+  &.loggedin .tag:not(.selected) {
+    .badge:hover {background:@brand-success;}
   }
 }
 

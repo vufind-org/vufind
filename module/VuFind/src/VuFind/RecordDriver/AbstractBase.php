@@ -218,6 +218,25 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Remove tags from the record.
+     *
+     * @param \VuFind\Db\Row\User $user The user posting the tag
+     * @param array               $tags The user-provided tags
+     *
+     * @return void
+     */
+    public function deleteTags($user, $tags)
+    {
+        $resources = $this->getDbTable('Resource');
+        $resource = $resources->findResource(
+            $this->getUniqueId(), $this->getResourceSource()
+        );
+        foreach ($tags as $tag) {
+            $resource->deleteTag($tag, $user);
+        }
+    }
+
+    /**
      * Save this record to the user's favorites.
      *
      * @param array               $params Array with some or all of these keys:
