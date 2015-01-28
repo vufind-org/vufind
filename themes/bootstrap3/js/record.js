@@ -127,7 +127,6 @@ function registerAjaxCommentRecord() {
 }
 
 function registerTabEvents() {
-
   // register the record comment form to be submitted via AJAX
   registerAjaxCommentRecord();
 
@@ -170,6 +169,64 @@ function ajaxLoadTab(tabid) {
     }
   });
   return false;
+}
+
+function addTag(tag) {
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+  $.ajax({
+    url:path+'/AJAX/JSON?method=tagRecord',
+    method:'POST',
+    data:{
+      tag:tag,
+      id:recordId,
+      source:recordSource
+    },
+    complete:refreshTagList
+  });
+}
+function refreshTagList() {
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+  var tagList = $('#tagList');
+  if (tagList.length > 0) {
+    tagList.empty();
+    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    $.ajax({
+      dataType: 'json',
+      url: url,
+      success: function(response) {
+        if (response.status == 'OK') {
+          var html = "";
+          for(var i=0;i<response.data.length;i++) {
+            var tag = response.data[i];
+            var href = path + '/Tag?' + $.param({lookfor:tag.tag});
+            html += '<div class="tag';
+            if(loggedin) {
+              if(tag.user.indexOf(user_id) > -1) {
+                html += ' selected">\
+                  <a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
+                  <a class="badge" onClick="removeTag(\'' + htmlEncode(tag.tag) + '\', '+user_id+');return false;">'
+                  +htmlEncode(tag.cnt)
+                  +'<i class="fa fa-close"></i></a>';
+              } else {
+                html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
+                         <a class="badge" onClick="addTag(\'' + htmlEncode(tag.tag) + '\');return false;">'
+                         +htmlEncode(tag.cnt)
+                         +'<i class="fa fa-plus"></i></a>';
+              }
+            } else {
+              html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a>'+htmlEncode(tag.cnt)+'</a>';
+            }
+            html += '</div>';
+          }
+          tagList.append(html);
+        } else if (response.data && response.data.length > 0) {
+          tagList.append(response.data);
+        }
+      }
+    });
+  }
 }
 
 $(document).ready(function(){
@@ -222,28 +279,8 @@ $(document).ready(function(){
     Lightbox.addCloseAction(function() {
       var recordId = $('#record_id').val();
       var recordSource = $('.hiddenSource').val();
-
       // Update tag list (add tag)
-      var tagList = $('#tagList');
-      if (tagList.length > 0) {
-        tagList.empty();
-        var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
-        $.ajax({
-          dataType: 'json',
-          url: url,
-          success: function(response) {
-            if (response.status == 'OK') {
-              $.each(response.data, function(i, tag) {
-                var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-                var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
-                tagList.append(html);
-              });
-            } else if (response.data && response.data.length > 0) {
-              tagList.append(response.data);
-            }
-          }
-        });
-      }
+      refreshTagList();
     });
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });

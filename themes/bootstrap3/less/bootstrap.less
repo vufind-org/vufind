@@ -184,6 +184,26 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   color:#000;
   font-weight:bold;
 }
+#tagList {
+  .tag {
+    border-radius:4px;
+    display:inline-block;
+    .button-size(@padding-base-vertical; @padding-base-vertical; @font-size-base; @line-height-base; @border-radius-base);
+    .badge .fa {width:12px;}
+    .loggedin & {
+      .badge:hover {background:@brand-success;}
+    }
+    &.selected {
+      background:@btn-primary-bg;
+      a {color:#FFF;}
+      .badge {
+        background:#FFF;
+        color:@gray-darker;
+        &:hover {color:#A94442;}
+      }
+    }
+  }
+}
 
 /* --- Search --- */
 .bulkActionButtons {
