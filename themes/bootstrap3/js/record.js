@@ -221,7 +221,7 @@ function refreshTagList() {
                 html += '<i class="fa fa-plus"></i></a>';
               }
             } else {
-              html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a><span class="badge">'+htmlEncode(tag.cnt)+'</span>';
+              html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a> <span class="badge">'+htmlEncode(tag.cnt)+'</span>';
             }
             html += '</div>';
           }

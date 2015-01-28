@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, refreshTagList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -202,6 +202,11 @@ function updatePageForLogin() {
   if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
     var tab = recordTabs.find('.active a').attr('id');
     ajaxLoadTab(tab);
+  }
+
+  // Refresh tag list
+  if(typeof refreshTagList === "function") {
+    refreshTagList();
   }
 }
 function newAccountHandler(html) {
