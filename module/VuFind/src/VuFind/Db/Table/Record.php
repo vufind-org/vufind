@@ -84,6 +84,7 @@ class Record extends Gateway
         
         $record->c_id = $id;
         $record->record_id = $recordId;
+        $record->data = json_encode($rawData);
         $record->source = $source;
         $record->user_id = $userId;
         $record->session_id = $sessionId;
