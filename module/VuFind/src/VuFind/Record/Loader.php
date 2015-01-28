@@ -63,7 +63,7 @@ class Loader
      * @param RecordFactory $recordFactory Record loader
      */
     public function __construct(SearchService $searchService,
-        RecordFactory $recordFactory, Cache $recordCache
+        RecordFactory $recordFactory, Cache $recordCache = null
     ) {
         $this->searchService = $searchService;
         $this->recordFactory = $recordFactory;
@@ -84,14 +84,14 @@ class Loader
     public function load($id, $source = 'VuFind', $tolerateMissing = false)
     {
         $results = array();
-        if ($this->recordCache->isPrimary()) {
-            $results = $this->recordCache->load($id, $source);
+        if (isset($this->recordCache) && $this->recordCache->isPrimary()) {
+            $results = $this->recordCache->lookup(array("$source|$id"));
         }
         if (count($results) === 0) {
             $results = $this->searchService->retrieve($source, $id)->getRecords();
         }
-        if ($this->recordCache->isFallback() && count($results) === 0) {
-            $results = $this->recordCache->load($id, $source);
+        if (isset($this->recordCache) && $this->recordCache->isFallback() && count($results) === 0) {
+            $results = $this->recordCache->lookup(array("$source|$id"));
         }
 
         
@@ -122,12 +122,12 @@ class Loader
     public function loadBatchForSource($ids, $source = 'VuFind')
     {
         $cachedRecords = array();
-        if ($this->recordCache->isPrimary()) {
+        if (isset($this->recordCache) && $this->recordCache->isPrimary()) {
             // try to load records from cache if source is cachable
-            $cachedRecords = $this->recordCache->loadBatchForSource($ids, $source);
+            $cachedRecords = $this->recordCache->lookup($ids, $source);
             // which records could not be loaded from the record cache?
             foreach ($cachedRecords as $cachedRecord) {
-                $key = array_search($cachedRecord->getUniqueId(),$ids);
+                $key = array_search($cachedRecord->getUniqueId(), $ids);
                 unset($ids[$key]);
             }
         }
@@ -137,14 +137,14 @@ class Loader
         if (count($ids) > 0 ) {
             $genuineRecords = $this->searchService->retrieveBatch($source, $ids)->getRecords();
             foreach ($genuineRecords as $genuineRecord) {
-                $key = array_search($genuineRecord->getUniqueId(),$ids);
+                $key = array_search($genuineRecord->getUniqueId(), $ids);
                 unset($ids[$key]);
             }
         }
         
-        if ($this->recordCache->isFallback() && count($ids) > 0) {
+        if (isset($this->recordCache) && $this->recordCache->isFallback() && count($ids) > 0) {
             // try to load missing records from cache if source is cachable
-            $cachedRecords = $this->recordCache->loadBatchForSource($ids, $source);
+            $cachedRecords = $this->recordCache->lookup($ids, $source);
         }
         
         // merge records found in cache and records loaded from original $source
@@ -172,9 +172,6 @@ class Loader
      */
     public function loadBatch($ids)
     {
-
-        $this->recordCache->loadBatch($ids);
-        
         // Sort the IDs by source -- we'll create an associative array indexed by
         // source and record ID which points to the desired position of the indexed
         // record in the final return array:

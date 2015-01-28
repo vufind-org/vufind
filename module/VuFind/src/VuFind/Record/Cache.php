@@ -9,7 +9,7 @@ class Cache
 {
     const FAVORITE      = 'favorite';
     
-    protected $cachePolicy = 0;
+    protected $cachePolicy = 5;
     protected $DISABLED          = 0b00000; //  0
     protected $PRIMARY           = 0b00001; //  1
     protected $FALLBACK          = 0b00010; //  2
@@ -17,26 +17,17 @@ class Cache
     protected $INCLUDE_SOURCE    = 0b01000; //  8
     protected $INCLUDE_USER_ID   = 0b10000; // 16
     
-    protected $cacheIds = array();
     protected $cachableSources = null;
     
     protected $recordFactories = array();
     protected $recordTable = null;
-    protected $resourceTable = null;
-    protected $userResourceTable = null;
     
     protected $config;
     
-    public function __construct(RecordFactory $recordFactoryManager, 
-        Config $config,
-        DbTableManager $dbTableManager)
+    public function __construct(RecordFactory $recordFactoryManager, Config $config, DbTableManager $dbTableManager )
     {
-        $this->recordTable = $dbTableManager->get('record');
-        $this->resourceTable = $dbTableManager->get('resource');
-        $this->userResourceTable = $dbTableManager->get('user_resource');
-        
         $this->cachableSources = preg_split("/[\s,]+/", $config->RecordCache->cachableSources);
-        
+        $this->recordTable = $dbTableManager->get('record');
         $this->recordFactories['VuFind'] = array($recordFactoryManager, 'getSolrRecord');
         $this->recordFactories['WorldCat'] = function ($data) use ($recordFactoryManager) {
             $driver = $recordFactoryManager->get('WorldCat');
@@ -45,29 +36,6 @@ class Cache
             return $driver;
         };
         $this->config = $config;
-    }
-
-    public function load($id, $source = 'VuFind')
-    {
-        if (! in_array($source, $this->cachableSources) || $this->cachePolicy === 0 ) {
-            return array();
-        }
-        
-        $this->initCacheIds($id, $source);
-        // try to load record from cache if source is cachable
-        $cachedRecords = $this->read(array($id), $this->cachePolicy);
-        
-        return $cachedRecords;
-    }
-
-    public function loadBatch($ids)
-    {
-        $this->initCacheIds($ids);
-    }
-    
-    public function loadBatchForSource($ids, $source = 'VuFind') {
-        $cachedRecords = $this->read($ids, $this->cachePolicy);
-        return $cachedRecords;
     }
     
     public function createOrUpdate($recordId, $userId, $source, $rawData, $sessionId, $resourceId) {
@@ -81,15 +49,38 @@ class Cache
         $this->recordTable->cleanup($userId);
     }
     
-    protected function read($ids) {
-        
-        if ($this->cachePolicy === 0) {
+    /**
+     * Given an array of associative arrays with id and source keys (or pipe-
+     * separated source|id strings) 
+     *
+     * @param array $ids Array of associative arrays with id/source keys or
+     * strings in source|id format.  In associative array formats, there is
+     * also an optional "extra_fields" key which can be used to pass in data
+     *
+     * @return array     Array of record drivers
+     */
+    
+    public function lookup($ids, $source = null) {
+        if ($this->cachePolicy === $this->DISABLED) {
             return array();
         }
         
+        if (isset($source)) {
+            foreach ($ids as $id) {
+                $tmp[] = "$source|$id";
+            }
+            $ids = $tmp;
+        } 
+
         $cacheIds = array();
-        foreach ($ids as $id) {
-                $cacheIds[] = $this->cacheIds[$id];
+        foreach ($ids as $i => $details) {
+            if (!is_array($details)) {
+                $parts = explode('|', $details, 2);
+                $details = array('source' => $parts[0],'id' => $parts[1]);
+            }
+            
+            $userId = isset($_SESSION['Account']) ? $_SESSION['Account']->userId : null;
+            $cacheIds[] = $this->getCacheId($details['id'], $details['source'], $userId);
         }
         
         $cachedRecords = $this->recordTable->findRecord($cacheIds);
@@ -98,7 +89,7 @@ class Cache
         foreach($cachedRecords as $cachedRecord) {
             $factory = $this->recordFactories[$cachedRecord['source']];
             $doc = json_decode($cachedRecord['data'], true);
-            
+        
             $vufindRecords[] = call_user_func($factory, $doc);
         }
         
@@ -121,24 +112,6 @@ class Cache
         return (($this->cachePolicy & $this->FALLBACK) === $this->FALLBACK);
     }
     
-    // $ids = recordId
-    // $ids = array(array(), array(), array());
-    protected function initCacheIds($ids, $source = null, $userId = null) {
-        if (!is_array($ids)) {
-            $recordId = $ids;
-            $source = ($source == 'Solr') ? 'VuFind' : $source;
-            $userId = isset($_SESSION['Account']) ? $_SESSION['Account']->userId : null;
-            $this->cacheIds[$recordId] = $this->getCacheId($recordId, $source, $userId);
-        } else {
-            foreach ($ids as $id) {
-                $recordId = $id['id'];
-                $source = isset($id['source']) ? $id['source'] : null;
-                $userId = isset($id['userId']) ? $id['userId'] : null;
-                
-                $this->cacheIds[$recordId] = $this->getCacheId($recordId, $source, $userId);
-            }
-        } 
-    }
     
     protected function getCacheId($recordId, $source = null, $userId = null) {
         $cIdHelper = array();
@@ -147,6 +120,7 @@ class Cache
         }
         
         if (($this->cachePolicy & $this->INCLUDE_SOURCE) === $this->INCLUDE_SOURCE) {
+            $source = ($source == 'Solr') ? 'VuFind' : $source;
             $cIdHelper['source']   = $source;
         }
             
@@ -154,7 +128,6 @@ class Cache
             $cIdHelper['userId']   = $userId;
         }
         $md5 = md5(json_encode($cIdHelper));
-        $cacheIds[$recordId] = $md5;
         
         return $md5;
     }
