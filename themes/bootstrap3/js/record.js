@@ -189,7 +189,8 @@ function ajaxTagUpdate(tag, remove) {
     complete:refreshTagList
   });
 }
-function refreshTagList() {
+function refreshTagList(loggedin) {
+  loggedin = !!loggedin || userIsLoggedIn;
   var recordId = $('#record_id').val();
   var recordSource = $('.hiddenSource').val();
   var tagList = $('#tagList');
@@ -201,35 +202,39 @@ function refreshTagList() {
       url: url,
       success: function(response) {
         if (response.status == 'OK') {
-          var html = "";
-          for(var i=0;i<response.data.length;i++) {
-            var tag = response.data[i];
-            var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-            html += '<div class="tag';
-            if(loggedin) {
-              if(tag.user.indexOf(user_id) > -1) {
-                html += ' selected">';
+          if(response.data.length > 0) {
+            var html = "";
+            for(var i=0;i<response.data.length;i++) {
+              var tag = response.data[i];
+              var href = path + '/Tag?' + $.param({lookfor:tag.tag});
+              html += '<div class="tag';
+              if(loggedin) {
+                if(tag.createdByUser) {
+                  html += ' selected">';
+                } else {
+                  html += '">';
+                }
+                html += '<a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
+                         <a class="badge" onClick="ajaxTagUpdate(\'' + htmlEncode(tag.tag) + '\', '+(tag.createdByUser)+');return false;">'
+                         +htmlEncode(tag.cnt);
+                if(tag.createdByUser) {
+                  html += '<i class="fa fa-close"></i></a>';
+                } else {
+                  html += '<i class="fa fa-plus"></i></a>';
+                }
               } else {
-                html += '">';
+                html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a> <span class="badge">'+htmlEncode(tag.cnt)+'</span>';
               }
-              html += '<a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
-                       <a class="badge" onClick="ajaxTagUpdate(\'' + htmlEncode(tag.tag) + '\', '+(tag.user.indexOf(user_id)>-1)+');return false;">'
-                       +htmlEncode(tag.cnt);
-              if(tag.user.indexOf(user_id) > -1) {
-                html += '<i class="fa fa-close"></i></a>';
-              } else {
-                html += '<i class="fa fa-plus"></i></a>';
-              }
-            } else {
-              html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a> <span class="badge">'+htmlEncode(tag.cnt)+'</span>';
+              html += '</div>';
             }
-            html += '</div>';
-          }
-          tagList.append(html);
-          if(loggedin) {
-            $('#tagList').addClass('loggedin');
+            tagList.html(html);
+            if(loggedin) {
+              $('#tagList').addClass('loggedin');
+            } else {
+              $('#tagList').removeClass('loggedin');
+            }
           } else {
-            $('#tagList').removeClass('loggedin');
+            tagList.html(vufindString['no_tags']);
           }
         } else if (response.data && response.data.length > 0) {
           tagList.append(response.data);
@@ -290,7 +295,7 @@ $(document).ready(function(){
       var recordId = $('#record_id').val();
       var recordSource = $('.hiddenSource').val();
       // Update tag list (add tag)
-      refreshTagList();
+      refreshTagList(userIsLoggedIn);
     });
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });

@@ -602,15 +602,14 @@ class AjaxController extends AbstractBase
 
         // Authenticate the user:
         try {
-            $this->getAuthManager()->login($this->getRequest());
+            $user = $this->getAuthManager()->login($this->getRequest());
+            return $this->output($user->id, self::STATUS_OK);
         } catch (AuthException $e) {
             return $this->output(
                 $this->translate($e->getMessage()),
                 self::STATUS_ERROR
             );
         }
-
-        return $this->output(true, self::STATUS_OK);
     }
 
     /**
@@ -637,7 +636,6 @@ class AjaxController extends AbstractBase
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             if (strlen($tag) > 0) { // don't add empty tags
                 if ('false' === $this->params()->fromPost('remove', 'false')) {
-                    var_dump("!");
                     $driver->addTags($user, $tagParser->parse($tag));
                 } else {
                     $driver->deleteTags($user, $tagParser->parse($tag));
@@ -669,12 +667,18 @@ class AjaxController extends AbstractBase
 
         // Build data structure for return:
         $tagList = array();
+        $user = $this->getAuthManager()->isLoggedIn();
         foreach ($tags as $tag) {
-            $tagList[] = array(
+            $t = array(
                 'tag'=>$tag->tag,
                 'cnt'=>$tag->cnt,
-                'user'=>array_map("intval", explode(',', $tag->user))
+                'createdByUser'=>false
             );
+            $tagOwners = array_map("intval", explode(',', $tag->user));
+            if ($user && in_array($user->id, $tagOwners)) {
+                $t['createdByUser'] = true;
+            }
+            $tagList[] = $t;
         }
 
         // If we don't have any tags, provide a user-appropriate message:

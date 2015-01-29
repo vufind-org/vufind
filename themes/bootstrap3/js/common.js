@@ -206,7 +206,7 @@ function updatePageForLogin() {
 
   // Refresh tag list
   if(typeof refreshTagList === "function") {
-    refreshTagList();
+    refreshTagList(true);
   }
 }
 function newAccountHandler(html) {

@@ -1,13 +1,13 @@
 <?
   if($loggedin = $this->auth()->isLoggedIn()) {
-    $user_id = $this->auth()->isLoggedIn()->id;
+    $user_id = $loggedin->id;
+    $loggedin = true;
   } else {
     $user_id = false;
   }
 ?>
 <script>
-  var loggedin = <?=$loggedin ? 'true' : 'false' ?>;
-  var user_id = <?=$user_id ? $user_id : 'false' ?>;
+  var userIsLoggedIn = <?=$loggedin ? 'true' : 'false' ?>;
 </script>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <div class="col-sm-3">
@@ -263,12 +263,11 @@
             <div id="tagList"<?=$loggedin ? ' class="loggedin"' : ''?>>
               <? if (count($tagList) > 0): ?>
                 <? $i = 0; foreach ($tagList as $tag): ?>
-                  <? $selected = in_array($user_id, $tag['user']); ?>
-                  <div class="tag<?=$selected ? ' selected' : ''?>">
+                  <div class="tag<?=$tag['createdByUser'] ? ' selected' : ''?>">
                     <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
                     <? if($loggedin): ?>
-                      <a class="badge" onClick="ajaxTagUpdate('<?=urlencode($tag['tag'])?>', <?=$selected?'true':'false' ?>);return false;"><?=$this->escapeHtml($tag['cnt'])?>
-                      <? if($selected): ?>
+                      <a class="badge" onClick="ajaxTagUpdate('<?=urlencode($tag['tag'])?>', <?=$tag['createdByUser']?'true':'false' ?>);return false;"><?=$this->escapeHtml($tag['cnt']) ?>
+                      <? if($tag['createdByUser']): ?>
                         <i class="fa fa-close"></i></a>
                       <? else: ?>
                         <i class="fa fa-plus"></i></a>

@@ -170,7 +170,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getSortTitle()
     {
         // Child classes should override this with smarter behavior, and the "strip
-        // articles" logic probably belongs in a more appropriate place, but for now,
+        // articles" logic probably belongs in a more appropriate place, but for now
         // in the absence of a better plan, we'll just use the XSLT Importer's strip
         // articles functionality.
         return ArticleStripper::stripArticles($this->getBreadcrumb());
@@ -189,11 +189,15 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         $tags = $this->getDbTable('Tags');
         $retTags = $tags->getForResource(
-            $this->getUniqueId(), $this->getResourceSource(), 0, $list_id, $user_id,
-            $sort
+            $this->getUniqueId(),
+            $this->getResourceSource(),
+            0, $list_id, $user_id, $sort
         )->toArray();
         foreach ($retTags as &$tag) {
-            $tag['user'] = array_map("intval", explode(',', $tag['user']));
+            $tagOwners = array_map("intval", explode(',', $tag['user']));
+            $tag['createdByUser'] = null !== $user_id
+                && in_array($user_id, $tagOwners);
+            unset($tag['user']);
         }
         return $retTags;
     }
