@@ -407,6 +407,9 @@ $(document).ready(function() {
     Lightbox.close();
     checkSaveStatuses();
   });
+  Lightbox.addFormCallback('bulkDelete', function(html) {
+    location.reload();
+  });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
