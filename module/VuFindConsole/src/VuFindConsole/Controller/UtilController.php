@@ -462,27 +462,31 @@ class UtilController extends AbstractBase
                 "\tBuilding tree for " . $recordid . '... '
                 . number_format($count) . ' records'
             );
-            $driver = $recordLoader->load($recordid);
-            // Only do this if the record is actually a hierarchy type record
-            if ($driver->getHierarchyType()) {
-                // JSON
-                if (!$this->consoleOpts->getOption('skip-json')) {
-                    Console::writeLine("\t\tJSON cache...");
-                    $driver->getHierarchyDriver()->getTreeSource()->getJSON(
-                        $recordid, array('refresh' => true)
-                    );
-                } else {
-                    Console::writeLine("\t\tJSON skipped.");
+            try {
+                $driver = $recordLoader->load($recordid);
+                // Only do this if the record is actually a hierarchy type record
+                if ($driver->getHierarchyType()) {
+                    // JSON
+                    if (!$this->consoleOpts->getOption('skip-json')) {
+                        Console::writeLine("\t\tJSON cache...");
+                        $driver->getHierarchyDriver()->getTreeSource()->getJSON(
+                            $recordid, array('refresh' => true)
+                        );
+                    } else {
+                        Console::writeLine("\t\tJSON skipped.");
+                    }
+                    // XML
+                    if (!$this->consoleOpts->getOption('skip-xml')) {
+                        Console::writeLine("\t\tXML cache...");
+                        $driver->getHierarchyDriver()->getTreeSource()->getXML(
+                            $recordid, array('refresh' => true)
+                        );
+                    } else {
+                        Console::writeLine("\t\tXML skipped.");
+                    }
                 }
-                // XML
-                if (!$this->consoleOpts->getOption('skip-xml')) {
-                    Console::writeLine("\t\tXML cache...");
-                    $driver->getHierarchyDriver()->getTreeSource()->getXML(
-                        $recordid, array('refresh' => true)
-                    );
-                } else {
-                    Console::writeLine("\t\tXML skipped.");
-                }
+            } catch (\VuFind\Exception\RecordMissing $e) {
+                Console::writeLine("WARNING! - Caught exception: " . $e->getMessage() . "\n");
             }
         }
         Console::writeLine(
