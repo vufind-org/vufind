@@ -253,7 +253,7 @@
       <? endif; ?>
 
       <? if ($this->usertags()->getMode() !== 'disabled'): ?>
-        <? $tagList = $this->driver->getTags(); ?>
+        <? $tagList = $this->driver->getTags(null, null, 'count', $user_id); ?>
         <tr>
           <th><?=$this->transEsc('Tags')?>: </th>
           <td>

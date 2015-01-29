@@ -202,39 +202,35 @@ function refreshTagList(loggedin) {
       url: url,
       success: function(response) {
         if (response.status == 'OK') {
-          if(response.data.length > 0) {
-            var html = "";
-            for(var i=0;i<response.data.length;i++) {
-              var tag = response.data[i];
-              var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-              html += '<div class="tag';
-              if(loggedin) {
-                if(tag.createdByUser) {
-                  html += ' selected">';
-                } else {
-                  html += '">';
-                }
-                html += '<a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
-                         <a class="badge" onClick="ajaxTagUpdate(\'' + htmlEncode(tag.tag) + '\', '+(tag.createdByUser)+');return false;">'
-                         +htmlEncode(tag.cnt);
-                if(tag.createdByUser) {
-                  html += '<i class="fa fa-close"></i></a>';
-                } else {
-                  html += '<i class="fa fa-plus"></i></a>';
-                }
-              } else {
-                html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a> <span class="badge">'+htmlEncode(tag.cnt)+'</span>';
-              }
-              html += '</div>';
-            }
-            tagList.html(html);
+          var html = "";
+          for(var i=0;i<response.data.length;i++) {
+            var tag = response.data[i];
+            var href = path + '/Tag?' + $.param({lookfor:tag.tag});
+            html += '<div class="tag';
             if(loggedin) {
-              $('#tagList').addClass('loggedin');
+              if(tag.createdByUser) {
+                html += ' selected">';
+              } else {
+                html += '">';
+              }
+              html += '<a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
+                       <a class="badge" onClick="ajaxTagUpdate(\'' + htmlEncode(tag.tag) + '\', '+(tag.createdByUser)+');return false;">'
+                       +htmlEncode(tag.cnt);
+              if(tag.createdByUser) {
+                html += '<i class="fa fa-close"></i></a>';
+              } else {
+                html += '<i class="fa fa-plus"></i></a>';
+              }
             } else {
-              $('#tagList').removeClass('loggedin');
+              html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a> <span class="badge">'+htmlEncode(tag.cnt)+'</span>';
             }
+            html += '</div>';
+          }
+          tagList.html(html);
+          if(loggedin) {
+            $('#tagList').addClass('loggedin');
           } else {
-            tagList.html(vufindString['no_tags']);
+            $('#tagList').removeClass('loggedin');
           }
         } else if (response.data && response.data.length > 0) {
           tagList.append(response.data);

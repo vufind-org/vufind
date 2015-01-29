@@ -182,10 +182,12 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param int    $list_id ID of list to load tags from (null for all lists)
      * @param int    $user_id ID of user to load tags from (null for all users)
      * @param string $sort    Sort type ('count' or 'tag')
+     * @param int    $ownerID ID of user to check for ownership
      *
      * @return array
      */
-    public function getTags($list_id = null, $user_id = null, $sort = 'count')
+    public function getTags($list_id = null, $user_id = null, $sort = 'count',
+        $ownerId = null)
     {
         $tags = $this->getDbTable('Tags');
         $retTags = $tags->getForResource(
@@ -194,10 +196,11 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             0, $list_id, $user_id, $sort
         )->toArray();
         foreach ($retTags as &$tag) {
-            $tagOwners = array_map("intval", explode(',', $tag['user']));
-            $tag['createdByUser'] = null !== $user_id
-                && in_array($user_id, $tagOwners);
-            unset($tag['user']);
+            if (null !== $ownerId) {
+                $tagOwners = array_map("intval", explode(',', $tag['user']));
+                $tag['createdByUser'] = in_array($ownerId, $tagOwners);
+            }
+            unset($tag['user']); // Do not expose user ids
         }
         return $retTags;
     }
