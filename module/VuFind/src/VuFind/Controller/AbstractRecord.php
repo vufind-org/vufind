@@ -519,8 +519,8 @@ class AbstractRecord extends AbstractBase
         if (!is_object($this->driver)) {
             $recordLoader = $this->getRecordLoader();
             $cachePolicy = $this->getRequest()->getQuery()->get('cachePolicy');
-            if (isset($cachePolicy)) {
-              $recordLoader->setCachePolicy($cachePolicy);
+            if (isset ($cachePolicy)) {
+                $recordLoader->setCachePolicy($cachePolicy);
             }
             $this->driver = $recordLoader->load(
                 $this->params()->fromRoute('id', $this->params()->fromQuery('id')),

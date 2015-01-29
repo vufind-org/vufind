@@ -30,6 +30,8 @@
 namespace VuFind\Record\Cache;
 
 /**
+ * RecordCacheAwareInterface
+ * 
  * @category VuFind2
  * @package  Translator
  * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
@@ -38,6 +40,21 @@ namespace VuFind\Record\Cache;
  */
 interface RecordCacheAwareInterface
 {
+    
+    /**
+     * Set record cache
+     * 
+     * @param \VuFind\Record\Cache $recordCache record cache
+     * 
+     * @return null
+     */
     public function setRecordCache(\VuFind\Record\Cache $recordCache);
+    
+    
+    /**
+     * Get record cache
+     * 
+     * @return \VuFind\Record\Cache
+     */
     public function getRecordCache();
 }

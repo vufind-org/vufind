@@ -61,6 +61,7 @@ class Loader
      *
      * @param SearchService $searchService Search service
      * @param RecordFactory $recordFactory Record loader
+     * @param RecordCache   $recordCache   Record Cache
      */
     public function __construct(SearchService $searchService,
         RecordFactory $recordFactory, Cache $recordCache = null
@@ -90,11 +91,12 @@ class Loader
         if (count($results) === 0) {
             $results = $this->searchService->retrieve($source, $id)->getRecords();
         }
-        if (isset($this->recordCache) && $this->recordCache->isFallback() && count($results) === 0) {
+        if (isset($this->recordCache) 
+            && $this->recordCache->isFallback() && count($results) === 0
+        ) {
             $results = $this->recordCache->lookup(array("$source|$id"));
         }
 
-        
         if (count($results) > 0) {
             return $results[0];
         }
@@ -135,14 +137,19 @@ class Loader
         // try to load the missing records from the original $source
         $genuineRecords = array();
         if (count($ids) > 0 ) {
-            $genuineRecords = $this->searchService->retrieveBatch($source, $ids)->getRecords();
+            $genuineRecordCollection = $this->searchService->retrieveBatch(
+                $source, $ids
+            )->getRecords();
+            
             foreach ($genuineRecords as $genuineRecord) {
                 $key = array_search($genuineRecord->getUniqueId(), $ids);
                 unset($ids[$key]);
             }
         }
         
-        if (isset($this->recordCache) && $this->recordCache->isFallback() && count($ids) > 0) {
+        if (isset($this->recordCache)
+            && $this->recordCache->isFallback() && count($ids) > 0 
+        ) {
             // try to load missing records from cache if source is cachable
             $cachedRecords = $this->recordCache->lookup($ids, $source);
         }
@@ -215,7 +222,15 @@ class Loader
         return $retVal;
     }
     
-    public function setCachePolicy($cachePolicy) {
+    /**
+     * Set policy to control cache beaviuor
+     *
+     * @param string $cachePolicy Caching policy 
+     * 
+     * @return null
+     */
+    public function setCachePolicy($cachePolicy) 
+    {
         $this->recordCache->setPolicy($cachePolicy);
     }
 }
