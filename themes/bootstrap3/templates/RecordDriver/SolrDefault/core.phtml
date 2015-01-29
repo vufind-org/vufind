@@ -266,7 +266,10 @@
                   <div class="tag<?=$tag['createdByUser'] ? ' selected' : ''?>">
                     <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
                     <? if($loggedin): ?>
-                      <a class="badge" onClick="ajaxTagUpdate('<?=urlencode($tag['tag'])?>', <?=$tag['createdByUser']?'true':'false' ?>);return false;"><?=$this->escapeHtml($tag['cnt']) ?>
+                      <? $updateHref = $tag['createdByUser']
+                        ? $this->recordLink()->getActionUrl($this->driver, 'DeleteTag') . '?tag='.$tag['tag']
+                        : $this->recordLink()->getActionUrl($this->driver, 'AddTag') . '?tag='.$tag['tag']; ?>
+                      <a class="badge" onClick="ajaxTagUpdate('<?=urlencode($tag['tag'])?>', <?=$tag['createdByUser']?'true':'false' ?>);return false;" href="<?=$updateHref ?>"><?=$this->escapeHtml($tag['cnt']) ?>
                       <? if($tag['createdByUser']): ?>
                         <i class="fa fa-close"></i></a>
                       <? else: ?>

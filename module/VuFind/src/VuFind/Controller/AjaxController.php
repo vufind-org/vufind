@@ -602,14 +602,15 @@ class AjaxController extends AbstractBase
 
         // Authenticate the user:
         try {
-            $user = $this->getAuthManager()->login($this->getRequest());
-            return $this->output($user->id, self::STATUS_OK);
+            $this->getAuthManager()->login($this->getRequest());
         } catch (AuthException $e) {
             return $this->output(
                 $this->translate($e->getMessage()),
                 self::STATUS_ERROR
             );
         }
+
+        return $this->output(true, self::STATUS_OK);
     }
 
     /**
@@ -632,7 +633,7 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
-            $tag = $this->params()->fromPost('tag', '');
+            $tag = '"' . $this->params()->fromPost('tag', '') . '"';
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             if (strlen($tag) > 0) { // don't add empty tags
                 if ('false' === $this->params()->fromPost('remove', 'false')) {

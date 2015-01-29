@@ -185,8 +185,13 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Save tags, if any:
-        if ($this->formWasSubmitted('submit')) {
-            $tags = $this->params()->fromPost('tag');
+        if ($this->formWasSubmitted('submit')
+            || $this->params()->fromQuery('tag')
+        ) {
+            $tags = $this->params()->fromPost(
+                'tag',
+                $this->params()->fromQuery('tag')
+            );
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
             return $this->redirectToRecord();
@@ -196,6 +201,43 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel();
         $view->setTemplate('record/addtag');
         return $view;
+    }
+
+    /**
+     * Delete a tag
+     *
+     * @return mixed
+     */
+    public function deletetagAction()
+    {
+        // Make sure tags are enabled:
+        if (!$this->tagsEnabled()) {
+            throw new \Exception('Tags disabled');
+        }
+
+        // Force login:
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+
+        // Obtain the current record object:
+        $driver = $this->loadRecord();
+
+        // Save tags, if any:
+        if ($tag = $this->params()->fromQuery('tag')) {
+            $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+            $driver->deleteTags($user, $tagParser->parse('"'.$tag.'"'));
+        }
+
+        $this->flashMessenger()->setNamespace('info')
+            ->addMessage(
+                array(
+                    'msg' => 'tags_deleted',
+                    'tokens' => array('%count%' => 1)
+                )
+            );
+
+        return $this->redirectToRecord();
     }
 
     /**

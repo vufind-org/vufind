@@ -669,7 +669,7 @@ $recordRoutes = array(
 // Record sub-routes are generally used to access tab plug-ins, but a few
 // URLs are hard-coded to specific actions; this array lists those actions.
 $nonTabRecordActions = array(
-    'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
+    'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save', 'Email', 'SMS', 'Cite',
     'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest', 'AjaxTab',
     'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest', 'PDF',
 );

@@ -181,7 +181,7 @@ function ajaxTagUpdate(tag, remove) {
     url:path+'/AJAX/JSON?method=tagRecord',
     method:'POST',
     data:{
-      tag:tag,
+      tag:tag.replace(/\+/g, ' '),
       id:recordId,
       source:recordSource,
       remove:remove
