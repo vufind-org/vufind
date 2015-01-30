@@ -124,7 +124,8 @@ class MultiIndexListener
             } else {
                 // In any other context, we should make sure our field values are
                 // all legal.
-                $shards = explode(',', implode(',', $params->get('shards')));
+                $params->set('shards', implode(',', $this->shards));
+                $shards = $params->get('shards');
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);
                 $backend->getQueryBuilder()->setSpecs($specs);

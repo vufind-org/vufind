@@ -459,7 +459,7 @@ class Params extends \VuFind\Search\Base\Params
         // Shards
         $allShards = $this->getOptions()->getShards();
         $shards = $this->getSelectedShards();
-        if (is_null($shards)) {
+        if (empty($shards)) {
             $shards = array_keys($allShards);
         }
 
