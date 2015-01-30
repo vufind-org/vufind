@@ -137,7 +137,7 @@ class Loader
         // try to load the missing records from the original $source
         $genuineRecords = array();
         if (count($ids) > 0 ) {
-            $genuineRecordCollection = $this->searchService->retrieveBatch(
+            $genuineRecords = $this->searchService->retrieveBatch(
                 $source, $ids
             )->getRecords();
             
