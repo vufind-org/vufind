@@ -45,7 +45,7 @@ class Cache
 {
     const FAVORITE             = 'favorite';
     
-    protected $cachePolicy = 5;
+    protected $cachePolicy = 0;
     protected $DISABLED          = 0b00000; //  0
     protected $PRIMARY           = 0b00001; //  1
     protected $FALLBACK          = 0b00010; //  2
@@ -174,11 +174,9 @@ class Cache
                 $details['id'], $details['source'], $userId
             );
         }
-        
         $cachedRecords = $this->recordTable->findRecord($cacheIds);
-        
+
         $vufindRecords = array();
-        
         foreach ($cachedRecords as $cachedRecord) {
             $factory = $this->recordFactories[$cachedRecord['source']];
             $doc = json_decode($cachedRecord['data'], true);
@@ -198,9 +196,8 @@ class Cache
      */
     public function setPolicy($cachePolicy)
     {
-        $policyValue = $this->cachePolicies[$cachePolicy]; 
         if (isset($this->cachePolicies[$cachePolicy])) {
-            $this->cachePolicy = $policyValue;
+            $this->cachePolicy = $this->cachePolicies[$cachePolicy];
         }
     }
     
@@ -238,7 +235,7 @@ class Cache
     }
     
     /**
-     * Helper method to calcualte and ensure consistens cacheIds
+     * Helper method to calcualte and ensure consistend cacheIds
      *
      * @param string  $recordId RecordId
      * @param string  $source   Source name
