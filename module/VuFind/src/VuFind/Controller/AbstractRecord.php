@@ -227,15 +227,15 @@ class AbstractRecord extends AbstractBase
         if ($tag = $this->params()->fromQuery('tag')) {
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->deleteTags($user, $tagParser->parse('"'.$tag.'"'));
+            $this->flashMessenger()->setNamespace('info')
+                ->addMessage(
+                    array(
+                        'msg' => 'tags_deleted',
+                        'tokens' => array('%count%' => 1)
+                    )
+                );
         }
 
-        $this->flashMessenger()->setNamespace('info')
-            ->addMessage(
-                array(
-                    'msg' => 'tags_deleted',
-                    'tokens' => array('%count%' => 1)
-                )
-            );
 
         return $this->redirectToRecord();
     }

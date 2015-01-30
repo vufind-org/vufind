@@ -262,7 +262,7 @@
             </a>
             <div id="tagList"<?=$loggedin ? ' class="loggedin"' : ''?>>
               <? if (count($tagList) > 0): ?>
-                <? $i = 0; foreach ($tagList as $tag): ?>
+                <? foreach ($tagList as $tag): ?>
                   <div class="tag<?=$tag['createdByUser'] ? ' selected' : ''?>">
                     <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
                     <? if($loggedin): ?>
