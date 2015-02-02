@@ -124,7 +124,14 @@ class MultiIndexListener
             } else {
                 // In any other context, we should make sure our field values are
                 // all legal.
-                $shards = explode(',', implode(',', $params->get('shards')));
+
+                // Normalize array of strings containing comma-separated values to
+                // simple array of values; check if $params->get('shards') returns
+                // an array to prevent invalid argument warnings.
+                $shards = $params->get('shards');
+                $shards = explode(
+                    ',', implode(',', (is_array($shards) ? $shards : array()))
+                );
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);
                 $backend->getQueryBuilder()->setSpecs($specs);
