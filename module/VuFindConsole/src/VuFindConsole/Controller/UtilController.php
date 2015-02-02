@@ -486,7 +486,9 @@ class UtilController extends AbstractBase
                     }
                 }
             } catch (\VuFind\Exception\RecordMissing $e) {
-                Console::writeLine("WARNING! - Caught exception: " . $e->getMessage() . "\n");
+                Console::writeLine(
+                    'WARNING! - Caught exception: ' . $e->getMessage() . "\n"
+                );
             }
         }
         Console::writeLine(

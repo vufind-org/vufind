@@ -351,7 +351,9 @@ class Solr extends AbstractBase
     {
         $settings = $this->hierarchyDriver->getTreeSettings();
 
-        if (!isset($settings['checkAvailability']) || $settings['checkAvailability']==1) {
+        if (!isset($settings['checkAvailability'])
+            || $settings['checkAvailability'] == 1
+        ) {
             $results = $this->searchService->retrieve(
                 'Solr', $id, new ParamBag(array('fq' => $this->filters))
             );
