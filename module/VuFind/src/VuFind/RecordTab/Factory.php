@@ -217,7 +217,7 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return SimilarItems
+     * @return SimilarItemsCarousel
      */
     public static function getSimilarItemsCarousel(ServiceManager $sm)
     {
