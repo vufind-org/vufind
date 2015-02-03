@@ -48,7 +48,6 @@ abstract class Options implements TranslatorAwareInterface
      * @var array
      */
     protected $sortOptions = array();
-    protected $listviewOption = "full";
 
     /**
      * Overall default sort option
@@ -203,6 +202,13 @@ abstract class Options implements TranslatorAwareInterface
      * @var string
      */
     protected $facetsIni = 'facets';
+
+    /**
+     * Active list view option (see [List] in searches.ini).
+     *
+     * @var string
+     */
+    protected $listviewOption = "full";
 
     /**
      * Translator (or null if unavailable)
