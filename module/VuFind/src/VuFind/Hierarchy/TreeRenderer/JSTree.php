@@ -50,6 +50,23 @@ class JSTree extends AbstractBase
     protected $translator = null;
 
     /**
+     * Router plugin
+     *
+     * @var \Zend\Mvc\Controller\Plugin\Url
+     */
+    protected $router = null;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Mvc\Controller\Plugin\Url $router Router plugin for urls
+     */
+    public function __construct(\Zend\Mvc\Controller\Plugin\Url $router)
+    {
+        $this->router = $router;
+    }
+
+    /**
      * Set a translator
      *
      * @param \Zend\I18n\Translator\Translator $translator Translator
@@ -133,11 +150,140 @@ class JSTree extends AbstractBase
     public function render($context, $mode, $hierarchyID, $recordID = false)
     {
         if (!empty($context) && !empty($mode)) {
-            return $this->transformCollectionXML(
-                $context, $mode, $hierarchyID, $recordID
-            );
+            if ($mode == 'List') {
+                return $this->jsonToHTML(
+                    json_decode($this->getJSON($hierarchyID, $context)),
+                    $this->recordDriver->getUniqueId()
+                );
+            } else {
+                return $this->transformCollectionXML(
+                    $context, $mode, $hierarchyID, $recordID
+                );
+            }
         }
         return false;
+    }
+
+    /**
+     * Convert JSTree JSON structure to HTML
+     *
+     * @param object $node     JSON object of a the JSTree
+     * @param string $recordID The currently active record
+     *
+     * @return string
+     */
+    public function jsonToHTML($node, $recordID = false)
+    {
+        $name = strlen($node->text) > 100
+            ? substr($node->text, 0, 100) . '...'
+            : $node->text;
+        $icon = $node->type == 'record' ? 'file-o' : 'folder-open';
+        $html = '<li';
+        if ($node->type == 'collection') {
+            $html .= ' class="hierarchy';
+            if ($recordID && $recordID == $node->li_attr->recordid) {
+                $html .= ' currentHierarchy';
+            }
+            $html .= '"';
+        } elseif ($recordID && $recordID == $node->li_attr->recordid) {
+            $html .= ' class="currentRecord"';
+        }
+        $html .= '><i class="fa fa-li fa-' . $icon . '"></i> '
+            . '<a name="tree-' . $node->id . '" href="' . $node->a_attr->href
+            . '" title="' . $node->text . '">'
+            . $name . '</a>';
+        if (isset($node->children)) {
+            $html .= '<ul class="fa-ul">';
+            foreach ($node->children as $child) {
+                $html .= $this->jsonToHTML($child, $recordID);
+            }
+            $html .= '</ul>';
+        }
+        return $html . '</li>';
+    }
+
+    /**
+     * Render the Hierarchy Tree
+     *
+     * @param string $hierarchyID The hierarchy ID of the tree to fetch
+     * @param string $context     Record or Collection
+     *
+     * @return mixed The desired hierarchy tree output (or false on error)
+     */
+    public function getJSON($hierarchyID, $context = 'Record')
+    {
+        $json = $this->getDataSource()->getJSON($hierarchyID);
+        if ($json == null) {
+            return false;
+        }
+        return json_encode(
+            $this->formatJSON(json_decode($json), $context, $hierarchyID)
+        );
+    }
+
+    /**
+     * Recursive function to convert the json to the right format
+     *
+     * @param object $node        JSON object of a node/top node
+     * @param string $context     Record or Collection
+     * @param string $hierarchyID Collection ID
+     *
+     * @return array/object
+     */
+    protected function formatJSON($node, $context, $hierarchyID)
+    {
+        $ret = array(
+            'id' => preg_replace('/\W/', '-', $node->id),
+            'text' => $node->title,
+            'li_attr' => array(
+                'recordid' => $node->id
+            ),
+            'a_attr' => array(
+                'href' => $this->getContextualUrl($node, $context, $hierarchyID),
+                'title' => $node->title
+            ),
+            'type' => $node->type
+        );
+        if (isset($node->children)) {
+            $ret['children'] = array();
+            for ($i=0;$i<count($node->children);$i++) {
+                $ret['children'][$i] = $this
+                    ->formatJSON($node->children[$i], $context, $hierarchyID);
+            }
+        }
+        return $ret;
+    }
+
+    /**
+     * Use the router to build the appropriate URL based on context
+     *
+     * @param object $node         JSON object of a node/top node
+     * @param string $context      Record or Collection
+     * @param string $collectionID Collection ID
+     *
+     * @return string
+     */
+    protected function getContextualUrl($node, $context, $collectionID)
+    {
+        $params = array(
+            'id' => $node->id,
+            'tab' => 'HierarchyTree'
+        );
+        $options = array(
+            'query' => array(
+                'recordID' => $node->id
+            )
+        );
+        if ($context == 'Collection') {
+            return $this->router->fromRoute('collection', $params, $options)
+                . '#tabnav';
+        } else {
+            $options['query']['hierarchy'] = $collectionID;
+            $url = $this->router->fromRoute($node->type, $params, $options);
+            return $node->type == 'collection'
+                ? $url . '#tabnav'
+                : $url . '#tree-' . preg_replace('/\W/', '-', $node->id);
+        }
     }
 
     /**
@@ -168,7 +314,7 @@ class JSTree extends AbstractBase
             'titleText' => $this->translate('collection_view_record'),
             'collectionID' => $hierarchyID,
             'collectionTitle' => $hierarchyTitle,
-            'baseURL' => '%%%%VUFIND-BASE-URL%%%%',
+            'baseURL' => rtrim($this->router->fromRoute('home'), '/'),
             'context' => $context,
             'recordID' => $recordID
         );

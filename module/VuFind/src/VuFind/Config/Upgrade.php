@@ -882,6 +882,18 @@ class Upgrade
         );
         $this->applyOldSettings('WorldCat.ini', $groups);
 
+        // we need to fix an obsolete search setting for authors
+        foreach (array('Basic_Searches', 'Advanced_Searches') as $section) {
+            $new = array();
+            foreach ($this->newConfigs['WorldCat.ini'][$section] as $k => $v) {
+                if ($k == 'srw.au:srw.pn:srw.cn') {
+                    $k = 'srw.au';
+                }
+                $new[$k] = $v;
+            }
+            $this->newConfigs['WorldCat.ini'][$section] = $new;
+        }
+
         // save the file
         $this->saveModifiedConfig('WorldCat.ini');
     }

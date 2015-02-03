@@ -288,6 +288,10 @@ ul.cartContent {
     margin-left: 4em;
 }
 
+.alphaBrowseEntry.browse-match {
+    border:.2em solid #619144;
+}
+
 .browseAlphabetSelectorItem {
     float: left;
     margin-right:5px;

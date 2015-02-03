@@ -454,12 +454,14 @@
     <lst name="lcc">
       <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/lcc_browse.db</str>
       <str name="field">callnumber-a</str>
+      <str name="normalizer">org.vufind.util.LCCallNormalizer</str>
     </lst>
 
     <lst name="dewey">
       <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/dewey_browse.db</str>
       <str name="field">dewey-raw</str>
       <str name="ignoreDiacritics">yes</str>
+      <str name="normalizer">org.vufind.util.DeweyCallNormalizer</str>
     </lst>
 
     <lst name="hierarchy">

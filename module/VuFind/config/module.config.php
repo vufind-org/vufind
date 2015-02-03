@@ -353,10 +353,9 @@ $config = array(
                 ),
             ),
             'hierarchy_treerenderer' => array(
-                'invokables' => array(
-                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\JSTree',
-                    'fancytree' => 'VuFind\Hierarchy\TreeRenderer\FancyTree',
-                )
+                'factories' => array(
+                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\Factory::getJSTree'
+                ),
             ),
             'ils_driver' => array(
                 'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
@@ -460,6 +459,7 @@ $config = array(
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
+                    'similaritemscarousel' => 'VuFind\RecordTab\Factory::getSimilarItemsCarousel',
                     'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
                 ),
                 'invokables' => array(
@@ -614,6 +614,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
+                    'Similar' => 'SimilarItemsCarousel',
                     'Details' => 'StaffViewArray',
                 ),
                 'defaultTab' => null,
@@ -625,6 +626,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
+                    'Similar' => 'SimilarItemsCarousel',
                     'Details' => 'StaffViewMARC',
                 ),
                 'defaultTab' => null,
