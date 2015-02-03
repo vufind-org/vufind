@@ -23,6 +23,8 @@
     <?
       // Set global path for Javascript code:
       $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
+      // Polyfill btoa
+      $this->headScript()->appendFile('vendor/base64.js', 'text/javascript', array('conditional' => 'lt IE 10'));
 
       // Deal with cart stuff:
       if (!isset($this->renderingError)) {
@@ -56,6 +58,7 @@
               'bookbagMax' => $cart->getMaxSize(),
               'bookbagFull' => 'bookbag_full_msg',
               'bookbagStatusFull' => 'bookbag_full',
+              'no_tags' => 'No Tags'
             )
           );
         }
