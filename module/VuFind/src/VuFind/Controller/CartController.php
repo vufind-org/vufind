@@ -220,6 +220,14 @@ class CartController extends AbstractBase
                     $view->to, $view->from, $view->message,
                     $url, $this->getViewRenderer(), 'bulk_email_title'
                 );
+                if ($this->params()->fromPost('ccself')
+                    && $view->from != $view->to
+                ) {
+                    $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
+                        $view->from, $view->from, $view->message,
+                        $url, $this->getViewRenderer(), 'bulk_email_title'
+                    );
+                }
                 return $this->redirectToSource('info', 'email_success');
             } catch (MailException $e) {
                 $this->flashMessenger()->setNamespace('error')
