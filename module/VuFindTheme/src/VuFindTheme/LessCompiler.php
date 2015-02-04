@@ -177,6 +177,9 @@ class LessCompiler
      */
     protected function compileFile($theme, $less)
     {
+        $parts = explode(':', $less);
+        $less = $parts[0];
+
         $finalOutDir = $this->basePath . '/themes/' . $theme . '/css/';
         list($fileName, ) = explode('.', $less);
         $finalFile = $finalOutDir . $fileName . '.css';

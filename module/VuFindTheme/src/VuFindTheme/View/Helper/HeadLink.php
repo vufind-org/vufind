@@ -89,7 +89,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      *
      * @return void
      */
-    public function addLessStylesheet($file)
+    public function addLessStylesheet($file, $media, $conditionalStylesheet)
     {
         $relPath = 'less/' . $file;
         $urlHelper = $this->getView()->plugin('url');
@@ -119,7 +119,9 @@ class HeadLink extends \Zend\View\Helper\HeadLink
                     'output' => str_replace('.less', '.css', $file)
                 )
             );
-            $this->prependStylesheet($cssDirectory . $css_file_name);
+            $this->prependStylesheet(
+                $cssDirectory . $css_file_name, $media, $conditionalStylesheet
+            );
         } catch (\Exception $e) {
             error_log($e->getMessage());
             list($fileName, ) = explode('.', $file);
