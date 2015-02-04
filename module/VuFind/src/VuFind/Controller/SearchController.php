@@ -117,6 +117,14 @@ class SearchController extends AbstractSearch
                     $view->to, $view->from, $view->message,
                     $view->url, $this->getViewRenderer()
                 );
+                if ($this->params()->fromPost('ccself')
+                    && $view->from != $view->to
+                ) {
+                    $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
+                    $view->from, $view->from, $view->message,
+                    $view->url, $this->getViewRenderer()
+                    );
+                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirect()->toUrl($view->url);
