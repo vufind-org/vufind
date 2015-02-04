@@ -1032,14 +1032,15 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('source', 'VuFind')
             );
             $view = $this->createEmailViewModel();
-            $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $mailer->sendRecord(
                 $view->to, $view->from, $view->message, $record,
                 $this->getViewRenderer()
             );
             if ($this->params()->fromPost('ccself')
                 && $view->from != $view->to
             ) {
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                $mailer->sendRecord(
                     $view->from, $view->from, $view->message, $record,
                     $this->getViewRenderer()
                 );
