@@ -43,6 +43,8 @@ use Zend\Log\LoggerInterface;
 abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Has the configuration been validated?
      *
@@ -63,13 +65,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @var \VuFind\Db\Table\PluginManager
      */
     protected $tableManager;
-
-    /**
-     * Translator
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator;
 
     /**
      * Logger (or false for none)
@@ -102,18 +97,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         if ($this->logger) {
             $this->logger->debug($msg);
         }
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return TranslatorAwareInterface
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
     }
 
     /**
@@ -387,31 +370,5 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                 )
             );
         }
-    }
-
-    /**
-     * Translate a string
-     *
-     * @param string $str    String to translate
-     * @param array  $tokens Tokens to inject into the translated string
-     *
-     * @return string
-     * @todo Use TranslatorAwareTrait instead when it's implemented
-     */
-    public function translate($str, $tokens = array())
-    {
-        $msg = $this->translator->translate($str);
-
-        // Do we need to perform substitutions?
-        if (!empty($tokens)) {
-            $in = $out = array();
-            foreach ($tokens as $key => $value) {
-                $in[] = $key;
-                $out[] = $value;
-            }
-            $msg = str_replace($in, $out, $msg);
-        }
-
-        return $msg;
     }
 }

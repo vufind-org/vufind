@@ -36,7 +36,7 @@ use VuFindSearch\Backend\BackendInterface;
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\I18n\Translator\Translator;
+use Zend\I18n\Translator\TranslatorInterface;
 
 /**
  * Solr hierarchical facet handling listener.
@@ -81,7 +81,7 @@ class HierarchicalFacetListener
     /**
      * Translator.
      *
-     * @var Translator
+     * @var TranslatorInterface
      */
     protected $translator;
 

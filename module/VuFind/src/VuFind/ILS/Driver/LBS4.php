@@ -40,6 +40,8 @@ use VuFind\ILS\Driver\AbstractBase as AbstractBase;
  */
 class LBS4 extends AbstractBase implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Database connection
      *
@@ -771,32 +773,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             throw new ILSException($e->getMessage());
         }
         return array();
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Opus
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    protected function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 
     /**
