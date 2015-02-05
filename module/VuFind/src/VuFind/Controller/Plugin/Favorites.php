@@ -87,8 +87,8 @@ class Favorites extends AbstractPlugin
                 ? $tagParser->parse($params['mytags']) : array();
             $user->saveResource($resource, $list, $tags, '', false);
 
-            $recordCache = $this->getController()->getServiceLocator()->get('VuFind\Record\Cache');
-            $recordLoader = $this->getController()->getServiceLocator()->get('VuFind\Record\Loader');
+            $recordCache = $this->getController()->getServiceLocator()->get('VuFind\RecordCache');
+            $recordLoader = $this->getController()->getServiceLocator()->get('VuFind\RecordLoader');
             $record = $recordLoader->load($resource->record_id, $resource->source);
             $recordCache->createOrUpdate($resource->record_id, $user->id, $resource->source, $record->getRawData(), null, $resource->id);
         }
