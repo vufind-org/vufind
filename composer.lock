@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0bcf71e8265164107ab6c874a47f118d",
+    "hash": "fcc3247c05b04451214d193fe0c08e4f",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -595,23 +595,23 @@
         },
         {
             "name": "vufind-org/vufindhttp",
-            "version": "v1.0.1",
+            "version": "v1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vufind-org/vufindhttp.git",
-                "reference": "ddedf7636f7e8d3fff529157dbc9aa8a2d0ea210"
+                "reference": "2cd2f92cf2b43eb6a79bec0e895cb9c3d6e273d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/ddedf7636f7e8d3fff529157dbc9aa8a2d0ea210",
-                "reference": "ddedf7636f7e8d3fff529157dbc9aa8a2d0ea210",
+                "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/2cd2f92cf2b43eb6a79bec0e895cb9c3d6e273d9",
+                "reference": "2cd2f92cf2b43eb6a79bec0e895cb9c3d6e273d9",
                 "shasum": ""
             },
             "require": {
-                "zendframework/zend-http": "2.2.*"
+                "zendframework/zend-http": ">=2.2"
             },
             "require-dev": {
-                "zendframework/zend-uri": "2.2.*"
+                "zendframework/zend-uri": ">=2.2"
             },
             "type": "library",
             "autoload": {
@@ -637,24 +637,24 @@
             ],
             "description": "VuFind 2.x HTTP service library",
             "homepage": "http://vufind.org/",
-            "time": "2015-02-05 17:26:35"
+            "time": "2015-02-05 19:25:26"
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.2.9",
+            "version": "2.3.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "351279d669cf16eb5c640f86e944fe8f84c8b181"
+                "reference": "c878e047ab1c5dcfb201974bdff607be54ccb54b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-351279d669cf16eb5c640f86e944fe8f84c8b181-zip-14eaac.zip",
-                "reference": "2.2.9",
-                "shasum": "022a1c0d5b3e54c3bd0333f1fedf79020ba57eea"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-c878e047ab1c5dcfb201974bdff607be54ccb54b-zip-991680.zip",
+                "reference": "2.3.4",
+                "shasum": "45535093807295917206dd98173a704c8eaa5da9"
             },
             "require": {
-                "php": ">=5.3.3",
+                "php": ">=5.3.23",
                 "zendframework/zendxml": "~1.0-dev"
             },
             "replace": {
@@ -712,17 +712,19 @@
             },
             "require-dev": {
                 "doctrine/annotations": ">=1.0",
-                "fabpot/php-cs-fixer": "*@dev",
+                "fabpot/php-cs-fixer": "1.*",
                 "ircmaxell/random-lib": "dev-master",
                 "ircmaxell/security-lib": "dev-master",
-                "ocramius/proxy-manager": "0.4.*",
-                "phpunit/phpunit": "3.7.*"
+                "mikey179/vfsstream": "1.2.*",
+                "phpunit/phpunit": "3.7.*",
+                "satooshi/php-coveralls": "dev-master",
+                "sebastianbergmann/phpcov": "1.1.0"
             },
             "suggest": {
                 "doctrine/annotations": "Doctrine Annotations >=1.0 for annotation features",
                 "ext-intl": "ext/intl for i18n features (included in default builds of PHP)",
                 "ircmaxell/random-lib": "Fallback random byte generator for Zend\\Math\\Rand if OpenSSL/Mcrypt extensions are unavailable",
-                "ocramius/proxy-manager": "ProxyManager to handle lazy initialization of services",
+                "ocramius/proxy-manager": "ProxyManager 0.5.* to handle lazy initialization of services",
                 "zendframework/zendpdf": "ZendPdf for creating PDF representations of barcodes",
                 "zendframework/zendservice-recaptcha": "ZendService\\ReCaptcha for rendering ReCaptchas in Zend\\Captcha and/or Zend\\Form"
             },
@@ -734,8 +736,8 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.2-dev",
-                    "dev-develop": "2.3-dev"
+                    "dev-master": "2.3-dev",
+                    "dev-develop": "2.4-dev"
                 }
             },
             "autoload": {
@@ -753,10 +755,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.2.9",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.3.4",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2015-01-14 16:28:50"
+            "time": "2015-01-14 16:44:17"
         },
         {
             "name": "zendframework/zendrest",
