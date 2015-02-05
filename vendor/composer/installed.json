@@ -670,54 +670,6 @@
         }
     },
     {
-        "name": "vufind-org/vufindhttp",
-        "version": "v1.0.0",
-        "version_normalized": "1.0.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/vufind-org/vufindhttp.git",
-            "reference": "2f56535bd3c306747ecf89ecea33c798f16f8c4e"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/2f56535bd3c306747ecf89ecea33c798f16f8c4e",
-            "reference": "2f56535bd3c306747ecf89ecea33c798f16f8c4e",
-            "shasum": ""
-        },
-        "require": {
-            "zendframework/zend-http": "2.2.*"
-        },
-        "require-dev": {
-            "zendframework/zend-uri": "2.2.*"
-        },
-        "time": "2014-10-16 14:38:35",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "VuFindHttp\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "GPL-2.0"
-        ],
-        "authors": [
-            {
-                "name": "David Maus",
-                "email": "maus@hab.de",
-                "role": "Developer"
-            },
-            {
-                "name": "Demian Katz",
-                "email": "demian.katz@villanova.edu",
-                "role": "Maintainer"
-            }
-        ],
-        "description": "VuFind 2.x HTTP service library",
-        "homepage": "http://vufind.org/"
-    },
-    {
         "name": "vufind-org/vufindcode",
         "version": "v1.0.2",
         "version_normalized": "1.0.2.0",
@@ -754,63 +706,6 @@
             }
         ],
         "description": "Class for representing ISBNs (a VuFind support library)"
-    },
-    {
-        "name": "behat/mink",
-        "version": "v1.6.0",
-        "version_normalized": "1.6.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Behat/Mink.git",
-            "reference": "090900a0049c441f1e072bbd837db4079b2250c5"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Behat/Mink/zipball/090900a0049c441f1e072bbd837db4079b2250c5",
-            "reference": "090900a0049c441f1e072bbd837db4079b2250c5",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.1",
-            "symfony/css-selector": "~2.0"
-        },
-        "suggest": {
-            "behat/mink-browserkit-driver": "extremely fast headless driver for Symfony\\Kernel-based apps (Sf2, Silex)",
-            "behat/mink-goutte-driver": "fast headless driver for any app without JS emulation",
-            "behat/mink-selenium2-driver": "slow, but JS-enabled driver for any app (requires Selenium2)",
-            "behat/mink-zombie-driver": "fast and JS-enabled headless driver for any app (requires node.js)"
-        },
-        "time": "2014-09-26 09:25:05",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "1.6.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Behat\\Mink": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Konstantin Kudryashov",
-                "email": "ever.zet@gmail.com",
-                "homepage": "http://everzet.com"
-            }
-        ],
-        "description": "Web acceptance testing framework for PHP 5.3",
-        "homepage": "http://mink.behat.org/",
-        "keywords": [
-            "browser",
-            "testing",
-            "web"
-        ]
     },
     {
         "name": "behat/mink-zombie-driver",
@@ -938,55 +833,6 @@
         ]
     },
     {
-        "name": "symfony/yaml",
-        "version": "v2.6.3",
-        "version_normalized": "2.6.3.0",
-        "target-dir": "Symfony/Component/Yaml",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/Yaml.git",
-            "reference": "82462a90848a52c2533aa6b598b107d68076b018"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Yaml/zipball/82462a90848a52c2533aa6b598b107d68076b018",
-            "reference": "82462a90848a52c2533aa6b598b107d68076b018",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "time": "2015-01-03 15:33:07",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.6-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Symfony\\Component\\Yaml\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            }
-        ],
-        "description": "Symfony Yaml Component",
-        "homepage": "http://symfony.com"
-    },
-    {
         "name": "zendframework/zendframework",
         "version": "2.2.9",
         "version_normalized": "2.2.9.0",
@@ -1108,9 +954,106 @@
         }
     },
     {
+        "name": "symfony/yaml",
+        "version": "v2.6.4",
+        "version_normalized": "2.6.4.0",
+        "target-dir": "Symfony/Component/Yaml",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/Yaml.git",
+            "reference": "60ed7751671113cf1ee7d7778e691642c2e9acd8"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/Yaml/zipball/60ed7751671113cf1ee7d7778e691642c2e9acd8",
+            "reference": "60ed7751671113cf1ee7d7778e691642c2e9acd8",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "time": "2015-01-25 04:39:26",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.6-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Symfony\\Component\\Yaml\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Symfony Community",
+                "homepage": "http://symfony.com/contributors"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Symfony Yaml Component",
+        "homepage": "http://symfony.com"
+    },
+    {
+        "name": "vufind-org/vufindhttp",
+        "version": "v1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/vufind-org/vufindhttp.git",
+            "reference": "ddedf7636f7e8d3fff529157dbc9aa8a2d0ea210"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/ddedf7636f7e8d3fff529157dbc9aa8a2d0ea210",
+            "reference": "ddedf7636f7e8d3fff529157dbc9aa8a2d0ea210",
+            "shasum": ""
+        },
+        "require": {
+            "zendframework/zend-http": "2.2.*"
+        },
+        "require-dev": {
+            "zendframework/zend-uri": "2.2.*"
+        },
+        "time": "2015-02-05 17:26:35",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "VuFindHttp\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "GPL-2.0"
+        ],
+        "authors": [
+            {
+                "name": "David Maus",
+                "email": "maus@hab.de",
+                "role": "Developer"
+            },
+            {
+                "name": "Demian Katz",
+                "email": "demian.katz@villanova.edu",
+                "role": "Maintainer"
+            }
+        ],
+        "description": "VuFind 2.x HTTP service library",
+        "homepage": "http://vufind.org/"
+    },
+    {
         "name": "symfony/css-selector",
-        "version": "v2.6.3",
-        "version_normalized": "2.6.3.0",
+        "version": "v2.6.4",
+        "version_normalized": "2.6.4.0",
         "target-dir": "Symfony/Component/CssSelector",
         "source": {
             "type": "git",
@@ -1161,25 +1104,82 @@
         "homepage": "http://symfony.com"
     },
     {
+        "name": "behat/mink",
+        "version": "v1.6.1",
+        "version_normalized": "1.6.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/minkphp/Mink.git",
+            "reference": "8b68523a339ec991bcd638b39dc8f04f808da88a"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/minkphp/Mink/zipball/8b68523a339ec991bcd638b39dc8f04f808da88a",
+            "reference": "8b68523a339ec991bcd638b39dc8f04f808da88a",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.1",
+            "symfony/css-selector": "~2.0"
+        },
+        "suggest": {
+            "behat/mink-browserkit-driver": "extremely fast headless driver for Symfony\\Kernel-based apps (Sf2, Silex)",
+            "behat/mink-goutte-driver": "fast headless driver for any app without JS emulation",
+            "behat/mink-selenium2-driver": "slow, but JS-enabled driver for any app (requires Selenium2)",
+            "behat/mink-zombie-driver": "fast and JS-enabled headless driver for any app (requires node.js)"
+        },
+        "time": "2015-02-04 17:02:06",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "1.6.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Behat\\Mink\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Konstantin Kudryashov",
+                "email": "ever.zet@gmail.com",
+                "homepage": "http://everzet.com"
+            }
+        ],
+        "description": "Browser controller/emulator abstraction for PHP",
+        "homepage": "http://mink.behat.org/",
+        "keywords": [
+            "browser",
+            "testing",
+            "web"
+        ]
+    },
+    {
         "name": "symfony/process",
-        "version": "v2.6.3",
-        "version_normalized": "2.6.3.0",
+        "version": "v2.6.4",
+        "version_normalized": "2.6.4.0",
         "target-dir": "Symfony/Component/Process",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/Process.git",
-            "reference": "319794f611bd8bdefbac72beb3f05e847f8ebc92"
+            "reference": "ecfc23e89d9967999fa5f60a1e9af7384396e9ae"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Process/zipball/319794f611bd8bdefbac72beb3f05e847f8ebc92",
-            "reference": "319794f611bd8bdefbac72beb3f05e847f8ebc92",
+            "url": "https://api.github.com/repos/symfony/Process/zipball/ecfc23e89d9967999fa5f60a1e9af7384396e9ae",
+            "reference": "ecfc23e89d9967999fa5f60a1e9af7384396e9ae",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2015-01-06 22:47:52",
+        "time": "2015-01-25 04:39:26",
         "type": "library",
         "extra": {
             "branch-alias": {
