@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Table;
-use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Expression, Zend\Db\Sql\Select;
 
 /**
  * Table Definition for tags
@@ -98,24 +98,61 @@ class Tags extends Gateway
      * @return array
      */
     public function getForResource($id, $source = 'VuFind', $limit = 0,
-        $list = null, $user = null, $sort = 'count'
+        $list = null, $user = null, $sort = 'count', $is_me_id = null
     ) {
+        /*
+        SELECT resource_tags.tag_id, count( * ) , is_me
+            FROM `resource_tags`
+            LEFT JOIN (
+                SELECT tag_id, 1 AS is_me
+                FROM `resource_tags`
+                WHERE resource_id =142
+                AND user_id =27
+            )subq ON resource_tags.tag_id = subq.tag_id
+            WHERE resource_id =142
+            GROUP BY tag_id
+        */
         return $this->select(
-            function ($select) use ($id, $source, $limit, $list, $user, $sort) {
-                $select->columns(
-                    array(
-                        'id', 'tag',
-                        'cnt' => new Expression(
-                            'COUNT(?)', array('tags.tag'),
-                            array(Expression::TYPE_IDENTIFIER)
-                        )
+            function ($select) use (
+                $id, $source, $limit, $list, $user, $sort, $is_me_id
+            ) {
+                // Array of select columns
+                $columns = array(
+                    "id", "tag",
+                    'cnt' => new Expression(
+                        'COUNT(?)', array("tags.tag"),
+                        array(Expression::TYPE_IDENTIFIER)
                     )
                 );
+                // If we're looking for ownership
+                if (!empty($is_me_id)) {
+                    // Create sub query
+                    $sub = new Select('resource_tags'); // FROM resource_tags
+                    // SELECT tag_id, 1 AS is_me
+                    $sub->columns(array('tag_id', 'is_me'=>new Expression("1")))
+                        ->join( // Convert record_id to resource_id
+                            array('r' => 'resource'),
+                            'resource_id = r.id',
+                            array()
+                        )
+                        ->where(array('r.record_id' => $id)) // WHERE resource_id = 142
+                        ->where(array('user_id' => $is_me_id)); // AND user_id = 27
+
+                    // LEFT JOIN ... ON resource_tags.tag_id = subq.tag_id
+                    $select->join(
+                        array('subq' => $sub),
+                        'tags.id = subq.tag_id',
+                        array('is_me'=>new Expression("`subq`.`is_me`")),
+                        Select::JOIN_LEFT
+                    );
+                }
+                // SELECT (do not add table prefixes)
+                $select->columns($columns);
+                // Convert record_id to resource_id
                 $select->join(
-                    array('rt' => 'resource_tags'),
-                    'tags.id = rt.tag_id',
-                    array('user' => new Expression("GROUP_CONCAT(DISTINCT user_id SEPARATOR ',')"))
+                    array('rt' => 'resource_tags'), 'rt.tag_ID = tags.id', array()
                 );
+                // Convert record_id to resource_id
                 $select->join(
                     array('r' => 'resource'), 'rt.resource_id = r.id', array()
                 );
@@ -142,8 +179,12 @@ class Tags extends Gateway
                 if (!is_null($user)) {
                     $select->where->equalTo('rt.user_id', $user);
                 }
+
+                // var_dump( $select->getSqlString( $this->adapter->getPlatform() ) );
             }
         );
+
+        return $resultset->toArray();
     }
 
     /**

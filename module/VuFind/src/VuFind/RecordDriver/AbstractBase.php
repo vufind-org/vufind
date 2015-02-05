@@ -190,19 +190,11 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         $ownerId = null)
     {
         $tags = $this->getDbTable('Tags');
-        $retTags = $tags->getForResource(
+        return $tags->getForResource(
             $this->getUniqueId(),
             $this->getResourceSource(),
-            0, $list_id, $user_id, $sort
-        )->toArray();
-        foreach ($retTags as &$tag) {
-            if (null !== $ownerId) {
-                $tagOwners = array_map("intval", explode(',', $tag['user']));
-                $tag['createdByUser'] = in_array($ownerId, $tagOwners);
-            }
-            unset($tag['user']); // Do not expose user ids
-        }
-        return $retTags;
+            0, $list_id, $user_id, $sort, $ownerId
+        );
     }
 
     /**

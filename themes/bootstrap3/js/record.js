@@ -181,7 +181,7 @@ function ajaxTagUpdate(tag, remove) {
     url:path+'/AJAX/JSON?method=tagRecord',
     method:'POST',
     data:{
-      tag:tag.replace(/\+/g, ' '),
+      tag:'"'+tag.replace(/\+/g, ' ')+'"',
       id:recordId,
       source:recordSource,
       remove:remove
@@ -208,18 +208,18 @@ function refreshTagList(loggedin) {
             var href = path + '/Tag?' + $.param({lookfor:tag.tag});
             html += '<div class="tag';
             if(loggedin) {
-              if(tag.createdByUser) {
+              if(tag.is_me) {
                 html += ' selected">';
               } else {
                 html += '">';
               }
               html += '<a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
-                       <a class="badge" onClick="ajaxTagUpdate(\'' + htmlEncode(tag.tag) + '\', '+(tag.createdByUser)+');return false;">'
-                       +htmlEncode(tag.cnt);
-              if(tag.createdByUser) {
-                html += '<i class="fa fa-close"></i></a>';
+                       <a class="badge" onClick="ajaxTagUpdate(\'' + tag.tag.replace(/ /g, '+') + '\', '+(tag.is_me)+');return false;">';
+              if(tag.is_me) {
+                if(tag.cnt > 1) html += htmlEncode(tag.cnt);
+                html += ' <i class="fa fa-close"></i></a>';
               } else {
-                html += '<i class="fa fa-plus"></i></a>';
+                html += htmlEncode(tag.cnt)+' <i class="fa fa-plus"></i></a>';
               }
             } else {
               html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a> <span class="badge">'+htmlEncode(tag.cnt)+'</span>';
@@ -284,15 +284,13 @@ $(document).ready(function(){
     return Lightbox.get(params['controller'], 'SMS', {id:id});
   });
   // Tag lightbox
+  Lightbox.addFormCallback('tagRecord', function(html) {
+    refreshTagList(true);
+    Lightbox.confirm(vufindString.bulk_save_success);
+  });
   $('#tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
-    Lightbox.addCloseAction(function() {
-      var recordId = $('#record_id').val();
-      var recordSource = $('.hiddenSource').val();
-      // Update tag list (add tag)
-      refreshTagList(userIsLoggedIn);
-    });
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
   // Form handlers

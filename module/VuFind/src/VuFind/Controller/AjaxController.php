@@ -633,7 +633,7 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
-            $tag = '"' . $this->params()->fromPost('tag', '') . '"';
+            $tag = $this->params()->fromPost('tag', '');
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             if (strlen($tag) > 0) { // don't add empty tags
                 if ('false' === $this->params()->fromPost('remove', 'false')) {
@@ -659,27 +659,24 @@ class AjaxController extends AbstractBase
      */
     protected function getRecordTagsAjax()
     {
+        $user = $this->getUser();
+        $is_me_id = is_null($user) ? null : $user->id;
         // Retrieve from database:
         $tagTable = $this->getTable('Tags');
         $tags = $tagTable->getForResource(
             $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind')
+            $this->params()->fromQuery('source', 'VuFind'),
+            0, null, null, 'count', $is_me_id
         );
 
         // Build data structure for return:
         $tagList = array();
-        $user = $this->getAuthManager()->isLoggedIn();
         foreach ($tags as $tag) {
-            $t = array(
-                'tag'=>$tag->tag,
-                'cnt'=>$tag->cnt,
-                'createdByUser'=>false
+            $tagList[] = array(
+                'tag'   => $tag->tag,
+                'cnt'   => $tag->cnt,
+                'is_me' => $tag->is_me == 1 ? true : false
             );
-            $tagOwners = array_map("intval", explode(',', $tag->user));
-            if ($user && in_array($user->id, $tagOwners)) {
-                $t['createdByUser'] = true;
-            }
-            $tagList[] = $t;
         }
 
         // If we don't have any tags, provide a user-appropriate message:
@@ -1046,14 +1043,15 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('source', 'VuFind')
             );
             $view = $this->createEmailViewModel();
-            $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $mailer->sendRecord(
                 $view->to, $view->from, $view->message, $record,
                 $this->getViewRenderer()
             );
             if ($this->params()->fromPost('ccself')
                 && $view->from != $view->to
             ) {
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                $mailer->sendRecord(
                     $view->from, $view->from, $view->message, $record,
                     $this->getViewRenderer()
                 );
@@ -1099,10 +1097,19 @@ class AjaxController extends AbstractBase
         // Attempt to send the email:
         try {
             $view = $this->createEmailViewModel();
-            $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $mailer->sendLink(
                 $view->to, $view->from, $view->message, $url,
                 $this->getViewRenderer(), $this->params()->fromPost('subject')
             );
+            if ($this->params()->fromPost('ccself')
+                && $view->from != $view->to
+            ) {
+                $mailer->sendLink(
+                    $view->from, $view->from, $view->message, $url,
+                    $this->getViewRenderer(), $this->params()->fromPost('subject')
+                );
+            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );
