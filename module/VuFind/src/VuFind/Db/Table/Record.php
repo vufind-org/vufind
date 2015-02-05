@@ -34,10 +34,10 @@ use Zend\Db\Sql\Sql;
  * Table Definition for user statistics
  *
  * @category VuFind2
- * @package Db_Table
- * @author Markus Beh <markus.beh@ub.uni-freiburg.de>
- * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link http://vufind.org Main Site
+ * @package  Db_Table
+ * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org Main Site
  */
 class Record extends Gateway
 {
@@ -50,6 +50,14 @@ class Record extends Gateway
         parent::__construct('record', 'VuFind\Db\Row\Record');
     }
     
+    /**
+     * Find records by ids
+     * 
+     * @param array(integer) $ids an array of ids
+     * 
+     * @throws \Exception
+     * @return array of record table rows
+     */
     public function findRecord($ids)
     {
         
@@ -73,8 +81,22 @@ class Record extends Gateway
         return $records;
     }
 
-    public function updateRecord($id, $source, $rawData, $recordId, $userId, $sessionId, $resourceId) {
-        
+    /**
+     * Update an existing entry in record table or create a new one
+     * 
+     * @param integer $id         id
+     * @param string  $source     data source
+     * @param string  $rawData    json encoded raw data from source
+     * @param string  $recordId   record id
+     * @param integer $userId     user id
+     * @param string  $sessionId  session id
+     * @param integer $resourceId resource id
+     * 
+     * @return updated or newly record table entry
+     */
+    public function updateRecord($id, $source, $rawData, 
+        $recordId, $userId, $sessionId, $resourceId
+    ) {
         $records = $this->findRecord(array($id));
         if (empty($records)) {
             $record = $this->createRow();
@@ -84,7 +106,7 @@ class Record extends Gateway
         
         $record->c_id = $id;
         $record->record_id = $recordId;
-        $record->data = str_replace('Katze','CACHED_Katze_CACHED',json_encode($rawData));
+        $record->data = json_encode($rawData);
         $record->source = $source;
         $record->user_id = $userId;
         $record->session_id = $sessionId;
@@ -97,23 +119,43 @@ class Record extends Gateway
         return $record;
     }
     
-    public function cleanup($userId) {
+    /**
+     * Clenaup orphaned entries
+     * 
+     * @param integer $userId user id
+     * 
+     * @return null
+     */
+    public function cleanup($userId) 
+    {
         $sql = new Sql($this->getAdapter());
         $select = $sql->select();
         $select->from('record');
-        $select->join('user_resource', 'record.resource_id = user_resource.resource_id', array(),$select::JOIN_LEFT);
+        $select->join(
+            'user_resource', 
+            'record.resource_id = user_resource.resource_id', 
+            array(), $select::JOIN_LEFT
+        );
         $select->where->equalTo('record.user_id', $userId);
         $select->where->isNull('user_resource.id');
 
         $statement = $sql->prepareStatementForSqlObject($select);
         $results = $statement->execute();
         
-        foreach($results as $result) {
-           $this->delete($result['c_id']);
+        foreach ($results as $result) {
+            $this->delete($result['c_id']);
         }
     }
 
-    public function delete($id) {
+    /** 
+     * Delete entry by id
+     * 
+     * @param integer $id primary key
+     * 
+     * @return null
+     */
+    public function delete($id)
+    {
         $records = $this->findRecord(array($id));
         if (!empty($records)) {
             $records[0]->delete();
