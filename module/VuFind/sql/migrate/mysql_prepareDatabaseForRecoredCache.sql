@@ -18,6 +18,6 @@ CREATE TABLE `record` (
   `updated` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `expires` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `record_id` (`c_id`)
+  UNIQUE KEY `c_id` (`c_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
