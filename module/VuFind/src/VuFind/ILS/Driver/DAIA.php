@@ -3,10 +3,11 @@
  * ILS Driver for VuFind to query availability information via DAIA.
  *
  * Based on the proof-of-concept-driver by Till Kinstler, GBV.
+ * Relaunch of the daia driver developed by Oliver Goldschmidt.
  *
  * PHP version 5
  *
- * Copyright (C) Oliver Goldschmidt 2010.
+ * Copyright (C) Jochen Lienhard 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,32 +24,49 @@
  *
  * @category VuFind2
  * @package  ILS_Drivers
+ * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Oliver Goldschmidt <o.goldschmidt@tu-harburg.de>
+ * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use DOMDocument, VuFind\Exception\ILS as ILSException, Zend\Log\LoggerInterface;
+use VuFind\Exception\ILS as ILSException,
+    DOMDocument, Zend\Log\LoggerInterface;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
  *
- * Based on the proof-of-concept-driver by Till Kinstler, GBV.
- *
  * @category VuFind2
  * @package  ILS_Drivers
+ * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Oliver Goldschmidt <o.goldschmidt@tu-harburg.de>
+ * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
+class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     /**
-     * Base URL
+     * Base URL for DAIA Service
      *
      * @var string
      */
-    protected $baseURL;
+    protected $baseUrl;
+
+    /**
+     * DAIA query identifier prefix
+     *
+     * @var string
+     */
+    protected $daiaidprefix;
+
+    /**
+     * DAIA response format
+     *
+     * @var string
+     */
+    protected $daiaResponseFormat;
 
     /**
      * Logger (or false for none)
@@ -58,30 +76,11 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
     protected $logger = false;
 
     /**
-     * Set the logger
+     * HTTP service
      *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
+     * @var \VuFindHttp\HttpServiceInterface
      */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
-    }
+    protected $httpService = null;
 
     /**
      * Initialize the driver.
@@ -94,11 +93,36 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      */
     public function init()
     {
-        if (!isset($this->config['Global']['baseUrl'])) {
-            throw new ILSException('Global/baseUrl configuration needs to be set.');
+        if (isset($this->config['DAIA']['baseUrl'])) {
+            $this->baseUrl = $this->config['DAIA']['baseUrl'];
+        } else {
+            throw new ILSException('DAIA/baseUrl configuration needs to be set.');
         }
+        if (isset($this->config['DAIA']['daiaResponseFormat'])) {
+            $this->daiaResponseFormat = strtolower($this->config['DAIA']['daiaResponseFormat']);
+        } else {
+            $this->debug("No daiaResponseFormat setting found, using default: xml");
+            $this->daiaResponseFormat = "xml";
+        }
+        if (isset($this->config['DAIA']['daiaidprefix'])) {
+            $this->daiaidprefix = $this->config['DAIA']['daiaidprefix'];
+        } else {
+            $this->debug("No daiaidprefix setting found, using default: \"\"");
+            $this->daiaidprefix = "";
+        }
+    }
 
-        $this->baseURL = $this->config['Global']['baseUrl'];
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     *
+     * @return array An array with key-value pairs.
+     */
+    public function getConfig($function)
+    {
+        return isset($this->config[$function]) ? $this->config[$function] : false;
     }
 
     /**
@@ -112,7 +136,6 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($id, $details)
     {
@@ -133,8 +156,13 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      */
     public function getStatus($id)
     {
-        $holding = $this->daiaToHolding($id);
-        return $holding;
+        if ($this->daiaResponseFormat == 'xml') {
+            return $this->getXMLStatus($id);
+        } elseif ($this->daiaResponseFormat == 'json') {
+            return $this->getJSONStatus($id);
+        } else {
+            throw new ILSException('No matching format found for status retrieval.');
+        }
     }
 
     /**
@@ -151,23 +179,18 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
     public function getStatuses($ids)
     {
         $items = array();
-        foreach ($ids as $id) {
-            $items[] = $this->getShortStatus($id);
+        if ($this->daiaResponseFormat == 'xml') {
+            foreach ($ids as $id) {
+                $items[] = $this->getXMLShortStatus($id);
+            }
+        } elseif ($this->daiaResponseFormat == 'json') {
+            foreach ($ids as $id) {
+                $items[] = $this->getJSONStatus($id);
+            }
+        } else {
+            throw new ILSException('No matching format found for status retrieval.');
         }
         return $items;
-    }
-
-    /**
-     * Public Function which retrieves renew, hold and cancel settings from the
-     * driver ini file.
-     *
-     * @param string $function The name of the feature to be checked
-     *
-     * @return array An array with key-value pairs.
-     */
-    public function getConfig($function)
-    {
-        return isset($this->config[$function]) ? $this->config[$function] : false;
     }
 
     /**
@@ -207,21 +230,180 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * Query a DAIA server and return the result as DOMDocument object.
-     * The returned object is an XML document containing
-     * content as described in the DAIA format specification.
+     * Get Status of JSON Result
      *
-     * @param string $id Document to look up.
+     * This method gets a json result from the DAIA server and
+     * analyses it. Than a vufind result is build.
      *
-     * @return DOMDocument Object representation of an XML document containing
-     * content as described in the DAIA format specification.
+     * @param string $id The id of the bib record
+     *
+     * @return array()      of items
      */
-    protected function queryDAIA($id)
+    protected function getJSONStatus($id)
     {
-        $daia = new DOMDocument();
-        $daia->load($this->baseURL . $id);
+        // get daia json request for id and decode it
+        $daia=json_decode($this->doHTTPRequest($id), true);
+        $result = array();
+        if (array_key_exists("message", $daia)) {
+            // analyse the message for the error handling and debugging
+        }
+        if (array_key_exists("instituion", $daia)) {
+            // information about the institution that grants or
+            // knows about services and their availability
+            // this fields could be analyzed: href, content, id
+        }
+        if (array_key_exists("document", $daia)) {
+            // analyse the items
+            $dummy_item = array("id"=>"0815",
+                "availability"=>true,
+                "status"=>"Available",
+                "location"=>"physical location no HTML",
+                "reserve"=>"N",
+                "callnumber"=>"007",
+                "number"=>"1",
+                "item_id"=>"0815",
+                "barcode"=>"1");
+            // each document may contain: id, href, message, item
+            foreach ($daia["document"] as $document) {
+                $doc_id=null;
+                $doc_href=null;
+                $doc_message=null;
+                if (array_key_exists("id", $document)) {
+                    $doc_id=$document["id"];
+                }
+                if (array_key_exists("href", $document)) {
+                    // url of the document
+                    $doc_href=$document["href"];
+                }
+                if (array_key_exists("message", $document)) {
+                    // array of messages with language code and content
+                    $doc_message=$document["message"];
+                }
+                // if one or more items exist, iterate and build result-item
+                if (array_key_exists("item", $document)) {
+                    $number=0;
+                    foreach ($document["item"] as $item) {
+                        $result_item=array();
+                        $result_item["id"]=$id;
+                        $result_item["item_id"]=$id;
+                        $number++; // count items
+                        $result_item["number"]=$number;
+                        // set default value for barcode
+                        $result_item["barcode"]="1";
+                        // set default value for reserve
+                        $result_item["reserve"]="N";
+                        // get callnumber
+                        if (isset($item["label"])) {
+                            $result_item["callnumber"]=$item["label"];
+                        } else {
+                            $result_item["callnumber"]="Unknown";
+                        }
+                        // get location
+                        if (isset($item["storage"])) {
+                            $result_item["location"]=$item["storage"]["content"];
+                        } else {
+                            $result_item["location"]="Unknown";
+                        }
+                        // status and availability will be calculated in own function
+                        $result_item=$this->calculateStatus($item)+$result_item;
+                        // add result_item to the result array
+                        $result[]=$result_item;
+                    } // end iteration on item
+                }
+            } // end iteration on document
+            // $result[]=$dummy_item;
+        }
+        return $result;
+    }
 
-        return $daia;
+    /**
+     * Calaculate Status and Availability of an item
+     *
+     * If availability is false the string of status will be shown in vufind
+     *
+     * @param string $item json DAIA item
+     *
+     * @return array("status"=>"only for VIPs" ... )
+     */
+    protected function calculateStatus($item)
+    {
+        $availability=false;
+        $status=null;
+        $duedate=null;
+        if (array_key_exists("available", $item)) {
+            // check if item is loanable or presentation
+            foreach ($item["available"] as $available) {
+                if ($available["service"] == "loan") {
+                    $availability=true;
+                }
+                if ($available["service"] == "presentation") {
+                    $availability=true;
+                }
+            }
+        }
+        if (array_key_exists("unavailable", $item)) {
+            foreach ($item["unavailable"] as $unavailable) {
+                if ($unavailable["service"] == "loan") {
+                    if (isset($unavailable["expected"])) {
+                        $duedate=$unavailable["expected"];
+                    }
+                    $status="dummy text";
+                }
+            }
+        }
+        return (array("status"=>$status,
+            "availability"=>$availability,
+            "duedate"=>$duedate));
+    }
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
+
+    /**
+     * Perform an HTTP request.
+     *
+     * @param string $id id for query in daia
+     *
+     * @return xml or json object
+     */
+    protected function doHTTPRequest($id)
+    {
+        $contentTypes = array (
+            "xml"  => "text/xml",
+            "json" => "application/json",
+        );
+
+        $http_headers = array(
+            "Content-type: " . $contentTypes[$this->daiaResponseFormat],
+            "Accept: " .  $contentTypes[$this->daiaResponseFormat],
+        );
+
+        $params = array(
+            "id" => $this->daiaidprefix . $id,
+            "format" => $this->daiaResponseFormat,
+        );
+
+        try {
+            $client = $this->httpService->createClient();
+            $result = $client->get($this->baseUrl, $params, null, $http_headers);
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        if (!$result->isSuccess()) {
+            throw new ILSException('HTTP error ' . $result->getStatusCode() . ' retrieving status for record: ' . $id);
+        }
+        return ($result->getBody());
+
     }
 
     /**
@@ -231,9 +413,10 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      *
      * @return array
      */
-    protected function daiaToHolding($id)
+    protected function getXMLStatus($id)
     {
-        $daia = $this->queryDAIA($id);
+        $daia = new DOMDocument();
+        $daia->loadXML($this->doHTTPRequest($id));
         // get Availability information from DAIA
         $documentlist = $daia->getElementsByTagName('document');
         $status = array();
@@ -245,19 +428,19 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                     ->getNamedItem('href')->nodeValue;
             }
             $emptyResult = array(
-                    'callnumber' => '-',
-                    'availability' => '0',
-                    'number' => 1,
-                    'reserve' => 'No',
-                    'duedate' => '',
-                    'queue'   => '',
-                    'delay'   => '',
-                    'barcode' => 'No samples',
-                    'status' => '',
-                    'id' => $id,
-                    'location' => '',
-                    'ilslink' => $ilslink,
-                    'label' => 'No samples'
+                'callnumber' => '-',
+                'availability' => '0',
+                'number' => 1,
+                'reserve' => 'No',
+                'duedate' => '',
+                'queue'   => '',
+                'delay'   => '',
+                'barcode' => 'No samples',
+                'status' => '',
+                'id' => $id,
+                'location' => '',
+                'ilslink' => $ilslink,
+                'label' => 'No samples'
             );
             for ($c = 0; $itemlist->item($c) !== null; $c++) {
                 $result = array(
@@ -279,8 +462,10 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                     'label' => '',
                     'notes' => array()
                 );
-                $result['item_id'] = $itemlist->item($c)->attributes
-                    ->getNamedItem('id')->nodeValue;
+                if ($itemlist->item($c)->attributes->getNamedItem('id') !== null) {
+                    $result['item_id'] = $itemlist->item($c)->attributes
+                        ->getNamedItem('id')->nodeValue;
+                }
                 if ($itemlist->item($c)->attributes->getNamedItem('href') !== null) {
                     $result['recallhref'] = $itemlist->item($c)->attributes
                         ->getNamedItem('href')->nodeValue;
@@ -304,8 +489,12 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                         $result['location'] = $storageElements->item(0)->nodeValue;
                         //$result['location.id'] = $storageElements->item(0)
                         //  ->attributes->getNamedItem('id')->nodeValue;
-                        $result['location.href'] = $storageElements->item(0)
-                            ->attributes->getNamedItem('href')->nodeValue;
+                        if ($storageElements->item(0)
+                                ->attributes->getNamedItem('href') !== null) {
+                            //href attribute is recommended but not mandatory
+                            $result['location.href'] = $storageElements->item(0)
+                                ->attributes->getNamedItem('href')->nodeValue;
+                        }
                         //$result['barcode'] = $result['location.id'];
                     }
                 }
@@ -352,53 +541,56 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                 if ($unavailableElements->item(0) !== null) {
                     for ($n = 0; $unavailableElements->item($n) !== null; $n++) {
                         $service = $unavailableElements->item($n)->attributes
-                            ->getNamedItem('service')->nodeValue;
+                            ->getNamedItem('service');
                         $expectedNode = $unavailableElements->item($n)->attributes
                             ->getNamedItem('expected');
                         $queueNode = $unavailableElements->item($n)->attributes
                             ->getNamedItem('queue');
-                        if ($service === 'presentation') {
-                            $result['presentation.availability'] = '0';
-                            $result['presentation_availability'] = '0';
-                            if ($expectedNode !== null) {
-                                $result['presentation.duedate']
-                                    = $expectedNode->nodeValue;
+                        if ($service !== null) {
+                            $service = $service->nodeValue;
+                            if ($service === 'presentation') {
+                                $result['presentation.availability'] = '0';
+                                $result['presentation_availability'] = '0';
+                                if ($expectedNode !== null) {
+                                    $result['presentation.duedate']
+                                        = $expectedNode->nodeValue;
+                                }
+                                if ($queueNode !== null) {
+                                    $result['presentation.queue']
+                                        = $queueNode->nodeValue;
+                                }
+                                $result['availability'] = '0';
+                            } elseif ($service === 'loan') {
+                                $result['loan.availability'] = '0';
+                                $result['loan_availability'] = '0';
+                                if ($expectedNode !== null) {
+                                    $result['loan.duedate'] = $expectedNode->nodeValue;
+                                }
+                                if ($queueNode !== null) {
+                                    $result['loan.queue'] = $queueNode->nodeValue;
+                                }
+                                $result['availability'] = '0';
+                            } elseif ($service === 'interloan') {
+                                $result['interloan.availability'] = '0';
+                                if ($expectedNode !== null) {
+                                    $result['interloan.duedate']
+                                        = $expectedNode->nodeValue;
+                                }
+                                if ($queueNode !== null) {
+                                    $result['interloan.queue'] = $queueNode->nodeValue;
+                                }
+                                $result['availability'] = '0';
+                            } elseif ($service === 'openaccess') {
+                                $result['openaccess.availability'] = '0';
+                                if ($expectedNode !== null) {
+                                    $result['openaccess.duedate']
+                                        = $expectedNode->nodeValue;
+                                }
+                                if ($queueNode !== null) {
+                                    $result['openaccess.queue'] = $queueNode->nodeValue;
+                                }
+                                $result['availability'] = '0';
                             }
-                            if ($queueNode !== null) {
-                                $result['presentation.queue']
-                                    = $queueNode->nodeValue;
-                            }
-                            $result['availability'] = '0';
-                        } elseif ($service === 'loan') {
-                            $result['loan.availability'] = '0';
-                            $result['loan_availability'] = '0';
-                            if ($expectedNode !== null) {
-                                $result['loan.duedate'] = $expectedNode->nodeValue;
-                            }
-                            if ($queueNode !== null) {
-                                $result['loan.queue'] = $queueNode->nodeValue;
-                            }
-                            $result['availability'] = '0';
-                        } elseif ($service === 'interloan') {
-                            $result['interloan.availability'] = '0';
-                            if ($expectedNode !== null) {
-                                $result['interloan.duedate']
-                                    = $expectedNode->nodeValue;
-                            }
-                            if ($queueNode !== null) {
-                                $result['interloan.queue'] = $queueNode->nodeValue;
-                            }
-                            $result['availability'] = '0';
-                        } elseif ($service === 'openaccess') {
-                            $result['openaccess.availability'] = '0';
-                            if ($expectedNode !== null) {
-                                $result['openaccess.duedate']
-                                    = $expectedNode->nodeValue;
-                            }
-                            if ($queueNode !== null) {
-                                $result['openaccess.queue'] = $queueNode->nodeValue;
-                            }
-                            $result['availability'] = '0';
                         }
                         // TODO: message/limitation
                         if ($expectedNode !== null) {
@@ -415,36 +607,39 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                 if ($availableElements->item(0) !== null) {
                     for ($n = 0; $availableElements->item($n) !== null; $n++) {
                         $service = $availableElements->item($n)->attributes
-                            ->getNamedItem('service')->nodeValue;
+                            ->getNamedItem('service');
                         $delayNode = $availableElements->item($n)->attributes
                             ->getNamedItem('delay');
-                        if ($service === 'presentation') {
-                            $result['presentation.availability'] = '1';
-                            $result['presentation_availability'] = '1';
-                            if ($delayNode !== null) {
-                                $result['presentation.delay']
-                                    = $delayNode->nodeValue;
+                        if ($service !== null) {
+                            $service = $service->nodeValue;
+                            if ($service === 'presentation') {
+                                $result['presentation.availability'] = '1';
+                                $result['presentation_availability'] = '1';
+                                if ($delayNode !== null) {
+                                    $result['presentation.delay']
+                                        = $delayNode->nodeValue;
+                                }
+                                $result['availability'] = '1';
+                            } elseif ($service === 'loan') {
+                                $result['loan.availability'] = '1';
+                                $result['loan_availability'] = '1';
+                                if ($delayNode !== null) {
+                                    $result['loan.delay'] = $delayNode->nodeValue;
+                                }
+                                $result['availability'] = '1';
+                            } elseif ($service === 'interloan') {
+                                $result['interloan.availability'] = '1';
+                                if ($delayNode !== null) {
+                                    $result['interloan.delay'] = $delayNode->nodeValue;
+                                }
+                                $result['availability'] = '1';
+                            } elseif ($service === 'openaccess') {
+                                $result['openaccess.availability'] = '1';
+                                if ($delayNode !== null) {
+                                    $result['openaccess.delay'] = $delayNode->nodeValue;
+                                }
+                                $result['availability'] = '1';
                             }
-                            $result['availability'] = '1';
-                        } elseif ($service === 'loan') {
-                            $result['loan.availability'] = '1';
-                            $result['loan_availability'] = '1';
-                            if ($delayNode !== null) {
-                                $result['loan.delay'] = $delayNode->nodeValue;
-                            }
-                            $result['availability'] = '1';
-                        } elseif ($service === 'interloan') {
-                            $result['interloan.availability'] = '1';
-                            if ($delayNode !== null) {
-                                $result['interloan.delay'] = $delayNode->nodeValue;
-                            }
-                            $result['availability'] = '1';
-                        } elseif ($service === 'openaccess') {
-                            $result['openaccess.availability'] = '1';
-                            if ($delayNode !== null) {
-                                $result['openaccess.delay'] = $delayNode->nodeValue;
-                            }
-                            $result['availability'] = '1';
                         }
                         // TODO: message/limitation
                         if ($delayNode !== null) {
@@ -489,9 +684,10 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
      * number
      */
-    public function getShortStatus($id)
+    public function getXMLShortStatus($id)
     {
-        $daia = $this->queryDAIA($id);
+        $daia = new DOMDocument();
+        $daia->loadXML($this->doHTTPRequest($id));
         // get Availability information from DAIA
         $itemlist = $daia->getElementsByTagName('item');
         $label = "Unknown";
@@ -604,18 +800,44 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                 $reserve = 'Y';
             }
             $holding[] = array('availability' => $availability,
-                   'id' => $id,
-                   'status' => "$status",
-                   'location' => "$storage",
-                   'reserve' => $reserve,
-                   'queue' => $earliest_queue,
-                   'callnumber' => "$label",
-                   'duedate' => $earliest_duedate,
-                   'leanable' => $leanable,
-                   'recallhref' => $earliest_href,
-                   'number' => ($c+1),
-                   'presenceOnly' => $presenceOnly);
+                'id' => $id,
+                'status' => "$status",
+                'location' => "$storage",
+                'reserve' => $reserve,
+                'queue' => $earliest_queue,
+                'callnumber' => "$label",
+                'duedate' => $earliest_duedate,
+                'leanable' => $leanable,
+                'recallhref' => $earliest_href,
+                'number' => ($c+1),
+                'presenceOnly' => $presenceOnly);
         }
         return $holding;
+    }
+
+    /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug(get_class($this) . ": $msg");
+        }
     }
 }
