@@ -50,7 +50,7 @@ class User extends Gateway
      *
      * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct(\Zend\Config\Config $config = null)
+    public function __construct(\Zend\Config\Config $config)
     {
         parent::__construct('user', 'VuFind\Db\Row\User');
         $this->config = $config;
