@@ -105,12 +105,24 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
         parent::initialize();
         if (null !== $this->rowClass) {
             $resultSetPrototype = $this->getResultSetPrototype();
-            $prototype = new $this->rowClass($this->getAdapter());
-            if ($prototype instanceof ServiceLocatorAwareInterface) {
-                $prototype->setServiceLocator($this->getServiceLocator());
-            }
-            $resultSetPrototype->setArrayObjectPrototype($prototype);
+            $resultSetPrototype->setArrayObjectPrototype(
+                $this->initializeRowPrototype()
+            );
         }
+    }
+
+    /**
+     * Construct the prototype for rows.
+     *
+     * @return object
+     */
+    protected function initializeRowPrototype()
+    {
+        $prototype = new $this->rowClass($this->getAdapter());
+        if ($prototype instanceof ServiceLocatorAwareInterface) {
+            $prototype->setServiceLocator($this->getServiceLocator());
+        }
+        return $prototype;
     }
 
     /**

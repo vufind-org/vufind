@@ -322,6 +322,7 @@ $config = array(
                 'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
                 'factories' => array(
                     'resource' => 'VuFind\Db\Table\Factory::getResource',
+                    'user' => 'VuFind\Db\Table\Factory::getUser',
                 ),
                 'invokables' => array(
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
@@ -331,7 +332,6 @@ $config = array(
                     'search' => 'VuFind\Db\Table\Search',
                     'session' => 'VuFind\Db\Table\Session',
                     'tags' => 'VuFind\Db\Table\Tags',
-                    'user' => 'VuFind\Db\Table\User',
                     'userlist' => 'VuFind\Db\Table\UserList',
                     'userresource' => 'VuFind\Db\Table\UserResource',
                     'userstats' => 'VuFind\Db\Table\UserStats',
