@@ -1165,17 +1165,17 @@
     },
     {
         "name": "vufind-org/vufindhttp",
-        "version": "v1.0.2",
-        "version_normalized": "1.0.2.0",
+        "version": "v1.0.3",
+        "version_normalized": "1.0.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/vufind-org/vufindhttp.git",
-            "reference": "2cd2f92cf2b43eb6a79bec0e895cb9c3d6e273d9"
+            "reference": "63b16b9c345b5e52eb3fa254abf9c3d260e92c87"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/2cd2f92cf2b43eb6a79bec0e895cb9c3d6e273d9",
-            "reference": "2cd2f92cf2b43eb6a79bec0e895cb9c3d6e273d9",
+            "url": "https://api.github.com/repos/vufind-org/vufindhttp/zipball/63b16b9c345b5e52eb3fa254abf9c3d260e92c87",
+            "reference": "63b16b9c345b5e52eb3fa254abf9c3d260e92c87",
             "shasum": ""
         },
         "require": {
@@ -1184,7 +1184,7 @@
         "require-dev": {
             "zendframework/zend-uri": ">=2.2"
         },
-        "time": "2015-02-05 19:25:26",
+        "time": "2015-02-06 16:09:37",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
