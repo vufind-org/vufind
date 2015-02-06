@@ -55,6 +55,31 @@ class DAIAJSONTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Test that dummy history.
+     *
+     * @return void
+     */
+    public function testgetPurchaseHistory()
+    {
+
+    }
+
+
+    /**
+     * Test that an empty query causes an error.
+     *
+     * @return void
+     */
+    public function testgetStatus()
+    {
+        $conn = $this->createConnector('daiajson');
+        $result = $conn->getStatus('123456');
+        var_dump($conn);
+        $this->assertEquals("test", $result['id']);
+    }
+
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file
@@ -76,7 +101,9 @@ class DAIAJSONTest extends \VuFindTest\Unit\ILSDriverTestCase
         }
         $client = new HttpClient();
         $client->setAdapter($adapter);
-        $conn = new Connector('fakeid', 'fakeinst', $client);
+//        var_dump($client);
+        $conn = new DAIAJSON($client);
+        var_dump($conn);
         return $conn;
     }
 }
