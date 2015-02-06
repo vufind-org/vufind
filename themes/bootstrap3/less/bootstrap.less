@@ -1,6 +1,9 @@
 @import "bootstrap/bootstrap";
 @import "a11y";
 
+.alert.alert-info a {
+  text-decoration:underline;
+}
 .btn.disabled {
   &:active,&:focus,&:hover {
     color:#000;
@@ -30,6 +33,7 @@ img {max-width:100%}
 label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-left:35px}
 .list-group-item.title {font-weight:bold}
 #modal .modal-body > h2:first-child {display:none}
+.popover {width:250px}
 .sub-breadcrumb {
   padding:5px 10px;
   white-space:nowrap;
@@ -46,8 +50,21 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Alphabrowse --- */
 .alphabrowse {
+  border-collapse:separate;
   .lcc {width:20%;}
   .titles {width:10%;text-align:center}
+  /* highlighting the row makes ff bugs; operate on its children */
+  tr.browse-match td {
+    border-top:.2em solid @brand-primary;
+    border-bottom:.2em solid @brand-primary;
+  }
+  tr.browse-match td:first-child {
+    border-left:.2em solid @brand-primary;
+  }
+  tr.browse-match td:last-child {
+    border-right:.2em solid @brand-primary;
+  }
+
 }
 
 /* --- Autocomplete --- */
@@ -162,6 +179,11 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   border-right:1px solid @gray-lighter;
   overflow-x:hidden;
 }
+#hierarchyTree .currentHierarchy > a,
+#hierarchyTree .currentRecord a {
+  color:#000;
+  font-weight:bold;
+}
 
 /* --- Search --- */
 .bulkActionButtons {
@@ -179,7 +201,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 .result {
   a.title {font-weight:bold}
-  .left img {max-width:100%}
+  .left {
+    text-align:center;
+    img {max-width:100%}
+  }
   @media (max-width:767px) {
     a {text-decoration:underline}
     .middle,.right {padding:0}
@@ -196,8 +221,13 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     margin-bottom:0;
   }
 }
+.title-in-heading {
+  font-size: inherit;
+  font-style: italic;
+}
 
-/* --- Sidebar rounded corners --- */
+/* --- Sidebar --- */
+/* Sidebar rounded corners */
 .sidebar {
   .list-group:not(.filters) .title {
     cursor:pointer;
@@ -227,10 +257,13 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     border-bottom-right-radius:@border-radius-base;
   }
 }
-.list-group-item.active, .badge {
+.list-group-item, .badge {
   i.fa {
     cursor:inherit;
   }
+}
+.sidebar .facet a {
+  text-decoration: none;
 }
 
 /* --- Slider accessibility --- */
@@ -299,4 +332,92 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 #viz-instructions {
   padding-top:600px;
+}
+
+/* ----- HOVER OVERLAY ------ */
+/* - similar items carousel - */
+.carousel-indicators {
+  bottom:0px;
+  li {
+    background:rgba(255,255,255,.3);
+    border-color:@gray-darker;
+    margin:2px;
+    width:8px;
+    height:8px;
+  }
+}
+.hover-overlay {
+  display:block;
+  position:relative;
+  text-align:center;
+  margin:auto;
+  min-width:150px;
+  min-height:200px;
+  img {
+    margin:10px 0;
+    max-width:100%;
+  }
+  .content {
+    display:none;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.5);
+    color:#FFF;
+    padding:.5em .5em 0;
+  }
+  &:hover .content {
+    display:block;
+  }
+}
+
+/* --- Hierarchical facets --- */
+/* jsTree arrows */
+.facet .jstree-ocl:before {
+  font-family: 'FontAwesome';
+  float: left;
+  speak: none;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration:
+  inherit;
+  cursor: pointer;
+  padding: 0;
+  width: 10px;
+  margin-left: -10px;
+}
+.facet .jstree-default .jstree-open > .jstree-ocl:before {
+  content: "\f0d7";
+}
+.facet .jstree-default .jstree-closed > .jstree-ocl:before {
+  content: "\f0da";
+}
+.facet .jstree-default .jstree-leaf > .jstree-ocl:before {
+  content: " ";
+}
+/* facet list styling */
+li.jstree-facet ul {
+  padding-left: 20px;
+}
+.jstree-facet li span.main {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 1px; /* Fix Firefox cutting the checkboxes */
+}
+li.jstree-facet, li.jstree-node {
+  list-style: none;
+}
+.jstree-facet .jstree-container-ul {
+  padding: 0;
+}
+.jstree-facet .jstree-container-ul > li.active, .jstree-facet .jstree-container-ul > li.active a.jstree-anchor {
+  background-color: #265680;
+  color: #fff;
+}
+li.jstree-facet .badge {
+  cursor: text;
 }

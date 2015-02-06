@@ -62,6 +62,19 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke()
     {
+        // Add various types of content to the header:
+        $this->addMetaTags();
+        $this->addLinks();
+        $this->addScripts();
+    }
+
+    /**
+     * Add meta tags to header.
+     *
+     * @return void
+     */
+    protected function addMetaTags()
+    {
         // Set up encoding:
         $headMeta = $this->getView()->plugin('headmeta');
         $headMeta()->prependHttpEquiv(
@@ -73,7 +86,15 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         if (!empty($generator)) {
             $headMeta()->appendName('Generator', $generator);
         }
+    }
 
+    /**
+     * Add links to header.
+     *
+     * @return void
+     */
+    protected function addLinks()
+    {
         // Convenient shortcut to view helper:
         $headLink = $this->getView()->plugin('headlink');
 
@@ -91,18 +112,11 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // Compile and load LESS (make sure we prepend them in the appropriate order
         // theme resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getLessCss()) as $current) {
-            $headLink()->addLessStylesheet($current);
-        }
-
-        // Load Javascript (same ordering considerations as CSS, above):
-        $headScript = $this->getView()->plugin('headscript');
-        foreach (array_reverse($this->container->getJs()) as $current) {
-            $parts =  explode(':', $current);
-            $headScript()->prependFile(
+            $parts = explode(':', $current);
+            $headLink()->addLessStylesheet(
                 trim($parts[0]),
-                'text/javascript',
-                isset($parts[1])
-                ? array('conditional' => trim($parts[1])) : array()
+                isset($parts[1]) ? trim($parts[1]) : 'all',
+                isset($parts[2]) ? trim($parts[2]) : false
             );
         }
 
@@ -114,6 +128,26 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
                 'href' => $imageLink($favicon),
                 'type' => 'image/x-icon', 'rel' => 'shortcut icon'
             ));
+        }
+    }
+
+    /**
+     * Add scripts to header.
+     *
+     * @return void
+     */
+    protected function addScripts()
+    {
+        // Load Javascript (same ordering considerations as CSS, above):
+        $headScript = $this->getView()->plugin('headscript');
+        foreach (array_reverse($this->container->getJs()) as $current) {
+            $parts =  explode(':', $current);
+            $headScript()->prependFile(
+                trim($parts[0]),
+                'text/javascript',
+                isset($parts[1])
+                ? array('conditional' => trim($parts[1])) : array()
+            );
         }
     }
 }

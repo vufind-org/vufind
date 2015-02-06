@@ -459,7 +459,7 @@ class Params extends \VuFind\Search\Base\Params
         // Shards
         $allShards = $this->getOptions()->getShards();
         $shards = $this->getSelectedShards();
-        if (is_null($shards)) {
+        if (empty($shards)) {
             $shards = array_keys($allShards);
         }
 
@@ -531,6 +531,14 @@ class Params extends \VuFind\Search\Base\Params
             $field, $value, $operator, $translate
         );
 
+        $hierarchicalFacets = $this->getOptions()->getHierarchicalFacets();
+        $hierarchicalFacetSeparators
+            = $this->getOptions()->getHierarchicalFacetSeparators();
+        $facetHelper = null;
+        if (!empty($hierarchicalFacets)) {
+            $facetHelper = $this->getServiceLocator()
+                ->get('VuFind\HierarchicalFacetHelper');
+        }
         // Convert range queries to a language-non-specific format:
         $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
@@ -544,6 +552,14 @@ class Params extends \VuFind\Search\Base\Params
             ) {
                 $filter['displayText'] = $matches[1] . '-' . $matches[2];
             }
+        } else if (in_array($field, $hierarchicalFacets)) {
+            // Display hierarchical facet levels nicely
+            $separator = isset($hierarchicalFacetSeparators[$field])
+                ? $hierarchicalFacetSeparators[$field]
+                : '/';
+            $filter['displayText'] = $facetHelper->formatDisplayText(
+                $filter['displayText'], true, $separator
+            );
         }
 
         return $filter;

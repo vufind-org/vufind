@@ -58,7 +58,7 @@ class LDAP extends AbstractBase
                 || empty($this->config->LDAP->$param)
             ) {
                 throw new AuthException(
-                    "One or more LDAP parameter are missing. Check your config.ini!"
+                    "One or more LDAP parameters are missing. Check your config.ini!"
                 );
             }
         }

@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/
  */
 namespace VuDL\Connection;
-use VuFindHttp\HttpServiceInterface,
-    VuFindSearch\ParamBag;
+use VuFindSearch\ParamBag;
 
 /**
  * VuDL-Fedora connection class

@@ -60,7 +60,7 @@
         "symfony/yaml": "*",
         "vufind-org/vufindcode": "*",
         "vufind-org/vufindhttp": "*",
-        "zendframework/zendframework": "2.2.7",
+        "zendframework/zendframework": "2.3.4",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",
         "zendframework/zendservice-recaptcha": "2.*",

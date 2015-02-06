@@ -88,6 +88,66 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test spelling query retrieval.
+     *
+     * @return void
+     */
+    public function testSpellingQuery()
+    {
+        $input = array(
+            'responseHeader' => array(
+                'params' => array(
+                    'spellcheck.q' => 'foo',
+                    'q' => 'bar',
+                )
+            )
+        );
+        $coll = new RecordCollection($input);
+        $this->assertEquals('foo', $coll->getSpellcheck()->getQuery());
+        unset($input['responseHeader']['params']['spellcheck.q']);
+        $coll = new RecordCollection($input);
+        $this->assertEquals('bar', $coll->getSpellcheck()->getQuery());
+    }
+
+    /**
+     * Test spelling suggestion retrieval.
+     *
+     * @return void
+     */
+    public function testSpellingSuggestions()
+    {
+        $input = array(
+            'spellcheck' => array(
+                'suggestions' => array(
+                    array(
+                        'frunkensteen',
+                        array(
+                            'numFound' => 6,
+                            'startOffset' => 0,
+                            'endOffset' => 12,
+                            'origFreq' => 0,
+                            'suggestion' => array(
+                                array(
+                                'word' => 'frankenstein',
+                                'freq' => 218,
+                                ),
+                                array(
+                                'word' => 'funkenstein',
+                                'freq' => 10,
+                                ),
+                            ),
+                        ),
+                    ),
+                    array('correctlySpelled', false),
+                )
+            )
+        );
+        $coll = new RecordCollection($input);
+        $spell = $coll->getSpellcheck();
+        $this->assertEquals(1, count($spell));
+    }
+
+    /**
      * Test the replace method.
      *
      * @return void

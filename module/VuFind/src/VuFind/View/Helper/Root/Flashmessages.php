@@ -82,7 +82,7 @@ class Flashmessages extends AbstractHelper
             $messages = array_merge(
                 $this->fm->getMessages(), $this->fm->getCurrentMessages()
             );
-            foreach (array_unique($messages) as $msg) {
+            foreach (array_unique($messages, SORT_REGULAR) as $msg) {
                 $html .= '<div class="' . $this->getClassForNamespace($ns) . '">';
                 // Advanced form:
                 if (is_array($msg)) {

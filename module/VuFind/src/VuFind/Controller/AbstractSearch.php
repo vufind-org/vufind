@@ -194,6 +194,30 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Get active recommendation module settings
+     *
+     * @return array
+     */
+    protected function getActiveRecommendationSettings()
+    {
+        // Enable recommendations unless explicitly told to disable them:
+        $all = array('top', 'side', 'noresults');
+        $noRecommend = $this->params()->fromQuery('noRecommend', false);
+        if ($noRecommend === 1 || $noRecommend === '1'
+            || $noRecommend === 'true' || $noRecommend === true
+        ) {
+            return array();
+        } else if ($noRecommend === 0 || $noRecommend === '0'
+            || $noRecommend === 'false' || $noRecommend === false
+        ) {
+            return $all;
+        }
+        return array_diff(
+            $all, array_map('trim', explode(',', strtolower($noRecommend)))
+        );
+    }
+
+    /**
      * Send search results to results view
      *
      * @return \Zend\View\Model\ViewModel
@@ -210,10 +234,7 @@ class AbstractSearch extends AbstractBase
 
         $results = $this->getResultsManager()->get($this->searchClassId);
         $params = $results->getParams();
-
-        // Enable recommendations unless explicitly told to disable them:
-        $noRecommend = $this->params()->fromQuery('noRecommend', false);
-        $params->recommendationsEnabled(!$noRecommend);
+        $params->recommendationsEnabled($this->getActiveRecommendationSettings());
 
         // Send both GET and POST variables to search class:
         $params->initFromRequest(
@@ -293,6 +314,11 @@ class AbstractSearch extends AbstractBase
             $response->setContent($feed($view->results)->export('rss'));
             return $response;
         }
+
+        // Search toolbar
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $view->showBulkOptions = isset($config->Site->showBulkOptions)
+          && $config->Site->showBulkOptions;
 
         return $view;
     }

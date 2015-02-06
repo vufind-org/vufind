@@ -184,6 +184,7 @@ $config = array(
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\Search'         => 'VuFindSearch\Service',
             'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
+            'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper'
         ),
         'initializers' => array(
             'VuFind\ServiceManager\Initializer::initInstance',
@@ -236,13 +237,14 @@ $config = array(
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
                 ),
                 'invokables' => array(
+                    'cas' => 'VuFind\Auth\CAS',
                     'choiceauth' => 'VuFind\Auth\ChoiceAuth',
                     'database' => 'VuFind\Auth\Database',
+                    'facebook' => 'VuFind\Auth\Facebook',
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
                     'shibboleth' => 'VuFind\Auth\Shibboleth',
                     'shibboleth2' => 'VuFind\Auth\Shibboleth2',
-                    'cas' => 'VuFind\Auth\CAS',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ),
                 'aliases' => array(
@@ -324,6 +326,7 @@ $config = array(
                 'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
                 'factories' => array(
                     'resource' => 'VuFind\Db\Table\Factory::getResource',
+                    'user' => 'VuFind\Db\Table\Factory::getUser',
                 ),
                 'invokables' => array(
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
@@ -333,7 +336,6 @@ $config = array(
                     'search' => 'VuFind\Db\Table\Search',
                     'session' => 'VuFind\Db\Table\Session',
                     'tags' => 'VuFind\Db\Table\Tags',
-                    'user' => 'VuFind\Db\Table\User',
                     'userlist' => 'VuFind\Db\Table\UserList',
                     'userresource' => 'VuFind\Db\Table\UserResource',
                     'userstats' => 'VuFind\Db\Table\UserStats',
@@ -355,10 +357,9 @@ $config = array(
                 ),
             ),
             'hierarchy_treerenderer' => array(
-                'invokables' => array(
-                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\JSTree',
-                    'fancytree' => 'VuFind\Hierarchy\TreeRenderer\FancyTree',
-                )
+                'factories' => array(
+                    'jstree' => 'VuFind\Hierarchy\TreeRenderer\Factory::getJSTree'
+                ),
             ),
             'ils_driver' => array(
                 'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
@@ -388,7 +389,6 @@ $config = array(
                     'sierra' => 'VuFind\ILS\Driver\Sierra',
                     'symphony' => 'VuFind\ILS\Driver\Symphony',
                     'virtua' => 'VuFind\ILS\Driver\Virtua',
-                    'xcncip' => 'VuFind\ILS\Driver\XCNCIP',
                     'xcncip2' => 'VuFind\ILS\Driver\XCNCIP2',
                 ),
             ),
@@ -424,6 +424,7 @@ $config = array(
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
                     'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
+                    'spellingsuggestions' => 'VuFind\Recommend\SpellingSuggestions',
                     'summonbestbetsdeferred' => 'VuFind\Recommend\SummonBestBetsDeferred',
                     'summondatabasesdeferred' => 'VuFind\Recommend\SummonDatabasesDeferred',
                     'summonresultsdeferred' => 'VuFind\Recommend\SummonResultsDeferred',
@@ -462,6 +463,7 @@ $config = array(
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
+                    'similaritemscarousel' => 'VuFind\RecordTab\Factory::getSimilarItemsCarousel',
                     'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
                 ),
                 'invokables' => array(
@@ -616,6 +618,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
+                    'Similar' => 'SimilarItemsCarousel',
                     'Details' => 'StaffViewArray',
                 ),
                 'defaultTab' => null,
@@ -627,6 +630,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
+                    'Similar' => 'SimilarItemsCarousel',
                     'Details' => 'StaffViewMARC',
                 ),
                 'defaultTab' => null,

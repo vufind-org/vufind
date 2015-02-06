@@ -93,8 +93,10 @@ class Factory
             ? (bool)$config->Site->showBookBag : false;
         $size = isset($config->Site->bookBagMaxSize)
             ? $config->Site->bookBagMaxSize : 100;
+        $domain = isset($config->Site->bookBagCookieDomain)
+            ? $config->Site->bookBagCookieDomain : null;
         return new \VuFind\Cart(
-            $sm->get('VuFind\RecordLoader'), $size, $active
+            $sm->get('VuFind\RecordLoader'), $size, $active, $_COOKIE, $domain
         );
     }
 
@@ -721,11 +723,11 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Zend\I18n\Translator\Translator
+     * @return \Zend\I18n\Translator\TranslatorInterface
      */
     public static function getTranslator(ServiceManager $sm)
     {
-        $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
+        $factory = new \Zend\Mvc\Service\TranslatorServiceFactory();
         $translator = $factory->createService($sm);
 
         // Set up the ExtendedIni plugin:

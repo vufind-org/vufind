@@ -172,36 +172,9 @@ class SpellingProcessor
     {
         $allSuggestions = array();
         foreach ($spellcheck as $term => $info) {
-            if ($this->shouldSkipNumericSpelling() && is_numeric($term)) {
-                continue;
-            }
-            // Term is not part of the query
-            if (!$query->containsTerm($term)) {
-                continue;
-            }
-            // Validate response format
-            if (isset($info['suggestion'][0]) && !is_array($info['suggestion'][0])) {
-                throw new \Exception(
-                    'Unexpected suggestion format; spellcheck.extendedResults'
-                    . ' must be set to true.'
-                );
-            }
-            // Filter out suggestions that are already part of the query
-            $suggestionLimit = $this->getSpellingLimit();
-            $suggestions     = array();
-            foreach ($info['suggestion'] as $suggestion) {
-                if (count($suggestions) >= $suggestionLimit) {
-                    break;
-                }
-                $word = $suggestion['word'];
-                if (!$query->containsTerm($word)) {
-                    // Note: !a || !b eq !(a && b)
-                    if (!is_numeric($word) || !$this->shouldSkipNumericSpelling()) {
-                        $suggestions[$word] = $suggestion['freq'];
-                    }
-                }
-            }
-            if ($suggestions) {
+            if (!$this->shouldSkipTerm($query, $term, false)
+                && ($suggestions = $this->formatAndFilterSuggestions($query, $info))
+            ) {
                 $allSuggestions[$term] = array(
                     'freq' => $info['origFreq'],
                     'suggestions' => $suggestions
@@ -213,6 +186,59 @@ class SpellingProcessor
             return $this->getSuggestions($secondary, $query);
         }
         return $allSuggestions;
+    }
+
+    /**
+     * Support method for getSuggestions()
+     *
+     * @param AbstractQuery $query Query for which info should be retrieved
+     * @param array         $info  Spelling suggestion information
+     *
+     * @return array
+     * @throws \Exception
+     */
+    protected function formatAndFilterSuggestions($query, $info)
+    {
+        // Validate response format
+        if (isset($info['suggestion'][0]) && !is_array($info['suggestion'][0])) {
+            throw new \Exception(
+                'Unexpected suggestion format; spellcheck.extendedResults'
+                . ' must be set to true.'
+            );
+        }
+        $limit = $this->getSpellingLimit();
+        $suggestions = array();
+        foreach ($info['suggestion'] as $suggestion) {
+            if (count($suggestions) >= $limit) {
+                break;
+            }
+            $word = $suggestion['word'];
+            if (!$this->shouldSkipTerm($query, $word, true)) {
+                $suggestions[$word] = $suggestion['freq'];
+            }
+        }
+        return $suggestions;
+    }
+
+    /**
+     * Should we skip the specified term?
+     *
+     * @param AbstractQuery $query         Query for which info should be retrieved
+     * @param string        $term          Term to check
+     * @param bool          $queryContains Should we skip the term if it is found
+     * in the query (true), or should we skip the term if it is NOT found in the
+     * query (false)?
+     *
+     * @return bool
+     */
+    protected function shouldSkipTerm($query, $term, $queryContains)
+    {
+        // If term is numeric and we're in "skip numeric" mode, we should skip it:
+        if ($this->shouldSkipNumericSpelling() && is_numeric($term)) {
+            return true;
+        }
+        // We should also skip terms already contained within the query:
+        return $queryContains == $query->containsTerm($term);
     }
 
     /**

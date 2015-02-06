@@ -51,4 +51,18 @@ class Factory
     {
         return new Resource($sm->getServiceLocator()->get('VuFind\DateConverter'));
     }
+
+    /**
+     * Construct the User table.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return User
+     */
+    public static function getUser(ServiceManager $sm)
+    {
+        return new User(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
+    }
 }

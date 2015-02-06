@@ -163,12 +163,6 @@ class Solr extends AbstractBase
 
         foreach ($results->getRecords() as $current) {
             ++$count;
-            if ($sorting) {
-                $positions = $current->getHierarchyPositionsInParents();
-                if (isset($positions[$parentID])) {
-                    $sequence = $positions[$parentID];
-                }
-            }
 
             $titles = $current->getTitlesInHierarchy();
             $title = isset($titles[$parentID])
@@ -182,41 +176,168 @@ class Solr extends AbstractBase
                 htmlspecialchars($title) . '</name></content>';
             $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
             $xmlNode .= '</item>';
-            array_push($xml, array((isset($sequence) ? $sequence : 0), $xmlNode));
+
+            // If we're in sorting mode, we need to create key-value arrays;
+            // otherwise, we can just collect flat strings.
+            if ($sorting) {
+                $positions = $current->getHierarchyPositionsInParents();
+                $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
+                $xml[] = array($sequence, $xmlNode);
+            } else {
+                $xml[] = $xmlNode;
+            }
         }
 
-        if ($sorting) {
-            $this->sortNodes($xml, 0);
+        // Assemble the XML, sorting it first if necessary:
+        return implode('', $sorting ? $this->sortNodes($xml) : $xml);
+    }
+
+    /**
+     * Get JSON for the specified hierarchy ID.
+     *
+     * Build the JSON file from the Solr fields
+     *
+     * @param string $id      Hierarchy ID.
+     * @param array  $options Additional options for JSON generation.  (Currently one
+     * option is supported: 'refresh' may be set to true to bypass caching).
+     *
+     * @return string
+     */
+    public function getJSON($id, $options = array())
+    {
+        $top = $this->searchService->retrieve('Solr', $id)->getRecords();
+        if (!isset($top[0])) {
+            return '';
+        }
+        $top = $top[0];
+        $cacheFile = (null !== $this->cacheDir)
+            ? $this->cacheDir . '/tree_' . urlencode($id) . '.json'
+            : false;
+
+        $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
+        $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
+
+        if ($useCache && file_exists($cacheFile)
+            && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
+        ) {
+            $this->debug("Using cached data from $cacheFile");
+            $json = file_get_contents($cacheFile);
+            return $json;
+        } else {
+            $starttime = microtime(true);
+            $json = array(
+                'id' => $id,
+                'type' => $top->isCollection()
+                    ? 'collection'
+                    : 'record',
+                'title' => $top->getTitle()
+            );
+            $children = $this->getChildrenJson($id, $count);
+            if (!empty($children)) {
+                $json['children'] = $children;
+            }
+            if ($cacheFile) {
+                $encoded = json_encode($json);
+                // Write file
+                if (!file_exists($this->cacheDir)) {
+                    mkdir($this->cacheDir);
+                }
+                file_put_contents($cacheFile, $encoded);
+            }
+            $this->debug(
+                "Hierarchy of $count records built in " .
+                abs(microtime(true) - $starttime)
+            );
+            return $encoded;
+        }
+    }
+
+    /**
+     * Get Solr Children for JSON
+     *
+     * @param string $parentID The starting point for the current recursion
+     * (equivlent to Solr field hierarchy_parent_id)
+     * @param string &$count   The total count of items in the tree
+     * before this recursion
+     *
+     * @return string
+     */
+    protected function getChildrenJson($parentID, &$count)
+    {
+        $query = new Query(
+            'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"'
+        );
+        $results = $this->searchService->search(
+            'Solr', $query, 0, 10000,
+            new ParamBag(array('fq' => $this->filters, 'hl' => 'false'))
+        );
+        if ($results->getTotal() < 1) {
+            return '';
+        }
+        $json = array();
+        $sorting = $this->getHierarchyDriver()->treeSorting();
+
+        foreach ($results->getRecords() as $current) {
+            ++$count;
+
+            $titles = $current->getTitlesInHierarchy();
+            $title = isset($titles[$parentID])
+                ? $titles[$parentID] : $current->getTitle();
+
+            $this->debug("$parentID: " . $current->getUniqueID());
+            $childNode = array(
+                'id' => $current->getUniqueID(),
+                'type' => $current->isCollection()
+                    ? 'collection'
+                    : 'record',
+                'title' => htmlspecialchars($title)
+            );
+            if ($current->isCollection()) {
+                $children = $this->getChildrenJson(
+                    $current->getUniqueID(),
+                    $count
+                );
+                if (!empty($children)) {
+                    $childNode['children'] = $children;
+                }
+            }
+
+            // If we're in sorting mode, we need to create key-value arrays;
+            // otherwise, we can just collect flat values.
+            if ($sorting) {
+                $positions = $current->getHierarchyPositionsInParents();
+                $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
+                $json[] = array($sequence, $childNode);
+            } else {
+                $json[] = $childNode;
+            }
         }
 
-        $xmlReturnString = '';
-        foreach ($xml as $node) {
-            $xmlReturnString .= $node[1];
-        }
-        return $xmlReturnString;
+        return $sorting ? $this->sortNodes($json) : $json;
     }
 
     /**
      * Sort Nodes
+     * Convert an unsorted array of [ key, value ] pairs into a sorted array
+     * of values.
      *
-     * @param array  &$array The Array to Sort
-     * @param string $key    The key to sort on
+     * @param array $array The array of arrays to sort
      *
-     * @return void
+     * @return array
      */
-    protected function sortNodes(&$array, $key)
+    protected function sortNodes($array)
     {
-        $sorter=array();
-        $ret=array();
-        reset($array);
-        foreach ($array as $ii => $va) {
-            $sorter[$ii]=$va[$key];
-        }
-        asort($sorter);
-        foreach ($sorter as $ii => $va) {
-            $ret[$ii]=$array[$ii];
-        }
-        $array=$ret;
+        // Sort arrays based on first element
+        $sorter = function ($a, $b) {
+            return strcmp($a[0], $b[0]);
+        };
+        usort($array, $sorter);
+
+        // Collapse array to remove sort values
+        $mapper = function ($i) {
+            return $i[1];
+        };
+        return array_map($mapper, $array);
     }
 
     /**
@@ -228,7 +349,19 @@ class Solr extends AbstractBase
      */
     public function supports($id)
     {
-        // Assume all IDs are supported.
+        $settings = $this->hierarchyDriver->getTreeSettings();
+
+        if (!isset($settings['checkAvailability'])
+            || $settings['checkAvailability'] == 1
+        ) {
+            $results = $this->searchService->retrieve(
+                'Solr', $id, new ParamBag(array('fq' => $this->filters))
+            );
+            if ($results->getTotal() < 1) {
+                return false;
+            }
+        }
+        // If we got this far the support-check was positive in any case.
         return true;
     }
 }

@@ -1032,14 +1032,15 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('source', 'VuFind')
             );
             $view = $this->createEmailViewModel();
-            $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $mailer->sendRecord(
                 $view->to, $view->from, $view->message, $record,
                 $this->getViewRenderer()
             );
             if ($this->params()->fromPost('ccself')
                 && $view->from != $view->to
             ) {
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                $mailer->sendRecord(
                     $view->from, $view->from, $view->message, $record,
                     $this->getViewRenderer()
                 );
@@ -1085,10 +1086,19 @@ class AjaxController extends AbstractBase
         // Attempt to send the email:
         try {
             $view = $this->createEmailViewModel();
-            $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $mailer->sendLink(
                 $view->to, $view->from, $view->message, $url,
                 $this->getViewRenderer(), $this->params()->fromPost('subject')
             );
+            if ($this->params()->fromPost('ccself')
+                && $view->from != $view->to
+            ) {
+                $mailer->sendLink(
+                    $view->from, $view->from, $view->message, $url,
+                    $this->getViewRenderer(), $this->params()->fromPost('subject')
+                );
+            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );
@@ -1522,6 +1532,52 @@ class AjaxController extends AbstractBase
 
         return $this->output(
             $this->translate('An error has occurred'), self::STATUS_ERROR
+        );
+    }
+
+    /**
+     * Get hierarchical facet data for jsTree
+     *
+     * Parameters:
+     * facetName  The facet to retrieve
+     * facetSort  By default all facets are sorted by count. Two values are available
+     * for alternative sorting:
+     *   top = sort the top level alphabetically, rest by count
+     *   all = sort all levels alphabetically
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getFacetDataAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+
+        $facet = $this->params()->fromQuery('facetName');
+        $sort = $this->params()->fromQuery('facetSort');
+        $operator = $this->params()->fromQuery('facetOperator');
+
+        $results = $this->getResultsManager()->get('Solr');
+        $params = $results->getParams();
+        $params->addFacet($facet, null, $operator === 'OR');
+        $params->initFromRequest($this->getRequest()->getQuery());
+
+        $facets = $results->getFullFieldFacets(array($facet), false, -1, 'count');
+        if (empty($facets[$facet]['data']['list'])) {
+            return $this->output(array(), self::STATUS_OK);
+        }
+
+        $facetList = $facets[$facet]['data']['list'];
+
+        $facetHelper = $this->getServiceLocator()
+            ->get('VuFind\HierarchicalFacetHelper');
+        if (!empty($sort)) {
+            $facetHelper->sortFacetList($facetList, $sort == 'top');
+        }
+
+        return $this->output(
+            $facetHelper->buildFacetArray(
+                $facet, $facetList, $results->getUrlQuery()
+            ),
+            self::STATUS_OK
         );
     }
 

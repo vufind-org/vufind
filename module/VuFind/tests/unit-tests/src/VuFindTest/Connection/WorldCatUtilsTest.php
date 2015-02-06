@@ -101,6 +101,17 @@ class WorldCatUtilsTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test related identities on an empty string
+     *
+     * @return void
+     */
+    public function testGetRelatedIdentitiesEmptyString()
+    {
+        $client = $this->getClient();
+        $this->assertFalse($client->getRelatedIdentities(''));
+    }
+
+    /**
      * Test related terminology
      *
      * @return void
@@ -123,13 +134,15 @@ class WorldCatUtilsTest extends \PHPUnit_Framework_TestCase
      *
      * @return WorldCatUtils
      */
-    protected function getClient($fixture, $silent = true)
+    protected function getClient($fixture = null, $silent = true)
     {
-        $file = realpath(__DIR__ . '/../../../../fixtures/worldcat/' . $fixture);
-        $adapter = new TestAdapter();
-        $adapter->setResponse(file_get_contents($file));
         $client = new HttpClient();
-        $client->setAdapter($adapter);
+        if (null !== $fixture) {
+            $adapter = new TestAdapter();
+            $file = realpath(__DIR__ . '/../../../../fixtures/worldcat/' . $fixture);
+            $adapter->setResponse(file_get_contents($file));
+            $client->setAdapter($adapter);
+        }
         return new WorldCatUtils('dummy', $client, $silent);
     }
 }

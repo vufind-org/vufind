@@ -742,8 +742,59 @@ class Upgrade
             }
         }
 
+        $this->upgradeSpellingSettings('searches.ini', array('CallNumber'));
+
         // save the file
         $this->saveModifiedConfig('searches.ini');
+    }
+
+    /**
+     * Upgrade spelling settings to account for refactoring of spelling as a
+     * recommendation module starting in release 2.4.
+     *
+     * @param string $ini  .ini file to modify
+     * @param array  $skip Keys to skip within [TopRecommendations]
+     *
+     * @return void
+     */
+    protected function upgradeSpellingSettings($ini, $skip = array())
+    {
+        // Turn on the spelling recommendations if we're upgrading from a version
+        // prior to 2.4.
+        if ((float)$this->from < 2.4) {
+            // Fix defaults in general section:
+            $cfg = & $this->newConfigs[$ini]['General'];
+            $keys = array('default_top_recommend', 'default_noresults_recommend');
+            foreach ($keys as $key) {
+                if (!isset($cfg[$key])) {
+                    $cfg[$key] = array();
+                }
+                if (!in_array('SpellingSuggestions', $cfg[$key])) {
+                    $cfg[$key][] = 'SpellingSuggestions';
+                }
+            }
+
+            // Fix settings in [TopRecommendations]
+            $cfg = & $this->newConfigs[$ini]['TopRecommendations'];
+            // Add SpellingSuggestions to all non-skipped handlers:
+            foreach ($cfg as $key => & $value) {
+                if (!in_array($key, $skip)
+                    && !in_array('SpellingSuggestions', $value)
+                ) {
+                    $value[] = 'SpellingSuggestions';
+                }
+            }
+            // Define handlers with no spelling support as the default minus the
+            // Spelling option:
+            foreach ($skip as $key) {
+                if (!isset($cfg[$key])) {
+                    $cfg[$key] = array_diff(
+                        $this->newConfigs[$ini]['General']['default_top_recommend'],
+                        array('SpellingSuggestions')
+                    );
+                }
+            }
+        }
     }
 
     /**
@@ -860,6 +911,8 @@ class Upgrade
         // update permission settings
         $this->upgradeSummonPermissions();
 
+        $this->upgradeSpellingSettings('Summon.ini');
+
         // save the file
         $this->saveModifiedConfig('Summon.ini');
     }
@@ -917,6 +970,18 @@ class Upgrade
             'Basic_Searches', 'Advanced_Searches', 'Sorting'
         );
         $this->applyOldSettings('WorldCat.ini', $groups);
+
+        // we need to fix an obsolete search setting for authors
+        foreach (array('Basic_Searches', 'Advanced_Searches') as $section) {
+            $new = array();
+            foreach ($this->newConfigs['WorldCat.ini'][$section] as $k => $v) {
+                if ($k == 'srw.au:srw.pn:srw.cn') {
+                    $k = 'srw.au';
+                }
+                $new[$k] = $v;
+            }
+            $this->newConfigs['WorldCat.ini'][$section] = $new;
+        }
 
         // save the file
         $this->saveModifiedConfig('WorldCat.ini');

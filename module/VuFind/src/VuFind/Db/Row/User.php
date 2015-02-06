@@ -42,9 +42,11 @@ use Zend\Db\Sql\Expression,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class User extends ServiceLocatorAwareGateway
-    implements \ZfcRbac\Identity\IdentityInterface
+class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
+    \ZfcRbac\Identity\IdentityInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+
     /**
      * Is encryption enabled?
      *
@@ -60,6 +62,13 @@ class User extends ServiceLocatorAwareGateway
     protected $encryptionKey = null;
 
     /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config = null;
+
+    /**
      * Constructor
      *
      * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
@@ -67,6 +76,18 @@ class User extends ServiceLocatorAwareGateway
     public function __construct($adapter)
     {
         parent::__construct('id', 'user', $adapter);
+    }
+
+    /**
+     * Configuration setter
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     *
+     * @return void
+     */
+    public function setConfig(\Zend\Config\Config $config)
+    {
+        $this->config = $config;
     }
 
     /**
@@ -125,11 +146,9 @@ class User extends ServiceLocatorAwareGateway
     protected function passwordEncryptionEnabled()
     {
         if (null === $this->encryptionEnabled) {
-            $config = $this->getServiceLocator()->getServiceLocator()
-                ->get('VuFind\Config')->get('config');
             $this->encryptionEnabled
-                = isset($config->Authentication->encrypt_ils_password)
-                ? $config->Authentication->encrypt_ils_password : false;
+                = isset($this->config->Authentication->encrypt_ils_password)
+                ? $this->config->Authentication->encrypt_ils_password : false;
         }
         return $this->encryptionEnabled;
     }
@@ -154,16 +173,14 @@ class User extends ServiceLocatorAwareGateway
 
         // Load encryption key from configuration if not already present:
         if (null === $this->encryptionKey) {
-            $config = $this->getServiceLocator()->getServiceLocator()
-                ->get('VuFind\Config')->get('config');
-            if (!isset($config->Authentication->ils_encryption_key)
-                || empty($config->Authentication->ils_encryption_key)
+            if (!isset($this->config->Authentication->ils_encryption_key)
+                || empty($this->config->Authentication->ils_encryption_key)
             ) {
                 throw new \VuFind\Exception\PasswordSecurity(
                     'ILS password encryption on, but no key set.'
                 );
             }
-            $this->encryptionKey = $config->Authentication->ils_encryption_key;
+            $this->encryptionKey = $this->config->Authentication->ils_encryption_key;
         }
 
         // Perform encryption:
