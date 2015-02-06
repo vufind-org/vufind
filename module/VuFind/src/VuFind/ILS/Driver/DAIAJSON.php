@@ -88,17 +88,13 @@ class DAIAJSON extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
         $http_headers = array(
         "Content-type: application/json",
         "Accept: application/json");
-        // $url = $this->daiaurl . "?id=" . $this->daiaidprefix . $id . "&format=json";
-	$params = array("id" => $this->daiaidprefix . $id, "format" => "json");
-        // $adapter = new CurlAdapter();
+        $params = array(
+        "id" => $this->daiaidprefix . $id, 
+        "format" => "json");
 
         try {
             $client = $this->httpService->createClient();
-            // $client->setHeaders($http_headers);
-            // $client->setMethod("GET");
-            // $client->setAdapter($adapter);
-            // $result = $client->send();
-            $result = $client->get($this->daiaurl,$params, null, $http_headers);
+            $result = $client->get($this->daiaurl, $params, null, $http_headers);
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
