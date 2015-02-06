@@ -62,7 +62,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * Create the supporting plugin manager.
      *
      * @param ServiceLocatorInterface $serviceLocator Service locator
-     * @param array $rbacConfig ZfcRbac configuration
+     * @param array                   $rbacConfig     ZfcRbac configuration
      *
      * @return PermissionProviderPluginManager
      */
@@ -80,7 +80,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * Get a configuration array.
      *
      * @param ServiceLocatorInterface $serviceLocator Service locator
-     * @param array $rbacConfig ZfcRbac configuration
+     * @param array                   $rbacConfig     ZfcRbac configuration
      *
      * @return array
      */

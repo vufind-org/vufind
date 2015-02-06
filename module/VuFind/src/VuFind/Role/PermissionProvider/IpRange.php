@@ -51,7 +51,7 @@ class IpRange implements PermissionProviderInterface
     /**
      * Constructor
      *
-     * @param Request              $request       Request object
+     * @param Request $request Request object
      */
     public function __construct(Request $request)
     {
@@ -70,7 +70,7 @@ class IpRange implements PermissionProviderInterface
     {
         // Check if any regex matches....
         $ip = $this->request->getServer()->get('REMOTE_ADDR');
-        if (checkIP($ip, $options)) {
+        if ($this->checkIP($ip, $options)) {
             // Match? Grant to all users (guest or logged in).
             return ['guest', 'loggedin'];
         }
@@ -79,32 +79,35 @@ class IpRange implements PermissionProviderInterface
         return [];
     }
 
-   /**
-    * Return true or false
-    *
-    * @param ip adress 		$remoteIP 	ip adress of the user
-    * @param array 		$rangeIP 	ip and ranges of adresses
-    *
-    * @return boolean
-    */
-   // ToDo: Implementin IPv6 check
-   private function checkIP($remoteIP, $rangeIP) {
+    /**
+     * Check if $remoteIP is within $rangeIP
+     *
+     * @param string $remoteIP ip address of the user
+     * @param array  $rangeIP  single ip or range of addresses
+     *
+     * @return bool
+     * @todo Implement IPv6 check
+     */
+    protected function checkIP($remoteIP, $rangeIP)
+    {
         $mylist = array();
         $count = 0;
         $inList = false;
         foreach ((array)$rangeIP as $range) {
             if (preg_match('/-/',$range)) {
                 $tmp=preg_split('/-/',$range);
-                $mylist[$count]["start"]=$tmp[0];
-                $mylist[$count]["end"]=$tmp[1];
+                $mylist[$count]['start']=$tmp[0];
+                $mylist[$count]['end']=$tmp[1];
             } else {
-                $mylist[$count]["start"]=$range;
-                $mylist[$count]["end"]=$range;
+                $mylist[$count]['start']=$range;
+                $mylist[$count]['end']=$range;
             }
             $count++;
         }
         foreach ($mylist as $check) {
-            if (ip2long($remoteIP) >= ip2long($check["start"]) && ip2long($remoteIP) <= ip2long($check["end"])) {
+            if (ip2long($remoteIP) >= ip2long($check['start'])
+                && ip2long($remoteIP) <= ip2long($check['end'])
+            ) {
                 $inList=true;
             }
         }

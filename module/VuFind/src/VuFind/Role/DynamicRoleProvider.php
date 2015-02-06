@@ -78,7 +78,7 @@ class DynamicRoleProvider implements RoleProviderInterface
     /**
      * Get the roles from the provider
      *
-     * @param  string[] $roleNames Role(s) to look up.
+     * @param string[] $roleNames Role(s) to look up.
      *
      * @return \Rbac\Role\RoleInterface[]
      */
