@@ -38,12 +38,7 @@ namespace VuFind\Statistics\Driver;
  */
 class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
 {
-    /**
-     * Database table plugin manager
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tableManager;
+    use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
      * Write a message to the log.
@@ -92,32 +87,6 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     {
         $userStats = $this->getTable('UserStats');
         return $userStats->getBrowserStats($version, $limit);
-    }
-
-    /**
-     * Get the table plugin manager.  Throw an exception if it is missing.
-     *
-     * @throws \Exception
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    public function getDbTableManager()
-    {
-        if (null === $this->tableManager) {
-            throw new \Exception('DB table manager missing.');
-        }
-        return $this->tableManager;
-    }
-
-    /**
-     * Set the table plugin manager.
-     *
-     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
-     *
-     * @return void
-     */
-    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
-    {
-        $this->tableManager = $manager;
     }
 
     /**

@@ -43,6 +43,7 @@ use Zend\Log\LoggerInterface;
 abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
@@ -58,13 +59,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param \Zend\Config\Config
      */
     protected $config = null;
-
-    /**
-     * Database table plugin manager
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tableManager;
 
     /**
      * Logger (or false for none)
@@ -310,32 +304,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getUserTable()
     {
         return $this->getDbTableManager()->get('User');
-    }
-
-    /**
-     * Get the table plugin manager.  Throw an exception if it is missing.
-     *
-     * @throws \Exception
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    public function getDbTableManager()
-    {
-        if (null === $this->tableManager) {
-            throw new \Exception('DB table manager missing.');
-        }
-        return $this->tableManager;
-    }
-
-    /**
-     * Set the table plugin manager.
-     *
-     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
-     *
-     * @return void
-     */
-    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
-    {
-        $this->tableManager = $manager;
     }
 
     /**
