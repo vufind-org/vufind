@@ -118,19 +118,4 @@ trait TranslatorAwareTrait
 
         return $msg;
     }
-
-    /**
-     * Sleep magic method -- the translator can't be serialized, so we need to
-     * exclude it from serialization.  Since we can't obtain a new one in the
-     * __wakeup() method, it needs to be re-injected from outside.
-     *
-     * @return array
-     */
-    public function __sleep()
-    {
-        $vars = get_object_vars($this);
-        unset($vars['translator']);
-        $vars = array_keys($vars);
-        return $vars;
-    }
 }
