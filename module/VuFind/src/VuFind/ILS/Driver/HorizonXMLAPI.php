@@ -41,24 +41,7 @@ use VuFind\Exception\ILS as ILSException;
  */
 class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Initialize the driver.

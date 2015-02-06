@@ -42,6 +42,8 @@ use VuFind\I18n\Translator\TranslatorAwareInterface,
  */
 abstract class Options implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Available sort options
      *
@@ -210,14 +212,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     protected $listviewOption = "full";
 
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
-
-    /**
+    /*
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -745,31 +740,5 @@ abstract class Options implements TranslatorAwareInterface
         unset($vars['translator']);
         $vars = array_keys($vars);
         return $vars;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Options
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    public function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 }

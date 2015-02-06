@@ -104,6 +104,9 @@ $config = array(
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
         ),
+        'initializers' => array(
+            'ZfcRbac\Initializer\AuthorizationServiceInitializer'
+        ),
     ),
     'controller_plugins' => array(
         'factories' => array(
@@ -322,6 +325,7 @@ $config = array(
                 'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
                 'factories' => array(
                     'resource' => 'VuFind\Db\Table\Factory::getResource',
+                    'user' => 'VuFind\Db\Table\Factory::getUser',
                 ),
                 'invokables' => array(
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
@@ -331,7 +335,6 @@ $config = array(
                     'search' => 'VuFind\Db\Table\Search',
                     'session' => 'VuFind\Db\Table\Session',
                     'tags' => 'VuFind\Db\Table\Tags',
-                    'user' => 'VuFind\Db\Table\User',
                     'userlist' => 'VuFind\Db\Table\UserList',
                     'userresource' => 'VuFind\Db\Table\UserResource',
                     'userstats' => 'VuFind\Db\Table\UserStats',
@@ -649,6 +652,31 @@ $config = array(
                     'Details' => 'StaffViewMARC',
                 ),
                 'defaultTab' => null,
+            ),
+        ),
+    ),
+    // Authorization configuration:
+    'zfc_rbac' => array(
+        'identity_provider' => 'VuFind\AuthManager',
+        'guest_role' => 'guest',
+        'role_provider' => array(
+            'VuFind\Role\DynamicRoleProvider' => array(
+                'map_legacy_settings' => true,
+            ),
+        ),
+        'role_provider_manager' => array(
+            'factories' => array(
+                'VuFind\Role\DynamicRoleProvider' => 'VuFind\Role\DynamicRoleProviderFactory',
+            ),
+        ),
+        'vufind_permission_provider_manager' => array(
+            'factories' => array(
+                'ipRange' => 'VuFind\Role\PermissionProvider\Factory::getIpRange',
+                'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
+                'username' => 'VuFind\Role\PermissionProvider\Factory::getUsername',
+            ),
+            'invokables' => array(
+                'role' => 'VuFind\Role\PermissionProvider\Role',
             ),
         ),
     ),

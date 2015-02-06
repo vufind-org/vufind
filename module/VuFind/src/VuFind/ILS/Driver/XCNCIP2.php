@@ -40,12 +40,7 @@ use VuFind\Exception\ILS as ILSException,
  */
 class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Is this a consortium? Default: false
@@ -74,18 +69,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var array
      */
     protected $pickupLocations = array();
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
 
     /**
      * Initialize the driver.
@@ -160,8 +143,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         // Make the NCIP request:
         try {
-            $client = $this->httpService
-                ->createClient($this->url);
+            $client = $this->httpService->createClient($this->url);
             // Set timeout value
             $timeout = isset($this->config['Catalog']['http_timeout'])
             ? $this->config['Catalog']['http_timeout'] : 30;

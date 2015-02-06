@@ -1061,14 +1061,15 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('source', 'VuFind')
             );
             $view = $this->createEmailViewModel();
-            $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $mailer->sendRecord(
                 $view->to, $view->from, $view->message, $record,
                 $this->getViewRenderer()
             );
             if ($this->params()->fromPost('ccself')
                 && $view->from != $view->to
             ) {
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                $mailer->sendRecord(
                     $view->from, $view->from, $view->message, $record,
                     $this->getViewRenderer()
                 );
@@ -1114,10 +1115,19 @@ class AjaxController extends AbstractBase
         // Attempt to send the email:
         try {
             $view = $this->createEmailViewModel();
-            $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $mailer->sendLink(
                 $view->to, $view->from, $view->message, $url,
                 $this->getViewRenderer(), $this->params()->fromPost('subject')
             );
+            if ($this->params()->fromPost('ccself')
+                && $view->from != $view->to
+            ) {
+                $mailer->sendLink(
+                    $view->from, $view->from, $view->message, $url,
+                    $this->getViewRenderer(), $this->params()->fromPost('subject')
+                );
+            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );

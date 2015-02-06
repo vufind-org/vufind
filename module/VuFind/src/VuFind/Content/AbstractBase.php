@@ -40,12 +40,7 @@ use VuFindCode\ISBN;
 abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
     \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Logger
@@ -94,18 +89,6 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
             throw new \Exception('HTTP service missing.');
         }
         return $this->httpService->createClient($url);
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**

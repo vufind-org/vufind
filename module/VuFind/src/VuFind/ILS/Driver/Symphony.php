@@ -46,6 +46,8 @@ use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
 class Symphony extends AbstractBase
     implements ServiceLocatorAwareInterface, LoggerAwareInterface
 {
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
+
     /**
      * Cache for policy information
      *
@@ -59,13 +61,6 @@ class Symphony extends AbstractBase
      * @var array
      */
     protected $policies;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Logger (or false for none)
@@ -1729,28 +1724,5 @@ class Symphony extends AbstractBase
             $libraries = $this->getPickUpLocations();
             return $libraries[0]['locationID'];
         }
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Symphony
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

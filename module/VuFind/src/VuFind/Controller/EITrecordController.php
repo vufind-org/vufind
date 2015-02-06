@@ -49,6 +49,7 @@ class EITrecordController extends AbstractRecord
     public function __construct()
     {
         // Override some defaults:
+        $this->accessPermission = 'access.EITModule';
         $this->searchClassId = 'EIT';
         $this->defaultTab = 'Description';
 

@@ -48,12 +48,7 @@ use VuFind\Exception\ILS as ILSException,
 class MultiBackend extends AbstractBase
     implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * The serviceLocator instance (implementing ServiceLocatorAwareInterface).
-     *
-     * @var object
-     */
-    protected $serviceLocator;
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
 
     /**
      * The array of configured driver names.
@@ -177,29 +172,6 @@ class MultiBackend extends AbstractBase
         $this->delimiters['login'] = isset($this->config['Delimiters']['login'])
             ? $this->config['Delimiters']['login']
             : '.';
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Manager
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**
