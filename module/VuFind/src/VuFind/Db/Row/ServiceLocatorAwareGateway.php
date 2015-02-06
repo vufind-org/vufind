@@ -41,12 +41,7 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
 class ServiceLocatorAwareGateway extends RowGateway
     implements ServiceLocatorAwareInterface
 {
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
 
     /**
      * Get access to another table.
@@ -58,28 +53,5 @@ class ServiceLocatorAwareGateway extends RowGateway
     public function getDbTable($table)
     {
         return $this->getServiceLocator()->get($table);
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return ServiceLocatorAwareGateway
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }
