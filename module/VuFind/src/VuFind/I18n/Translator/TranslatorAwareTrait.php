@@ -89,15 +89,22 @@ trait TranslatorAwareTrait
     /**
      * Translate a string
      *
-     * @param string $str    String to translate
-     * @param array  $tokens Tokens to inject into the translated string
+     * @param string $str     String to translate
+     * @param array  $tokens  Tokens to inject into the translated string
+     * @param string $default Default value to use if no translation is found (null
+     * for no default).
      *
      * @return string
      */
-    public function translate($str, $tokens = array())
+    public function translate($str, $tokens = array(), $default = null)
     {
         $msg = null === $this->translator
             ? $str : $this->translator->translate($str);
+
+        // Did the translation fail to change anything?  If so, use default:
+        if (null !== $default && $msg == $str) {
+            $msg = $default;
+        }
 
         // Do we need to perform substitutions?
         if (!empty($tokens)) {
