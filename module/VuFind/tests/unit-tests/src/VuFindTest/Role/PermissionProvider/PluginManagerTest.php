@@ -1,6 +1,6 @@
 <?php
 /**
- * EIT Controller
+ * PermissionProvider Plugin Manager Test Class
  *
  * PHP version 5
  *
@@ -20,64 +20,46 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFind\Controller;
+namespace VuFindTest\Role\PermissionProvider;
+use VuFind\Role\PermissionProvider\PluginManager;
 
 /**
- * EIT Controller
+ * PermissionProvider Plugin Manager Test Class
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-class EITController extends AbstractSearch
+class PluginManagerTest extends \VuFindTest\Unit\TestCase
 {
     /**
-     * Constructor
+     * Test results.
+     *
+     * @return void
      */
-    public function __construct()
+    public function testShareByDefault()
     {
-        $this->accessPermission = 'access.EITModule';
-        $this->searchClassId = 'EIT';
-        parent::__construct();
+        $pm = new PluginManager(null);
+        $this->assertTrue($pm->shareByDefault());
     }
 
     /**
-     * Is the result scroller active?
+     * Test expected interface.
      *
-     * @return bool
+     * @return void
+     * @expectedException Zend\ServiceManager\Exception\RuntimeException
+     * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Role\PermissionProvider\PermissionProviderInterface
      */
-    protected function resultScrollerActive()
+    public function testExpectedInterface()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EIT');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
-    }
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        // Set up default parameters:
-        return $this->createViewModel();
-    }
-
-    /**
-     * Search action -- call standard results action
-     *
-     * @return mixed
-     */
-    public function searchAction()
-    {
-        return $this->resultsAction();
+        $pm = new PluginManager(null);
+        $pm->validatePlugin(new \ArrayObject());
     }
 }

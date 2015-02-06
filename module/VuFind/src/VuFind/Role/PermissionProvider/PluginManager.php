@@ -1,6 +1,6 @@
 <?php
 /**
- * EIT Record Controller
+ * Permission provider plugin manager
  *
  * PHP version 5
  *
@@ -20,53 +20,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
- * @author   Julia Bauder <bauderj@grinnell.edu>
+ * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
-namespace VuFind\Controller;
-use Zend\Mvc\MvcEvent;
+namespace VuFind\Role\PermissionProvider;
 
 /**
- * EIT Record Controller
- * Largely copied from Summon Record Controller
+ * Permission provider plugin manager
  *
  * @category VuFind2
- * @package  Controller
- * @author   Julia Bauder <bauderj@grinnell.edu>
+ * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
-
-class EITrecordController extends AbstractRecord
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        // Override some defaults:
-        $this->accessPermission = 'access.EITModule';
-        $this->searchClassId = 'EIT';
-        $this->defaultTab = 'Description';
-
-        // Call standard record controller initialization:
-        parent::__construct();
-    }
-
-    /**
-     * Is the result scroller active?
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
      *
-     * @return bool
+     * @return string
      */
-    protected function resultScrollerActive()
+    protected function getExpectedInterface()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EIT');
-        return (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        return 'VuFind\Role\PermissionProvider\PermissionProviderInterface';
     }
-
 }

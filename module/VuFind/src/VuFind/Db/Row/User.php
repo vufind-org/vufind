@@ -42,7 +42,8 @@ use Zend\Db\Sql\Expression,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
+class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
+    \ZfcRbac\Identity\IdentityInterface
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
 
@@ -435,5 +436,15 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
             $this->username . $this->password . $this->pass_hash . rand()
         ) . (time() % pow(10, 10));
         return $this->save();
+    }
+
+    /**
+     * Get the list of roles of this identity
+     *
+     * @return string[]|\Rbac\Role\RoleInterface[]
+     */
+    public function getRoles()
+    {
+        return array('loggedin');
     }
 }
