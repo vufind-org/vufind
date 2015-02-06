@@ -26,9 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
  */
 namespace VuFind\Session;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Session\SaveHandler\SaveHandlerInterface;
+use Zend\Session\SaveHandler\SaveHandlerInterface;
 
 /**
  * Base class for session handling
