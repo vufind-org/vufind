@@ -70,4 +70,16 @@ trait DbTableAwareTrait
     {
         $this->tableManager = $manager;
     }
+
+    /**
+     * Get a database table object.
+     *
+     * @param string $table Table to load.
+     *
+     * @return Gateway
+     */
+    public function getDbTable($table)
+    {
+        return $this->getDbTableManager()->get($table);
+    }
 }

@@ -122,6 +122,9 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
         if ($prototype instanceof ServiceLocatorAwareInterface) {
             $prototype->setServiceLocator($this->getServiceLocator());
         }
+        \VuFind\ServiceManager\Initializer::initInstance(
+            $prototype, $this->getServiceLocator()->getServiceLocator()
+        );
         return $prototype;
     }
 

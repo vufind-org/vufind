@@ -486,16 +486,4 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             ? call_user_func_array(array($this, $method), $params)
             : null;
     }
-
-    /**
-     * Get a database table object.
-     *
-     * @param string $table Table to load.
-     *
-     * @return \VuFind\Db\Table\User
-     */
-    public function getDbTable($table)
-    {
-        return $this->getDbTableManager()->get($table);
-    }
 }

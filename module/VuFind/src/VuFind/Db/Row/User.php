@@ -42,8 +42,10 @@ use Zend\Db\Sql\Expression,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class User extends ServiceLocatorAwareGateway
+class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+
     /**
      * Is encryption enabled?
      *
