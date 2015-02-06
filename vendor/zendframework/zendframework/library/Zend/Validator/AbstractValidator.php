@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -36,7 +36,7 @@ abstract class AbstractValidator implements
     protected static $defaultTranslatorTextDomain = 'default';
 
     /**
-     * Limits the maximum returned length of a error message
+     * Limits the maximum returned length of an error message
      *
      * @var int
      */
@@ -248,21 +248,17 @@ abstract class AbstractValidator implements
         if (array_key_exists($property, $this->abstractOptions['messageVariables'])) {
             $result = $this->abstractOptions['messageVariables'][$property];
             if (is_array($result)) {
-                $result = $this->{key($result)}[current($result)];
-            } else {
-                $result = $this->{$result};
+                return $this->{key($result)}[current($result)];
             }
-            return $result;
+            return $this->{$result};
         }
 
         if (isset($this->messageVariables) && array_key_exists($property, $this->messageVariables)) {
             $result = $this->{$this->messageVariables[$property]};
             if (is_array($result)) {
-                $result = $this->{key($result)}[current($result)];
-            } else {
-                $result = $this->{$result};
+                return $this->{key($result)}[current($result)];
             }
-            return $result;
+            return $this->{$result};
         }
 
         throw new Exception\InvalidArgumentException("No property exists by the name '$property'");
@@ -468,9 +464,7 @@ abstract class AbstractValidator implements
      * @return void
      * @throws Exception\InvalidArgumentException
      */
-    public static function setDefaultTranslator(
-        Translator\TranslatorInterface $translator = null, $textDomain = null
-    )
+    public static function setDefaultTranslator(Translator\TranslatorInterface $translator = null, $textDomain = null)
     {
         static::$defaultTranslator = $translator;
         if (null !== $textDomain) {
@@ -575,15 +569,6 @@ abstract class AbstractValidator implements
             return $message;
         }
 
-        $translated = $translator->translate(
-            $messageKey, $this->getTranslatorTextDomain()
-        );
-        if ($translated !== $messageKey) {
-            return $translated;
-        }
-
-        return $translator->translate(
-            $message, $this->getTranslatorTextDomain()
-        );
+        return $translator->translate($message, $this->getTranslatorTextDomain());
     }
 }

@@ -733,11 +733,11 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Zend\I18n\Translator\Translator
+     * @return \Zend\I18n\Translator\TranslatorInterface
      */
     public static function getTranslator(ServiceManager $sm)
     {
-        $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
+        $factory = new \Zend\Mvc\Service\TranslatorServiceFactory();
         $translator = $factory->createService($sm);
 
         // Set up the ExtendedIni plugin:

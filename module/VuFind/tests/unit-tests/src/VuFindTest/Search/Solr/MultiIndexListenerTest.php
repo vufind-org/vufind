@@ -77,7 +77,8 @@ class MultiIndexListenerTest extends TestCase
                         array('or', '~')
                     )
                 )
-            )
+            ),
+            'FilterQuery' => 'format:Book',
         )
     );
 
@@ -151,6 +152,47 @@ class MultiIndexListenerTest extends TestCase
     }
 
     /**
+     * Test that loading a record overrides the shard settings.
+     *
+     * @return void
+     */
+    public function testAllShardsUsedForRecordRetrieval()
+    {
+        $params   = new ParamBag(
+            array(
+                'shards' => array(self::$shards['b'], self::$shards['c']),
+            )
+        );
+        $event    = new Event(
+            'pre', $this->backend,
+            array('params' => $params, 'context' => 'retrieve')
+        );
+        $this->listener->onSearchPre($event);
+
+        $shards = $params->get('shards');
+        $this->assertEquals(
+            array(implode(',', array(self::$shards['a'], self::$shards['b'], self::$shards['c']))),
+            $shards
+        );
+    }
+
+    /**
+     * Test attaching listener.
+     *
+     * @return void
+     */
+    public function testAttach()
+    {
+        $mock = $this->getMock('Zend\EventManager\SharedEventManagerInterface');
+        $mock->expects($this->once())->method('attach')->with(
+            $this->equalTo('VuFind\Search'),
+            $this->equalTo('pre'),
+            $this->equalTo(array($this->listener, 'onSearchPre'))
+        );
+        $this->listener->attach($mock);
+    }
+
+    /**
      * Apply strip to empty specs.
      *
      * @return void
@@ -193,7 +235,8 @@ class MultiIndexListenerTest extends TestCase
                                   array('onephrase', 300)
                               )
                           )
-                      )
+                      ),
+                      'FilterQuery' => 'format:Book',
                   )
             ),
             $specs
@@ -209,7 +252,7 @@ class MultiIndexListenerTest extends TestCase
     {
         $specs = $this->callMethod($this->listener, 'getSearchSpecs', array(array('A', 'B', 'C', 'D', 'E')));
         $this->assertEquals(
-            array('test' => array('QueryFields' => array())),
+            array('test' => array('QueryFields' => array(), 'FilterQuery' => 'format:Book')),
             $specs
         );
     }

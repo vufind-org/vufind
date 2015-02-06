@@ -113,10 +113,19 @@ class SearchController extends AbstractSearch
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
+                $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+                $mailer->sendLink(
                     $view->to, $view->from, $view->message,
                     $view->url, $this->getViewRenderer()
                 );
+                if ($this->params()->fromPost('ccself')
+                    && $view->from != $view->to
+                ) {
+                    $mailer->sendLink(
+                        $view->from, $view->from, $view->message,
+                        $view->url, $this->getViewRenderer()
+                    );
+                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirect()->toUrl($view->url);

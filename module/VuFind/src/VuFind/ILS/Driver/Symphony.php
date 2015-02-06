@@ -46,6 +46,8 @@ use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
 class Symphony extends AbstractBase
     implements ServiceLocatorAwareInterface, LoggerAwareInterface
 {
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
+
     /**
      * Cache for policy information
      *
@@ -59,13 +61,6 @@ class Symphony extends AbstractBase
      * @var array
      */
     protected $policies;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Logger (or false for none)
@@ -1121,7 +1116,33 @@ class Symphony extends AbstractBase
             $patron['lastname']  = $matches[1];
         }
 
-        // @TODO: email, major, college
+        // There may be an email address in any of three numbered addresses,
+        // so we search each one until we find an email address,
+        // starting with the one marked primary.
+        $addrinfo_check_order = array('1','2','3');
+        if (isset($resp->patronAddressInfo->primaryAddress)) {
+            $primary_addr_n = $resp->patronAddressInfo->primaryAddress;
+            array_unshift($addrinfo_check_order, $primary_addr_n);
+        }
+        foreach ($addrinfo_check_order as $n) {
+            $AddressNInfo = "Address{$n}Info";
+            if (isset($resp->patronAddressInfo->$AddressNInfo)) {
+                $addrinfos = is_array($resp->patronAddressInfo->$AddressNInfo)
+                    ? $resp->patronAddressInfo->$AddressNInfo
+                    : array($resp->patronAddressInfo->$AddressNInfo);
+                foreach ($addrinfos as $addrinfo) {
+                    if ($addrinfo->addressPolicyID == 'EMAIL'
+                        && !empty($addrinfo->addressValue)
+                    ) {
+                        $patron['email'] = $addrinfo->addressValue;
+                        break;
+                    }
+                }
+
+            }
+        }
+
+        // @TODO: major, college
 
         return $patron;
     }
@@ -1703,28 +1724,5 @@ class Symphony extends AbstractBase
             $libraries = $this->getPickUpLocations();
             return $libraries[0]['locationID'];
         }
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Symphony
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

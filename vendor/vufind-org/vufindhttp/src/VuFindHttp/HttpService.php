@@ -115,11 +115,13 @@ class HttpService implements HttpServiceInterface
      * @param string $url     Request URL
      * @param array  $params  Request parameters
      * @param float  $timeout Request timeout in seconds
+     * @param array  $headers Request headers
      *
      * @return \Zend\Http\Response
      */
-    public function get($url, array $params = array(), $timeout = null)
-    {
+    public function get($url, array $params = array(), $timeout = null,
+        array $headers = array()
+    ) {
         if ($params) {
             $query = $this->createQueryString($params);
             if (strpos($url, '?') !== false) {
@@ -130,6 +132,9 @@ class HttpService implements HttpServiceInterface
         }
         $client
             = $this->createClient($url, \Zend\Http\Request::METHOD_GET, $timeout);
+        if ($headers) {
+            $client->setHeaders($headers);
+        }
         return $this->send($client);
     }
 

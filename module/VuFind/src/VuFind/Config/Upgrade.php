@@ -111,6 +111,13 @@ class Upgrade
     protected $inPlaceUpgrade;
 
     /**
+     * Have we modified permissions.ini?
+     *
+     * @var bool
+     */
+    protected $permissionsModified = false;
+
+    /**
      * Constructor
      *
      * @param string $from   Version we're upgrading from.
@@ -153,6 +160,10 @@ class Upgrade
         $this->upgradeSms();
         $this->upgradeSummon();
         $this->upgradeWorldCat();
+
+        // The previous upgrade routines may have added values to permissions.ini,
+        // so we should save it last. It doesn't have its own upgrade routine.
+        $this->saveModifiedConfig('permissions.ini');
 
         // The following routines load special configurations that were not
         // explicitly loaded by loadConfigs:
@@ -280,7 +291,8 @@ class Upgrade
         // first so that getOldConfigPath can work properly!
         $configs = array(
             'config.ini', 'authority.ini', 'facets.ini', 'reserves.ini',
-            'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini'
+            'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini',
+            'permissions.ini'
         );
         foreach ($configs as $config) {
             // Special case for config.ini, since we may need to overlay extra
@@ -343,7 +355,11 @@ class Upgrade
         // If we're doing an in-place upgrade, and the source file is empty,
         // there is no point in upgrading anything (the file doesn't exist).
         if (empty($this->oldConfigs[$filename]) && $this->inPlaceUpgrade) {
-            return;
+            // Special case: if we set up custom permissions, we need to
+            // write the file even if it didn't previously exist.
+            if (!$this->permissionsModified || $filename !== 'permissions.ini') {
+                return;
+            }
         }
 
         // If target file already exists, back it up:
@@ -611,11 +627,47 @@ class Upgrade
             unset($newConfig['Syndetics']['url']);
         }
 
+        // Translate obsolete permission settings:
+        $this->upgradeAdminPermissions();
+
         // Deal with shard settings (which may have to be moved to another file):
         $this->upgradeShardSettings();
 
         // save the file
         $this->saveModifiedConfig('config.ini');
+    }
+
+    /**
+     * Translate obsolete permission settings.
+     *
+     * @return void
+     */
+    protected function upgradeAdminPermissions()
+    {
+        $config = & $this->newConfigs['config.ini'];
+        $permissions = & $this->newConfigs['permissions.ini'];
+
+        if (isset($config['AdminAuth'])) {
+            $permissions['access.AdminModule'] = [];
+            if (isset($config['AdminAuth']['ipRegEx'])) {
+                $permissions['access.AdminModule']['ipRegEx']
+                    = $config['AdminAuth']['ipRegEx'];
+            }
+            if (isset($config['AdminAuth']['userWhitelist'])) {
+                $permissions['access.AdminModule']['username']
+                    = $config['AdminAuth']['userWhitelist'];
+            }
+            // If no settings exist in config.ini, we grant access to everyone
+            // by allowing both logged-in and logged-out roles.
+            if (empty($permissions['access.AdminModule'])) {
+                $permissions['access.AdminModule']['role'] = ['guest', 'loggedin'];
+            }
+            $permissions['access.AdminModule']['permission'] = 'access.AdminModule';
+            $this->permissionsModified = true;
+
+            // Remove any old settings remaining in config.ini:
+            unset($config['AdminAuth']);
+        }
     }
 
     /**
@@ -690,8 +742,59 @@ class Upgrade
             }
         }
 
+        $this->upgradeSpellingSettings('searches.ini', array('CallNumber'));
+
         // save the file
         $this->saveModifiedConfig('searches.ini');
+    }
+
+    /**
+     * Upgrade spelling settings to account for refactoring of spelling as a
+     * recommendation module starting in release 2.4.
+     *
+     * @param string $ini  .ini file to modify
+     * @param array  $skip Keys to skip within [TopRecommendations]
+     *
+     * @return void
+     */
+    protected function upgradeSpellingSettings($ini, $skip = array())
+    {
+        // Turn on the spelling recommendations if we're upgrading from a version
+        // prior to 2.4.
+        if ((float)$this->from < 2.4) {
+            // Fix defaults in general section:
+            $cfg = & $this->newConfigs[$ini]['General'];
+            $keys = array('default_top_recommend', 'default_noresults_recommend');
+            foreach ($keys as $key) {
+                if (!isset($cfg[$key])) {
+                    $cfg[$key] = array();
+                }
+                if (!in_array('SpellingSuggestions', $cfg[$key])) {
+                    $cfg[$key][] = 'SpellingSuggestions';
+                }
+            }
+
+            // Fix settings in [TopRecommendations]
+            $cfg = & $this->newConfigs[$ini]['TopRecommendations'];
+            // Add SpellingSuggestions to all non-skipped handlers:
+            foreach ($cfg as $key => & $value) {
+                if (!in_array($key, $skip)
+                    && !in_array('SpellingSuggestions', $value)
+                ) {
+                    $value[] = 'SpellingSuggestions';
+                }
+            }
+            // Define handlers with no spelling support as the default minus the
+            // Spelling option:
+            foreach ($skip as $key) {
+                if (!isset($cfg[$key])) {
+                    $cfg[$key] = array_diff(
+                        $this->newConfigs[$ini]['General']['default_top_recommend'],
+                        array('SpellingSuggestions')
+                    );
+                }
+            }
+        }
     }
 
     /**
@@ -805,8 +908,47 @@ class Upgrade
             }
         }
 
+        // update permission settings
+        $this->upgradeSummonPermissions();
+
+        $this->upgradeSpellingSettings('Summon.ini');
+
         // save the file
         $this->saveModifiedConfig('Summon.ini');
+    }
+
+    /**
+     * Translate obsolete permission settings.
+     *
+     * @return void
+     */
+    protected function upgradeSummonPermissions()
+    {
+        $config = & $this->newConfigs['Summon.ini'];
+        $permissions = & $this->newConfigs['permissions.ini'];
+        if (isset($config['Auth'])) {
+            $permissions['access.SummonExtendedResults'] = [];
+            if (isset($config['Auth']['check_login'])
+                && $config['Auth']['check_login']
+            ) {
+                $permissions['access.SummonExtendedResults']['role'] = ['loggedin'];
+            }
+            if (isset($config['Auth']['ip_range'])) {
+                $permissions['access.SummonExtendedResults']['ipRegEx']
+                    = $config['Auth']['ip_range'];
+            }
+            if (!empty($permissions['access.SummonExtendedResults'])) {
+                $permissions['access.SummonExtendedResults']['boolean'] = 'OR';
+                $permissions['access.SummonExtendedResults']['permission']
+                    = 'access.SummonExtendedResults';
+                $this->permissionsModified = true;
+            } else {
+                unset($permissions['access.SummonExtendedResults']);
+            }
+
+            // Remove any old settings remaining in config.ini:
+            unset($config['Auth']);
+        }
     }
 
     /**
@@ -828,6 +970,18 @@ class Upgrade
             'Basic_Searches', 'Advanced_Searches', 'Sorting'
         );
         $this->applyOldSettings('WorldCat.ini', $groups);
+
+        // we need to fix an obsolete search setting for authors
+        foreach (array('Basic_Searches', 'Advanced_Searches') as $section) {
+            $new = array();
+            foreach ($this->newConfigs['WorldCat.ini'][$section] as $k => $v) {
+                if ($k == 'srw.au:srw.pn:srw.cn') {
+                    $k = 'srw.au';
+                }
+                $new[$k] = $v;
+            }
+            $this->newConfigs['WorldCat.ini'][$section] = $new;
+        }
 
         // save the file
         $this->saveModifiedConfig('WorldCat.ini');

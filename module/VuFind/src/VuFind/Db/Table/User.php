@@ -39,11 +39,21 @@ namespace VuFind\Db\Table;
 class User extends Gateway
 {
     /**
-     * Constructor
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
      */
-    public function __construct()
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     */
+    public function __construct(\Zend\Config\Config $config)
     {
         parent::__construct('user', 'VuFind\Db\Row\User');
+        $this->config = $config;
     }
 
     /**
@@ -92,6 +102,18 @@ class User extends Gateway
                 ->OR->isNotNull('cat_password');
         };
         return $this->select($callback);
+    }
+
+    /**
+     * Construct the prototype for rows.
+     *
+     * @return object
+     */
+    protected function initializeRowPrototype()
+    {
+        $prototype = parent::initializeRowPrototype();
+        $prototype->setConfig($this->config);
+        return $prototype;
     }
 
     /**

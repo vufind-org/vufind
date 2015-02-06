@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -13,7 +13,13 @@ use RecursiveIterator;
 
 abstract class AbstractIterator implements RecursiveIterator
 {
+    /**
+     * @var int
+     */
     protected $index    = 0;
+    /**
+     * @var array
+     */
     protected $children = array();
 
     /**
@@ -42,7 +48,7 @@ abstract class AbstractIterator implements RecursiveIterator
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Return the key of the current element
      * @link http://php.net/manual/en/iterator.key.php
-     * @return scalar scalar on success, or null on failure.
+     * @return int|null scalar on success, or null on failure.
      */
     public function key()
     {
