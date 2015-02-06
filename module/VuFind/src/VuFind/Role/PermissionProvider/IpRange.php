@@ -94,8 +94,8 @@ class IpRange implements PermissionProviderInterface
         $count = 0;
         $inList = false;
         foreach ((array)$rangeIP as $range) {
-            if (preg_match('/-/',$range)) {
-                $tmp=preg_split('/-/',$range);
+            if (preg_match('/-/', $range)) {
+                $tmp=preg_split('/-/', $range);
                 $mylist[$count]['start']=$tmp[0];
                 $mylist[$count]['end']=$tmp[1];
             } else {
