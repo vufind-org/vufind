@@ -28,4 +28,8 @@ use RuntimeException as BaseRuntimeException;
  */
 class RoleNotFoundException extends BaseRuntimeException implements ExceptionInterface
 {
+    /**
+     * @var string
+     */
+    protected $message = 'No role could be found';
 }

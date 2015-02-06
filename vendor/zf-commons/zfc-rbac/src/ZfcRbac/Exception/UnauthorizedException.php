@@ -28,4 +28,8 @@ use RuntimeException as BaseRuntimeException;
  */
 class UnauthorizedException extends BaseRuntimeException implements UnauthorizedExceptionInterface
 {
+    /**
+     * @var string
+     */
+    protected $message = 'You are not authorized to access this resource';
 }

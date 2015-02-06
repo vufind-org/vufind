@@ -23,5 +23,4 @@ return array(
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
     'Less' => array($vendorDir . '/oyejorge/less.php/lib'),
     'Behat\\Mink\\Driver' => array($vendorDir . '/behat/mink-zombie-driver/src'),
-    'Behat\\Mink' => array($vendorDir . '/behat/mink/src'),
 );
