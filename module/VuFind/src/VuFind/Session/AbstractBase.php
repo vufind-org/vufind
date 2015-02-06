@@ -40,7 +40,9 @@ use Zend\Session\SaveHandler\SaveHandlerInterface;
 abstract class AbstractBase implements SaveHandlerInterface,
     \VuFind\Db\Table\DbTableAwareInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\Db\Table\DbTableAwareTrait {
+        getDbTable as getTable;
+    }
 
     /**
      * Session lifetime in seconds
@@ -138,17 +140,5 @@ abstract class AbstractBase implements SaveHandlerInterface,
         // Anecdotal testing Today and Yesterday seems to indicate destroy()
         //   is called by the garbage collector and everything is good.
         // Something to keep in mind though.
-    }
-
-    /**
-     * Get a database table object.
-     *
-     * @param string $table Name of table to retrieve
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    protected function getTable($table)
-    {
-        return $this->getDbTableManager()->get($table);
     }
 }

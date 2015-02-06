@@ -57,7 +57,7 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
         // Make sure the browser version is a legal length.
         $userData['browserVersion'] = substr($userData['browserVersion'], 0, 8);
 
-        $this->getTable('UserStatsFields')->save($data, $userData);
+        $this->getDbTable('UserStatsFields')->save($data, $userData);
     }
 
     /**
@@ -71,7 +71,7 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     public function getFullList($field, $value = array())
     {
         // Use the model
-        return $this->getTable('UserStatsFields')->getFields($field, $value)
+        return $this->getDbTable('UserStatsFields')->getFields($field, $value)
             ->toArray();
     }
 
@@ -85,19 +85,7 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      */
     public function getBrowserStats($version, $limit)
     {
-        $userStats = $this->getTable('UserStats');
+        $userStats = $this->getDbTable('UserStats');
         return $userStats->getBrowserStats($version, $limit);
-    }
-
-    /**
-     * Get a database table object.
-     *
-     * @param string $table Name of table to retrieve
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    protected function getTable($table)
-    {
-        return $this->getDbTableManager()->get($table);
     }
 }
