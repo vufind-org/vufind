@@ -26,12 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\Sql\Expression,
-    Zend\Db\Sql\Predicate\Predicate,
-    Zend\Db\Sql\Sql,
-    Zend\Crypt\Symmetric\Mcrypt,
-    Zend\Crypt\Password\Bcrypt,
-    Zend\Crypt\BlockCipher as BlockCipher;
 
 /**
  * Row Definition for user
@@ -42,9 +36,8 @@ use Zend\Db\Sql\Expression,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Record extends ServiceLocatorAwareGateway
+class Record extends RowGateway
 {
-
     /**
      * Constructor
      *
@@ -54,7 +47,4 @@ class Record extends ServiceLocatorAwareGateway
     {
         parent::__construct('id', 'record', $adapter);
     }
-
-    
-
 }
