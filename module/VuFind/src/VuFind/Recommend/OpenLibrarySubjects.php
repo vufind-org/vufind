@@ -45,6 +45,8 @@ use VuFind\Connection\OpenLibrary, VuFind\Solr\Utils as SolrUtils;
 class OpenLibrarySubjects implements RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Parameter to use for search terms
      *
@@ -93,25 +95,6 @@ class OpenLibrarySubjects implements RecommendInterface,
      * @var array|bool
      */
     protected $result = false;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
 
     /**
      * setConfig

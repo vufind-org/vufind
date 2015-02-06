@@ -304,6 +304,8 @@ class AlephRestfulException extends ILSException
 class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Duedate configuration
      *
@@ -331,13 +333,6 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @var LoggerInterface|bool
      */
     protected $logger = false;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
 
     /**
      * Date converter object
@@ -369,18 +364,6 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**

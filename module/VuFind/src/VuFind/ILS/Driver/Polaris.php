@@ -41,6 +41,8 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Web services host
      *
@@ -75,25 +77,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var string
      */
     protected $ws_requestingorgid;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
 
     /**
      * Initialize the driver.

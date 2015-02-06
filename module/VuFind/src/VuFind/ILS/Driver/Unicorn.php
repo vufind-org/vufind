@@ -44,6 +44,8 @@ use File_MARC, VuFind\Exception\ILS as ILSException;
  **/
 class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Host
      *
@@ -73,13 +75,6 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $url;
 
     /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
@@ -94,18 +89,6 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function __construct(\VuFind\Date\Converter $dateConverter)
     {
         $this->dateConverter = $dateConverter;
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**
