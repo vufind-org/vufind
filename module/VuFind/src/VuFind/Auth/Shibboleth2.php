@@ -79,6 +79,19 @@ class Shibboleth2 extends Shibboleth
             throw new AuthException('authentication_error_admin');
         }
 
+        $entityId = $request->getServer()->get('Shib-Identity-Provider');
+        if (is_array($shib->idpentityid)) {
+            if (!in_array($entityId, $shib->idpentityid)) {
+                  throw new AuthException('authentication_error_denied');
+            }
+        } elseif (is_string($shib->idpentityid)) {
+            if ($shib->idpentityid!=$entityId) {
+                 throw new AuthException('authentication_error_denied');
+            }
+        } else { 
+            throw new AuthException('authentication_error_admin'); 
+        }
+
         // If we made it this far, we should log in the user!
         $user = $this->getUserTable()->getByUsername($username);
 
