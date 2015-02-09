@@ -40,8 +40,6 @@ use VuFind\Exception\ILS as ILSException,
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
- * @author   Oliver Goldschmidt <o.goldschmidt@tu-harburg.de>
- * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
@@ -93,6 +91,12 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function init()
     {
+        // DAIA.ini sections changed, therefore move old [Global] section to
+        // new [DAIA] section as fallback
+        if (isset($this->config['Global']) && !isset($this->config['DAIA'])) {
+            $this->config['DAIA'] = $this->config['Global'];
+        }
+
         if (isset($this->config['DAIA']['baseUrl'])) {
             $this->baseUrl = $this->config['DAIA']['baseUrl'];
         } else {
@@ -179,6 +183,7 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getStatuses($ids)
     {
         $items = array();
+
         if ($this->daiaResponseFormat == 'xml') {
             foreach ($ids as $id) {
                 $items[] = $this->getXMLShortStatus($id);
@@ -190,6 +195,7 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         } else {
             throw new ILSException('No matching format found for status retrieval.');
         }
+
         return $items;
     }
 
@@ -227,6 +233,64 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getPurchaseHistory($id)
     {
         return array();
+    }
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
+
+    /**
+     * Perform an HTTP request.
+     *
+     * @param string $id id for query in daia
+     *
+     * @return xml or json object
+     * @throws ILSException
+     */
+    protected function doHTTPRequest($id)
+    {
+        $contentTypes = array (
+            "xml"  => "application/xml",
+            "json" => "application/json",
+        );
+
+        $http_headers = array(
+            "Content-type: " . $contentTypes[$this->daiaResponseFormat],
+            "Accept: " .  $contentTypes[$this->daiaResponseFormat]
+        );
+
+        $params = array(
+            "id" => $this->daiaidprefix . $id,
+            "format" => $this->daiaResponseFormat,
+        );
+
+        try {
+            $client = $this->httpService->createClient();
+            $result = $client->get($this->baseUrl, $params, null, $http_headers);
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        if (!$result->isSuccess()) {
+            // throw ILSException disabled as this will be shown in VuFind-Frontend
+            //throw new ILSException('HTTP error ' . $result->getStatusCode() . ' retrieving status for record: ' . $id);
+            // write to Debug instead
+            $this->debug('HTTP status ' . $result->getStatusCode() .
+                ' received, retrieving availability information for record: ' . $id);
+
+            // return false as DAIA request failed
+            return false;
+        }
+        return ($result->getBody());
+
     }
 
     /**
@@ -327,17 +391,17 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected function calculateStatus($item)
     {
-        $availability=false;
-        $status=null;
-        $duedate=null;
+        $availability = false;
+        $status = null;
+        $duedate = null;
         if (array_key_exists("available", $item)) {
             // check if item is loanable or presentation
             foreach ($item["available"] as $available) {
                 if ($available["service"] == "loan") {
-                    $availability=true;
+                    $availability = true;
                 }
                 if ($available["service"] == "presentation") {
-                    $availability=true;
+                    $availability = true;
                 }
             }
         }
@@ -345,65 +409,15 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             foreach ($item["unavailable"] as $unavailable) {
                 if ($unavailable["service"] == "loan") {
                     if (isset($unavailable["expected"])) {
-                        $duedate=$unavailable["expected"];
+                        $duedate = $unavailable["expected"];
                     }
-                    $status="dummy text";
+                    $status = "dummy text";
                 }
             }
         }
-        return (array("status"=>$status,
-            "availability"=>$availability,
-            "duedate"=>$duedate));
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
-
-    /**
-     * Perform an HTTP request.
-     *
-     * @param string $id id for query in daia
-     *
-     * @return xml or json object
-     */
-    protected function doHTTPRequest($id)
-    {
-        $contentTypes = array (
-            "xml"  => "text/xml",
-            "json" => "application/json",
-        );
-
-        $http_headers = array(
-            "Content-type: " . $contentTypes[$this->daiaResponseFormat],
-            "Accept: " .  $contentTypes[$this->daiaResponseFormat],
-        );
-
-        $params = array(
-            "id" => $this->daiaidprefix . $id,
-            "format" => $this->daiaResponseFormat,
-        );
-
-        try {
-            $client = $this->httpService->createClient();
-            $result = $client->get($this->baseUrl, $params, null, $http_headers);
-        } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
-        }
-
-        if (!$result->isSuccess()) {
-            throw new ILSException('HTTP error ' . $result->getStatusCode() . ' retrieving status for record: ' . $id);
-        }
-        return ($result->getBody());
-
+        return (array("status" => $status,
+            "availability" => $availability,
+            "duedate" => $duedate));
     }
 
     /**
@@ -416,9 +430,19 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected function getXMLStatus($id)
     {
         $daia = new DOMDocument();
-        $daia->loadXML($this->doHTTPRequest($id));
+        $response = $this->doHTTPRequest($id);
+        if ($response) {
+            $daia->loadXML($response);
+        }
         // get Availability information from DAIA
         $documentlist = $daia->getElementsByTagName('document');
+
+        // handle empty DAIA response
+        if ($documentlist->length == 0 &&
+            $daia->getElementsByTagName("message") != null) {
+            // analyse the message for the error handling and debugging
+        }
+
         $status = array();
         for ($b = 0; $documentlist->item($b) !== null; $b++) {
             $itemlist = $documentlist->item($b)->getElementsByTagName('item');
@@ -687,7 +711,10 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getXMLShortStatus($id)
     {
         $daia = new DOMDocument();
-        $daia->loadXML($this->doHTTPRequest($id));
+        $response = $this->doHTTPRequest($id);
+        if ($response) {
+            $daia->loadXML($response);
+        }
         // get Availability information from DAIA
         $itemlist = $daia->getElementsByTagName('item');
         $label = "Unknown";
@@ -697,7 +724,7 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         for ($c = 0; $itemlist->item($c) !== null; $c++) {
             $earliest_href = '';
             $storageElements = $itemlist->item($c)->getElementsByTagName('storage');
-            if ($storageElements->item(0)->nodeValue) {
+            if ($storageElements->item(0) && $storageElements->item(0)->nodeValue) {
                 if ($storageElements->item(0)->nodeValue === 'Internet') {
                     $href = $storageElements->item(0)->attributes
                         ->getNamedItem('href')->nodeValue;
@@ -773,8 +800,10 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     foreach ($earliest as $earliest_key => $earliest_value) {
                         if ($earliest_counter === 0) {
                             $earliest_duedate = $earliest_value;
-                            $earliest_href = $hrefs[$earliest_key];
-                            $earliest_queue = $queue[$earliest_key];
+                            $earliest_href =
+                                isset($hrefs[$earliest_key]) ? $hrefs[$earliest_key] : '';
+                            $earliest_queue =
+                                isset($queue[$earliest_key]) ? $queue[$earliest_key] : '';
                         }
                         $earliest_counter = 1;
                     }
@@ -790,27 +819,28 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         $status = 'missing';
                     }
                 }
-                if (!$status) {
+                if (!isset($status)) {
                     $status = 'Unavailable';
                 }
                 $availability = 0;
             }
             $reserve = 'N';
-            if ($earliest_queue > 0) {
+            if (isset($earliest_queue) && $earliest_queue > 0) {
                 $reserve = 'Y';
             }
             $holding[] = array('availability' => $availability,
-                'id' => $id,
-                'status' => "$status",
-                'location' => "$storage",
-                'reserve' => $reserve,
-                'queue' => $earliest_queue,
-                'callnumber' => "$label",
-                'duedate' => $earliest_duedate,
-                'leanable' => $leanable,
-                'recallhref' => $earliest_href,
-                'number' => ($c+1),
-                'presenceOnly' => $presenceOnly);
+                'id'            => $id,
+                'status'        => isset($status) ? "$status" : '',
+                'location'      => isset($storage) ? "$storage" : '',
+                'reserve'       => isset($reserve) ? $reserve : '',
+                'queue'         => isset($earliest_queue) ? $earliest_queue : '',
+                'callnumber'    => isset($label) ? "$label" : '',
+                'duedate'       => isset($earliest_duedate) ? $earliest_duedate : '',
+                'leanable'      => isset($leanable) ? $leanable : '',
+                'recallhref'    => isset($earliest_href) ? $earliest_href : '',
+                'number'        => ($c+1),
+                'presenceOnly'  => isset($presenceOnly) ? $presenceOnly : '',
+            );
         }
         return $holding;
     }
