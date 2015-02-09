@@ -43,7 +43,7 @@ trait LoggerAwareTrait
     /**
      * Log an error message.
      *
-     * @param string $message      Log message
+     * @param string $msg          Log message
      * @param array  $context      Log context
      * @param bool   $prependClass Prepend class name to message?
      *
@@ -57,7 +57,7 @@ trait LoggerAwareTrait
     /**
      * Log a warning message.
      *
-     * @param string $message      Log message
+     * @param string $msg          Log message
      * @param array  $context      Log context
      * @param bool   $prependClass Prepend class name to message?
      *
@@ -71,7 +71,7 @@ trait LoggerAwareTrait
     /**
      * Log a debug message.
      *
-     * @param string $message      Log message
+     * @param string $msg          Log message
      * @param array  $context      Log context
      * @param bool   $prependClass Prepend class name to message?
      *
