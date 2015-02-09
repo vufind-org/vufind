@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -14,7 +14,7 @@ use Zend\File\Transfer;
 use Zend\File\Transfer\Exception;
 use Zend\Filter;
 use Zend\Filter\Exception as FilterException;
-use Zend\I18n\Translator\Translator;
+use Zend\I18n\Translator\TranslatorInterface as Translator;
 use Zend\I18n\Translator\TranslatorAwareInterface;
 use Zend\Stdlib\ErrorHandler;
 use Zend\Validator;
@@ -275,7 +275,7 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
      * Adds a new validator for this class
      *
      * @param  string|Validator\ValidatorInterface $validator           Type of validator to add
-     * @param  bool                    $breakChainOnFailure If the validation chain should stop an failure
+     * @param  bool                    $breakChainOnFailure If the validation chain should stop a failure
      * @param  string|array               $options             Options to set for the validator
      * @param  string|array               $files               Files to limit this validator to
      * @return AbstractAdapter
@@ -369,14 +369,18 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
                                 break;
                             case (1 <= $argc):
                                 $validator  = array_shift($validatorInfo);
+                                // fall-through
                             case (2 <= $argc):
                                 $breakChainOnFailure = array_shift($validatorInfo);
+                                // fall-through
                             case (3 <= $argc):
                                 $options = array_shift($validatorInfo);
+                                // fall-through
                             case (4 <= $argc):
                                 if (!empty($validatorInfo)) {
                                     $file = array_shift($validatorInfo);
                                 }
+                                // fall-through
                             default:
                                 $this->addValidator($validator, $breakChainOnFailure, $options, $file);
                                 break;
@@ -523,13 +527,13 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
             foreach ($options as $name => $value) {
                 foreach ($file as $key => $content) {
                     switch ($name) {
-                        case 'magicFile' :
+                        case 'magicFile':
                             $this->files[$key]['options'][$name] = (string) $value;
                             break;
 
-                        case 'ignoreNoFile' :
-                        case 'useByteString' :
-                        case 'detectInfos' :
+                        case 'ignoreNoFile':
+                        case 'useByteString':
+                        case 'detectInfos':
                             $this->files[$key]['options'][$name] = (bool) $value;
                             break;
 
@@ -596,7 +600,7 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
                 }
 
                 $checkit .= DIRECTORY_SEPARATOR . $content['name'];
-                    $validator->addFile($checkit);
+                $validator->addFile($checkit);
             }
         }
 

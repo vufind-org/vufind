@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * AuthorInfo Recommendations Module
@@ -42,15 +41,8 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  * @view     AuthorInfoFacets.phtml
  */
-class ResultGoogleMapAjax implements RecommendInterface, TranslatorAwareInterface
+class ResultGoogleMapAjax implements RecommendInterface
 {
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
-
     /**
      * Saved search results
      *
@@ -105,40 +97,6 @@ class ResultGoogleMapAjax implements RecommendInterface, TranslatorAwareInterfac
     public function process($results)
     {
         $this->searchObject = $results;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return ResultGoogleMapAjax
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Get translator object.
-     *
-     * @return \Zend\I18n\Translator\Translator
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * getUserLang
-     *
-     * @return string of lang
-     */
-    public function userLang()
-    {
-        $translator = $this->getTranslator();
-        return is_object($translator) ? $translator->getLocale() : 'en';
     }
 
     /**

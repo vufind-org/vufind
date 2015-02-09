@@ -39,12 +39,7 @@ namespace VuFind\Content\Covers;
 class Google extends \VuFind\Content\AbstractCover
     implements \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Constructor
@@ -67,18 +62,6 @@ class Google extends \VuFind\Content\AbstractCover
             throw new \Exception('HTTP service missing.');
         }
         return $this->httpService->createClient($url);
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**

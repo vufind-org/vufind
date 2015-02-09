@@ -37,15 +37,7 @@ namespace VuFind\RecordTab;
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 class Map extends AbstractBase
-    implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
-     /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
-
     /**
      * Is this module enabled in the configuration?
      *
@@ -94,40 +86,6 @@ class Map extends AbstractBase
             )
         );
         return json_encode($markers);
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return ResultGoogleMapAjax
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Get translator object.
-     *
-     * @return \Zend\I18n\Translator\Translator
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * getUserLang
-     *
-     * @return string of lang
-     */
-    public function userLang()
-    {
-        $translator = $this->getTranslator();
-        return is_object($translator) ? $translator->getLocale() : 'en';
     }
 
     /**

@@ -43,6 +43,9 @@ use Zend\Log\LoggerInterface;
 abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Has the configuration been validated?
      *
@@ -56,20 +59,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param \Zend\Config\Config
      */
     protected $config = null;
-
-    /**
-     * Database table plugin manager
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tableManager;
-
-    /**
-     * Translator
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator;
 
     /**
      * Logger (or false for none)
@@ -102,18 +91,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         if ($this->logger) {
             $this->logger->debug($msg);
         }
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return TranslatorAwareInterface
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
     }
 
     /**
@@ -330,32 +307,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Get the table plugin manager.  Throw an exception if it is missing.
-     *
-     * @throws \Exception
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    public function getDbTableManager()
-    {
-        if (null === $this->tableManager) {
-            throw new \Exception('DB table manager missing.');
-        }
-        return $this->tableManager;
-    }
-
-    /**
-     * Set the table plugin manager.
-     *
-     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
-     *
-     * @return void
-     */
-    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
-    {
-        $this->tableManager = $manager;
-    }
-
-    /**
      * Verify that a password fulfills the password policy. Throws exception if
      * the password is invalid.
      *
@@ -387,31 +338,5 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
                 )
             );
         }
-    }
-
-    /**
-     * Translate a string
-     *
-     * @param string $str    String to translate
-     * @param array  $tokens Tokens to inject into the translated string
-     *
-     * @return string
-     * @todo Use TranslatorAwareTrait instead when it's implemented
-     */
-    public function translate($str, $tokens = array())
-    {
-        $msg = $this->translator->translate($str);
-
-        // Do we need to perform substitutions?
-        if (!empty($tokens)) {
-            $in = $out = array();
-            foreach ($tokens as $key => $value) {
-                $in[] = $key;
-                $out[] = $value;
-            }
-            $msg = str_replace($in, $out, $msg);
-        }
-
-        return $msg;
     }
 }

@@ -108,6 +108,25 @@ if (is_array($languages)) {
     }
 }
 
+$genres =  $this->driver->tryMethod('getGenres');
+if (is_array($genres)) {
+    foreach ($genres as $genre) {
+        echo 'M3  - ' . "$genre\r\n";
+    }
+}
+
+$topics =  $this->driver->tryMethod('getTopics');
+if (is_array($topics)) {
+    foreach ($topics as $topic) {
+        echo 'KW  - ' . "$topic\r\n";
+    }
+}
+
+$start_page = $this->driver->tryMethod('getContainerStartPage');
+if (!empty($start_page)) {
+    echo 'SP  - ' . "$start_page\r\n";
+}
+
 $isbns = $this->driver->tryMethod('getISBNs');
 if (is_array($isbns)) {
     foreach ($isbns as $isbn) {

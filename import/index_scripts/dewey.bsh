@@ -34,9 +34,10 @@ public Set getDeweyNumber(Record record, String fieldSpec, String precisionStr) 
         // Get the current string to work on:
         String current = iter.next();
 
-        if (CallNumUtils.isValidDewey(current)) {
+        DeweyCallNumber callNum = new DeweyCallNumber(current);
+        if (callNum.isValid()) {
             // Convert the numeric portion of the call number into a float:
-            float currentVal = Float.parseFloat(CallNumUtils.getDeweyB4Cutter(current));
+            float currentVal = Float.parseFloat(callNum.getClassification());
 
             // Round the call number value to the specified precision:
             Float finalVal = new Float(Math.floor(currentVal / precision) * precision);
@@ -74,8 +75,9 @@ public Set getDeweySearchable(Record record, String fieldSpec) {
 
         // Add valid strings to the set, normalizing them to be all uppercase
         // and free from whitespace.
-        if (CallNumUtils.isValidDewey(current)) {
-            result.add(current.toUpperCase().replaceAll(" ", ""));
+        DeweyCallNumber callNum = new DeweyCallNumber(current);
+        if (callNum.isValid()) {
+            result.add(callNum.toString().toUpperCase().replaceAll(" ", ""));
         }
     }
 
@@ -104,8 +106,9 @@ public String getDeweySortable(Record record, String fieldSpec) {
         String current = iter.next();
 
         // If this is a valid Dewey number, return the sortable shelf key:
-        if (CallNumUtils.isValidDewey(current)) {
-            return CallNumUtils.getDeweyShelfKey(current);
+        DeweyCallNumber callNum = new DeweyCallNumber(current);
+        if (callNum.isValid()) {
+            return callNum.getShelfKey();
         }
     }
 
@@ -133,15 +136,9 @@ public List getDeweySortables(Record record, String fieldSpec) {
         // Get the current string to work on:
         String current = iter.next();
 
-        // If this is a valid Dewey number, return the sortable shelf key:
-        if (CallNumUtils.isValidDewey(current)) {
-            result.add(CallNumUtils.getDeweyShelfKey(current));
-        } else {
-            // If the number is invalid, we can't normalize it, but we still want
-            // to put an entry in the sort list so that things don't get out of sync
-            // for the AlphaBrowse indexer -- we'll just use the raw string
-            result.add(current);
-        }
+        // gather all sort keys, even if number is not valid
+        DeweyCallNumber callNum = new DeweyCallNumber(current);
+        result.add(callNum.getShelfKey());
     }
 
     // If we found no call numbers, return null; otherwise, return our results:

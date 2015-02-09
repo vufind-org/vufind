@@ -29,9 +29,20 @@
       <textarea class="form-control" id="email_message" name="message" rows="3"><?=isset($this->message) ? $this->message : ''?></textarea>
     </div>
   </div>
+  <? if ($this->disableFrom && $this->userEmailInFrom): ?>
+    <div class="form-group">
+      <div class="col-sm-9 col-sm-offset-3">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="ccself"/> <?=$this->translate('send_email_copy_to_me'); ?>
+          </label>
+        </div>
+      </div>
+    </div>
+  <? endif ?>
   <div class="form-group">
     <div class="col-sm-9 col-sm-offset-3">
-      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Email')?>"/>
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
     </div>
   </div>
 </form>

@@ -60,7 +60,11 @@ abstract class DbTestCase extends TestCase
                 new \Zend\ServiceManager\Config(
                     array(
                         'abstract_factories' =>
-                            array('VuFind\Db\Table\PluginFactory')
+                            array('VuFind\Db\Table\PluginFactory'),
+                        'factories' => array(
+                            'resource' => 'VuFind\Db\Table\Factory::getResource',
+                            'user' => 'VuFind\Db\Table\Factory::getUser',
+                        )
                     )
                 )
             );

@@ -3,13 +3,14 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\Form\Annotation;
 
 use Zend\EventManager\EventManagerInterface;
+use Zend\Stdlib\ArrayObject;
 
 /**
  * Default listeners for element annotations
@@ -124,20 +125,49 @@ class ElementAnnotationsListener extends AbstractAnnotationsListener
         $elementSpec = $e->getParam('elementSpec');
         $filterSpec  = $e->getParam('filterSpec');
 
-        // Compose input filter into parent input filter
-        $inputFilter = $specification['input_filter'];
-        if (!isset($inputFilter['type'])) {
-            $inputFilter['type'] = 'Zend\InputFilter\InputFilter';
-        }
-        $e->setParam('inputSpec', $inputFilter);
-        unset($specification['input_filter']);
+        if ($annotation->isCollection()) {
+            // Compose specification as a fieldset into parent form/fieldset
+            if (!isset($specification['type'])) {
+                //use input filter provider fieldset so we can compose the input filter into the fieldset
+                //it is assumed that if someone uses a custom fieldset, they will take care of the input
+                //filtering themselves or consume the input_filter_spec option.
+                $specification['type'] = 'Zend\Form\InputFilterProviderFieldset';
+            }
 
-        // Compose specification as a fieldset into parent form/fieldset
-        if (!isset($specification['type'])) {
-            $specification['type'] = 'Zend\Form\Fieldset';
+            $inputFilter = $specification['input_filter'];
+            if (!isset($inputFilter['type'])) {
+                $inputFilter['type'] = 'Zend\InputFilter\InputFilter';
+            }
+            unset($specification['input_filter']);
+
+            $elementSpec['spec']['type'] = 'Zend\Form\Element\Collection';
+            $elementSpec['spec']['name'] = $name;
+            $elementSpec['spec']['options'] = new ArrayObject($this->mergeOptions($elementSpec, $annotation));
+            $elementSpec['spec']['options']['target_element'] = $specification;
+            $elementSpec['spec']['options']['target_element']['options']['input_filter_spec'] = $inputFilter;
+
+            if (isset($specification['hydrator'])) {
+                $elementSpec['spec']['hydrator'] = $specification['hydrator'];
+            }
+        } else {
+            // Compose input filter into parent input filter
+            $inputFilter = $specification['input_filter'];
+            if (!isset($inputFilter['type'])) {
+                $inputFilter['type'] = 'Zend\InputFilter\InputFilter';
+            }
+            $e->setParam('inputSpec', $inputFilter);
+            unset($specification['input_filter']);
+
+            // Compose specification as a fieldset into parent form/fieldset
+            if (!isset($specification['type'])) {
+                $specification['type'] = 'Zend\Form\Fieldset';
+            }
+
+            // Add element spec:
+            $elementSpec['spec'] = $specification;
+            $elementSpec['spec']['name'] = $name;
+            $elementSpec['spec']['options'] = new ArrayObject($this->mergeOptions($elementSpec, $annotation));
         }
-        $elementSpec['spec'] = $specification;
-        $elementSpec['spec']['name'] = $name;
     }
 
     /**
@@ -290,7 +320,7 @@ class ElementAnnotationsListener extends AbstractAnnotationsListener
         }
 
         $elementSpec = $e->getParam('elementSpec');
-        $elementSpec['spec']['options'] = $annotation->getOptions();
+        $elementSpec['spec']['options'] = $this->mergeOptions($elementSpec, $annotation);
     }
 
     /**
@@ -361,5 +391,26 @@ class ElementAnnotationsListener extends AbstractAnnotationsListener
             $inputSpec['validators'] = array();
         }
         $inputSpec['validators'][] = $annotation->getValidator();
+    }
+
+    /**
+     * @param array|\ArrayAccess     $elementSpec
+     * @param ComposedObject|Options $annotation
+     *
+     * @return array
+     */
+    private function mergeOptions($elementSpec, $annotation)
+    {
+        if (isset($elementSpec['spec']['options'])) {
+            if (is_array($elementSpec['spec']['options'])) {
+                return array_merge($elementSpec['spec']['options'], $annotation->getOptions());
+            }
+
+            if ($elementSpec['spec']['options'] instanceof ArrayObject) {
+                return array_merge($elementSpec['spec']['options']->getArrayCopy(), $annotation->getOptions());
+            }
+        }
+
+        return $annotation->getOptions();
     }
 }
