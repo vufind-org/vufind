@@ -28,7 +28,6 @@
  */
 namespace VuFind\Auth;
 use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
-use Zend\Log\LoggerInterface;
 
 /**
  * Abstract authentication base class
@@ -45,6 +44,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Has the configuration been validated?
@@ -59,39 +59,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param \Zend\Config\Config
      */
     protected $config = null;
-
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
 
     /**
      * Get configuration (load automatically if not previously set).  Throw an

@@ -32,8 +32,6 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
 
 use Zend\Http\Request;
 
-use Zend\Log\LoggerInterface;
-
 /**
  * Central class for connecting to resources used by VuFind.
  *
@@ -43,8 +41,10 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class Connector
+class Connector implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Base url for searches
      *
@@ -67,13 +67,6 @@ class Connector
     protected $session = false;
 
     /**
-     * Logger instance.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger = false;
-
-    /**
      * Constructor
      *
      * @param string            $base     Base URL for Pazpar2
@@ -94,18 +87,6 @@ class Connector
         if ($autoInit) {
             $this->init();
         }
-    }
-
-    /**
-     * Set logger instance.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -175,24 +156,20 @@ class Connector
      */
     protected function send(\Zend\Http\Client $client)
     {
-        if ($this->logger) {
-            $this->logger->debug(
-                sprintf('=> %s %s', $client->getMethod(), $client->getUri())
-            );
-        }
+        $this->debug(
+            sprintf('=> %s %s', $client->getMethod(), $client->getUri())
+        );
 
         $time     = microtime(true);
         $response = $client->send();
         $time     = microtime(true) - $time;
 
-        if ($this->logger) {
-            $this->logger->debug(
-                sprintf(
-                    '<= %s %s', $response->getStatusCode(),
-                    $response->getReasonPhrase()
-                ), array('time' => $time)
-            );
-        }
+        $this->debug(
+            sprintf(
+                '<= %s %s', $response->getStatusCode(),
+                $response->getReasonPhrase()
+            ), array('time' => $time)
+        );
 
         if (!$response->isSuccess()) {
             throw HttpErrorException::createFromResponse($response);

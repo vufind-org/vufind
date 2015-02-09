@@ -31,7 +31,6 @@
  */
 namespace VuFindSearch\Backend\Primo;
 use Zend\Http\Client as HttpClient;
-use Zend\Log\LoggerInterface;
 
 /**
  * Primo Central connector.
@@ -45,14 +44,9 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Connector
+class Connector implements \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Logger instance.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * The HTTP_Request object used for API transactions
@@ -98,18 +92,6 @@ class Connector
             . "PrimoWebServices/xservice/search/brief?";
         $this->inst = $inst;
         $this->client = $client;
-    }
-
-    /**
-     * Set logger instance.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -165,9 +147,7 @@ class Connector
             $result = $this->performSearch($institution, $terms, $args);
         } catch (\Exception $e) {
             if ($args["returnErr"]) {
-                if ($this->logger) {
-                    $this->logger->debug($e->getMessage());
-                }
+                $this->debug($e->getMessage());
                 return array(
                     'recordCount' => 0,
                     'documents' => array(),
@@ -354,9 +334,7 @@ class Connector
      */
     protected function call($qs, $method = 'GET')
     {
-        if ($this->logger) {
-            $this->logger->debug("{$method}: {$this->host}{$qs}");
-        }
+        $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
         if ($method == 'GET') {
             $baseUrl = $this->host . $qs;

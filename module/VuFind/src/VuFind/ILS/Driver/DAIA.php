@@ -28,7 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use DOMDocument, VuFind\Exception\ILS as ILSException, Zend\Log\LoggerInterface;
+use DOMDocument, VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -43,45 +43,14 @@ use DOMDocument, VuFind\Exception\ILS as ILSException, Zend\Log\LoggerInterface;
  */
 class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Base URL
      *
      * @var string
      */
     protected $baseURL;
-
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
-    }
 
     /**
      * Initialize the driver.

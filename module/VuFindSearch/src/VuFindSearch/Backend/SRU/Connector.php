@@ -32,9 +32,6 @@ use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFind\XSLT\Processor as XSLTProcessor;
 
-use Zend\Log\LoggerAwareInterface;
-use Zend\Log\LoggerInterface;
-
 /**
  * SRU Search Interface
  *
@@ -44,14 +41,9 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Connector implements LoggerAwareInterface
+class Connector implements \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Logger object for debug info (or false for no debugging).
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Whether to Serialize to a PHP Array or not.
@@ -94,32 +86,6 @@ class Connector implements LoggerAwareInterface
         // Initialize properties needed for HTTP connection:
         $this->host = $host;
         $this->client = $client;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
     }
 
     /**
