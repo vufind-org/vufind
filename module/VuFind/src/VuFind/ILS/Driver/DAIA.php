@@ -45,6 +45,8 @@ use VuFind\Exception\ILS as ILSException,
  */
 class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Base URL for DAIA Service
      *
@@ -72,13 +74,6 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @var LoggerInterface|bool
      */
     protected $logger = false;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
 
     /**
      * Initialize the driver.
@@ -236,18 +231,6 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
-
-    /**
      * Perform an HTTP request.
      *
      * @param string $id id for query in daia
@@ -273,8 +256,7 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
 
         try {
-            $client = $this->httpService->createClient();
-            $result = $client->get($this->baseUrl, $params, null, $http_headers);
+            $result = $this->httpService->get($this->baseUrl, $params, null, $http_headers);
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
