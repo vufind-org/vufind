@@ -26,7 +26,6 @@
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
-use VuFindHttp\HttpService as Service;
 use VuFind\ILS\Driver\AbstractBase as AbstractBase;
 
 /**
