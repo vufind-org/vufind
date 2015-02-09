@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
-use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\LoggerInterface;
+use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config,
+    Zend\Log\LoggerInterface;
 
 /**
  * World Cat Utilities
@@ -49,20 +50,54 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     protected $logger = false;
 
     /**
-     * WorldCat ID
+     * WorldCat configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $client;
+
+    /**
+     * Should we silently ignore HTTP failures?
+     *
+     * @var bool
+     */
+    protected $silent;
+
+    /**
+     * Current server IP address
      *
      * @var string
      */
-    protected $worldCatId;
+    protected $ip;
 
     /**
      * Constructor
      *
-     * @param string $worldCatId WorldCat ID
+     * @param Config|string     $config WorldCat configuration (either a full Config
+     * object, or a string containing the id setting).
+     * @param \Zend\Http\Client $client HTTP client
+     * @param bool              $silent Should we silently ignore HTTP failures?
+     * @param string            $ip     Current server IP address (optional, but
+     * needed for xID token hashing
      */
-    public function __construct($worldCatId)
-    {
-        $this->worldCatId = $worldCatId;
+    public function __construct($config, \Zend\Http\Client $client, $silent = true,
+        $ip = null
+    ) {
+        // Legacy compatibility -- prior to VuFind 2.4, this parameter was a string.
+        if (!($config instanceof Config)) {
+            $config = new Config(array('id' => $config));
+        }
+        $this->config = $config;
+        $this->client = $client;
+        $this->silent = $silent;
+        $this->ip = $ip;
     }
 
     /**
@@ -92,13 +127,64 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Retrieve data over HTTP.
+     *
+     * @param string $url URL to access.
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function retrieve($url)
+    {
+        try {
+            $response = $this->client->setUri($url)->setMethod('GET')->send();
+            if ($response->isSuccess()) {
+                return $response->getBody();
+            }
+            throw new \Exception('HTTP error');
+        } catch (\Exception $e) {
+            if (!$this->silent) {
+                throw $e;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get the WorldCat ID from the config file.
      *
      * @return string
      */
     protected function getWorldCatId()
     {
-        return $this->worldCatId;
+        return isset($this->config->id) ? $this->config->id : false;
+    }
+
+    /**
+     * Build a url to use in querying OCLC's xID service.
+     *
+     * @param string $base      base url with no querystring
+     * @param string $tokenVar  config file variable holding the token
+     * @param string $secretVar config file variable holding the secret
+     * @param string $format    data format for api response
+     *
+     * @return string
+     */
+    protected function buildXIdUrl($base, $tokenVar, $secretVar, $format)
+    {
+        $token = isset($this->config->$tokenVar)
+            ? $this->config->$tokenVar : false;
+        $secret = isset($this->config->$secretVar)
+            ? $this->config->$secretVar : false;
+        $querystr = '?method=getEditions&format=' . $format;
+        if ($token && $secret) {
+            $hash = md5($base . '|' . $this->ip . '|' . $secret);
+            $querystr .= '&token=' . $token . '&hash=' . $hash;
+        } if ($wcId = $this->getWorldCatId()) {
+            $querystr .= '&ai=' . urlencode($wcId);
+        }
+        $base .= $querystr;
+        return $base;
     }
 
     /**
@@ -111,31 +197,29 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     public function getXISBN($isbn)
     {
         // Build URL
-        $url = 'http://xisbn.worldcat.org/webservices/xid/isbn/' .
-                urlencode(is_array($isbn) ? $isbn[0] : $isbn) .
-               '?method=getEditions&format=csv';
-        if ($wcId = $this->getWorldCatId()) {
-            $url .= '&ai=' . urlencode($wcId);
-        }
+        $base = 'http://xisbn.worldcat.org/webservices/xid/isbn/' .
+                urlencode(is_array($isbn) ? $isbn[0] : $isbn);
+        $url = $this->buildXIdUrl($base, 'xISBN_token', 'xISBN_secret', 'json');
 
         // Print Debug code
         $this->debug("XISBN: $url");
+        $response = json_decode($this->retrieve($url));
 
         // Fetch results
         $isbns = array();
-        if ($fp = @fopen($url, "r")) {
-            while (($data = fgetcsv($fp, 1000, ",")) !== false) {
+        if (isset($response->list)) {
+            foreach ($response->list as $line) {
                 // Filter out non-ISBN characters and validate the length of
                 // whatever is left behind; this will prevent us from treating
                 // error messages like "invalidId" or "overlimit" as ISBNs.
-                $isbn = preg_replace('/[^0-9xX]/', '', $data[0]);
-                if (strlen($isbn) < 10) {
-                    continue;
+                $isbn = preg_replace(
+                    '/[^0-9xX]/', '', isset($line->isbn[0]) ? $line->isbn[0] : ''
+                );
+                if (strlen($isbn) >= 10) {
+                    $isbns[] = $isbn;
                 }
-                $isbns[] = $isbn;
             }
         }
-
         return $isbns;
     }
 
@@ -149,32 +233,32 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     public function getXOCLCNUM($oclc)
     {
         // Build URL
-        $url = 'http://xisbn.worldcat.org/webservices/xid/oclcnum/' .
-                urlencode(is_array($oclc) ? $oclc[0] : $oclc) .
-               '?method=getEditions&format=csv';
-        if ($wcId = $this->getWorldCatId()) {
-            $url .= '&ai=' . urlencode($wcId);
-        }
+        $base = 'http://xisbn.worldcat.org/webservices/xid/oclcnum/' .
+                urlencode(is_array($oclc) ? $oclc[0] : $oclc);
+        $url = $this->buildXIdUrl($base, 'xISBN_token', 'xISBN_secret', 'json');
 
         // Print Debug code
         $this->debug("XOCLCNUM: $url");
+        $response = json_decode($this->retrieve($url));
 
         // Fetch results
         $results = array();
-        if ($fp = @fopen($url, "r")) {
-            while (($data = fgetcsv($fp, 1000, ",")) !== false) {
-                // Filter out non-numeric characters and validate the length of
-                // whatever is left behind; this will prevent us from treating
-                // error messages like "invalidId" or "overlimit" as ISBNs.
-                $current = preg_replace('/[^0-9]/', '', $data[0]);
-                if (empty($current)) {
-                    continue;
+        if (isset($response->list)) {
+            foreach ($response->list as $line) {
+                $values = isset($line->oclcnum) ? $line->oclcnum : array();
+                foreach ($values as $data) {
+                    // Filter out non-numeric characters and validate the length of
+                    // whatever is left behind; this will prevent us from treating
+                    // error messages like "invalidId" or "overlimit" as ISBNs.
+                    $current = preg_replace('/[^0-9]/', '', $data);
+                    if (!empty($current)) {
+                        $results[] = $current;
+                    }
                 }
-                $results[] = $current;
             }
         }
 
-        return $results;
+        return array_unique($results);
     }
 
     /**
@@ -187,20 +271,16 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     public function getXISSN($issn)
     {
         // Build URL
-        $url = 'http://xissn.worldcat.org/webservices/xid/issn/' .
-                urlencode(is_array($issn) ? $issn[0] : $issn) .
-               //'?method=getEditions&format=csv';
-               '?method=getEditions&format=xml';
-        if ($wcId = $this->getWorldCatId()) {
-            $url .= '&ai=' . urlencode($wcId);
-        }
+        $base = 'http://xissn.worldcat.org/webservices/xid/issn/' .
+                urlencode(is_array($issn) ? $issn[0] : $issn);
+        $url = $this->buildXIdUrl($base, 'xISSN_token', 'xISSN_secret', 'xml');
 
         // Print Debug code
         $this->debug("XISSN: $url");
 
         // Fetch results
         $issns = array();
-        $xml = @file_get_contents($url);
+        $xml = $this->retrieve($url);
         if (!empty($xml)) {
             $data = simplexml_load_string($xml);
             if (!empty($data) && isset($data->group->issn)
@@ -277,9 +357,10 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         if (empty($first) && empty($last)) {
             return false;
         } else if (empty($last)) {
-            return "local.Name=\"{$first}\"";
+            return "local.PersonalName=\"{$first}\"";
         } else {
-            return "local.Name=\"{$last}\" and local.Name=\"{$first}\"";
+            return "local.PersonalName=\"{$last}\" "
+                . "and local.PersonalName=\"{$first}\"";
         }
     }
 
@@ -319,6 +400,29 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Get the URL to perform a related identities query.
+     *
+     * @param string $query      Query
+     * @param int    $maxRecords Max # of records to read from API (more = slower).
+     *
+     * @return string
+     */
+    protected function getRelatedIdentitiesUrl($query, $maxRecords)
+    {
+        return "http://worldcat.org/identities/search/PersonalIdentities" .
+            "?query=" . urlencode($query) .
+            "&version=1.1" .
+            "&operation=searchRetrieve" .
+            "&recordSchema=info%3Asrw%2Fschema%2F1%2FIdentities" .
+            "&maximumRecords=" . intval($maxRecords) .
+            "&startRecord=1" .
+            "&resultSetTTL=300" .
+            "&recordPacking=xml" .
+            "&recordXPath=" .
+            "&sortKeys=holdingscount";
+    }
+
+    /**
      * Given a name string, get related identities.  Inspired by Eric Lease
      * Morgan's Name Finder demo (http://zoia.library.nd.edu/sandbox/name-finder/).
      * Return value is an associative array where key = author name and value =
@@ -332,27 +436,14 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     public function getRelatedIdentities($name, $maxRecords = 10)
     {
         // Build the WorldCat Identities API query:
-        $query = $this->getIdentitiesQuery($name);
-        if (!$query) {
+        if (!($query = $this->getIdentitiesQuery($name))) {
             return false;
         }
 
-        // Get the API response:
-        $url = "http://worldcat.org/identities/search/PersonalIdentities" .
-            "?query=" . urlencode($query) .
-            "&version=1.1" .
-            "&operation=searchRetrieve" .
-            "&recordSchema=info%3Asrw%2Fschema%2F1%2FIdentities" .
-            "&maximumRecords=" . intval($maxRecords) .
-            "&startRecord=1" .
-            "&resultSetTTL=300" .
-            "&recordPacking=xml" .
-            "&recordXPath=" .
-            "&sortKeys=holdingscount";
-        $xml = @file_get_contents($url);
-
-        // Translate XML to object:
-        $data = simplexml_load_string($xml);
+        // Get the API response and translate it into an object:
+        $data = simplexml_load_string(
+            $this->retrieve($this->getRelatedIdentitiesUrl($query, $maxRecords))
+        );
 
         // Give up if expected data is missing:
         if (!isset($data->records->record)) {
@@ -423,7 +514,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
             "&sortKeys=recordcount";
 
         // Get the API response:
-        $data = @file_get_contents($url);
+        $data = $this->retrieve($url);
 
         // Extract plain MARCXML from the WorldCat response:
         $marcxml = XSLTProcessor::process('wcterms-marcxml.xsl', $data);

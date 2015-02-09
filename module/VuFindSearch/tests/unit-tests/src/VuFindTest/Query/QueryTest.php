@@ -74,4 +74,16 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $q->setHandler('baz');
         $this->assertEquals('baz', $q->getHandler());
     }
+
+    /**
+     * Test setOperator() method
+     *
+     * @return void
+     */
+    public function testSetOperator()
+    {
+        $q = new Query('foo', 'bar');
+        $q->setOperator('baz');
+        $this->assertEquals('baz', $q->getOperator());
+    }
 }

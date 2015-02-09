@@ -41,24 +41,7 @@ use VuFind\Exception\ILS as ILSException;
  */
 class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Initialize the driver.
@@ -94,10 +77,12 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         if (isset($this->config[$function]) ) {
             $functionConfig = $this->config[$function];
@@ -399,7 +384,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param string $userBarcode  A valid Horizon user barcode
      * @param string $userPassword A valid Horizon user password (pin)
      *
-     * @return boolean true on success, false on failure
+     * @return bool true on success, false on failure
      */
     protected function registerUser($userBarcode, $userPassword)
     {
@@ -434,7 +419,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param string $itemData Array containing item id and hold level
      * @param array  $patron   Patron Array Data
      *
-     * @return boolean true if the request can be made, false if it cannot
+     * @return bool true if the request can be made, false if it cannot
      */
     public function checkRequestIsValid($bibId, $itemData, $patron)
     {
@@ -769,7 +754,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     /**
      * Process Renewals
      *
-     * This is responsible for processing renewals and is neccessary
+     * This is responsible for processing renewals and is necessary
      * as result of renew attempt is not returned
      *
      * @param array $renewIDs  A list of the items being renewed
@@ -778,7 +763,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param array $renewData A Simple XML array of loan data after the
      * renewal attempt
      *
-     * @return array        An Array specifiying the results of each renewal attempt
+     * @return array        An Array specifying the results of each renewal attempt
      */
     protected function processRenewals($renewIDs, $origData, $renewData)
     {
@@ -903,5 +888,3 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         return $cancelDetails;
     }
 }
-
-?>

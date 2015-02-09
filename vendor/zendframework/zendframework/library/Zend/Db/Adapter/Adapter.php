@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -160,10 +160,11 @@ class Adapter implements AdapterInterface, Profiler\ProfilerAwareInterface
      *
      * @param string $sql
      * @param string|array|ParameterContainer $parametersOrQueryMode
+     * @param \Zend\Db\ResultSet\ResultSetInterface $resultPrototype
      * @throws Exception\InvalidArgumentException
      * @return Driver\StatementInterface|ResultSet\ResultSet
      */
-    public function query($sql, $parametersOrQueryMode = self::QUERY_MODE_PREPARE)
+    public function query($sql, $parametersOrQueryMode = self::QUERY_MODE_PREPARE, ResultSet\ResultSetInterface $resultPrototype = null)
     {
         if (is_string($parametersOrQueryMode) && in_array($parametersOrQueryMode, array(self::QUERY_MODE_PREPARE, self::QUERY_MODE_EXECUTE))) {
             $mode = $parametersOrQueryMode;
@@ -190,7 +191,7 @@ class Adapter implements AdapterInterface, Profiler\ProfilerAwareInterface
         }
 
         if ($result instanceof Driver\ResultInterface && $result->isQueryResult()) {
-            $resultSet = clone $this->queryResultSetPrototype;
+            $resultSet = clone ($resultPrototype ?: $this->queryResultSetPrototype);
             $resultSet->initialize($result);
             return $resultSet;
         }
@@ -247,7 +248,6 @@ class Adapter implements AdapterInterface, Profiler\ProfilerAwareInterface
             default:
                 throw new Exception\InvalidArgumentException('Invalid magic property on adapter');
         }
-
     }
 
     /**

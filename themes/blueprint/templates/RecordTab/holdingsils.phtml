@@ -46,7 +46,7 @@
   <? if ($openUrl): ?><?=$this->openUrl($openUrl);?><? endif; ?>
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
-<h3><?=$this->transEsc($holding['location'])?></h3>
+<h3><?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?></h3>
 <table cellpadding="2" cellspacing="0" border="0" class="citation" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>

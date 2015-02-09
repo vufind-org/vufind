@@ -41,19 +41,14 @@ use Zend\Log\Logger as BaseLogger,
  */
 class Logger extends BaseLogger implements ServiceLocatorAwareInterface
 {
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
+
     /**
      * Is debug logging enabled?
      *
      * @var bool
      */
     protected $debugNeeded = false;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Set configuration
@@ -226,29 +221,6 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     public function debugNeeded()
     {
         return $this->debugNeeded;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Logger
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**

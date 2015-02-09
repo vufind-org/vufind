@@ -1,0 +1,119 @@
+<h1>Suggerimenti utili per la ricerca</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#Wildcard Searches">Ricerca per carattere jolly</a></li>
+  <li><a href="#Fuzzy Searches">Ricerca fuzzy</a></li>
+  <li><a href="#Proximity Searches">Ricerca per prossimit&agrave;</a></li>
+  <li><a href="#Range Searches">Ricerca per serie</a></li>
+  <li><a href="#Boosting a Term">Valorizzare un termine</a></li>
+  <li><a href="#Boolean operators">Operatori booleani</a>
+    <ul>
+      <li><a href="#AND">AND</a></li>
+      <li><a href="#+">+</a></li>
+      <li><a href="#OR">OR</a></li>
+      <li><a href="#NOT">NOT</a></li>
+      <li><a href="#-">-</a></li>
+    </ul>
+  </li>
+</ul>
+
+<dl class="Content">
+  <dt><a name="Wildcard Searches"></a>Ricerca per carattere jolly</dt>
+  <dd>
+    <p>Per sostituire un singolo carattere utilizzare il simbolo <strong>?</strong>.</p>
+    <p>Ad esempio, per cercare "woman" o "women" va usata la ricerca:</p>
+    <pre class="code">wom?n</pre>
+    <p>Per sostituire pi&ugrave; caratteri, da 0 in su, utilizzare il termine <strong>*</strong>.</p>
+    <p>Ad esempio, per cercare test, tests o tester, va usata la ricerca: </p>
+    <pre class="code">test*</pre>
+    <p>I caratteri jolly possono essere usati anche in mezzo al termine, ad esempio:</p>
+    <pre class="code">te*t</pre>
+    <p>Nota: non &egrave; possibile usare i simboli * o ? come primo carattere del termine.</p>
+  </dd>
+  
+  <dt><a name="Fuzzy Searches"></a>Ricerca fuzzy</dt>
+  <dd>
+    <p>Usare la tilde <strong>~</strong> [ALT + 126] alla fine di un <strong>singolo</strong> termine. Ad esempio, per cercare le varianti del nome "Tchaikovsky," usare la ricerca fuzzy: </p>
+    <pre class="code">Tchaikovsky~</pre>
+    <p>Si pu&ograve; utilizzare un parametro ulteriore per specificare la somiglianza richiesta. Il valore &egrave; compreso tra 0 e 1, dove con un valore vicino a 1 saranno trovati solo i termini con un alto livello di somiglianza. Ad esempio:</p>
+    <pre class="code">Tchaikovsky~0.8</pre>
+    <p>Se non viene attribuito un valore diverso alla ricerca, il parametro base &egrave; pari a 0.5.</p>
+  </dd>
+  
+  <dt><a name="Proximity Searches"></a>Ricerca per prossimit&agrave;</dt>
+  <dd>
+    <p>
+      Usare la tilde <strong>~</strong> alla fine di un insieme <strong>multiplo</strong> di termini.
+      Ad esempio, la ricerca per economics e keynes con un massimo di 10 parole tra un termine e l'altro corrisponde a:
+    </p>
+    <pre class="code">"economics Keynes"~10</pre>
+  </dd>
+  
+  <dt><a name="Range Searches"></a>Ricerca per serie</dt>
+  <dd>
+    <p>
+      Per condurre una ricerca per serie si possono usare i caratteri <strong>{ }</strong>.
+      Ad esempio, la ricerca di un termine che inizia sia con A, B o C corrisponde a:
+    </p>
+    <pre class="code">{A TO C}</pre>
+    <p>
+      La stessa cosa pu&ograve; essere fatta con campi di valore numerico, come l'anno:
+    </p>
+    <pre class="code">[2002 TO 2003]</pre>
+  </dd>
+  
+  <dt><a name="Boosting a Term"></a>Valorizzare un termine</dt>
+  <dd>
+    <p>
+      Per dare pi&ugrave; peso o valore a un termine, utilizzare il carattere <strong>^</strong>.
+      Ad esempio, una ricerca tipo:
+    </p>
+    <pre class="code">economics Keynes^5</pre>
+    <p>Dar&agrave; maggior valore al termine "Keynes"</p>
+  </dd>
+  
+  <dt><a name="Boolean operators"></a>Operatori booleani</dt>
+  <dd>
+    <p>
+      Gli operatori booleani consentono di combinare tra loro termini con l'uso di operatori logici.
+      Sono ammessi i seguenti operatori: <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong> e <strong>-</strong>.
+    </p>
+    <p>Nota: gli operatori booleanni vanno scritti in MAIUSCOLO</p>
+    <dl>
+      <dt><a name="AND"></a>AND</dt>
+      <dd>
+        <p><strong>AND</strong> &egrave; un operatore di connessione. Ci&ograve; significa che se non &egrave; indicato un operatore tra due termini viene utilizzato AND. AND recupera i record in cui entrambi i termini esistono, in qualsiasi parte del record.</p>
+        <p>Per cercare record che contengono i termini "economics" e "Keynes" usare la ricerca: </p>
+        <pre class="code">economics Keynes</pre>
+        <p>or</p>
+        <pre class="code">economics AND Keynes</pre>
+      </dd>
+      <dt><a name="+"></a>+</dt>
+      <dd>
+        <p>"+" o operatore di obbligo richiede che il termine dopo il "+" esista in qualche punto del record.</p>
+        <p>Per cercare record che dveono contenere "economics" e che potrebbero contenere "Keynes" usare la ricerca:</p>
+        <pre class="code">+economics Keynes</pre>
+      </dd>
+      <dt><a name="OR"></a>OR</dt>
+      <dd>
+        <p>OR collega due termini e trova i record corrispondenti se uno o l'altro dei termini esiste in un record.</p>
+        <p>Per cercare documenti che contengono sia "economics Keynes" che solo "Keynes" usare la ricerca:</p>
+        <pre class="code">"economics Keynes" OR Keynes</pre>
+      </dd>
+      <dt><a name="NOT"></a>NOT</dt>
+      <dd>
+        <p>NOT esclude i record che contengono il termine indicato dopo "NOT".</p>
+        <p>Per cercare documenti che contengono "economics" ma non "Keynes" usare la ricerca: </p>
+        <pre class="code">economics NOT Keynes</pre>
+        <p>Nota: l'operatore NOT non pu&ograve; essere utilizzato in presenza di un solo termine di ricerca. Ad esempio, la ricerca che segue non avr&agrave; risultati:</p>
+        <pre class="code">NOT economics</pre>
+      </dd>
+      <dt><a name="-"></a>-</dt>
+      <dd>
+        <p><strong>-</strong> o operatore di proibizione esclude documenti che contengono il termine dopo il simbolo "-".</p>
+        <p>Per cercare documenti che contengono "economics" ma non "Keynes" usare la query: </p>
+        <pre class="code">economics -Keynes</pre>
+      </dd>
+    </dl>
+  </dd>
+</dl>

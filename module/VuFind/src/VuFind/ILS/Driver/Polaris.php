@@ -41,6 +41,8 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Web services host
      *
@@ -75,25 +77,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var string
      */
     protected $ws_requestingorgid;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
 
     /**
      * Initialize the driver.
@@ -308,10 +291,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         if (isset($this->config[$function]) ) {
             $functionConfig = $this->config[$function];

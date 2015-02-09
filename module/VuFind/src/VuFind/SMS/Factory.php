@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @codeCoverageIgnore
  */
 class Factory implements \Zend\ServiceManager\FactoryInterface
 {

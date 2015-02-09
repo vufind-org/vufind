@@ -19,7 +19,7 @@
     <? endif; ?>
     <? $pLink = $this->driver->getPLink();
         if($pLink): ?>
-        <br/><a href="<?=$pLink?>">
+        <br/><a href="<?=$this->escapeHtmlAttr($pLink)?>">
           <?=$this->transEsc('View in EDS')?>
         </a>
     <? endif; ?>
@@ -41,7 +41,7 @@
               $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
               $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
               $name = isset($customLink['Name']) ? $customLink['Name'] : '';?>
-          <a href="<?=$url?>" target="_blank" title="<?=$mot?>" class="custom-link">
+          <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
             <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
           </a><br/>
         <? endforeach; ?>

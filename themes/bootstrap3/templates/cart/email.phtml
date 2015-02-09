@@ -16,7 +16,7 @@
     <label class="col-sm-3 control-label"><?=$this->transEsc('Title')?></label>
     <div class="col-sm-9">
     <? if(count($this->records) > 1): ?>
-        <button type="button" class="btn hidden" data-toggle="collapse" data-target="#itemhide">
+        <button type="button" class="btn btn-default hidden" data-toggle="collapse" data-target="#itemhide">
           <?=count($this->records).' '.$this->transEsc('items') ?>
         </button>
         <div id="itemhide" class="collapse in">
@@ -27,7 +27,7 @@
           </ul>
         </div>
     <? else: ?>
-      <span class="uneditable-input"><?=$this->records[0]->getBreadcrumb() ?></span>
+      <p class="form-control-static"><?=$this->records[0]->getBreadcrumb() ?></p>
     <? endif; ?>
     </div>
   </div>
@@ -51,6 +51,17 @@
       <textarea id="email_message" name="message" rows="3" cols="40" class="form-control"><?=isset($this->message) ? $this->message : ''?></textarea>
     </div>
   </div>
+  <? if ($this->disableFrom && $this->userEmailInFrom): ?>
+    <div class="form-group">
+      <div class="col-sm-9 col-sm-offset-3">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="ccself"/> <?=$this->translate('send_email_copy_to_me'); ?>
+          </label>
+        </div>
+      </div>
+    </div>
+  <? endif ?>
   <div class="form-group">
     <div class="col-sm-9 col-sm-offset-3">
       <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>

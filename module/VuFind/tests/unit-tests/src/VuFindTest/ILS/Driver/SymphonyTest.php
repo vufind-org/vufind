@@ -62,7 +62,7 @@ class SymphonyTest extends \VuFindTest\Unit\TestCase
 
         // Without SOAP functionality, we can't proceed:
         if (!class_exists('SoapClient')) {
-            $this->markTestSkipped();
+            $this->markTestSkipped('SoapClient not installed');
         }
 
         $this->driver->setConfig(

@@ -77,7 +77,8 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getTotal()
     {
-        return $this->response['recordCount'];
+        return isset($this->response['recordCount'])
+            ? $this->response['recordCount'] : 0;
     }
 
     /**

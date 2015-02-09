@@ -1,0 +1,26 @@
+<div class="row">
+  <? $columnIndex = 0; ?>
+  <? $span = floor(12/$columns); ?>
+  <? $sectionCount = count($this->combinedResults); ?>
+  <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+    <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { continue; } ?>
+    <? if ($columnIndex < $columns): ?>
+      <div class="col-sm-<?=$span ?><? if($columnIndex == $columns-1): ?> col-sm-pull-<?=$span*($columns-1) ?><? else: ?> col-sm-push-<?=$span ?><? endif; ?> combined-list">
+    <? endif; ?>
+    <?
+      $viewParams = array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch);
+      // Enable cart if appropriate:
+      $viewParams['showCartControls'] = $this->supportsCartOptions[$columnIndex] && $this->showCartControls;
+      // Enable bulk options if appropriate:
+      $viewParams['showBulkOptions'] = $this->supportsCartOptions[$columnIndex] && $this->showBulkOptions;
+    ?>
+    <div id="combined_<?=$this->escapeHtmlAttr($searchClassId)?>">
+      <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
+      <?=$this->render('combined/results-' . $templateSuffix . '.phtml', $viewParams)?>
+    </div>
+    <? ++$columnIndex ?>
+    <? if($columnIndex < $columns || $columnIndex == $sectionCount): ?>
+      </div>
+    <? endif; ?>
+  <? endforeach; ?>
+</div>

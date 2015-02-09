@@ -405,7 +405,7 @@ foo: |-
 
 EOF;
         $expected = array(
-            'foo' => "\n\nbar"
+            'foo' => "\n\nbar",
         );
 
         $this->assertSame($expected, $this->parser->parse($yaml));
@@ -449,7 +449,7 @@ EOF;
         $yamls = array(
             iconv("UTF-8", "ISO-8859-1", "foo: 'äöüß'"),
             iconv("UTF-8", "ISO-8859-15", "euro: '€'"),
-            iconv("UTF-8", "CP1252", "cp1252: '©ÉÇáñ'")
+            iconv("UTF-8", "CP1252", "cp1252: '©ÉÇáñ'"),
         );
 
         foreach ($yamls as $yaml) {
@@ -458,15 +458,13 @@ EOF;
 
                 $this->fail('charsets other than UTF-8 are rejected.');
             } catch (\Exception $e) {
-                 $this->assertInstanceOf('Symfony\Component\Yaml\Exception\ParseException', $e, 'charsets other than UTF-8 are rejected.');
+                $this->assertInstanceOf('Symfony\Component\Yaml\Exception\ParseException', $e, 'charsets other than UTF-8 are rejected.');
             }
         }
     }
 
     /**
-     *
      * @expectedException \Symfony\Component\Yaml\Exception\ParseException
-     *
      */
     public function testUnindentedCollectionException()
     {
@@ -480,6 +478,43 @@ collection:
 EOF;
 
         $this->parser->parse($yaml);
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
+     */
+    public function testShortcutKeyUnindentedCollectionException()
+    {
+        $yaml = <<<EOF
+
+collection:
+-  key: foo
+  foo: bar
+
+EOF;
+
+        $this->parser->parse($yaml);
+    }
+
+    /**
+     * @expectedException \Symfony\Component\Yaml\Exception\ParseException
+     * @expectedExceptionMessage Multiple documents are not supported.
+     */
+    public function testMultipleDocumentsNotSupportedException()
+    {
+        Yaml::parse(<<<EOL
+# Ranking of 1998 home runs
+---
+- Mark McGwire
+- Sammy Sosa
+- Ken Griffey
+
+# Team ranking
+---
+- Chicago Cubs
+- St Louis Cardinals
+EOL
+        );
     }
 
     /**
@@ -624,7 +659,7 @@ EOF
     public function testNestedFoldedStringBlockWithComments()
     {
         $this->assertEquals(array(array(
-            'title'   => 'some title',
+            'title' => 'some title',
             'content' => <<<EOT
 # comment 1
 header
@@ -651,6 +686,43 @@ EOT
         footer # comment3
 EOF
         ));
+    }
+
+    public function testReferenceResolvingInInlineStrings()
+    {
+        $this->assertEquals(array(
+            'var' => 'var-value',
+            'scalar' => 'var-value',
+            'list' => array('var-value'),
+            'list_in_list' => array(array('var-value')),
+            'map_in_list' => array(array('key' => 'var-value')),
+            'embedded_mapping' => array(array('key' => 'var-value')),
+            'map' => array('key' => 'var-value'),
+            'list_in_map' => array('key' => array('var-value')),
+            'map_in_map' => array('foo' => array('bar' => 'var-value')),
+        ), Yaml::parse(<<<EOF
+var:  &var var-value
+scalar: *var
+list: [ *var ]
+list_in_list: [[ *var ]]
+map_in_list: [ { key: *var } ]
+embedded_mapping: [ key: *var ]
+map: { key: *var }
+list_in_map: { key: [*var] }
+map_in_map: { foo: { bar: *var } }
+EOF
+        ));
+    }
+
+    public function testYamlDirective()
+    {
+        $yaml = <<<EOF
+%YAML 1.2
+---
+foo: 1
+bar: 2
+EOF;
+        $this->assertEquals(array('foo' => 1, 'bar' => 2), $this->parser->parse($yaml));
     }
 }
 

@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Content;
+use VuFindCode\ISBN;
 
 /**
  * Abstract base for content loader plug-ins.
@@ -39,12 +40,7 @@ namespace VuFind\Content;
 abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
     \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Logger
@@ -69,7 +65,7 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
      * Attempt to get an ISBN-10; revert to ISBN-13 only when ISBN-10 representation
      * is impossible.
      *
-     * @param \VuFind\Code\ISBN $isbnObj ISBN object to convert
+     * @param ISBN $isbnObj ISBN object to convert
      *
      * @return string
      */
@@ -87,7 +83,7 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
      * @return \Zend\Http\Client
      * @throws \Exception
      */
-    protected function getHttpClient($url)
+    protected function getHttpClient($url = null)
     {
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
@@ -96,24 +92,12 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
     }
 
     /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
-
-    /**
      * Load results for a particular API key and ISBN.
      *
-     * @param string            $key     API key
-     * @param \VuFind\Code\ISBN $isbnObj ISBN object
+     * @param string $key     API key
+     * @param ISBN   $isbnObj ISBN object
      *
      * @return array
      */
-    abstract public function loadByIsbn($key, \VuFind\Code\ISBN $isbnObj);
+    abstract public function loadByIsbn($key, ISBN $isbnObj);
 }

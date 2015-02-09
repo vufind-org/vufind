@@ -313,6 +313,15 @@ class Results extends \VuFind\Search\Base\Results
         // Don't waste time on spellcheck:
         $params->getOptions()->spellcheckEnabled(false);
 
+        // Don't fetch any records:
+        $params->setLimit(0);
+
+        // Disable highlighting:
+        $params->getOptions()->disableHighlighting();
+
+        // Disable sort:
+        $params->setSort('', true);
+
         // Do search
         $result = $clone->getFacetList();
 

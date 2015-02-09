@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, vufindString */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -10,7 +10,9 @@ function htmlEncode(value){
 }
 function extractClassParams(str) {
   str = $(str).attr('class');
-  if (typeof str === "undefined") return [];
+  if (typeof str === "undefined") {
+    return [];
+  }
   var params = {};
   var classes = str.split(/\s+/);
   for(var i = 0; i < classes.length; i++) {
@@ -22,7 +24,7 @@ function extractClassParams(str) {
   return params;
 }
 function jqEscape(myid) {
-  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~]/g, "\\$&");
+  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
 }
 function html_entity_decode(string, quote_style)
 {
@@ -98,6 +100,24 @@ function setupOrFacets() {
  * This is a default open action, so it runs every time changeContent
  * is called and the 'shown' lightbox event is triggered
  */
+function bulkActionSubmit($form) {
+  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
+  var checks = $form.find('input.checkbox-select-item:checked');
+  if(checks.length == 0 && submit != 'empty') {
+    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+  }
+  if (submit == 'print') {
+    //redirect page
+    var url = path+'/Records/Home?print=true';
+    for(var i=0;i<checks.length;i++) {
+      url += '&id[]='+checks[i].value;
+    }
+    document.location.href = url;
+  } else {
+    Lightbox.submit($form, Lightbox.changeContent);
+  }
+  return false;
+}
 function registerLightboxEvents() {
   var modal = $("#modal");
   // New list
@@ -113,19 +133,23 @@ function registerLightboxEvents() {
     var get = deparam(parts[1]);
     return Lightbox.get('MyResearch', 'Account', get);
   });
+  $('.back-to-login').click(function() {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    return false;
+  });
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
+    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
   });
   $(modal).find('.checkbox-select-item').change(function() {
-    if(!this.checked) { // Uncheck all selected if one is unselected
-      $(this).closest('.modal-body').find('.checkbox-select-all').attr('checked', false);
-    }
+    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
   });
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .fa-spinner').remove();
+    // Remove other clicks
+    $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
@@ -203,8 +227,9 @@ function ajaxLogin(form) {
         // get the user entered password
         var password = form.password.value;
 
-        // encrypt the password with the salt
-        password = rc4Encrypt(salt, password);
+        // base-64 encode the password (to allow support for Unicode)
+        // and then encrypt the password with the salt
+        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
 
         // hex encode the encrypted password
         password = hexEncode(password);
@@ -287,56 +312,45 @@ $(document).ready(function() {
     });
 
   // Search autocomplete
-  var searcher = extractClassParams('.autocomplete');
-  var autocompleteEngine = new Bloodhound({
-    name: 'search-suggestions',
-    remote: {
-      url: path + '/AJAX/JSON?q=%QUERY',
-      ajax: {
-        data: {
-          method:'getACSuggestions',
-          type:$('#searchForm_type').val(),
-          searcher:searcher['searcher']
-        },
-        dataType:'json'
-      },
-      filter: function(json) {
-        if (json.status == 'OK' && json.data.length > 0) {
-          var datums = [];
-          for (var i=0;i<json.data.length;i++) {
-            datums.push({val:json.data[i]});
-          }
-          return datums;
-        } else {
-          return [];
-        }
-      }
-    },
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('val'),
-    queryTokenizer: Bloodhound.tokenizers.whitespace
-  });
-  autocompleteEngine.initialize();
   $('.autocomplete').typeahead(
     {
       highlight: true,
-      minLength: 3,
+      minLength: 3
     }, {
       displayKey:'val',
-      source: autocompleteEngine.ttAdapter()
+      source: function(query, cb) {
+        var searcher = extractClassParams('.autocomplete');
+        $.ajax({
+          url: path + '/AJAX/JSON',
+          data: {
+            q:query,
+            method:'getACSuggestions',
+            searcher:searcher['searcher'],
+            type:$('#searchForm_type').val()
+          },
+          dataType:'json',
+          success: function(json) {
+            if (json.status == 'OK' && json.data.length > 0) {
+              var datums = [];
+              for (var i=0;i<json.data.length;i++) {
+                datums.push({val:json.data[i]});
+              }
+              cb(datums);
+            } else {
+              cb([]);
+            }
+          }
+        });
+      }
     }
   );
 
   // Checkbox select all
-  $('.checkbox-select-all').click(function(event) {
-    if(this.checked) {
-      $(this).closest('form').find('.checkbox-select-item').each(function() {
-        this.checked = true;
-      });
-    } else {
-      $(this).closest('form').find('.checkbox-select-item').each(function() {
-        this.checked = false;
-      });
-    }
+  $('.checkbox-select-all').change(function() {
+    $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
+  });
+  $('.checkbox-select-item').change(function() {
+    $(this).closest('form').find('.checkbox-select-all').prop('checked', false);
   });
 
   // handle QR code links
@@ -364,6 +378,18 @@ $(document).ready(function() {
   // Advanced facets
   setupOrFacets();
 
+  $('[name=bulkActionForm]').submit(function() {
+    return bulkActionSubmit($(this));
+  });
+  $('[name=bulkActionForm]').find("input[type=submit]").click(function() {
+    // Abort requests triggered by the lightbox
+    $('#modal .fa-spinner').remove();
+    // Remove other clicks
+    $(this).closest('form').find('input[type="submit"][clicked=true]').attr('clicked', false);
+    // Add useful information
+    $(this).attr("clicked", "true");
+  });
+
   /******************************
    * LIGHTBOX DEFAULT BEHAVIOUR *
    ******************************/
@@ -381,11 +407,37 @@ $(document).ready(function() {
     Lightbox.close();
     checkSaveStatuses();
   });
+  Lightbox.addFormCallback('bulkDelete', function(html) {
+    location.reload();
+  });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
   });
+  Lightbox.addFormHandler('feedback', function(evt) {
+    var $form = $(evt.target);
+    // Grabs hidden inputs
+    var formSuccess     = $form.find("input#formSuccess").val();
+    var feedbackFailure = $form.find("input#feedbackFailure").val();
+    var feedbackSuccess = $form.find("input#feedbackSuccess").val();
+    // validate and process form here
+    var name  = $form.find("input#name").val();
+    var email = $form.find("input#email").val();
+    var comments = $form.find("textarea#comments").val();
+    if (name.length == 0 || comments.length == 0) {
+      Lightbox.displayError(feedbackFailure);
+    } else {
+      Lightbox.get('Feedback', 'Email', {}, {'name':name,'email':email,'comments':comments}, function() {
+        Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
+      });
+    }
+    return false;
+  });
 
+  // Feedback
+  $('#feedbackLink').click(function() {
+    return Lightbox.get('Feedback', 'Home');
+  });
   // Help links
   $('.help-link').click(function() {
     var split = this.href.split('=');

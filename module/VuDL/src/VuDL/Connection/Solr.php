@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/
  */
 namespace VuDL\Connection;
-use VuFindHttp\HttpServiceInterface,
-    VuFindSearch\ParamBag;
+use VuFindSearch\ParamBag;
 
 /**
  * VuDL-Fedora connection class
@@ -260,6 +259,9 @@ class Solr extends AbstractBase
         $tree = array();
         while (!empty($queue)) {
             $current = array_shift($queue);
+            if ($current == $this->getRootId()) {
+                continue;
+            }
             $response = $this->search(
                 new ParamBag(
                     array(
@@ -274,18 +276,16 @@ class Solr extends AbstractBase
             }
             // Get info on our record
             $parents = $data->response->docs[0];
-            if ($current != $this->getRootId()) {
-                foreach ($parents->hierarchy_parent_id as $i=>$cid) {
-                    array_push($queue, $cid);
-                    if (!isset($tree[$cid])) {
-                        $tree[$cid] = array(
-                            'children' => array(),
-                            'title' => $parents->hierarchy_parent_title[$i]
-                        );
-                    }
-                    if (!in_array($current, $tree[$cid]['children'])) {
-                        $tree[$cid]['children'][] = $current;
-                    }
+            foreach ($parents->hierarchy_parent_id as $i=>$cid) {
+                array_push($queue, $cid);
+                if (!isset($tree[$cid])) {
+                    $tree[$cid] = array(
+                        'children' => array(),
+                        'title' => $parents->hierarchy_parent_title[$i]
+                    );
+                }
+                if (!in_array($current, $tree[$cid]['children'])) {
+                    $tree[$cid]['children'][] = $current;
                 }
             }
         }
@@ -311,7 +311,7 @@ class Solr extends AbstractBase
             new ParamBag(
                 array(
                     'q'     => 'id:"'.$id.'"',
-                    'fl'    => $licenseField,
+                    'fl'    => $licenseField
                 )
             )
         );

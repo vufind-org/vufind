@@ -277,13 +277,15 @@ class AjaxController extends AbstractBase
      * Support method for getItemStatuses() -- when presented with multiple values,
      * pick which one(s) to send back via AJAX.
      *
-     * @param array  $list Array of values to choose from.
-     * @param string $mode config.ini setting -- first, all or msg
-     * @param string $msg  Message to display if $mode == "msg"
+     * @param array  $list        Array of values to choose from.
+     * @param string $mode        config.ini setting -- first, all or msg
+     * @param string $msg         Message to display if $mode == "msg"
+     * @param string $transPrefix Translator prefix to apply to values (false to
+     * omit translation of values)
      *
      * @return string
      */
-    protected function pickValue($list, $mode, $msg)
+    protected function pickValue($list, $mode, $msg, $transPrefix = false)
     {
         // Make sure array contains only unique values:
         $list = array_unique($list);
@@ -291,11 +293,25 @@ class AjaxController extends AbstractBase
         // If there is only one value in the list, or if we're in "first" mode,
         // send back the first list value:
         if ($mode == 'first' || count($list) == 1) {
-            return $list[0];
+            if (!$transPrefix) {
+                return $list[0];
+            } else {
+                return $this->translate($transPrefix . $list[0], array(), $list[0]);
+            }
         } else if (count($list) == 0) {
             // Empty list?  Return a blank string:
             return '';
         } else if ($mode == 'all') {
+            // Translate values if necessary:
+            if ($transPrefix) {
+                $transList = array();
+                foreach ($list as $current) {
+                    $transList[] = $this->translate(
+                        $transPrefix . $current, array(), $current
+                    );
+                }
+                $list = $transList;
+            }
             // All values mode?  Return comma-separated values:
             return implode(', ', $list);
         } else {
@@ -349,7 +365,7 @@ class AjaxController extends AbstractBase
 
         // Determine location string based on findings:
         $location = $this->pickValue(
-            $locations, $locationSetting, 'Multiple Locations'
+            $locations, $locationSetting, 'Multiple Locations', 'location_'
         );
 
         $availability_message = $use_unknown_status
@@ -416,7 +432,10 @@ class AjaxController extends AbstractBase
             $locationInfo = array(
                 'availability' =>
                     isset($details['available']) ? $details['available'] : false,
-                'location' => htmlentities($location, ENT_COMPAT, 'UTF-8'),
+                'location' => htmlentities(
+                    $this->translate('location_' . $location, array(), $location),
+                    ENT_COMPAT, 'UTF-8'
+                ),
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8')
             );
@@ -528,7 +547,7 @@ class AjaxController extends AbstractBase
      *
      * @param string $errno   Error code number
      * @param string $errstr  Error message
-     * @param string $errfile File where error occured
+     * @param string $errfile File where error occurred
      * @param string $errline Line number of error
      *
      * @return bool           Always true to cancel default error handling
@@ -576,7 +595,7 @@ class AjaxController extends AbstractBase
         $password = pack('H*', $this->params()->fromPost('password'));
 
         // Decrypt Password
-        $password = \VuFind\Crypt\RC4::encrypt($salt, $password);
+        $password = base64_decode(\VuFind\Crypt\RC4::encrypt($salt, $password));
 
         // Update the request with the decrypted password:
         $this->getRequest()->getPost()->set('password', $password);
@@ -1013,14 +1032,15 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('source', 'VuFind')
             );
             $view = $this->createEmailViewModel();
-            $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $mailer->sendRecord(
                 $view->to, $view->from, $view->message, $record,
                 $this->getViewRenderer()
             );
             if ($this->params()->fromPost('ccself')
                 && $view->from != $view->to
             ) {
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                $mailer->sendRecord(
                     $view->from, $view->from, $view->message, $record,
                     $this->getViewRenderer()
                 );
@@ -1066,10 +1086,19 @@ class AjaxController extends AbstractBase
         // Attempt to send the email:
         try {
             $view = $this->createEmailViewModel();
-            $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $mailer->sendLink(
                 $view->to, $view->from, $view->message, $url,
                 $this->getViewRenderer(), $this->params()->fromPost('subject')
             );
+            if ($this->params()->fromPost('ccself')
+                && $view->from != $view->to
+            ) {
+                $mailer->sendLink(
+                    $view->from, $view->from, $view->message, $url,
+                    $this->getViewRenderer(), $this->params()->fromPost('subject')
+                );
+            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );
@@ -1106,7 +1135,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = $this->getILS();
-                $patron = $this->getAuthManager()->storedCatalogLogin();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
                     switch ($requestType) {
                     case 'ILLRequest':
@@ -1421,7 +1450,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = $this->getILS();
-                $patron = $this->getAuthManager()->storedCatalogLogin();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
                     $results = $catalog->getILLPickupLocations(
                         $id, $pickupLib, $patron
@@ -1474,7 +1503,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = $this->getILS();
-                $patron = $this->getAuthManager()->storedCatalogLogin();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
                     $details = array(
                         'id' => $id,
@@ -1503,6 +1532,52 @@ class AjaxController extends AbstractBase
 
         return $this->output(
             $this->translate('An error has occurred'), self::STATUS_ERROR
+        );
+    }
+
+    /**
+     * Get hierarchical facet data for jsTree
+     *
+     * Parameters:
+     * facetName  The facet to retrieve
+     * facetSort  By default all facets are sorted by count. Two values are available
+     * for alternative sorting:
+     *   top = sort the top level alphabetically, rest by count
+     *   all = sort all levels alphabetically
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getFacetDataAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+
+        $facet = $this->params()->fromQuery('facetName');
+        $sort = $this->params()->fromQuery('facetSort');
+        $operator = $this->params()->fromQuery('facetOperator');
+
+        $results = $this->getResultsManager()->get('Solr');
+        $params = $results->getParams();
+        $params->addFacet($facet, null, $operator === 'OR');
+        $params->initFromRequest($this->getRequest()->getQuery());
+
+        $facets = $results->getFullFieldFacets(array($facet), false, -1, 'count');
+        if (empty($facets[$facet]['data']['list'])) {
+            return $this->output(array(), self::STATUS_OK);
+        }
+
+        $facetList = $facets[$facet]['data']['list'];
+
+        $facetHelper = $this->getServiceLocator()
+            ->get('VuFind\HierarchicalFacetHelper');
+        if (!empty($sort)) {
+            $facetHelper->sortFacetList($facetList, $sort == 'top');
+        }
+
+        return $this->output(
+            $facetHelper->buildFacetArray(
+                $facet, $facetList, $results->getUrlQuery()
+            ),
+            self::STATUS_OK
         );
     }
 

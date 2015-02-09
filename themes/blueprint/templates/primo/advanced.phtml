@@ -11,10 +11,16 @@
     // Set up saved search details:
     if (isset($this->saved) && is_object($this->saved)) {
         $searchDetails = $this->saved->getParams()->getQuery();
-        $groups = $searchDetails->getQueries();
+        if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+            // Not an advanced query -- ignore it.
+            $searchDetails = $groups = false;
+        } else {
+            $groups = $searchDetails->getQueries();
+        }
+        $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
         $searchFilters = $this->saved->getParams()->getFilterList();
     } else {
-        $searchDetails = $searchFilters = $groups = false;
+        $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
     }
 ?>
 <form method="get" action="<?=$this->url($this->options->getSearchAction())?>" id="advSearchForm" name="searchForm" class="search">
@@ -85,6 +91,9 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
+    <? if ($hasDefaultsApplied): ?>
+      <input type="hidden" name="dfApplied" value="1" />
+    <? endif ?>
     <? if (!empty($searchFilters)): ?>
       <div class="filterList">
         <h3><?=$this->transEsc("adv_search_filters")?><br/><span>(<?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" onclick="filterAll(this, 'advSearchForm');" />)</span></h3>

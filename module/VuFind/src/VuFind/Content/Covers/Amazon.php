@@ -38,7 +38,10 @@ use ZendService\Amazon\Amazon as AmazonService;
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class Amazon extends \VuFind\Content\AbstractCover
+    implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Associate ID
      *
@@ -64,6 +67,21 @@ class Amazon extends \VuFind\Content\AbstractCover
         $this->associate = $associate;
         $this->secret = $secret;
         $this->supportsIsbn = true;
+    }
+
+    /**
+     * Get an HTTP client
+     *
+     * @param string $url URL for client to use
+     *
+     * @return \Zend\Http\Client
+     */
+    protected function getHttpClient($url = null)
+    {
+        if (null === $this->httpService) {
+            throw new \Exception('HTTP service missing.');
+        }
+        return $this->httpService->createClient($url);
     }
 
     /**
@@ -122,6 +140,8 @@ class Amazon extends \VuFind\Content\AbstractCover
      */
     protected function getAmazonService($key)
     {
-        return new AmazonService($key, 'US', $this->secret);
+        $service = new AmazonService($key, 'US', $this->secret);
+        $service->getRestClient()->setHttpClient($this->getHttpClient());
+        return $service;
     }
 }

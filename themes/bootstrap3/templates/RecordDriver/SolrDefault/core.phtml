@@ -20,13 +20,17 @@
       <? endif; ?>
     </div>
 
+    <? // if you have a preview tab but want to move or remove the preview link
+       // from this area of the record view, this can be split into
+       // getPreviewData() (should stay here) and
+       // getPreviewLink() (can go in your desired tab) ?>
     <?=$this->record($this->driver)->getPreviews()?>
   </div>
 
   <div class="col-sm-9">
     <h3 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
 
-    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
+    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
     <? if ($summary): ?>
       <p><?=$this->truncate($summary, 300)?></p>
 
@@ -46,9 +50,10 @@
     <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
       <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
       <tr>
-        <th><?=$this->transEsc('Journal Title')?>:</th>
+        <th><?=$this->transEsc('Published in')?>:</th>
         <td>
-          <a href="<?=$this->record($this->driver)->getLink('journaltitle', $journalTitle)?>"><?=$this->escapeHtml($journalTitle)?></a>
+          <? $containerID = $this->driver->getContainerRecordID(); ?>
+          <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
           <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
         </td>
       </tr>
@@ -184,6 +189,15 @@
             <? endforeach; ?>
           </div>
           <? endforeach; ?>
+        </td>
+      </tr>
+      <? endif; ?>
+
+      <? $childRecordCount = $this->driver->tryMethod('getChildRecordCount'); if ($childRecordCount): ?>
+      <tr>
+        <th><?=$this->transEsc('child_records')?>: </th>
+        <td>
+          <a href="<?=$this->recordLink()->getChildRecordSearchUrl($this->driver)?>"><?=$this->transEsc('child_record_count', array('%%count%%' => $childRecordCount))?></a>
         </td>
       </tr>
       <? endif; ?>

@@ -84,21 +84,17 @@ class MyResearchController extends AbstractBase
      */
     public function homeAction()
     {
-        // if the current auth class proxies others, we'll get the proxied
-        //   auth method as a querystring or post parameter.
-        //   Force to post.
-        if ($method = trim($this->params()->fromQuery('auth_method'))) {
-            $this->getRequest()->getPost()->set('auth_method', $method);
-        }
-
         // Process login request, if necessary (either because a form has been
         // submitted or because we're using an external login provider):
         if ($this->params()->fromPost('processLogin')
             || $this->getSessionInitiator()
             || $this->params()->fromPost('auth_method')
+            || $this->params()->fromQuery('auth_method')
         ) {
             try {
-                $this->getAuthManager()->login($this->getRequest());
+                if (!$this->getAuthManager()->isLoggedIn()) {
+                    $this->getAuthManager()->login($this->getRequest());
+                }
             } catch (AuthException $e) {
                 $this->processAuthenticationException($e);
             }
@@ -113,7 +109,12 @@ class MyResearchController extends AbstractBase
         // or default action (if no followup provided):
         if ($url = $this->getFollowupUrl()) {
             $this->clearFollowupUrl();
-            return $this->redirect()->toUrl($url);
+            // If a user clicks on the "Your Account" link, we want to be sure
+            // they get to their account rather than being redirected to an old
+            // followup URL. We'll use a redirect=0 GET flag to indicate this:
+            if ($this->params()->fromQuery('redirect', true)) {
+                return $this->redirect()->toUrl($url);
+            }
         }
 
         $config = $this->getConfig();
@@ -138,11 +139,9 @@ class MyResearchController extends AbstractBase
         if ($this->getAuthManager()->isLoggedIn()) {
             return $this->redirect()->toRoute('myresearch-home');
         }
-        // if the current auth class proxies others, we'll get the proxied
-        //   auth method as a querystring parameter.
-        $method = trim($this->params()->fromQuery('auth_method'));
         // If authentication mechanism does not support account creation, send
         // the user away!
+        $method = trim($this->params()->fromQuery('auth_method'));
         if (!$this->getAuthManager()->supportsCreation($method)) {
             return $this->forwardTo('MyResearch', 'Home');
         }
@@ -157,6 +156,9 @@ class MyResearchController extends AbstractBase
 
         // Make view
         $view = $this->createViewModel();
+        // Password policy
+        $view->passwordPolicy = $this->getAuthManager()
+            ->getPasswordPolicy($method);
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('newAccount');
         // Pass request to view so we can repopulate user parameters in form:
@@ -170,6 +172,12 @@ class MyResearchController extends AbstractBase
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
             }
+        } else {
+            // If we are not processing a submission, we need to simply display
+            // an empty form. In case ChoiceAuth is being used, we may need to
+            // override the active authentication method based on request
+            // parameters to ensure display of the appropriate template.
+            $this->setUpAuthenticationFromRequest();
         }
         return $view;
     }
@@ -219,6 +227,10 @@ class MyResearchController extends AbstractBase
      */
     public function userloginAction()
     {
+        // Don't log in if already logged in!
+        if ($this->getAuthManager()->isLoggedIn()) {
+            return $this->redirect()->toRoute('home');
+        }
         $this->clearFollowupUrl();
         $this->setFollowupUrlToReferer();
         if ($si = $this->getSessionInitiator()) {
@@ -243,8 +255,14 @@ class MyResearchController extends AbstractBase
                 $logoutTarget = $this->getServerUrl('home');
             }
 
-            // clear querystring parameters
-            $logoutTarget = preg_replace('/\?.*/', '', $logoutTarget);
+            // If there is an auth_method parameter in the query, we should strip
+            // it out. Otherwise, the user may get stuck in an infinite loop of
+            // logging out and getting logged back in when using environment-based
+            // authentication methods like Shibboleth.
+            $logoutTarget = preg_replace(
+                '/([?&])auth_method=[^&]*&?/', '$1', $logoutTarget
+            );
+            $logoutTarget = rtrim($logoutTarget, '?');
         }
 
         return $this->redirect()
@@ -808,8 +826,9 @@ class MyResearchController extends AbstractBase
     protected function getDriverForILSRecord($current)
     {
         $id = isset($current['id']) ? $current['id'] : null;
+        $source = isset($current['source']) ? $current['source'] : 'VuFind';
         $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
-            ->load($id, 'VuFind', true);
+            ->load($id, $source, true);
         $record->setExtraDetail('ils_details', $current);
         return $record;
     }
@@ -830,7 +849,7 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelStatus = $catalog->checkFunction('cancelHolds');
+        $cancelStatus = $catalog->checkFunction('cancelHolds', compact('patron'));
         $view = $this->createViewModel();
         $view->cancelResults = $cancelStatus
             ? $this->holds()->cancelHolds($catalog, $patron) : array();
@@ -889,7 +908,9 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelSRR = $catalog->checkFunction('cancelStorageRetrievalRequests');
+        $cancelSRR = $catalog->checkFunction(
+            'cancelStorageRetrievalRequests', compact('patron')
+        );
         $view = $this->createViewModel();
         $view->cancelResults = $cancelSRR
             ? $this->storageRetrievalRequests()->cancelStorageRetrievalRequests(
@@ -952,7 +973,9 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelStatus = $catalog->checkFunction('cancelILLRequests');
+        $cancelStatus = $catalog->checkFunction(
+            'cancelILLRequests', compact('patron')
+        );
         $view = $this->createViewModel();
         $view->cancelResults = $cancelStatus
             ? $this->ILLRequests()->cancelILLRequests(
@@ -1008,7 +1031,7 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Get the current renewal status and process renewal form, if necessary:
-        $renewStatus = $catalog->checkFunction('Renewals');
+        $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));
         $renewResult = $renewStatus
             ? $this->renewals()->processRenewals(
                 $this->getRequest()->getPost(), $catalog, $patron
@@ -1069,9 +1092,10 @@ class MyResearchController extends AbstractBase
                 if (!isset($row['id']) || empty($row['id'])) {
                     throw new \Exception();
                 }
-                $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
-                    ->load($row['id']);
-                $row['title'] = $record->getShortTitle();
+                $source = isset($row['source']) ? $row['source'] : 'VuFind';
+                $row['driver'] = $this->getServiceLocator()
+                    ->get('VuFind\RecordLoader')->load($row['id'], $source);
+                $row['title'] = $row['driver']->getShortTitle();
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {
                     $row['title'] = null;
@@ -1103,8 +1127,8 @@ class MyResearchController extends AbstractBase
     public function recoverAction()
     {
         // Make sure we're configured to do this
-        $method = trim($this->params()->fromQuery('auth_method'));
-        if (!$this->getAuthManager()->supportsRecovery($method)) {
+        $this->setUpAuthenticationFromRequest();
+        if (!$this->getAuthManager()->supportsRecovery()) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_disabled');
             return $this->redirect()->toRoute('myresearch-home');
@@ -1166,6 +1190,7 @@ class MyResearchController extends AbstractBase
                     $user->updateHash();
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
+                    $method = $this->getAuthManager()->getAuthMethod();
                     // Custom template for emails (text-only)
                     $message = $renderer->render(
                         'Email/recover-password.phtml',
@@ -1173,7 +1198,7 @@ class MyResearchController extends AbstractBase
                             'library' => $config->Site->title,
                             'url' => $this->getServerUrl('myresearch-verify')
                                 . '?hash='
-                                . $user->verify_hash
+                                . $user->verify_hash . '&auth_method=' . $method
                         )
                     );
                     $this->getServiceLocator()->get('VuFind\Mailer')->send(
@@ -1216,7 +1241,10 @@ class MyResearchController extends AbstractBase
                 $user = $table->getByVerifyHash($hash);
                 // If the hash is valid, forward user to create new password
                 if (null != $user) {
+                    $this->setUpAuthenticationFromRequest();
                     $view = $this->createViewModel();
+                    $view->auth_method
+                        = $this->getAuthManager()->getAuthMethod();
                     $view->hash = $hash;
                     $view->username = $user->username;
                     $view->useRecaptcha
@@ -1249,8 +1277,10 @@ class MyResearchController extends AbstractBase
         $userFromHash = isset($post->hash)
             ? $this->getTable('User')->getByVerifyHash($post->hash)
             : false;
-        // View and reCaptcha
+        // View, password policy and reCaptcha
         $view = $this->createViewModel($post);
+        $view->passwordPolicy = $this->getAuthManager()
+            ->getPasswordPolicy();
         $view->useRecaptcha = $this->recaptcha()->active('changePassword');
         // Check reCaptcha
         if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
@@ -1274,18 +1304,15 @@ class MyResearchController extends AbstractBase
         // Verify old password if we're logged in
         if ($this->getUser()) {
             if (isset($post->oldpwd)) {
-                try {
-                    // Reassign oldpwd to password in the request so login works
-                    $temp_password = $post->password;
-                    $post->password = $post->oldpwd;
-                    $this->getAuthManager()->login($request);
-                    $post->password = $temp_password;
-                } catch(AuthException $e) {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage($e->getMessage());
-                    return $view;
-                }
+                // Reassign oldpwd to password in the request so login works
+                $tempPassword = $post->password;
+                $post->password = $post->oldpwd;
+                $valid = $this->getAuthManager()->validateCredentials($request);
+                $post->password = $tempPassword;
             } else {
+                $valid = false;
+            }
+            if (!$valid) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('authentication_error_invalid');
                 $view->verifyold = true;
@@ -1332,6 +1359,9 @@ class MyResearchController extends AbstractBase
         // Display username
         $user = $this->getUser();
         $view->username = $user->username;
+        // Password policy
+        $view->passwordPolicy = $this->getAuthManager()
+            ->getPasswordPolicy();
         // Identification
         $user->updateHash();
         $view->hash = $user->verify_hash;
@@ -1350,5 +1380,18 @@ class MyResearchController extends AbstractBase
     protected function getHashAge($hash)
     {
         return intval(substr($hash, -10));
+    }
+
+    /**
+     * Configure the authentication manager to use a user-specified method.
+     *
+     * @return void
+     */
+    protected function setUpAuthenticationFromRequest()
+    {
+        $method = trim($this->params()->fromQuery('auth_method'));
+        if (!empty($method)) {
+            $this->getAuthManager()->setAuthMethod($method);
+        }
     }
 }

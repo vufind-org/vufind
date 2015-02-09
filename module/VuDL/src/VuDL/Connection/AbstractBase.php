@@ -40,6 +40,8 @@ use VuFindHttp\HttpServiceInterface,
  */
 class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * VuDL config
      *
@@ -55,13 +57,6 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected $parentLists = array();
 
     /**
-     * HTTP service
-     *
-     * @var HttpServiceInterface
-     */
-    protected $httpService = false;
-
-    /**
      * Constructor
      *
      * @param \Zend\Config\Config $config config
@@ -69,18 +64,6 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function __construct($config)
     {
         $this->config = $config;
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**
@@ -156,7 +139,6 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 }
             } else {
                 $value = array();
-                $field = false;
                 foreach ($keys as $k) {
                     if (isset($record[$k])) {
                         if (is_array($record[$k])) {
@@ -168,7 +150,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 }
                 $details[$field] = array(
                     'title' => $title,
-                    'value' => $record[$keys[0]]
+                    'value' => $value
                 );
             }
         }

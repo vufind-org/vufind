@@ -50,12 +50,7 @@ use File_MARC, PDO, PDOException,
 class Voyager extends AbstractBase
     implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Database connection
@@ -834,18 +829,21 @@ class Voyager extends AbstractBase
                "and LINE_ITEM.BIB_ID = :id " .
                "order by LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ISSUE_ID DESC";
         try {
-            $data = array();
             $sqlStmt = $this->executeSQL($sql, array(':id' => $id));
-            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $data[] = array(
-                    'issue' => $row['ENUMCHRON'],
-                    'holdings_id' => $row['MFHD_ID']
-                );
-            }
-            return $data;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
+        $raw = $processed = array();
+        // Collect raw data:
+        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+            $raw[] = $row['MFHD_ID'] . '||' . $row['ENUMCHRON'];
+        }
+        // Deduplicate data and format it:
+        foreach (array_unique($raw) as $current) {
+            list($holdings_id, $issue) = explode('||', $current, 2);
+            $processed[] = compact('issue', 'holdings_id');
+        }
+        return $processed;
     }
 
     /**
@@ -1215,48 +1213,66 @@ class Voyager extends AbstractBase
         $login_field = isset($this->config['Catalog']['login_field'])
             ? $this->config['Catalog']['login_field'] : 'LAST_NAME';
         $login_field = preg_replace('/[^\w]/', '', $login_field);
-
-        $sql = "SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME " .
-               "FROM $this->dbName.PATRON, $this->dbName.PATRON_BARCODE " .
-               "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND " .
-               "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode AND ";
-        if (isset($this->config['Catalog']['fallback_login_field'])) {
-            $fallback_login_field = preg_replace(
+        $fallback_login_field
+            = isset($this->config['Catalog']['fallback_login_field'])
+            ? preg_replace(
                 '/[^\w]/', '', $this->config['Catalog']['fallback_login_field']
-            );
-            $sql .= "(lower(PATRON.{$login_field}) = :login OR " .
-                    "(PATRON.{$login_field} IS NULL AND " .
-                    "lower(PATRON.{$fallback_login_field}) = :login))";
-        } else {
-            $sql .= "lower(PATRON.{$login_field}) = :login";
+            ) : '';
+
+        // Turns out it's difficult and inefficient to handle the mismatching
+        // character sets of the Voyager database in the query (in theory something
+        // like
+        // "UPPER(UTL_I18N.RAW_TO_NCHAR(UTL_RAW.CAST_TO_RAW(field), 'WE8ISO8859P1'))"
+        // could be used, but it's SLOW and ugly). We'll rely on the fact that the
+        // barcode shouldn't contain any characters outside the basic latin
+        // characters and check login verification fields here.
+
+        $sql = "SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME, " .
+               "PATRON.{$login_field} as LOGIN";
+        if ($fallback_login_field) {
+            $sql .= ", PATRON.{$fallback_login_field} as FALLBACK_LOGIN";
         }
+        $sql .= " FROM $this->dbName.PATRON, $this->dbName.PATRON_BARCODE " .
+               "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND " .
+               "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode";
 
         try {
-            $bindLogin = strtolower(utf8_decode($login));
             $bindBarcode = strtolower(utf8_decode($barcode));
+            $compareLogin = mb_strtolower($login, 'UTF-8');
 
-            $this->debugSQL(__FUNCTION__, $sql, array(':login' => $bindLogin));
+            $this->debugSQL(__FUNCTION__, $sql, array(':barcode' => $bindBarcode));
             $sqlStmt = $this->db->prepare($sql);
-            $sqlStmt->bindParam(':login', $bindLogin, PDO::PARAM_STR);
             $sqlStmt->bindParam(':barcode', $bindBarcode, PDO::PARAM_STR);
             $sqlStmt->execute();
-            $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            if (isset($row['PATRON_ID']) && ($row['PATRON_ID'] != '')) {
-                return array(
-                    'id' => utf8_encode($row['PATRON_ID']),
-                    'firstname' => utf8_encode($row['FIRST_NAME']),
-                    'lastname' => utf8_encode($row['LAST_NAME']),
-                    'cat_username' => $barcode,
-                    'cat_password' => $login,
-                    // There's supposed to be a getPatronEmailAddress stored
-                    // procedure in Oracle, but I couldn't get it to work here;
-                    // might be worth investigating further if needed later.
-                    'email' => null,
-                    'major' => null,
-                    'college' => null);
-            } else {
-                return null;
+            // For some reason barcode is not unique, so evaluate all resulting
+            // rows just to be safe
+            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+                $primary = !is_null($row['LOGIN'])
+                    ? mb_strtolower(utf8_encode($row['LOGIN']), 'UTF-8')
+                    : null;
+                $fallback = $fallback_login_field && is_null($row['LOGIN'])
+                    ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
+                    : null;
+
+                if ((!is_null($primary) && $primary == $compareLogin)
+                    || ($fallback_login_field && is_null($primary)
+                    && $fallback == $compareLogin)
+                ) {
+                    return array(
+                        'id' => utf8_encode($row['PATRON_ID']),
+                        'firstname' => utf8_encode($row['FIRST_NAME']),
+                        'lastname' => utf8_encode($row['LAST_NAME']),
+                        'cat_username' => $barcode,
+                        'cat_password' => $login,
+                        // There's supposed to be a getPatronEmailAddress stored
+                        // procedure in Oracle, but I couldn't get it to work here;
+                        // might be worth investigating further if needed later.
+                        'email' => null,
+                        'major' => null,
+                        'college' => null);
+                }
             }
+            return null;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
@@ -1283,7 +1299,8 @@ class Voyager extends AbstractBase
             "BIB_TEXT.TITLE_BRIEF",
             "BIB_TEXT.TITLE",
             "CIRC_TRANSACTIONS.RENEWAL_COUNT",
-            "CIRC_POLICY_MATRIX.RENEWAL_COUNT as RENEWAL_LIMIT"
+            "CIRC_POLICY_MATRIX.RENEWAL_COUNT as RENEWAL_LIMIT",
+            "LOCATION.LOCATION_DISPLAY_NAME as BORROWING_LOCATION"
         );
 
         // From
@@ -1292,7 +1309,8 @@ class Voyager extends AbstractBase
             $this->dbName.".BIB_ITEM",
             $this->dbName.".MFHD_ITEM",
             $this->dbName.".BIB_TEXT",
-            $this->dbName.".CIRC_POLICY_MATRIX"
+            $this->dbName.".CIRC_POLICY_MATRIX",
+            $this->dbName.".LOCATION"
         );
 
         // Where
@@ -1302,7 +1320,8 @@ class Voyager extends AbstractBase
             "CIRC_TRANSACTIONS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
             "BIB_TEXT.BIB_ID = BIB_ITEM.BIB_ID",
             "CIRC_TRANSACTIONS.CIRC_POLICY_MATRIX_ID = " .
-            "CIRC_POLICY_MATRIX.CIRC_POLICY_MATRIX_ID"
+            "CIRC_POLICY_MATRIX.CIRC_POLICY_MATRIX_ID",
+            "CIRC_TRANSACTIONS.CHARGE_LOCATION = LOCATION.LOCATION_ID"
         );
 
         // Order
@@ -1357,7 +1376,7 @@ class Voyager extends AbstractBase
             }
         }
 
-        return array(
+        $transaction = array(
             'id' => $sqlRow['BIB_ID'],
             'item_id' => $sqlRow['ITEM_ID'],
             'duedate' => $dueDate,
@@ -1370,6 +1389,14 @@ class Voyager extends AbstractBase
             'renew' => $sqlRow['RENEWAL_COUNT'],
             'renewLimit' => $sqlRow['RENEWAL_LIMIT']
         );
+        if (isset($this->config['Loans']['display_borrowing_location'])
+            && $this->config['Loans']['display_borrowing_location']
+        ) {
+            $transaction['borrowingLocation']
+                = utf8_encode($sqlRow['BORROWING_LOCATION']);
+        }
+
+        return $transaction;
     }
 
     /**
@@ -1413,9 +1440,6 @@ class Voyager extends AbstractBase
      */
     protected function getFineSQL($patron)
     {
-        // Modifier
-        $sqlSelectModifier = "distinct";
-
         // Expressions
         $sqlExpressions = array(
             "FINE_FEE_TYPE.FINE_FEE_DESC",
@@ -1446,7 +1470,6 @@ class Voyager extends AbstractBase
         $sqlBind = array(':id' => $patron['id']);
 
         $sqlArray = array(
-            'modifier' => $sqlSelectModifier,
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'where' => $sqlWhere,
@@ -2380,32 +2403,6 @@ class Voyager extends AbstractBase
         }
 
         return $list;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Voyager
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    protected function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 
     /**

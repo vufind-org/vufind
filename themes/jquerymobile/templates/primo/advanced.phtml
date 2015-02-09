@@ -8,8 +8,6 @@
   // Load search actions and settings (if any):
   $options = $this->searchOptions($this->searchClassId);
   $basicSearch = $options->getSearchAction();
-  $searchHome = $basicSearch;
-  $searchHome['action'] = 'Home';
   $lastSort = $options->getLastSort();
   $lastLimit = $options->getLastLimit();
 ?>
@@ -19,46 +17,27 @@
     <!-- SEARCH BOXES -->
     <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" data-ajax="false">
       <input type="hidden" name="join" value="AND" />
-      <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
-      <? if ($groups !== false) {
-             $numGroups = count($groups);
-         }
-         if (!isset($numGroups) || $numGroups < 3) {
-             $numGroups = 1;
-         }
-      ?>
+      <? $numGroups = 1; $numRows = 3; // hard-coded sizes ?>
       <? for ($i = 0; $i < $numGroups; $i++): ?>
         <input type="hidden" name="bool<?=$i?>[]" value="AND" />
         <fieldset class="ui-grid-b">
-        <?
-          if (isset($groups[$i])) {
-              $currentGroup = $groups[$i]->getQueries();
-              $numRows = count($currentGroup);
-          } else {
-              $currentGroup = false;
-          }
-          if (!isset($numRows) || $numRows < 3) {
-              $numRows = 3;
-          }
-        ?>
         <? for ($j = 0; $j < $numRows; $j++): ?>
-          <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
           <div class="ui-block-a">
             <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]">
               <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                <option value="<?=$this->escapeHtmlAttr($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
               <? endforeach; ?>
             </select>
           </div>
           <div class="ui-block-b">
             <select id="searchForm_op<?=$i?>_<?=$j?>" name="op<?=$i?>[]">
               <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
-                <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                <option value="<?=$this->escapeHtmlAttr($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
               <? endforeach; ?>
             </select>
           </div>
           <div class="ui-block-c">
-            <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" name="lookfor<?=$i?>[]" style="margin-top:.5em;height:28px"/>
+            <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="" name="lookfor<?=$i?>[]" style="margin-top:.5em;height:28px"/>
           </div>
         <? endfor; ?>
         </fieldset>

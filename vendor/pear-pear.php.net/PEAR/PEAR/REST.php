@@ -9,7 +9,7 @@
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    CVS: $Id: REST.php 313023 2011-07-06 19:17:11Z dufuz $
+ * @version    CVS: $Id$
  * @link       http://pear.php.net/package/PEAR
  * @since      File available since Release 1.4.0a1
  */
@@ -28,7 +28,7 @@ require_once 'PEAR/XMLParser.php';
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.9.4
+ * @version    Release: 1.9.5
  * @link       http://pear.php.net/package/PEAR
  * @since      Class available since Release 1.4.0a1
  */
@@ -129,11 +129,13 @@ class PEAR_REST
         }
 
         if (isset($headers['content-type'])) {
-            switch ($headers['content-type']) {
+            $content_type = explode(";", $headers['content-type']);
+            $content_type = $content_type[0];
+            switch ($content_type) {
                 case 'text/xml' :
                 case 'application/xml' :
                 case 'text/plain' :
-                    if ($headers['content-type'] === 'text/plain') {
+                    if ($content_type === 'text/plain') {
                         $check = substr($content, 0, 5);
                         if ($check !== '<?xml') {
                             break;
@@ -273,19 +275,24 @@ class PEAR_REST
                 return PEAR::raiseError("Could not write $file.");
             }
         } else { // update file
-            $cachefile_lstat = lstat($file);
-            $cachefile_fp = @fopen($file, 'wb');
+            $cachefile_fp = @fopen($file, 'r+b'); // do not truncate file
             if (!$cachefile_fp) {
                 return PEAR::raiseError("Could not open $file for writing.");
             }
 
-            $cachefile_fstat = fstat($cachefile_fp);
-            if (
-              $cachefile_lstat['mode'] == $cachefile_fstat['mode'] &&
-              $cachefile_lstat['ino']  == $cachefile_fstat['ino'] &&
-              $cachefile_lstat['dev']  == $cachefile_fstat['dev'] &&
-              $cachefile_fstat['nlink'] === 1
-            ) {
+            if (OS_WINDOWS) {
+                $not_symlink     = !is_link($file); // see bug #18834
+            } else {
+                $cachefile_lstat = lstat($file);
+                $cachefile_fstat = fstat($cachefile_fp);
+                $not_symlink     = $cachefile_lstat['mode'] == $cachefile_fstat['mode']
+                                   && $cachefile_lstat['ino']  == $cachefile_fstat['ino']
+                                   && $cachefile_lstat['dev']  == $cachefile_fstat['dev']
+                                   && $cachefile_fstat['nlink'] === 1;
+            }
+
+            if ($not_symlink) {
+                ftruncate($cachefile_fp, 0); // NOW truncate
                 if (fwrite($cachefile_fp, $contents, $len) < $len) {
                     fclose($cachefile_fp);
                     return PEAR::raiseError("Could not write $file.");
@@ -383,7 +390,7 @@ class PEAR_REST
         }
 
         $request .= $ifmodifiedsince .
-            "User-Agent: PEAR/1.9.4/PHP/" . PHP_VERSION . "\r\n";
+            "User-Agent: PEAR/1.9.5/PHP/" . PHP_VERSION . "\r\n";
 
         $username = $this->config->get('username', null, $channel);
         $password = $this->config->get('password', null, $channel);

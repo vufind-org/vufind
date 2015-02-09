@@ -44,6 +44,8 @@ use File_MARC, VuFind\Exception\ILS as ILSException;
  **/
 class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Host
      *
@@ -73,13 +75,6 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $url;
 
     /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
@@ -94,18 +89,6 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function __construct(\VuFind\Date\Converter $dateConverter)
     {
         $this->dateConverter = $dateConverter;
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**
@@ -142,10 +125,12 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         if (isset($this->config[$function]) ) {
             $functionConfig = $this->config[$function];
@@ -1062,7 +1047,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $holdcount, $library_code, $library,
         $location_code, $location, $currLocCode, $current_location,
         $holdable,
-        $circulation_rule, $duedate, $date_recalled, $recall_period, 
+        $circulation_rule, $duedate, $date_recalled, $recall_period,
         $format, $title_holds) = explode("|", $line);
 
         // availability
@@ -1182,7 +1167,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $params[$key] = '';
             }
         }
-        
+
         $url = $this->url;
         if (empty($url)) {
             $url = $this->host;
@@ -1295,7 +1280,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * reflect local policies regarding interpretation of the a, b and
      * c subfields of  852.
      *
-     * @param File_Marc_Field $field Location field to be processed. 
+     * @param File_Marc_Field $field Location field to be processed.
      *
      * @return array Location information.
      */

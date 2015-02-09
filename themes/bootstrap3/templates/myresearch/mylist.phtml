@@ -21,54 +21,56 @@
 
 <?=$this->flashmessages()?>
 
-<div class="<?=$this->layoutClass('mainbody')?>">
-  <div class="clearfix hidden-print">
-    <p class="lead pull-left"><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></p>
-    <div class="pull-right">
-      <? if (isset($list)): ?>
-        <? if ($list->editAllowed($account->isLoggedIn())): ?>
-          <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="btn btn-link" title="<?=$this->transEsc("edit_list")?>"><i class="fa fa-edit"></i> <?=$this->transEsc("edit_list")?></a>
-          <div class="btn-group">
-            <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
-              <i class="fa fa-trash-o"></i> <?=$this->transEsc("delete_list")?>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('Delete') ?></a></li>
-              <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
-            </ul>
-          </div>
-        <? endif; ?>
-      <? elseif ($recordTotal > 0): ?>
-        <?=$this->transEsc("Showing")?>
-        <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
-        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
-      <? endif; ?>
-    </div>
-  </div>
-<? if ($list && !empty($list->description)): ?>
-  <p><?=$this->escapeHtml($list->description)?></p>
-<? endif; ?>
-  <? if ($recordTotal > 0): ?>
-    <div class="resulthead">
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <div class="clearfix hidden-print">
+      <p class="lead pull-left"><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></p>
       <div class="pull-right">
-        <?=$this->render('search/controls/sort.phtml')?>
+        <? if (isset($list)): ?>
+          <? if ($list->editAllowed($account->isLoggedIn())): ?>
+            <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="btn btn-link" title="<?=$this->transEsc("edit_list")?>"><i class="fa fa-edit"></i> <?=$this->transEsc("edit_list")?></a>
+            <div class="btn-group">
+              <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
+                <i class="fa fa-trash-o"></i> <?=$this->transEsc("delete_list")?>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('Delete') ?></a></li>
+                <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
+          <? endif; ?>
+        <? elseif ($recordTotal > 0): ?>
+          <?=$this->transEsc("Showing")?>
+          <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
+          <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
+        <? endif; ?>
       </div>
     </div>
-    <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>">
-      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
-      <? foreach ($this->results->getResults() as $i=>$current): ?>
-        <?=$this->record($current)->getListEntry($list, $user)?>
-      <? endforeach; ?>
-    </form>
-    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
-  <? else: ?>
-    <p><?=$this->transEsc('You do not have any saved resources')?></p>
+  <? if ($list && !empty($list->description)): ?>
+    <p><?=$this->escapeHtml($list->description)?></p>
   <? endif; ?>
-</div>
+    <? if ($recordTotal > 0): ?>
+      <div class="resulthead">
+        <div class="pull-right">
+          <?=$this->render('search/controls/sort.phtml')?>
+        </div>
+      </div>
+      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>">
+        <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
+        <? foreach ($this->results->getResults() as $i=>$current): ?>
+          <?=$this->record($current)->getListEntry($list, $user)?>
+        <? endforeach; ?>
+      </form>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+    <? else: ?>
+      <p><?=$this->transEsc('You do not have any saved resources')?></p>
+    <? endif; ?>
+  </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
-  <? foreach ($this->results->getRecommendations('side') as $current): ?>
-    <?=$this->recommend($current)?>
-  <? endforeach; ?>
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
+    <? foreach ($this->results->getRecommendations('side') as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+  </div>
 </div>

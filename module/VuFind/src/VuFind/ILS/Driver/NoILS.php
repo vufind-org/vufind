@@ -42,12 +42,7 @@ use VuFind\Exception\ILS as ILSException,
  */
 class NoILS extends AbstractBase implements TranslatorAwareInterface
 {
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Record loader
@@ -85,10 +80,12 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         return isset($this->config[$function]) ? $this->config[$function] : false;
     }
@@ -100,7 +97,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public function getSolrRecord($id)
+    protected function getSolrRecord($id)
     {
         return $this->recordLoader->load($id);
     }
@@ -261,14 +258,17 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      *
      * @param string $id The record id to retrieve the holdings for
      *
-     * @return boolean True if holdings exist, False if they do not
+     * @return bool True if holdings exist, False if they do not
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function hasHoldings($id)
     {
         $useHoldings = isset($this->config['settings']['useHoldings'])
-            ? $this->config['settings']['useHoldings'] : 'none';
-        return $useHoldings == 'none';
+            ? $this->config['settings']['useHoldings'] : '';
+
+        // "none" will be processed differently in the config depending
+        // on whether it's in or out of quotes; handle both cases.
+        return $useHoldings != 'none' && !empty($useHoldings);
     }
 
 
@@ -354,31 +354,5 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     {
         // Block authentication:
         return null;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return NoILS
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    protected function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 }

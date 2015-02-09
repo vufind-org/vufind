@@ -10,7 +10,7 @@
     <? endif; ?>
     <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
       <div id="logoutOptions"<?=!$account->isLoggedIn() ? ' class="hide"' : ''?>>
-        <a class="account" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Your Account")?></a> |
+        <a class="account" href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>"><?=$this->transEsc("Your Account")?></a> |
         <a class="logout" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a>
       </div>
       <div id="loginOptions"<?=$account->isLoggedIn() ? ' class="hide"' : ''?>>

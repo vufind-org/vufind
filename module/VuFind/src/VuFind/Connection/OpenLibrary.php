@@ -69,7 +69,7 @@ class OpenLibrary
      * @param bool   $details        Whether to return full details
      * @param int    $limit          The number of works to return
      * @param int    $offset         Paging offset
-     * @param bool   $publicFullText Only return publically available, full-text
+     * @param bool   $publicFullText Only return publicly available, full-text
      * works
      *
      * @return array
@@ -111,13 +111,13 @@ class OpenLibrary
         return $result;
     }
 
-     /**
+    /**
      * Return the following array of values for each work:
      * title, cover_id, cover_id_type, key, ia, mainAuthor
      *
      * @param string $url            URL to request
      * @param int    $limit          The number of works to return
-     * @param bool   $publicFullText Only return publically available, full-text
+     * @param bool   $publicFullText Only return publicly available, full-text
      * works
      *
      * @return array
@@ -135,7 +135,7 @@ class OpenLibrary
             $json = $response->getBody();
             // parse json
             $data = json_decode($json, true);
-            if ($data) {
+            if ($data && isset($data['works']) && !empty($data['works'])) {
                 $i = 1;
                 foreach ($data['works'] as $work) {
                     if ($i <= $limit) {
@@ -163,7 +163,7 @@ class OpenLibrary
         return $result;
     }
 
-     /**
+    /**
      * Support function to return a normalised version of the search string
      *     for use in the API url
      *
@@ -173,13 +173,10 @@ class OpenLibrary
      */
     protected function normaliseSubjectString($subject)
     {
-        //normalise search term
-        $subject = str_replace('"', "", $subject);
-        $subject = str_replace(",", "", $subject);
+        // Normalise search term
+        $subject = str_replace(array('"', ',', '/'), '', $subject);
         $subject = trim(strtolower($subject));
         $subject = preg_replace("/\s+/", "_", $subject);
         return $subject;
     }
 }
-
-?>

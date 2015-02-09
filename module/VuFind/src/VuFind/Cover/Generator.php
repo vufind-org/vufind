@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFind\Code\ISBN, Zend\Log\LoggerInterface, ZendService\Amazon\Amazon;
+use VuFindCode\ISBN, Zend\Log\LoggerInterface, ZendService\Amazon\Amazon;
 
 /**
  * Dynamic Book Cover Generator
@@ -111,6 +111,7 @@ class Generator
      * @param string $callnumber Callnumber of the book
      *
      * @return string contents of image file
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function generateSolid($title, $author, $callnumber)
     {
@@ -148,10 +149,12 @@ class Generator
             $im,
             strtoupper($title[0]),
             $half,
-            $half+30,
+            $half+28,
             $this->settings->titleFont,
             60,
-            $this->white
+            $this->white,
+            false,
+            'center'
         );
 
         // Output png CHECK THE PARAM

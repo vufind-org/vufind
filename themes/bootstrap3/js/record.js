@@ -1,4 +1,4 @@
-/*global deparam, extractClassParams, htmlEncode, Lightbox, path, vufindString */
+/*global deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -114,28 +114,12 @@ function registerAjaxCommentRecord() {
         if (response.status == 'OK') {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
-        } else if (response.status == 'NEED_AUTH') {
-          Lightbox.addCloseAction(function() {
-            $.ajax({
-              type: 'POST',
-              url:  url,
-              data: data,
-              dataType: 'json',
-              success:function() {
-                refreshCommentList(id, recordSource);
-                $(form).find('textarea[name="comment"]').val('');
-              }
-            });
-          });
-          return Lightbox.get('Record', 'AddComment', data, data);
+          $(form).find('input[type="submit"]').button('loading');
         } else {
-          $('#modal').find('.modal-body').html(response.data+'!');
-          $('#modal').find('.modal-header h3').html('Error!');
-          $('#modal').modal('show');
+          Lightbox.displayError(response.data);
         }
       }
     });
-    $(form).find('input[type="submit"]').button('loading');
     return false;
   });
   // Delete links
@@ -151,13 +135,14 @@ function registerTabEvents() {
 
   // Place a Hold
   // Place a Storage Hold
+  // Place an ILL Request
   $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
     var parts = $(this).attr('href').split('?');
     parts = parts[0].split('/');
     var params = deparam($(this).attr('href'));
     params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', parts[parts.length-1], params, {}, function(html) {
+    return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
       Lightbox.checkForError(html, Lightbox.changeContent);
     });
   });
@@ -165,8 +150,13 @@ function registerTabEvents() {
 
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
+  // Grab the part of the url that is the Controller and Record ID
+  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id));
+  if(!urlroot) {
+    return true;
+  }
   $.ajax({
-    url: path + '/Record/'+id+'/AjaxTab',
+    url: path + urlroot + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
@@ -179,6 +169,7 @@ function ajaxLoadTab(tabid) {
       }
     }
   });
+  return false;
 }
 
 $(document).ready(function(){
@@ -187,22 +178,21 @@ $(document).ready(function(){
 
   $('ul.recordTabs a').click(function (e) {
     if($(this).parents('li.active').length > 0) {
-      window.location.href = $(this).attr('href');
-      return;
+      return true;
     }
     var tabid = $(this).attr('id').toLowerCase();
     if($('#'+tabid+'-tab').length > 0) {
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
       $('#'+tabid).tab('show');
+      return false;
     } else {
       $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString.loading+'...</div>');
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
-      ajaxLoadTab(tabid);
+      return ajaxLoadTab(tabid);
     }
-    return false;
-  })
+  });
 
   /* --- LIGHTBOX --- */
   // Cite lightbox
@@ -263,8 +253,13 @@ $(document).ready(function(){
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('placeHold', function() {
-    document.location.href = path+'/MyResearch/Holds';
+  Lightbox.addFormCallback('placeHold', function(html) {
+    Lightbox.checkForError(html, function(html) {
+      var divPattern = '<div class="alert alert-info">';
+      var fi = html.indexOf(divPattern);
+      var li = html.indexOf('</div>', fi+divPattern.length);
+      Lightbox.confirm(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
+    });
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = path+'/MyResearch/StorageRetrievalRequests';

@@ -1,5 +1,5 @@
 <?=$this->doctype('HTML5')?>
-<html>
+<html lang="<?=$this->layout()->userLang?>">
   <head>
     <meta charset="utf-8"/>
     <meta name="format-detection" content="telephone=no"/>
@@ -49,5 +49,6 @@
       </div>
     </div>
     <?=$this->googleanalytics()?>
+    <?=$this->piwik()?>
   </body>
 </html>

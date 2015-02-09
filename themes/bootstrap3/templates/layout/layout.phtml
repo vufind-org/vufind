@@ -2,6 +2,8 @@
 <html lang="<?=$this->layout()->userLang?>">
   <head>
     <?$this->headThemeResources()?>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
     <?=$this->headMeta()?>
     <?=$this->headTitle()?>
@@ -35,11 +37,16 @@
           )
         );
         if ($cart->isActive()) {
-          $this->headScript()->appendFile("cookies.js");
+          $this->headScript()->appendFile("vendor/cookies.js");
           $this->headScript()->appendFile("cart.js");
+          $domain = $cart->getCookieDomain();
+          $this->headScript()->appendScript(
+            'var cartCookieDomain = ' . (!empty($domain) ? "'$domain'" : 'false') . ';'
+          );
           $this->jsTranslations()->addStrings(
             array(
               'bulk_noitems_advice' => 'bulk_noitems_advice',
+              'confirmDelete' => 'confirm_delete',
               'confirmEmpty' => 'bookbag_confirm_empty',
               'viewBookBag' => 'View Book Bag',
               'addBookBag' => 'Add to Book Bag',
@@ -49,6 +56,7 @@
               'bookbagMax' => $cart->getMaxSize(),
               'bookbagFull' => 'bookbag_full_msg',
               'bookbagStatusFull' => 'bookbag_full',
+              'no_tags' => 'No Tags'
             )
           );
         }
@@ -110,17 +118,15 @@
         <? endif; ?>
       </div>
     </header>
-    <div role="main" class="main">
+    <div role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
       <div class="container">
-        <div class="row">
-          <?=$this->layout()->content?>
-        </div>
+        <?=$this->layout()->content ?>
       </div>
     </div>
     <footer role="contentinfo" class="hidden-print">
       <div class="container">
         <?=$this->render('footer.phtml')?>
-        <div class="col-sm-12"><?=$this->layout()->poweredBy ?></div>
+        <?=$this->layout()->poweredBy ?>
       </div>
     </footer>
     <!-- MODAL IN CASE WE NEED ONE -->
@@ -136,5 +142,6 @@
       </div>
     </div>
     <?=$this->googleanalytics()?>
+    <?=$this->piwik()?>
   </body>
 </html>

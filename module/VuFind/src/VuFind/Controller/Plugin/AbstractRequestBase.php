@@ -120,7 +120,10 @@ abstract class AbstractRequestBase extends AbstractPlugin
 
         $keyValueArray = array();
         foreach ($linkData as $details) {
-            $keyValueArray[$details] = $params->fromQuery($details);
+            // We expect most parameters to come via query, but some (mainly ID) may
+            // be in the route:
+            $keyValueArray[$details]
+                = $params->fromQuery($details, $params->fromRoute($details));
         }
         $hashKey = $this->hmac->generate($linkData, $keyValueArray);
 
@@ -267,12 +270,15 @@ abstract class AbstractRequestBase extends AbstractPlugin
         }
 
         // If the driver setting is active, try it out:
-        if ($useDriver && $catalog
-            && $catalog->checkCapability('getHoldDefaultRequiredDate')
-        ) {
-            $result = $catalog->getHoldDefaultRequiredDate($patron, $holdInfo);
-            if (!empty($result)) {
-                return $result;
+        if ($useDriver && $catalog) {
+            $check = $catalog->checkCapability(
+                'getHoldDefaultRequiredDate', array($patron, $holdInfo)
+            );
+            if ($check) {
+                $result = $catalog->getHoldDefaultRequiredDate($patron, $holdInfo);
+                if (!empty($result)) {
+                    return $result;
+                }
             }
         }
 

@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\Solr\Json\Response;
 
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
+use VuFindTest\RecordDriver\TestHarness;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -84,5 +85,112 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(5, $coll->key());
         $coll->next();
         $this->assertEquals(6, $coll->key());
+    }
+
+    /**
+     * Test spelling query retrieval.
+     *
+     * @return void
+     */
+    public function testSpellingQuery()
+    {
+        $input = array(
+            'responseHeader' => array(
+                'params' => array(
+                    'spellcheck.q' => 'foo',
+                    'q' => 'bar',
+                )
+            )
+        );
+        $coll = new RecordCollection($input);
+        $this->assertEquals('foo', $coll->getSpellcheck()->getQuery());
+        unset($input['responseHeader']['params']['spellcheck.q']);
+        $coll = new RecordCollection($input);
+        $this->assertEquals('bar', $coll->getSpellcheck()->getQuery());
+    }
+
+    /**
+     * Test spelling suggestion retrieval.
+     *
+     * @return void
+     */
+    public function testSpellingSuggestions()
+    {
+        $input = array(
+            'spellcheck' => array(
+                'suggestions' => array(
+                    array(
+                        'frunkensteen',
+                        array(
+                            'numFound' => 6,
+                            'startOffset' => 0,
+                            'endOffset' => 12,
+                            'origFreq' => 0,
+                            'suggestion' => array(
+                                array(
+                                'word' => 'frankenstein',
+                                'freq' => 218,
+                                ),
+                                array(
+                                'word' => 'funkenstein',
+                                'freq' => 10,
+                                ),
+                            ),
+                        ),
+                    ),
+                    array('correctlySpelled', false),
+                )
+            )
+        );
+        $coll = new RecordCollection($input);
+        $spell = $coll->getSpellcheck();
+        $this->assertEquals(1, count($spell));
+    }
+
+    /**
+     * Test the replace method.
+     *
+     * @return void
+     */
+    public function testReplace()
+    {
+        $coll = new RecordCollection(array());
+        $r1 = new TestHarness();
+        $r1->setRawData(array('UniqueId' => 1));
+        $r2 = new TestHarness();
+        $r2->setRawData(array('UniqueId' => 2));
+        $r3 = new TestHarness();
+        $r3->setRawData(array('UniqueId' => 3));
+        $coll->add($r1);
+        $coll->add($r2);
+        $coll->replace($r1, $r3);
+        $this->assertEquals(array($r3, $r2), $coll->getRecords());
+    }
+
+    /**
+     * Test the shuffle method.
+     *
+     * @return void
+     */
+    public function testShuffle()
+    {
+        // Since shuffle is random, there is no 100% reliable way to test its
+        // behavior, but we can at least test that it doesn't corrupt anything.
+        $coll = new RecordCollection(array());
+        $r1 = new TestHarness();
+        $r1->setRawData(array('UniqueId' => 1));
+        $r2 = new TestHarness();
+        $r2->setRawData(array('UniqueId' => 2));
+        $r3 = new TestHarness();
+        $r3->setRawData(array('UniqueId' => 3));
+        $coll->add($r1);
+        $coll->add($r2);
+        $coll->add($r3);
+        $coll->shuffle();
+        $final = $coll->getRecords();
+        $this->assertEquals(3, count($final));
+        $this->assertTrue(in_array($r1, $final));
+        $this->assertTrue(in_array($r2, $final));
+        $this->assertTrue(in_array($r3, $final));
     }
 }

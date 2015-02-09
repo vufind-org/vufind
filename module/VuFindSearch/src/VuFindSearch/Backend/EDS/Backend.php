@@ -34,17 +34,18 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Response\RecordCollectionInterface;
-use VuFindSearch\Response\RecordCollectionFactoryInterface as
-    RecordCollectionFactoryInterface;
+use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use VuFindSearch\Backend\BackendInterface as BackendInterface;
+use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 
 use Zend\Log\LoggerInterface;
 use VuFindSearch\Backend\EDS\Response\RecordCollection;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
+use Zend\Config\Config;
+use Zend\Session\Container as SessionContainer;
 
 /**
  *  EDS API Backend
@@ -55,7 +56,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface
+class Backend extends AbstractBackend
 {
     /**
      * Client user to make the actually requests to the EdsApi
@@ -65,32 +66,11 @@ class Backend implements BackendInterface
     protected $client;
 
     /**
-     * Backend identifier
-     *
-     * @var identifier
-     */
-    protected $identifier;
-
-    /**
      * Query builder
      *
      * @var QueryBuilder
      */
     protected $queryBuilder;
-
-    /**
-     * Record collection factory
-     *
-     * @var RecordCollectionFactory
-     */
-    protected $collectionFactory;
-
-    /**
-     * Logger, if any.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     /**
      * User name for EBSCO EDS API account if using UID Authentication
@@ -107,11 +87,19 @@ class Backend implements BackendInterface
     protected $password = null;
 
     /**
-     * Profile for EBSCO EDS API account
+     * Profile for EBSCO EDS API account (may be overridden)
      *
      * @var string
      */
     protected $profile = null;
+
+    /**
+     * Default profile for EBSCO EDS API account (taken from initial config and
+     * never changed)
+     *
+     * @var string
+     */
+    protected $defaultProfile = null;
 
     /**
      * Whether or not to use IP Authentication for communication with the EDS API
@@ -125,14 +113,7 @@ class Backend implements BackendInterface
      *
      * @var string
      */
-    protected $orgid = null;
-
-    /**
-     * Superior service manager.
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
+    protected $orgId = null;
 
     /**
      * Vufind Authentication manager
@@ -142,67 +123,57 @@ class Backend implements BackendInterface
     protected $authManager = null;
 
     /**
+     * Object cache (for storing authentication tokens)
+     *
+     * @var CacheAdapter
+     */
+    protected $cache;
+
+    /**
+     * Session container
+     *
+     * @var SessionContainer
+     */
+    protected $session;
+
+    /**
      * Constructor.
      *
      * @param ApiClient                        $client  EdsApi client to use
      * @param RecordCollectionFactoryInterface $factory Record collection factory
-     * @param array                            $account Account details
+     * @param CacheAdapter                     $cache   Object cache
+     * @param SessionContainer                 $session Session container
+     * @param Config                           $config  Object representing EDS.ini
      */
     public function __construct(ApiClient $client,
-        RecordCollectionFactoryInterface $factory, array $account
+        RecordCollectionFactoryInterface $factory, CacheAdapter $cache,
+        SessionContainer $session, Config $config = null
     ) {
-        $this->setRecordCollectionFactory($factory);
+        // Save dependencies:
         $this->client = $client;
-        $this->identifier   = null;
-        $this->userName = isset($account['username']) ? $account['username'] : null;
-        $this->password = isset($account['password']) ? $account['password'] : null;
-        $this->ipAuth = isset($account['ipauth']) ? $account['ipauth'] : null;
-        $this->profile = isset($account['profile']) ? $account['profile'] : null;
-        $this->orgId = isset($account['orgid']) ? $account['orgid'] : null;
-    }
+        $this->setRecordCollectionFactory($factory);
+        $this->cache = $cache;
+        $this->session = $session;
 
-    /**
-     * Set the backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setIdentifier($identifier)
-    {
-        $this->identifier = $identifier;
-    }
+        // Extract key values from configuration:
+        if (isset($config->EBSCO_Account->user_name)) {
+            $this->userName = $config->EBSCO_Account->user_name;
+        }
+        if (isset($config->EBSCO_Account->password)) {
+            $this->password = $config->EBSCO_Account->password;
+        }
+        if (isset($config->EBSCO_Account->ip_auth)) {
+            $this->ipAuth = $config->EBSCO_Account->ip_auth;
+        }
+        if (isset($config->EBSCO_Account->profile)) {
+            $this->profile = $config->EBSCO_Account->profile;
+        }
+        if (isset($config->EBSCO_Account->organization_id)) {
+            $this->orgId = $config->EBSCO_Account->organization_id;
+        }
 
-    /**
-     * Return backend identifier.
-     *
-     * @return string
-     */
-    public function getIdentifier()
-    {
-        return $this->identifier;
-    }
-
-    /**
-     * Sets the superior service locator
-     *
-     * @param ServiceLocatorInterface $serviceLocator Superior service locator
-     *
-     * @return void
-     */
-    public function setServiceLocator($serviceLocator)
-    {
-        $this->serviceLocator =  $serviceLocator;
-    }
-
-    /**
-     * gets the superior service locator
-     *
-     * @return ServiceLocatorInterface Superior service locator
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
+        // Save default profile value, since profile property may be overriden:
+        $this->defaultProfile = $this->profile;
     }
 
      /**
@@ -218,29 +189,29 @@ class Backend implements BackendInterface
     public function search(AbstractQuery $query, $offset, $limit,
         ParamBag $params = null
     ) {
-        //process EDS API communication tokens.
+        // process EDS API communication tokens.
         $authenticationToken = $this->getAuthenticationToken();
         $sessionToken = $this->getSessionToken();
         $this->debugPrint(
             "Authentication Token: $authenticationToken, SessionToken: $sessionToken"
         );
 
-        //check to see if there is a parameter to only process this call as a setup
-        if (null != $params->get('setuponly') && true == $params->get('setuponly')) {
+        // check to see if there is a parameter to only process this call as a setup
+        if (null !== $params && true == $params->get('setuponly')) {
             return false;
         }
 
-        //create query parameters from VuFind data
+        // create query parameters from VuFind data
         $queryString = !empty($query) ? $query->getAllTerms() : '';
-        $paramsString = implode('&', $params->request());
+        $paramsStr = implode('&', null !== $params ? $params->request() : array());
         $this->debugPrint(
             "Query: $queryString, Limit: $limit, Offset: $offset, "
-            . "Params: $paramsString"
+            . "Params: $paramsStr"
         );
 
         $baseParams = $this->getQueryBuilder()->build($query);
-        $paramsString = implode('&', $baseParams->request());
-        $this->debugPrint("BaseParams: $paramsString ");
+        $paramsStr = implode('&', $baseParams->request());
+        $this->debugPrint("BaseParams: $paramsStr ");
         if (null !== $params) {
             $baseParams->mergeWith($params);
         }
@@ -255,53 +226,36 @@ class Backend implements BackendInterface
             $response = $this->client
                 ->search($searchModel, $authenticationToken, $sessionToken);
         } catch (\EbscoEdsApiException $e) {
-            // if the auth token was invalid, try once more
-            if ($e->getApiErrorCode() == 104) {
+            // if the auth or session token was invalid, try once more
+            switch ($e->getApiErrorCode()) {
+            case 104:
+            case 108:
+            case 109:
                 try {
-                    $authenticationToken = $this->getAuthenticationToken(true);
+                    // For error 104, retry auth token; for 108/9, retry sess token:
+                    if ($e->getApiErrorCode() == 104) {
+                        $authenticationToken = $this->getAuthenticationToken(true);
+                    } else {
+                        $sessionToken = $this->getSessionToken(true);
+                    }
                     $response = $this->client
                         ->search($searchModel, $authenticationToken, $sessionToken);
                 } catch(Exception $e) {
-                    throw new BackendException(
-                        $e->getMessage(),
-                        $e->getCode(),
-                        $e
-                    );
-
+                    throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
-            } else if (108 == $e->getApiErrorCode()
-                || 109 == $e->getApiErrorCode()
-            ) {
-                try {
-                    $sessionToken = $this->getSessionToken(true);
-                    $response = $this->client
-                        ->search($searchModel, $authenticationToken, $sessionToken);
-                } catch(Exception $e) {
-                    throw new BackendException(
-                        $e->getMessage(),
-                        $e->getCode(),
-                        $e
-                    );
-
-                }
-            } else {
+                break;
+            default:
                 $response = array();
+                break;
             }
-
         } catch(Exception $e) {
             $this->debugPrint("Exception found: " . $e->getMessage());
-
-            throw new BackendException(
-                $e->getMessage(),
-                $e->getCode(),
-                $e
-            );
+            throw new BackendException($e->getMessage(), $e->getCode(), $e);
         }
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
     }
-
 
     /**
      * Retrieve a single document.
@@ -315,8 +269,8 @@ class Backend implements BackendInterface
     {
         try {
             $authenticationToken = $this->getAuthenticationToken();
-            //check to see if the profile is overriden
-            $overrideProfile =  $params->get('profile');
+            // check to see if the profile is overriden
+            $overrideProfile = (null !== $params) ? $params->get('profile') : null;
             if (isset($overrideProfile)) {
                 $this->profile = $overrideProfile;
             }
@@ -327,31 +281,33 @@ class Backend implements BackendInterface
                     'Retrieval id is not in the correct format.'
                 );
             }
-            $dbId = $parts[0];
-            $an  = $parts[1];
-            $highlightTerms = null;
-            if (null != $params) {
-                $highlightTerms = $params->get('highlightterms');
-            }
+            list($dbId, $an) = $parts;
+            $hlTerms = (null != $params)
+                ? $params->get('highlightterms') : null;
             $response = $this->client->retrieve(
-                $an, $dbId, $authenticationToken, $sessionToken, $highlightTerms
+                $an, $dbId, $authenticationToken, $sessionToken, $hlTerms
             );
         } catch (\EbscoEdsApiException $e) {
-            if ($e->getApiErrorCode() == 104) {
+            // if the auth or session token was invalid, try once more
+            switch ($e->getApiErrorCode()) {
+            case 104:
+            case 108:
+            case 109:
                 try {
-                    $authenticationToken = $this->getAuthenticationToken(true);
+                    // For error 104, retry auth token; for 108/9, retry sess token:
+                    if ($e->getApiErrorCode() == 104) {
+                        $authenticationToken = $this->getAuthenticationToken(true);
+                    } else {
+                        $sessionToken = $this->getSessionToken(true);
+                    }
                     $response = $this->client->retrieve(
-                        $an, $dbId,  $authenticationToken,
-                        $sessionToken, $highlightTerms
+                        $an, $dbId,  $authenticationToken, $sessionToken, $hlTerms
                     );
                 } catch(Exception $e) {
-                    throw new BackendException(
-                        $e->getMessage(),
-                        $e->getCode(),
-                        $e
-                    );
+                    throw new BackendException($e->getMessage(), $e->getCode(), $e);
                 }
-            } else {
+                break;
+            default:
                 throw $e;
             }
         }
@@ -381,19 +337,6 @@ class Backend implements BackendInterface
                 ? $param : $param[0];
         }
         return new SearchRequestModel($options);
-    }
-
-    /**
-     * Set the record collection factory.
-     *
-     * @param RecordCollectionFactoryInterface $factory Factory
-     *
-     * @return void
-     */
-    public function setRecordCollectionFactory(
-        RecordCollectionFactoryInterface $factory
-    ) {
-        $this->collectionFactory = $factory;
     }
 
     /**
@@ -439,38 +382,6 @@ class Backend implements BackendInterface
     /// Internal API
 
     /**
-     * Inject source identifier in record collection and all contained records.
-     *
-     * @param ResponseInterface $response Response
-     *
-     * @return void
-     */
-    protected function injectSourceIdentifier(RecordCollectionInterface $response)
-    {
-        $response->setSourceIdentifier($this->identifier);
-        foreach ($response as $record) {
-            $record->setSourceIdentifier($this->identifier);
-        }
-        return $response;
-    }
-
-    /**
-     * Send a message to the logger.
-     *
-     * @param string $level   Log level
-     * @param string $message Log message
-     * @param array  $context Log context
-     *
-     * @return void
-     */
-    protected function log($level, $message, array $context = array())
-    {
-        if ($this->logger) {
-            $this->logger->$level($message, $context);
-        }
-    }
-
-    /**
      * Create record collection.
      *
      * @param array $records Records to process
@@ -480,18 +391,6 @@ class Backend implements BackendInterface
     protected function createRecordCollection($records)
     {
         return $this->getRecordCollectionFactory()->factory($records);
-    }
-
-    /**
-     * Set the Logger.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -505,15 +404,13 @@ class Backend implements BackendInterface
     protected function getAuthenticationToken($isInvalid = false)
     {
         $token = null;
-        if (!empty($this->ipAuth) && true == $this->ipAuth) {
+        if ($this->ipAuth) {
             return $token;
         }
-        $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
-            ->getCache('object');
         if ($isInvalid) {
-            $cache->setItem('edsAuthenticationToken', null);
+            $this->cache->setItem('edsAuthenticationToken', null);
         }
-        $authTokenData = $cache->getItem('edsAuthenticationToken');
+        $authTokenData = $this->cache->getItem('edsAuthenticationToken');
         if (isset($authTokenData)) {
             $currentToken =  isset($authTokenData['token'])
                 ? $authTokenData['token'] : '';
@@ -544,11 +441,10 @@ class Backend implements BackendInterface
             $token = $results['AuthToken'];
             $timeout = $results['AuthTimeout'] + time();
             $authTokenData = array('token' => $token, 'expiration' => $timeout);
-            $cache->setItem('edsAuthenticationToken', $authTokenData);
+            $this->cache->setItem('edsAuthenticationToken', $authTokenData);
         }
         return $token;
     }
-
 
     /**
      * Print a message if debug is enabled.
@@ -559,13 +455,8 @@ class Backend implements BackendInterface
      */
     protected function debugPrint($msg)
     {
-        if ($this->logger) {
-            $this->logger->debug("$msg\n");
-        } else {
-            parent::debugPrint($msg);
-        }
+        $this->log('debug', "$msg\n");
     }
-
 
     /**
      * Obtain the session token from the Session container. If it doesn't exist,
@@ -578,23 +469,18 @@ class Backend implements BackendInterface
      */
     public function getSessionToken($isInvalid = false)
     {
-        $sessionToken = '';
-        $container = new \Zend\Session\Container('EBSCO');
-        if (!$isInvalid && !empty($container->sessionID)) {
-            // check to see if the user has logged in/out between the creation
-            // of this session token and now
-            $sessionGuest = $container->sessionGuest;
-            $currentGuest = $this->isGuest();
-
-            if ($sessionGuest == $currentGuest) {
-                return $container->sessionID;
-            }
+        // check to see if the user has logged in/out between the creation
+        // of this session token and now
+        if (!$isInvalid && !empty($this->session->sessionID)
+            && $this->session->sessionGuest == $this->isGuest()
+        ) {
+            return $this->session->sessionID;
         }
 
-        $sessionToken = $this->createEBSCOSession();
         // When creating a new session, also call the INFO method to pull the
         // available search criteria for this profile
-        $this->createSearchCriteria($sessionToken);
+        $sessionToken = $this->createEBSCOSession();
+        $this->session->info = $this->getInfo($sessionToken);
 
         return $sessionToken;
     }
@@ -606,26 +492,14 @@ class Backend implements BackendInterface
      */
     protected function createEBSCOSession()
     {
-        // If the user is not logged in, the treat them as a guest. Unless they are
-        // using IP Authentication.
-        // If IP Authentication is used, then don't treat them as a guest.
-        $guest = ($this->isAuthenticationIP()) ? 'n' : $this->isGuest();
-        $container = new \Zend\Session\Container('EBSCO');
-
-        // if there is no profile passed, use the one set in the configuration file
-        $profile = $this->profile;
-        if (null == $profile) {
-            $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
-            if (isset($config->EBSCO_Account->profile)) {
-                $profile = $config->EBSCO_Account->profile;
-            }
-        }
-        $session = $this->createSession($guest, $profile);
-        $container->sessionID = $session;
-        $container->profileID = $profile;
-        $container->sessionGuest = $guest;
-        return $container->sessionID;
-
+        // if there is no profile passed, restore the default from the config file
+        $this->session->profileID = (null == $this->profile)
+            ? $this->defaultProfile : $this->profile;
+        $this->session->sessionGuest = $this->isGuest();
+        $this->session->sessionID = $this->createSession(
+            $this->session->sessionGuest, $this->session->profileID
+        );
+        return $this->session->sessionID;
     }
 
     /**
@@ -636,22 +510,16 @@ class Backend implements BackendInterface
      */
     protected function isGuest()
     {
+        // If the user is not logged in, then treat them as a guest. Unless they are
+        // using IP Authentication.
+        // If IP Authentication is used, then don't treat them as a guest.
+        if ($this->ipAuth) {
+            return 'n';
+        }
         if (isset($this->authManager)) {
             return $this->authManager->isLoggedIn() ? 'n' : 'y';
         }
         return 'y';
-    }
-
-     /**
-     * Is IP Authentication being used?
-     *
-     * @return bool
-     */
-    protected function isAuthenticationIP()
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
-        return (isset($config->EBSCO_Account->ip_auth)
-            && 'true' ==  $config->EBSCO_Account->ip_auth);
     }
 
     /**
@@ -716,7 +584,7 @@ class Backend implements BackendInterface
                 try {
                     $authenticationToken = $this->getAuthenticationToken(true);
                     $response = $this->client
-                        ->info($searchModel, $authenticationToken, $sessionToken);
+                        ->info($authenticationToken, $sessionToken);
                 } catch(Exception $e) {
                     throw new BackendException(
                         $e->getMessage(),
@@ -732,23 +600,6 @@ class Backend implements BackendInterface
         return $response;
 
     }
-
-    /**
-     * Obtain available search criteria from the info method and store it in the
-     * session container
-     *
-     * @param string $sessionToken Session token to use to call the INFO method.
-     *
-     * @return array
-    */
-    protected function createSearchCriteria($sessionToken)
-    {
-        $container = new \Zend\Session\Container('EBSCO');
-        $info = $this->getInfo($sessionToken);
-        $container->info = $info;
-        return $container->info;
-    }
-
 
     /**
      * Set the VuFind Authentication Manager

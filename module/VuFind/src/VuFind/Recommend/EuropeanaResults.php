@@ -44,6 +44,8 @@ use Zend\Feed\Reader\Reader as FeedReader, Zend\Log\LoggerInterface;
 class EuropeanaResults implements RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Request parameter for searching
      *
@@ -122,13 +124,6 @@ class EuropeanaResults implements RecommendInterface,
     protected $logger = false;
 
     /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
      * Constructor
      *
      * @param string $key API key
@@ -136,18 +131,6 @@ class EuropeanaResults implements RecommendInterface,
     public function __construct($key)
     {
         $this->key = $key;
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**

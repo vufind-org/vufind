@@ -48,6 +48,8 @@ use PDO, PDOException, VuFind\Exception\Date as DateException,
  */
 class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Web services host
      *
@@ -110,13 +112,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @var int
      */
     protected $callSlipCheckLimit;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
 
     /**
      * Holds mode
@@ -228,18 +223,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
-
-    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -322,10 +305,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         if (isset($this->config[$function]) ) {
             $functionConfig = $this->config[$function];
@@ -609,7 +594,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -643,7 +628,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
@@ -1403,7 +1388,7 @@ EOT;
      * @param string $bibId    An item's Bib ID
      * @param string $itemId   An item's Item ID (optional)
      *
-     * @return boolean         true if the request can be made, false if it cannot
+     * @return bool true if the request can be made, false if it cannot
      */
     protected function checkItemRequests($patronId, $request, $bibId,
         $itemId = false
@@ -1611,7 +1596,7 @@ EOT;
      * @param integer $patronId Patron ID
      * @param integer $bibId    BIB ID
      *
-     * @return boolean
+     * @return bool
      */
     protected function isRecordOnLoan($patronId, $bibId)
     {
@@ -1668,7 +1653,7 @@ EOT;
      * @param integer $bibId          BIB ID
      * @param integer $requestGroupId Request group ID or null
      *
-     * @return boolean;
+     * @return bool
      */
     protected function itemsExist($bibId, $requestGroupId)
     {
@@ -1731,7 +1716,7 @@ EOT;
      * @param integer $bibId          BIB ID
      * @param integer $requestGroupId Request group ID or null
      *
-     * @return boolean;
+     * @return bool
      */
     protected function itemsAvailable($bibId, $requestGroupId)
     {
@@ -2514,7 +2499,7 @@ EOT;
      * @param string $id     BIB id
      * @param array  $patron Patron
      *
-     * @return boolean|array False if UB request is not available or an array
+     * @return bool|array False if UB request is not available or an array
      * of details on success
      */
     protected function getUBRequestDetails($id, $patron)
@@ -2712,7 +2697,7 @@ EOT;
      * @param array  $data   An Array of item data
      * @param patron $patron An array of patron data
      *
-     * @return string True if request is valid, false if not
+     * @return bool True if request is valid, false if not
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
@@ -3129,5 +3114,110 @@ EOT;
         // let's try checking the last 5 characters. If other options
         // exist in the wild, we can make this method more sophisticated.
         return substr($institution, -5) == 'LOCAL';
+    }
+
+    /**
+     * Change Password
+     *
+     * Attempts to change patron password (PIN code)
+     *
+     * @param array $details An array of patron id and old and new password:
+     *
+     * 'patron'      The patron array from patronLogin
+     * 'oldPassword' Old password
+     * 'newPassword' New password
+     *
+     * @return array An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function changePassword($details)
+    {
+        $patron = $details['patron'];
+        $id = htmlspecialchars($patron['id'], ENT_COMPAT, 'UTF-8');
+        $lastname = htmlspecialchars($patron['lastname'], ENT_COMPAT, 'UTF-8');
+        $ubId = htmlspecialchars($this->ws_patronHomeUbId, ENT_COMPAT, 'UTF-8');
+        $oldPIN = trim(
+            htmlspecialchars($details['oldPassword'], ENT_COMPAT, 'UTF-8')
+        );
+        if ($oldPIN === '') {
+            // Voyager requires the PIN code to be set even if it was empty
+            $oldPIN = '     ';
+        }
+        $newPIN = trim(
+            htmlspecialchars($details['newPassword'], ENT_COMPAT, 'UTF-8')
+        );
+        $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
+
+        $xml =  <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<ser:serviceParameters
+xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+   <ser:parameters>
+      <ser:parameter key="oldPatronPIN">
+         <ser:value>$oldPIN</ser:value>
+      </ser:parameter>
+      <ser:parameter key="newPatronPIN">
+         <ser:value>$newPIN</ser:value>
+      </ser:parameter>
+   </ser:parameters>
+   <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId" patronId="$id">
+      <ser:authFactor type="B">$barcode</ser:authFactor>
+   </ser:patronIdentifier>
+</ser:serviceParameters>
+EOT;
+
+        $result = $this->makeRequest(
+            array('ChangePINService' => false), array(), 'POST', $xml
+        );
+
+        $result->registerXPathNamespace(
+            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+        );
+        $error = $result->xpath("//ser:message[@type='error']");
+        if (!empty($error)) {
+            $error = reset($error);
+            $code = $error->attributes()->errorCode;
+            $exceptionNamespace = 'com.endinfosys.voyager.patronpin.PatronPIN.';
+            if ($code == $exceptionNamespace . 'ValidateException') {
+                return array(
+                    'success' => false, 'status' => 'authentication_error_invalid'
+                );
+            }
+            if ($code == $exceptionNamespace . 'ValidateUniqueException') {
+                return array(
+                    'success' => false, 'status' => 'password_error_not_unique'
+                );
+            }
+            if ($code == $exceptionNamespace . 'ValidateLengthException') {
+                // This issue should not be encountered if the settings are correct.
+                // Log an error and let through for an exception
+                $this->error(
+                    'ValidateLengthException encountered when trying to'
+                    . ' change patron PIN. Verify PIN length settings.'
+                );
+            }
+            throw new ILSException((string)$error);
+        }
+        return array('success' => true, 'status' => 'change_password_ok');
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver.  Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        // Special case: change password is only available if properly configured.
+        if ($method == 'changePassword') {
+            return isset($this->config['changePassword']);
+        }
+        return is_callable(array($this, $method));
     }
 }

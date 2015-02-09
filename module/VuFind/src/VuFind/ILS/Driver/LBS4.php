@@ -40,6 +40,8 @@ use VuFind\ILS\Driver\AbstractBase as AbstractBase;
  */
 class LBS4 extends AbstractBase implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Database connection
      *
@@ -108,10 +110,12 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         return isset($this->config[$function]) ? $this->config[$function] : false;
     }
@@ -317,7 +321,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param string $loanindi The loan indicator
      * @param string $material The material code
      *
-     * @return boolean
+     * @return bool
      */
     protected function checkHold($loanindi, $material)
     {
@@ -769,32 +773,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             throw new ILSException($e->getMessage());
         }
         return array();
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Opus
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    protected function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 
     /**

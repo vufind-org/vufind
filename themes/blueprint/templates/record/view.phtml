@@ -39,8 +39,11 @@
              $this->layout()->breadcrumbs .= '<span>&gt;</span><em>' . $this->transEsc($desc) . '</em>';
              $activeTabObj = $obj;
          }
+        $tab_classes = array();
+        if ($isCurrent) $tab_classes[] = 'active';
+        if (!$obj->isVisible()) $tab_classes[] = 'hidden';
       ?>
-      <li<?=$isCurrent ? ' class="active"' : ''?>>
+      <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
         <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
       </li>
       <? endforeach; ?>

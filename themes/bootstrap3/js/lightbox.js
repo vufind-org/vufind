@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, path, vufindString */
+/*global checkSaveStatuses, console, deparam, path, Recaptcha, vufindString */
 
 var Lightbox = {
   /**
@@ -12,7 +12,7 @@ var Lightbox = {
   shown: false,      // Is the lightbox deployed?
   XHR: false,        // Used for current in-progress XHR lightbox request
   openStack: [],     // Array of functions to be called after changeContent or the lightbox event 'shown'
-  closeStack: [],    // Array of functions to be called after the lightbox event 'hidden'
+  closeStack: [],    // Array of functions to be called and cleared after the lightbox event 'hidden'
   formHandlers: [],  // Full custom handlers for forms; by name
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
 
@@ -90,9 +90,10 @@ var Lightbox = {
    * Hide the header if it's empty to make more
    * room for content and avoid double headers.
    */
-  changeContent: function(html, headline) {
+  titleSet: false,
+  changeContent: function(html) {
     var header = $('#modal .modal-header');
-    if(typeof headline === "undefined") {
+    if(!Lightbox.titleSet) {
       var h2 = html.match(/<h2>([^<]*)<\/h2>/);
       if(h2) {
         header.find('.modal-title').html(h2[1]);
@@ -102,8 +103,7 @@ var Lightbox = {
           header.find('.modal-title').html(pLead[1]);
         }
       }
-    } else {
-      header.find('.modal-title').html(headline);
+      Lightbox.titleSet = false;
     }
     if(header.find('.modal-title').html().length == 0) {
       header.css('border-bottom-width', '0');
@@ -152,7 +152,7 @@ var Lightbox = {
    * This function changes the content of the lightbox to a message with a close button
    */
   confirm: function(message) {
-    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
   },
   /**
    * Regexes a piece of html to find an error alert
@@ -160,11 +160,15 @@ var Lightbox = {
    *
    * If one is not found, return html to a success callback function
    */
-  checkForError: function(html, success) {
-    var fi = html.indexOf('<div class="alert alert-danger">');
+  checkForError: function(html, success, type) {
+    if(typeof type === "undefined") {
+      type = "danger";
+    }
+    var divPattern = '<div class="alert alert-'+type+'">';
+    var fi = html.indexOf(divPattern);
     if(fi > -1) {
-      var li = html.indexOf('</div>', fi+31);
-      Lightbox.displayError(html.substring(fi+31, li));
+      var li = html.indexOf('</div>', fi+divPattern.length);
+      Lightbox.displayError(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''), type);
     } else {
       success(html);
     }
@@ -172,18 +176,28 @@ var Lightbox = {
   /**
    * Insert an error alert element at the top of the lightbox
    */
-  displayError: function(message) {
-    var alert = $('#modal .modal-body .alert');
-    if(alert.length > 0) {
-      $(alert).html(message);
-    } else if($('#modal .modal-body').html() == vufindString.loading+"...") {
-      $('#modal .modal-body').html('<div class="alert alert-danger">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+  displayError: function(message, type) {
+    if(typeof type === "undefined") {
+      type = "danger";
+    }
+    $('#modal .modal-body .alert').remove();
+    var html = $.parseHTML($('#modal .modal-body').html());
+     // Empty or alert only, change to message with button
+    if($('#modal .modal-body').html() == vufindString.loading+"..."
+      || (html.length == 1 && $(html).hasClass('alert-'+type))) {
+      Lightbox.changeContent('<div class="alert alert-'+type+'" role="alert">'+message+'</div><button class="btn btn-default" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
+    // Page without alert
     } else {
-      $('#modal .modal-body').prepend('<div class="alert alert-danger">'+message+'</div>');
+      $('#modal .modal-body').prepend('<div class="alert alert-'+type+' alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button><p class="message">'+message+'</p></div>');
     }
     $('.fa-spinner').remove();
     if (typeof Recaptcha !== "undefined" && Recaptcha.widget) {
       Recaptcha.reload();
+    }
+    // If the lightbox isn't visible, fix that
+    if(this.shown == false) {
+      $('#modal').modal('show');
+      this.shown = true;
     }
   },
 
@@ -222,7 +236,7 @@ var Lightbox = {
           } catch(error) {
             Lightbox.changeContent('<p class="alert alert-danger">'+d.responseText+'</p>');
           }
-        } else {
+        } else if(d.status > 0) {
           Lightbox.changeContent('<p class="alert alert-danger">'+d.statusText+' ('+d.status+')</p>');
         }
         console.log(e,d); // Error reporting
@@ -316,20 +330,29 @@ var Lightbox = {
    * is called and the 'shown' lightbox event is triggered
    */
   registerForms: function() {
-    var form = $("#modal").find('form');
-    var name = $(form).attr('name');
+    var $form = $("#modal").find('form');
+    $form.validator();
+    var name = $form.attr('name');
     // Assign form handler based on name
     if(typeof name !== "undefined" && typeof Lightbox.formHandlers[name] !== "undefined") {
-      $(form).unbind('submit').submit(Lightbox.formHandlers[name]);
+      $form.submit(Lightbox.formHandlers[name]);
     // Default action, with custom callback
     } else if(typeof Lightbox.formCallbacks[name] !== "undefined") {
-      $(form).unbind('submit').submit(function(evt){
+      $form.submit(function(evt){
+        if(evt.isDefaultPrevented()) {
+          $('.fa.fa-spinner', evt.target).remove();
+          return false;
+        }
         Lightbox.submit($(evt.target), Lightbox.formCallbacks[name]);
         return false;
       });
     // Default
     } else {
-      $(form).unbind('submit').submit(function(evt){
+      $form.unbind('submit').submit(function(evt){
+        if(evt.isDefaultPrevented()) {
+          $('.fa.fa-spinner', evt.target).remove();
+          return false;
+        }
         Lightbox.submit($(evt.target), function(html){
           Lightbox.checkForError(html, Lightbox.close);
         });
@@ -401,5 +424,6 @@ $(document).ready(function() {
       title = $(this).html();
     }
     $('#modal .modal-title').html(title);
+    Lightbox.titleSet = true;
   });
 });

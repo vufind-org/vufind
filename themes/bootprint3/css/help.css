@@ -1,0 +1,55 @@
+.modal.in .modal-dialog {width:80%}
+.modal-body:before,.modal-body:after {
+  clear:both;
+  content:"";
+  display:table;
+}
+.modal-body h1 {display:none}
+.HelpMenu {
+  border:1px solid #888;
+  border-radius:4px;
+  float:left;
+  list-style:none;
+  padding-left:0;
+  width:30%;
+}
+.HelpMenu li {
+  border-top:1px solid #888;
+  padding:0;
+}
+.HelpMenu li a {
+  color:#250;
+  display:block;
+  padding:4px;
+}
+.HelpMenu li a:hover {
+  background:#DFF0D8;
+}
+.HelpMenu li:first-child {
+  border:0;
+}
+.HelpMenu li ul {
+  border-top:1px solid #888;
+  list-style:none;
+  margin-top:4px;
+  padding-left:0;
+}
+.HelpMenu li ul li a {
+  padding-left:20px;
+}
+
+.Content {
+  float:right;
+  padding-left:2em;
+  width:70%;
+}
+.Content dt {
+  font-size:125%;
+}
+.Content pre {
+  background:#FFF;
+  border:1px solid #619144;
+  box-shadow:inset 0px 1px 2px rgba(0, 0, 0, 0.2);
+  font:14px "Helvetica Neue",Helvetica,Arial;
+  padding:5px 8px;
+}

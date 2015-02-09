@@ -11,10 +11,13 @@ return array(
         'print.css:print',
     ),
     'js' => array(
+        'vendor/base64.js:lt IE 10', // btoa polyfill
         'vendor/jquery.min.js',
         'vendor/bootstrap.min.js',
         'vendor/bootstrap-accessibility.min.js',
+        //'vendor/bootlint.min.js',
         'vendor/typeahead.js',
+        'vendor/validator.min.js',
         'vendor/rc4.js',
         'common.js',
         'lightbox.js',
@@ -22,10 +25,6 @@ return array(
     'less' => array(
         'active' => false,
         'compiled.less'
-    ),
-    'scss' => array(
-        'active' => false,
-        'compiled.scss'
     ),
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(

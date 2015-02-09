@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @codeCoverageIgnore
  */
 class Factory
 {
@@ -189,6 +190,24 @@ class Factory
     }
 
     /**
+     * Construct the Piwik helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Piwik
+     */
+    public static function getPiwik(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $url = isset($config->Piwik->url) ? $config->Piwik->url : false;
+        $siteId = isset($config->Piwik->site_id) ? $config->Piwik->site_id : 1;
+        $customVars = isset($config->Piwik->custom_variables)
+            ? $config->Piwik->custom_variables
+            : false;
+        return new Piwik($url, $siteId, $customVars);
+    }
+
+    /**
      * Construct the GetLastSearchLink helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -200,6 +219,21 @@ class Factory
         return new GetLastSearchLink(
             $sm->getServiceLocator()->get('VuFind\Search\Memory')
         );
+    }
+
+    /**
+     * Construct the HelpText helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HelpText
+     */
+    public static function getHelpText(ServiceManager $sm)
+    {
+        $lang = $sm->getServiceLocator()->has('VuFind\Translator')
+            ? $sm->getServiceLocator()->get('VuFind\Translator')->getLocale()
+            : 'en';
+        return new HelpText($sm->get('context'), $lang);
     }
 
     /**
@@ -257,20 +291,6 @@ class Factory
     }
 
     /**
-     * Construct the ProxyUrl helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return ProxyUrl
-     */
-    public static function getProxyUrl(ServiceManager $sm)
-    {
-        return new ProxyUrl(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
-    }
-
-    /**
      * Construct the OpenUrl helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -282,6 +302,20 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new OpenUrl(
             $sm->get('context'), isset($config->OpenURL) ? $config->OpenURL : null
+        );
+    }
+
+    /**
+     * Construct the ProxyUrl helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ProxyUrl
+     */
+    public static function getProxyUrl(ServiceManager $sm)
+    {
+        return new ProxyUrl(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
 
@@ -338,6 +372,21 @@ class Factory
         return new Related(
             $sm->getServiceLocator()->get('VuFind\RelatedPluginManager')
         );
+    }
+
+    /**
+     * Construct the SafeMoneyFormat helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SafeMoneyFormat
+     */
+    public static function getSafeMoneyFormat(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $defaultCurrency = isset($config->Site->defaultCurrency)
+            ? $config->Site->defaultCurrency : null;
+        return new SafeMoneyFormat($defaultCurrency);
     }
 
     /**
@@ -468,18 +517,5 @@ class Factory
             || ($cfg->Social->tags && $cfg->Social->tags !== 'disabled')
             ? 'enabled' : 'disabled';
         return new UserTags($mode);
-    }
-
-    /**
-     * Construct the WorldCat helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return WorldCat
-     */
-    public static function getWorldCat(ServiceManager $sm)
-    {
-        $bm = $sm->getServiceLocator()->get('VuFind\Search\BackendManager');
-        return new WorldCat($bm->get('WorldCat')->getConnector());
     }
 }

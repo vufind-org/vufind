@@ -47,8 +47,30 @@ class MaintenanceController extends AbstractAdmin
     public function homeAction()
     {
         $view = $this->createViewModel();
+        $view->caches = $this->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCacheList();
         $view->setTemplate('admin/maintenance/home');
         return $view;
+    }
+
+    /**
+     * Clear cache(s).
+     *
+     * @return mixed
+     */
+    public function clearcacheAction()
+    {
+        $cacheManager = $this->getServiceLocator()->get('VuFind\CacheManager');
+        foreach ($this->params()->fromQuery('cache', array()) as $cache) {
+            $cacheManager->getCache($cache)->flush();
+        }
+        // If cache is unset, we didn't go through the loop above, so no message
+        // needs to be displayed.
+        if (isset($cache)) {
+            $this->flashMessenger()->setNamespace('info')
+                ->addMessage('Cache(s) cleared.');
+        }
+        return $this->forwardTo('AdminMaintenance', 'Home');
     }
 
     /**

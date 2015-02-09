@@ -1,5 +1,24 @@
+.grid-btn {font-size:14px}
+.sibling-form .navbar-nav {display:table;float:none;margin:auto}
+.sibling-form .navbar-nav li {margin:0 4px}
+.sibling-form .navbar {min-height:1px}
+.sibling-form .navbar-nav > li > a {
+  padding-top:6px;
+  padding-bottom:6px;
+}
+
+/* Navbar buttons */
+.sibling-form .navbar-nav li a.btn.btn-default:active,
+.sibling-form .navbar-nav li a.btn.btn-default:focus,
+.sibling-form .navbar-nav li a.btn.btn-default:hover {
+  color:#FFF;
+  background-color:#333;
+  border-color:#ADADAD;
+}
+
 .panel {border:1px solid #DDD}
 .panel .panel-heading {background:#EEE}
+.panel-collapse {max-height:500px;overflow-y:auto}
 
 .details {text-align:center}
 .details .copyright {margin-bottom:1em}
@@ -19,8 +38,16 @@
 
 .page-grid {text-align:center}
 
+.panel .panel-heading a,
+.panel .panel-heading a i.fa,
+.nav-tabs .static.opener a {
+  cursor:pointer;
+}
+
 #view #preview {max-width:100%}
 .front {position:absolute;left:10%;top:150px;width:80%;z-index:5}
+
+#zoomy {background:#F0F0F0}
 
 #allFiles .btn {display:block;margin:auto;max-width:400px}
 #download-button .details {font-size:14px}

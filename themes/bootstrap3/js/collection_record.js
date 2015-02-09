@@ -4,7 +4,7 @@ function toggleCollectionInfo() {
 
 function showMoreInfoToggle() {
   toggleCollectionInfo();
-  $("#moreInfoToggle").show();
+  $("#moreInfoToggle").removeClass('hidden');
   $("#moreInfoToggle").click(function(e) {
     e.preventDefault();
     toggleCollectionInfo();

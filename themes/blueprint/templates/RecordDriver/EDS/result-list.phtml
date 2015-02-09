@@ -54,7 +54,7 @@
             $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
             $name = isset($customLink['Name']) ? $customLink['Name'] : '';?>
         <span>
-          <a href="<?=$url?>" target="_blank" title="<?=$mot?>" class="custom-link">
+          <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
             <? if ($icon): ?><img src="<?=$icon?>" /><? endif; ?><?=$name?>
           </a>
         </span>

@@ -26,9 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindAdmin\Controller;
-use VuFind\Exception\Forbidden as ForbiddenException,
-    Zend\Mvc\MvcEvent,
-    Zend\Stdlib\Parameters;
+use Zend\Mvc\MvcEvent;
 
 /**
  * VuFind Admin Controller Base
@@ -41,6 +39,15 @@ use VuFind\Exception\Forbidden as ForbiddenException,
  */
 class AbstractAdmin extends \VuFind\Controller\AbstractBase
 {
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->accessPermission = 'access.AdminModule';
+    }
+
     /**
      * preDispatch -- block access when appropriate.
      *
@@ -69,49 +76,10 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
             return $redirectPlugin->toRoute('admin/disabled');
         }
 
-        // Block access by IP when IP checking is enabled:
-        if (isset($config->AdminAuth->ipRegEx)) {
-            $ipMatch = preg_match(
-                $config->AdminAuth->ipRegEx,
-                $this->getRequest()->getServer()->get('REMOTE_ADDR')
-            );
-            if (!$ipMatch) {
-                throw new ForbiddenException('Access denied.');
-            }
-        }
-
-        // Block access by username when user whitelist is enabled:
-        if (isset($config->AdminAuth->userWhitelist)) {
-            $user = $this->getUser();
-            if ($user == false) {
-                $e->setResponse($this->forceLogin(null, array(), false));
-                return;
-            }
-            $matchFound = false;
-            foreach ($config->AdminAuth->userWhitelist as $check) {
-                if ($check == $user->username) {
-                    $matchFound = true;
-                    break;
-                }
-            }
-            if (!$matchFound) {
-                throw new ForbiddenException('Access denied.');
-            }
-        }
+        // Call parent method to do permission checking:
+        parent::preDispatch($e);
     }
 
-    /**
-     * Register the default events for this controller
-     *
-     * @return void
-     */
-    protected function attachDefaultListeners()
-    {
-        parent::attachDefaultListeners();
-        $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
-    }
-    
     /**
      * Display disabled message.
      *

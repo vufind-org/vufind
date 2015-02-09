@@ -35,6 +35,7 @@ use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\RandomInterface;
+use VuFindSearch\Feature\SimilarInterface;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Response\AbstractRecordCollection;
 
@@ -586,6 +587,20 @@ class SearchServiceTest extends TestCase
     }
 
     /**
+     * Test similar action on bad backend.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage foo does not support similar()
+     */
+    public function testSimilarOnNonSupportingBackend()
+    {
+        $service = $this->getService();
+        $params = new ParamBag(array('x' => 'y'));
+        $service->similar('foo', 'bar', $params);
+    }
+
+    /**
      * Test exception-throwing similar action.
      *
      * @return void
@@ -690,9 +705,8 @@ abstract class TestClassForRetrieveBatchInterface
  * Stub class to test similar.
  */
 abstract class TestBackendClassForSimilar
-    implements BackendInterface
+    implements BackendInterface, SimilarInterface
 {
-    abstract function similar();
 }
 
 /**

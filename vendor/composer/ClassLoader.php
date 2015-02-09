@@ -56,7 +56,10 @@ class ClassLoader
 
     public function getPrefixes()
     {
-        return call_user_func_array('array_merge', $this->prefixesPsr0);
+        if (!empty($this->prefixesPsr0)) {
+            return call_user_func_array('array_merge', $this->prefixesPsr0);
+        }
+        return array();
     }
 
     public function getPrefixesPsr4()
@@ -143,6 +146,8 @@ class ClassLoader
      * @param string       $prefix  The prefix/namespace, with trailing '\\'
      * @param array|string $paths   The PSR-0 base directories
      * @param bool         $prepend Whether to prepend the directories
+     *
+     * @throws \InvalidArgumentException
      */
     public function addPsr4($prefix, $paths, $prepend = false)
     {
@@ -204,6 +209,8 @@ class ClassLoader
      *
      * @param string       $prefix The prefix/namespace, with trailing '\\'
      * @param array|string $paths  The PSR-4 base directories
+     *
+     * @throws \InvalidArgumentException
      */
     public function setPsr4($prefix, $paths)
     {
