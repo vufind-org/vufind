@@ -31,8 +31,9 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Exception\ILS as ILSException,
-    DOMDocument, Zend\Log\LoggerInterface;
+use DOMDocument, VuFind\Exception\ILS as ILSException,
+    VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface,
+    Zend\Log\LoggerAwareInterface as LoggerAwareInterface;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -43,9 +44,10 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
+class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Base URL for DAIA Service
@@ -67,13 +69,6 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @var string
      */
     protected $daiaResponseFormat;
-
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
 
     /**
      * Initialize the driver.
@@ -135,6 +130,7 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($id, $details)
     {
@@ -825,31 +821,5 @@ class DAIA extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             );
         }
         return $holding;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
     }
 }
