@@ -262,7 +262,7 @@ class Wikipedia implements TranslatorAwareInterface
         // We can either find content or recursive brackets:
         $recursive_match = "($content|(?R))*";
         $body .= "[[file:bad]]";
-        preg_match_all("/" . $open . $recursive_match . $close . "/Us", $body, $new_matches);
+        preg_match_all("/{$open}{$recursive_match}{$close}/Us", $body, $new_matches);
         // Loop through every match (link) we found
         if (is_array($new_matches)) {
             foreach ($new_matches as $nm) {

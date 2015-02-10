@@ -1390,8 +1390,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelStorageRetrievalRequestDetails($callslipDetails)
     {
-        $cancelDetails = $callslipDetails['id'] . "|" . $callslipDetails['requestId'];
-        return $cancelDetails;
+        return $callslipDetails['id'] . "|" . $callslipDetails['requestId'];
     }
 
     /**

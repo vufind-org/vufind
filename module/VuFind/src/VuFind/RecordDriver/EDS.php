@@ -350,7 +350,8 @@ class EDS extends SolrDefault
     {
         $authors = array();
         if (isset($this->fields['RecordInfo']['BibRecord']['BibRelationships'])) {
-            $bibRels = & $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
+            $bibRels
+                = & $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
         }
         if (isset($bibRels['HasContributorRelationships'])
             && !empty($bibRels['HasContributorRelationships'])

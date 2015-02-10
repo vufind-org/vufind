@@ -222,10 +222,10 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     protected function sacaFecha($copyId)
     {
-        $circulacion = "SELECT to_char(CIRT_ITM_DUE_DTE,'dd-mm-yyyy') AS FECHADEV, " .
-            "ROUND(CIRT_ITM_DUE_DTE - SYSDATE) AS DIFERENCIA " .
-            "FROM CIRT_ITM " .
-            "WHERE CPY_ID_NBR = '$copyId'";
+        $circulacion = "SELECT to_char(CIRT_ITM_DUE_DTE,'dd-mm-yyyy') AS FECHADEV, "
+            . "ROUND(CIRT_ITM_DUE_DTE - SYSDATE) AS DIFERENCIA "
+            . "FROM CIRT_ITM "
+            . "WHERE CPY_ID_NBR = '$copyId'";
         $fecha = 0;
         $diferencia = 0;
         try {
@@ -633,14 +633,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     {
         $fineList = array();
 
-        $sql = "SELECT UNIQUE TO_CHAR(CIRT_ITM.CIRT_ITM_CHRG_OUT_DTE,'DD/MM/YYYY') " .
-            "AS ORIG_CHARGE_DATE, " .
-            "TO_CHAR(CIRT_ITM.CIRT_ITM_DUE_DTE,'DD/MM/YYYY')  AS DUE_DATE, " .
-            "CIRT_ITM.BIB_ITM_NBR AS BIB_ID " .
-            "FROM CIRT_ITM, LV_USER " .
-            "WHERE CIRT_ITM.PRSN_NBR = LV_USER.PRSN_NBR " .
-            "AND CIRT_ITM_DUE_DTE < SYSDATE " .
-            "AND  LV_USER.LOGIN='" . $patron['id'] . "'";
+        $sql = "SELECT UNIQUE TO_CHAR(CIRT_ITM.CIRT_ITM_CHRG_OUT_DTE,'DD/MM/YYYY') "
+            . "AS ORIG_CHARGE_DATE, "
+            . "TO_CHAR(CIRT_ITM.CIRT_ITM_DUE_DTE,'DD/MM/YYYY')  AS DUE_DATE, "
+            . "CIRT_ITM.BIB_ITM_NBR AS BIB_ID "
+            . "FROM CIRT_ITM, LV_USER "
+            . "WHERE CIRT_ITM.PRSN_NBR = LV_USER.PRSN_NBR "
+            . "AND CIRT_ITM_DUE_DTE < SYSDATE "
+            . "AND  LV_USER.LOGIN='" . $patron['id'] . "'";
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();

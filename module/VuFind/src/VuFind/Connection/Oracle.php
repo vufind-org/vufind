@@ -366,7 +366,9 @@ class Oracle
 
         // Bind Variables
         foreach (array_keys($data) as $column) {
-            $this->bindParam($delete, ":" . $column, $data[$column], $types[$column]);
+            $this->bindParam(
+                $delete, ":" . $column, $data[$column], $types[$column]
+            );
         }
 
         // Execute
@@ -421,7 +423,9 @@ class Oracle
 
         // Bind Variables
         foreach (array_keys($data) as $column) {
-            $this->bindParam($insert, ":" . $column, $data[$column], $types[$column]);
+            $this->bindParam(
+                $insert, ":" . $column, $data[$column], $types[$column]
+            );
         }
 
         // Execute

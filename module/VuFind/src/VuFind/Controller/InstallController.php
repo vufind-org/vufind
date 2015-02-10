@@ -266,8 +266,8 @@ class InstallController extends AbstractBase
         if (!function_exists('mb_substr')) {
             $msg
                 = "Your PHP installation appears to be missing the mbstring plug-in."
-                . " For better language support, it is recommended that you add this."
-                . " For details on how to do this, see "
+                . " For better language support, it is recommended that you add"
+                . " this. For details on how to do this, see "
                 . "http://vufind.org/wiki/vufind2:installation_notes "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
@@ -290,8 +290,8 @@ class InstallController extends AbstractBase
         if (!function_exists('mcrypt_module_open')) {
             $msg
                 = "Your PHP installation appears to be missing the mcrypt plug-in."
-                . " For better security support, it is recommended that you add this."
-                . " For details on how to do this, see "
+                . " For better security support, it is recommended that you add"
+                . " this. For details on how to do this, see "
                 . "http://vufind.org/wiki/vufind2:installation_notes "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);

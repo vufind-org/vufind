@@ -204,7 +204,8 @@ class Fedora extends AbstractBase
     public function getMemberList($root)
     {
         $query = 'select $memberPID $memberTitle from <#ri> '
-            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/' . $root . '> '
+            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/'
+            . $root . '> '
             . 'and $member <fedora-model:label> $memberTitle '
             . 'and $member <dc:identifier> $memberPID';
         $response = $this->query($query);
@@ -250,7 +251,8 @@ class Fedora extends AbstractBase
     public function getOrderedMembers($root)
     {
         $query = 'select $memberPID $memberTitle $sequence $member from <#ri> '
-            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/' . $root . '> '
+            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/'
+            . $root . '> '
             . 'and $member <http://vudl.org/relationships#sequence> $sequence '
             . 'and $member <fedora-model:label> $memberTitle '
             . 'and $member <dc:identifier> $memberPID';
@@ -291,7 +293,8 @@ class Fedora extends AbstractBase
         }
         // No sequence? Title sort.
         $query = 'select $memberPID $memberTitle from <#ri> '
-            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/' . $root . '> '
+            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/'
+            . $root . '> '
             . 'and $member <fedora-model:label> $memberTitle '
             . 'and $member <dc:identifier> $memberPID '
             . 'order by $memberTitle';

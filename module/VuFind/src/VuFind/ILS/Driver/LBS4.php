@@ -579,9 +579,11 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 if ($row) {
                     if ($row[8] == $row[13]) { //reminder address first
                         $result['address2'] = $result['address1'];
-                        $result['address1'] = $row[10] . ', ' . $row[9] . ' ' . $row[11];
+                        $result['address1']
+                            = $row[10] . ', ' . $row[9] . ' ' . $row[11];
                     } else {
-                        $result['address2'] = $row[10] . ', ' . $row[9] . ' ' . $row[11];
+                        $result['address2']
+                            = $row[10] . ', ' . $row[9] . ' ' . $row[11];
                     }
                 }
                 return $result;

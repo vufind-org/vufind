@@ -866,8 +866,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getRenewDetails($checkOutDetails)
     {
-        $renewDetails = $checkOutDetails['item_id'] . "|" . $checkOutDetails['barcode'];
-        return $renewDetails;
+        return $checkOutDetails['item_id'] . "|" . $checkOutDetails['barcode'];
     }
 
     /**

@@ -292,9 +292,10 @@ class Demo extends AbstractBase
         $list = new ArrayObject();
         for ($i = 0; $i < $items; $i++) {
             $location = $this->getFakeLoc(false);
+            $randDays = rand() % 10;
             $currentItem = array(
                 "location" => $location,
-                "create"   => date("j-M-y", strtotime("now - " . (rand()%10) . " days")),
+                "create"   => date("j-M-y", strtotime("now - {$randDays} days")),
                 "expire"   => date("j-M-y", strtotime("now + 30 days")),
                 "reqnum"   => sprintf("%06d", $i),
                 "item_id" => $i,

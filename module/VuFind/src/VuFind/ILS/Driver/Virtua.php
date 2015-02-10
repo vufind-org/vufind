@@ -747,7 +747,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 $years  = explode("-", $data['data'][0]); $y = count($years);
                 $dmy = $d . $m . $y;
 
-                $start_time = strtotime($days[0] . "-" . $months[0] . "-" . $years[0]);
+                $start_time
+                    = strtotime($days[0] . "-" . $months[0] . "-" . $years[0]);
                 $end_string = "jS F Y";
 
                 switch ($dmy) {
