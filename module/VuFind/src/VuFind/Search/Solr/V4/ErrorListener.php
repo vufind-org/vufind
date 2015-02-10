@@ -68,7 +68,7 @@ class ErrorListener extends AbstractErrorListener
         $backend = $event->getParam('backend_instance');
         if ($this->listenForBackend($backend)) {
             $error = $event->getTarget();
-            if ($error instanceOf HttpErrorException) {
+            if ($error instanceof HttpErrorException) {
                 $response = $error->getResponse();
 
                 $body = $response->getBody();

@@ -322,7 +322,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      */
     public function setAdapter($adapter)
     {
-        if (is_object($adapter) && (!$adapter instanceOf AdapterInterface)) {
+        if (is_object($adapter) && (!$adapter instanceof AdapterInterface)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'HTTP client adapter must implement AdapterInterface: %s',

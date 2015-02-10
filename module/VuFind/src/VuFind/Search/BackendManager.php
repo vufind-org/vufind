@@ -110,7 +110,7 @@ class BackendManager implements SharedListenerAggregateInterface
                 )
             );
         }
-        if (!$backend instanceOf BackendInterface) {
+        if (!$backend instanceof BackendInterface) {
             throw new UnexpectedValueException(
                 sprintf(
                     'Object of class %s does not implement the expected interface',
