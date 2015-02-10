@@ -56,6 +56,17 @@ class Map extends AbstractBase
     }
 
     /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax()
+    {
+        // No, Google script magic required
+        return false;
+    }
+
+    /**
      * Get the on-screen description for this tab.
      *
      * @return string
