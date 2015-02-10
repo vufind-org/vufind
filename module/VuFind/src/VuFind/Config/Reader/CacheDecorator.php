@@ -66,7 +66,7 @@ class CacheDecorator implements ReaderInterface
      *
      * @return void
      */
-    public function __construct (ReaderInterface $reader, StorageInterface $storage)
+    public function __construct(ReaderInterface $reader, StorageInterface $storage)
     {
         $this->reader  = $reader;
         $this->storage = $storage;

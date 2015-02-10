@@ -955,7 +955,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 && (empty($courseId) || $courseId == $course_id)
                 && (empty($departmentId) || $departmentId == $dept_id)
             ) {
-                $items[] = array (
+                $items[] = array(
                     'BIB_ID' => $bib_id,
                     'INSTRUCTOR_ID' => $instructor_id,
                     'COURSE_ID' => $course_id,
@@ -1000,7 +1000,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $rescount = 0;
         foreach ($item_lines as $item) {
             $item = rtrim($item, '|');
-            $items[$item] = array (
+            $items[$item] = array(
                 'id' => $item
             );
             $rescount++;
@@ -1083,7 +1083,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $status= $this->config['UnavailableLocations'][$currLocCode];
         }
 
-        $item = array (
+        $item = array(
             'status' => $status,
             'availability' => $availability,
             'id' => $catkey,

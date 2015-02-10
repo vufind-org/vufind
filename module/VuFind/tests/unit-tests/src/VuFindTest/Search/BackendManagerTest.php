@@ -86,7 +86,7 @@ class BackendManagerTest extends TestCase
      *
      * @return void
      */
-    public function testAttachDetachShared ()
+    public function testAttachDetachShared()
     {
         $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
         $events   = new SharedEventManager();

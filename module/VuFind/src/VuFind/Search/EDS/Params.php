@@ -215,7 +215,7 @@ class Params extends \VuFind\Search\Base\Params
         foreach ($this->limiters as $limiter) {
             if (isset($limiter) &&!empty($limiter)) {
                 // split the id/value
-                list ($key, $value) = explode(':', $limiter, 2);
+                list($key, $value) = explode(':', $limiter, 2);
                 $value = SearchRequestModel::escapeSpecialCharacters($value);
                 $edsLimiters[$key] = (!isset($edsLimiters[$key]))
                      ? $value : $edsLimiters[$key].','.$value;
