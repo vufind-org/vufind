@@ -286,7 +286,7 @@ class Fedora extends AbstractBase
                         return $op['id'];
                     },
                     $items
-                );;
+                );
             }
         }
         // No sequence? Title sort.

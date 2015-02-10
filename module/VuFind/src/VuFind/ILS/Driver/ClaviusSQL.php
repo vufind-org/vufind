@@ -257,7 +257,7 @@ class ClaviusSQL extends AbstractBase
             $sqlSt = $this->db->prepare($sql);
             $sqlSt->execute();
             $result = $sqlSt->fetchAll();
-            $return = array('count' => count($result), 'results' => array());;
+            $return = array('count' => count($result), 'results' => array());
             foreach ($result as $row) {
                 $return['results'][] = array(
                     'id' => $this->getLongId($row['tcislo'], $row['druhdoku'])
