@@ -62,7 +62,7 @@ class Options extends \VuFind\Search\Base\Options
      * The set search mode
      * @var string
      */
-    protected $searchMode ;
+    protected $searchMode;
 
     /**
      * Default expanders to apply
@@ -612,7 +612,7 @@ class Options extends \VuFind\Search\Base\Options
         $ssLimiterOptions = array();
         if (isset($this->commonLimiters)) {
             foreach ($this->commonLimiters as $key) {
-                $limiter = $this->limiterOptions[$key] ;
+                $limiter = $this->limiterOptions[$key];
                 $ssLimiterOptions[$key] = array(
                     'selectedvalue' => 'LIMIT|' . $key . ':y',
                     'description' => $this->getLabelForCheckboxFilter(

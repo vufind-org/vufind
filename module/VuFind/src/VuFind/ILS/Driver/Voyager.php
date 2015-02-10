@@ -2242,15 +2242,15 @@ class Voyager extends AbstractBase
         $bindParams = array();
 
         if ($course != '') {
-            $reserveWhere[] = "RESERVE_LIST_COURSES.COURSE_ID = :course" ;
+            $reserveWhere[] = "RESERVE_LIST_COURSES.COURSE_ID = :course";
             $bindParams[':course'] = $course;
         }
         if ($inst != '') {
-            $reserveWhere[] = "RESERVE_LIST_COURSES.INSTRUCTOR_ID = :inst" ;
+            $reserveWhere[] = "RESERVE_LIST_COURSES.INSTRUCTOR_ID = :inst";
             $bindParams[':inst'] = $inst;
         }
         if ($dept != '') {
-            $reserveWhere[] = "RESERVE_LIST_COURSES.DEPARTMENT_ID = :dept" ;
+            $reserveWhere[] = "RESERVE_LIST_COURSES.DEPARTMENT_ID = :dept";
             $bindParams[':dept'] = $dept;
         }
 
