@@ -85,7 +85,7 @@ class AlephTranslator
         $result = array();
         $file_handle = fopen($file, "r, ccs=UTF-8");
         $rgxp = "";
-        while (!feof($file_handle) ) {
+        while (!feof($file_handle)) {
             $line = fgets($file_handle);
             $line = chop($line);
             if (preg_match("/!!/", $line)) {

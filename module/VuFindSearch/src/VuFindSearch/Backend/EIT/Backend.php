@@ -91,7 +91,7 @@ class Backend extends AbstractBackend
     public function search(AbstractQuery $query, $offset, $limit,
         ParamBag $params = null
     ) {
-        if (null === $params ) {
+        if (null === $params) {
             $params = new ParamBag();
         }
         $params->mergeWith($this->getQueryBuilder()->build($query));

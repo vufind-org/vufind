@@ -312,7 +312,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function getConfig($function, $params = null)
     {
-        if (isset($this->config[$function]) ) {
+        if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
         } else {
             $functionConfig = false;
@@ -1393,7 +1393,7 @@ EOT;
     protected function checkItemRequests($patronId, $request, $bibId,
         $itemId = false
     ) {
-        if (!empty($bibId) && !empty($patronId) && !empty($request) ) {
+        if (!empty($bibId) && !empty($patronId) && !empty($request)) {
 
             $hierarchy = array();
 
@@ -1423,7 +1423,7 @@ EOT;
 
                 // Valid Response
                 if ($reply == "ok") {
-                    if ($check->$request ) {
+                    if ($check->$request) {
                         $requestAttributes = $check->$request->attributes();
                         if ($requestAttributes['allowed'] == "Y") {
                             return true;

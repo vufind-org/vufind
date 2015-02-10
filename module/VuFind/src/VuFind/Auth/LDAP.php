@@ -279,7 +279,7 @@ class LDAP extends AbstractBase
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
                         $value = $data[$i][$configValue][0];
                         $this->debug("found $field = $value");
-                        if ($field != "cat_password" ) {
+                        if ($field != "cat_password") {
                             $user->$field = $value;
                         } else {
                             $catPassword = $value;

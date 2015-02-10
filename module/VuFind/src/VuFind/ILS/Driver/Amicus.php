@@ -337,7 +337,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 $prestados = $this->sacaStatus($row['CPY_ID_NBR']);
                 $reservados = $this->sacaReservas($row['CPY_ID_NBR']);
                 if (!isset($data[$row['BIB_ITM_NBR']])) {
-                    if ($multiple != 1 ) {
+                    if ($multiple != 1) {
                         $multiple = $this->translate("Multiple Locations");
                         $textoLoc = $this->translate("Multiple");
                         $textoSign = $this->translate("Multiple Locations");

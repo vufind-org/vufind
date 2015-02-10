@@ -351,7 +351,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      */
     protected function getNote($loanind, $locid, $callnumber)
     {
-        if ( $loanind == 0 && $locid=='000') {
+        if ($loanind == 0 && $locid=='000') {
             $note = $this->translate("Textbook Collection");
         } else if ($loanind == 1) {
             $note = $this->translate("Short loan");//Short time loan?
