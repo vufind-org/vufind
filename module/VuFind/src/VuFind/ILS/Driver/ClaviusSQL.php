@@ -740,7 +740,6 @@ class ClaviusSQL extends AbstractBase
      * @return mixed          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-
     public function patronLogin($username, $password)
     {
         // TODO - oracle a mssql

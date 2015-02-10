@@ -42,7 +42,6 @@ use Zend\Log\LoggerAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-
 class Symphony extends AbstractBase
     implements ServiceLocatorAwareInterface, LoggerAwareInterface
 {

@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
  */
-
 namespace VuFindTest\Harvester;
 
 use VuFind\Harvester\OAI;
@@ -57,7 +56,6 @@ use VuFind\Harvester\OAI;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
  */
-
 class OAITest extends \VuFindTest\Unit\TestCase
 {
     /**
