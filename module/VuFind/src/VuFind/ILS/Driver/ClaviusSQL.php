@@ -814,7 +814,7 @@ class ClaviusSQL extends AbstractBase
     public function getMyTransactions($user, $history = false)
     {
         //TODO mssql a Oracle
-        $sql = "SELECT DATE_FORMAT(k.datum2,'%e. %c. %Y') as duedate, 
+        $sql = "SELECT DATE_FORMAT(k.datum2,'%e. %c. %Y') as duedate,
                 TRIM(s.ckod) as barcode, t.druhdoku as druhdoku, t.tcislo as tcislo,
                 t.rokvydani as year, CONCAT(t.nazev, t.big_nazev) as title,
                 TRIM(s.pcislo) as item_id

@@ -291,7 +291,7 @@ class LDAP extends AbstractBase
 
         // Save credentials if applicable:
         if (!empty($catPassword) && !empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword); 
+            $user->saveCredentials($user->cat_username, $catPassword);
         }
 
         // Update the user in the database, then return it to the caller:

@@ -317,9 +317,9 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     
     /**
      * Convert function argument to a loggable string
-     * 
+     *
      * @param mixed $arg Argument
-     * 
+     *
      * @return string
      */
     protected function argumentToString($arg)
@@ -344,6 +344,6 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
         if (is_null($arg)) {
             return 'null';
         }
-        return "'$arg'";        
+        return "'$arg'";
     }
 }

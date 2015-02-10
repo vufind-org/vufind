@@ -139,7 +139,7 @@ class MultiIndexListenerTest extends TestCase
     {
         $params   = new ParamBag(
             array(
-                'facet.field' => array('field_1', 'field_2', 'field_3'), 
+                'facet.field' => array('field_1', 'field_2', 'field_3'),
                 'shards' => array(self::$shards['b'], self::$shards['c']),
             )
         );

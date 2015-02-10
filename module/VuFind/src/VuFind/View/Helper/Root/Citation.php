@@ -166,9 +166,9 @@ class Citation extends \Zend\View\Helper\AbstractHelper
 
     /**
      * Retrieve a citation in a particular format
-     * 
+     *
      * Returns the citation in the format specified
-     * 
+     *
      * @param string $format Citation format ('APA' or 'MLA')
      *
      * @return string        Formatted citation

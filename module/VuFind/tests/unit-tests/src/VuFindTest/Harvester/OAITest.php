@@ -247,7 +247,7 @@ class OAITest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * 
+     *
     /**
      * Test that a missing URL throws an exception.
      *

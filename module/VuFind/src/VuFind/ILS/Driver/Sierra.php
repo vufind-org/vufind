@@ -445,9 +445,9 @@ class Sierra extends AbstractBase
                             FROM
                             sierra_view.item_view
                         LEFT JOIN sierra_view.location
-                        ON (item_view.location_code = location.code) 
-                        LEFT JOIN sierra_view.location_name 
-                        ON (location.id = location_name.location_id) 
+                        ON (item_view.location_code = location.code)
+                        LEFT JOIN sierra_view.location_name
+                        ON (location.id = location_name.location_id)
                         LEFT JOIN sierra_view.checkout
                         ON (item_view.id = checkout.item_record_id)
                         LEFT JOIN sierra_view.varfield_view

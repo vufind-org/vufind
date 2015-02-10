@@ -1654,7 +1654,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 '<ns1:LookupUser>';
 
         if (!is_null($patron_agency_id)) {
-            $ret .= 
+            $ret .=
                    '<ns1:InitiationHeader>' .
                         '<ns1:ToAgencyId>' .
                             '<ns1:AgencyId>' .
@@ -1664,7 +1664,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     '</ns1:InitiationHeader>';
         }
 
-        $ret .= 
+        $ret .=
                     '<ns1:AuthenticationInput>' .
                         '<ns1:AuthenticationInputData>' .
                             htmlspecialchars($username) .
