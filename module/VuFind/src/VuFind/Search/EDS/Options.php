@@ -620,7 +620,7 @@ class Options extends \VuFind\Search\Base\Options
                     'description' => $this->getLabelForCheckboxFilter(
                         'eds_limiter_' . $key, $limiter['Label']
                     ),
-                    'selected' => ('y' == $limiter['DefaultOn'])? true : false
+                    'selected' => ('y' == $limiter['DefaultOn']) ? true : false
                 );
             }
         }

@@ -507,7 +507,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      */
     protected function appendQueryString($url, $params)
     {
-        $sep = (strpos($url, "?") === false)?'?':'&';
+        $sep = (strpos($url, "?") === false) ? '?' : '&';
         if ($params != null) {
             foreach ($params as $key => $value) {
                 $url .= $sep . $key . "=" . urlencode($value);
@@ -905,7 +905,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $barcode = (string) $z30->{'z30-barcode'};
             $transList[] = array(
                 //'type' => $type,
-                'id' => ($history)?null:$this->barcodeToID($barcode),
+                'id' => ($history) ? null : $this->barcodeToID($barcode),
                 'item_id' => $group,
                 'location' => $location,
                 'title' => $title,

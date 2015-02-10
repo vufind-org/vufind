@@ -288,7 +288,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
                 }
                 $basicBacktraceLine = $detailedBacktraceLine = $line['file'] .
                     ' line ' . $line['line'] . ' - ' .
-                    (isset($line['class'])? 'class = ' . $line['class'] . ', ' : '')
+                    (isset($line['class']) ? 'class = ' . $line['class'] . ', ' : '')
                     . 'function = ' . $line['function'];
                 $basicBacktrace .= "{$basicBacktraceLine}\n";
                 if (!empty($line['args'])) {

@@ -151,7 +151,7 @@ class Demo extends AbstractBase
         $loc = rand()%count($locations);
         return $returnText
             ? $locations[$loc]['locationDisplay']
-            :$locations[$loc]['locationID'];
+            : $locations[$loc]['locationID'];
     }
 
     /**

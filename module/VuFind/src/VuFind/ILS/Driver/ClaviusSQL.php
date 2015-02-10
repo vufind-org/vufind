@@ -353,7 +353,7 @@ class ClaviusSQL extends AbstractBase
                     $status = "K dispozici";
                     $duedate = '';
                 } else {
-                    $availability = ($item2['availability'] == 1)?true:false;
+                    $availability = ($item2['availability'] == 1) ? true : false;
                     $status = $item2['status'];
                     $duedate = $item2['duedate'];
                 }
@@ -440,7 +440,7 @@ class ClaviusSQL extends AbstractBase
                     'amount' => abs($fine['amount']),
                     'checkout' => null, // TODO maybe
                     'fine' => $reasons[$fine['reason']],
-                    'balance' => ($fine['amount']<0)?abs($fine['amount']):0,
+                    'balance' => ($fine['amount']<0) ? abs($fine['amount']) : 0,
                     'createdate' => $fine['createdate'],
                     'duedate' => null, // TODO maybe
                     'id' => null,        // TODO maybe
@@ -554,7 +554,7 @@ class ClaviusSQL extends AbstractBase
                     'address1' => $patron2['tulice'],
                     'address2' => $patron2['tmesto'],
                     'zip' => $patron2['tpsc'],
-                    'phone' => $patron2['telefon']?$patron2['telefon']:null,
+                    'phone' => $patron2['telefon'] ? $patron2['telefon'] : null,
                     'group' => null              //TODO - Maybe
                 );
             }
@@ -700,7 +700,7 @@ class ClaviusSQL extends AbstractBase
             $kod3int = $kod3int - 5;
         }
         substr_replace($password, chr($kod3int), 2);
-        $sexConstant = $woman?1:0;
+        $sexConstant = $woman ? 1 : 0;
         $kod6 = substr($password, 5, 1);
         $kod6r = chr(70 + (intval($kod6) * 2) + $sexConstant);
         if ($kod6 != " ") {
@@ -775,7 +775,7 @@ class ClaviusSQL extends AbstractBase
             'lastname' => $names['lastname'],
             'cat_username' => $username,
             'cat_password' => $password,
-            'email' => $patronRow['mail']?$patronRow['mail']:null,
+            'email' => $patronRow['mail'] ? $patronRow['mail'] : null,
             'major' => null,
             'college' => null
         );

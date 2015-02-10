@@ -371,7 +371,7 @@ class Summon extends SolrDefault
     public function getSeries()
     {
         return isset($this->fields['PublicationSeriesTitle'])
-            ? $this->fields['PublicationSeriesTitle']:array();
+            ? $this->fields['PublicationSeriesTitle'] : array();
     }
 
     /**

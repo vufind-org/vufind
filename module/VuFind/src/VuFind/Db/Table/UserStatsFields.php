@@ -61,7 +61,7 @@ class UserStatsFields extends Gateway
         // Statistics data
         foreach ($stats as $field => $value) {
             if (gettype($value) == "boolean") {
-                $value = ($value) ? "true":"false";
+                $value = ($value) ? "true" : "false";
             }
             $this->insert(
                 array(

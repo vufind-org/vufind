@@ -260,7 +260,7 @@ class EDS extends SolrDefault
         ) {
             foreach ($this->fields['FullText']['Links'] as $link) {
                 if (isset($link['Type']) && 'pdflink' == $link['Type']) {
-                    return isset($link['Url']) ? $link['Url']: false;
+                    return isset($link['Url']) ? $link['Url'] : false;
                 }
             }
         }
@@ -373,7 +373,7 @@ class EDS extends SolrDefault
     public function getPrimaryAuthor()
     {
         $authors = $this->getAuthors();
-        return empty($authors) ? '': $authors[0];
+        return empty($authors) ? '' : $authors[0];
     }
 
     /**
