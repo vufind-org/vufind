@@ -888,14 +888,12 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         $dept = str_replace(";", "", $dept);
         $dept = str_replace("*", "%", $dept);
 
-
         $sql = "select distinct(BIB_ITM_NBR) as BIB_ID " .
                "FROM CPY_ID, SHLF_LIST " .
                "WHERE CPY_ID.SHLF_LIST_KEY_NBR = SHLF_LIST.SHLF_LIST_KEY_NBR " .
                "AND UPPER(SUBSTR(SHLF_LIST.SHLF_LIST_STRNG_TEXT,3,20)) LIKE " .
                "UPPER('" . $dept . "%') " .
                "AND ROWNUM <= 1000";
-
 
         try {
             $sqlStmt = $this->db->prepare($sql);

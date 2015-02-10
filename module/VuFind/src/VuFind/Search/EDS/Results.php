@@ -89,7 +89,6 @@ class Results extends \VuFind\Search\Base\Results
         }
     }
 
-
     /**
      * Returns the stored list of facets for the last search
      *

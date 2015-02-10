@@ -345,7 +345,6 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         return $table->getSavedData($resourceId, $source, $listId, $this->id);
     }
 
-
     /**
      * Add/update a resource in the user's account.
      *

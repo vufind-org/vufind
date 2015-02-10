@@ -105,7 +105,6 @@ class OutlineGenerator
         $this->cache = $cache;
     }
 
-
     /**
      * Compares the cache date against a given date. If given date is newer,
      * return false in order to refresh cache. Else return cache!

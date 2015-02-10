@@ -103,7 +103,6 @@ class EdsController extends AbstractSearch
         return $this->resultsAction();
     }
 
-
     /**
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache.
@@ -300,7 +299,6 @@ class EdsController extends AbstractSearch
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
-
 
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             if ($e->hasTag('VuFind\Search\ParserError')) {

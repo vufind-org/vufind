@@ -91,7 +91,6 @@ class Sierra extends AbstractBase
         return $fullNumber;
     }
 
-
     /**
      * Uses the bib number in VuFind to look up the database ids for the associated
      * items

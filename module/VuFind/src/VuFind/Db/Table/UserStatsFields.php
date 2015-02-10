@@ -27,7 +27,6 @@
  */
 namespace VuFind\Db\Table;
 
-
 /**
  * Table Definition for statistics
  *

@@ -612,7 +612,6 @@ class PICA extends DAIA
         return array();
     }
 
-
     // protected functions to connect to PICA
 
     /**
@@ -655,7 +654,6 @@ class PICA extends DAIA
         fclose($conex);
         return $data;
     }
-
 
     /**
      * gets a PPN by its barcode

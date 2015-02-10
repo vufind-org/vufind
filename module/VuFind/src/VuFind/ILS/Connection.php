@@ -34,7 +34,6 @@ use VuFind\Exception\ILS as ILSException,
     VuFind\ILS\Driver\DriverInterface,
     VuFind\I18n\Translator\TranslatorAwareInterface;
 
-
 /**
  * Catalog Connection Class
  *

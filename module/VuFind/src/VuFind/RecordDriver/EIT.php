@@ -274,7 +274,6 @@ class EIT extends SolrDefault
             ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
-
         /**
      * Get an array of summary strings for the record.
      *

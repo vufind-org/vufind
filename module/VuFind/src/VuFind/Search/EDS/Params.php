@@ -228,8 +228,6 @@ class Params extends \VuFind\Search\Base\Params
         }
     }
 
-
-
     /**
      * Set up expanders based on VuFind settings.
      *
@@ -252,7 +250,6 @@ class Params extends \VuFind\Search\Base\Params
             }
         }
     }
-
 
     /**
      * Return the value for which search view we use
@@ -344,7 +341,6 @@ class Params extends \VuFind\Search\Base\Params
     {
         return $this->dateFacetSettings;
     }
-
 
     /**
      * Populate common limiters as checkbox facets

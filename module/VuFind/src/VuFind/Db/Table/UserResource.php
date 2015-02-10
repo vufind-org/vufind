@@ -159,7 +159,6 @@ class UserResource extends Gateway
             }
         };
 
-
         // Delete the rows:
         $this->delete($callback);
     }

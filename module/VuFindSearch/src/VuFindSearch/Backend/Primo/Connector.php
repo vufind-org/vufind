@@ -161,7 +161,6 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         return $result;
     }
 
-
     /**
      * Support method for query() -- perform inner search logic
      *

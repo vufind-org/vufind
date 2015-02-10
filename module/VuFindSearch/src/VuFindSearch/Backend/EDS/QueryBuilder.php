@@ -92,7 +92,6 @@ class QueryBuilder
         return $expression;
     }
 
-
     /// Internal API
 
     /**

@@ -120,8 +120,6 @@ class RecordCollection extends AbstractRecordCollection
         return $vufindFacetList;
     }
 
-
-
     /**
      * Return offset in the total search result set.
      *

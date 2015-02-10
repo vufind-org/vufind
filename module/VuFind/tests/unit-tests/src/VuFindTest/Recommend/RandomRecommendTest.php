@@ -163,7 +163,6 @@ class RandomRecommendTest extends TestCase
                 $this->equalTo(10)
             )->will($this->returnValue($this->getMock('VuFindSearch\Response\RecordCollectionInterface')));
 
-
         $recommend->setConfig("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
         $recommend->init($params, $request);
     }

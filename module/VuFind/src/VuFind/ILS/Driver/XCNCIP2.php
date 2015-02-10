@@ -170,7 +170,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
     }
 
-
     /**
      * Given a chunk of the availability response, extract the values needed
      * by VuFind.
@@ -572,7 +571,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         return $this->getConsortialHoldings($id, $patron, $ids);
     }
-
 
     /**
      * Get Purchase History

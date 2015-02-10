@@ -286,7 +286,6 @@ HERE;
         return array();
     }
 
-
     /**
      * Patron Login
      *
@@ -559,7 +558,6 @@ HERE;
             throw new ILSException($e->getMessage());
         }
     }
-
 
     /**
      * Only one of the following 2 function should be implemented.

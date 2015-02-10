@@ -85,7 +85,6 @@ class Threesixtylink implements DriverInterface
         return $feed;
     }
 
-
     /**
      * Parse Links
      *

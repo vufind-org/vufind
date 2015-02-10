@@ -387,7 +387,6 @@ class Horizon extends AbstractBase
         return current($status);
     }
 
-
     /**
      * Protected support method for getStatus.
      *
@@ -1064,7 +1063,6 @@ class Horizon extends AbstractBase
         for ($i = 0; $i < count($foundVersionParts); $i++) {
             $required = intval($requiredVersionParts[$i]);
             $found    = intval($foundVersionParts[$i]);
-
 
             if ($found > $required) {
                 // If found is greater than required stop checking

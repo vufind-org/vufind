@@ -371,7 +371,6 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultSort = $searchSettings->General->default_sort;
         }
 
-
         if (isset($searchSettings->General->default_amount)
             && isset($this->amountOptions[$searchSettings->General->default_amount])
         ) {
@@ -388,7 +387,6 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->default_view)) {
             $this->defaultView = 'list|' . $searchSettings->General->default_view;
         }
-
 
         if (isset($searchSettings->Advanced_Facet_Settings->special_facets)) {
             $this->specialAdvancedFacets

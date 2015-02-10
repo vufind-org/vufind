@@ -540,7 +540,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             ->with('123456')
             ->will($this->returnValue($driverReturn));
 
-
         $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
         $driver->setServiceLocator($sm);
 
@@ -777,7 +776,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $returnVal = $driver->getMyTransactions($patron);
         $this->assertTrue($returnVal);
     }
-
 
     /**
      * Testing method for getNewItems
@@ -2216,7 +2214,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $methodReturn = $driver->supportsMethod('getStatus', null);
         $this->assertTrue($methodReturn);
         $this->setProperty($driver, 'defaultDriver', null);
-
 
         //Case: Instance to use is in parameters but does not have method
             //Result: A return of false

@@ -101,7 +101,6 @@ class SpellingProcessor
         return $this->spellSkipNumeric;
     }
 
-
     /**
      * Get the spelling limit.
      *

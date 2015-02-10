@@ -129,7 +129,6 @@ class EbscoEdsApiException extends Exception
             ? $this->apiErrorDetails['Description'] : '';
     }
 
-
     /**
      * Known api detailed error description
      *

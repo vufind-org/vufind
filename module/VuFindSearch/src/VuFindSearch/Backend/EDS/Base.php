@@ -163,7 +163,6 @@ abstract class EdsApi_REST_Base
         return $this->call($url, $headers, $qs);
     }
 
-
     /**
      * Retrieves a record specified by its identifiers
      *

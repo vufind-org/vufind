@@ -664,5 +664,4 @@ class SearchController extends AbstractSearch
             : array();
     }
 
-
 }

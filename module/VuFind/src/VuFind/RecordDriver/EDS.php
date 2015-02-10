@@ -217,7 +217,6 @@ class EDS extends SolrDefault
             ? $this->fields['Header']['PubType'] : '';
     }
 
-
     /**
      * Get the publication type id of the record.
      *
