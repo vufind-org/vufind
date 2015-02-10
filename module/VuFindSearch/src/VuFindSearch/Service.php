@@ -289,12 +289,15 @@ class Service
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
         $args = compact('backend', 'id', 'params', 'context');
-        $backend = $this->resolve($backend, $args);
-        $args['backend_instance'] = $backend;
+        $backendInstance = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backendInstance;
 
-        $this->triggerPre($backend, $args);
+        $this->triggerPre($backendInstance, $args);
         try {
-            $response = $backend->similar($id, $params);
+            if (!($backendInstance instanceof Feature\SimilarInterface)) {
+                throw new BackendException("$backend does not support similar()");
+            }
+            $response = $backendInstance->similar($id, $params);
         } catch (BackendException $e) {
             $this->triggerError($e, $args);
             throw $e;

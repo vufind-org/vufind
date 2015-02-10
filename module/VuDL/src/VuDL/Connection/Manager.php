@@ -26,8 +26,6 @@
  * @link     http://vufind.org/wiki/
  */
 namespace VuDL\Connection;
-use VuFindHttp\HttpServiceInterface,
-    VuFindSearch\ParamBag;
 
 /**
  * VuDL connection manager

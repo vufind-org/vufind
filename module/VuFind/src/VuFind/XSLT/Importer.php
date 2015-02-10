@@ -43,12 +43,7 @@ use DOMDocument, VuFind\Config\Locator as ConfigLocator,
  */
 class Importer implements ServiceLocatorAwareInterface
 {
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
 
     /**
      * Save an XML file to the Solr index using the specified configuration.
@@ -190,28 +185,5 @@ class Importer implements ServiceLocatorAwareInterface
         }
 
         return $xsl;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Manager
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

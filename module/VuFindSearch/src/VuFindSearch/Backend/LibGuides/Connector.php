@@ -29,7 +29,6 @@
  */
 namespace VuFindSearch\Backend\LibGuides;
 use Zend\Http\Client as HttpClient;
-use Zend\Log\LoggerInterface;
 
 /**
  * LibGuides connector.
@@ -41,14 +40,9 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Connector
+class Connector implements \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Logger instance.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * The HTTP_Request object used for API transactions
@@ -100,18 +94,6 @@ class Connector
     }
 
     /**
-     * Set logger instance.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
      * Execute a search.  adds all the querystring parameters into
      * $this->client and returns the parsed response
      *
@@ -135,9 +117,7 @@ class Connector
                 = array_slice($result['documents'], $offset, $limit);
         } catch (\Exception $e) {
             if ($returnErr) {
-                if ($this->logger) {
-                    $this->logger->debug($e->getMessage());
-                }
+                $this->debug($e->getMessage());
                 $result = array(
                     'recordCount' => 0,
                     'documents' => array(),
@@ -163,9 +143,7 @@ class Connector
      */
     protected function call($qs, $method = 'GET')
     {
-        if ($this->logger) {
-            $this->logger->debug("{$method}: {$this->host}{$qs}");
-        }
+        $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
         if ($method == 'GET') {
             $baseUrl = $this->host . $qs;

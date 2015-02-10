@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -172,7 +172,7 @@ class Collection extends Fieldset
         }
 
         $this->object = $object;
-        $this->count  = count($object);
+        $this->count  = count($object) > $this->count ? count($object) : $this->count;
 
         return $this;
     }
@@ -197,17 +197,31 @@ class Collection extends Fieldset
 
         // Can't do anything with empty data
         if (empty($data)) {
-            $this->shouldCreateChildrenOnPrepareElement = false;
             return;
         }
 
         if (!$this->allowRemove && count($data) < $this->count) {
             throw new Exception\DomainException(sprintf(
-                'There are fewer elements than specified in the collection (%s). Either set the allow_remove option ' .
-                'to true, or re-submit the form.',
+                'There are fewer elements than specified in the collection (%s). Either set the allow_remove option '
+                . 'to true, or re-submit the form.',
                 get_class($this)
-                )
-            );
+            ));
+        }
+
+        // Check to see if elements have been replaced or removed
+        foreach ($this->byName as $name => $elementOrFieldset) {
+            if (isset($data[$name])) {
+                continue;
+            }
+
+            if (!$this->allowRemove) {
+                throw new Exception\DomainException(sprintf(
+                    'Elements have been removed from the collection (%s) but the allow_remove option is not true.',
+                    get_class($this)
+                ));
+            }
+
+            $this->remove($name);
         }
 
         foreach ($data as $key => $value) {
@@ -479,10 +493,13 @@ class Collection extends Fieldset
 
     /**
      * @return array
+     * @throws \Zend\Form\Exception\InvalidArgumentException
+     * @throws \Zend\Stdlib\Exception\InvalidArgumentException
+     * @throws \Zend\Form\Exception\DomainException
+     * @throws \Zend\Form\Exception\InvalidElementException
      */
     public function extract()
     {
-
         if ($this->object instanceof Traversable) {
             $this->object = ArrayUtils::iteratorToArray($this->object, false);
         }
@@ -494,39 +511,34 @@ class Collection extends Fieldset
         $values = array();
 
         foreach ($this->object as $key => $value) {
+            // If a hydrator is provided, our work here is done
             if ($this->hydrator) {
                 $values[$key] = $this->hydrator->extract($value);
-            } elseif ($value instanceof $this->targetElement->object) {
-                // @see https://github.com/zendframework/zf2/pull/2848
+                continue;
+            }
+            
+            // If the target element is a fieldset that can accept the provided value
+            // we should clone it, inject the value and extract the data
+            if ( $this->targetElement instanceof FieldsetInterface ) {
+                if ( ! $this->targetElement->allowObjectBinding($value) ) {
+                    continue;
+                }
                 $targetElement = clone $this->targetElement;
-                $targetElement->object = $value;
+                $targetElement->setObject($value);
                 $values[$key] = $targetElement->extract();
                 if (!$this->createNewObjects() && $this->has($key)) {
-                    $fieldset = $this->get($key);
-                    if ($fieldset instanceof Fieldset && $fieldset->allowObjectBinding($value)) {
-                        $fieldset->setObject($value);
-                    }
+                    $this->get($key)->setObject($value);
                 }
+                continue;
             }
-        }
-
-        foreach ($values as $name => $object) {
-            $fieldset = $this->addNewTargetElementInstance($name);
-
-            if ($fieldset->allowObjectBinding($object)) {
-                $fieldset->setObject($object);
-                $values[$name] = $fieldset->extract();
-            } else {
-                foreach ($fieldset->fieldsets as $childFieldset) {
-                    $childName = $childFieldset->getName();
-                    if (isset($object[$childName])) {
-                        $childObject = $object[$childName];
-                        if ($childFieldset->allowObjectBinding($childObject)) {
-                            $childFieldset->setObject($childObject);
-                            $values[$name][$childName] = $childFieldset->extract();
-                        }
-                    }
+            
+            // If the target element is a non-fieldset element, just use the value
+            if ( $this->targetElement instanceof ElementInterface ) {
+                $values[$key] = $value;
+                if (!$this->createNewObjects() && $this->has($key)) {
+                    $this->get($key)->setValue($value);
                 }
+                continue;
             }
         }
 
@@ -546,6 +558,7 @@ class Collection extends Fieldset
     /**
      * Add a new instance of the target element
      *
+     * @param string $name
      * @return ElementInterface
      * @throws Exception\DomainException
      */

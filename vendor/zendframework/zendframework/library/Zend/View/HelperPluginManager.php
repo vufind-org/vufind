@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -143,13 +143,29 @@ class HelperPluginManager extends AbstractPluginManager
      */
     public function injectTranslator($helper)
     {
-        if ($helper instanceof TranslatorAwareInterface) {
-            $locator = $this->getServiceLocator();
-            if ($locator && $locator->has('MvcTranslator')) {
-                $helper->setTranslator($locator->get('MvcTranslator'));
-            } elseif ($locator && $locator->has('translator')) {
-                $helper->setTranslator($locator->get('translator'));
-            }
+        if (!$helper instanceof TranslatorAwareInterface) {
+            return;
+        }
+
+        $locator = $this->getServiceLocator();
+
+        if (!$locator) {
+            return;
+        }
+
+        if ($locator->has('MvcTranslator')) {
+            $helper->setTranslator($locator->get('MvcTranslator'));
+            return;
+        }
+
+        if ($locator->has('Zend\I18n\Translator\TranslatorInterface')) {
+            $helper->setTranslator($locator->get('Zend\I18n\Translator\TranslatorInterface'));
+            return;
+        }
+
+        if ($locator->has('Translator')) {
+            $helper->setTranslator($locator->get('Translator'));
+            return;
         }
     }
 

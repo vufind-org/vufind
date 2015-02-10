@@ -365,14 +365,15 @@ class AbstractRecord extends AbstractBase
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+                $mailer->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
                 if ($this->params()->fromPost('ccself')
                     && $view->from != $view->to
                 ) {
-                    $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                    $mailer->sendRecord(
                         $view->from, $view->from, $view->message, $driver,
                         $this->getViewRenderer()
                     );

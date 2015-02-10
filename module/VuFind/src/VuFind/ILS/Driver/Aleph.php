@@ -37,7 +37,6 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
-use Zend\Log\LoggerInterface;
 use VuFindHttp\HttpServiceInterface;
 use DateTime;
 use VuFind\Exception\Date as DateException;
@@ -304,6 +303,9 @@ class AlephRestfulException extends ILSException
 class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Duedate configuration
      *
@@ -326,20 +328,6 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     protected $cacheManager;
 
     /**
-     * Logger object for debug info (or false for no debugging).
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
@@ -357,30 +345,6 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     ) {
         $this->dateConverter = $dateConverter;
         $this->cacheManager = $cacheManager;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**
@@ -522,7 +486,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $replyCode = (string) $result->{'reply-code'};
         if ($replyCode != "0000") {
             $replyText = (string) $result->{'reply-text'};
-            $this->logger->err(
+            $this->logError(
                 "DLF request failed", array(
                     'url' => $url, 'reply-code' => $replyCode,
                     'reply-message' => $replyText
@@ -599,20 +563,6 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             );
         }
         return $result;
-    }
-
-    /**
-     * Show a debug message.
-     *
-     * @param string $msg Debug message.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
     }
 
     /**

@@ -40,19 +40,14 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  */
 class Wikipedia implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * HTTP client
      *
      * @var \Zend\Http\Client
      */
     protected $client;
-
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
 
     /**
      * Selected language
@@ -76,41 +71,6 @@ class Wikipedia implements TranslatorAwareInterface
     public function __construct(\Zend\Http\Client $client)
     {
         $this->client = $client;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Wikipedia
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Get translator object.
-     *
-     * @return \Zend\I18n\Translator\Translator
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * Translate a string
-     *
-     * @param string $s String to translate
-     *
-     * @return string
-     */
-    public function translate($s)
-    {
-        return null === $this->translator ? $s : $this->translator->translate($s);
     }
 
     /**

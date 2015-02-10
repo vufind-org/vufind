@@ -33,8 +33,7 @@ use File_MARC, PDO, PDOException,
     VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\Validator\EmailAddress as EmailAddressValidator,
-    Zend\Log\LoggerInterface;
+    Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager ILS Driver
@@ -50,12 +49,10 @@ use File_MARC, PDO, PDOException,
 class Voyager extends AbstractBase
     implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait {
+        logError as error;
+    }
 
     /**
      * Database connection
@@ -87,13 +84,6 @@ class Voyager extends AbstractBase
     protected $dateFormat;
 
     /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
      * Whether to use holdings sort groups to sort holdings records
      *
      * @var bool
@@ -108,32 +98,6 @@ class Voyager extends AbstractBase
     public function __construct(\VuFind\Date\Converter $dateConverter)
     {
         $this->dateFormat = $dateConverter;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
     }
 
     /**
@@ -153,20 +117,6 @@ class Voyager extends AbstractBase
                 $logString .= ', params: ' . print_r($params, true);
             }
             $this->debug($logString);
-        }
-    }
-
-    /**
-     * Log an error message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function error($msg)
-    {
-        if ($this->logger) {
-            $this->logger->err(get_class($this) . ": $msg");
         }
     }
 
@@ -2408,32 +2358,6 @@ class Voyager extends AbstractBase
         }
 
         return $list;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Voyager
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    protected function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 
     /**

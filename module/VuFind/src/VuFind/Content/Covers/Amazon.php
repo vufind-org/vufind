@@ -40,6 +40,8 @@ use ZendService\Amazon\Amazon as AmazonService;
 class Amazon extends \VuFind\Content\AbstractCover
     implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Associate ID
      *
@@ -53,13 +55,6 @@ class Amazon extends \VuFind\Content\AbstractCover
      * @var string
      */
     protected $secret;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
 
     /**
      * Constructor
@@ -87,18 +82,6 @@ class Amazon extends \VuFind\Content\AbstractCover
             throw new \Exception('HTTP service missing.');
         }
         return $this->httpService->createClient($url);
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**
