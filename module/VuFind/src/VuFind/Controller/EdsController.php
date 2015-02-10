@@ -158,13 +158,13 @@ class EdsController extends AbstractSearch
             if (isset($list['LimiterValues'])) {
                 foreach ($list['LimiterValues'] as $key => $value) {
                     // Build the filter string for the URL:
-                    $fullFilter = $facet.':'.$value['Value'];
+                    $fullFilter = $facet . ':' . $value['Value'];
 
                     // If we haven't already found a selected facet and the current
                     // facet has been applied to the search, we should store it as
                     // the selected facet for the current control.
                     if ($searchObject) {
-                        $limitFilt = 'LIMIT|'.$fullFilter;
+                        $limitFilt = 'LIMIT|' . $fullFilter;
                         if ($searchObject->getParams()->hasFilter($limitFilt)) {
                             $facetList[$facet]['LimiterValues'][$key]['selected']
                                 = true;
@@ -202,7 +202,7 @@ class EdsController extends AbstractSearch
         // Process the expanders, assuming they came back
         foreach ($availableExpanders as $key => $value) {
             if ($searchObject) {
-                $expandFilt = 'EXPAND:'.$value['Value'];
+                $expandFilt = 'EXPAND:' . $value['Value'];
                 if ($searchObject->getParams()->hasFilter($expandFilt)) {
                     $availableExpanders[$key]['selected'] = true;
                     // Remove the filter from the search object -- we don't want
@@ -239,7 +239,7 @@ class EdsController extends AbstractSearch
                         $to = $range['to'] == '*' ? '12' : $range['to'];
                     }
                     $searchObject->getParams()
-                        ->removeFilter($key.':'.$value[0]['value']);
+                        ->removeFilter($key . ':' . $value[0]['value']);
                     break;
                 }
             }
@@ -263,7 +263,7 @@ class EdsController extends AbstractSearch
         // Process the facets, assuming they came back
         foreach ($searchModes as $key => $mode) {
             if ($searchObject) {
-                $modeFilter = 'SEARCHMODE:'.$mode['Value'];
+                $modeFilter = 'SEARCHMODE:' . $mode['Value'];
                 if ($searchObject->getParams()->hasFilter($modeFilter)) {
                     $searchModes[$key]['selected'] = true;
                     // Remove the filter from the search object -- we don't want

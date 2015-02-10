@@ -55,7 +55,7 @@ class Params extends \VuFind\Search\Base\Params
             foreach ($sources as $i => $current) {
                 $sources[$i] = $allShards[$current];
             }
-            $backendParams->set('filter', 'pz:id='.implode('|', $sources));
+            $backendParams->set('filter', 'pz:id=' . implode('|', $sources));
         }
 
         return $backendParams;

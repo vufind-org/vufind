@@ -140,7 +140,7 @@ class SpellingProcessor
         while ($token !== false) {
             // find double quoted tokens
             if (substr($token, 0, 1) == '"' && substr($token, -1) != '"') {
-                $token .= ' '.strtok('"').'"';
+                $token .= ' ' . strtok('"') . '"';
             }
             // skip boolean operators
             if (!in_array($token, $joins)) {

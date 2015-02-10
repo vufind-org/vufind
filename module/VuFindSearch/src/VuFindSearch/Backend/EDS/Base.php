@@ -136,7 +136,7 @@ abstract class EdsApi_REST_Base
     public function info($authenticationToken = null, $sessionToken = null)
     {
         $this->debugPrint("Info");
-        $url = $this->edsApiHost.'/info';
+        $url = $this->edsApiHost . '/info';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers);
     }
@@ -158,7 +158,7 @@ abstract class EdsApi_REST_Base
             . "$profile, guest: $isGuest, authToken: $authToken "
         );
         $qs = array('profile' => $profile, 'guest' => $isGuest);
-        $url = $this->edsApiHost.'/createsession';
+        $url = $this->edsApiHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
         return $this->call($url, $headers, $qs);
     }
@@ -188,7 +188,7 @@ abstract class EdsApi_REST_Base
         if (null != $highlightTerms) {
             $qs['highlightterms'] = $highlightTerms;
         }
-        $url = $this->edsApiHost.'/retrieve';
+        $url = $this->edsApiHost . '/retrieve';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
 
@@ -208,7 +208,7 @@ abstract class EdsApi_REST_Base
         // Query String Parameters
         $qs = $query->convertToQueryStringParameterArray();
         $this->debugPrint('Query: ' . print_r($qs, true));
-        $url = $this->edsApiHost.'/search';
+        $url = $this->edsApiHost . '/search';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
     }
@@ -227,7 +227,7 @@ abstract class EdsApi_REST_Base
         $this->debugPrint(
             "Authenticating: username: $username, password: $password, orgid: $orgid"
         );
-        $url = $this->authHost.'/uidauth';
+        $url = $this->authHost . '/uidauth';
         $org = isset($orgid) ? $orgid : $this->orgId;
         $authInfo = array();
         if (isset($username)) {
@@ -267,13 +267,13 @@ abstract class EdsApi_REST_Base
                         $cnt = $cnt + 1 ;
                         $finalParameterName = $parameterName;
                         if (SearchRequestModel::isParameterIndexed($key)) {
-                            $finalParameterName = $parameterName.'-'.$cnt;
+                            $finalParameterName = $parameterName . '-' . $cnt;
                         }
                         $queryParameters[]
-                            = $finalParameterName.'='.urlencode($subValue);
+                            = $finalParameterName . '=' . urlencode($subValue);
                     }
                 } else {
-                    $queryParameters[] = $key.'='.urlencode($value);
+                    $queryParameters[] = $key . '=' . urlencode($value);
                 }
             }
         }

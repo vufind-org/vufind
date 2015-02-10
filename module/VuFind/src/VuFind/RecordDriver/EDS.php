@@ -49,7 +49,7 @@ class EDS extends SolrDefault
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
-        return $dbid.','.$an;
+        return $dbid . ',' . $an;
     }
 
     /**
@@ -64,7 +64,7 @@ class EDS extends SolrDefault
             return '';
         }
         if (mb_strlen($title, 'UTF-8') > 20) {
-            $title = mb_substr($title, 0, 17, 'UTF-8').'...';
+            $title = mb_substr($title, 0, 17, 'UTF-8') . '...';
         }
         return $title;
     }

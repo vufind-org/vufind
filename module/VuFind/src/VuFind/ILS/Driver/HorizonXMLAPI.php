@@ -200,7 +200,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             // Where
             $sqlWhere = array(
                     "pls.display = 1",
-                    "bb.bbarcode=\"".addslashes($patron['id'])."\""
+                    "bb.bbarcode=\"" . addslashes($patron['id']) . "\""
             );
 
             // Order by
@@ -269,7 +269,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             $sqlJoin = array("borrower_barcode bb on bb.borrower# = b.borrower#");
 
             // Where
-            $sqlWhere = array("bb.bbarcode=\"".addslashes($patron['id'])."\"");
+            $sqlWhere = array("bb.bbarcode=\"" . addslashes($patron['id']) . "\"");
 
             $sqlArray = array(
                     'expressions' => $sqlSelect,
@@ -318,12 +318,12 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         foreach ($params as $key => $param) {
             if (is_array($param)) {
                 foreach ($param as $sub) {
-                    $queryString[] = $key. "=" .urlencode($sub);
+                    $queryString[] = $key . "=" . urlencode($sub);
                 }
             } else {
                 // This is necessary as Horizon expects spaces to be represented by
                 // "+" rather than the url_encode "%20" for Pick Up Locations
-                $queryString[] = $key. "=" .
+                $queryString[] = $key . "=" .
                     str_replace("%20", "+", urlencode($param));
             }
         }
@@ -866,7 +866,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getRenewDetails($checkOutDetails)
     {
-        $renewDetails = $checkOutDetails['item_id']."|".$checkOutDetails['barcode'];
+        $renewDetails = $checkOutDetails['item_id'] . "|" . $checkOutDetails['barcode'];
         return $renewDetails;
     }
 
@@ -884,7 +884,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['id']."|".$holdDetails['item_id'];
+        $cancelDetails = $holdDetails['id'] . "|" . $holdDetails['item_id'];
         return $cancelDetails;
     }
 }

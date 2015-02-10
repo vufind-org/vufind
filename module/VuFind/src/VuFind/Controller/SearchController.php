@@ -208,7 +208,7 @@ class SearchController extends AbstractSearch
             foreach ($list['list'] as $key => $value) {
                 // Build the filter string for the URL:
                 $fullFilter = ($value['operator'] == 'OR' ? '~' : '')
-                    . $facet.':"'.$value['value'].'"';
+                    . $facet . ':"' . $value['value'] . '"';
 
                 // If we haven't already found a selected facet and the current
                 // facet has been applied to the search, we should store it as

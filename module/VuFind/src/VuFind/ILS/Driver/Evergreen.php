@@ -78,15 +78,15 @@ class Evergreen extends AbstractBase
         try {
             $this->db = new PDO(
                 'pgsql:host='
-                .$this->config['Catalog']['hostname']
-                .' user='
-                .$this->config['Catalog']['user']
-                .' dbname='
-                .$this->config['Catalog']['database']
-                .' password='
-                .$this->config['Catalog']['password']
-                .' port='
-                .$this->config['Catalog']['port']
+                . $this->config['Catalog']['hostname']
+                . ' user='
+                . $this->config['Catalog']['user']
+                . ' dbname='
+                . $this->config['Catalog']['database']
+                . ' password='
+                . $this->config['Catalog']['password']
+                . ' port='
+                . $this->config['Catalog']['port']
             );
         } catch (PDOException $e) {
             throw $e;
@@ -405,11 +405,11 @@ HERE;
         $sql = "select billable_xact_summary.total_owed, " .
                "billable_xact_summary.balance_owed, " .
                "billable_xact_summary.last_billing_type, " .
-               "extract (year from billable_xact_summary.xact_start) ".
+               "extract (year from billable_xact_summary.xact_start) " .
                "as start_year, " .
-               "extract (month from billable_xact_summary.xact_start) ".
+               "extract (month from billable_xact_summary.xact_start) " .
                "as start_month, " .
-               "extract (day from billable_xact_summary.xact_start) ".
+               "extract (day from billable_xact_summary.xact_start) " .
                "as start_day, " .
                "billable_cirulations.target_copy " .
                "from $this->dbName.money.billable_xact_summary " .

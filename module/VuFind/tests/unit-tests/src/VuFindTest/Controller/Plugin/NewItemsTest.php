@@ -199,7 +199,7 @@ class NewItemsTest extends TestCase
     public function testGetSolrFilter()
     {
         $range = 30;
-        $expected = 'first_indexed:[NOW-' . $range .'DAY TO NOW]';
+        $expected = 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
         $newItems = new NewItems(new Config(array()));
         $this->assertEquals($expected, $newItems->getSolrFilter($range));
     }

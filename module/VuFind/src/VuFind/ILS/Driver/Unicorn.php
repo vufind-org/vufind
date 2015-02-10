@@ -1230,8 +1230,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         if (strlen($date) >= 8) {
             // format is MM/DD/YYYY HH:MI so it can be passed to strtotime
-            $formatted_date = substr($date, 4, 2).'/'.substr($date, 6, 2).
-                    '/'.substr($date, 0, 4);
+            $formatted_date = substr($date, 4, 2) . '/' . substr($date, 6, 2) .
+                    '/' . substr($date, 0, 4);
             if (strlen($date) > 8) {
                 $formatted_date .= ' ' . substr($date, 8, 2) . ':' .
                 substr($date, 10);
@@ -1387,7 +1387,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 if (strpos('68x', $subfield->getCode()) !== false) {
                     continue;
                 }
-                $decoded_holding .= ' '. $subfield->getData();
+                $decoded_holding .= ' ' . $subfield->getData();
             }
 
             $ndx = (int) ($linking
@@ -1398,7 +1398,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($textuals as $linking => $field) {
             $textual_holding = $field->getSubfield('a')->getData();
             foreach ($field->getSubfields('z') as $note) {
-                $textual_holding .= ' '. $note->getData();
+                $textual_holding .= ' ' . $note->getData();
             }
 
             $ndx = (int) ($linking . sprintf("%0{$link_digits}u", 0));

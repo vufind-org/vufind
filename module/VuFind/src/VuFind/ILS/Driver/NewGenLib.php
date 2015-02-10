@@ -222,7 +222,7 @@ class NewGenLib extends AbstractBase
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $type = "RECALLED ITEM - Return the item to the library";
             $rIdql = "select due_date, ta_date from cir_transaction " .
-                "where patron_id='" . $row['patron_id']."'";
+                "where patron_id='" . $row['patron_id'] . "'";
             try {
                 $sqlStmt2 = $this->db->prepare($rIdql);
                 $sqlStmt2->execute();

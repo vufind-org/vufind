@@ -149,7 +149,7 @@ class Symphony extends AbstractBase
         if (!isset($soapClients[$service])) {
             try {
                 $soapClients[$service] = new SoapClient(
-                    $this->config['WebServices']['baseURL']."/soap/$service?wsdl",
+                    $this->config['WebServices']['baseURL'] . "/soap/$service?wsdl",
                     $this->config['WebServices']['soapOptions']
                 );
             } catch (SoapFault $e) {

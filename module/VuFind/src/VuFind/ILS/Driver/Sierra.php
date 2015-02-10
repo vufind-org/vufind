@@ -255,10 +255,10 @@ class Sierra extends AbstractBase
             while ($row = pg_fetch_row($results)) {
                 if ($instructors[$row[2]] != null) {
                     $fakeId = $row[2] . "-" . $j;
-                    $instructors[$fakeId] = $row[0] . " (" . $row[1]. ")";
+                    $instructors[$fakeId] = $row[0] . " (" . $row[1] . ")";
                     $j++;
                 } else {
-                    $instructors[$row[2]] = $row[0] . " (" . $row[1]. ")";
+                    $instructors[$row[2]] = $row[0] . " (" . $row[1] . ")";
                 }
             }
             return $instructors;

@@ -100,7 +100,7 @@ class Solr extends AbstractBase
      */
     public function getFullList($field, $value = array('value' => '[* TO *]'))
     {
-        $query = new Query($field.':'.$value['value']);
+        $query = new Query($field . ':' . $value['value']);
         $params = new ParamBag();
         $params->add('fl', $field);
         $start = 0;
@@ -142,7 +142,7 @@ class Solr extends AbstractBase
                 if ($version) {
                     // Version specific
                     $browser = $group['doclist']['docs'][0]['browser']
-                        .' '.$group['doclist']['docs'][0]['browserVersion'];
+                        . ' ' . $group['doclist']['docs'][0]['browserVersion'];
                     if (isset($hashes[$browser])) {
                         $hashes[$browser] ++;
                     } elseif (count($hashes) < $limit) {

@@ -104,19 +104,19 @@ class Horizon extends AbstractBase
         $modifier = isset($sql['modifier']) ? $sql['modifier'] . " " : "";
 
         // Put String Together
-        $sqlString = "select ". $modifier . implode(", ", $sql['expressions']);
-        $sqlString .= " from " .implode(", ", $sql['from']);
+        $sqlString = "select " . $modifier . implode(", ", $sql['expressions']);
+        $sqlString .= " from " . implode(", ", $sql['from']);
         $sqlString .= (!empty($sql['join']))
-            ? " join " .implode(" join ", $sql['join']) : "";
+            ? " join " . implode(" join ", $sql['join']) : "";
         $sqlString .= (!empty($sql['innerJoin']))
-            ? " inner join " .implode(" inner join ", $sql['innerJoin']) : "";
+            ? " inner join " . implode(" inner join ", $sql['innerJoin']) : "";
         $sqlString .= (!empty($sql['leftOuterJoin']))
             ? " left outer join "
                 . implode(" left outer join ", $sql['leftOuterJoin'])
             : "";
-        $sqlString .= " where " .implode(" AND ", $sql['where']);
+        $sqlString .= " where " . implode(" AND ", $sql['where']);
         $sqlString .= (!empty($sql['order']))
-            ? " ORDER BY " .implode(", ", $sql['order']) : "";
+            ? " ORDER BY " . implode(", ", $sql['order']) : "";
 
         return $sqlString;
     }
@@ -416,7 +416,7 @@ class Horizon extends AbstractBase
         $bibIDs = implode(',', $idList);
 
         // Where
-        $sqlWhere = array("i.bib# in (" .$bibIDs . ")",
+        $sqlWhere = array("i.bib# in (" . $bibIDs . ")",
                           "i.staff_only = 0");
 
         $sqlArray = array('expressions' => $sqlExpressions,

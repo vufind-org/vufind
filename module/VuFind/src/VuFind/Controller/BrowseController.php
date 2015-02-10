@@ -260,7 +260,7 @@ class BrowseController extends AbstractBase
                 $view->paramTitle .= 'filter[]=dewey-ones:';
                 break;
             default:
-                $view->paramTitle .= 'filter[]='.$this->getCategory().':';
+                $view->paramTitle .= 'filter[]=' . $this->getCategory() . ':';
             }
             $view->paramTitle = str_replace(
                 '+AND+',
@@ -635,7 +635,7 @@ class BrowseController extends AbstractBase
     protected function quoteValues($array)
     {
         foreach ($array as $i => $result) {
-            $result['value'] = '"'.$result['value'].'"';
+            $result['value'] = '"' . $result['value'] . '"';
             $array[$i] = $result;
         }
         return $array;

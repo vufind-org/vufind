@@ -142,7 +142,7 @@ class LessCompiler
             }
         }
 
-        \Less_Cache::SetCacheDir(APPLICATION_PATH.'/themes/'.$theme.'/css/less/');
+        \Less_Cache::SetCacheDir(APPLICATION_PATH . '/themes/' . $theme . '/css/less/');
         \Less_Cache::CleanCache(); // deletes week old files
     }
 

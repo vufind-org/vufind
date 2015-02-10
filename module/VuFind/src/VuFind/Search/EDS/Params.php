@@ -218,12 +218,12 @@ class Params extends \VuFind\Search\Base\Params
                 list($key, $value) = explode(':', $limiter, 2);
                 $value = SearchRequestModel::escapeSpecialCharacters($value);
                 $edsLimiters[$key] = (!isset($edsLimiters[$key]))
-                     ? $value : $edsLimiters[$key].','.$value;
+                     ? $value : $edsLimiters[$key] . ',' . $value;
             }
         }
         if (!empty($edsLimiters)) {
             foreach ($edsLimiters as $key => $value) {
-                $params->add('limiters', $key.':'.$value);
+                $params->add('limiters', $key . ':' . $value);
             }
         }
     }
@@ -245,7 +245,7 @@ class Params extends \VuFind\Search\Base\Params
             $value = '';
             foreach ($this->expanders as $expander) {
                 $value = (!empty($value))
-                    ? $value.','.$expander : $expander;
+                    ? $value . ',' . $expander : $expander;
             }
             if (!empty($value)) {
                 $params->add('expander', $value);
@@ -397,7 +397,7 @@ class Params extends \VuFind\Search\Base\Params
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
             $list[$key] = array(
                 'desc' => $value,
-                'selected' => ($key == $this->getView().'|'.$this->getEdsView())
+                'selected' => ($key == $this->getView() . '|' . $this->getEdsView())
             );
         }
         return $list;

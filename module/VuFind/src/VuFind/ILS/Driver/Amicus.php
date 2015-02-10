@@ -222,7 +222,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     protected function sacaFecha($copyId)
     {
-        $circulacion = "SELECT to_char(CIRT_ITM_DUE_DTE,'dd-mm-yyyy') AS FECHADEV, ".
+        $circulacion = "SELECT to_char(CIRT_ITM_DUE_DTE,'dd-mm-yyyy') AS FECHADEV, " .
             "ROUND(CIRT_ITM_DUE_DTE - SYSDATE) AS DIFERENCIA " .
             "FROM CIRT_ITM " .
             "WHERE CPY_ID_NBR = '$copyId'";
@@ -255,8 +255,8 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     protected function sacaReservas($holdingId)
     {
-        $reservas = "SELECT COUNT(*) as reservados ".
-                    "FROM CIRTN_HLD ".
+        $reservas = "SELECT COUNT(*) as reservados " .
+                    "FROM CIRTN_HLD " .
                     "WHERE CPY_ID_NBR = '$holdingId'";
 
         $reservados = 0;
@@ -297,11 +297,11 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             "CPY_ID_NBR " .
             "from CPY_ID, SHLF_LIST, T_LCTN_NME_BUO " .
             "where CPY_ID.SHLF_LIST_KEY_NBR = SHLF_LIST.SHLF_LIST_KEY_NBR " .
-            "and CPY_ID.LCTN_NME_CDE = T_LCTN_NME_BUO.TBL_VLU_CDE ".
+            "and CPY_ID.LCTN_NME_CDE = T_LCTN_NME_BUO.TBL_VLU_CDE " .
             "and CPY_ID.BIB_ITM_NBR = '$id'";
 
-        $multipleLoc = "SELECT COUNT(DISTINCT(SHLF_LIST_KEY_NBR)) AS multiple ".
-                 "FROM CPY_ID ".
+        $multipleLoc = "SELECT COUNT(DISTINCT(SHLF_LIST_KEY_NBR)) AS multiple " .
+                 "FROM CPY_ID " .
                  "WHERE CPY_ID.BIB_ITM_NBR = '$id'";
 
         try {
@@ -447,14 +447,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     {
         include_once 'File/MARC.php';
 
-        $items = "select CPY_ID.BRCDE_NBR, CPY_ID.BIB_ITM_NBR, ".
-            "T_LCTN_NME_BUO.TBL_LNG_ENG_TXT ".
+        $items = "select CPY_ID.BRCDE_NBR, CPY_ID.BIB_ITM_NBR, " .
+            "T_LCTN_NME_BUO.TBL_LNG_ENG_TXT " .
             "as LOCATION, SHLF_LIST_SRT_FORM as CALLNUMBER, CPY_ID.CPY_ID_NBR as " .
             "CPY_ID_NBR " .
             "from CPY_ID, SHLF_LIST, T_LCTN_NME_BUO " .
             "where CPY_ID.SHLF_LIST_KEY_NBR = SHLF_LIST.SHLF_LIST_KEY_NBR " .
-            "AND CPY_ID.LCTN_NME_CDE = T_LCTN_NME_BUO.TBL_VLU_CDE ".
-            "and CPY_ID.BIB_ITM_NBR = '$id' ".
+            "AND CPY_ID.LCTN_NME_CDE = T_LCTN_NME_BUO.TBL_VLU_CDE " .
+            "and CPY_ID.BIB_ITM_NBR = '$id' " .
             "order by SHLF_LIST_SRT_FORM ASC, CPY_ID.CPY_ID_NBR ASC";
 
         $possibleQueries = array($items);
@@ -555,8 +555,8 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     public function patronLogin($barcode, $lname)
     {
-        $sql = "SELECT LOGIN , PASSWORD AS FIRST_NAME ".
-               "FROM LV_USER ".
+        $sql = "SELECT LOGIN , PASSWORD AS FIRST_NAME " .
+               "FROM LV_USER " .
                "WHERE PASSWORD = '$lname' AND LOGIN = '$barcode'";
 
         try {
@@ -601,9 +601,9 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         $transList = array();
 
         $sql = "SELECT TO_CHAR(CIRT_ITM.CIRT_ITM_DUE_DTE,'DD/MM/YYYY') " .
-            "AS DUEDATE, CIRT_ITM.BIB_ITM_NBR AS BIB_ID ".
-            "FROM LV_USER, CIRT_ITM ".
-            "WHERE LV_USER.PRSN_NBR = CIRT_ITM.PRSN_NBR ".
+            "AS DUEDATE, CIRT_ITM.BIB_ITM_NBR AS BIB_ID " .
+            "FROM LV_USER, CIRT_ITM " .
+            "WHERE LV_USER.PRSN_NBR = CIRT_ITM.PRSN_NBR " .
             "AND LV_USER.LOGIN =  '" . $patron['id'] . "'";
         try {
             $sqlStmt = $this->db->prepare($sql);
@@ -633,13 +633,13 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     {
         $fineList = array();
 
-        $sql = "SELECT UNIQUE TO_CHAR(CIRT_ITM.CIRT_ITM_CHRG_OUT_DTE,'DD/MM/YYYY') ".
-            "AS ORIG_CHARGE_DATE, ".
-            "TO_CHAR(CIRT_ITM.CIRT_ITM_DUE_DTE,'DD/MM/YYYY')  AS DUE_DATE, ".
-            "CIRT_ITM.BIB_ITM_NBR AS BIB_ID ".
-            "FROM CIRT_ITM, LV_USER ".
-            "WHERE CIRT_ITM.PRSN_NBR = LV_USER.PRSN_NBR ".
-            "AND CIRT_ITM_DUE_DTE < SYSDATE ".
+        $sql = "SELECT UNIQUE TO_CHAR(CIRT_ITM.CIRT_ITM_CHRG_OUT_DTE,'DD/MM/YYYY') " .
+            "AS ORIG_CHARGE_DATE, " .
+            "TO_CHAR(CIRT_ITM.CIRT_ITM_DUE_DTE,'DD/MM/YYYY')  AS DUE_DATE, " .
+            "CIRT_ITM.BIB_ITM_NBR AS BIB_ID " .
+            "FROM CIRT_ITM, LV_USER " .
+            "WHERE CIRT_ITM.PRSN_NBR = LV_USER.PRSN_NBR " .
+            "AND CIRT_ITM_DUE_DTE < SYSDATE " .
             "AND  LV_USER.LOGIN='" . $patron['id'] . "'";
         try {
             $sqlStmt = $this->db->prepare($sql);
@@ -675,8 +675,8 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             "CIRTN_HLD.CIRTN_HLD_TYP_CDE AS  HOLD_RECALL_TYPE, " .
             "TO_CHAR(CIRTN_HLD.TME_HLD_END_DTE,'DD/MM/YYYY') AS EXPIRE_DATE, " .
             "TO_CHAR(CIRTN_HLD.CIRTN_HLD_CRTE_DTE,'DD/MM/YYYY') AS " .
-            "CREATE_DATE FROM CIRTN_HLD, LV_USER ".
-            "WHERE CIRTN_HLD.PRSN_NBR = LV_USER.PRSN_NBR ".
+            "CREATE_DATE FROM CIRTN_HLD, LV_USER " .
+            "WHERE CIRTN_HLD.PRSN_NBR = LV_USER.PRSN_NBR " .
             "AND LV_USER.LOGIN = '" . $patron['id'] . "'";
         try {
             $sqlStmt = $this->db->prepare($sql);
@@ -707,21 +707,21 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     public function getMyProfile($patron)
     {
         $sql = "SELECT DISTINCT  PRSN.PRSN_NBR AS UNO, (SELECT p1.PRSN_CMCTN_NBR " .
-            "FROM PRSN_CMCTN p1 ".
-            "WHERE p1.prsn_nbr = PRSN.prsn_nbr AND  PRSN_CMCTN_TYP_CDE = 7) tfno, ".
+            "FROM PRSN_CMCTN p1 " .
+            "WHERE p1.prsn_nbr = PRSN.prsn_nbr AND  PRSN_CMCTN_TYP_CDE = 7) tfno, " .
             "(SELECT p1.PRSN_CMCTN_NBR  FROM PRSN_CMCTN p1 WHERE p1.prsn_nbr = " .
-            "PRSN.prsn_nbr AND  ".
-            "PRSN_CMCTN_TYP_CDE = 1) email, ".
+            "PRSN.prsn_nbr AND  " .
+            "PRSN_CMCTN_TYP_CDE = 1) email, " .
             "PRSN.PRSN_SRNME_SRT_FORM AS  LAST_NAME, PRSN.PRSN_1ST_NME_SRT_FORM " .
-            "AS FIRST_NAME, ".
+            "AS FIRST_NAME, " .
             "CONCAT(PSTL_ADR_ST_NME,CONCAT(' ',CONCAT(PSTL_ADR_ST_NBR,CONCAT(' ', " .
             "CONCAT(PSTL_ADR_FLR_NBR,CONCAT(' ',PSTL_ADR_RM_NBR)))))) " .
-            "AS ADDRESS_LINE1, PRSN_PSTL_ADR.PSTL_ADR_CTY_NME ".
-            "AS ADDRESS_LINE2, PRSN_PSTL_ADR.PSTL_ADR_PSTL_CDE AS ZIP_POSTAL ".
-            "FROM PRSN, PRSN_CMCTN, PRSN_PSTL_ADR, LV_USER ".
-            "WHERE   PRSN_CMCTN.PRSN_nbr = PRSN.PRSN_NBR (+) ".
-            "AND PRSN.PRSN_NBR = PRSN_PSTL_ADR.PRSN_NBR (+) ".
-            "AND LV_USER.PRSN_NBR = PRSN.PRSN_NBR ".
+            "AS ADDRESS_LINE1, PRSN_PSTL_ADR.PSTL_ADR_CTY_NME " .
+            "AS ADDRESS_LINE2, PRSN_PSTL_ADR.PSTL_ADR_PSTL_CDE AS ZIP_POSTAL " .
+            "FROM PRSN, PRSN_CMCTN, PRSN_PSTL_ADR, LV_USER " .
+            "WHERE   PRSN_CMCTN.PRSN_nbr = PRSN.PRSN_NBR (+) " .
+            "AND PRSN.PRSN_NBR = PRSN_PSTL_ADR.PRSN_NBR (+) " .
+            "AND LV_USER.PRSN_NBR = PRSN.PRSN_NBR " .
             "AND LV_USER.LOGIN = UPPER('" . $patron['id'] . "')";
 
         try {
@@ -761,7 +761,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     public function getHoldLink($recordId, $details)
     {
-        return $this->config['Catalog']['hold'].$recordId;
+        return $this->config['Catalog']['hold'] . $recordId;
     }
 
     /**
@@ -890,7 +890,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
 
 
         $sql = "select distinct(BIB_ITM_NBR) as BIB_ID " .
-               "FROM CPY_ID, SHLF_LIST ".
+               "FROM CPY_ID, SHLF_LIST " .
                "WHERE CPY_ID.SHLF_LIST_KEY_NBR = SHLF_LIST.SHLF_LIST_KEY_NBR " .
                "AND UPPER(SUBSTR(SHLF_LIST.SHLF_LIST_STRNG_TEXT,3,20)) LIKE " .
                "UPPER('" . $dept . "%') " .
@@ -951,9 +951,9 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
     public function getSuppressedRecords()
     {
         $list = array();
-        $sql = "SELECT BIB_AUT_ITM_NBR as BIB_ID ".
-            "FROM CTLGG_TRSTN_ACTVT_LOG ".
-            "WHERE STATS_TRSTN_TYP_CDE = 4 ".
+        $sql = "SELECT BIB_AUT_ITM_NBR as BIB_ID " .
+            "FROM CTLGG_TRSTN_ACTVT_LOG " .
+            "WHERE STATS_TRSTN_TYP_CDE = 4 " .
             "AND trstn_log_tmest >= SYSDATE -30";
         try {
             $sqlStmt = $this->db->prepare($sql);

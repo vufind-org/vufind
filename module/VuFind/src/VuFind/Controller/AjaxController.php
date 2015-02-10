@@ -554,8 +554,8 @@ class AjaxController extends AbstractBase
      */
     public static function storeError($errno, $errstr, $errfile, $errline)
     {
-        self::$php_errors[] = "ERROR [$errno] - ".$errstr."<br />\n"
-            . " Occurred in ".$errfile." on line ".$errline.".";
+        self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br />\n"
+            . " Occurred in " . $errfile . " on line " . $errline . ".";
         return true;
     }
 

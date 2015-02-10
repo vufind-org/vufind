@@ -211,7 +211,7 @@ class Writer
             $tabStr .= ' ';
         }
 
-        return $key . $tabStr . "= ". $this->buildContentValue($value);
+        return $key . $tabStr . "= " . $this->buildContentValue($value);
     }
 
     /**
@@ -256,7 +256,7 @@ class Writer
             if (isset($comments['sections'][$key]['before'])) {
                 $content .= $comments['sections'][$key]['before'];
             }
-            $content .= "[".$key."]";
+            $content .= "[" . $key . "]";
             if (!empty($comments['sections'][$key]['inline'])) {
                 $content .= "\t" . $comments['sections'][$key]['inline'];
             }

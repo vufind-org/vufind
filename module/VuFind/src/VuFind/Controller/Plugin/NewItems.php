@@ -199,6 +199,6 @@ class NewItems extends AbstractPlugin
      */
     public function getSolrFilter($range)
     {
-        return 'first_indexed:[NOW-' . $range .'DAY TO NOW]';
+        return 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
     }
 }

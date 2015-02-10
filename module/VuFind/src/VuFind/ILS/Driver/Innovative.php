@@ -318,7 +318,7 @@ class Innovative extends AbstractBase implements
 
         //Build request link
         $link = $this->config['Catalog']['url'] . '/search?/.b' . $id_ . '/.b' .
-            $id_ . '/1%2C1%2C1%2CB/request~b'. $id_;
+            $id_ . '/1%2C1%2C1%2CB/request~b' . $id_;
         //$link = $this->config['Catalog']['url'] . '/record=b' . $id_;
 
         return $link;

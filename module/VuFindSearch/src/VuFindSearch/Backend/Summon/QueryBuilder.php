@@ -122,7 +122,7 @@ class QueryBuilder
                     $excludes[] = join(" OR ", $thisGroup);
                 } else {
                     $groups[]
-                        = join(" ".$params->getOperator()." ", $thisGroup);
+                        = join(" " . $params->getOperator() . " ", $thisGroup);
                 }
             } else {
                 // Basic Search

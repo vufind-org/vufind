@@ -731,7 +731,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                     "as location_name from " .
                     $this->dbName . ".CIRC_POLICY_LOCS, $this->dbName.LOCATION, " .
                     "$this->dbName.REQUEST_GROUP_LOCATION rgl " .
-                    "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' ".
+                    "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' " .
                     "and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID " .
                     "and rgl.GROUP_ID=:requestGroupId " .
                     "and rgl.LOCATION_ID = LOCATION.LOCATION_ID";
@@ -741,7 +741,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                     "NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) " .
                     "as location_name from " .
                     $this->dbName . ".CIRC_POLICY_LOCS, $this->dbName.LOCATION " .
-                    "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' ".
+                    "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' " .
                     "and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID";
             }
 
@@ -1051,7 +1051,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // Add Params
         $queryString = array();
         foreach ($params as $key => $param) {
-            $queryString[] = urlencode($key). "=" . urlencode($param);
+            $queryString[] = urlencode($key) . "=" . urlencode($param);
         }
 
         // Build Hierarchy
@@ -1997,7 +1997,7 @@ EOT;
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['item_id']."|".$holdDetails['reqnum'];
+        $cancelDetails = $holdDetails['item_id'] . "|" . $holdDetails['reqnum'];
         return $cancelDetails;
     }
 

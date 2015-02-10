@@ -248,7 +248,7 @@ class ClaviusSQL extends AbstractBase
             . "WHERE s.datumvloz > DATE_SUB(CURDATE(),INTERVAL "
             . $this->db->quote($daysOld)
             . " DAY) AND s.datumvloz <= DATE_SUB(CURDATE(),INTERVAL "
-            . $this->db->quote($this->hideNewItemsDays) ." DAY)";
+            . $this->db->quote($this->hideNewItemsDays) . " DAY)";
         if ($fundId) {
             $sql .= " AND s.lokace = " . $this->db->quote($fundId);
         }

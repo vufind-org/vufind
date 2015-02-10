@@ -1326,7 +1326,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['id']."|".$holdDetails['requestId'];
+        $cancelDetails = $holdDetails['id'] . "|" . $holdDetails['requestId'];
         return $cancelDetails;
     }
 
@@ -1357,7 +1357,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             );
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
-                'ns1:CancelRequestItemResponse/'.
+                'ns1:CancelRequestItemResponse/' .
                 'ns1:UserId/ns1:UserIdentifierValue'
             );
             $itemId = (string)$itemId;
@@ -1392,7 +1392,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelStorageRetrievalRequestDetails($callslipDetails)
     {
-        $cancelDetails = $callslipDetails['id']."|".$callslipDetails['requestId'];
+        $cancelDetails = $callslipDetails['id'] . "|" . $callslipDetails['requestId'];
         return $cancelDetails;
     }
 

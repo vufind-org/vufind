@@ -126,7 +126,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $url = $this->ws_host . $this->ws_app . $api_query;
 
-        $signature_text = $http_method.$url.$date.$patronpassword;
+        $signature_text = $http_method . $url . $date . $patronpassword;
         $signature = base64_encode(
             hash_hmac('sha1', $signature_text, $this->ws_api_key, true)
         );
@@ -343,7 +343,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         // all activations are for now(), for now.
         // microtime is msec or sec?? seems to have changed
-        $activationdate = '/Date(' . intval(microtime(true) * 1000) .')/';
+        $activationdate = '/Date(' . intval(microtime(true) * 1000) . ')/';
 
         $jsonrequest = array(
             'PatronID' => $holdDetails['patron']['id'],

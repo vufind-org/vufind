@@ -98,11 +98,11 @@ class UserStatsFields extends Gateway
             );
             $select->where->equalTo('field', $fields[0]);
             for ($i = 1;$i<count($fields);$i++) {
-                $select->where->equalTo('field'.$i.'.field', $fields[$i]);
+                $select->where->equalTo('field' . $i . '.field', $fields[$i]);
                 $select->join(
-                    array('field'.$i => 'user_stats_fields'),
-                    'user_stats_fields.id=field'.$i.'.id',
-                    array($fields[$i] => 'field'.$i.'.value')
+                    array('field' . $i => 'user_stats_fields'),
+                    'user_stats_fields.id=field' . $i . '.id',
+                    array($fields[$i] => 'field' . $i . '.value')
                 );
             }
             foreach ($values as $key => $value) {

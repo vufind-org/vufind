@@ -386,7 +386,7 @@ class Options extends \VuFind\Search\Base\Options
 
         //View preferences
         if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = 'list|'.$searchSettings->General->default_view;
+            $this->defaultView = 'list|' . $searchSettings->General->default_view;
         }
 
 
@@ -616,7 +616,7 @@ class Options extends \VuFind\Search\Base\Options
             foreach ($this->commonLimiters as $key) {
                 $limiter = $this->limiterOptions[$key] ;
                 $ssLimiterOptions[$key] = array(
-                    'selectedvalue' => 'LIMIT|'.$key.':y',
+                    'selectedvalue' => 'LIMIT|' . $key . ':y',
                     'description' => $this->getLabelForCheckboxFilter(
                         'eds_limiter_' . $key, $limiter['Label']
                     ),
@@ -639,7 +639,7 @@ class Options extends \VuFind\Search\Base\Options
             foreach ($this->commonExpanders as $key) {
                 $expander = $this->expanderOptions[$key];
                 $ssExpanderOptions[$key] = array(
-                    'selectedvalue' => 'EXPAND:'.$key,
+                    'selectedvalue' => 'EXPAND:' . $key,
                     'description' => $this->getLabelForCheckboxFilter(
                         'eds_expander_' . $key, $expander['Label']
                     ),
@@ -694,7 +694,7 @@ class Options extends \VuFind\Search\Base\Options
             //expanders
             $expanders = $this->getDefaultExpanders();
             foreach ($expanders as $expander) {
-                $this->defaultFilters[] = 'EXPAND:'.$expander;
+                $this->defaultFilters[] = 'EXPAND:' . $expander;
             }
 
             //limiters
@@ -704,7 +704,7 @@ class Options extends \VuFind\Search\Base\Options
                     // only select limiters can be defaulted on limiters can be
                     // defaulted
                     $val = $value['LimiterValues'][0]['Value'];
-                    $this->defaultFilters[] = 'LIMIT|'.$key.':'.$val;
+                    $this->defaultFilters[] = 'LIMIT|' . $key . ':' . $val;
                 }
             }
         }

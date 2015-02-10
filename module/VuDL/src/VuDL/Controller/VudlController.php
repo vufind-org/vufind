@@ -213,7 +213,7 @@ class VudlController extends AbstractVuDL
         $data['keys'] = array_keys($data);
         try {
             $view = $renderer->render(
-                'vudl/views/'.$data['filetype'].'.phtml',
+                'vudl/views/' . $data['filetype'] . '.phtml',
                 $data
             );
         } catch(\Exception $e) {

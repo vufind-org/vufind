@@ -210,13 +210,13 @@ class TagsController extends AbstractAdmin
         $tag = $this->getTable('tags')
             ->select(array('id' => $this->getParam('tag_id')))
             ->current();
-        $tagMsg = (false !== $tag) ? $tag->tag. " (" . $tag->id . ")" : " All";
+        $tagMsg = (false !== $tag) ? $tag->tag . " (" . $tag->id . ")" : " All";
 
         $resource = $this->getTable('resource')
             ->select(array('id' => $this->getParam('resource_id')))
             ->current();
         $resourceMsg = (false !== $resource)
-            ? $resource->title. " (" . $resource->id . ")" : " All";
+            ? $resource->title . " (" . $resource->id . ")" : " All";
 
         $messages[] = array(
             'msg' => 'tag_delete_warning',

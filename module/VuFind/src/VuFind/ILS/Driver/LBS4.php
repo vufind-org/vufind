@@ -91,7 +91,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         if (function_exists("sybase_pconnect")
             && isset($this->config['Catalog']['database'])
         ) {
-            putenv("SYBASE=".$this->config['Catalog']['sybpath']);
+            putenv("SYBASE=" . $this->config['Catalog']['sybpath']);
             $this->db = sybase_pconnect(
                 $this->config['Catalog']['sybase'],
                 $this->config['Catalog']['username'],
@@ -135,8 +135,8 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         $sybid = substr($ppn, 0, -1); //strip checksum
         $sql = "select o.loan_indication, o.signature, v.loan_status"
              . " from ous_copy_cache o, volume v"
-             . " where o.iln=".$this->opaciln
-             . " and o.ppn=".$sybid
+             . " where o.iln=" . $this->opaciln
+             . " and o.ppn=" . $sybid
              . " and o.epn *= v.epn"; //outer join
         try {
             $sqlStmt = sybase_query($sql);
@@ -146,7 +146,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $loan_indi  = $row[0];
                 $label = substr($row[1], 4);
                 $locid = substr($row[1], 0, 3);
-                $location = $this->translate($this->opaciln."/". $locid);
+                $location = $this->translate($this->opaciln . "/" . $locid);
                 $loan_status  = $row[2];
 
                 $reserve = 'N';
@@ -228,8 +228,8 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              . ", v.volume_number, o.signature"
              . ", o.holding, o.type_of_material_copy"
              . " from ous_copy_cache o, volume v, titles_copy t"
-             . " where o.iln=".$this->opaciln
-             . " and o.ppn=".$sybid
+             . " where o.iln=" . $this->opaciln
+             . " and o.ppn=" . $sybid
              . " and o.epn *= v.epn"//outer join
              . " and t.epn = o.epn"
              . " and t.iln = o.iln"
@@ -252,7 +252,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $callnumber = current(explode(',', substr($row[5], 4)));
 
                 if ($locid != '') {
-                    $location = $this->opaciln."/". $locid;
+                    $location = $this->opaciln . "/" . $locid;
                 }
                 if ($row[6] != '') {
                     $summary = array($row[6]);
@@ -401,7 +401,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     protected function getLoanexpire($vol)
     {
         $sql = "select expiry_date_loan from loans_requests"
-             . " where volume_number=".$vol."";
+             . " where volume_number=" . $vol . "";
         try {
             $sqlStmt = sybase_query($sql);
             $result = false;
@@ -433,13 +433,13 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     {
         if (isset($details['item_id'])) {
             $epn = $details['item_id'];
-            $hold = $this->opcloan."?MTR=mon"
-                        ."&BES=".$this->opacfno
-                        ."&EPN=".$this->prfz($epn);
+            $hold = $this->opcloan . "?MTR=mon"
+                        . "&BES=" . $this->opacfno
+                        . "&EPN=" . $this->prfz($epn);
             return $hold;
         }
-        return $this->opcloan."?MTR=mon" ."&BES=".$this->opacfno
-               ."&EPN=".$this->prfz($id);
+        return $this->opcloan . "?MTR=mon" . "&BES=" . $this->opacfno
+               . "&EPN=" . $this->prfz($id);
     }
 
     /**
@@ -487,18 +487,18 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              . ",b.iln"
              . ",b.language_code"
              . " from borrower b, pincode p"
-             . " where b.borrower_bar='".$barcode."'"
+             . " where b.borrower_bar='" . $barcode . "'"
              . " and b.address_id_nr=p.address_id_nr"
-             . " and b.iln=".$this->opaciln
+             . " and b.iln=" . $this->opaciln
              . " and p.hashnumber = "
-             . "     ascii(substring(convert(char(12),'".$pin."',104),1,1))"
-             . " + 2*ascii(substring(convert(char(12),'".$pin."',104),2,1))"
-             . " + 3*ascii(substring(convert(char(12),'".$pin."',104),3,1))"
-             . " + 4*ascii(substring(convert(char(12),'".$pin."',104),4,1))"
-             . " + 5*ascii(substring(convert(char(12),'".$pin."',104),5,1))"
-             . " + 6*ascii(substring(convert(char(12),'".$pin."',104),6,1))"
-             . " + 7*ascii(substring(convert(char(12),'".$pin."',104),7,1))"
-             . " + 8*ascii(substring(convert(char(12),'".$pin."',104),8,1))";
+             . "     ascii(substring(convert(char(12),'" . $pin . "',104),1,1))"
+             . " + 2*ascii(substring(convert(char(12),'" . $pin . "',104),2,1))"
+             . " + 3*ascii(substring(convert(char(12),'" . $pin . "',104),3,1))"
+             . " + 4*ascii(substring(convert(char(12),'" . $pin . "',104),4,1))"
+             . " + 5*ascii(substring(convert(char(12),'" . $pin . "',104),5,1))"
+             . " + 6*ascii(substring(convert(char(12),'" . $pin . "',104),6,1))"
+             . " + 7*ascii(substring(convert(char(12),'" . $pin . "',104),7,1))"
+             . " + 8*ascii(substring(convert(char(12),'" . $pin . "',104),8,1))";
         try {
             $result = array();
             $sqlStmt = sybase_query($sql);
@@ -552,7 +552,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              . ",a.address_code"
              . " from borrower b, address a"
              . " where b.address_id_nr=a.address_id_nr"
-             . "   and b.borrower_bar='".$user['id']."'"
+             . "   and b.borrower_bar='" . $user['id'] . "'"
              . "   order by a.address_code asc";
         try {
             $result = array();
@@ -562,7 +562,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $result = array(
                           'firstname' => $row[1],
                           'lastname'  => $row[2],
-                          'address1'  => $row[10].', '.$row[9].' '.$row[11],
+                          'address1'  => $row[10] . ', ' . $row[9] . ' ' . $row[11],
                           //'zip'     => $row[14],
                           'email'     => $row[3],
                           'phone'     => $row[12],
@@ -579,9 +579,9 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 if ($row) {
                     if ($row[8] == $row[13]) { //reminder address first
                         $result['address2'] = $result['address1'];
-                        $result['address1'] = $row[10].', '.$row[9].' '.$row[11];
+                        $result['address1'] = $row[10] . ', ' . $row[9] . ' ' . $row[11];
                     } else {
-                        $result['address2'] = $row[10].', '.$row[9].' '.$row[11];
+                        $result['address2'] = $row[10] . ', ' . $row[9] . ' ' . $row[11];
                     }
                 }
                 return $result;
@@ -610,7 +610,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         $aid = $patron['address_id_nr'];
         $iln = $patron['iln'];
         $lang = $patron['lang'];
-        $sql = "exec loans_requests_rm_003 ".$aid.", ".$iln.", ".$lang;
+        $sql = "exec loans_requests_rm_003 " . $aid . ", " . $iln . ", " . $lang;
         try {
             $result = array();
             $count = 0;
@@ -653,20 +653,20 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         $iln = $patron['iln'];
         //$lang = $patron['lang'];
         $sql = "select o.ppn"
-            .", o.shorttitle"
-            .", rtrim(convert(char(20),r.reservation_date_time,104))"
-            .", rtrim(convert(char(20),l.expiry_date_reminder,104))"
-            .", r.counter_nr_destination"
-            .", l.no_reminders"
-            .", l.period_of_loan"
-            ." from reservation r, loans_requests l, ous_copy_cache o, volume v"
-            ." where r.address_id_nr=". $aid .""
-            ." and l.volume_number=r.volume_number"
-            ." and v.volume_number=l.volume_number"
-            ." and v.epn=o.epn"
-            ." and l.iln=o.iln"
-            ." and l.iln=".$iln
-            ."";
+            . ", o.shorttitle"
+            . ", rtrim(convert(char(20),r.reservation_date_time,104))"
+            . ", rtrim(convert(char(20),l.expiry_date_reminder,104))"
+            . ", r.counter_nr_destination"
+            . ", l.no_reminders"
+            . ", l.period_of_loan"
+            . " from reservation r, loans_requests l, ous_copy_cache o, volume v"
+            . " where r.address_id_nr=" . $aid . ""
+            . " and l.volume_number=r.volume_number"
+            . " and v.volume_number=l.volume_number"
+            . " and v.epn=o.epn"
+            . " and l.iln=o.iln"
+            . " and l.iln=" . $iln
+            . "";
         try {
             $result = array();
             $sqlStmt = sybase_query($sql);
@@ -721,30 +721,30 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         $iln = $patron['iln'];
         //$lang = $patron['lang'];
         $sql = "select o.ppn"
-            .", r.costs_code"
-            .", r.costs"
-            .", rtrim(convert(char(20),r.date_of_issue,104))"
-            .", rtrim(convert(char(20),r.date_of_creation,104))"
-            .", 'Overdue' as fines"
-            .", o.shorttitle"
-            ." from requisition r, ous_copy_cache o, volume v"
-            ." where r.address_id_nr=". $aid .""
-            ." and r.iln=".$iln
-            ." and r.id_number=v.volume_number"
-            ." and v.epn=o.epn"
-            ." and r.iln=o.iln"
-            ." and r.costs_code in (1, 2, 3, 4, 8)"
-            ." union select id_number"
-            .", r.costs_code"
-            .", r.costs"
-            .", rtrim(convert(char(20),r.date_of_issue,104))"
-            .", rtrim(convert(char(20),r.date_of_creation,104))"
-            .", r.extra_information"
-            .", '' as zero"
-            ." from requisition r"
-            ." where r.address_id_nr=". $aid .""
-            ." and r.costs_code not in (1, 2, 3, 4, 8)"
-            ."";
+            . ", r.costs_code"
+            . ", r.costs"
+            . ", rtrim(convert(char(20),r.date_of_issue,104))"
+            . ", rtrim(convert(char(20),r.date_of_creation,104))"
+            . ", 'Overdue' as fines"
+            . ", o.shorttitle"
+            . " from requisition r, ous_copy_cache o, volume v"
+            . " where r.address_id_nr=" . $aid . ""
+            . " and r.iln=" . $iln
+            . " and r.id_number=v.volume_number"
+            . " and v.epn=o.epn"
+            . " and r.iln=o.iln"
+            . " and r.costs_code in (1, 2, 3, 4, 8)"
+            . " union select id_number"
+            . ", r.costs_code"
+            . ", r.costs"
+            . ", rtrim(convert(char(20),r.date_of_issue,104))"
+            . ", rtrim(convert(char(20),r.date_of_creation,104))"
+            . ", r.extra_information"
+            . ", '' as zero"
+            . " from requisition r"
+            . " where r.address_id_nr=" . $aid . ""
+            . " and r.costs_code not in (1, 2, 3, 4, 8)"
+            . "";
         try {
             $result = array();
             $sqlStmt = sybase_query($sql);
@@ -809,9 +809,9 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             $p = 0;
         }
         if ($p == 10) {
-            $ret = $str."X";
+            $ret = $str . "X";
         } else {
-            $ret = $str.$p;
+            $ret = $str . $p;
         }
         return $ret;
     }

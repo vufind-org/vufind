@@ -225,7 +225,7 @@ class DPLATerms implements RecommendInterface
                     'provider' => is_array($doc->dataProvider)
                         ? current($doc->dataProvider)
                         : $doc->dataProvider,
-                    'link' => 'http://dp.la/item/'.$doc->id
+                    'link' => 'http://dp.la/item/' . $doc->id
                 );
                 if (isset($doc->$desc)) {
                     $results[$i]['desc'] = is_array($doc->$desc)

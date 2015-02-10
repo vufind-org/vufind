@@ -106,7 +106,7 @@ class Manager
             $index ++;
         }
         throw new \Exception(
-            'VuDL Connection Failed to resolved method "'.$methodName.'"'
+            'VuDL Connection Failed to resolved method "' . $methodName . '"'
         );
     }
 }

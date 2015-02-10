@@ -84,10 +84,10 @@ class QueryBuilder
         $fieldCode = ($query->getHandler() == 'AllFields')
             ? '' : $query->getHandler();  //fieldcode
         if (!empty($fieldCode)) {
-            $expression = $fieldCode.':'.$expression;
+            $expression = $fieldCode . ':' . $expression;
         }
         if (!empty($operator)) {
-            $expression = $operator.','.$expression;
+            $expression = $operator . ',' . $expression;
         }
         return $expression;
     }

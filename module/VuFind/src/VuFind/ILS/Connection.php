@@ -222,7 +222,7 @@ class Connection implements TranslatorAwareInterface
         ) ? $this->getDriver()->getConfig($function, $params) : false;
 
         // See if we have a corresponding check method to analyze the response:
-        $checkMethod = "checkMethod".$function;
+        $checkMethod = "checkMethod" . $function;
         if (!method_exists($this, $checkMethod)) {
             return false;
         }
