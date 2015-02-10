@@ -28,9 +28,7 @@
  */
 namespace VuFind\Search\Factory;
 
-
 use VuFindSearch\Backend\Solr\Backend;
-
 
 /**
  * Factory for the default SOLR backend.

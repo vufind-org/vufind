@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search\EDS;
 
-
 /**
  * EDS API Options
  *

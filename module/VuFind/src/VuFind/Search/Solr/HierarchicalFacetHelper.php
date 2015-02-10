@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search\Solr;
 
-
 /**
  * Functions for manipulating facets
  *

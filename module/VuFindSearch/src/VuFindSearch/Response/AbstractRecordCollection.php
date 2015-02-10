@@ -26,9 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Response;
-
 
 /**
  * Abstract record collection (implements some shared low-level functionality).
