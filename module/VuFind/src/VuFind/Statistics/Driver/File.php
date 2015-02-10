@@ -111,7 +111,7 @@ class File extends AbstractBase
     {
         $xml = str_repeat("\t", $tab)."<doc>\n";
         $tab++;
-        foreach ($data as $tag=>$value) {
+        foreach ($data as $tag => $value) {
             $xml .= str_repeat("\t", $tab);
             $insert = (strtolower(gettype($value)) == 'boolean')
                 ? ($value)

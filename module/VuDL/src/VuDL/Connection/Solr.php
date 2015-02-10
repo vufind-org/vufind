@@ -276,7 +276,7 @@ class Solr extends AbstractBase
             }
             // Get info on our record
             $parents = $data->response->docs[0];
-            foreach ($parents->hierarchy_parent_id as $i=>$cid) {
+            foreach ($parents->hierarchy_parent_id as $i => $cid) {
                 array_push($queue, $cid);
                 if (!isset($tree[$cid])) {
                     $tree[$cid] = array(
@@ -322,7 +322,7 @@ class Solr extends AbstractBase
         }
         $license = $docs->$licenseField;
         $license = $license[0];
-        foreach ($setLicenses as $tell=>$value) {
+        foreach ($setLicenses as $tell => $value) {
             if (strpos($license, $tell)) {
                 return array($license, $value);
             }

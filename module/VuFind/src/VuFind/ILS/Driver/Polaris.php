@@ -117,7 +117,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return obj
      */
-    protected function makeRequest($api_query, $http_method="GET",
+    protected function makeRequest($api_query, $http_method = "GET",
         $patronpassword = "", $json = false
     ) {
         // TODO, just make this for this one call

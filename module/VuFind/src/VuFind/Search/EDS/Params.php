@@ -111,7 +111,7 @@ class Params extends \VuFind\Search\Base\Params
             $backendParams->set('view', $view);
         }
 
-        $mode= $options->getSearchMode();
+        $mode = $options->getSearchMode();
         if (isset($mode)) {
             $backendParams->set('searchMode', $mode);
         }
@@ -213,7 +213,7 @@ class Params extends \VuFind\Search\Base\Params
         //group limiters with same id together
         $edsLimiters = array();
         foreach ($this->limiters as $limiter) {
-            if (isset($limiter) &&!empty($limiter)) {
+            if (isset($limiter) && !empty($limiter)) {
                 // split the id/value
                 list($key, $value) = explode(':', $limiter, 2);
                 $value = SearchRequestModel::escapeSpecialCharacters($value);

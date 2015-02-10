@@ -1535,7 +1535,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $last_date = $holdDetails['requiredBy'];
 
         // Assume an error response:
-        $response = array('success' => false, 'status' =>"hold_error_fail");
+        $response = array('success' => false, 'status' => "hold_error_fail");
 
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];

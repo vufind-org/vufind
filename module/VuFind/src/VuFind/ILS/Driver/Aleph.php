@@ -176,11 +176,11 @@ class AlephTranslator
         $lib = $matches[1];
         $no1 = $matches[2];
         if ($no1 == "##") {
-            $no1="";
+            $no1 = "";
         }
         $no2 = $matches[3];
         if ($no2 == "##") {
-            $no2="";
+            $no2 = "";
         }
         $desc = iconv($charset, 'UTF-8', $matches[5]);
         $key = trim($lib) . "|" . trim($no1) . "|" . trim($no2);
@@ -432,7 +432,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      *
      * @return SimpleXMLElement
      */
-    protected function doXRequest($op, $params, $auth=false)
+    protected function doXRequest($op, $params, $auth = false)
     {
         if (!$this->xserver_enabled) {
             throw new \Exception(
@@ -472,7 +472,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @return SimpleXMLElement
      */
     protected function doRestDLFRequest($path_elements, $params = null,
-        $method='GET', $body = null
+        $method = 'GET', $body = null
     ) {
         $path = '';
         foreach ($path_elements as $path_element) {
@@ -510,7 +510,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $sep = (strpos($url, "?") === false)?'?':'&';
         if ($params != null) {
             foreach ($params as $key => $value) {
-                $url.= $sep . $key . "=" . urlencode($value);
+                $url .= $sep . $key . "=" . urlencode($value);
                 $sep = "&";
             }
         }
@@ -526,7 +526,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      *
      * @return SimpleXMLElement
      */
-    protected function doHTTPRequest($url, $method='GET', $body = null)
+    protected function doHTTPRequest($url, $method = 'GET', $body = null)
     {
         if ($this->debug_enabled) {
             $this->debug("URL: '$url'");
@@ -572,7 +572,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      */
     protected function parseId($id)
     {
-        if (count($this->bib)==1) {
+        if (count($this->bib) == 1) {
             return array($this->bib[0], $id);
         } else {
             return explode('-', $id);
@@ -866,7 +866,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
-    public function getMyTransactions($user, $history=false)
+    public function getMyTransactions($user, $history = false)
     {
         $userId = $user['id'];
         $transList = array();
@@ -1138,10 +1138,10 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $barcode = (string) $z30->{'z30-barcode'};
             $checkout = (string) $z31->{'z31-date'};
             $id = $this->barcodeToID($barcode);
-            if ($transactiontype=="Debit") {
-                $mult=-100;
-            } elseif ($transactiontype=="Credit") {
-                $mult=100;
+            if ($transactiontype == "Debit") {
+                $mult = -100;
+            } elseif ($transactiontype == "Credit") {
+                $mult = 100;
             }
             $amount
                 = (float)(preg_replace("/[\(\)]/", "", (string) $z31->{'z31-sum'}))
@@ -1215,7 +1215,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      */
     public function getMyProfileX($user)
     {
-        $recordList=array();
+        $recordList = array();
         if (!isset($user['college'])) {
             $user['college'] = $this->useradm;
         }
@@ -1346,7 +1346,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         } catch (\Exception $ex) {
             throw new ILSException($ex->getMessage());
         }
-        $patron=array();
+        $patron = array();
         $name = $xml->z303->{'z303-name'};
         if (strstr($name, ",")) {
             list($lastName, $firstName) = explode(",", $name);
@@ -1545,7 +1545,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                         false
                     );
                     $id = $result->xpath('//doc_number/text()');
-                    if (count($this->bib)==1) {
+                    if (count($this->bib) == 1) {
                         return $id[0];
                     } else {
                         return $base . "-" . $id[0];
@@ -1624,7 +1624,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
      */
-    public function getPickUpLocations($patron, $holdInfo=null)
+    public function getPickUpLocations($patron, $holdInfo = null)
     {
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(
@@ -1656,7 +1656,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      *
      * @return string       The default pickup location for the patron.
      */
-    public function getDefaultPickUpLocation($patron, $holdInfo=null)
+    public function getDefaultPickUpLocation($patron, $holdInfo = null)
     {
         if ($holdInfo != null) {
             $details = $this->getHoldingInfoForItem(

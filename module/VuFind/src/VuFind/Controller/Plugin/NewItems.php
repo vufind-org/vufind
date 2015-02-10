@@ -78,7 +78,7 @@ class NewItems extends AbstractPlugin
 
         // Build a list of unique IDs
         $bibIDs = array();
-        for ($i=0; $i<count($newItems['results']); $i++) {
+        for ($i = 0; $i<count($newItems['results']); $i++) {
             $bibIDs[] = $newItems['results'][$i]['id'];
         }
 

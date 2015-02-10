@@ -153,7 +153,7 @@ class Fedora extends AbstractBase
             $dc
         );
         $details = array();
-        foreach ($dc[2] as $i=>$detail) {
+        foreach ($dc[2] as $i => $detail) {
             $details[$dc[1][$i]] = $detail;
         }
         if ($format) {
@@ -210,7 +210,7 @@ class Fedora extends AbstractBase
         $response = $this->query($query);
         $list = explode("\n", $response->getBody());
         $items = array();
-        for ($i=1;$i<count($list);$i++) {
+        for ($i = 1;$i<count($list);$i++) {
             if (empty($list[$i])) {
                 continue;
             }
@@ -259,7 +259,7 @@ class Fedora extends AbstractBase
         if (count($list) > 2) {
             $items = array();
             $sequenced = true;
-            for ($i=1;$i<count($list);$i++) {
+            for ($i = 1;$i<count($list);$i++) {
                 if (empty($list[$i])) {
                     continue;
                 }
@@ -271,7 +271,7 @@ class Fedora extends AbstractBase
                 }
                 $items[] = array(
                     'seq' => $seq,
-                    'id' =>$id
+                    'id' => $id
                 );
             }
             if ($sequenced) {
@@ -298,7 +298,7 @@ class Fedora extends AbstractBase
         $response = $this->query($query);
         $list = explode("\n", $response->getBody());
         $items = array();
-        for ($i=1;$i<count($list);$i++) {
+        for ($i = 1;$i<count($list);$i++) {
             if (empty($list[$i])) {
                 continue;
             }
@@ -332,7 +332,7 @@ class Fedora extends AbstractBase
         $response = $this->query($query);
         $list = explode("\n", trim($response->getBody(), "\n"));
         $tree = array();
-        for ($i=1;$i<count($list);$i++) {
+        for ($i = 1;$i<count($list);$i++) {
             list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
             $parent = substr($parent, 12);
             if (!isset($tree[$parent])) {
@@ -396,7 +396,7 @@ class Fedora extends AbstractBase
         }
         if ($renderer != null) {
             $ret['div'] = $renderer
-                ->render('vudl/techinfo.phtml', array('record'=>$record));
+                ->render('vudl/techinfo.phtml', array('record' => $record));
         }
         return $ret;
     }
@@ -445,7 +445,7 @@ class Fedora extends AbstractBase
             $xml = $this->getDatastreamContent($id, 'LICENSE');
             preg_match('/xlink:href="(.*?)"/', $xml, $license);
             $license = $license[1];
-            foreach ($setLicenses as $tell=>$value) {
+            foreach ($setLicenses as $tell => $value) {
                 if (strpos($license, $tell)) {
                     return array($license, $value);
                 }
@@ -469,10 +469,10 @@ class Fedora extends AbstractBase
             'type'  => 'tuples',
             'flush' => false,
             'lang'  => 'itql',
-            'format'=> 'CSV',
+            'format' => 'CSV',
             'query' => $query
         );
-        foreach ($options as $key=>$value) {
+        foreach ($options as $key => $value) {
             $data[$key] = $value;
         }
         $client = $this->getHttpClient($this->getQueryURL());

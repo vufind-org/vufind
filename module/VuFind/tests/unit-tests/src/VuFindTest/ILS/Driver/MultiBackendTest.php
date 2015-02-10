@@ -114,7 +114,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $driver = $this->getDriver();
 
-        $drivers = array('d1' => 'Voyager', 'd2'=> 'Demo');
+        $drivers = array('d1' => 'Voyager', 'd2' => 'Demo');
         $this->setProperty($driver, 'drivers', $drivers);
 
         $result = $this->callMethod($driver, 'getSourceFromParams', array(''));

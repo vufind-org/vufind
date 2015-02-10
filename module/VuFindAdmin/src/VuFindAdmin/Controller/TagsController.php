@@ -222,7 +222,7 @@ class TagsController extends AbstractAdmin
             'msg' => 'tag_delete_warning',
             'tokens' => array('%count%' => $count)
         );
-        if (false !== $user || false!== $tag || false !== $resource) {
+        if (false !== $user || false !== $tag || false !== $resource) {
             $messages[] = array(
                 'msg' => 'tag_delete_filter',
                 'tokens' => array(

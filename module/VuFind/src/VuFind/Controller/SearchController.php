@@ -146,7 +146,7 @@ class SearchController extends AbstractSearch
      */
     protected function getIllustrationSettings($savedSearch = false)
     {
-        $illYes= array(
+        $illYes = array(
             'text' => 'Has Illustrations', 'value' => 1, 'selected' => false
         );
         $illNo = array(

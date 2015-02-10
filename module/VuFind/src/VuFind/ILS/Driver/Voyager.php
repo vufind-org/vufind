@@ -1499,7 +1499,7 @@ class Voyager extends AbstractBase
         try {
             $sqlStmt = $this->executeSQL($sql);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $processFine= $this->processFinesData($row);
+                $processFine = $this->processFinesData($row);
                 $fineList[] = $processFine;
             }
             return $fineList;

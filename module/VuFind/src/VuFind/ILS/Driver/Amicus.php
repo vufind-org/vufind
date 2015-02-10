@@ -203,9 +203,9 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $prestados = $row['PRESTADO'];
             if ($row['PRESTADO'] == 0) {
-                $prestados="Disponible";
+                $prestados = "Disponible";
             } else {
-                $prestados="No disponible";
+                $prestados = "No disponible";
             }
         }
         return $prestados;
@@ -350,12 +350,12 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                             'callnumber' => $textoSign
                         );
                     } else {
-                        $multiple=$row['LOCATION'];
-                        if ($multiple=='Deposito2') {
-                            $multiple="Depósito2";
+                        $multiple = $row['LOCATION'];
+                        if ($multiple == 'Deposito2') {
+                            $multiple = "Depósito2";
                         }
-                        if ($multiple=='Deposito') {
-                            $multiple="Depósito";
+                        if ($multiple == 'Deposito') {
+                            $multiple = "Depósito";
                         }
                         $data[$row['BIB_ITM_NBR']] = array(
                             'id' => $id,
@@ -474,12 +474,12 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $data = array();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 // Determine Location
-                $loc=$row['LOCATION'];
-                if ($loc=='Deposito2') {
-                    $loc="Depósito2";
+                $loc = $row['LOCATION'];
+                if ($loc == 'Deposito2') {
+                    $loc = "Depósito2";
                 }
-                if ($loc=='Deposito') {
-                    $loc="Depósito";
+                if ($loc == 'Deposito') {
+                    $loc = "Depósito";
                 }
 
                 $status = $this->sacaStatus($row['CPY_ID_NBR']);

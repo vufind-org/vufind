@@ -1452,7 +1452,7 @@ EOT;
         if (empty($patron) || empty($requestData) || empty($requestData['bibId'])
             || empty($type)
         ) {
-            return array('success' => false, 'status' =>"hold_error_fail");
+            return array('success' => false, 'status' => "hold_error_fail");
         }
 
         // Build request

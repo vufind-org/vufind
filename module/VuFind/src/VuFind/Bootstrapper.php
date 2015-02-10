@@ -298,7 +298,7 @@ class Bootstrapper
             return;
         }
 
-        $config =& $this->config;
+        $config = & $this->config;
         $browserCallback = array($this, 'detectBrowserLanguage');
         $callback = function ($event) use ($config, $browserCallback) {
             $validBrowserLanguage = call_user_func($browserCallback);

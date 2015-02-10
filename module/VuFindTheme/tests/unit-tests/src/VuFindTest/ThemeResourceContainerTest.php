@@ -64,7 +64,7 @@ class ThemeResourceContainerTest extends Unit\TestCase
     {
         $container = new ResourceContainer();
         $container->addCss(array('c', 'd.css'));
-        $container->addLessCss(array('active'=>true, 'a', 'b', 'c'));
+        $container->addLessCss(array('active' => true, 'a', 'b', 'c'));
         $container->addLessCss('c');
         $container->addLessCss('d');
         $this->assertEquals(array(), array_diff(array('a', 'b', 'c', 'd'), $container->getLessCss()));

@@ -160,13 +160,13 @@ class Solr extends AbstractBase
             $start += $limit;
         } while (count($groups['session']['groups']) > 0);
         $solrBrowsers = array();
-        foreach ($hashes as $browser=>$count) {
+        foreach ($hashes as $browser => $count) {
             $newBrowser = array(
                 'browserName' => $browser,
                 'count' => $count
             );
             // Insert sort (limit to listLength)
-            for ($i=0;$i<$listLength-1 && $i<count($solrBrowsers);$i++) {
+            for ($i = 0;$i<$listLength-1 && $i<count($solrBrowsers);$i++) {
                 if ($count > $solrBrowsers[$i]['count']) {
                     // Insert in order
                     array_splice($solrBrowsers, $i, 0, array($newBrowser));

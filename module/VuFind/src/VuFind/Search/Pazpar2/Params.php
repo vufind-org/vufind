@@ -52,7 +52,7 @@ class Params extends \VuFind\Search\Base\Params
         $sources = $this->getSelectedShards();
         if (!empty($sources)) {
             $allShards = $this->getOptions()->getShards();
-            foreach ($sources as $i=>$current) {
+            foreach ($sources as $i => $current) {
                 $sources[$i] = $allShards[$current];
             }
             $backendParams->set('filter', 'pz:id='.implode('|', $sources));

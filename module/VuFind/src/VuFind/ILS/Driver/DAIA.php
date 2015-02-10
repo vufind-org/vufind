@@ -208,8 +208,8 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
         $status = array();
         for ($b = 0; $documentlist->item($b) !== null; $b++) {
             $itemlist = $documentlist->item($b)->getElementsByTagName('item');
-            $ilslink='';
-            if ($documentlist->item($b)->attributes->getNamedItem('href')!==null) {
+            $ilslink = '';
+            if ($documentlist->item($b)->attributes->getNamedItem('href') !== null) {
                 $ilslink = $documentlist->item($b)->attributes
                     ->getNamedItem('href')->nodeValue;
             }

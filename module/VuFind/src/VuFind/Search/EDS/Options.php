@@ -129,7 +129,7 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
         $this->viewOptions = array(
             'list|title' => 'Title View', 'list|brief' => 'Brief View',
-            'list|detailed'=>'Detailed View'
+            'list|detailed' => 'Detailed View'
         );
         $this->apiInfo = $apiInfo;
         $this->setOptionsFromApi($searchSettings);
@@ -462,7 +462,7 @@ class Options extends \VuFind\Search\Base\Options
             if (isset($availCriteria['AvailableSearchModes'])) {
                 foreach ($availCriteria['AvailableSearchModes'] as $mode) {
                     $this->modeOptions[$mode['Mode']] = array(
-                        'Label'=>$mode['Label'], 'Value' => $mode['Mode']
+                        'Label' => $mode['Label'], 'Value' => $mode['Mode']
                     );
                     if (isset($mode['DefaultOn'])
                         &&  'y' == $mode['DefaultOn']
@@ -489,7 +489,7 @@ class Options extends \VuFind\Search\Base\Options
             }
 
             //Limiters
-            $this->limiterOptions= array();
+            $this->limiterOptions = array();
             if (isset($availCriteria['AvailableLimiters'])) {
                 foreach ($availCriteria['AvailableLimiters'] as $limiter) {
                     $val = '';

@@ -583,7 +583,7 @@ class Symphony extends AbstractBase
                      * it is insufficient to provide just the location
                      * description as the "location."
                      */
-                    if (count($this->config['LibraryFilter']['include_only'])!=1) {
+                    if (count($this->config['LibraryFilter']['include_only']) != 1) {
                         $location = "$library - $location";
                     }
                 }
@@ -1507,7 +1507,7 @@ class Symphony extends AbstractBase
                 $details[$barcode] = array(
                     'success' => true,
                     'new_date' => date('j-M-y', strtotime($renewal->dueDate)),
-                    'new_time' =>date('g:i a', strtotime($renewal->dueDate)),
+                    'new_time' => date('g:i a', strtotime($renewal->dueDate)),
                     'item_id' => $renewal->itemID,
                     'sysMessage' => $renewal->message
                 );
@@ -1653,7 +1653,7 @@ class Symphony extends AbstractBase
     {
         $libraries = array();
 
-        foreach ($this->getPolicyList('LIBR') as $key=>$library) {
+        foreach ($this->getPolicyList('LIBR') as $key => $library) {
             $libraries[] = array(
                 'locationID' => $key,
                 'locationDisplay' => $library

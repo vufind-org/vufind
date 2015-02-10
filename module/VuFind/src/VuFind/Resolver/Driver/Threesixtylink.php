@@ -133,7 +133,7 @@ class Threesixtylink implements DriverInterface
                 }
                 if ($elems->length > 0) {
                     $href = $elems->item(0)->nodeValue;
-                    $record['href']= $href;
+                    $record['href'] = $href;
                     $record['service_type'] = 'getFullTxt';
                 } else {
                     $record['service_type'] = 'getHolding';

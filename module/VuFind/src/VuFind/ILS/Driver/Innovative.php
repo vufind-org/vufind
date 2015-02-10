@@ -171,7 +171,7 @@ class Innovative extends AbstractBase implements
             $cols = preg_split("/<t(h|d)([^>]*)>/", $row);
 
             // for each th or td section, do the following.
-            for ($i=0; $i < sizeof($cols); $i++) {
+            for ($i = 0; $i < sizeof($cols); $i++) {
                 // replace non blocking space encodings with a space.
                 $cols[$i] = str_replace("&nbsp;", " ", $cols[$i]);
                 // remove html comment tags

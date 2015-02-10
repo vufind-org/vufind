@@ -95,12 +95,12 @@ class IpRange implements PermissionProviderInterface
         $inList = false;
         foreach ((array)$rangeIP as $range) {
             if (preg_match('/-/', $range)) {
-                $tmp=preg_split('/-/', $range);
-                $mylist[$count]['start']=$tmp[0];
-                $mylist[$count]['end']=$tmp[1];
+                $tmp = preg_split('/-/', $range);
+                $mylist[$count]['start'] = $tmp[0];
+                $mylist[$count]['end'] = $tmp[1];
             } else {
-                $mylist[$count]['start']=$range;
-                $mylist[$count]['end']=$range;
+                $mylist[$count]['start'] = $range;
+                $mylist[$count]['end'] = $range;
             }
             $count++;
         }
@@ -108,7 +108,7 @@ class IpRange implements PermissionProviderInterface
             if (ip2long($remoteIP) >= ip2long($check['start'])
                 && ip2long($remoteIP) <= ip2long($check['end'])
             ) {
-                $inList=true;
+                $inList = true;
             }
         }
         return $inList;

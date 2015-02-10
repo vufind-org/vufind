@@ -118,10 +118,10 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new \Exception('Missing [Details] in VuDL.ini');
         }
         $details = array();
-        foreach ($detailsList as $key=>$title) {
+        foreach ($detailsList as $key => $title) {
             $keys = explode(',', $key);
             $field = false;
-            for ($i=0;$i<count($keys);$i++) {
+            for ($i = 0;$i<count($keys);$i++) {
                 if (isset($record[$keys[$i]])) {
                     $field = $keys[$i];
                     break;

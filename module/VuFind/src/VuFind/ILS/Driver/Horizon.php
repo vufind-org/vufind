@@ -511,7 +511,7 @@ class Horizon extends AbstractBase
             $sqlStmt = mssql_query($sql);
             $row = mssql_fetch_assoc($sqlStmt);
             if ($row) {
-                list($lastname,$firstname)=explode(', ', $row['FULLNAME']);
+                list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
                 $user = array('id' => $username,
                               'firstname' => $firstname,
                               'lastname' => $lastname,
@@ -626,7 +626,7 @@ class Horizon extends AbstractBase
                 $expire = $this->dateFormat->convertToDisplayDate(
                     "M d Y", trim($row['REQUEST_EXPIRE'])
                 );
-            } elseif ($row['STATUS']==2) {
+            } elseif ($row['STATUS'] == 2) {
                 // Items that are 'In Transit' have no expiration date.
                 $expire = 'In Transit';
             } else {
@@ -808,8 +808,8 @@ class Horizon extends AbstractBase
 
             $row = mssql_fetch_assoc($sqlStmt);
             if ($row) {
-                list($lastname,$firstname)=explode(', ', $row['FULLNAME']);
-                $profile= array('lastname' => $lastname,
+                list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
+                $profile = array('lastname' => $lastname,
                                 'firstname' => $firstname,
                                 'address1' => $row['ADDRESS1'],
                                 'address2' => $row['ADDRESS2'],

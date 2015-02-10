@@ -522,7 +522,7 @@ class PICA extends DAIA
             // so its not a valid identifier
             // we need to calculate the checksum
             $checksum = 0;
-            for ($i=0; $i<strlen($value);$i++) {
+            for ($i = 0; $i<strlen($value);$i++) {
                 $checksum += $value[$i]*(9-$i);
             }
             if ($checksum%11 === 1) {

@@ -215,7 +215,7 @@ class JSTree extends AbstractBase
         );
         if (isset($node->children)) {
             $ret['children'] = array();
-            for ($i=0;$i<count($node->children);$i++) {
+            for ($i = 0;$i<count($node->children);$i++) {
                 $ret['children'][$i] = $this
                     ->formatJSON($node->children[$i], $context, $hierarchyID);
             }

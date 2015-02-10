@@ -195,7 +195,7 @@ class DPLATerms implements RecommendInterface
             'fields' => implode(',', $this->returnFields),
             'api_key' => $this->apiKey
         );
-        foreach ($filters as $field=>$filter) {
+        foreach ($filters as $field => $filter) {
             if (isset($this->formatMap[$field])) {
                 $params[$this->formatMap[$field]] = implode(',', $filter);
             }

@@ -141,8 +141,8 @@ class OutlineGenerator
             $this->cache->setItem(
                 $key,
                 array(
-                    'moddate'=>date(DATE_ATOM),
-                    'outline'=>$data
+                    'moddate' => date(DATE_ATOM),
+                    'outline' => $data
                 )
             );
             return $data;
@@ -162,14 +162,14 @@ class OutlineGenerator
         // Reset the state of the class:
         $this->queue = $this->moddate = array();
         $this->outline = array(
-            'counts'=>array(),
-            'names'=>array(),
-            'lists'=>array()
+            'counts' => array(),
+            'names' => array(),
+            'lists' => array()
         );
         // Get lists
         $lists = $this->connector->getOrderedMembers($root);
         // Get list items
-        foreach ($lists as $i=>$list_id) {
+        foreach ($lists as $i => $list_id) {
             // Get list name
             $this->outline['names'][] = $this->connector->getLabel($list_id);
             $this->moddate[$i] = $this->connector->getModDate($list_id);
@@ -238,13 +238,13 @@ class OutlineGenerator
         }
 
         // Get data on all pages and docs
-        foreach ($this->queue as $parent=>$items) {
+        foreach ($this->queue as $parent => $items) {
             $this->outline['counts'][$parent] = count($items);
             if (count($items) < $start) {
                 continue;
             }
             $this->outline['lists'][$parent] = array();
-            for ($i=$start;$i < $start + $pageLength;$i++) {
+            for ($i = $start;$i < $start + $pageLength;$i++) {
                 if ($i >= count($items)) {
                     break;
                 }
@@ -267,8 +267,8 @@ class OutlineGenerator
      */
     protected function injectUrls()
     {
-        foreach ($this->outline['lists'] as $key=>$list) {
-            foreach ($list as $id=>$item) {
+        foreach ($this->outline['lists'] as $key => $list) {
+            foreach ($list as $id => $item) {
                 foreach ($item['datastreams'] as $ds) {
                     $routeParams = array('id' => $item['id'], 'type' => $ds);
                     $this->outline['lists'][$key][$id][strtolower($ds)]

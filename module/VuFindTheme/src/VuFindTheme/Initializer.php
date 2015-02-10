@@ -329,14 +329,14 @@ class Initializer
 
         $lessActive = false;
         // Find LESS activity
-        foreach ($themes as $key=>$currentThemeInfo) {
+        foreach ($themes as $key => $currentThemeInfo) {
             if (isset($currentThemeInfo['less']['active'])) {
                 $lessActive = $currentThemeInfo['less']['active'];
             }
         }
 
         // Apply the loaded theme settings in reverse for proper inheritance:
-        foreach ($themes as $key=>$currentThemeInfo) {
+        foreach ($themes as $key => $currentThemeInfo) {
             if (isset($currentThemeInfo['helpers'])) {
                 $this->setUpThemeViewHelpers($currentThemeInfo['helpers']);
             }

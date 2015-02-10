@@ -161,7 +161,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
-        $params = array('query'=>'libraries');
+        $params = array('query' => 'libraries');
         $response = $this->querySirsi($params);
         $response = rtrim($response);
         $lines = explode("\n", $response);
@@ -702,7 +702,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $patron = $cancelDetails['patron'];
         $details = $cancelDetails['details'];
         $params = array(
-            'query'=>'cancelHolds',
+            'query' => 'cancelHolds',
             'patronId' => $patron['cat_username'], 'pin' => $patron['cat_password'],
             'holdId' => implode('|', $details)
         );
@@ -1080,7 +1080,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             && isset($this->config['UnavailableLocations'][$currLocCode])
         ) {
             $availability = 0;
-            $status= $this->config['UnavailableLocations'][$currLocCode];
+            $status = $this->config['UnavailableLocations'][$currLocCode];
         }
 
         $item = array(

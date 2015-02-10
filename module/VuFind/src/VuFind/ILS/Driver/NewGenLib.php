@@ -105,7 +105,7 @@ class NewGenLib extends AbstractBase
             }
             $duedate = "";
             while ($rowDD = $sqlStmt2->fetch(PDO::FETCH_ASSOC)) {
-                $duedate=$rowDD['due_date'];
+                $duedate = $rowDD['due_date'];
             }
             // add needed entries
             $holding[$i]['duedate'] = $duedate;
@@ -133,8 +133,8 @@ class NewGenLib extends AbstractBase
     public function getMyFines($patron)
     {
         $MyFines = array();
-        $pid=$patron['cat_username'];
-        $fine='Overdue';
+        $pid = $patron['cat_username'];
+        $fine = 'Overdue';
         $LibId = 1;
         $mainsql = "select d.volume_id as volume_id, c.status as status, " .
             "v.volume_id as volume_id, d.accession_number as " .
@@ -172,8 +172,8 @@ class NewGenLib extends AbstractBase
             $paidamt = "";
             $balance = "";
             while ($rowpaid = $sqlStmt1->fetch(PDO::FETCH_ASSOC)) {
-                $paidamt=$rowpaid['fine_amt_paid']*100;
-                $balance=$amount-$paidamt;
+                $paidamt = $rowpaid['fine_amt_paid']*100;
+                $balance = $amount-$paidamt;
             }
 
             $MyFines[] = array('amount' => $amount,
@@ -181,7 +181,7 @@ class NewGenLib extends AbstractBase
                 'fine' => $fine,
                 'balance' => $balance,
                 'duedate' => $duedate,
-                'id'=>$id);
+                'id' => $id);
         }
 
         return $MyFines;
@@ -233,8 +233,8 @@ class NewGenLib extends AbstractBase
             $duedate = "";
             $tadate = "";
             while ($rowDD = $sqlStmt2->fetch(PDO::FETCH_ASSOC)) {
-                $duedate=$rowDD['due_date'];
-                $tadate=$rowDD['ta_date'];
+                $duedate = $rowDD['due_date'];
+                $tadate = $rowDD['ta_date'];
             }
             $holds[] = array('type' => $type,
                 'id' => $RecordId,
@@ -497,7 +497,7 @@ class NewGenLib extends AbstractBase
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         // Do some initial work in solr so we aren't repeating it inside this loop.
-        $retVal[][]=array();
+        $retVal[][] = array();
 
         $offset = ($page - 1) * $limit;
         $sql = "select cataloguerecordid,owner_library_id from cataloguerecord " .
@@ -513,8 +513,8 @@ class NewGenLib extends AbstractBase
 
         $results = array();
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            $id=$row['cataloguerecordid'] . "_" . $row['owner_library_id'];
-            $results[]=$id;
+            $id = $row['cataloguerecordid'] . "_" . $row['owner_library_id'];
+            $results[] = $id;
         }
         $retVal = array('count' => count($results), 'results' => array());
         foreach ($results as $result) {
@@ -601,7 +601,7 @@ class NewGenLib extends AbstractBase
             }
             $location = "";
             while ($rowLoc = $sqlSmt1->fetch(PDO::FETCH_ASSOC)) {
-                $location=$rowLoc['location'];
+                $location = $rowLoc['location'];
             }
             $StatusResult[] = array('id' => $RecordID,
                 'status' => $status,

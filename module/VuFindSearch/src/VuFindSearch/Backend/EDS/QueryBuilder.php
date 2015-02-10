@@ -105,7 +105,7 @@ class QueryBuilder
     protected function abstractQueryToArray(AbstractQuery $query)
     {
         if ($query instanceof Query) {
-            return array('1'=>$this->queryToEdsQuery($query));
+            return array('1' => $this->queryToEdsQuery($query));
         } else {
             return $this->queryGroupToArray($query);
         }

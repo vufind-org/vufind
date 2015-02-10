@@ -362,7 +362,7 @@ class ClaviusSQL extends AbstractBase
                     'id' => $originalId,
                     //'location' => $item['location'],
                     'location' => $locs[$item['location']],
-                    'callnumber' => ($item['callnumber']=="")
+                    'callnumber' => ($item['callnumber'] == "")
                         ? null : $item['callnumber'],
                     'number' => intval($item['number']),
                     'barcode' => ($this->useBarcodes)

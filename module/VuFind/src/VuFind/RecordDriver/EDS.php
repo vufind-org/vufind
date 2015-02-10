@@ -334,7 +334,7 @@ class EDS extends SolrDefault
             foreach ($this->fields['RecordInfo']['BibRecord']['BibEntity']['Titles']
                 as $titleRecord
             ) {
-                if (isset($titleRecord['Type']) && 'main' ==$titleRecord['Type']) {
+                if (isset($titleRecord['Type']) && 'main' == $titleRecord['Type']) {
                     return $titleRecord['TitleFull'];
                 }
             }
@@ -351,7 +351,7 @@ class EDS extends SolrDefault
     {
         $authors = array();
         if (isset($this->fields['RecordInfo']['BibRecord']['BibRelationships'])) {
-            $bibRels =& $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
+            $bibRels = & $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
         }
         if (isset($bibRels['HasContributorRelationships'])
             && !empty($bibRels['HasContributorRelationships'])
@@ -468,7 +468,7 @@ class EDS extends SolrDefault
                 '<ulink'       => '<a',
                 '</ulink'      => '</a',
                 '<superscript' => '<sup',
-                '</superscript'=> '</sup',
+                '</superscript' => '</sup',
                 '<relatesTo'   => '<sup',
                 '</relatesTo'  => '</sup'
         );
