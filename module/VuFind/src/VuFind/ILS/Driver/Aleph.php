@@ -37,8 +37,6 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
-use VuFindHttp\HttpServiceInterface;
-use DateTime;
 use VuFind\Exception\Date as DateException;
 
 /**

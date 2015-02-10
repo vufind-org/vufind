@@ -28,7 +28,6 @@
 namespace VuFind\Search\EDS;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\EDS\SearchRequestModel as SearchRequestModel;
-use VuFind\Search\EDS\QueryAdapter;
 
 /**
  * EDS API Params

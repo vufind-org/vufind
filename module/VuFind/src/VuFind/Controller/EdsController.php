@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use EBSCO\EdsApi\Zend2 as EdsApi;
 use VuFind\Solr\Utils as SolrUtils;
 /**
  * EDS Controller

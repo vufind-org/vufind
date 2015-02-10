@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search\Solr;
 
-use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * Functions for manipulating facets

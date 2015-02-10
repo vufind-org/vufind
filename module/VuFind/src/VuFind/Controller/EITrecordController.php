@@ -27,7 +27,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use Zend\Mvc\MvcEvent;
 
 /**
  * EIT Record Controller

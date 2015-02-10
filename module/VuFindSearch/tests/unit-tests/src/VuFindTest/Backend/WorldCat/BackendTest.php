@@ -30,8 +30,6 @@
 namespace VuFindTest\Backend\WorldCat;
 
 use VuFindSearch\Backend\WorldCat\Backend;
-use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
-use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;

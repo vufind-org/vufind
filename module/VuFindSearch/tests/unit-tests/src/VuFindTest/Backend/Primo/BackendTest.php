@@ -30,10 +30,8 @@
 namespace VuFindTest\Backend\Primo;
 
 use VuFindSearch\Backend\Primo\Backend;
-use VuFindSearch\Backend\Primo\Response\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;
 
 /**

@@ -31,9 +31,7 @@ namespace VuFindTest\Backend\EDS;
 
 use VuFindSearch\Backend\EDS\Backend;
 use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
-use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;
 
 /**

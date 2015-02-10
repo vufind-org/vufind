@@ -29,8 +29,6 @@
  */
 namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\MultiBackend, VuFind\Config\Reader as ConfigReader;
-use VuFind\Auth\MultiAuth;
-use Zend\Log\Writer\WriterInterface;
 use Zend\Log\Writer\Mock;
 use Zend\Log\Logger;
 

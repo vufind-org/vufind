@@ -39,9 +39,6 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 
-use Zend\Log\LoggerInterface;
-use VuFindSearch\Backend\EDS\Response\RecordCollection;
-use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 
 use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 use Zend\Config\Config;

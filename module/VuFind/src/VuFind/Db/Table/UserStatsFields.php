@@ -27,7 +27,6 @@
  */
 namespace VuFind\Db\Table;
 
-use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for statistics

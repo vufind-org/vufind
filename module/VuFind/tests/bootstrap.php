@@ -1,7 +1,4 @@
 <?php
-use Zend\Loader\AutoloaderFactory;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfig;
 
 // Set flag that we're in test mode
 define('VUFIND_PHPUNIT_RUNNING', 1);

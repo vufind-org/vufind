@@ -29,9 +29,6 @@
 
 namespace VuFindSearch\Feature;
 
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
-use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
 

@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search\EDS;
 
-use VuFindSearch\ParamBag;
 
 /**
  * EDS API Options

@@ -30,7 +30,6 @@
 namespace VuFindTest\Search\Solr;
 
 use VuFindTest\Unit\TestCase;
-use Zend\EventManager\Event;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 /**

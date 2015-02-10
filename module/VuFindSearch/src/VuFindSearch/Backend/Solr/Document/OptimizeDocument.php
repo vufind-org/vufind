@@ -29,8 +29,6 @@
 
 namespace VuFindSearch\Backend\Solr\Document;
 
-use VuFindSearch\Backend\Solr\Record\SerializableRecordInterface;
-use VuFindSearch\Response\RecordInterface;
 
 use XMLWriter;
 

@@ -32,9 +32,7 @@ namespace VuFindTest\Backend\EIT;
 use VuFindSearch\Backend\EIT\Backend;
 use VuFindSearch\Backend\EIT\QueryBuilder;
 use VuFindSearch\Backend\EIT\Response\RecordCollectionFactory;
-use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;
 
 /**

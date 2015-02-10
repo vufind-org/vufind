@@ -28,8 +28,6 @@
 namespace VuFind\Search\EDS;
 
 use EBSCO\EdsApi\SearchCriteria;
-use VuFindSearch\ParamBag;
-use Zend\Log\LoggerInterface;
 
 /**
  * EDS API Results

@@ -31,8 +31,6 @@
 
 namespace VuFindSearch\Backend\Solr;
 
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
@@ -46,7 +44,6 @@ use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\AdapterInterface;
 
 use InvalidArgumentException;
-use XMLWriter;
 
 /**
  * SOLR connector.

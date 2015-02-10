@@ -37,7 +37,6 @@ use Zend\Http\Client\Adapter\Test as TestAdapter;
 use Zend\Http\Client as HttpClient;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;
 
 /**

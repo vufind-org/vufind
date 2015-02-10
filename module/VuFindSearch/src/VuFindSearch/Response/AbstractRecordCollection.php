@@ -29,8 +29,6 @@
 
 namespace VuFindSearch\Response;
 
-use VuFindSearch\Response\RecordCollectionInterface;
-use VuFindSearch\Response\RecordInterface;
 
 /**
  * Abstract record collection (implements some shared low-level functionality).
