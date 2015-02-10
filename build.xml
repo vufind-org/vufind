@@ -19,6 +19,9 @@
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
+  <property name="php-cs-fixers" value="no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces" />
+
+
   <property name="version" value="2.3.1" />
 
   <!-- We only need the -p switch if the password is non-blank -->
@@ -50,6 +53,7 @@
 
     <!-- Call standard tasks -->
     <phingcall target="phpcs"/>
+    <phingcall target="php-cs-fixer-dryrun"/>
     <phingcall target="phpunit"/>
     <phingcall target="phpdoc"/>
     <phingcall target="phpcpd"/>
@@ -83,9 +87,12 @@
     <exec command="phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php --report=checkstyle ${srcdir}/module &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
   </target>
 
-  <!-- php-cs-fixer -->
+  <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
   <target name="php-cs-fixer">
-    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=no_blank_lines_before_namespaces,function_call_space,trailing_spaces,unused_use,lowercase_keywords,encoding,parenthesis,php_closing_tag,visibility,duplicate_semicolon,extra_empty_lines,no_blank_lines_after_class_opening,no_empty_lines_after_phpdocs,operators_spaces,spaces_before_semicolon,ternary_spaces,concat_with_spaces" escape="false" />
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers}" escape="false" />
+  </target>
+  <target name="php-cs-fixer-dryrun">
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run" escape="false" checkreturn="true" />
   </target>
 
   <!-- PHP API Documentation -->
