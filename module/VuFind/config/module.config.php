@@ -159,9 +159,9 @@ $config = array(
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
             'VuFind\Recaptcha' => 'VuFind\Service\Factory::getRecaptcha',
             'VuFind\RecommendPluginManager' => 'VuFind\Service\Factory::getRecommendPluginManager',
+            'VuFind\RecordCache' => 'VuFind\Service\Factory::getRecordCache',
             'VuFind\RecordDriverPluginManager' => 'VuFind\Service\Factory::getRecordDriverPluginManager',
             'VuFind\RecordLoader' => 'VuFind\Service\Factory::getRecordLoader',
-            'VuFind\RecordCache' => 'VuFind\Service\Factory::getRecordCache',
             'VuFind\RecordRouter' => 'VuFind\Service\Factory::getRecordRouter',
             'VuFind\RecordStats' => 'VuFind\Service\Factory::getRecordStats',
             'VuFind\RecordTabPluginManager' => 'VuFind\Service\Factory::getRecordTabPluginManager',
@@ -219,6 +219,7 @@ $config = array(
         'pgsql_seq_mapping'  => array(
             'comments'       => array('id', 'comments_id_seq'),
             'oai_resumption' => array('id', 'oai_resumption_id_seq'),
+            'record'         => array('id', 'record_id_seq'),
             'resource'       => array('id', 'resource_id_seq'),
             'resource_tags'  => array('id', 'resource_tags_id_seq'),
             'search'         => array('id', 'search_id_seq'),
@@ -227,7 +228,6 @@ $config = array(
             'user'           => array('id', 'user_id_seq'),
             'user_list'      => array('id', 'user_list_id_seq'),
             'user_resource'  => array('id', 'user_resource_id_seq'),
-            'record'         => array('id', 'record_id_seq')
         ),
         // This section contains service manager configurations for all VuFind
         // pluggable components:
@@ -333,6 +333,7 @@ $config = array(
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
                     'comments' => 'VuFind\Db\Table\Comments',
                     'oairesumption' => 'VuFind\Db\Table\OaiResumption',
+                    'record' => 'VuFind\Db\Table\Record',
                     'resourcetags' => 'VuFind\Db\Table\ResourceTags',
                     'search' => 'VuFind\Db\Table\Search',
                     'session' => 'VuFind\Db\Table\Session',
@@ -340,8 +341,7 @@ $config = array(
                     'userlist' => 'VuFind\Db\Table\UserList',
                     'userresource' => 'VuFind\Db\Table\UserResource',
                     'userstats' => 'VuFind\Db\Table\UserStats',
-                    'userstatsfields' => 'VuFind\Db\Table\UserStatsFields',                 
-                    'record' => 'VuFind\Db\Table\Record'
+                    'userstatsfields' => 'VuFind\Db\Table\UserStatsFields',
                 ),
             ),
             'hierarchy_driver' => array(
@@ -502,6 +502,7 @@ $config = array(
                     'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
                     'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
+                    'RecordCache' => 'VuFind\Search\Factory\RecordCacheBackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
@@ -509,7 +510,6 @@ $config = array(
                     'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',
                     'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
-                    'RecordCache' => 'VuFind\Search\Factory\RecordCacheBackendFactory'
                 ),
                 'aliases' => array(
                     // Allow Solr core names to be used as aliases for services:
