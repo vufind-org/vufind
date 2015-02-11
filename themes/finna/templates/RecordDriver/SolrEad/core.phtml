@@ -2,15 +2,8 @@
   <div class="col-sm-3">
     <div class="text-center">
       <? /* Display thumbnail if appropriate: */ ?>
-      <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
-      <? if ($mediumThumb): ?>
-        <? if ($largeThumb): ?><a href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
-          <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
-        <? if ($largeThumb): ?></a><? endif; ?>
-      <? else: ?>
-        <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-      <? endif; ?>
-
+      <? $img = $this->recordImage($this->record($this->driver))?>
+      <?= $img->render('record', array('small' => array('w' => 100, 'h' => 100, 'maxh' => 200), 'medium' => array('w' => 300, 'h' => 300, 'maxh' => 400))) ?>
       <? /* Display qrcode if appropriate: */ ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>

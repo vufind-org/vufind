@@ -23,6 +23,7 @@
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -34,6 +35,7 @@ namespace Finna\RecordDriver;
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Eoghan O'Carragain <Eoghan.OCarragan@gmail.com>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
@@ -43,6 +45,8 @@ namespace Finna\RecordDriver;
  */
 class SolrEad extends \VuFind\RecordDriver\SolrDefault
 {
+    use SolrFinna;
+
     /**
      * Record metadata
      *
@@ -90,14 +94,16 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get type of access restriction for the record.
+     * Return type of access restriction for the record.
+     *
+     * @param string $language Language
      *
      * @return mixed array with keys:
      *   'copyright'   Copyright (e.g. 'CC BY 4.0')
      *   'link'        Link to copyright info, see IndexRecord::getRightsLink
      *   or false if no access restriction type is defined.
      */
-    public function getAccessRestrictionsType()
+    public function getAccessRestrictionsType($language)
     {
         $record = $this->getSimpleXML();
         if (!isset($record->accessrestrict)) {
@@ -108,7 +114,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
             $copyright = (string)$attributes['type'];
             $data = array();
             $data['copyright'] = $copyright;
-            if ($link = $this->getRightsLink(strtoupper($copyright))) {
+            if ($link = $this->getRightsLink(strtoupper($copyright), $language)) {
                 $data['link'] = $link;
             }
             return $data;
@@ -179,7 +185,36 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return an associative array of image URLs associated with this record 
+     * (key = URL, value = description), if available; false otherwise.
+     *
+     * @param string $size Size of requested images
+     *
+     * @return mixed
+     * @access protected
+     */
+    public function getAllThumbnails($size = 'large')
+    {
+        $urls = array();
+        $url = '';
+        $role = $size == 'large'
+            ? 'image_reference'
+            : 'image_thumbnail';
+
+        foreach ($this->getSimpleXML()
+            ->xpath("did/daogrp/daoloc[@role=\"$role\"]") as $node
+        ) {
+            $url = (string)$node->attributes()->href;
+            $urls[$url] = '';
+        }
+
+        return $urls;
+    }
+
+    /**
      * Return image rights.
+     *
+     * @param string $language Language
      *
      * @return mixed array with keys:
      *   'copyright'   Copyright (e.g. 'CC BY 4.0') (optional)
@@ -187,15 +222,15 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      *   'link'        Link to copyright info
      *   or false if the record contains no images
      */
-    public function getImageRights()
+    public function getImageRights($language)
     {
-        if (!count($this->getAllImages())) {
+        if (!count($this->getAllThumbnails())) {
             return false;
         }
 
         $rights = array();
 
-        if ($type = $this->getAccessRestrictionsType()) {
+        if ($type = $this->getAccessRestrictionsType($language)) {
             $rights['copyright'] = $type['copyright'];
             if (isset($type['link'])) {
                 $rights['link'] = $type['link'];

@@ -50,12 +50,15 @@ $config = array(
     ),
     'controllers' => array(
         'invokables' => array(
+            'ajax' => 'Finna\Controller\AjaxController',
             'contentpage' => 'Finna\Controller\ContentController',
+            'cover' => 'Finna\Controller\CoverController'
         ),
     ),
     'service_manager' => array(
         'allow_override' => true,
         'factories' => array(
+            'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\Translator' => 'Finna\Service\Factory::getTranslator',
         )
     ),
@@ -79,6 +82,7 @@ $config = array(
             ),
             'recorddriver' => array(
                 'factories' => array(
+                    'solrdefault' => 'Finna\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
                     'solrlido' => 'Finna\RecordDriver\Factory::getSolrLido',

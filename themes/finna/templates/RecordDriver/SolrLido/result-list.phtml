@@ -3,13 +3,8 @@
     <div class="col-sm-2 col-xs-3 left">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-        <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-          <img class="recordcover" src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-        <? else: ?>
-          <img class="recordcover" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-        <? endif; ?>
-      </a>
+      <? $img = $this->recordImage($this->record($this->driver))?>
+      <?= $img->render('list', array('medium' => array('w' => 300, 'h' => 300, 'maxh' => 400))) ?>
     </div>
     <div class="col-sm-7 col-xs-6 middle">
       <div>

@@ -451,14 +451,13 @@ email = SHIB_mail
 ;   Note: Summon service takes a Serials Solutions client key, NOT Summon API key!
 ;coverimages     = Syndetics:MySyndeticsId,Amazon:MyAccessKeyId,Booksite,LibraryThing:MyLibraryThingId,Google,OpenLibrary,Summon:MySerialsSolutionsClientKey,Contentcafe:MyContentCafeID
 coverimages     = NatLibFi,OpenLibrary
-; Cover image attributes
-coverwidth      = 126
-coverheight     = 126
-coverbackground = ffffff
 
 ; This setting controls the image to display when no book cover is available.
 ; The path is relative to the base of your theme directory.
 noCoverAvailableImage = images/noCover2.gif
+
+; How long book summaries are cached locally in minutes. Default is one day
+summarycachetime = 1440
 
 ; You can select from Syndetics, SyndeticsPlus, Amazon Editorial, Amazon, Booksite
 ; and/or the Guardian
