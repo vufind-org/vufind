@@ -71,16 +71,15 @@ class Cache
         DbTableManager $dbTableManager
     ) {
         if (isset($config->RecordCache)) {
-            $cachableSources = $config->RecordCache->cachableSources;
-            if (isset($cachableSources)) {
-                $this->cachableSources = preg_split("/[\s,]+/", $cachableSources);
+            if (isset($config->RecordCache->cachableSources)) {
+                $this->cachableSources
+                    = preg_split("/[\s,]+/", $config->RecordCache->cachableSources);
             } else {
                 $this->cachableSources = array();
             }
 
-            $cachePolicies = $config->RecordCache->cachePolicy;
-            if (isset($cachePolicies)) {
-                $this->cachePolicies = $cachePolicies;
+            if (isset($config->RecordCache->cachePolicy)) {
+                $this->cachePolicies = $config->RecordCache->cachePolicy;
             } else {
                 $this->cachePolicies = array();
             }
