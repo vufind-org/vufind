@@ -79,9 +79,9 @@ class FeedbackController extends AbstractBase
             throw new \Exception('Feedback Module Error: Comment Post Failed');
         }
 
-        $email_message = 'Name: '.$name."\n";
-        $email_message .= 'Email: '.$users_email."\n";
-        $email_message .= 'Comments: '.$comments."\n";
+        $email_message = 'Name: ' . $name . "\n";
+        $email_message .= 'Email: ' . $users_email . "\n";
+        $email_message .= 'Comments: ' . $comments . "\n";
 
         // This sets up the email to be sent
         $mail = new Mail\Message();

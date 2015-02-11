@@ -103,7 +103,7 @@ class AlphabrowseController extends AbstractBase
         $page   = intval($this->params()->fromQuery('page', 0));
 
         // Set up any extra parameters to pass
-        $extraParams = new ParamBag(); 
+        $extraParams = new ParamBag();
         if (isset($extras[$source])) {
             $extraParams->add('extras', $extras[$source]);
         }

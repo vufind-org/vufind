@@ -99,7 +99,7 @@ class Tags extends Gateway
      */
     public function getForResource($id, $source = 'VuFind', $limit = 0,
         $list = null, $user = null, $sort = 'count'
-    ) {   
+    ) {
         return $this->select(
             function ($select) use ($id, $source, $limit, $list, $user, $sort) {
                 $select->columns(

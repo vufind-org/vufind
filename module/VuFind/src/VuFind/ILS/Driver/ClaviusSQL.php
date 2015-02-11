@@ -248,7 +248,7 @@ class ClaviusSQL extends AbstractBase
             . "WHERE s.datumvloz > DATE_SUB(CURDATE(),INTERVAL "
             . $this->db->quote($daysOld)
             . " DAY) AND s.datumvloz <= DATE_SUB(CURDATE(),INTERVAL "
-            . $this->db->quote($this->hideNewItemsDays) ." DAY)";
+            . $this->db->quote($this->hideNewItemsDays) . " DAY)";
         if ($fundId) {
             $sql .= " AND s.lokace = " . $this->db->quote($fundId);
         }
@@ -257,7 +257,7 @@ class ClaviusSQL extends AbstractBase
             $sqlSt = $this->db->prepare($sql);
             $sqlSt->execute();
             $result = $sqlSt->fetchAll();
-            $return = array('count' => count($result), 'results' => array());;
+            $return = array('count' => count($result), 'results' => array());
             foreach ($result as $row) {
                 $return['results'][] = array(
                     'id' => $this->getLongId($row['tcislo'], $row['druhdoku'])
@@ -353,7 +353,7 @@ class ClaviusSQL extends AbstractBase
                     $status = "K dispozici";
                     $duedate = '';
                 } else {
-                    $availability = ($item2['availability'] == 1)?true:false;
+                    $availability = ($item2['availability'] == 1) ? true : false;
                     $status = $item2['status'];
                     $duedate = $item2['duedate'];
                 }
@@ -362,7 +362,7 @@ class ClaviusSQL extends AbstractBase
                     'id' => $originalId,
                     //'location' => $item['location'],
                     'location' => $locs[$item['location']],
-                    'callnumber' => ($item['callnumber']=="")
+                    'callnumber' => ($item['callnumber'] == "")
                         ? null : $item['callnumber'],
                     'number' => intval($item['number']),
                     'barcode' => ($this->useBarcodes)
@@ -440,7 +440,7 @@ class ClaviusSQL extends AbstractBase
                     'amount' => abs($fine['amount']),
                     'checkout' => null, // TODO maybe
                     'fine' => $reasons[$fine['reason']],
-                    'balance' => ($fine['amount']<0)?abs($fine['amount']):0,
+                    'balance' => ($fine['amount']<0) ? abs($fine['amount']) : 0,
                     'createdate' => $fine['createdate'],
                     'duedate' => null, // TODO maybe
                     'id' => null,        // TODO maybe
@@ -554,7 +554,7 @@ class ClaviusSQL extends AbstractBase
                     'address1' => $patron2['tulice'],
                     'address2' => $patron2['tmesto'],
                     'zip' => $patron2['tpsc'],
-                    'phone' => $patron2['telefon']?$patron2['telefon']:null,
+                    'phone' => $patron2['telefon'] ? $patron2['telefon'] : null,
                     'group' => null              //TODO - Maybe
                 );
             }
@@ -700,7 +700,7 @@ class ClaviusSQL extends AbstractBase
             $kod3int = $kod3int - 5;
         }
         substr_replace($password, chr($kod3int), 2);
-        $sexConstant = $woman?1:0;
+        $sexConstant = $woman ? 1 : 0;
         $kod6 = substr($password, 5, 1);
         $kod6r = chr(70 + (intval($kod6) * 2) + $sexConstant);
         if ($kod6 != " ") {
@@ -740,7 +740,6 @@ class ClaviusSQL extends AbstractBase
      * @return mixed          Associative array of patron info on successful login,
      * null on unsuccessful login.
      */
-
     public function patronLogin($username, $password)
     {
         // TODO - oracle a mssql
@@ -775,7 +774,7 @@ class ClaviusSQL extends AbstractBase
             'lastname' => $names['lastname'],
             'cat_username' => $username,
             'cat_password' => $password,
-            'email' => $patronRow['mail']?$patronRow['mail']:null,
+            'email' => $patronRow['mail'] ? $patronRow['mail'] : null,
             'major' => null,
             'college' => null
         );
@@ -814,7 +813,7 @@ class ClaviusSQL extends AbstractBase
     public function getMyTransactions($user, $history = false)
     {
         //TODO mssql a Oracle
-        $sql = "SELECT DATE_FORMAT(k.datum2,'%e. %c. %Y') as duedate, 
+        $sql = "SELECT DATE_FORMAT(k.datum2,'%e. %c. %Y') as duedate,
                 TRIM(s.ckod) as barcode, t.druhdoku as druhdoku, t.tcislo as tcislo,
                 t.rokvydani as year, CONCAT(t.nazev, t.big_nazev) as title,
                 TRIM(s.pcislo) as item_id

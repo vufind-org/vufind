@@ -27,7 +27,6 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Search\BackendManager;
 
 /**
  * SpellingSuggestions Recommendations Module

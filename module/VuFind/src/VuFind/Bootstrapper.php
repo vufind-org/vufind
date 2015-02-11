@@ -298,7 +298,7 @@ class Bootstrapper
             return;
         }
 
-        $config =& $this->config;
+        $config = & $this->config;
         $browserCallback = array($this, 'detectBrowserLanguage');
         $callback = function ($event) use ($config, $browserCallback) {
             $validBrowserLanguage = call_user_func($browserCallback);
@@ -322,10 +322,18 @@ class Bootstrapper
             }
 
             $sm = $event->getApplication()->getServiceManager();
-            $sm->get('VuFind\Translator')
-                ->addTranslationFile('ExtendedIni', null, 'default', $language)
-                ->setLocale($language);
-
+            try {
+                $sm->get('VuFind\Translator')
+                    ->addTranslationFile('ExtendedIni', null, 'default', $language)
+                    ->setLocale($language);
+            } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+                if (!extension_loaded('intl')) {
+                    throw new \Exception(
+                        'Translation broken due to missing PHP intl extension.'
+                        . ' Please disable translation or install the extension.'
+                    );
+                }
+            }
             // Send key values to view:
             $viewModel = $sm->get('viewmanager')->getViewModel();
             $viewModel->setVariable('userLang', $language);

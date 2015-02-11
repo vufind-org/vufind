@@ -224,7 +224,7 @@ class AjaxController extends AbstractBase
 
         // Loop through all the status information that came back
         $statuses = array();
-        foreach ($results as $recordNumber=>$record) {
+        foreach ($results as $recordNumber => $record) {
             // Filter out suppressed locations:
             $record = $this->filterSuppressedLocations($record);
 
@@ -531,7 +531,7 @@ class AjaxController extends AbstractBase
             $headers->addHeaderLine(
                 'Expires', 'Mon, 26 Jul 1997 05:00:00 GMT'
             );
-            $output = array('data'=>$data,'status'=>$status);
+            $output = array('data' => $data,'status' => $status);
             if ('development' == APPLICATION_ENV && count(self::$php_errors) > 0) {
                 $output['php_errors'] = self::$php_errors;
             }
@@ -554,8 +554,8 @@ class AjaxController extends AbstractBase
      */
     public static function storeError($errno, $errstr, $errfile, $errline)
     {
-        self::$php_errors[] = "ERROR [$errno] - ".$errstr."<br />\n"
-            . " Occurred in ".$errfile." on line ".$errline.".";
+        self::$php_errors[] = "ERROR [$errno] - " . $errstr . "<br />\n"
+            . " Occurred in " . $errfile . " on line " . $errline . ".";
         return true;
     }
 
@@ -665,7 +665,7 @@ class AjaxController extends AbstractBase
         // Build data structure for return:
         $tagList = array();
         foreach ($tags as $tag) {
-            $tagList[] = array('tag'=>$tag->tag, 'cnt'=>$tag->cnt);
+            $tagList[] = array('tag' => $tag->tag, 'cnt' => $tag->cnt);
         }
 
         // If we don't have any tags, provide a user-appropriate message:
@@ -726,7 +726,7 @@ class AjaxController extends AbstractBase
 
         $facets = $results->getFullFieldFacets($fields, false);
 
-        $markers=array();
+        $markers = array();
         $i = 0;
         $list = isset($facets['long_lat']['data']['list'])
             ? $facets['long_lat']['data']['list'] : array();
@@ -907,7 +907,7 @@ class AjaxController extends AbstractBase
         $ids = $this->params()->fromPost('ids', array());
         if (empty($ids)) {
             return $this->output(
-                array('result'=>$this->translate('bulk_error_missing')),
+                array('result' => $this->translate('bulk_error_missing')),
                 self::STATUS_ERROR
             );
         }
@@ -1334,7 +1334,7 @@ class AjaxController extends AbstractBase
         $ids = $this->params()->fromPost('ids');
         if (empty($ids)) {
             return $this->output(
-                array('result'=>$this->translate('bulk_error_missing')),
+                array('result' => $this->translate('bulk_error_missing')),
                 self::STATUS_ERROR
             );
         }

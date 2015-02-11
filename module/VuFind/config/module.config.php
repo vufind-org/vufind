@@ -589,7 +589,7 @@ $config = array(
                 'defaultTab' => null,
             ),
             'VuFind\RecordDriver\Pazpar2' => array(
-                'tabs' => array (
+                'tabs' => array(
                     'Details' => 'StaffViewMARC',
                  ),
                 'defaultTab' => null,
@@ -605,13 +605,13 @@ $config = array(
                 'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrAuth' => array(
-                'tabs' => array (
+                'tabs' => array(
                     'Details' => 'StaffViewMARC',
                  ),
                 'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrDefault' => array(
-                'tabs' => array (
+                'tabs' => array(
                     'Holdings' => 'HoldingsILS', 'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
@@ -645,7 +645,7 @@ $config = array(
                 'defaultTab' => null,
             ),
             'VuFind\RecordDriver\WorldCat' => array(
-                'tabs' => array (
+                'tabs' => array(
                     'Holdings' => 'HoldingsWorldCat', 'Description' => 'Description',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',

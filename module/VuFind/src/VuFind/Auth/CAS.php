@@ -152,7 +152,7 @@ class CAS extends AbstractBase
         }
 
         // Save credentials if applicable:
-        if (!empty ($catPassword) && !empty($user->cat_username)) {
+        if (!empty($catPassword) && !empty($user->cat_username)) {
             $user->saveCredentials($user->cat_username, $catPassword);
         }
 
@@ -248,7 +248,7 @@ class CAS extends AbstractBase
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
                     throw new AuthException(
-                        "User attribute value of " . $value. " is missing!"
+                        "User attribute value of " . $value . " is missing!"
                     );
                 }
             }

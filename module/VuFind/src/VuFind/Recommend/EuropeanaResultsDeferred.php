@@ -32,7 +32,7 @@ namespace VuFind\Recommend;
  * EuropeanaResultsDeferred Recommendations Module
  *
  * This class sets up an AJAX call to trigger a call to the EuropeanaResults
- * module.  
+ * module.
  *
  * @category VuFind2
  * @package  Recommendations

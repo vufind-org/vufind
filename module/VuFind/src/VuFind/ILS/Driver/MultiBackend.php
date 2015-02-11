@@ -30,8 +30,7 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Log\LoggerInterface;
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Multiple Backend Driver.
@@ -48,6 +47,9 @@ use VuFind\Exception\ILS as ILSException,
 class MultiBackend extends AbstractBase
     implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait {
+        logError as error;
+    }
     use \Zend\ServiceManager\ServiceLocatorAwareTrait;
 
     /**
@@ -108,13 +110,6 @@ class MultiBackend extends AbstractBase
     protected $ilsAuth;
 
     /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
@@ -125,18 +120,6 @@ class MultiBackend extends AbstractBase
     ) {
         $this->configLoader = $configLoader;
         $this->ilsAuth = $ilsAuth;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -1195,34 +1178,6 @@ class MultiBackend extends AbstractBase
 
         $driver = $this->getDriver($source);
         return $driver && $this->methodSupported($driver, $method, $params);
-    }
-
-    /**
-     * Log an error message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function error($msg)
-    {
-        if ($this->logger) {
-            $this->logger->err(get_class($this) . ": $msg");
-        }
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
     }
 
     /**

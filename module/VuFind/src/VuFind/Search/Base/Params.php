@@ -1329,7 +1329,7 @@ class Params implements ServiceLocatorAwareInterface
     protected function buildNumericRangeFilter($field, $from, $to)
     {
         // Make sure that $to is less than $from:
-        if ($to != '*' && $from!= '*' && $to < $from) {
+        if ($to != '*' && $from != '*' && $to < $from) {
             $tmp = $to;
             $to = $from;
             $from = $tmp;
@@ -1367,7 +1367,7 @@ class Params implements ServiceLocatorAwareInterface
     protected function buildFullDateRangeFilter($field, $from, $to)
     {
         // Make sure that $to is less than $from:
-        if ($to != '*' && $from!= '*' && strtotime($to) < strtotime($from)) {
+        if ($to != '*' && $from != '*' && strtotime($to) < strtotime($from)) {
             $tmp = $to;
             $to = $from;
             $from = $tmp;

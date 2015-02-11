@@ -105,9 +105,7 @@ abstract class AbstractSyndetics extends AbstractBase
             ? 'https://secure.syndetics.com' : 'http://syndetics.com';
         $url = $baseUrl . '/index.aspx?isbn=' . $isbn
             . '/' . $file . '&client=' . $id . '&type=' . $type;
-        if ($this->logger) {
-            $this->logger->debug('Syndetics request: ' . $url);
-        }
+        $this->debug('Syndetics request: ' . $url);
         return $url;
     }
 

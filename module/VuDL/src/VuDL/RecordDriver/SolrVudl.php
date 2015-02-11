@@ -95,7 +95,7 @@ class SolrVudl extends \VuFind\RecordDriver\SolrDefault
             'route' => 'files',
             'routeParams' => array(
                 'id' => $this->getUniqueID(),
-                'type'=>'THUMBNAIL'
+                'type' => 'THUMBNAIL'
             )
         );
         // We are currently storing only one size of thumbnail; we'll use this for

@@ -274,7 +274,7 @@ class Server
      *
      * @return void
      */
-    protected function attachRecordHeader($xml, $id, $date, $sets = array(), 
+    protected function attachRecordHeader($xml, $id, $date, $sets = array(),
         $status = ''
     ) {
         $header = $xml->addChild('header');

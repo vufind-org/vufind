@@ -31,7 +31,6 @@
  */
 namespace VuFindSearch\Backend\Primo;
 use Zend\Http\Client as HttpClient;
-use Zend\Log\LoggerInterface;
 
 /**
  * Primo Central connector.
@@ -45,14 +44,9 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Connector
+class Connector implements \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Logger instance.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * The HTTP_Request object used for API transactions
@@ -101,18 +95,6 @@ class Connector
     }
 
     /**
-     * Set logger instance.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
      * Execute a search.  adds all the querystring parameters into
      * $this->client and returns the parsed response
      *
@@ -143,7 +125,7 @@ class Connector
      * @return array             An array of query results
      * @link http://www.exlibrisgroup.org/display/PrimoOI/Brief+Search
      */
-    public function query($institution, $terms, $params=null)
+    public function query($institution, $terms, $params = null)
     {
         // defaults for params
         $args = array(
@@ -165,9 +147,7 @@ class Connector
             $result = $this->performSearch($institution, $terms, $args);
         } catch (\Exception $e) {
             if ($args["returnErr"]) {
-                if ($this->logger) {
-                    $this->logger->debug($e->getMessage());
-                }
+                $this->debug($e->getMessage());
                 return array(
                     'recordCount' => 0,
                     'documents' => array(),
@@ -180,7 +160,6 @@ class Connector
         }
         return $result;
     }
-
 
     /**
      * Support method for query() -- perform inner search logic
@@ -275,7 +254,7 @@ class Connector
             // have a query to send to primo or it hates us
 
             // QUERYSTRING: institution
-            $qs[] ="institution=$institution";
+            $qs[] = "institution=$institution";
 
             // QUERYSTRING: onCampus
             if ($args["onCampus"]) {
@@ -288,7 +267,7 @@ class Connector
             if ($args["didYouMean"]) {
                 $qs[] = "dym=true";
             } else {
-                $qs[] ="dym=false";
+                $qs[] = "dym=false";
             }
 
             // QUERYSTRING: query (filter list)
@@ -354,9 +333,7 @@ class Connector
      */
     protected function call($qs, $method = 'GET')
     {
-        if ($this->logger) {
-            $this->logger->debug("{$method}: {$this->host}{$qs}");
-        }
+        $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
         if ($method == 'GET') {
             $baseUrl = $this->host . $qs;

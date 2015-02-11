@@ -33,8 +33,7 @@ use File_MARC, PDO, PDOException,
     VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\Validator\EmailAddress as EmailAddressValidator,
-    Zend\Log\LoggerInterface;
+    Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
  * Voyager ILS Driver
@@ -51,6 +50,9 @@ class Voyager extends AbstractBase
     implements TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait {
+        logError as error;
+    }
 
     /**
      * Database connection
@@ -82,13 +84,6 @@ class Voyager extends AbstractBase
     protected $dateFormat;
 
     /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
      * Whether to use holdings sort groups to sort holdings records
      *
      * @var bool
@@ -103,32 +98,6 @@ class Voyager extends AbstractBase
     public function __construct(\VuFind\Date\Converter $dateConverter)
     {
         $this->dateFormat = $dateConverter;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
     }
 
     /**
@@ -148,20 +117,6 @@ class Voyager extends AbstractBase
                 $logString .= ', params: ' . print_r($params, true);
             }
             $this->debug($logString);
-        }
-    }
-
-    /**
-     * Log an error message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function error($msg)
-    {
-        if ($this->logger) {
-            $this->logger->err(get_class($this) . ": $msg");
         }
     }
 
@@ -387,11 +342,11 @@ class Voyager extends AbstractBase
 
         // From
         $sqlFrom = array(
-            $this->dbName.".BIB_ITEM", $this->dbName.".ITEM",
-            $this->dbName.".ITEM_STATUS_TYPE",
-            $this->dbName.".ITEM_STATUS",
-            $this->dbName.".LOCATION", $this->dbName.".MFHD_ITEM",
-            $this->dbName.".MFHD_MASTER"
+            $this->dbName . ".BIB_ITEM", $this->dbName . ".ITEM",
+            $this->dbName . ".ITEM_STATUS_TYPE",
+            $this->dbName . ".ITEM_STATUS",
+            $this->dbName . ".LOCATION", $this->dbName . ".MFHD_ITEM",
+            $this->dbName . ".MFHD_MASTER"
         );
 
         // Where
@@ -444,8 +399,8 @@ class Voyager extends AbstractBase
 
         // From
         $sqlFrom = array(
-            $this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
-            $this->dbName.".MFHD_MASTER"
+            $this->dbName . ".BIB_MFHD", $this->dbName . ".LOCATION",
+            $this->dbName . ".MFHD_MASTER"
         );
 
         // Where
@@ -648,13 +603,13 @@ class Voyager extends AbstractBase
 
         // From
         $sqlFrom = array(
-            $this->dbName.".BIB_ITEM", $this->dbName.".ITEM",
-            $this->dbName.".ITEM_STATUS_TYPE",
-            $this->dbName.".ITEM_STATUS",
-            $this->dbName.".LOCATION", $this->dbName.".MFHD_ITEM",
-            $this->dbName.".MFHD_MASTER", $this->dbName.".MFHD_DATA",
-            $this->dbName.".CIRC_TRANSACTIONS",
-            $this->dbName.".ITEM_BARCODE"
+            $this->dbName . ".BIB_ITEM", $this->dbName . ".ITEM",
+            $this->dbName . ".ITEM_STATUS_TYPE",
+            $this->dbName . ".ITEM_STATUS",
+            $this->dbName . ".LOCATION", $this->dbName . ".MFHD_ITEM",
+            $this->dbName . ".MFHD_MASTER", $this->dbName . ".MFHD_DATA",
+            $this->dbName . ".CIRC_TRANSACTIONS",
+            $this->dbName . ".ITEM_BARCODE"
         );
 
         // Where
@@ -718,8 +673,8 @@ class Voyager extends AbstractBase
 
         // From
         $sqlFrom = array(
-            $this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
-            $this->dbName.".MFHD_MASTER", $this->dbName.".MFHD_DATA"
+            $this->dbName . ".BIB_MFHD", $this->dbName . ".LOCATION",
+            $this->dbName . ".MFHD_MASTER", $this->dbName . ".MFHD_DATA"
         );
 
         // Where
@@ -815,8 +770,8 @@ class Voyager extends AbstractBase
     protected function getPurchaseHistoryData($id)
     {
         $sql = "select LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ENUMCHRON " .
-               "from $this->dbName.SERIAL_ISSUES, $this->dbName.COMPONENT, ".
-               "$this->dbName.ISSUES_RECEIVED, $this->dbName.SUBSCRIPTION, ".
+               "from $this->dbName.SERIAL_ISSUES, $this->dbName.COMPONENT, " .
+               "$this->dbName.ISSUES_RECEIVED, $this->dbName.SUBSCRIPTION, " .
                "$this->dbName.LINE_ITEM, $this->dbName.LINE_ITEM_COPY_STATUS " .
                "where SERIAL_ISSUES.COMPONENT_ID = COMPONENT.COMPONENT_ID " .
                "and ISSUES_RECEIVED.ISSUE_ID = SERIAL_ISSUES.ISSUE_ID " .
@@ -1305,12 +1260,12 @@ class Voyager extends AbstractBase
 
         // From
         $sqlFrom = array(
-            $this->dbName.".CIRC_TRANSACTIONS",
-            $this->dbName.".BIB_ITEM",
-            $this->dbName.".MFHD_ITEM",
-            $this->dbName.".BIB_TEXT",
-            $this->dbName.".CIRC_POLICY_MATRIX",
-            $this->dbName.".LOCATION"
+            $this->dbName . ".CIRC_TRANSACTIONS",
+            $this->dbName . ".BIB_ITEM",
+            $this->dbName . ".MFHD_ITEM",
+            $this->dbName . ".BIB_TEXT",
+            $this->dbName . ".CIRC_POLICY_MATRIX",
+            $this->dbName . ".LOCATION"
         );
 
         // Where
@@ -1453,8 +1408,8 @@ class Voyager extends AbstractBase
 
         // From
         $sqlFrom = array(
-            $this->dbName.".FINE_FEE", $this->dbName.".FINE_FEE_TYPE",
-            $this->dbName.".PATRON", $this->dbName.".BIB_ITEM"
+            $this->dbName . ".FINE_FEE", $this->dbName . ".FINE_FEE_TYPE",
+            $this->dbName . ".PATRON", $this->dbName . ".BIB_ITEM"
         );
 
         // Where
@@ -1544,7 +1499,7 @@ class Voyager extends AbstractBase
         try {
             $sqlStmt = $this->executeSQL($sql);
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $processFine= $this->processFinesData($row);
+                $processFine = $this->processFinesData($row);
                 $fineList[] = $processFine;
             }
             return $fineList;
@@ -1584,12 +1539,12 @@ class Voyager extends AbstractBase
 
         // From
         $sqlFrom = array(
-            $this->dbName.".HOLD_RECALL",
-            $this->dbName.".HOLD_RECALL_ITEMS",
-            $this->dbName.".MFHD_ITEM",
-            $this->dbName.".BIB_TEXT",
-            $this->dbName.".VOYAGER_DATABASES",
-            $this->dbName.".REQUEST_GROUP"
+            $this->dbName . ".HOLD_RECALL",
+            $this->dbName . ".HOLD_RECALL_ITEMS",
+            $this->dbName . ".MFHD_ITEM",
+            $this->dbName . ".BIB_TEXT",
+            $this->dbName . ".VOYAGER_DATABASES",
+            $this->dbName . ".REQUEST_GROUP"
         );
 
         // Where
@@ -1766,10 +1721,10 @@ class Voyager extends AbstractBase
 
         // From
         $sqlFrom = array(
-            $this->dbName.'.CALL_SLIP',
-            $this->dbName.'.CALL_SLIP_STATUS_TYPE',
-            $this->dbName.'.MFHD_ITEM',
-            $this->dbName.'.BIB_TEXT'
+            $this->dbName . '.CALL_SLIP',
+            $this->dbName . '.CALL_SLIP_STATUS_TYPE',
+            $this->dbName . '.MFHD_ITEM',
+            $this->dbName . '.BIB_TEXT'
         );
 
         // Where
@@ -1899,10 +1854,10 @@ class Voyager extends AbstractBase
     {
         $sql = "SELECT PATRON.LAST_NAME, PATRON.FIRST_NAME, " .
                "PATRON.HISTORICAL_CHARGES, PATRON_ADDRESS.ADDRESS_LINE1, " .
-               "PATRON_ADDRESS.ADDRESS_LINE2, PATRON_ADDRESS.ZIP_POSTAL, ".
+               "PATRON_ADDRESS.ADDRESS_LINE2, PATRON_ADDRESS.ZIP_POSTAL, " .
                "PATRON_ADDRESS.CITY, PATRON_ADDRESS.COUNTRY, " .
                "PATRON_PHONE.PHONE_NUMBER, PATRON_GROUP.PATRON_GROUP_NAME " .
-               "FROM $this->dbName.PATRON, $this->dbName.PATRON_ADDRESS, ".
+               "FROM $this->dbName.PATRON, $this->dbName.PATRON_ADDRESS, " .
                "$this->dbName.PATRON_PHONE, $this->dbName.PATRON_BARCODE, " .
                "$this->dbName.PATRON_GROUP " .
                "WHERE PATRON.PATRON_ID = PATRON_ADDRESS.PATRON_ID (+) " .
@@ -2287,15 +2242,15 @@ class Voyager extends AbstractBase
         $bindParams = array();
 
         if ($course != '') {
-            $reserveWhere[] = "RESERVE_LIST_COURSES.COURSE_ID = :course" ;
+            $reserveWhere[] = "RESERVE_LIST_COURSES.COURSE_ID = :course";
             $bindParams[':course'] = $course;
         }
         if ($inst != '') {
-            $reserveWhere[] = "RESERVE_LIST_COURSES.INSTRUCTOR_ID = :inst" ;
+            $reserveWhere[] = "RESERVE_LIST_COURSES.INSTRUCTOR_ID = :inst";
             $bindParams[':inst'] = $inst;
         }
         if ($dept != '') {
-            $reserveWhere[] = "RESERVE_LIST_COURSES.DEPARTMENT_ID = :dept" ;
+            $reserveWhere[] = "RESERVE_LIST_COURSES.DEPARTMENT_ID = :dept";
             $bindParams[':dept'] = $dept;
         }
 
@@ -2339,7 +2294,7 @@ class Voyager extends AbstractBase
                " JOIN $this->dbName.MFHD_MASTER " .
                " ON BIB_MFHD.MFHD_ID = MFHD_MASTER.MFHD_ID" .
                " JOIN " .
-               "  ( ".
+               "  ( " .
                "  ((select distinct eitem.mfhd_id, subsubquery1.COURSE_ID, " .
                "     subsubquery1.INSTRUCTOR_ID, subsubquery1.DEPARTMENT_ID " .
                "     from $this->dbName.eitem join " .

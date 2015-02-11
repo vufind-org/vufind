@@ -59,7 +59,7 @@ class WorldCatTermsTest extends \VuFindTest\Unit\TestCase
         $module->setConfig('');
         $module->init($results->getParams(), $request);
         $module->process($results);
-        $this->assertEquals( array('exact' => 'exact'), $module->getTerms());
+        $this->assertEquals(array('exact' => 'exact'), $module->getTerms());
     }
 
     /**
