@@ -91,7 +91,7 @@ class Loader
         if (count($results) === 0) {
             $results = $this->searchService->retrieve($source, $id)->getRecords();
         }
-        if (isset($this->recordCache) 
+        if (isset($this->recordCache)
             && $this->recordCache->isFallback() && count($results) === 0
         ) {
             $results = $this->recordCache->lookup(array("$source|$id"));
@@ -136,7 +136,7 @@ class Loader
             
         // try to load the missing records from the original $source
         $genuineRecords = array();
-        if (count($ids) > 0 ) {
+        if (count($ids) > 0) {
             $genuineRecords = $this->searchService->retrieveBatch(
                 $source, $ids
             )->getRecords();
@@ -148,7 +148,7 @@ class Loader
         }
         
         if (isset($this->recordCache)
-            && $this->recordCache->isFallback() && count($ids) > 0 
+            && $this->recordCache->isFallback() && count($ids) > 0
         ) {
             // try to load missing records from cache if source is cachable
             $cachedRecords = $this->recordCache->lookup($ids, $source);
@@ -225,11 +225,11 @@ class Loader
     /**
      * Set policy to control cache beaviuor
      *
-     * @param string $cachePolicy Caching policy 
-     * 
+     * @param string $cachePolicy Caching policy
+     *
      * @return null
      */
-    public function setCachePolicy($cachePolicy) 
+    public function setCachePolicy($cachePolicy)
     {
         $this->recordCache->setPolicy($cachePolicy);
     }

@@ -27,7 +27,6 @@
  */
 namespace VuFind\Db\Table;
 
-use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Sql;
 
 /**
@@ -52,9 +51,9 @@ class Record extends Gateway
     
     /**
      * Find records by ids
-     * 
+     *
      * @param array(integer) $ids an array of ids
-     * 
+     *
      * @throws \Exception
      * @return array of record table rows
      */
@@ -83,7 +82,7 @@ class Record extends Gateway
 
     /**
      * Update an existing entry in record table or create a new one
-     * 
+     *
      * @param integer $id         id
      * @param string  $source     data source
      * @param string  $rawData    json encoded raw data from source
@@ -91,10 +90,10 @@ class Record extends Gateway
      * @param integer $userId     user id
      * @param string  $sessionId  session id
      * @param integer $resourceId resource id
-     * 
+     *
      * @return updated or newly record table entry
      */
-    public function updateRecord($id, $source, $rawData, 
+    public function updateRecord($id, $source, $rawData,
         $recordId, $userId, $sessionId, $resourceId
     ) {
         $records = $this->findRecord(array($id));
@@ -121,19 +120,19 @@ class Record extends Gateway
     
     /**
      * Clenaup orphaned entries
-     * 
+     *
      * @param integer $userId user id
-     * 
+     *
      * @return null
      */
-    public function cleanup($userId) 
+    public function cleanup($userId)
     {
         $sql = new Sql($this->getAdapter());
         $select = $sql->select();
         $select->from('record');
         $select->join(
-            'user_resource', 
-            'record.resource_id = user_resource.resource_id', 
+            'user_resource',
+            'record.resource_id = user_resource.resource_id',
             array(), $select::JOIN_LEFT
         );
         $select->where->equalTo('record.user_id', $userId);
@@ -147,11 +146,11 @@ class Record extends Gateway
         }
     }
 
-    /** 
+    /**
      * Delete entry by id
-     * 
+     *
      * @param integer $id primary key
-     * 
+     *
      * @return null
      */
     public function delete($id)

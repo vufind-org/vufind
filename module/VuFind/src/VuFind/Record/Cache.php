@@ -26,9 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-
 namespace VuFind\Record;
-use VuFind\RecordDriver\PluginManager as RecordFactory, 
+use VuFind\RecordDriver\PluginManager as RecordFactory,
     VuFind\Db\Table\PluginManager as DbTableManager,
     Zend\Config\Config as Config;
 
@@ -66,15 +65,15 @@ class Cache
      * @param Config         $config               VuFind main config
      * @param DbTableManager $dbTableManager       Database Table Manager
      */
-    public function __construct(  
-        RecordFactory $recordFactoryManager, 
-        Config $config, 
+    public function __construct(
+        RecordFactory $recordFactoryManager,
+        Config $config,
         DbTableManager $dbTableManager
     ) {
         if (isset($config->RecordCache)) {
             
             $cachableSources = $config->RecordCache->cachableSources;
-            if (isset ($cachableSources)) {
+            if (isset($cachableSources)) {
                 $this->cachableSources = preg_split("/[\s,]+/", $cachableSources);
             } else {
                 $this->cachableSources = array();
@@ -92,7 +91,7 @@ class Cache
         $this->recordFactories['VuFind'] = array(
             $recordFactoryManager, 'getSolrRecord'
         );
-        $this->recordFactories['WorldCat'] = function ($data) 
+        $this->recordFactories['WorldCat'] = function ($data)
         use ($recordFactoryManager) {
             $driver = $recordFactoryManager->get('WorldCat');
             $driver->setRawData($data);
@@ -106,14 +105,14 @@ class Cache
      *
      * @param string  $recordId   RecordId
      * @param integer $userId     UserId
-     * @param string  $source     Source name 
+     * @param string  $source     Source name
      * @param string  $rawData    Raw Data from data source
      * @param string  $sessionId  PHP Session Id
      * @param integer $resourceId ResourceId from resource table
      *
      * @return null
      */
-    public function createOrUpdate($recordId, $userId, $source, 
+    public function createOrUpdate($recordId, $userId, $source,
         $rawData, $sessionId, $resourceId
     ) {
         if (in_array($source, $this->cachableSources)) {
@@ -121,7 +120,7 @@ class Cache
             $this->recordTable->updateRecord(
                 $cId, $source, $rawData, $recordId, $userId, $sessionId, $resourceId
             );
-        } 
+        }
     }
 
     /**
@@ -131,14 +130,14 @@ class Cache
      *
      * @return null
      */
-    public function cleanup($userId) 
-    { 
-        $this->recordTable->cleanup($userId); 
+    public function cleanup($userId)
+    {
+        $this->recordTable->cleanup($userId);
     }
     
     /**
      * Given an array of associative arrays with id and source keys (or pipe-
-     * separated source|id strings) 
+     * separated source|id strings)
      *
      * @param array  $ids    Array of associative arrays with id/source keys or
      * strings in source|id format.  In associative array formats, there is
@@ -147,7 +146,6 @@ class Cache
      *
      * @return array     Array of record drivers
      */
-    
     public function lookup($ids, $source = null)
     {
         if ($this->cachePolicy === $this->DISABLED) {
@@ -159,7 +157,7 @@ class Cache
                 $tmp[] = "$source|$id";
             }
             $ids = $tmp;
-        } 
+        }
 
         $cacheIds = array();
         foreach ($ids as $i => $details) {
@@ -168,7 +166,7 @@ class Cache
                 $details = array('source' => $parts[0],'id' => $parts[1]);
             }
             
-            $userId = isset($_SESSION['Account']) 
+            $userId = isset($_SESSION['Account'])
                 ? $_SESSION['Account']->userId : null;
             $cacheIds[] = $this->getCacheId(
                 $details['id'], $details['source'], $userId
@@ -206,7 +204,7 @@ class Cache
      *
      * @return boolean
      */
-    public function isPrimary() 
+    public function isPrimary()
     {
         return $this->hasPolicy($this->PRIMARY);
     }
@@ -216,7 +214,7 @@ class Cache
      *
      * @return boolean
      */
-    public function isFallback()  
+    public function isFallback()
     {
         return $this->hasPolicy($this->FALLBACK);
     }
@@ -229,7 +227,7 @@ class Cache
      *
      * @return boolean
      */
-    protected function hasPolicy($policy) 
+    protected function hasPolicy($policy)
     {
         return (($this->cachePolicy & $policy) === $policy);
     }

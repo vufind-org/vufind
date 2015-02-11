@@ -26,12 +26,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-
 namespace VuFind\Record\Cache;
 
 /**
  * RecordCacheAwareInterface
- * 
+ *
  * @category VuFind2
  * @package  Translator
  * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
@@ -43,9 +42,9 @@ interface RecordCacheAwareInterface
     
     /**
      * Set record cache
-     * 
+     *
      * @param \VuFind\Record\Cache $recordCache record cache
-     * 
+     *
      * @return null
      */
     public function setRecordCache(\VuFind\Record\Cache $recordCache);
@@ -53,7 +52,7 @@ interface RecordCacheAwareInterface
     
     /**
      * Get record cache
-     * 
+     *
      * @return \VuFind\Record\Cache
      */
     public function getRecordCache();
