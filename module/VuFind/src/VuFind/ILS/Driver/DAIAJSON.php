@@ -30,6 +30,8 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException,
+    VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface,
+    Zend\Log\LoggerAwareInterface as LoggerAwareInterface,
     Zend\Http\Client\Adapter\Curl as CurlAdapter;
 
 /**
@@ -41,8 +43,12 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class DAIAJSON extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
+class DAIAJSON extends AbstractBase implements HttpServiceAwareInterface, 
+                                               LoggerAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Daia URL
      *
@@ -93,8 +99,14 @@ class DAIAJSON extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
         "format" => "json");
 
         try {
-            $client = $this->httpService->createClient();
-            $result = $client->get($this->daiaurl, $params, null, $http_headers);
+            // $client = $this->httpService->createClient();
+            // $result = $client->get($this->daiaurl, $params, null, $http_headers);
+            $result = $this->httpService->get(
+                $this->daiaurl, 
+                $params, 
+                null, 
+                $http_headers
+            );
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
@@ -139,11 +151,12 @@ class DAIAJSON extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      * @param string $id      The id of the bib record
      * @param array  $details Item details from getHoldings return array
      *
-     * @return string         URL to ILS's OPAC's place hold screen.
+     * @return string URL to ILS's OPAC's place hold screen.
      */
     public function getHoldLink($id, $details)
     {
-        return($details['ilslink']);
+        return (isset($details['ilslink']) && $details['ilslink']!= '') ? 
+              $details['ilslink'] : null;
     }
 
         /**
