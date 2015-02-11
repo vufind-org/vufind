@@ -43,7 +43,7 @@ use VuFind\RecordDriver\PluginManager as RecordFactory,
 class Cache
 {
     const FAVORITE             = 'favorite';
-    
+
     protected $cachePolicy = 0;
     protected $DISABLED          = 0b00000; //  0
     protected $PRIMARY           = 0b00001; //  1
@@ -51,13 +51,13 @@ class Cache
     protected $INCLUDE_RECORD_ID = 0b00100; //  4
     protected $INCLUDE_SOURCE    = 0b01000; //  8
     protected $INCLUDE_USER_ID   = 0b10000; // 16
-    
+
     protected $recordFactories = array();
     protected $recordTable = null;
-    
+
     protected $cachableSources = null;
     protected $cachePolicies = array();
-    
+
     /**
      * Constructor
      *
@@ -71,14 +71,13 @@ class Cache
         DbTableManager $dbTableManager
     ) {
         if (isset($config->RecordCache)) {
-            
             $cachableSources = $config->RecordCache->cachableSources;
             if (isset($cachableSources)) {
                 $this->cachableSources = preg_split("/[\s,]+/", $cachableSources);
             } else {
                 $this->cachableSources = array();
             }
-            
+
             $cachePolicies = $config->RecordCache->cachePolicy;
             if (isset($cachePolicies)) {
                 $this->cachePolicies = $cachePolicies;
@@ -86,7 +85,7 @@ class Cache
                 $this->cachePolicies = array();
             }
         }
-        
+
         $this->recordTable = $dbTableManager->get('record');
         $this->recordFactories['VuFind'] = array(
             $recordFactoryManager, 'getSolrRecord'
@@ -99,16 +98,16 @@ class Cache
             return $driver;
         };
     }
-    
+
     /**
      * Create a new or update an existing cache entry
      *
-     * @param string  $recordId   RecordId
-     * @param integer $userId     UserId
-     * @param string  $source     Source name
-     * @param string  $rawData    Raw Data from data source
-     * @param string  $sessionId  PHP Session Id
-     * @param integer $resourceId ResourceId from resource table
+     * @param string $recordId   RecordId
+     * @param int    $userId     UserId
+     * @param string $source     Source name
+     * @param string $rawData    Raw Data from data source
+     * @param string $sessionId  PHP Session Id
+     * @param int    $resourceId ResourceId from resource table
      *
      * @return null
      */
@@ -126,7 +125,7 @@ class Cache
     /**
      * Cleanup orphaned cache entries for the given UserId
      *
-     * @param integer $userId UserId
+     * @param int $userId UserId
      *
      * @return null
      */
@@ -134,7 +133,7 @@ class Cache
     {
         $this->recordTable->cleanup($userId);
     }
-    
+
     /**
      * Given an array of associative arrays with id and source keys (or pipe-
      * separated source|id strings)
@@ -151,7 +150,7 @@ class Cache
         if ($this->cachePolicy === $this->DISABLED) {
             return array();
         }
-        
+
         if (isset($source)) {
             foreach ($ids as $id) {
                 $tmp[] = "$source|$id";
@@ -165,7 +164,7 @@ class Cache
                 $parts = explode('|', $details, 2);
                 $details = array('source' => $parts[0],'id' => $parts[1]);
             }
-            
+
             $userId = isset($_SESSION['Account'])
                 ? $_SESSION['Account']->userId : null;
             $cacheIds[] = $this->getCacheId(
@@ -178,13 +177,13 @@ class Cache
         foreach ($cachedRecords as $cachedRecord) {
             $factory = $this->recordFactories[$cachedRecord['source']];
             $doc = json_decode($cachedRecord['data'], true);
-        
+
             $vufindRecords[] = call_user_func($factory, $doc);
         }
-        
+
         return $vufindRecords;
     }
-    
+
     /**
      * Set policy for controling cache behaviour
      *
@@ -198,48 +197,47 @@ class Cache
             $this->cachePolicy = $this->cachePolicies[$cachePolicy];
         }
     }
-    
+
     /**
      * Convenience method for checking if cache is used as primary data data source
      *
-     * @return boolean
+     * @return bool
      */
     public function isPrimary()
     {
         return $this->hasPolicy($this->PRIMARY);
     }
-    
+
     /**
      * Convenience method for checking if cache is used as fallback data source
      *
-     * @return boolean
+     * @return bool
      */
     public function isFallback()
     {
         return $this->hasPolicy($this->FALLBACK);
     }
-    
-    
+
     /**
      * Convenience method checking policies
      *
-     * @param integer $policy cache policy
+     * @param int $policy cache policy
      *
-     * @return boolean
+     * @return bool
      */
     protected function hasPolicy($policy)
     {
         return (($this->cachePolicy & $policy) === $policy);
     }
-    
+
     /**
      * Helper method to calcualte and ensure consistend cacheIds
      *
-     * @param string  $recordId RecordId
-     * @param string  $source   Source name
-     * @param integer $userId   UserId userId
+     * @param string $recordId RecordId
+     * @param string $source   Source name
+     * @param int    $userId   UserId userId
      *
-     * @return null
+     * @return string
      */
     protected function getCacheId($recordId, $source = null, $userId = null)
     {
@@ -247,17 +245,17 @@ class Cache
         if ($this->hasPolicy($this->INCLUDE_RECORD_ID)) {
             $cIdHelper['recordId'] = $recordId;
         }
-        
+
         if ($this->hasPolicy($this->INCLUDE_SOURCE)) {
             $source = ($source == 'Solr') ? 'VuFind' : $source;
             $cIdHelper['source']   = $source;
         }
-            
+
         if ($this->hasPolicy($this->INCLUDE_USER_ID)) {
             $cIdHelper['userId']   = $userId;
         }
         $md5 = md5(json_encode($cIdHelper));
-        
+
         return $md5;
     }
 }

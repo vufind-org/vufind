@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Record cache aware marker interface.
  *
@@ -21,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Search
+ * @package  Record
  * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
@@ -32,14 +31,13 @@ namespace VuFind\Record\Cache;
  * RecordCacheAwareInterface
  *
  * @category VuFind2
- * @package  Translator
+ * @package  Record
  * @author   Markus Beh <markus.beh@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
 interface RecordCacheAwareInterface
 {
-    
     /**
      * Set record cache
      *
@@ -48,8 +46,7 @@ interface RecordCacheAwareInterface
      * @return null
      */
     public function setRecordCache(\VuFind\Record\Cache $recordCache);
-    
-    
+
     /**
      * Get record cache
      *
