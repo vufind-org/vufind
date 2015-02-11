@@ -132,7 +132,7 @@ class HarvestController extends AbstractBase
         Console::writeLine('<collection>');
         while (false !== ($file = readdir($handle))) {
             // Only operate on XML files:
-            if (pathinfo($file, PATHINFO_EXTENSION) === "xml" ) {
+            if (pathinfo($file, PATHINFO_EXTENSION) === "xml") {
                 // get file content
                 $filePath = $dir . '/' . $file;
                 $fileContent = file_get_contents($filePath);

@@ -44,6 +44,10 @@ use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
  */
 class Params implements ServiceLocatorAwareInterface
 {
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait {
+        setServiceLocator as setServiceLocatorThroughTrait;
+    }
+
     /**
      * Internal representation of user query.
      *
@@ -153,13 +157,6 @@ class Params implements ServiceLocatorAwareInterface
      * Override Query
      */
     protected $overrideQuery = false;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Are default filters applied?
@@ -1332,7 +1329,7 @@ class Params implements ServiceLocatorAwareInterface
     protected function buildNumericRangeFilter($field, $from, $to)
     {
         // Make sure that $to is less than $from:
-        if ($to != '*' && $from!= '*' && $to < $from) {
+        if ($to != '*' && $from != '*' && $to < $from) {
             $tmp = $to;
             $to = $from;
             $from = $tmp;
@@ -1370,7 +1367,7 @@ class Params implements ServiceLocatorAwareInterface
     protected function buildFullDateRangeFilter($field, $from, $to)
     {
         // Make sure that $to is less than $from:
-        if ($to != '*' && $from!= '*' && strtotime($to) < strtotime($from)) {
+        if ($to != '*' && $from != '*' && strtotime($to) < strtotime($from)) {
             $tmp = $to;
             $to = $from;
             $from = $tmp;
@@ -1663,18 +1660,7 @@ class Params implements ServiceLocatorAwareInterface
         if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
             $serviceLocator = $serviceLocator->getServiceLocator();
         }
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
+        return $this->setServiceLocatorThroughTrait($serviceLocator);
     }
 
     /**

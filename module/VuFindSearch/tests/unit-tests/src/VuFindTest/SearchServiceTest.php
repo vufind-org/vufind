@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest;
 
 use VuFindSearch\Service;
@@ -340,7 +339,7 @@ class SearchServiceTest extends TestCase
         $responseForZero->expects($this->once())->method('getTotal')
             ->will($this->returnValue($total));
 
-        for ($i=1; $i<$limit+1; $i++) {
+        for ($i = 1; $i<$limit+1; $i++) {
             $response = $this->getRecordCollection();
             $response->expects($this->any())->method('first')
                 ->will($this->returnValue($this->getMock('VuFindSearch\Response\RecordInterface')));

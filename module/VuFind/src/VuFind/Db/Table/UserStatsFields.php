@@ -27,8 +27,6 @@
  */
 namespace VuFind\Db\Table;
 
-use Zend\Db\Sql\Expression;
-
 /**
  * Table Definition for statistics
  *
@@ -60,9 +58,9 @@ class UserStatsFields extends Gateway
     public function save($stats, $userData)
     {
         // Statistics data
-        foreach ($stats as $field=>$value) {
+        foreach ($stats as $field => $value) {
             if (gettype($value) == "boolean") {
-                $value = ($value) ? "true":"false";
+                $value = ($value) ? "true" : "false";
             }
             $this->insert(
                 array(
@@ -98,15 +96,15 @@ class UserStatsFields extends Gateway
                 array($fields[0] => 'value')
             );
             $select->where->equalTo('field', $fields[0]);
-            for ($i=1;$i<count($fields);$i++) {
-                $select->where->equalTo('field'.$i.'.field', $fields[$i]);
+            for ($i = 1;$i<count($fields);$i++) {
+                $select->where->equalTo('field' . $i . '.field', $fields[$i]);
                 $select->join(
-                    array('field'.$i => 'user_stats_fields'),
-                    'user_stats_fields.id=field'.$i.'.id',
-                    array($fields[$i] => 'field'.$i.'.value')
+                    array('field' . $i => 'user_stats_fields'),
+                    'user_stats_fields.id=field' . $i . '.id',
+                    array($fields[$i] => 'field' . $i . '.value')
                 );
             }
-            foreach ($values as $key=>$value) {
+            foreach ($values as $key => $value) {
                 $select->where->equalTo($key, $value);
             }
         };

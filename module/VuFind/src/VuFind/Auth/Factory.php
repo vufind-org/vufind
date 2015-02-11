@@ -107,6 +107,7 @@ class Factory
             // here may interfere with UI rendering. If we ignore it now, it will
             // still get handled appropriately later in processing.
             error_log($e->getMessage());
+            $catalog = null; // avoid unset variable notice
         }
 
         // Load remaining dependencies:

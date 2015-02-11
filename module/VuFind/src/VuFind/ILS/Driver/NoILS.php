@@ -42,12 +42,7 @@ use VuFind\Exception\ILS as ILSException,
  */
 class NoILS extends AbstractBase implements TranslatorAwareInterface
 {
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Record loader
@@ -276,7 +271,6 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
         return $useHoldings != 'none' && !empty($useHoldings);
     }
 
-
     /**
      * Get Purchase History
      *
@@ -359,31 +353,5 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
     {
         // Block authentication:
         return null;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return NoILS
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    protected function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 }

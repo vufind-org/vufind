@@ -41,19 +41,14 @@ use Zend\Log\Logger as BaseLogger,
  */
 class Logger extends BaseLogger implements ServiceLocatorAwareInterface
 {
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
+
     /**
      * Is debug logging enabled?
      *
      * @var bool
      */
     protected $debugNeeded = false;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Set configuration
@@ -229,29 +224,6 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Logger
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
      * Add a message as a log entry
      *
      * @param int               $priority Priority
@@ -316,7 +288,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
                 }
                 $basicBacktraceLine = $detailedBacktraceLine = $line['file'] .
                     ' line ' . $line['line'] . ' - ' .
-                    (isset($line['class'])? 'class = '.$line['class'].', ' : '')
+                    (isset($line['class']) ? 'class = ' . $line['class'] . ', ' : '')
                     . 'function = ' . $line['function'];
                 $basicBacktrace .= "{$basicBacktraceLine}\n";
                 if (!empty($line['args'])) {
@@ -345,9 +317,9 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     
     /**
      * Convert function argument to a loggable string
-     * 
+     *
      * @param mixed $arg Argument
-     * 
+     *
      * @return string
      */
     protected function argumentToString($arg)
@@ -372,6 +344,6 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
         if (is_null($arg)) {
             return 'null';
         }
-        return "'$arg'";        
+        return "'$arg'";
     }
 }

@@ -30,7 +30,7 @@ namespace VuFind\ILS\Driver;
 use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
+use Zend\Log\LoggerAwareInterface;
 
 /**
  * Symphony Web Services (symws) ILS Driver
@@ -42,10 +42,12 @@ use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-
 class Symphony extends AbstractBase
     implements ServiceLocatorAwareInterface, LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
+
     /**
      * Cache for policy information
      *
@@ -59,46 +61,6 @@ class Symphony extends AbstractBase
      * @var array
      */
     protected $policies;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
-    }
 
     /**
      * Initialize the driver.
@@ -186,7 +148,7 @@ class Symphony extends AbstractBase
         if (!isset($soapClients[$service])) {
             try {
                 $soapClients[$service] = new SoapClient(
-                    $this->config['WebServices']['baseURL']."/soap/$service?wsdl",
+                    $this->config['WebServices']['baseURL'] . "/soap/$service?wsdl",
                     $this->config['WebServices']['soapOptions']
                 );
             } catch (SoapFault $e) {
@@ -620,7 +582,7 @@ class Symphony extends AbstractBase
                      * it is insufficient to provide just the location
                      * description as the "location."
                      */
-                    if (count($this->config['LibraryFilter']['include_only'])!=1) {
+                    if (count($this->config['LibraryFilter']['include_only']) != 1) {
                         $location = "$library - $location";
                     }
                 }
@@ -1485,7 +1447,7 @@ class Symphony extends AbstractBase
      */
     public function getConfig($function, $params = null)
     {
-        if (isset($this->config[$function]) ) {
+        if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
         } else {
             $functionConfig = false;
@@ -1544,7 +1506,7 @@ class Symphony extends AbstractBase
                 $details[$barcode] = array(
                     'success' => true,
                     'new_date' => date('j-M-y', strtotime($renewal->dueDate)),
-                    'new_time' =>date('g:i a', strtotime($renewal->dueDate)),
+                    'new_time' => date('g:i a', strtotime($renewal->dueDate)),
                     'item_id' => $renewal->itemID,
                     'sysMessage' => $renewal->message
                 );
@@ -1690,7 +1652,7 @@ class Symphony extends AbstractBase
     {
         $libraries = array();
 
-        foreach ($this->getPolicyList('LIBR') as $key=>$library) {
+        foreach ($this->getPolicyList('LIBR') as $key => $library) {
             $libraries[] = array(
                 'locationID' => $key,
                 'locationDisplay' => $library
@@ -1729,28 +1691,5 @@ class Symphony extends AbstractBase
             $libraries = $this->getPickUpLocations();
             return $libraries[0]['locationID'];
         }
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Symphony
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

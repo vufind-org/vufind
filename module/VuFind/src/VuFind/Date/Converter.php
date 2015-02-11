@@ -173,7 +173,6 @@ class Converter
      * @throws DateException
      * @return string               A re-formatted date string
      */
-
     public function convertToDisplayDate($createFormat, $dateString)
     {
         return $this->convert($createFormat, $this->displayDateFormat, $dateString);

@@ -260,7 +260,7 @@ class SearchRequestModel
         }
 
         $highlightVal = isset($this->highlight) && $this->highlight ? 'y' : 'n';
-        $qs['highlight']= $highlightVal;
+        $qs['highlight'] = $highlightVal;
 
         return $qs;
     }

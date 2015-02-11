@@ -39,7 +39,7 @@ use VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Manager
+class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
 {
     /**
      * Authentication modules
@@ -174,7 +174,7 @@ class Manager
      *
      * @return bool
      */
-    public function supportsCreation($authMethod=null)
+    public function supportsCreation($authMethod = null)
     {
         return $this->getAuth($authMethod)->supportsCreation();
     }
@@ -187,7 +187,7 @@ class Manager
      *
      * @return bool
      */
-    public function supportsRecovery($authMethod=null)
+    public function supportsRecovery($authMethod = null)
     {
         if ($this->getAuth($authMethod)->supportsPasswordRecovery()) {
             return isset($this->config->Authentication->recover_password)
@@ -204,7 +204,7 @@ class Manager
      *
      * @return bool
      */
-    public function supportsPasswordChange($authMethod=null)
+    public function supportsPasswordChange($authMethod = null)
     {
         if ($this->getAuth($authMethod)->supportsPasswordChange()) {
             return isset($this->config->Authentication->change_password)
@@ -221,7 +221,7 @@ class Manager
      *
      * @return array
      */
-    public function getPasswordPolicy($authMethod=null)
+    public function getPasswordPolicy($authMethod = null)
     {
         return $this->getAuth($authMethod)->getPasswordPolicy();
     }
@@ -389,6 +389,16 @@ class Manager
                 ? false : $results->current();
         }
         return $this->currentUser;
+    }
+
+    /**
+     * Get the identity
+     *
+     * @return \ZfcRbac\Identity\IdentityInterface|null
+     */
+    public function getIdentity()
+    {
+        return ($user = $this->isLoggedIn()) ?: null;
     }
 
     /**

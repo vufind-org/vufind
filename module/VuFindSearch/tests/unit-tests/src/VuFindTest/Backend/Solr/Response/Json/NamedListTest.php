@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\Solr\Json\Response;
 
 use VuFindSearch\Backend\Solr\Response\Json\NamedList;
@@ -53,7 +52,7 @@ class NamedListTest extends TestCase
         $list = new NamedList(array(array('first term', 'info'), array('second term', 'info')));
         $keys = array();
         foreach ($list as $key => $value) {
-            $keys []= $key;
+            $keys [] = $key;
         }
         $this->assertEquals(array('first term', 'second term'), $keys);
     }

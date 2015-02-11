@@ -27,7 +27,13 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFind\Controller;
-use Zend\Mvc\Controller\AbstractActionController, Zend\View\Model\ViewModel;
+
+use VuFind\Exception\Forbidden as ForbiddenException,
+    Zend\Mvc\Controller\AbstractActionController,
+    Zend\Mvc\MvcEvent,
+    Zend\View\Model\ViewModel,
+    ZfcRbac\Service\AuthorizationServiceAwareInterface,
+    ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -41,7 +47,56 @@ use Zend\Mvc\Controller\AbstractActionController, Zend\View\Model\ViewModel;
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class AbstractBase extends AbstractActionController
+    implements AuthorizationServiceAwareInterface
 {
+    use AuthorizationServiceAwareTrait;
+
+    /**
+     * Permission that must be granted to access this module (false for no
+     * restriction)
+     *
+     * @var string|bool
+     */
+    protected $accessPermission = false;
+
+    /**
+     * preDispatch -- block access when appropriate.
+     *
+     * @param MvcEvent $e Event object
+     *
+     * @return void
+     */
+    public function preDispatch(MvcEvent $e)
+    {
+        // Make sure the current user has permission to access the module:
+        if ($this->accessPermission
+            && !$this->getAuthorizationService()->isGranted($this->accessPermission)
+        ) {
+            if (!$this->getUser()) {
+                $e->setResponse($this->forceLogin(null, array(), false));
+                return;
+            }
+            throw new ForbiddenException('Access denied.');
+        }
+    }
+
+    /**
+     * Register the default events for this controller
+     *
+     * @return void
+     */
+    protected function attachDefaultListeners()
+    {
+        parent::attachDefaultListeners();
+        // Attach preDispatch event if we need to check permissions.
+        if ($this->accessPermission) {
+            $events = $this->getEventManager();
+            $events->attach(
+                MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000
+            );
+        }
+    }
+
     /**
      * Constructor
      */

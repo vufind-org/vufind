@@ -39,8 +39,10 @@ use VuFind\Exception\ListPermission as ListPermissionException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class UserList extends ServiceLocatorAwareGateway
+class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+
     /**
      * Constructor
      *

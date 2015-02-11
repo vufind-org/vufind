@@ -42,12 +42,7 @@ use VuFind\Exception\Auth as AuthException;
 class Facebook extends AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Session container
@@ -62,18 +57,6 @@ class Facebook extends AbstractBase implements
     public function __construct()
     {
         $this->session = new \Zend\Session\Container('Facebook');
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**

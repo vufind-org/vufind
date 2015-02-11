@@ -195,7 +195,7 @@ class DPLATerms implements RecommendInterface
             'fields' => implode(',', $this->returnFields),
             'api_key' => $this->apiKey
         );
-        foreach ($filters as $field=>$filter) {
+        foreach ($filters as $field => $filter) {
             if (isset($this->formatMap[$field])) {
                 $params[$this->formatMap[$field]] = implode(',', $filter);
             }
@@ -225,7 +225,7 @@ class DPLATerms implements RecommendInterface
                     'provider' => is_array($doc->dataProvider)
                         ? current($doc->dataProvider)
                         : $doc->dataProvider,
-                    'link' => 'http://dp.la/item/'.$doc->id
+                    'link' => 'http://dp.la/item/' . $doc->id
                 );
                 if (isset($doc->$desc)) {
                     $results[$i]['desc'] = is_array($doc->$desc)

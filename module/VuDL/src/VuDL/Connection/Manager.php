@@ -26,8 +26,6 @@
  * @link     http://vufind.org/wiki/
  */
 namespace VuDL\Connection;
-use VuFindHttp\HttpServiceInterface,
-    VuFindSearch\ParamBag;
 
 /**
  * VuDL connection manager
@@ -108,7 +106,7 @@ class Manager
             $index ++;
         }
         throw new \Exception(
-            'VuDL Connection Failed to resolved method "'.$methodName.'"'
+            'VuDL Connection Failed to resolved method "' . $methodName . '"'
         );
     }
 }

@@ -38,16 +38,10 @@ namespace VuFind\Hierarchy\TreeRenderer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
-
 class JSTree extends AbstractBase
     implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Router plugin
@@ -64,32 +58,6 @@ class JSTree extends AbstractBase
     public function __construct(\Zend\Mvc\Controller\Plugin\Url $router)
     {
         $this->router = $router;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return AbstractBase
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    public function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 
     /**
@@ -246,7 +214,7 @@ class JSTree extends AbstractBase
         );
         if (isset($node->children)) {
             $ret['children'] = array();
-            for ($i=0;$i<count($node->children);$i++) {
+            for ($i = 0;$i<count($node->children);$i++) {
                 $ret['children'][$i] = $this
                     ->formatJSON($node->children[$i], $context, $hierarchyID);
             }

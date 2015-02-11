@@ -40,19 +40,14 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  */
 class Wikipedia implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * HTTP client
      *
      * @var \Zend\Http\Client
      */
     protected $client;
-
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
 
     /**
      * Selected language
@@ -76,41 +71,6 @@ class Wikipedia implements TranslatorAwareInterface
     public function __construct(\Zend\Http\Client $client)
     {
         $this->client = $client;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Wikipedia
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Get translator object.
-     *
-     * @return \Zend\I18n\Translator\Translator
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * Translate a string
-     *
-     * @param string $s String to translate
-     *
-     * @return string
-     */
-    public function translate($s)
-    {
-        return null === $this->translator ? $s : $this->translator->translate($s);
     }
 
     /**
@@ -242,7 +202,7 @@ class Wikipedia implements TranslatorAwareInterface
             foreach ($infoboxTags as $tag) {
                 if (substr($m, 0, strlen($tag) + 1) == '{' . $tag) {
                     // We found an infobox!!
-                    return "{".$m."}";
+                    return "{" . $m . "}";
                 }
             }
         }
@@ -302,7 +262,7 @@ class Wikipedia implements TranslatorAwareInterface
         // We can either find content or recursive brackets:
         $recursive_match = "($content|(?R))*";
         $body .= "[[file:bad]]";
-        preg_match_all("/".$open.$recursive_match.$close."/Us", $body, $new_matches);
+        preg_match_all("/{$open}{$recursive_match}{$close}/Us", $body, $new_matches);
         // Loop through every match (link) we found
         if (is_array($new_matches)) {
             foreach ($new_matches as $nm) {

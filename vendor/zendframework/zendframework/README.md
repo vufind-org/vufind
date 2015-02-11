@@ -1,19 +1,25 @@
-### Welcome to the *Zend Framework 2.2* Release!
+![Logo](https://raw.githubusercontent.com/zendframework/zf2/234b554f2ca202095aea32e4fa557553f8849664/resources/ZendFramework-logo.png)
 
-Master: [![Build Status](https://secure.travis-ci.org/zendframework/zf2.png?branch=master)](http://travis-ci.org/zendframework/zf2)
-Develop: [![Build Status](https://secure.travis-ci.org/zendframework/zf2.png?branch=develop)](http://travis-ci.org/zendframework/zf2)
+# Welcome to the *Zend Framework 2.3* Release!
+
+Master:
+[![Build Status](https://secure.travis-ci.org/zendframework/zf2.png?branch=master)](http://travis-ci.org/zendframework/zf2)
+[![Coverage Status](https://coveralls.io/repos/zendframework/zf2/badge.png?branch=master)](https://coveralls.io/r/zendframework/zf2)
+Develop:
+[![Build Status](https://secure.travis-ci.org/zendframework/zf2.png?branch=develop)](http://travis-ci.org/zendframework/zf2)
+[![Coverage Status](https://coveralls.io/repos/zendframework/zf2/badge.png?branch=develop)](https://coveralls.io/r/zendframework/zf2)
 
 ## RELEASE INFORMATION
 
-*Zend Framework 2.2.9*
+*Zend Framework 2.3.4*
 
-This is the ninth maintenance release for the 2.2 series.
+This is the fourth maintenance release for the version 2.3 series.
 
 14 Jan 2015
 
-### UPDATES IN 2.2.9
+### UPDATES IN 2.3.4
 
-**This release contains security updates:**
+This release contains important security fixes:
 
 - **ZF2015-01:** Session validators were not run if set before session start.
   Essentially, the validators were writing to the `$_SESSION` superglobal before
@@ -28,7 +34,7 @@ Please see [CHANGELOG.md](CHANGELOG.md).
 
 ### SYSTEM REQUIREMENTS
 
-Zend Framework 2 requires PHP 5.3.3 or later; we recommend using the
+Zend Framework 2 requires PHP 5.3.23 or later; we recommend using the
 latest PHP version whenever possible.
 
 ### INSTALLATION

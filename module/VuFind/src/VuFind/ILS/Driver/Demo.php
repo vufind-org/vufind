@@ -151,7 +151,7 @@ class Demo extends AbstractBase
         $loc = rand()%count($locations);
         return $returnText
             ? $locations[$loc]['locationDisplay']
-            :$locations[$loc]['locationID'];
+            : $locations[$loc]['locationID'];
     }
 
     /**
@@ -185,7 +185,7 @@ class Demo extends AbstractBase
         $a = $codes[rand()%strlen($codes)];
         $b = rand()%899 + 100;
         $c = rand()%9999;
-        return $a.$b.".".$c;
+        return $a . $b . "." . $c;
     }
 
     /**
@@ -292,9 +292,10 @@ class Demo extends AbstractBase
         $list = new ArrayObject();
         for ($i = 0; $i < $items; $i++) {
             $location = $this->getFakeLoc(false);
+            $randDays = rand() % 10;
             $currentItem = array(
                 "location" => $location,
-                "create"   => date("j-M-y", strtotime("now - ".(rand()%10)." days")),
+                "create"   => date("j-M-y", strtotime("now - {$randDays} days")),
                 "expire"   => date("j-M-y", strtotime("now + 30 days")),
                 "reqnum"   => sprintf("%06d", $i),
                 "item_id" => $i,
@@ -382,7 +383,7 @@ class Demo extends AbstractBase
      */
     public function getSimulatedStatus($id, array $patron = null)
     {
-        $id = $id.""; // make it a string for consistency
+        $id = $id . ""; // make it a string for consistency
         // How many items are there?
         $records = rand()%15;
         $holding = array();
@@ -633,7 +634,7 @@ class Demo extends AbstractBase
                 // How many days overdue is the item?
                 $day_overdue = rand()%30 + 5;
                 // Calculate checkout date:
-                $checkout = strtotime("now - ".($day_overdue+14)." days");
+                $checkout = strtotime("now - " . ($day_overdue+14) . " days");
                 // 50c a day fine?
                 $fine = $day_overdue * 0.50;
 
