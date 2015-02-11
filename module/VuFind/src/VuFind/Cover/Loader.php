@@ -158,7 +158,7 @@ class Loader extends \VuFind\ImageLoader
     {
         return new \VuFind\Cover\Generator(
             $this->themeTools,
-            array('mode'=>$this->config->Content->makeDynamicCovers)
+            array('mode' => $this->config->Content->makeDynamicCovers)
         );
     }
 

@@ -197,7 +197,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     protected function call($method = 'GET', $params = null, $process = true)
     {
         if ($params) {
-            $query = array('version='.$this->sruVersion);
+            $query = array('version=' . $this->sruVersion);
             foreach ($params as $function => $value) {
                 if (is_array($value)) {
                     foreach ($value as $additional) {

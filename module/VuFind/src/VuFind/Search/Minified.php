@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Search;
-use VuFind\Search\QueryAdapter;
 
 /**
  * A minified search object used exclusively for trimming a search object down to its

@@ -98,7 +98,7 @@ class Results extends BaseResults
                             'displayText' => $tag->tag,
                             'count' => $tag->cnt,
                             'isApplied' =>
-                                $this->getParams()->hasFilter("$field:".$tag->tag)
+                                $this->getParams()->hasFilter("$field:" . $tag->tag)
                         );
                     }
                     break;

@@ -41,7 +41,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
     public function testMissingDetails()
     {
         $subject = new \VuDL\Connection\Solr(
-            (object) array('General'=>(object) array('page_length'=>8)),
+            (object) array('General' => (object) array('page_length' => 8)),
             new FakeBackend(array('{"response":{"docs":[{"author":"1,2"}]}}'))
         );
 
@@ -64,8 +64,8 @@ class SolrTest extends \VuFindTest\Unit\TestCase
     {
         $subject = new \VuDL\Connection\Solr(
             (object) array(
-                'General'=>(object) array('root_id'=>'ROOT'),
-                'Details'=>new FakeConfig(array('author,author2'=>'Author','series'=>'Series','bacon,eggs'=>'Yum','unused'=>':('))
+                'General' => (object) array('root_id' => 'ROOT'),
+                'Details' => new FakeConfig(array('author,author2' => 'Author','series' => 'Series','bacon,eggs' => 'Yum','unused' => ':('))
             ),
             new FakeBackend(
                 array(
@@ -105,18 +105,18 @@ class SolrTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(array("CLASS_ONE", "CLASS_TWO"), $subject->getClasses('id'));
 
         $this->assertEquals(null, $subject->getDetails('id', false));
-        $this->assertEquals(array("author"=>array("A1","A2"),"series"=>"S1"), $subject->getDetails('id', false));
+        $this->assertEquals(array("author" => array("A1","A2"),"series" => "S1"), $subject->getDetails('id', false));
         $this->assertEquals(array(
-            "author"=>array("title"=>"Author", "value"=>array("A1","A2")),
-            "bacon"=>array("title"=>"Yum", "value"=>array("MORE")),
-            "series"=>array("title"=>"Series", "value"=>"S1"),
+            "author" => array("title" => "Author", "value" => array("A1","A2")),
+            "bacon" => array("title" => "Yum", "value" => array("MORE")),
+            "series" => array("title" => "Series", "value" => "S1"),
         ), $subject->getDetails('id', true));
 
         $this->assertEquals(null, $subject->getLabel('id'));
         $this->assertEquals("LABEL", $subject->getLabel('id'));
 
         $this->assertEquals(array(), $subject->getMemberList('root'));
-        $this->assertEquals(array(array('id'=>'ID','title'=>'TOP')), $subject->getMemberList('root'));
+        $this->assertEquals(array(array('id' => 'ID','title' => 'TOP')), $subject->getMemberList('root'));
 
         $this->assertEquals(null, $subject->getModDate('id'));
         $this->assertEquals("DATE", $subject->getModDate('id'));
@@ -125,13 +125,13 @@ class SolrTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(array("ID1", "ID2"), $subject->getOrderedMembers('id', array('fake_filter')));
 
         $this->assertEquals(null, $subject->getParentList('id1'));
-        $this->assertEquals(array(array('id4'=>'title4'), array('id3'=>'title3','id2'=>'title2')), $subject->getParentList('id1'));
+        $this->assertEquals(array(array('id4' => 'title4'), array('id3' => 'title3','id2' => 'title2')), $subject->getParentList('id1'));
         // Cache test
-        $this->assertEquals(array(array('id4'=>'title4'), array('id3'=>'title3','id2'=>'title2')), $subject->getParentList('id1'));
+        $this->assertEquals(array(array('id4' => 'title4'), array('id3' => 'title3','id2' => 'title2')), $subject->getParentList('id1'));
 
         $this->assertEquals(null, $subject->getCopyright('id', array()));
-        $this->assertEquals(array("vuABC", "WTFPL"), $subject->getCopyright('id', array('A'=>'WTFPL')));
-        $this->assertEquals(array("vuABC", false), $subject->getCopyright('id', array('X'=>'WTFPL')));
+        $this->assertEquals(array("vuABC", "WTFPL"), $subject->getCopyright('id', array('A' => 'WTFPL')));
+        $this->assertEquals(array("vuABC", false), $subject->getCopyright('id', array('X' => 'WTFPL')));
 
         $this->assertEquals(16, $subject->getPageLength());
     }

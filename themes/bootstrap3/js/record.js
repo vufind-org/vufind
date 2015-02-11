@@ -150,9 +150,11 @@ function registerTabEvents() {
 
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
-  // Grab the part of the url that is the Controller and Record ID
+  // Try to parse out the controller portion of the URL. If this fails, or if
+  // we're flagged to skip AJAX for this tab, just return true and let the
+  // browser handle it.
   var urlroot = document.URL.match(new RegExp('/[^/]+/'+id));
-  if(!urlroot) {
+  if(!urlroot || document.getElementById(tabid).parentNode.className.indexOf('noajax') > -1) {
     return true;
   }
   $.ajax({

@@ -146,7 +146,7 @@ class SearchController extends AbstractSearch
      */
     protected function getIllustrationSettings($savedSearch = false)
     {
-        $illYes= array(
+        $illYes = array(
             'text' => 'Has Illustrations', 'value' => 1, 'selected' => false
         );
         $illNo = array(
@@ -208,7 +208,7 @@ class SearchController extends AbstractSearch
             foreach ($list['list'] as $key => $value) {
                 // Build the filter string for the URL:
                 $fullFilter = ($value['operator'] == 'OR' ? '~' : '')
-                    . $facet.':"'.$value['value'].'"';
+                    . $facet . ':"' . $value['value'] . '"';
 
                 // If we haven't already found a selected facet and the current
                 // facet has been applied to the search, we should store it as
@@ -663,6 +663,5 @@ class SearchController extends AbstractSearch
             ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
             : array();
     }
-
 
 }

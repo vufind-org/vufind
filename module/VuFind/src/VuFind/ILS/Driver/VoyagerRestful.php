@@ -312,7 +312,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function getConfig($function, $params = null)
     {
-        if (isset($this->config[$function]) ) {
+        if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
         } else {
             $functionConfig = false;
@@ -731,7 +731,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                     "as location_name from " .
                     $this->dbName . ".CIRC_POLICY_LOCS, $this->dbName.LOCATION, " .
                     "$this->dbName.REQUEST_GROUP_LOCATION rgl " .
-                    "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' ".
+                    "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' " .
                     "and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID " .
                     "and rgl.GROUP_ID=:requestGroupId " .
                     "and rgl.LOCATION_ID = LOCATION.LOCATION_ID";
@@ -741,7 +741,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                     "NVL(LOCATION.LOCATION_DISPLAY_NAME, LOCATION.LOCATION_NAME) " .
                     "as location_name from " .
                     $this->dbName . ".CIRC_POLICY_LOCS, $this->dbName.LOCATION " .
-                    "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' ".
+                    "where CIRC_POLICY_LOCS.PICKUP_LOCATION = 'Y' " .
                     "and CIRC_POLICY_LOCS.LOCATION_ID = LOCATION.LOCATION_ID";
             }
 
@@ -1051,7 +1051,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // Add Params
         $queryString = array();
         foreach ($params as $key => $param) {
-            $queryString[] = urlencode($key). "=" . urlencode($param);
+            $queryString[] = urlencode($key) . "=" . urlencode($param);
         }
 
         // Build Hierarchy
@@ -1393,7 +1393,7 @@ EOT;
     protected function checkItemRequests($patronId, $request, $bibId,
         $itemId = false
     ) {
-        if (!empty($bibId) && !empty($patronId) && !empty($request) ) {
+        if (!empty($bibId) && !empty($patronId) && !empty($request)) {
 
             $hierarchy = array();
 
@@ -1423,7 +1423,7 @@ EOT;
 
                 // Valid Response
                 if ($reply == "ok") {
-                    if ($check->$request ) {
+                    if ($check->$request) {
                         $requestAttributes = $check->$request->attributes();
                         if ($requestAttributes['allowed'] == "Y") {
                             return true;
@@ -1452,7 +1452,7 @@ EOT;
         if (empty($patron) || empty($requestData) || empty($requestData['bibId'])
             || empty($type)
         ) {
-            return array('success' => false, 'status' =>"hold_error_fail");
+            return array('success' => false, 'status' => "hold_error_fail");
         }
 
         // Build request
@@ -1997,7 +1997,7 @@ EOT;
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['item_id']."|".$holdDetails['reqnum'];
+        $cancelDetails = $holdDetails['item_id'] . "|" . $holdDetails['reqnum'];
         return $cancelDetails;
     }
 

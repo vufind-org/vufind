@@ -47,7 +47,6 @@ class Search extends Gateway
         parent::__construct('search', 'VuFind\Db\Row\Search');
     }
 
-
     /**
      * Delete unsaved searches for a particular session.
      *

@@ -320,7 +320,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
      *
      * @return void
      */
-    protected function setup ()
+    protected function setup()
     {
         parent::setup();
         if (!ini_get('short_open_tag')) {

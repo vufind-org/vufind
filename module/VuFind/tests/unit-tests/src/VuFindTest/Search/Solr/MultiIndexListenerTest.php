@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFindTest\Search\Solr;
 
 use VuFindSearch\ParamBag;
@@ -139,7 +138,7 @@ class MultiIndexListenerTest extends TestCase
     {
         $params   = new ParamBag(
             array(
-                'facet.field' => array('field_1', 'field_2', 'field_3'), 
+                'facet.field' => array('field_1', 'field_2', 'field_3'),
                 'shards' => array(self::$shards['b'], self::$shards['c']),
             )
         );

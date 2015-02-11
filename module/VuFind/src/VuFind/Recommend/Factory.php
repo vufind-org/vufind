@@ -67,7 +67,7 @@ class Factory
         return new AuthorInfo(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
             $sm->getServiceLocator()->get('VuFind\Http')->createClient(),
-            isset ($config->Content->authors) ? $config->Content->authors : ''
+            isset($config->Content->authors) ? $config->Content->authors : ''
         );
     }
 

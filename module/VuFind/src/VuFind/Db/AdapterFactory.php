@@ -102,7 +102,7 @@ class AdapterFactory
      * @return Adapter
      */
     public function getAdapterFromOptions($options)
-    {       
+    {
         // Set up custom options by database type:
         $driver = strtolower($options['driver']);
         switch ($driver) {
@@ -110,7 +110,7 @@ class AdapterFactory
             $options['charset'] = isset($this->config->Database->charset)
                 ? $this->config->Database->charset : 'utf8';
             $options['options'] = array('buffer_results' => true);
-            break; 
+            break;
         }
 
         // Set up database connection:

@@ -236,7 +236,6 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-
     public function getSearchAction()
     {
         return 'search-results';

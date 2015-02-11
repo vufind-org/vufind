@@ -86,7 +86,7 @@ class Shibboleth extends AbstractBase
 
         // Check if required attributes match up:
         foreach ($this->getRequiredAttributes() as $key => $value) {
-            if (!preg_match('/'. $value .'/', $request->getServer()->get($key))) {
+            if (!preg_match('/' . $value . '/', $request->getServer()->get($key))) {
                 throw new AuthException('authentication_error_denied');
             }
         }
@@ -222,7 +222,7 @@ class Shibboleth extends AbstractBase
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
                     throw new AuthException(
-                        "User attribute value of " . $value. " is missing!"
+                        "User attribute value of " . $value . " is missing!"
                     );
                 }
             }

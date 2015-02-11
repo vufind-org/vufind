@@ -162,7 +162,7 @@ class AuthorityRecommend implements RecommendInterface
         $this->results = $results;
 
         // function will return blank on Advanced Search
-        if ($results->getParams()->getSearchType()== 'advanced') {
+        if ($results->getParams()->getSearchType() == 'advanced') {
             return;
         }
 

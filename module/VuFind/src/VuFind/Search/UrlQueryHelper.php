@@ -159,7 +159,7 @@ class UrlQueryHelper
                                 if (!isset($params['type' . $i])) {
                                     $params['type' . $i] = array();
                                 }
-                                $params['lookfor'.$i][] = $inner->getString();
+                                $params['lookfor' . $i][] = $inner->getString();
                                 $params['type' . $i][] = $inner->getHandler();
                                 if (null !== ($op = $inner->getOperator())) {
                                     $params['op' . $i][] = $op;

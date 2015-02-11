@@ -174,7 +174,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      *
      * @return bool
      */
-    public function supportsCreation($authMethod=null)
+    public function supportsCreation($authMethod = null)
     {
         return $this->getAuth($authMethod)->supportsCreation();
     }
@@ -187,7 +187,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      *
      * @return bool
      */
-    public function supportsRecovery($authMethod=null)
+    public function supportsRecovery($authMethod = null)
     {
         if ($this->getAuth($authMethod)->supportsPasswordRecovery()) {
             return isset($this->config->Authentication->recover_password)
@@ -204,7 +204,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      *
      * @return bool
      */
-    public function supportsPasswordChange($authMethod=null)
+    public function supportsPasswordChange($authMethod = null)
     {
         if ($this->getAuth($authMethod)->supportsPasswordChange()) {
             return isset($this->config->Authentication->change_password)
@@ -221,7 +221,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      *
      * @return array
      */
-    public function getPasswordPolicy($authMethod=null)
+    public function getPasswordPolicy($authMethod = null)
     {
         return $this->getAuth($authMethod)->getPasswordPolicy();
     }

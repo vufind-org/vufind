@@ -28,11 +28,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr;
 
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
@@ -46,7 +43,6 @@ use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\AdapterInterface;
 
 use InvalidArgumentException;
-use XMLWriter;
 
 /**
  * SOLR connector.
@@ -325,7 +321,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      */
     public function setAdapter($adapter)
     {
-        if (is_object($adapter) && (!$adapter instanceOf AdapterInterface)) {
+        if (is_object($adapter) && (!$adapter instanceof AdapterInterface)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'HTTP client adapter must implement AdapterInterface: %s',

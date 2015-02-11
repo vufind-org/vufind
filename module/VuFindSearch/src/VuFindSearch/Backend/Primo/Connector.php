@@ -125,7 +125,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      * @return array             An array of query results
      * @link http://www.exlibrisgroup.org/display/PrimoOI/Brief+Search
      */
-    public function query($institution, $terms, $params=null)
+    public function query($institution, $terms, $params = null)
     {
         // defaults for params
         $args = array(
@@ -160,7 +160,6 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         }
         return $result;
     }
-
 
     /**
      * Support method for query() -- perform inner search logic
@@ -255,7 +254,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // have a query to send to primo or it hates us
 
             // QUERYSTRING: institution
-            $qs[] ="institution=$institution";
+            $qs[] = "institution=$institution";
 
             // QUERYSTRING: onCampus
             if ($args["onCampus"]) {
@@ -268,7 +267,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             if ($args["didYouMean"]) {
                 $qs[] = "dym=true";
             } else {
-                $qs[] ="dym=false";
+                $qs[] = "dym=false";
             }
 
             // QUERYSTRING: query (filter list)

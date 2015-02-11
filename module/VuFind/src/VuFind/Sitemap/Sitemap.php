@@ -69,7 +69,7 @@ class Sitemap extends AbstractFile
         $freq = htmlspecialchars($this->frequency);
         return '<url>' . "\n"
             . '  <loc>' . $loc . '</loc>' . "\n"
-            . '  <changefreq>'. $freq . '</changefreq>'."\n"
+            . '  <changefreq>' . $freq . '</changefreq>' . "\n"
             . '</url>' . "\n";
     }
 }

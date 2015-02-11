@@ -126,7 +126,7 @@ abstract class AbstractSummonRecommend implements RecommendInterface
     public function process($results)
     {
         // If we received a Summon search object, we'll use that.  If not, we need
-        // to create a new Summon search object using the specified request 
+        // to create a new Summon search object using the specified request
         // parameter for search terms.
         if ($results->getParams()->getSearchClassId() != 'Summon') {
             $results = $this->resultsManager->get('Summon');

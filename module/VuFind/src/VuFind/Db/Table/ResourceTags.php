@@ -233,7 +233,6 @@ class ResourceTags extends Gateway
             }
         };
 
-
         // Get a list of all tag IDs being deleted; we'll use these for
         // orphan-checking:
         $potentialOrphans = $this->select($callback);

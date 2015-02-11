@@ -271,7 +271,6 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
         return $useHoldings != 'none' && !empty($useHoldings);
     }
 
-
     /**
      * Get Purchase History
      *

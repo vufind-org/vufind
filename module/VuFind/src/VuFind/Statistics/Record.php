@@ -74,7 +74,7 @@ class Record extends AbstractBase
                 $sources = $driver->getFullList('recordSource');
                 $hashes = array();
                 // Generate hashes (faster than grouping by looping)
-                for ($i=0;$i<count($summary);$i++) {
+                for ($i = 0;$i<count($summary);$i++) {
                     $source = $sources[$i]['recordSource'];
                     $id = $summary[$i]['recordId'];
                     $hashes[$source][$id]
@@ -84,22 +84,22 @@ class Record extends AbstractBase
                 }
                 $top = array();
                 // For each source
-                foreach ($hashes as $source=>$records) {
+                foreach ($hashes as $source => $records) {
                     // Using a reference to consolidate code dramatically
-                    $reference =& $top;
+                    $reference = & $top;
                     if ($bySource) {
                         $top[$source] = array();
-                        $reference =& $top[$source];
+                        $reference = & $top[$source];
                     }
                     // For each record
-                    foreach ($records as $id=>$count) {
+                    foreach ($records as $id => $count) {
                         $newRecord = array(
                             'value'  => $id,
                             'count'  => $count,
                             'source' => $source
                         );
                         // Insert sort (limit to listLength)
-                        for ($i=0;$i<$listLength-1 && $i<count($reference);$i++) {
+                        for ($i = 0;$i<$listLength-1 && $i<count($reference);$i++) {
                             if ($count > $reference[$i]['count']) {
                                 // Insert in order
                                 array_splice($reference, $i, 0, array($newRecord));

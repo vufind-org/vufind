@@ -208,8 +208,8 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
         $status = array();
         for ($b = 0; $documentlist->item($b) !== null; $b++) {
             $itemlist = $documentlist->item($b)->getElementsByTagName('item');
-            $ilslink='';
-            if ($documentlist->item($b)->attributes->getNamedItem('href')!==null) {
+            $ilslink = '';
+            if ($documentlist->item($b)->attributes->getNamedItem('href') !== null) {
                 $ilslink = $documentlist->item($b)->attributes
                     ->getNamedItem('href')->nodeValue;
             }
@@ -474,7 +474,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                 if ($storageElements->item(0)->nodeValue === 'Internet') {
                     $href = $storageElements->item(0)->attributes
                         ->getNamedItem('href')->nodeValue;
-                    $storage = '<a href="'.$href.'">'.$href.'</a>';
+                    $storage = '<a href="' . $href . '">' . $href . '</a>';
                 } else {
                     $storage = $storageElements->item(0)->nodeValue;
                 }
@@ -512,7 +512,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                         $unavailHref = $unavailableElements->item($n)->attributes
                             ->getNamedItem('href');
                         if ($unavailHref !== null) {
-                            $hrefs['item'.$n] = $unavailHref->nodeValue;
+                            $hrefs['item' . $n] = $unavailHref->nodeValue;
                         }
                         $expectedNode = $unavailableElements->item($n)->attributes
                             ->getNamedItem('expected');
@@ -527,14 +527,14 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                             //    'expected' => $expectedNode->nodeValue,
                             //    'recall' => $unavailHref->nodeValue);
                             //array_push($earliest, $expectedNode->nodeValue);
-                            $earliest['item'.$n] = $expectedNode->nodeValue;
+                            $earliest['item' . $n] = $expectedNode->nodeValue;
                         } else {
                             array_push($earliest, "0");
                         }
                         $queueNode = $unavailableElements->item($n)->attributes
                             ->getNamedItem('queue');
                         if ($queueNode !== null) {
-                            $queue['item'.$n] = $queueNode->nodeValue;
+                            $queue['item' . $n] = $queueNode->nodeValue;
                         } else {
                             array_push($queue, "0");
                         }

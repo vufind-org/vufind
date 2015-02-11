@@ -55,9 +55,9 @@ class Summon extends SolrDefault
     public function getAllSubjectHeadings()
     {
         $retval = array();
-        $topic = isset($this->fields['SubjectTerms']) ? 
+        $topic = isset($this->fields['SubjectTerms']) ?
             $this->fields['SubjectTerms'] : array();
-        $temporal = isset($this->fields['TemporalSubjectTerms']) ? 
+        $temporal = isset($this->fields['TemporalSubjectTerms']) ?
             $this->fields['TemporalSubjectTerms'] : array();
         $geo = isset($this->fields['GeographicLocations']) ?
             $this->fields['GeographicLocations'] : array();
@@ -371,7 +371,7 @@ class Summon extends SolrDefault
     public function getSeries()
     {
         return isset($this->fields['PublicationSeriesTitle'])
-            ? $this->fields['PublicationSeriesTitle']:array();
+            ? $this->fields['PublicationSeriesTitle'] : array();
     }
 
     /**
