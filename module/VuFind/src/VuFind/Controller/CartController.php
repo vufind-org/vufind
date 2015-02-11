@@ -38,7 +38,6 @@ use VuFind\Exception\Mail as MailException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class CartController extends AbstractBase
 {
     /**
@@ -340,7 +339,6 @@ class CartController extends AbstractBase
         // Send appropriate HTTP headers for requested format:
         $response = $this->getResponse();
         $response->getHeaders()->addHeaders($this->getExport()->getHeaders($format));
-
 
         // Actually export the records
         $records = $this->getRecordLoader()->loadBatch($ids);

@@ -27,7 +27,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFindSearch\Backend\WorldCat;
-use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\ParamBag;
 
 /**

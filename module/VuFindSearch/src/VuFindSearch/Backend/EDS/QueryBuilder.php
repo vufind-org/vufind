@@ -42,7 +42,6 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 class QueryBuilder
 {
     /**
@@ -84,14 +83,13 @@ class QueryBuilder
         $fieldCode = ($query->getHandler() == 'AllFields')
             ? '' : $query->getHandler();  //fieldcode
         if (!empty($fieldCode)) {
-            $expression = $fieldCode.':'.$expression;
+            $expression = $fieldCode . ':' . $expression;
         }
         if (!empty($operator)) {
-            $expression = $operator.','.$expression;
+            $expression = $operator . ',' . $expression;
         }
         return $expression;
     }
-
 
     /// Internal API
 
@@ -105,7 +103,7 @@ class QueryBuilder
     protected function abstractQueryToArray(AbstractQuery $query)
     {
         if ($query instanceof Query) {
-            return array('1'=>$this->queryToEdsQuery($query));
+            return array('1' => $this->queryToEdsQuery($query));
         } else {
             return $this->queryGroupToArray($query);
         }

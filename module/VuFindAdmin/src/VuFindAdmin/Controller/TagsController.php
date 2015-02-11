@@ -36,7 +36,6 @@ namespace VuFindAdmin\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class TagsController extends AbstractAdmin
 {
     /**
@@ -210,19 +209,19 @@ class TagsController extends AbstractAdmin
         $tag = $this->getTable('tags')
             ->select(array('id' => $this->getParam('tag_id')))
             ->current();
-        $tagMsg = (false !== $tag) ? $tag->tag. " (" . $tag->id . ")" : " All";
+        $tagMsg = (false !== $tag) ? $tag->tag . " (" . $tag->id . ")" : " All";
 
         $resource = $this->getTable('resource')
             ->select(array('id' => $this->getParam('resource_id')))
             ->current();
         $resourceMsg = (false !== $resource)
-            ? $resource->title. " (" . $resource->id . ")" : " All";
+            ? $resource->title . " (" . $resource->id . ")" : " All";
 
         $messages[] = array(
             'msg' => 'tag_delete_warning',
             'tokens' => array('%count%' => $count)
         );
-        if (false !== $user || false!== $tag || false !== $resource) {
+        if (false !== $user || false !== $tag || false !== $resource) {
             $messages[] = array(
                 'msg' => 'tag_delete_filter',
                 'tokens' => array(

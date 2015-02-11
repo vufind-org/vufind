@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use Zend\Feed\Reader\Reader as FeedReader, Zend\Log\LoggerInterface;
+use Zend\Feed\Reader\Reader as FeedReader;
 
 /**
  * EuropeanaResults Recommendations Module
@@ -44,6 +44,7 @@ use Zend\Feed\Reader\Reader as FeedReader, Zend\Log\LoggerInterface;
 class EuropeanaResults implements RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
@@ -117,13 +118,6 @@ class EuropeanaResults implements RecommendInterface,
     protected $results;
 
     /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
      * Constructor
      *
      * @param string $key API key
@@ -131,32 +125,6 @@ class EuropeanaResults implements RecommendInterface,
     public function __construct($key)
     {
         $this->key = $key;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
     }
 
     /**

@@ -38,7 +38,6 @@ namespace VuFind\Hierarchy\TreeRenderer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
-
 class JSTree extends AbstractBase
     implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
@@ -215,7 +214,7 @@ class JSTree extends AbstractBase
         );
         if (isset($node->children)) {
             $ret['children'] = array();
-            for ($i=0;$i<count($node->children);$i++) {
+            for ($i = 0;$i<count($node->children);$i++) {
                 $ret['children'][$i] = $this
                     ->formatJSON($node->children[$i], $context, $hierarchyID);
             }

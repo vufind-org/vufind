@@ -91,7 +91,9 @@ class AbstractBase extends AbstractActionController
         // Attach preDispatch event if we need to check permissions.
         if ($this->accessPermission) {
             $events = $this->getEventManager();
-            $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
+            $events->attach(
+                MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000
+            );
         }
     }
 

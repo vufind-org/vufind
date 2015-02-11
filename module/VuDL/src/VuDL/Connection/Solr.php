@@ -71,7 +71,7 @@ class Solr extends AbstractBase
         $response = $this->search(
             new ParamBag(
                 array(
-                    'q'  => 'id:"'.$id.'"',
+                    'q'  => 'id:"' . $id . '"',
                     'fl' => 'modeltype_str_mv',
                 )
             )
@@ -102,7 +102,7 @@ class Solr extends AbstractBase
         if ($response = $this->search(
             new ParamBag(
                 array(
-                    'q' => 'id:"'.$id.'"'
+                    'q' => 'id:"' . $id . '"'
                 )
             )
         )) {
@@ -128,7 +128,7 @@ class Solr extends AbstractBase
         $response = $this->search(
             new ParamBag(
                 array(
-                    'q'     => 'id:"'.$id.'"',
+                    'q'     => 'id:"' . $id . '"',
                     'fl'    => $labelField,
                 )
             )
@@ -154,7 +154,7 @@ class Solr extends AbstractBase
         $response = $this->search(
             new ParamBag(
                 array(
-                    'q'  => 'relsext.isMemberOf:"'.$root.'"',
+                    'q'  => 'relsext.isMemberOf:"' . $root . '"',
                     'fl' => 'id,hierarchy_top_title',
                     'rows' => 100,
                 )
@@ -190,7 +190,7 @@ class Solr extends AbstractBase
         if ($response = $this->search(
             new ParamBag(
                 array(
-                    'q'     => 'id:"'.$id.'"',
+                    'q'     => 'id:"' . $id . '"',
                     'fl'    => $modfield,
                 )
             )
@@ -213,15 +213,15 @@ class Solr extends AbstractBase
     public function getOrderedMembers($id, $extra_sort = array())
     {
         // Try to find members in order
-        $seqField = 'sequence_'.str_replace(':', '_', $id).'_str';
-        $sort = array($seqField.' asc');
+        $seqField = 'sequence_' . str_replace(':', '_', $id) . '_str';
+        $sort = array($seqField . ' asc');
         foreach ($extra_sort as $sf) {
             $sort[] = $sf;
         }
         $response = $this->search(
             new ParamBag(
                 array(
-                    'q'  => 'relsext.isMemberOf:"'.$id.'"',
+                    'q'  => 'relsext.isMemberOf:"' . $id . '"',
                     'sort'  => implode(',', $sort),
                     'fl' => 'id',
                     'rows' => 99999,
@@ -265,7 +265,7 @@ class Solr extends AbstractBase
             $response = $this->search(
                 new ParamBag(
                     array(
-                        'q'     => 'id:"'.$current.'"',
+                        'q'     => 'id:"' . $current . '"',
                         'fl'    => 'hierarchy_parent_id,hierarchy_parent_title',
                     )
                 )
@@ -276,7 +276,7 @@ class Solr extends AbstractBase
             }
             // Get info on our record
             $parents = $data->response->docs[0];
-            foreach ($parents->hierarchy_parent_id as $i=>$cid) {
+            foreach ($parents->hierarchy_parent_id as $i => $cid) {
                 array_push($queue, $cid);
                 if (!isset($tree[$cid])) {
                     $tree[$cid] = array(
@@ -310,7 +310,7 @@ class Solr extends AbstractBase
         $response = $this->search(
             new ParamBag(
                 array(
-                    'q'     => 'id:"'.$id.'"',
+                    'q'     => 'id:"' . $id . '"',
                     'fl'    => $licenseField
                 )
             )
@@ -322,7 +322,7 @@ class Solr extends AbstractBase
         }
         $license = $docs->$licenseField;
         $license = $license[0];
-        foreach ($setLicenses as $tell=>$value) {
+        foreach ($setLicenses as $tell => $value) {
             if (strpos($license, $tell)) {
                 return array($license, $value);
             }

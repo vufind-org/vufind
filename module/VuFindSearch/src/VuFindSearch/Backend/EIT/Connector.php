@@ -33,7 +33,6 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
 
 use Zend\Http\Request;
 
-use Zend\Log\LoggerInterface;
 /**
  * Central class for connecting to EIT resources used by VuFind.
  *
@@ -43,8 +42,10 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class Connector
+class Connector implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Base url for searches
      *
@@ -74,13 +75,6 @@ class Connector
     protected $pwd;
 
     /**
-     * Logger instance.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger = false;
-
-    /**
      * Array of 3-character EBSCO database abbreviations to include in search
      *
      * @var array
@@ -103,32 +97,6 @@ class Connector
         $this->prof = $prof;
         $this->pwd = $pwd;
         $this->dbs = $dbs;
-    }
-
-    /**
-     * Set logger instance.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
     }
 
     /**

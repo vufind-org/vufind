@@ -40,26 +40,8 @@ use VuFindCode\ISBN;
 abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
     \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
-
-    /**
-     * Logger
-     *
-     * @var \Zend\Log\LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Set logger
-     *
-     * @param \Zend\Log\LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(\Zend\Log\LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
 
     /**
      * Attempt to get an ISBN-10; revert to ISBN-13 only when ISBN-10 representation

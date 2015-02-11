@@ -108,7 +108,7 @@ class ExportTest extends \PHPUnit_Framework_TestCase
             "<?xml version=\"1.0\"?>\n"
             . '<collection xmlns="http://www.loc.gov/MARC21/slim">'
             . '<record><id>a</id></record><record><id>b</id></record></collection>',
-            trim (
+            trim(
                 $this->getExport(array(), $config)->processGroup(
                     'foo',
                     array($this->getFakeMARCXML('a'), $this->getFakeMARCXML('b'))

@@ -112,9 +112,9 @@ class Params extends \VuFind\Search\Base\Params
                 if (substr($value, -1) == '*'
                     || preg_match('/\[[^\]]+\s+TO\s+[^\]]+\]/', $value)
                 ) {
-                    $q = $field.':'.$value;
+                    $q = $field . ':' . $value;
                 } else {
-                    $q = $field.':"'.addcslashes($value, '"\\').'"';
+                    $q = $field . ':"' . addcslashes($value, '"\\') . '"';
                 }
                 if ($orFacet) {
                     $orFilters[$field] = isset($orFilters[$field])

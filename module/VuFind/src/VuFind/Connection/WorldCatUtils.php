@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
-use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config,
-    Zend\Log\LoggerInterface;
+use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config;
 
 /**
  * World Cat Utilities
@@ -42,12 +41,7 @@ use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config,
  */
 class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * WorldCat configuration
@@ -98,32 +92,6 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         $this->client = $client;
         $this->silent = $silent;
         $this->ip = $ip;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
     }
 
     /**

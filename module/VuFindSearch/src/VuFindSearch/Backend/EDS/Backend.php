@@ -39,10 +39,6 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 
-use Zend\Log\LoggerInterface;
-use VuFindSearch\Backend\EDS\Response\RecordCollection;
-use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
-
 use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 use Zend\Config\Config;
 use Zend\Session\Container as SessionContainer;
@@ -311,7 +307,7 @@ class Backend extends AbstractBackend
                 throw $e;
             }
         }
-        $collection = $this->createRecordCollection(array('Records'=> $response));
+        $collection = $this->createRecordCollection(array('Records' => $response));
         $this->injectSourceIdentifier($collection);
         return $collection;
     }
@@ -325,7 +321,7 @@ class Backend extends AbstractBackend
      */
     protected function paramBagToEBSCOSearchModel(ParamBag $params)
     {
-        $params= $params->getArrayCopy();
+        $params = $params->getArrayCopy();
         $options = array();
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
@@ -532,7 +528,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    public function createSession($isGuest, $profile='')
+    public function createSession($isGuest, $profile = '')
     {
         try {
             $authToken = $this->getAuthenticationToken();

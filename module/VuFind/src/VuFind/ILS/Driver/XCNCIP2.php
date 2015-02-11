@@ -170,7 +170,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         }
     }
 
-
     /**
      * Given a chunk of the availability response, extract the values needed
      * by VuFind.
@@ -572,7 +571,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         return $this->getConsortialHoldings($id, $patron, $ids);
     }
-
 
     /**
      * Get Purchase History
@@ -1326,7 +1324,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['id']."|".$holdDetails['requestId'];
+        $cancelDetails = $holdDetails['id'] . "|" . $holdDetails['requestId'];
         return $cancelDetails;
     }
 
@@ -1357,7 +1355,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             );
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
-                'ns1:CancelRequestItemResponse/'.
+                'ns1:CancelRequestItemResponse/' .
                 'ns1:UserId/ns1:UserIdentifierValue'
             );
             $itemId = (string)$itemId;
@@ -1392,8 +1390,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getCancelStorageRetrievalRequestDetails($callslipDetails)
     {
-        $cancelDetails = $callslipDetails['id']."|".$callslipDetails['requestId'];
-        return $cancelDetails;
+        return $callslipDetails['id'] . "|" . $callslipDetails['requestId'];
     }
 
     /**
@@ -1654,7 +1651,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 '<ns1:LookupUser>';
 
         if (!is_null($patron_agency_id)) {
-            $ret .= 
+            $ret .=
                    '<ns1:InitiationHeader>' .
                         '<ns1:ToAgencyId>' .
                             '<ns1:AgencyId>' .
@@ -1664,7 +1661,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     '</ns1:InitiationHeader>';
         }
 
-        $ret .= 
+        $ret .=
                     '<ns1:AuthenticationInput>' .
                         '<ns1:AuthenticationInputData>' .
                             htmlspecialchars($username) .

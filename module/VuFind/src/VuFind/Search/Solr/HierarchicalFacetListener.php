@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
@@ -197,6 +196,8 @@ class HierarchicalFacetListener
                 if (!isset($fields[$facetName])) {
                     continue;
                 }
+                // Keep the original data too
+                $fields["__unprocessed_$facetName"] = $fields[$facetName];
                 if (is_array($fields[$facetName])) {
                     // If full facet display style is used, discard all but the
                     // most significant value

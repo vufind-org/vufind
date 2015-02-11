@@ -26,11 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch;
-
-use Zend\ServiceManager\ServiceManager;
-use Zend\EventManager\EventManager;
 
 /**
  * ZF2 module definition for the VF2 search service.

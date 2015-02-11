@@ -40,7 +40,6 @@ use VuFind\Config\Locator as ConfigLocator,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class InstallController extends AbstractBase
 {
     /**
@@ -267,10 +266,10 @@ class InstallController extends AbstractBase
         if (!function_exists('mb_substr')) {
             $msg
                 = "Your PHP installation appears to be missing the mbstring plug-in."
-                ." For better language support, it is recommended that you add this."
-                ." For details on how to do this, see "
-                ."http://vufind.org/wiki/vufind2:installation_notes "
-                ."and look at the PHP installation instructions for your platform.";
+                . " For better language support, it is recommended that you add"
+                . " this. For details on how to do this, see "
+                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             $problems++;
         }
@@ -291,10 +290,10 @@ class InstallController extends AbstractBase
         if (!function_exists('mcrypt_module_open')) {
             $msg
                 = "Your PHP installation appears to be missing the mcrypt plug-in."
-                ." For better security support, it is recommended that you add this."
-                ." For details on how to do this, see "
-                ."http://vufind.org/wiki/vufind2:installation_notes "
-                ."and look at the PHP installation instructions for your platform.";
+                . " For better security support, it is recommended that you add"
+                . " this. For details on how to do this, see "
+                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             $problems++;
         }
@@ -303,9 +302,9 @@ class InstallController extends AbstractBase
         if (!class_exists('XSLTProcessor')) {
             $msg
                 = "Your PHP installation appears to be missing the XSL plug-in."
-                ." For details on how to do this, see "
-                ."http://vufind.org/wiki/vufind2:installation_notes "
-                ."and look at the PHP installation instructions for your platform.";
+                . " For details on how to do this, see "
+                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             $problems++;
         }
@@ -474,7 +473,7 @@ class InstallController extends AbstractBase
             $grantTables =  "GRANT ALL PRIVILEGES ON ALL TABLES IN "
                 . "SCHEMA public TO {$view->dbuser} ";
             $grantSequences =  "GRANT ALL PRIVILEGES ON ALL SEQUENCES"
-                ." IN SCHEMA public TO {$view->dbuser} ";
+                . " IN SCHEMA public TO {$view->dbuser} ";
             return array($grantTables, $grantSequences);
         }
         // Default: MySQL:
@@ -711,7 +710,7 @@ class InstallController extends AbstractBase
         if (!isset($config->Authentication->ils_encryption_key)
             || empty($config->Authentication->ils_encryption_key)
         ) {
-            $enc_key = sha1(microtime(true).mt_rand(10000, 90000));
+            $enc_key = sha1(microtime(true) . mt_rand(10000, 90000));
             $writer->set('Authentication', 'ils_encryption_key', $enc_key);
             $changed = true;
         }

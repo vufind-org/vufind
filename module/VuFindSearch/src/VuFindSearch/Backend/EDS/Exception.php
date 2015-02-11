@@ -72,7 +72,7 @@ class EbscoEdsApiException extends Exception
         //AuthErrorMessages
         if (isset($message['ErrorCode'])) {
             $this->apiErrorDetails['ErrorCode'] = $message['ErrorCode'];
-            $this->apiErrorDetails['Description'] = $message['Reason'] ;
+            $this->apiErrorDetails['Description'] = $message['Reason'];
             $this->apiErrorDetails['DetailedDescription']
                 = $message['AdditionalDetail'];
         }
@@ -128,7 +128,6 @@ class EbscoEdsApiException extends Exception
         return isset($this->apiErrorDetails)
             ? $this->apiErrorDetails['Description'] : '';
     }
-
 
     /**
      * Known api detailed error description

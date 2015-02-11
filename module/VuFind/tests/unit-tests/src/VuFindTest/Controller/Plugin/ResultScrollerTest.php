@@ -53,8 +53,8 @@ class ResultScrollerTest extends TestCase
         $results = $this->getMockResults();
         $this->assertFalse($plugin->init($results));
         $expected = array(
-            'previousRecord'=>null, 'nextRecord'=>null,
-            'currentPosition'=>null, 'resultTotal'=>null
+            'previousRecord' => null, 'nextRecord' => null,
+            'currentPosition' => null, 'resultTotal' => null
         );
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(1)));
     }
@@ -70,8 +70,8 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = array(
-            'previousRecord'=>'VuFind|4', 'nextRecord'=>'VuFind|6',
-            'currentPosition'=>5, 'resultTotal'=>10
+            'previousRecord' => 'VuFind|4', 'nextRecord' => 'VuFind|6',
+            'currentPosition' => 5, 'resultTotal' => 10
         );
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(5)));
     }
@@ -87,8 +87,8 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = array(
-            'previousRecord'=>null, 'nextRecord'=>'VuFind|2',
-            'currentPosition'=>1, 'resultTotal'=>10
+            'previousRecord' => null, 'nextRecord' => 'VuFind|2',
+            'currentPosition' => 1, 'resultTotal' => 10
         );
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(1)));
     }
@@ -104,8 +104,8 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = array(
-            'previousRecord'=>'VuFind|9', 'nextRecord'=>null,
-            'currentPosition'=>10, 'resultTotal'=>10
+            'previousRecord' => 'VuFind|9', 'nextRecord' => null,
+            'currentPosition' => 10, 'resultTotal' => 10
         );
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(10)));
     }
@@ -121,8 +121,8 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = array(
-            'previousRecord'=>'VuFind|16', 'nextRecord'=>null,
-            'currentPosition'=>17, 'resultTotal'=>17
+            'previousRecord' => 'VuFind|16', 'nextRecord' => null,
+            'currentPosition' => 17, 'resultTotal' => 17
         );
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(17)));
     }
@@ -138,8 +138,8 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = array(
-            'previousRecord'=>'VuFind|10', 'nextRecord'=>'VuFind|12',
-            'currentPosition'=>11, 'resultTotal'=>30
+            'previousRecord' => 'VuFind|10', 'nextRecord' => 'VuFind|12',
+            'currentPosition' => 11, 'resultTotal' => 30
         );
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(11)));
     }
@@ -155,8 +155,8 @@ class ResultScrollerTest extends TestCase
         $plugin = $this->getMockResultScroller($results);
         $this->assertTrue($plugin->init($results));
         $expected = array(
-            'previousRecord'=>'VuFind|19', 'nextRecord'=>'VuFind|21',
-            'currentPosition'=>20, 'resultTotal'=>30
+            'previousRecord' => 'VuFind|19', 'nextRecord' => 'VuFind|21',
+            'currentPosition' => 20, 'resultTotal' => 30
         );
         $this->assertEquals($expected, $plugin->getScrollData($results->getMockRecordDriver(20)));
     }
