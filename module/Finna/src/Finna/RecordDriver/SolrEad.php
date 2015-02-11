@@ -51,33 +51,6 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     protected $simpleXML;
 
     /**
-     * Translator
-     *
-     * @TODO Get rid of this and places where it's used when support for
-     * __unprocessed_* fields is merged
-     * @var \Zend\I18n\Translator
-     */
-    protected $translator;
-
-    /**
-     * Constructor
-     *
-     * @param \Zend\Config\Config   $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \Zend\Config\Config   $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as $recordConfig)
-     * @param \Zend\Config\Config   $searchSettings Search-specific configuration
-     * file
-     * @param \Zend\I18n\Translator $translator     Translator
-     */
-    public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null, $translator = null
-    ) {
-        parent::__construct($mainConfig, $recordConfig, $searchSettings);
-        $this->translator = $translator;
-    }
-
-    /**
      * Get access restriction notes for the record.
      *
      * @return string[] Notes
@@ -302,12 +275,12 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
         $urls = array();
         $source = $this->getDataSource();
         $config = $this->recordConfig->Record;
+        $formats = isset($this->fields['__unprocessed_format'])
+            ? $this->fields['__unprocessed_format']
+            : $this->getFormats();
         if (isset($config->ead_document_order_link_template[$source])
             && !$this->isDigitized()
-            && in_array(
-                $this->translator->translate('1/Document/ArchiveItem/'),
-                $this->getFormats()
-            )
+            && in_array('1/Document/ArchiveItem/', $formats)
         ) {
             $urls[] = array(
                 'url' => $this->replaceURLPlaceholders(

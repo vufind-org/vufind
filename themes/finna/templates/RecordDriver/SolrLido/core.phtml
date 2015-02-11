@@ -183,7 +183,7 @@
       </tr>
       <? endif; ?>
 
-      <? $mainFormat = reset($formats); ?>
+      <? $mainFormat = $this->driver->getMainFormat(); ?>
       <? foreach ($this->driver->getEvents() as $eventType => $events): ?>
       <tr>
         <th><?=$this->transEsc("lido_event_type_{$mainFormat}_$eventType")?>:</th>

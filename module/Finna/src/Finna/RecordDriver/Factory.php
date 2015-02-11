@@ -52,8 +52,7 @@ class Factory
         $driver = new SolrEad(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\Translator')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
         return $driver;
     }
@@ -71,7 +70,6 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\Translator'),
             $sm->getServiceLocator()->get('VuFind\DateConverter')
         );
         return $driver;

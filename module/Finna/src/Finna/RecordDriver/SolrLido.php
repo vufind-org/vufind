@@ -46,15 +46,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     protected $simpleXML;
 
     /**
-     * Translator
-     *
-     * @TODO Get rid of this and places where it's used when support for
-     * __unprocessed_* fields is merged
-     * @var \Zend\I18n\Translator
-     */
-    protected $translator;
-
-    /**
      * Date Converter
      *
      * @var \VuFind\Date\Converter
@@ -70,14 +61,12 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      * file (omit to use $mainConfig as $recordConfig)
      * @param \Zend\Config\Config    $searchSettings Search-specific configuration
      * file
-     * @param \Zend\I18n\Translator  $translator     Translator
      * @param \VuFind\Date\Converter $dateConverter  Date Converter
      */
     public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null, $translator = null, $dateConverter = null
+        $searchSettings = null, $dateConverter = null
     ) {
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
-        $this->translator = $translator;
         $this->dateConverter = $dateConverter;
     }
 
@@ -640,6 +629,27 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             . 'relatedWorkSet/relatedWork/object/objectWebResource'
         );
         return isset($url[0]) ? $url[0] : false;
+    }
+
+    /**
+     * Get the main format.
+     *
+     * @return array
+     */
+    public function getMainFormat()
+    {
+        $formats = array();
+        if (isset($this->fields['__unprocessed_format'])) {
+            $formats = $this->fields['__unprocessed_format'];
+        } else if (isset($this->fields['format'])) {
+            $formats = $this->fields['format'];
+        }
+        if (!$formats) {
+            return '';
+        }
+        $format = reset($formats);
+        $format = preg_replace('/^\d+\/([^\/]+)\/.*/', '\1', $format);
+        return $format;
     }
 
     /**
