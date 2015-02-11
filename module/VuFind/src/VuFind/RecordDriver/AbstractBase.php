@@ -48,6 +48,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
 {
     use \VuFind\Db\Table\DbTableAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Record\Cache\RecordCacheAwareTrait;
 
     /**
      * Used for identifying search backends
@@ -83,8 +84,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @var array
      */
     protected $fields = array();
-
-    protected $recordCache = null;
 
     /**
      * Constructor
@@ -245,8 +244,13 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         );
 
         // Persist record in the database for "offline" use
-        $this->recordCache->setPolicy(Cache::FAVORITE);
-        $this->recordCache->createOrUpdate($resource->record_id, $user->id, $resource->source, $this->getRawData(), null, $resource->id);
+        if ($recordCache = $this->getRecordCache()) {
+            $recordCache->setPolicy(Cache::FAVORITE);
+            $recordCache->createOrUpdate(
+                $resource->record_id, $user->id, $resource->source,
+                $this->getRawData(), null, $resource->id
+            );
+        }
 
         // Add the information to the user's account:
         $user->saveResource(
@@ -493,13 +497,5 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         return is_callable(array($this, $method))
             ? call_user_func_array(array($this, $method), $params)
             : null;
-    }
-
-    public function getRecordCache() {
-        return $this->recordCache;
-    }
-
-    public function setRecordCache(\VuFind\Record\Cache $recordCache) {
-       $this->recordCache = $recordCache;
     }
 }
