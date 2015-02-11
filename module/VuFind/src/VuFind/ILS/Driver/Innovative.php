@@ -43,24 +43,7 @@ use VuFind\Exception\ILS as ILSException;
 class Innovative extends AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Initialize the driver.
@@ -188,7 +171,7 @@ class Innovative extends AbstractBase implements
             $cols = preg_split("/<t(h|d)([^>]*)>/", $row);
 
             // for each th or td section, do the following.
-            for ($i=0; $i < sizeof($cols); $i++) {
+            for ($i = 0; $i < sizeof($cols); $i++) {
                 // replace non blocking space encodings with a space.
                 $cols[$i] = str_replace("&nbsp;", " ", $cols[$i]);
                 // remove html comment tags
@@ -335,7 +318,7 @@ class Innovative extends AbstractBase implements
 
         //Build request link
         $link = $this->config['Catalog']['url'] . '/search?/.b' . $id_ . '/.b' .
-            $id_ . '/1%2C1%2C1%2CB/request~b'. $id_;
+            $id_ . '/1%2C1%2C1%2CB/request~b' . $id_;
         //$link = $this->config['Catalog']['url'] . '/record=b' . $id_;
 
         return $link;

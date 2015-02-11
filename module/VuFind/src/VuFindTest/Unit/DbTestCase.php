@@ -37,7 +37,6 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-
 abstract class DbTestCase extends TestCase
 {
     /**
@@ -60,7 +59,11 @@ abstract class DbTestCase extends TestCase
                 new \Zend\ServiceManager\Config(
                     array(
                         'abstract_factories' =>
-                            array('VuFind\Db\Table\PluginFactory')
+                            array('VuFind\Db\Table\PluginFactory'),
+                        'factories' => array(
+                            'resource' => 'VuFind\Db\Table\Factory::getResource',
+                            'user' => 'VuFind\Db\Table\Factory::getUser',
+                        )
                     )
                 )
             );

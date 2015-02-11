@@ -39,31 +39,14 @@ use VuFind\Exception\ILS as ILSException;
  */
 class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Oracle connection
      *
      * @var \VuFind\Connection\Oracle
      */
     protected $db;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
 
     /**
      * Initialize the driver.
@@ -717,15 +700,15 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 break;
             // Year only
             case "(year)":
-                return $data['data'][0]." ";
+                return $data['data'][0] . " ";
                 break;
             // Year + Month
             case "(year)(month)":
                 $months = explode("-", $data['data'][1]); $m = count($months);
                 $years  = explode("-", $data['data'][0]); $y = count($years);
-                $my = $m.$y;
+                $my = $m . $y;
 
-                $start_time = strtotime("01-".$months[0]."-".$years[0]);
+                $start_time = strtotime("01-" . $months[0] . "-" . $years[0]);
                 $end_string = "F Y";
 
                 switch ($my) {
@@ -751,7 +734,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     break;
                 }
                 if ($end_time != null) {
-                    return date($start_string, $start_time)." - ".
+                    return date($start_string, $start_time) . " - " .
                         date($end_string, $end_time);
                 } else {
                     return date($start_string, $start_time);
@@ -762,9 +745,10 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 $days   = explode("-", $data['data'][2]); $d = count($days);
                 $months = explode("-", $data['data'][1]); $m = count($months);
                 $years  = explode("-", $data['data'][0]); $y = count($years);
-                $dmy = $d.$m.$y;
+                $dmy = $d . $m . $y;
 
-                $start_time = strtotime($days[0]."-".$months[0]."-".$years[0]);
+                $start_time
+                    = strtotime($days[0] . "-" . $months[0] . "-" . $years[0]);
                 $end_string = "jS F Y";
 
                 switch ($dmy) {
@@ -824,7 +808,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     break;
                 }
                 if ($end_time != null) {
-                    return date($start_string, $start_time)." - ".
+                    return date($start_string, $start_time) . " - " .
                         date($end_string, $end_time);
                 } else {
                     return date($start_string, $start_time);
@@ -1017,7 +1001,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 }
             }
 
-            $sort_set[$sort_rule.".".$sort_order] = array(
+            $sort_set[$sort_rule . "." . $sort_order] = array(
                 'tag'  => $tag,
                 'data' => $data
             );
@@ -1122,7 +1106,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             if ($row['SUBFIELD_DATA'] != null
                 && trim($row['SUBFIELD_DATA']) != ""
             ) {
-                $data_set[$row['ID']."_".$row['FIELD_SEQUENCE']][] = array(
+                $data_set[$row['ID'] . "_" . $row['FIELD_SEQUENCE']][] = array(
                     'id'   => trim($row['ID']),
                     'code' => trim($row['SUBFIELD_CODE']),
                     'data' => trim($row['SUBFIELD_DATA'])
@@ -1552,7 +1536,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $last_date = $holdDetails['requiredBy'];
 
         // Assume an error response:
-        $response = array('success' => false, 'status' =>"hold_error_fail");
+        $response = array('success' => false, 'status' => "hold_error_fail");
 
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
@@ -1788,24 +1772,24 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
-        $post_data  = "function="      ."RENEWAL";
-        $post_data .= "&search="       ."PATRON";
-        $post_data .= "&sessionid="    ."$session_id";
-        $post_data .= "&skin="         ."homepage";
-        $post_data .= "&lng="          ."en";
-        $post_data .= "&inst="         ."consortium";
-        $post_data .= "&conf="         .urlencode(".&#047;chameleon.conf");
-        $post_data .= "&u1="           ."12";
-        $post_data .= "&SourceScreen=" ."PATRONACTIVITY";
-        $post_data .= "&pos="          ."1";
-        $post_data .= "&patronid="     .$patron['cat_username'];
+        $post_data  = "function="      . "RENEWAL";
+        $post_data .= "&search="       . "PATRON";
+        $post_data .= "&sessionid="    . "$session_id";
+        $post_data .= "&skin="         . "homepage";
+        $post_data .= "&lng="          . "en";
+        $post_data .= "&inst="         . "consortium";
+        $post_data .= "&conf="         . urlencode(".&#047;chameleon.conf");
+        $post_data .= "&u1="           . "12";
+        $post_data .= "&SourceScreen=" . "PATRONACTIVITY";
+        $post_data .= "&pos="          . "1";
+        $post_data .= "&patronid="     . $patron['cat_username'];
         $post_data .= "&patronhost="
             . urlencode($this->config['Catalog']['patron_host']);
         $post_data .= "&host="
             . urlencode($this->config['Catalog']['host_string']);
-        $post_data .= "&itembarcode="  .implode("&itembarcode=", $item_list);
-        $post_data .= "&submit="       ."Renew";
-        $post_data .= "&reset="        ."Clear";
+        $post_data .= "&itembarcode="  . implode("&itembarcode=", $item_list);
+        $post_data .= "&submit="       . "Renew";
+        $post_data .= "&reset="        . "Clear";
 
         $result = $this->httpRequest($virtua_url, null, $post_data);
 

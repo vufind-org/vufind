@@ -145,7 +145,7 @@ class Generator
         }
         if (isset($this->config->SitemapIndex->indexFileName)) {
             $this->indexFile = $this->config->Sitemap->fileLocation . '/' .
-                $this->config->SitemapIndex->indexFileName. '.xml';
+                $this->config->SitemapIndex->indexFileName . '.xml';
         }
     }
 
@@ -210,7 +210,7 @@ class Generator
             foreach ($ids as $item) {
                 $loc = htmlspecialchars($recordUrl . urlencode($item));
                 if (strpos($loc, 'http') === false) {
-                    $loc = 'http://'.$loc;
+                    $loc = 'http://' . $loc;
                 }
                 $smf->addUrl($loc);
                 $lastTerm = $item;

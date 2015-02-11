@@ -109,16 +109,16 @@ class File extends AbstractBase
      */
     protected function getSaveXML($data, $tab = 0)
     {
-        $xml = str_repeat("\t", $tab)."<doc>\n";
+        $xml = str_repeat("\t", $tab) . "<doc>\n";
         $tab++;
-        foreach ($data as $tag=>$value) {
+        foreach ($data as $tag => $value) {
             $xml .= str_repeat("\t", $tab);
             $insert = (strtolower(gettype($value)) == 'boolean')
                 ? ($value)
                     ? 'true'
                     : 'false'
                 : $value;
-            $xml .= '<field name="'.$tag.'">'.$insert."</field>\n";
+            $xml .= '<field name="' . $tag . '">' . $insert . "</field>\n";
         }
         $tab--;
         return $xml . str_repeat("\t", $tab) . "</doc>";

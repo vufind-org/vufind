@@ -323,7 +323,7 @@ class Oracle
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
             list($column, $type) = explode(":", $field);
-            $this->bindParam($stmt, ":".$column, $datum, $type);
+            $this->bindParam($stmt, ":" . $column, $datum, $type);
         }
 
         if ($this->exec($stmt)) {
@@ -361,12 +361,14 @@ class Oracle
 
         // Prepare the SQL for child table - turn the columns in placeholders for
         // the bind
-        $sql  = "DELETE FROM $table WHERE ".join(" AND ", $clauses);
+        $sql  = "DELETE FROM $table WHERE " . join(" AND ", $clauses);
         $delete = $this->prepare($sql);
 
         // Bind Variables
         foreach (array_keys($data) as $column) {
-            $this->bindParam($delete, ":".$column, $data[$column], $types[$column]);
+            $this->bindParam(
+                $delete, ":" . $column, $data[$column], $types[$column]
+            );
         }
 
         // Execute
@@ -409,19 +411,21 @@ class Oracle
             $columns[]      = $column;
             // Dates are special
             if (count($tmp) > 0 && !is_null($datum)) {
-                $values[] = "TO_DATE(:$column, '".join(":", $tmp)."')";
+                $values[] = "TO_DATE(:$column, '" . join(":", $tmp) . "')";
             } else {
                 $values[] = ":$column";
             }
         }
 
-        $sql  = "INSERT INTO $table (".join(", ", $columns).") VALUES (".
-            join(", ", $values).")";
+        $sql  = "INSERT INTO $table (" . join(", ", $columns) . ") VALUES (" .
+            join(", ", $values) . ")";
         $insert = $this->prepare($sql);
 
         // Bind Variables
         foreach (array_keys($data) as $column) {
-            $this->bindParam($insert, ":".$column, $data[$column], $types[$column]);
+            $this->bindParam(
+                $insert, ":" . $column, $data[$column], $types[$column]
+            );
         }
 
         // Execute
@@ -449,7 +453,7 @@ class Oracle
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
             list($column, $type) = explode(":", $field);
-            $this->bindParam($stmt, ":".$column, $datum, $type);
+            $this->bindParam($stmt, ":" . $column, $datum, $type);
         }
         if ($this->exec($stmt)) {
             $this->commit();
@@ -535,7 +539,7 @@ class Oracle
 
         // Generic stuff
         $output  = "<b>ORACLE ERROR</b><br/>\n";
-        $output .= "Oracle '".$this->lastErrorType."' Error<br />\n";
+        $output .= "Oracle '" . $this->lastErrorType . "' Error<br />\n";
         $output .= "=============<br />\n";
         foreach ($this->lastError as $key => $value) {
             $output .= "($key) => $value<br />\n";
@@ -547,21 +551,21 @@ class Oracle
             $output .= "=============<br />\n";
             $output .= "Offset into SQL:<br />\n";
             $output .=
-                substr($this->lastError['sqltext'], $this->lastError['offset']).
+                substr($this->lastError['sqltext'], $this->lastError['offset']) .
                 "\n";
             break;
         case 'executing':
             $output .= "=============<br />\n";
             $output .= "Offset into SQL:<br />\n";
             $output .=
-                substr($this->lastError['sqltext'], $this->lastError['offset']).
+                substr($this->lastError['sqltext'], $this->lastError['offset']) .
                 "<br />\n";
             if (count($this->lastErrorFields) > 0) {
                 $output .= "=============<br />\n";
                 $output .= "Bind Variables:<br />\n";
                 foreach ($this->lastErrorFields as $k => $l) {
                     if (is_array($l)) {
-                        $output .= "$k => (".join(", ", $l).")<br />\n";
+                        $output .= "$k => (" . join(", ", $l) . ")<br />\n";
                     } else {
                         $output .= "$k => $l<br />\n";
                     }

@@ -29,8 +29,6 @@
  */
 namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\MultiBackend, VuFind\Config\Reader as ConfigReader;
-use VuFind\Auth\MultiAuth;
-use Zend\Log\Writer\WriterInterface;
 use Zend\Log\Writer\Mock;
 use Zend\Log\Logger;
 
@@ -116,7 +114,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     {
         $driver = $this->getDriver();
 
-        $drivers = array('d1' => 'Voyager', 'd2'=> 'Demo');
+        $drivers = array('d1' => 'Voyager', 'd2' => 'Demo');
         $this->setProperty($driver, 'drivers', $drivers);
 
         $result = $this->callMethod($driver, 'getSourceFromParams', array(''));
@@ -542,7 +540,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             ->with('123456')
             ->will($this->returnValue($driverReturn));
 
-
         $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
         $driver->setServiceLocator($sm);
 
@@ -779,7 +776,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $returnVal = $driver->getMyTransactions($patron);
         $this->assertTrue($returnVal);
     }
-
 
     /**
      * Testing method for getNewItems
@@ -2218,7 +2214,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $methodReturn = $driver->supportsMethod('getStatus', null);
         $this->assertTrue($methodReturn);
         $this->setProperty($driver, 'defaultDriver', null);
-
 
         //Case: Instance to use is in parameters but does not have method
             //Result: A return of false

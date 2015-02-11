@@ -87,9 +87,9 @@ class VudlController extends AbstractVuDL
         // GET LISTS
         $lists = $this->getConnector()->getOrderedMembers($parent);
         // GET LIST ITEMS
-        foreach ($lists as $list=>$list_data) {
+        foreach ($lists as $list => $list_data) {
             $items = $this->getConnector()->getOrderedMembers($list_data);
-            foreach ($items as $i=>$id) {
+            foreach ($items as $i => $id) {
                 if ($id == $child) {
                     return array($list, $i);
                 }
@@ -138,7 +138,7 @@ class VudlController extends AbstractVuDL
      */
     public function ajaxAction()
     {
-        $method =(String) $this->params()->fromQuery('method');
+        $method = (String) $this->params()->fromQuery('method');
         return $this->jsonReturn($this->$method());
     }
 
@@ -151,7 +151,7 @@ class VudlController extends AbstractVuDL
      */
     protected function jsonReturn($data)
     {
-        $output = array('data'=>$data, 'status'=>'OK');
+        $output = array('data' => $data, 'status' => 'OK');
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine(
@@ -213,7 +213,7 @@ class VudlController extends AbstractVuDL
         $data['keys'] = array_keys($data);
         try {
             $view = $renderer->render(
-                'vudl/views/'.$data['filetype'].'.phtml',
+                'vudl/views/' . $data['filetype'] . '.phtml',
                 $data
             );
         } catch(\Exception $e) {
@@ -240,7 +240,7 @@ class VudlController extends AbstractVuDL
 
         $classes = $this->getConnector()->getClasses($id);
         if (in_array('FolderCollection', $classes)) {
-            return $this->forwardTo('Collection', 'Home', array('id'=>$id));
+            return $this->forwardTo('Collection', 'Home', array('id' => $id));
         }
         $view = $this->createViewModel();
 
@@ -256,7 +256,7 @@ class VudlController extends AbstractVuDL
         } catch(\Exception $e) {
         }
         if (isset($driver) && $driver->isProtected()) {
-            return $this->forwardTo('VuDL', 'Denied', array('id'=>$id));
+            return $this->forwardTo('VuDL', 'Denied', array('id' => $id));
         }
 
         // File information / description
@@ -368,14 +368,14 @@ class VudlController extends AbstractVuDL
         );
         $response = '';
         foreach ($queries as $q) {
-            $params = new \VuFindSearch\ParamBag(array('q'=>$q));
+            $params = new \VuFindSearch\ParamBag(array('q' => $q));
             $response .= $connector->search($params);
         }
         $result = array();
         preg_match_all('/"ngroups">([^<]*)/', $response, $result);
         $view->totals = array(
-            'folders'=>intval($result[1][0]),
-            'resources'=>intval($result[1][1]),
+            'folders' => intval($result[1][0]),
+            'resources' => intval($result[1][1]),
             // TODO: make these work:
             //'images'=>intval($result[1][2]),
             //'pdfs'=>intval($result[1][3])
@@ -420,7 +420,7 @@ class VudlController extends AbstractVuDL
                 //->toRoute('Collection', 'Home', array('id'=>$params['trail']));
         }
         $index = -1;
-        foreach ($members as $i=>$member) {
+        foreach ($members as $i => $member) {
             if ($member == $params['id']) {
                 $index = $i + count($members);
                 break;
@@ -428,14 +428,14 @@ class VudlController extends AbstractVuDL
         }
         if ($index == -1) {
             return $this->redirect()
-                ->toRoute('collection', array('id'=>$params['trail']));
+                ->toRoute('collection', array('id' => $params['trail']));
         } elseif (isset($params['prev'])) {
             return $this->redirect()->toRoute(
-                'vudl-record', array('id'=>$members[($index-1)%count($members)])
+                'vudl-record', array('id' => $members[($index-1)%count($members)])
             );
         } else {
             return $this->redirect()->toRoute(
-                'vudl-record', array('id'=>$members[($index+1)%count($members)])
+                'vudl-record', array('id' => $members[($index+1)%count($members)])
             );
         }
     }

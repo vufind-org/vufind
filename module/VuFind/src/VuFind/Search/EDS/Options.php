@@ -27,8 +27,6 @@
  */
 namespace VuFind\Search\EDS;
 
-use VuFindSearch\ParamBag;
-
 /**
  * EDS API Options
  *
@@ -64,7 +62,7 @@ class Options extends \VuFind\Search\Base\Options
      * The set search mode
      * @var string
      */
-    protected $searchMode ;
+    protected $searchMode;
 
     /**
      * Default expanders to apply
@@ -131,7 +129,7 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
         $this->viewOptions = array(
             'list|title' => 'Title View', 'list|brief' => 'Brief View',
-            'list|detailed'=>'Detailed View'
+            'list|detailed' => 'Detailed View'
         );
         $this->apiInfo = $apiInfo;
         $this->setOptionsFromApi($searchSettings);
@@ -373,7 +371,6 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultSort = $searchSettings->General->default_sort;
         }
 
-
         if (isset($searchSettings->General->default_amount)
             && isset($this->amountOptions[$searchSettings->General->default_amount])
         ) {
@@ -388,9 +385,8 @@ class Options extends \VuFind\Search\Base\Options
 
         //View preferences
         if (isset($searchSettings->General->default_view)) {
-            $this->defaultView = 'list|'.$searchSettings->General->default_view;
+            $this->defaultView = 'list|' . $searchSettings->General->default_view;
         }
-
 
         if (isset($searchSettings->Advanced_Facet_Settings->special_facets)) {
             $this->specialAdvancedFacets
@@ -464,7 +460,7 @@ class Options extends \VuFind\Search\Base\Options
             if (isset($availCriteria['AvailableSearchModes'])) {
                 foreach ($availCriteria['AvailableSearchModes'] as $mode) {
                     $this->modeOptions[$mode['Mode']] = array(
-                        'Label'=>$mode['Label'], 'Value' => $mode['Mode']
+                        'Label' => $mode['Label'], 'Value' => $mode['Mode']
                     );
                     if (isset($mode['DefaultOn'])
                         &&  'y' == $mode['DefaultOn']
@@ -491,7 +487,7 @@ class Options extends \VuFind\Search\Base\Options
             }
 
             //Limiters
-            $this->limiterOptions= array();
+            $this->limiterOptions = array();
             if (isset($availCriteria['AvailableLimiters'])) {
                 foreach ($availCriteria['AvailableLimiters'] as $limiter) {
                     $val = '';
@@ -616,13 +612,13 @@ class Options extends \VuFind\Search\Base\Options
         $ssLimiterOptions = array();
         if (isset($this->commonLimiters)) {
             foreach ($this->commonLimiters as $key) {
-                $limiter = $this->limiterOptions[$key] ;
+                $limiter = $this->limiterOptions[$key];
                 $ssLimiterOptions[$key] = array(
-                    'selectedvalue' => 'LIMIT|'.$key.':y',
+                    'selectedvalue' => 'LIMIT|' . $key . ':y',
                     'description' => $this->getLabelForCheckboxFilter(
                         'eds_limiter_' . $key, $limiter['Label']
                     ),
-                    'selected' => ('y' == $limiter['DefaultOn'])? true : false
+                    'selected' => ('y' == $limiter['DefaultOn']) ? true : false
                 );
             }
         }
@@ -641,7 +637,7 @@ class Options extends \VuFind\Search\Base\Options
             foreach ($this->commonExpanders as $key) {
                 $expander = $this->expanderOptions[$key];
                 $ssExpanderOptions[$key] = array(
-                    'selectedvalue' => 'EXPAND:'.$key,
+                    'selectedvalue' => 'EXPAND:' . $key,
                     'description' => $this->getLabelForCheckboxFilter(
                         'eds_expander_' . $key, $expander['Label']
                     ),
@@ -696,7 +692,7 @@ class Options extends \VuFind\Search\Base\Options
             //expanders
             $expanders = $this->getDefaultExpanders();
             foreach ($expanders as $expander) {
-                $this->defaultFilters[] = 'EXPAND:'.$expander;
+                $this->defaultFilters[] = 'EXPAND:' . $expander;
             }
 
             //limiters
@@ -706,7 +702,7 @@ class Options extends \VuFind\Search\Base\Options
                     // only select limiters can be defaulted on limiters can be
                     // defaulted
                     $val = $value['LimiterValues'][0]['Value'];
-                    $this->defaultFilters[] = 'LIMIT|'.$key.':'.$val;
+                    $this->defaultFilters[] = 'LIMIT|' . $key . ':' . $val;
                 }
             }
         }

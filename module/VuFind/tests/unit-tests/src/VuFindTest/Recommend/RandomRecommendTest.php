@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\RandomRecommend as Random;
@@ -162,7 +161,6 @@ class RandomRecommendTest extends TestCase
                 $this->equalTo($params->getQuery()),
                 $this->equalTo(10)
             )->will($this->returnValue($this->getMock('VuFindSearch\Response\RecordCollectionInterface')));
-
 
         $recommend->setConfig("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
         $recommend->init($params, $request);

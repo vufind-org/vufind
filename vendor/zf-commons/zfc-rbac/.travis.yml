@@ -1,0 +1,27 @@
+language: php
+
+php:
+  - 5.4
+  - 5.5
+  - 5.6
+  - hhvm
+
+before_script:
+  - composer self-update
+  - composer update --prefer-source
+
+script:
+  - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml --exclude-group Functional
+  - ./vendor/bin/phpunit --group=Functional
+  - ./vendor/bin/phpcs --standard=PSR2 ./src/
+
+after_script:
+  - php vendor/bin/coveralls -v
+
+notifications:
+  irc: "irc.freenode.org#zftalk.modules"
+  email: true
+
+matrix:
+  allow_failures:
+    - php: hhvm

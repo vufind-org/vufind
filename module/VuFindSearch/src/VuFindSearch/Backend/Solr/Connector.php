@@ -28,11 +28,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr;
 
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
@@ -45,10 +42,7 @@ use Zend\Http\Request;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\AdapterInterface;
 
-use Zend\Log\LoggerInterface;
-
 use InvalidArgumentException;
-use XMLWriter;
 
 /**
  * SOLR connector.
@@ -61,8 +55,10 @@ use XMLWriter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Connector
+class Connector implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Maximum length of a GET url.
      *
@@ -73,13 +69,6 @@ class Connector
      * @var integer
      */
     const MAX_GET_URL_LENGTH = 2048;
-
-    /**
-     * Logger instance.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     /**
      * URL of SOLR core.
@@ -285,18 +274,6 @@ class Connector
     }
 
     /**
-     * Set logger instance.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
      * Set the HTTP proxy service.
      *
      * @param mixed $proxy Proxy service
@@ -344,7 +321,7 @@ class Connector
      */
     public function setAdapter($adapter)
     {
-        if (is_object($adapter) && (!$adapter instanceOf AdapterInterface)) {
+        if (is_object($adapter) && (!$adapter instanceof AdapterInterface)) {
             throw new InvalidArgumentException(
                 sprintf(
                     'HTTP client adapter must implement AdapterInterface: %s',
@@ -386,9 +363,7 @@ class Connector
             $client = $this->createClient($url, $method);
         }
 
-        if ($this->logger) {
-            $this->logger->debug(sprintf('Query %s', $paramString));
-        }
+        $this->debug(sprintf('Query %s', $paramString));
         return $this->send($client);
     }
 
@@ -404,24 +379,20 @@ class Connector
      */
     protected function send(HttpClient $client)
     {
-        if ($this->logger) {
-            $this->logger->debug(
-                sprintf('=> %s %s', $client->getMethod(), $client->getUri())
-            );
-        }
+        $this->debug(
+            sprintf('=> %s %s', $client->getMethod(), $client->getUri())
+        );
 
         $time     = microtime(true);
         $response = $client->send();
         $time     = microtime(true) - $time;
 
-        if ($this->logger) {
-            $this->logger->debug(
-                sprintf(
-                    '<= %s %s', $response->getStatusCode(),
-                    $response->getReasonPhrase()
-                ), array('time' => $time)
-            );
-        }
+        $this->debug(
+            sprintf(
+                '<= %s %s', $response->getStatusCode(),
+                $response->getReasonPhrase()
+            ), array('time' => $time)
+        );
 
         if (!$response->isSuccess()) {
             throw HttpErrorException::createFromResponse($response);

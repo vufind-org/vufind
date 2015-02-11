@@ -34,7 +34,6 @@ use VuFind\Exception\ILS as ILSException,
     VuFind\ILS\Driver\DriverInterface,
     VuFind\I18n\Translator\TranslatorAwareInterface;
 
-
 /**
  * Catalog Connection Class
  *
@@ -50,12 +49,7 @@ use VuFind\Exception\ILS as ILSException,
  */
 class Connection implements TranslatorAwareInterface
 {
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Has the driver been initialized yet?
@@ -133,19 +127,6 @@ class Connection implements TranslatorAwareInterface
                 $this->setDriver($driverManager->get('NoILS'));
             }
         }
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Connection
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
     }
 
     /**
@@ -240,7 +221,7 @@ class Connection implements TranslatorAwareInterface
         ) ? $this->getDriver()->getConfig($function, $params) : false;
 
         // See if we have a corresponding check method to analyze the response:
-        $checkMethod = "checkMethod".$function;
+        $checkMethod = "checkMethod" . $function;
         if (!method_exists($this, $checkMethod)) {
             return false;
         }
@@ -566,13 +547,8 @@ class Connection implements TranslatorAwareInterface
     protected function getHelpText($helpText)
     {
         if (is_array($helpText)) {
-            $lang = !is_null($this->translator)
-                ? $this->translator->getLocale()
-                : 'en';
-            if (isset($helpText[$lang])) {
-                return $helpText[$lang];
-            }
-            return '';
+            $lang = $this->getTranslatorLocale();
+            return isset($helpText[$lang]) ? $helpText[$lang] : '';
         }
         return $helpText;
     }

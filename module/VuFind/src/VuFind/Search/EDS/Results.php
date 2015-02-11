@@ -28,8 +28,6 @@
 namespace VuFind\Search\EDS;
 
 use EBSCO\EdsApi\SearchCriteria;
-use VuFindSearch\ParamBag;
-use Zend\Log\LoggerInterface;
 
 /**
  * EDS API Results
@@ -90,7 +88,6 @@ class Results extends \VuFind\Search\Base\Results
             $this->results = $collection->getRecords();
         }
     }
-
 
     /**
      * Returns the stored list of facets for the last search

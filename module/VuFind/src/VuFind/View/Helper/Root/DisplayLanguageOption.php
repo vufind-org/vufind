@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
+use Zend\I18n\Translator\TranslatorInterface;
 
 /**
  * DisplayLanguageOption view helper
@@ -41,16 +42,16 @@ class DisplayLanguageOption extends \Zend\View\Helper\AbstractHelper
     /**
      * Translator (or null if unavailable)
      *
-     * @var \Zend\I18n\Translator\Translator
+     * @var TranslatorInterface
      */
     protected $translator = null;
 
     /**
      * Constructor
      *
-     * @param \Zend\I18n\Translator\Translator $translator Main VuFind translator
+     * @param TranslatorInterface $translator Main VuFind translator
      */
-    public function __construct(\Zend\I18n\Translator\Translator $translator)
+    public function __construct(TranslatorInterface $translator)
     {
         // Clone the translator; we need to switch language for the purposes
         // of this plugin, but we don't want that change to happen globally.

@@ -78,7 +78,7 @@ class NewItems extends AbstractPlugin
 
         // Build a list of unique IDs
         $bibIDs = array();
-        for ($i=0; $i<count($newItems['results']); $i++) {
+        for ($i = 0; $i<count($newItems['results']); $i++) {
             $bibIDs[] = $newItems['results'][$i]['id'];
         }
 
@@ -199,6 +199,6 @@ class NewItems extends AbstractPlugin
      */
     public function getSolrFilter($range)
     {
-        return 'first_indexed:[NOW-' . $range .'DAY TO NOW]';
+        return 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
     }
 }

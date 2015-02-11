@@ -72,7 +72,7 @@ class TopFacets extends AbstractFacets
     public function setConfig($settings)
     {
         $settings = explode(':', $settings);
-        $mainSection = empty($settings[0]) ? 'ResultsTop':$settings[0];
+        $mainSection = empty($settings[0]) ? 'ResultsTop' : $settings[0];
         $iniName = isset($settings[1]) ? $settings[1] : 'facets';
 
         // Load the desired facet information:

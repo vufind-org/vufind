@@ -42,6 +42,8 @@ use Zend\Db\TableGateway\AbstractTableGateway,
  */
 class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterface
 {
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
+
     /**
      * Name of class used to represent rows (null for default)
      *
@@ -49,13 +51,6 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
      */
     protected $rowClass = null;
     
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
     /**
      * Constructor
      *
@@ -110,12 +105,27 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
         parent::initialize();
         if (null !== $this->rowClass) {
             $resultSetPrototype = $this->getResultSetPrototype();
-            $prototype = new $this->rowClass($this->getAdapter());
-            if ($prototype instanceof ServiceLocatorAwareInterface) {
-                $prototype->setServiceLocator($this->getServiceLocator());
-            }
-            $resultSetPrototype->setArrayObjectPrototype($prototype);
+            $resultSetPrototype->setArrayObjectPrototype(
+                $this->initializeRowPrototype()
+            );
         }
+    }
+
+    /**
+     * Construct the prototype for rows.
+     *
+     * @return object
+     */
+    protected function initializeRowPrototype()
+    {
+        $prototype = new $this->rowClass($this->getAdapter());
+        if ($prototype instanceof ServiceLocatorAwareInterface) {
+            $prototype->setServiceLocator($this->getServiceLocator());
+        }
+        \VuFind\ServiceManager\Initializer::initInstance(
+            $prototype, $this->getServiceLocator()->getServiceLocator()
+        );
+        return $prototype;
     }
 
     /**
@@ -159,28 +169,5 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
     public function getDbTable($table)
     {
         return $this->getServiceLocator()->get($table);
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Gateway
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

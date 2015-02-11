@@ -86,20 +86,16 @@ class BookSite extends \VuFind\Content\AbstractBase
             . '&ean=' . $isn;
         $response = $this->getHttpClient($url)->send();
         if (!$response->isSuccess()) {
-            if ($this->logger) {
-                $this->logger->warn(
-                    "Reviews: " . $response->getStatusCode() . " "
-                    . $response->getReasonPhrase() . " $url"
-                );
-            }
-            return $reviews;    // still empty
-        }
-        if ($this->logger) {
-            $this->logger->debug(
+            $this->logWarning(
                 "Reviews: " . $response->getStatusCode() . " "
                 . $response->getReasonPhrase() . " $url"
             );
+            return $reviews;    // still empty
         }
+        $this->debug(
+            "Reviews: " . $response->getStatusCode() . " "
+            . $response->getReasonPhrase() . " $url"
+        );
 
         $i = 0;
         $json = json_decode($response->getBody());

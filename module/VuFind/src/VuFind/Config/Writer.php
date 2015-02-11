@@ -94,7 +94,7 @@ class Writer
         $lines = explode("\n", $this->content);
 
         // Reset some flags and prepare to rewrite the content:
-        $settingSet= false;
+        $settingSet = false;
         $currentSection = "";
         $this->content = "";
 
@@ -211,7 +211,7 @@ class Writer
             $tabStr .= ' ';
         }
 
-        return $key . $tabStr . "= ". $this->buildContentValue($value);
+        return $key . $tabStr . "= " . $this->buildContentValue($value);
     }
 
     /**
@@ -252,16 +252,16 @@ class Writer
     protected function buildContent($assoc_arr, $comments)
     {
         $content = "";
-        foreach ($assoc_arr as $key=>$elem) {
+        foreach ($assoc_arr as $key => $elem) {
             if (isset($comments['sections'][$key]['before'])) {
                 $content .= $comments['sections'][$key]['before'];
             }
-            $content .= "[".$key."]";
+            $content .= "[" . $key . "]";
             if (!empty($comments['sections'][$key]['inline'])) {
                 $content .= "\t" . $comments['sections'][$key]['inline'];
             }
             $content .= "\n";
-            foreach ($elem as $key2=>$elem2) {
+            foreach ($elem as $key2 => $elem2) {
                 if (isset($comments['sections'][$key]['settings'][$key2])) {
                     $settingComments
                         = $comments['sections'][$key]['settings'][$key2];

@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -65,10 +65,18 @@ class DefaultRenderingStrategy extends AbstractListenerAggregate
             $responseText .= $result->getVariable(ConsoleViewModel::RESULT);
         }
 
+        // Fetch service manager
+        $sm = $e->getApplication()->getServiceManager();
+
+        // Fetch console
+        $console = $sm->get('console');
+
         // Append console response to response object
-        $response->setContent(
-            $response->getContent() . $responseText
-        );
+        $content = $response->getContent() . $responseText;
+        if (is_callable(array($console, 'encodeText'))) {
+            $content = $console->encodeText($content);
+        }
+        $response->setContent($content);
 
         // Pass on console-specific options
         if ($response instanceof ConsoleResponse

@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use EBSCO\EdsApi\Zend2 as EdsApi;
 use VuFind\Solr\Utils as SolrUtils;
 /**
  * EDS Controller
@@ -38,7 +37,6 @@ use VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class EdsController extends AbstractSearch
 {
     /**
@@ -104,7 +102,6 @@ class EdsController extends AbstractSearch
         return $this->resultsAction();
     }
 
-
     /**
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache.
@@ -159,13 +156,13 @@ class EdsController extends AbstractSearch
             if (isset($list['LimiterValues'])) {
                 foreach ($list['LimiterValues'] as $key => $value) {
                     // Build the filter string for the URL:
-                    $fullFilter = $facet.':'.$value['Value'];
+                    $fullFilter = $facet . ':' . $value['Value'];
 
                     // If we haven't already found a selected facet and the current
                     // facet has been applied to the search, we should store it as
                     // the selected facet for the current control.
                     if ($searchObject) {
-                        $limitFilt = 'LIMIT|'.$fullFilter;
+                        $limitFilt = 'LIMIT|' . $fullFilter;
                         if ($searchObject->getParams()->hasFilter($limitFilt)) {
                             $facetList[$facet]['LimiterValues'][$key]['selected']
                                 = true;
@@ -203,7 +200,7 @@ class EdsController extends AbstractSearch
         // Process the expanders, assuming they came back
         foreach ($availableExpanders as $key => $value) {
             if ($searchObject) {
-                $expandFilt = 'EXPAND:'.$value['Value'];
+                $expandFilt = 'EXPAND:' . $value['Value'];
                 if ($searchObject->getParams()->hasFilter($expandFilt)) {
                     $availableExpanders[$key]['selected'] = true;
                     // Remove the filter from the search object -- we don't want
@@ -240,7 +237,7 @@ class EdsController extends AbstractSearch
                         $to = $range['to'] == '*' ? '12' : $range['to'];
                     }
                     $searchObject->getParams()
-                        ->removeFilter($key.':'.$value[0]['value']);
+                        ->removeFilter($key . ':' . $value[0]['value']);
                     break;
                 }
             }
@@ -264,7 +261,7 @@ class EdsController extends AbstractSearch
         // Process the facets, assuming they came back
         foreach ($searchModes as $key => $mode) {
             if ($searchObject) {
-                $modeFilter = 'SEARCHMODE:'.$mode['Value'];
+                $modeFilter = 'SEARCHMODE:' . $mode['Value'];
                 if ($searchObject->getParams()->hasFilter($modeFilter)) {
                     $searchModes[$key]['selected'] = true;
                     // Remove the filter from the search object -- we don't want
@@ -301,7 +298,6 @@ class EdsController extends AbstractSearch
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
-
 
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             if ($e->hasTag('VuFind\Search\ParserError')) {

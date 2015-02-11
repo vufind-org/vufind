@@ -41,19 +41,14 @@ use VuFind\Exception\Mail as MailException,
  */
 class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Mail transport
      *
      * @var \Zend\Mail\Transport\TransportInterface
      */
     protected $transport;
-
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
 
     /**
      * Constructor
@@ -63,32 +58,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function __construct(\Zend\Mail\Transport\TransportInterface $transport)
     {
         $this->setTransport($transport);
-    }
-
-    /**
-     * Translate a string if a translator is provided.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    public function translate($msg)
-    {
-        return (null !== $this->translator)
-            ? $this->translator->translate($msg) : $msg;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Mailer
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
     }
 
     /**

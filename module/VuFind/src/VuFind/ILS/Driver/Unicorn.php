@@ -44,6 +44,8 @@ use File_MARC, VuFind\Exception\ILS as ILSException;
  **/
 class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Host
      *
@@ -73,13 +75,6 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $url;
 
     /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
@@ -94,18 +89,6 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     public function __construct(\VuFind\Date\Converter $dateConverter)
     {
         $this->dateConverter = $dateConverter;
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**
@@ -149,7 +132,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getConfig($function, $params = null)
     {
-        if (isset($this->config[$function]) ) {
+        if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
         } else {
             $functionConfig = false;
@@ -178,7 +161,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
-        $params = array('query'=>'libraries');
+        $params = array('query' => 'libraries');
         $response = $this->querySirsi($params);
         $response = rtrim($response);
         $lines = explode("\n", $response);
@@ -719,7 +702,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $patron = $cancelDetails['patron'];
         $details = $cancelDetails['details'];
         $params = array(
-            'query'=>'cancelHolds',
+            'query' => 'cancelHolds',
             'patronId' => $patron['cat_username'], 'pin' => $patron['cat_password'],
             'holdId' => implode('|', $details)
         );
@@ -972,7 +955,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 && (empty($courseId) || $courseId == $course_id)
                 && (empty($departmentId) || $departmentId == $dept_id)
             ) {
-                $items[] = array (
+                $items[] = array(
                     'BIB_ID' => $bib_id,
                     'INSTRUCTOR_ID' => $instructor_id,
                     'COURSE_ID' => $course_id,
@@ -1017,7 +1000,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $rescount = 0;
         foreach ($item_lines as $item) {
             $item = rtrim($item, '|');
-            $items[$item] = array (
+            $items[$item] = array(
                 'id' => $item
             );
             $rescount++;
@@ -1097,10 +1080,10 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             && isset($this->config['UnavailableLocations'][$currLocCode])
         ) {
             $availability = 0;
-            $status= $this->config['UnavailableLocations'][$currLocCode];
+            $status = $this->config['UnavailableLocations'][$currLocCode];
         }
 
-        $item = array (
+        $item = array(
             'status' => $status,
             'availability' => $availability,
             'id' => $catkey,
@@ -1247,8 +1230,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         if (strlen($date) >= 8) {
             // format is MM/DD/YYYY HH:MI so it can be passed to strtotime
-            $formatted_date = substr($date, 4, 2).'/'.substr($date, 6, 2).
-                    '/'.substr($date, 0, 4);
+            $formatted_date = substr($date, 4, 2) . '/' . substr($date, 6, 2) .
+                    '/' . substr($date, 0, 4);
             if (strlen($date) > 8) {
                 $formatted_date .= ' ' . substr($date, 8, 2) . ':' .
                 substr($date, 10);
@@ -1404,7 +1387,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 if (strpos('68x', $subfield->getCode()) !== false) {
                     continue;
                 }
-                $decoded_holding .= ' '. $subfield->getData();
+                $decoded_holding .= ' ' . $subfield->getData();
             }
 
             $ndx = (int) ($linking
@@ -1415,7 +1398,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($textuals as $linking => $field) {
             $textual_holding = $field->getSubfield('a')->getData();
             foreach ($field->getSubfields('z') as $note) {
-                $textual_holding .= ' '. $note->getData();
+                $textual_holding .= ' ' . $note->getData();
             }
 
             $ndx = (int) ($linking . sprintf("%0{$link_digits}u", 0));

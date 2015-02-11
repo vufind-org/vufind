@@ -260,7 +260,7 @@ class BrowseController extends AbstractBase
                 $view->paramTitle .= 'filter[]=dewey-ones:';
                 break;
             default:
-                $view->paramTitle .= 'filter[]='.$this->getCategory().':';
+                $view->paramTitle .= 'filter[]=' . $this->getCategory() . ':';
             }
             $view->paramTitle = str_replace(
                 '+AND+',
@@ -327,7 +327,7 @@ class BrowseController extends AbstractBase
                     $this->config->Browse->result_limit
                 );
                 $resultList = array();
-                foreach ($tagList as $i=>$tag) {
+                foreach ($tagList as $i => $tag) {
                     $resultList[$i] = array(
                         'result' => $tag['tag'],
                         'count'    => $tag['cnt']
@@ -634,8 +634,8 @@ class BrowseController extends AbstractBase
      */
     protected function quoteValues($array)
     {
-        foreach ($array as $i=>$result) {
-            $result['value'] = '"'.$result['value'].'"';
+        foreach ($array as $i => $result) {
+            $result['value'] = '"' . $result['value'] . '"';
             $array[$i] = $result;
         }
         return $array;
