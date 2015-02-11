@@ -749,7 +749,15 @@ class Factory
         $fallbackLocales = $config->Site->language == 'en'
             ? 'en'
             : array($config->Site->language, 'en');
-        $translator->getPluginManager()->setService(
+        try {
+            $pm = $translator->getPluginManager();
+        } catch (\Zend\Mvc\Exception\BadMethodCallException $ex) {
+            // If getPluginManager is missing, this means that the user has
+            // disabled translation in module.config.php or PHP's intl extension
+            // is missing. We can do no further configuration of the object.
+            return $translator;
+        }
+        $pm->setService(
             'extendedini',
             new \VuFind\I18n\Translator\Loader\ExtendedIni(
                 $pathStack, $fallbackLocales
