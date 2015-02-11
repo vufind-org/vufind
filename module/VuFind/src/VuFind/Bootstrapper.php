@@ -26,7 +26,10 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind;
+
+use Zend\Config\Config;
 use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+use \Zend\I18n\Translator\Translator;
 
 /**
  * VuFind Bootstrapper
@@ -322,7 +325,8 @@ class Bootstrapper
             }
 
             $sm = $event->getApplication()->getServiceManager();
-            $sm->get('VuFind\Translator')
+            $translator = $sm->get('VuFind\Translator');
+            $translator
                 ->addTranslationFile('ExtendedIni', null, 'default', $language)
                 ->setLocale($language);
 
@@ -330,9 +334,47 @@ class Bootstrapper
             $viewModel = $sm->get('viewmanager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
+
+            if (isset($config->TextDomains)
+                && isset($config->TextDomains->textDomains)
+            ) {
+                $this->addTextDomainTranslation(
+                    $translator,
+                    $config->TextDomains->textDomains
+                );
+            }
         };
+
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);
+    }
+
+    /**
+     * Adds text-domain language files
+     *
+     * @param Translator $translator  Translator Object
+     * @param Config     $textDomains Text-domain configuration
+     *
+     * @return void
+     */
+    protected function addTextDomainTranslation(Translator $translator, $textDomains)
+    {
+        // nothing to do if no text-domain is configured
+        if (!($textDomains instanceof Config)) {
+            return;
+        }
+
+        $language = $translator->getLocale();
+
+        foreach ($textDomains as $textDomain) {
+            $langFile = $textDomain . '/' . $language . '.ini';
+            $translator->addTranslationFile(
+                'ExtendedIni',
+                $langFile,
+                $textDomain,
+                $language
+            );
+        }
     }
 
     /**
