@@ -1173,7 +1173,10 @@ class MultiBackend extends AbstractBase
             $source = $this->defaultDriver;
         }
         if (!$source) {
-            return false;
+            // If we can't determine the source, assume we are capable to handle
+            // the request. This might happen e.g. when the user hasn't yet done
+            // a catalog login.
+            return true;
         }
 
         $driver = $this->getDriver($source);
