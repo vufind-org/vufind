@@ -167,7 +167,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
 
     /**
      * Get the default subject line for sendLink().
-     * 
+     *
      * @return string
      */
     public function getDefaultLinkSubject()
@@ -206,9 +206,9 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
 
     /**
      * Get the default subject line for sendRecord()
-     * 
+     *
      * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
-     * 
+     *
      * @return string
      */
     public function getDefaultRecordSubject($record)
