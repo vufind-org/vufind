@@ -1,5 +1,14 @@
 finna.imagePopup = (function(finna) {
 
+    var openPopup = function(trigger) {
+        var ind = trigger.data('ind');
+        var links = trigger.closest('.recordcover-holder').find('.image-popup');
+        var link = links.filter(function() { 
+            return $(this).data('ind') === ind 
+        } );
+        link.click();
+    }
+
     var initThumbnailNavi = function() {
 
         // Assign image indices to UI components. 
@@ -34,14 +43,9 @@ finna.imagePopup = (function(finna) {
 
         // Open image-popup from medium size record image.
         $(".image-popup-trigger").click(function(e) {
-            var ind = $(this).data('ind');
-            var links = $(this).closest('.recordcover-holder').find('.image-popup');
-            var link = links.filter(function() { 
-                return $(this).data('ind') === ind 
-            } );
-            link.click();
+            openPopup($(this));
             e.preventDefault();
-        });      
+        });     
     };
 
     var initRecordImage = function() {
@@ -72,14 +76,9 @@ finna.imagePopup = (function(finna) {
         
         // Init image-popup components.
         $('.image-popup').each(function() {
-            var href = $(this).attr('href');
-            var img = urls.filter(function(obj) {
-                return obj.href === href;
-            });
-            index = img[0].ind;
             $(this).magnificPopup({
                 items: urls,
-                index: index,
+                index: $(this).data('ind'),
                 type: 'ajax',
 	            tLoading: vufindString.loading,
                 ajax: {
