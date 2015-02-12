@@ -38,6 +38,8 @@ namespace Finna\RecordDriver;
  */
 class SolrMarc extends \VuFind\RecordDriver\SolrMarc
 {
+    use SolrFinna;
+
     /**
      * Get an array of embedded component parts
      *
@@ -158,6 +160,35 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             }
         }
         return $urls;
+    }
+
+    /**
+     * Return an external URL where a displayable description text
+     * can be retrieved from, if available; false otherwise.
+     *
+     * @return mixed
+     * @access public
+     */
+    public function getDescriptionURL()
+    {
+        $url = '';
+        $type = '';
+        foreach ($this->marcRecord->getFields('856') as $url) {
+            $type = $url->getSubfield('q');
+            if ($type) {
+                $type = $type->getData();
+                if ("TEXT" == $type || "text/html" == $type) {
+                    $address = $url->getSubfield('u');
+                    if ($address && !$this->urlBlacklisted($address->getData())) {
+                        $address = $address->getData();
+                        return $address;
+                    }
+                }
+            }
+        }
+
+        return 'http://siilo-kk.lib.helsinki.fi/getText.php?query=' . 
+            $this->getCleanISBN();
     }
 
     /**

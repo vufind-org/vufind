@@ -23,7 +23,7 @@
     <?
       // Set global path for Javascript code:
       $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
-
+        
       // Deal with cart stuff:
       if (!isset($this->renderingError)) {
         $cart = $this->cart();

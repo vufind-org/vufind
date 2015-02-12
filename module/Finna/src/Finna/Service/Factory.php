@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -34,6 +35,7 @@ use Zend\ServiceManager\ServiceManager;
  * @category VuFind2
  * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -85,5 +87,20 @@ class Factory
         }
 
         return $translator;
+    }
+
+    /**
+     * Construct the cache manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\Cache\Manager
+     */
+    public static function getCacheManager(ServiceManager $sm)
+    {
+        return new \Finna\Cache\Manager(
+            $sm->get('VuFind\Config')->get('config'),
+            $sm->get('VuFind\Config')->get('searches')
+        );
     }
 }

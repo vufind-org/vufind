@@ -41,6 +41,24 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for SolrDefault record driver.
+     *
+      * @param ServiceManager $sm Service manager.
+     *
+     * @return SolrDefault
+     */
+    public static function getSolrDefault(ServiceManager $sm)
+    {
+        $driver = new SolrDefault(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            null,
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
+            $sm->getServiceLocator()->get('VuFind\Translator')
+        );
+        return $driver;
+    }
+
+    /**
      * Factory for SolrEad record driver.
      *
      * @param ServiceManager $sm Service manager.

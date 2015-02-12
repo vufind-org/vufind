@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -33,11 +34,14 @@ namespace Finna\RecordDriver;
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 class SolrLido extends \VuFind\RecordDriver\SolrDefault
 {
+    use SolrFinna;
+
     /**
      * Record metadata
      *
@@ -72,10 +76,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
 
 
     /**
-     * Get access restriction notes for the record.
+     * Return access restriction notes for the record.
      *
      * @return array
-     * @access protected
      */
     public function getAccessRestrictions()
     {
@@ -101,15 +104,16 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get type of access restriction for the record.
+     * Return type of access restriction for the record.
+     *
+     * @param string $language Language
      *
      * @return mixed array with keys:
      *   'copyright'   Copyright (e.g. 'CC BY 4.0')
      *   'link'        Link to copyright info, see IndexRecord::getRightsLink
      *   or false if no access restriction type is defined.
-     * @access protected
      */
-    public function getAccessRestrictionsType()
+    public function getAccessRestrictionsType($language)
     {
         if ($rights = $this->getSimpleXML()->xpath(
             'lido/administrativeMetadata/resourceWrap/resourceSet/rightsResource/'
@@ -129,7 +133,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     $data['copyright'] = $copyright;
 
                     $copyright = strtoupper($copyright);
-                    if ($link = $this->getRightsLink($copyright)) {
+                    if ($link = $this->getRightsLink($copyright, $language)) {
                         $data['link'] = $link;
                     }
                     return $data;
@@ -397,6 +401,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     /**
      * Return image rights.
      *
+     * @param string $language Language
+     *
      * @return mixed array with keys:
      *   'copyright'  Copyright (e.g. 'CC BY 4.0') (optional)
      *   'description Human readable description (array)
@@ -404,17 +410,15 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      *   or false if the record contains no images
      * @access protected
      */
-    public function getImageRights()
+    public function getImageRights($language)
     {
-        global $configArray;
-
-        if (!count($this->getAllImages())) {
+        if (!count($this->getAllThumbnails())) {
             return false;
         }
 
         $rights = array();
 
-        if ($type = $this->getAccessRestrictionsType()) {
+        if ($type = $this->getAccessRestrictionsType($language)) {
             $rights['copyright'] = $type['copyright'];
             if (isset($type['link'])) {
                 $rights['link'] = $type['link'];
@@ -431,7 +435,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
         }
 
         return isset($rights['copyright']) || isset($rights['description'])
-            ? $rights : parent::getImageRights();
+            ? $rights : false
+        ;
     }
 
     /**
@@ -675,6 +680,37 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 isset($url['desc']) ? $url['desc'] : ''
             )) {
                 $urls[] = $url;
+            }
+        }
+        return $urls;
+    }
+
+    /**
+     * Return an associative array of image URLs associated with this record
+     * (key = URL, value = description).
+     *
+     * @param string $size Size of requested images
+     *
+     * @return array
+     */
+    public function getAllThumbnails($size = 'large')
+    {
+        $urls = array();
+        $url = '';
+        foreach ($this->getSimpleXML()->xpath(
+            '/lidoWrap/lido/administrativeMetadata/'
+            . 'resourceWrap/resourceSet/resourceRepresentation'
+        ) as $node) {
+            if ($node->linkResource) {
+                $attributes = $node->attributes();
+                if (!$attributes->type
+                    || (($size != 'large' && $attributes->type == 'thumb') 
+                    || $size == 'large' && $attributes->type == 'large' 
+                    || $attributes->type == 'zoomview')
+                ) {
+                    $url = (string)$node->linkResource;
+                    $urls[$url] = '';
+                }
             }
         }
         return $urls;

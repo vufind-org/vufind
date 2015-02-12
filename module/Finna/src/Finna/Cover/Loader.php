@@ -1,0 +1,379 @@
+<?php
+/**
+ * Record image loader
+ *
+ * PHP version 5
+ *
+ * Copyright (C) Villanova University 2007.
+ * Copyright (C) The National Library of Finland 2015.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  Cover_Generator
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/use_of_external_content Wiki
+ */
+namespace Finna\Cover;
+use VuFindCode\ISBN;
+
+/**
+ * Record image loader
+ *
+ * @category VuFind2
+ * @package  Cover_Generator
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/use_of_external_content Wiki
+ */
+class Loader extends \VuFind\Cover\Loader
+{
+    /**
+     * Image URL
+     *
+     * @var string
+     */
+    protected $url;
+
+    /**
+     * Record id
+     *
+     * @var string
+     */
+    protected $id;
+
+    /**
+     * Image index
+     *
+     * @var int
+     */
+    protected $index;
+
+    /**
+     * Image background color hex value
+     *
+     * @var string
+     */
+    protected $bgColor;
+
+    /**
+     * Image width
+     *
+     * @var int
+     */
+    protected $width;
+
+    /**
+     * Image height
+     *
+     * @var int
+     */
+    protected $height;
+
+    /**
+     * Image maximum height
+     *
+     * @var int
+     */
+    protected $maxHeight;
+
+    /**
+     * Set image parameters.
+     *
+     * @param int    $width     Image width
+     * @param int    $height    Image height
+     * @param int    $maxHeight Image maximum height
+     * @param string $bgColor   Image background color hex value
+     *
+     * @return void
+     */
+    public function setParams($width, $height, $maxHeight, $bgColor)
+    {
+        $this->width = $width;
+        $this->height = $height;
+        $this->maxHeight = $maxHeight;
+        $this->bgColor = $bgColor;
+    }
+
+    /**
+     * Load an image given an ISBN and/or content type.
+     *
+     * @param string $isbn       ISBN
+     * @param string $size       Requested size
+     * @param string $type       Content type
+     * @param string $title      Title of book (for dynamic covers)
+     * @param string $author     Author of the book (for dynamic covers)
+     * @param string $callnumber Callnumber (unique id for dynamic covers)
+     * @param string $issn       ISSN
+     * @param string $oclc       OCLC number
+     * @param string $upc        UPC number
+     *
+     * @return void
+     */
+    public function loadImage($isbn = null, $size = 'small', $type = null,
+        $title = null, $author = null, $callnumber = null, $issn = null,
+        $oclc = null, $upc = null
+    ) {
+        // Sanitize parameters:
+        $this->isbn = new ISBN($isbn);
+        $this->issn = empty($issn)
+            ? null
+            : substr(preg_replace('/[^0-9X]/', '', strtoupper($issn)), 0, 8);
+        $this->oclc = $oclc;
+        $this->upc = $upc;
+        $this->type = preg_replace("/[^a-zA-Z]/", "", $type);
+
+        // Display a fail image unless our parameters pass inspection and we
+        // are able to display an ISBN or content-type-based image.
+        if (!$this->fetchFromAPI()
+            && !$this->fetchFromContentType()
+        ) {
+            if (isset($this->config->Content->makeDynamicCovers)
+                && false !== $this->config->Content->makeDynamicCovers
+            ) {
+                $this->image = $this->getCoverGenerator()
+                    ->generate($title, $author, $callnumber);
+                $this->contentType = 'image/png';
+            } else {
+                $this->loadUnavailable();
+            }
+        }
+    }
+
+    /**
+     * Load a record image.
+     *
+     * @param \Vufind\RecordDriver\SolrDefault $driver Record
+     * @param int                              $index  Image index
+     *
+     * @return void
+     */
+    public function loadRecordImage(
+        \VuFind\RecordDriver\SolrDefault $driver, $index = 0
+    ) {
+        $this->index = $index;
+
+        $params = $driver->getRecordImage('large', $index);
+
+        if (isset($params['url'])) {
+            $this->id = $params['id'];
+            $this->url = $params['url'];
+            return parent::fetchFromAPI();
+        }
+    }
+
+    /**
+     * Get all valid identifiers as an associative array.
+     *
+     * @return array
+     */
+    protected function getIdentifiers()
+    {
+        if ($this->url) {
+            return array('url' => $this->url);
+        } else {
+            return parent::getIdentifiers();
+        }
+    }
+
+    /**
+     * Support method for fetchFromAPI() -- set the localFile property.
+     *
+     * @param array $ids IDs returned by getIdentifiers() method
+     *
+     * @return void
+     */
+    protected function determineLocalFile($ids)
+    {
+        $keys = array();
+
+        if (isset($this->url)) {
+            $keys['id'] = $this->id;
+        } else {
+            if (isset($ids['isbn'])) {
+                $keys['isbn'] = $ids['isbn']->get13();
+            } else if (isset($ids['issn'])) {
+                $keys['issn'] = $ids['issn'];
+            } else if (isset($ids['oclc'])) {
+                $keys['oclc'] = $ids['oclc'];
+            } else if (isset($ids['upc'])) {
+                $keys['upc'] = $ids['upc'];
+            }
+        }
+
+        $keys = array_merge(
+            $keys,
+            array(
+                  $this->index, $this->width, $this->height,
+                  $this->maxHeight, $this->bgColor
+            )
+        );
+
+        $file = implode('-', $keys);
+        return $this->getCachePath('finna', $file);
+    }
+
+    /**
+     * Return a path to the image cache for the given size and ID; ensure that
+     * directories are created as needed.
+     *
+     * @param string $size      Size category
+     * @param string $id        Unique identifier (ISBN / ISSN)
+     * @param string $extension File extension to use (default = jpg)
+     *
+     * @return string      Cache path
+     */
+    protected function getCachePath($size, $id, $extension = 'jpg')
+    {
+        $base = $this->baseDir;
+        if (!is_dir($base)) {
+            mkdir($base);
+        }
+        $base .= '/finna';
+        if (!is_dir($base)) {
+            mkdir($base);
+        }
+        return $base . '/' . $id . '.' . $extension;
+    }
+
+    /**
+     * Load image from URL, store in cache if requested, display if possible.
+     *
+     * @param string $url   URL to load image from
+     * @param string $cache Boolean -- should we store in local cache?
+     *
+     * @return bool         True if image loaded, false on failure.
+     */
+    protected function processImageURL($url, $cache = true)
+    {
+        // Attempt to pull down the image:
+        $result = $this->client->setUri($url)->send();
+        if (!$result->isSuccess()) {
+            $this->debug("Failed to retrieve image from " + $url);
+            return false;
+        }
+
+        $image = $result->getBody();
+
+        if ('' == $image) {
+            return false;
+        }
+
+
+        // Figure out file paths -- $tempFile will be used to store the
+        // image for analysis.  $finalFile will be used for long-term storage if
+        // $cache is true or for temporary display purposes if $cache is false.
+        $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
+        $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
+
+        // Write image data to disk:
+        if (!@file_put_contents($tempFile, $image)) {
+            throw new \Exception("Unable to write to image directory.");
+        }
+
+        // We can't proceed if we don't have image conversion functions:
+        if (!is_callable('imagecreatefromstring')) {
+            return false;
+        }
+
+
+        // Try to create a GD image and rewrite as JPEG, fail if we can't:
+        if (!($imageGD = @imagecreatefromstring($image))) {
+            return false;
+        }
+
+        list($width, $height, $type) = @getimagesize($tempFile);
+
+        $reqWidth = $this->width;
+        $reqHeight = $this->height;
+        $maxHeight = $this->maxHeight ? $this->maxHeight : $reqHeight;
+        $bg = $this->bgColor;
+
+        if ($reqWidth && $reqHeight && $bg) {
+            if ($height > $maxHeight && $height > $width) {
+                $reqHeight = $reqWidth * $height / $width;
+                if ($reqHeight > $maxHeight) {
+                    $reqHeight = $maxHeight;
+                }
+            }
+            $imageGDResized = imagecreatetruecolor($reqWidth, $reqHeight);
+            $background = imagecolorallocate(
+                $imageGDResized, hexdec(substr($bg, 0, 2)),
+                hexdec(substr($bg, 2, 2)), hexdec(substr($bg, 4, 2))
+            );
+            imagefill($imageGDResized, 0, 0, $background);
+
+            // If both dimensions are smaller than the new image,
+            // just copy to center. Otherwise resample to fit if necessary.
+            if ($width < $reqWidth && $height < $reqHeight) {
+                $imgX = floor(($reqWidth - $width) / 2);
+                $imgY = 0; // no centering here.. floor(($reqHeight - $height) / 2);
+                imagecopy(
+                    $imageGDResized, $imageGD, $imgX, $imgY, 0, 0, $width, $height
+                );
+                if (!@imagejpeg($imageGDResized, $finalFile)) {
+                    return false;
+                }
+            } elseif ($width > $reqWidth || $height > $reqHeight) {
+                if (($width / $height) * $reqHeight < $reqWidth) {
+                    $newHeight = $reqHeight;
+                    $newWidth = round($newHeight * ($width / $height));
+                    $imgY = 0;
+                    $imgX = round(($reqWidth - $newWidth) / 2);
+                    imagecopyresampled(
+                        $imageGDResized, $imageGD, $imgX, $imgY, 0, 0,
+                        $newWidth, $newHeight, $width, $height
+                    );
+                } else {
+                    $newWidth = $reqWidth;
+                    $newHeight = round($newWidth * ($height / $width));
+                    $imgX = 0;
+                    $imgY = 0;
+                    imagecopyresampled(
+                        $imageGDResized, $imageGD, $imgX, $imgY, 0, 0,
+                        $newWidth, $newHeight, $width, $height
+                    );
+                }
+                if (!@imagejpeg($imageGDResized, $finalFile)) {
+                    return false;
+                }
+            } else {
+                if (!@imagejpeg($imageGD, $finalFile)) {
+                    return false;
+                }
+            }
+
+            // We no longer need the temp file:
+            @unlink($tempFile);
+        } else {
+            // Move temporary file to final location:
+            if (!$this->validateAndMoveTempFile($image, $tempFile, $finalFile)) {
+                return false;
+            }
+        }
+
+
+        // Display the image:
+        $this->contentType = 'image/jpeg';
+        $this->image = file_get_contents($finalFile);
+
+        // If we don't want to cache the image, delete it now that we're done.
+        if (!$cache) {
+            @unlink($finalFile);
+        }
+
+        return true;
+    }
+}
