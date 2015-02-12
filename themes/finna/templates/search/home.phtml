@@ -1,0 +1,77 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Search Home'));
+
+  // Disable top search box -- this page has a special layout.
+
+
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'Solr';
+  }
+
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $advSearch = $options->getAdvancedSearchAction();
+
+  $this->layout()->breadcrumbs = false;
+  $this->layout()->logosection = true;
+  $this->layout()->introduction = true;
+?>
+<!--  Begin home.phtml and close page container for extra styling  -->
+</div>
+<div class="container-fluid home-top-content">
+    <div class="container">
+        <div class="row">
+            <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
+            <div class="alert alert-warning">
+                 <h2><?=$this->transEsc('ils_offline_title')?></h2>
+                <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+                <p><?=$this->transEsc('ils_offline_home_message')?></p>
+                <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+                <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+            </div>
+            <? endif; ?>
+            <? if ($this->resolver('search/homelefttop.phtml')): ?>
+            <div class="col-sm-7 left-top">
+                <?=$this->render('search/homelefttop.phtml')?>
+            </div>
+            <? endif; ?>
+            <? if ($this->resolver('search/homerighttop.phtml')): ?>
+            <div class="col-sm-5 right-top">
+                <?=$this->render('search/homerighttop.phtml')?>
+             </div>
+            <? endif; ?>
+        </div>
+   </div>
+</div>
+<!-- Begin middle content -->
+<div class="container-fluid home-middle-content">
+    <div class="container">
+        <div class="row">
+          <? if ($this->resolver('search/homemiddle.phtml')): ?>
+            <?=$this->render('search/homemiddle.phtml')?>
+          <? endif; ?>
+        </div>     
+    </div>
+</div>
+<!-- End middle content -->
+<!-- Begin carousel -->
+<div class="container-fluid carousel">
+    <div class="container">
+          <? if ($this->resolver('search/carousel-template.phtml')): ?>
+            <?=$this->render('search/carousel-template.phtml')?>
+          <? endif; ?>
+    </div>
+</div>
+<!-- End carousel -->
+<div class="container-fluid home-bottom-content">
+  <div class="container">
+  	<div class="row">
+    <? if ($this->resolver('search/homebottom.phtml')): ?>
+      <?=$this->render('search/homebottom.phtml')?>
+    <? endif; ?>
+  </div>
+</div>
+<!-- End Home.phtml -->

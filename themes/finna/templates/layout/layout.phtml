@@ -83,14 +83,18 @@
       }
     ?>
     <header role="banner" class="hidden-print">
-      <div class="container navbar">
-        <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
-        <?=$this->render('header.phtml')?>
+      <div class="container-fluid navbar">
+        <div class="row">
+          <div class="col-xs-12">
+            <a class="sr-only" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+            <?=$this->render('header.phtml')?>
+          </div>
+        </div>
       </div>
     </header>
     <section role="search" class="searchLayout">
       <div class="container">
-        <?if (isset($this->layout()->logosection)): ?>
+        <?if (isset($this->layout()->logosection) && $this->layout()->logosection == true): ?>
         <div class="row">
           <div class="logo col-xs-12 clearfix">
             <?=$this->render('search/logosection.phtml') ?>
@@ -99,7 +103,7 @@
         <? endif; ?>
         <?if (isset($this->layout()->introduction)): ?>
         <div class="row">
-          <div class="col-xs-11 col-sm-10 col-md-8 col-lg-6 introduction clearfix">
+          <div class="col-xs-12 introduction clearfix">
             <?=$this->render('search/introductiontext.phtml') ?>
           </div>
           <div class="col-xs-1"></div>
