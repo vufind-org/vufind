@@ -22,13 +22,7 @@
     <?=$this->headStyle()?>
     <?
       // Set global path for Javascript code:
-      $script = "path = '" . rtrim($this->url('home'), '/') . "';";
-      // Set page info for JavaScript code;
-      $pageInfo = $this->page()->getInfo();
-      $script .= "controller = '" . $pageInfo['controller'] . "';";
-      $script .= "action = '" . $pageInfo['action'] . "';";
-    
-      $this->headScript()->prependScript($script);
+      $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
         
       // Deal with cart stuff:
       if (!isset($this->renderingError)) {
