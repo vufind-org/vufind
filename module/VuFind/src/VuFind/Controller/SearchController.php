@@ -117,18 +117,12 @@ class SearchController extends AbstractSearch
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
+                $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                    ? $view->from : null;
                 $mailer->sendLink(
                     $view->to, $view->from, $view->message,
-                    $view->url, $this->getViewRenderer(), $view->subject
+                    $view->url, $this->getViewRenderer(), $view->subject, $cc
                 );
-                if ($this->params()->fromPost('ccself')
-                    && $view->from != $view->to
-                ) {
-                    $mailer->sendLink(
-                        $view->from, $view->from, $view->message,
-                        $view->url, $this->getViewRenderer(), $view->subject
-                    );
-                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirect()->toUrl($view->url);

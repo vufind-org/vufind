@@ -370,18 +370,12 @@ class AbstractRecord extends AbstractBase
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
+                $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                    ? $view->from : null;
                 $mailer->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
-                    $this->getViewRenderer(), $view->subject
+                    $this->getViewRenderer(), $view->subject, $cc
                 );
-                if ($this->params()->fromPost('ccself')
-                    && $view->from != $view->to
-                ) {
-                    $mailer->sendRecord(
-                        $view->from, $view->from, $view->message, $driver,
-                        $this->getViewRenderer(), $view->subject
-                    );
-                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();

@@ -1036,18 +1036,12 @@ class AjaxController extends AbstractBase
                 null, $mailer->getDefaultRecordSubject($record)
             );
             $mailer->setMaxRecipients($view->maxRecipients);
+            $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                ? $view->from : null;
             $mailer->sendRecord(
                 $view->to, $view->from, $view->message, $record,
-                $this->getViewRenderer(), $view->subject
+                $this->getViewRenderer(), $view->subject, $cc
             );
-            if ($this->params()->fromPost('ccself')
-                && $view->from != $view->to
-            ) {
-                $mailer->sendRecord(
-                    $view->from, $view->from, $view->message, $record,
-                    $this->getViewRenderer(), $view->subject
-                );
-            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );
@@ -1102,18 +1096,12 @@ class AjaxController extends AbstractBase
                 : $mailer->getDefaultLinkSubject();
             $view = $this->createEmailViewModel(null, $defaultSubject);
             $mailer->setMaxRecipients($view->maxRecipients);
+            $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                ? $view->from : null;
             $mailer->sendLink(
                 $view->to, $view->from, $view->message, $url,
-                $this->getViewRenderer(), $view->subject
+                $this->getViewRenderer(), $view->subject, $cc
             );
-            if ($this->params()->fromPost('ccself')
-                && $view->from != $view->to
-            ) {
-                $mailer->sendLink(
-                    $view->from, $view->from, $view->message, $url,
-                    $this->getViewRenderer(), $view->subject
-                );
-            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );

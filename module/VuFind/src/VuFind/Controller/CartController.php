@@ -221,18 +221,12 @@ class CartController extends AbstractBase
                 // If we got this far, we're ready to send the email:
                 $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
                 $mailer->setMaxRecipients($view->maxRecipients);
+                $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                    ? $view->from : null;
                 $mailer->sendLink(
                     $view->to, $view->from, $view->message,
-                    $url, $this->getViewRenderer(), $view->subject
+                    $url, $this->getViewRenderer(), $view->subject, $cc
                 );
-                if ($this->params()->fromPost('ccself')
-                    && $view->from != $view->to
-                ) {
-                    $mailer->sendLink(
-                        $view->from, $view->from, $view->message,
-                        $url, $this->getViewRenderer(), $view->subject
-                    );
-                }
                 return $this->redirectToSource('info', 'email_success');
             } catch (MailException $e) {
                 $this->flashMessenger()->setNamespace('error')

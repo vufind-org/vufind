@@ -135,11 +135,12 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param string $from    Sender email address
      * @param string $subject Subject line for message
      * @param string $body    Message body
+     * @param string $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void
      */
-    public function send($to, $from, $subject, $body)
+    public function send($to, $from, $subject, $body, $cc = null)
     {
         $recipients = $this->stringToAddressList($to);
 
@@ -170,6 +171,9 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 ->addTo($recipients)
                 ->setBody($body)
                 ->setSubject($subject);
+            if ($cc !== null) {
+                $message->addCc($cc);
+            }
             $this->getTransport()->send($message);
         } catch (\Exception $e) {
             throw new MailException($e->getMessage());
@@ -187,12 +191,14 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param \Zend\View\Renderer\PhpRenderer $view    View object (used to render
      * email templates)
      * @param string                          $subject Subject for email (optional)
+     * @param string                          $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void
      */
-    public function sendLink($to, $from, $msg, $url, $view, $subject = null)
-    {
+    public function sendLink($to, $from, $msg, $url, $view, $subject = null,
+        $cc = null
+    ) {
         if (null === $subject) {
             $subject = $this->getDefaultLinkSubject();
         }
@@ -202,7 +208,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 'msgUrl' => $url, 'to' => $to, 'from' => $from, 'message' => $msg
             )
         );
-        return $this->send($to, $from, $subject, $body);
+        return $this->send($to, $from, $subject, $body, $cc);
     }
 
     /**
@@ -226,12 +232,14 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param \Zend\View\Renderer\PhpRenderer   $view   View object (used to render
      * email templates)
      * @param string                            $subject Subject for email (optional)
+     * @param string                            $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void
      */
-    public function sendRecord($to, $from, $msg, $record, $view, $subject = null)
-    {
+    public function sendRecord($to, $from, $msg, $record, $view, $subject = null,
+        $cc = null
+    ) {
         if (null === $subject) {
             $subject = $this->getDefaultRecordSubject($record);
         }
@@ -241,7 +249,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
                 'driver' => $record, 'to' => $to, 'from' => $from, 'message' => $msg
             )
         );
-        return $this->send($to, $from, $subject, $body);
+        return $this->send($to, $from, $subject, $body, $cc);
     }
 
     /**
