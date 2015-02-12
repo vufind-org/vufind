@@ -44,7 +44,7 @@ class ContentController extends \VuFind\Controller\AbstractBase
     /**
      * Default action if none provided
      *
-     * @return array
+     * @return Zend\View\Model\ViewModel
      */
     public function contentAction()
     {
@@ -63,8 +63,7 @@ class ContentController extends \VuFind\Controller\AbstractBase
             $page = "{$page}_$language";
         }
 
-        $routeMatch->setParam('action', $page);
-        $this->createViewModel();
+        return $this->createViewModel(array('page' => $page));
     }
 
     /**
