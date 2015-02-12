@@ -6735,6 +6735,36 @@ label.list-group-item {
   border-right: 1px solid #eeeeee;
   overflow-x: hidden;
 }
+/* --- Record images--- */
+.recordcovers.list {
+  position: absolute;
+  left: auto;
+  padding: 0;
+  width: 126px;
+  z-index: 3;
+  min-height: 20px;
+  text-align: center;
+}
+.recordcovers.list a {
+  background: #fff;
+  opacity: 0.9;
+  font-size: 1em;
+  display: inline-block;
+  border: 1px solid #cfcfcf;
+  width: 1em;
+  margin: 0 4px 4px 0;
+  text-align: center;
+}
+.recordcovers.record a {
+  background-position: 50% 50%;
+  background-size: cover;
+  display: block;
+  loat: left;
+  height: 32px;
+  margin: 0 5px 5px 0;
+  overflow: hidden;
+  width: 32px;
+}
 /* --- Search --- */
 .bulkActionButtons label {
   display: inline-block;
