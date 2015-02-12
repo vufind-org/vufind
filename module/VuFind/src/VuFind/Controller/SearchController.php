@@ -83,6 +83,7 @@ class SearchController extends AbstractSearch
         // find the HTTP referrer.
         $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
         $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
+        $mailer->setMaxRecipients($view->maxRecipients);
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
         $view->url = $this->params()->fromPost(

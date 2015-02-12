@@ -137,6 +137,8 @@ class AbstractBase extends AbstractActionController
             = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
         $view->editableSubject = isset($config->Mail->user_editable_subjects)
             && $config->Mail->user_editable_subjects;
+        $view->maxRecipients = isset($config->Mail->maximum_recipients)
+            ? intval($config->Mail->maximum_recipients) : 1;
         $user = $this->getUser();
 
         // Send parameters back to view so form can be re-populated:

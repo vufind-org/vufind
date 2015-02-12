@@ -27,6 +27,7 @@
  */
 namespace VuFind\Mailer;
 use VuFind\Exception\Mail as MailException,
+    Zend\Mail\AddressList,
     Zend\Mail\Message,
     Zend\Mail\Header\ContentType;
 
@@ -49,6 +50,13 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @var \Zend\Mail\Transport\TransportInterface
      */
     protected $transport;
+
+    /**
+     * The maximum number of email recipients allowed (0 = no limit)
+     *
+     * @var int
+     */
+    protected $maxRecipients = 1;
 
     /**
      * Constructor
@@ -101,9 +109,29 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     }
 
     /**
+     * Convert a delimited string to an address list.
+     *
+     * @param string $input String to convert
+     *
+     * @return AddressList
+     */
+    public function stringToAddressList($input)
+    {
+        // Create recipient list
+        $list = new AddressList();
+        foreach (preg_split('/[\s,;]/', $input) as $current) {
+            $current = trim($current);
+            if (!empty($current)) {
+                $list->add($current);
+            }
+        }
+        return $list;
+    }
+
+    /**
      * Send an email message.
      *
-     * @param string $to      Recipient email address
+     * @param string $to      Recipient email address (or delimited list)
      * @param string $from    Sender email address
      * @param string $subject Subject line for message
      * @param string $body    Message body
@@ -113,10 +141,22 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      */
     public function send($to, $from, $subject, $body)
     {
-        // Validate sender and recipient
+        $recipients = $this->stringToAddressList($to);
+
+        // Validate email addresses:
+        if ($this->maxRecipients > 0
+            && $this->maxRecipients < count($recipients)
+        ) {
+            throw new MailException('Too Many Email Recipients');
+        }
         $validator = new \Zend\Validator\EmailAddress();
-        if (!$validator->isValid($to)) {
+        if (count($recipients) == 0) {
             throw new MailException('Invalid Recipient Email Address');
+        }
+        foreach ($recipients as $current) {
+            if (!$validator->isValid($current->getEmail())) {
+                throw new MailException('Invalid Recipient Email Address');
+            }
         }
         if (!$validator->isValid($from)) {
             throw new MailException('Invalid Sender Email Address');
@@ -127,7 +167,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             // Send message
             $message = $this->getNewMessage()
                 ->addFrom($from)
-                ->addTo($to)
+                ->addTo($recipients)
                 ->setBody($body)
                 ->setSubject($subject);
             $this->getTransport()->send($message);
@@ -202,6 +242,18 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             )
         );
         return $this->send($to, $from, $subject, $body);
+    }
+
+    /**
+     * Set the maximum number of email recipients
+     *
+     * @param type $max Maximum
+     *
+     * @return void
+     */
+    public function setMaxRecipients($max)
+    {
+        $this->maxRecipients = $max;
     }
 
     /**

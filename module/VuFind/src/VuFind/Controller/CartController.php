@@ -220,6 +220,7 @@ class CartController extends AbstractBase
             try {
                 // If we got this far, we're ready to send the email:
                 $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+                $mailer->setMaxRecipients($view->maxRecipients);
                 $mailer->sendLink(
                     $view->to, $view->from, $view->message,
                     $url, $this->getViewRenderer(), $view->subject

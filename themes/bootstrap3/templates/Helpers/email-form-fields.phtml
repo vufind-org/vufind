@@ -1,7 +1,14 @@
 <div class="form-group">
   <label class="col-sm-3 control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
   <div class="col-sm-9">
-    <input type="email" id="email_to" class="form-control" oninvalid="$('#modal .fa-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+    <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="form-control" oninvalid="$('#modal .fa-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+    <? if ($this->maxRecipients != 1): ?>
+      <br />
+      <?=$this->transEsc('email_multiple_recipients_note')?>
+      <? if ($this->maxRecipients > 1): ?>
+        <?=$this->transEsc('email_maximum_recipients_note', array('%%max%%' => $this->maxRecipients))?>
+      <? endif; ?>
+    <? endif; ?>
   </div>
 </div>
 <? if (!$this->disableFrom): ?>

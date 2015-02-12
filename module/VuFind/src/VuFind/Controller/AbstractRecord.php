@@ -362,6 +362,7 @@ class AbstractRecord extends AbstractBase
         $view = $this->createEmailViewModel(
             null, $mailer->getDefaultRecordSubject($driver)
         );
+        $mailer->setMaxRecipients($view->maxRecipients);
 
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');

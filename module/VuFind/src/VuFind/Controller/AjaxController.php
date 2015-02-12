@@ -1035,6 +1035,7 @@ class AjaxController extends AbstractBase
             $view = $this->createEmailViewModel(
                 null, $mailer->getDefaultRecordSubject($record)
             );
+            $mailer->setMaxRecipients($view->maxRecipients);
             $mailer->sendRecord(
                 $view->to, $view->from, $view->message, $record,
                 $this->getViewRenderer(), $view->subject
@@ -1100,6 +1101,7 @@ class AjaxController extends AbstractBase
                 ? $this->translate('bulk_email_title')
                 : $mailer->getDefaultLinkSubject();
             $view = $this->createEmailViewModel(null, $defaultSubject);
+            $mailer->setMaxRecipients($view->maxRecipients);
             $mailer->sendLink(
                 $view->to, $view->from, $view->message, $url,
                 $this->getViewRenderer(), $view->subject
