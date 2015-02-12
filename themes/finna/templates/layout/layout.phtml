@@ -23,7 +23,7 @@
     <?
       // Set global path for Javascript code:
       $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
-        
+
       // Deal with cart stuff:
       if (!isset($this->renderingError)) {
         $cart = $this->cart();
@@ -101,15 +101,15 @@
           </div>
         </div>
         <? endif; ?>
-        <?if (isset($this->layout()->introduction)): ?>
+        <? if (isset($this->layout()->introduction) && $this->resolver('search//introductiontext.phtml')): ?>
         <div class="row">
           <div class="col-xs-12 introduction clearfix">
             <?=$this->render('search/introductiontext.phtml') ?>
           </div>
           <div class="col-xs-1"></div>
-        </div>    
+        </div>
         <? endif; ?>
-        <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+        <? if ((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
           && !empty($this->layout()->breadcrumbs)
           && $this->layout()->breadcrumbs !== false
         ): ?>
