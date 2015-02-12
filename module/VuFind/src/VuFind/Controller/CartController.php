@@ -202,9 +202,11 @@ class CartController extends AbstractBase
 
         $view = $this->createEmailViewModel();
         $view->records = $this->getRecordLoader()->loadBatch($ids);
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('email');
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Build the URL to share:
             $params = array();
             foreach ($ids as $current) {

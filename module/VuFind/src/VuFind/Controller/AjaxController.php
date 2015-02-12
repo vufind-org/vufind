@@ -1021,7 +1021,7 @@ class AjaxController extends AbstractBase
         try {
             // Check captcha
             $this->recaptcha()->setErrorMode('throw');
-            $useRecaptcha = $this->recaptcha()->active('sms');
+            $useRecaptcha = $this->recaptcha()->active('email');
             // Process form submission:
             if (!$this->formWasSubmitted('id', $useRecaptcha)) {
                 throw new \Exception('recaptcha_not_passed');
@@ -1085,6 +1085,14 @@ class AjaxController extends AbstractBase
 
         // Attempt to send the email:
         try {
+            // Check captcha
+            $this->recaptcha()->setErrorMode('throw');
+            $useRecaptcha = $this->recaptcha()->active('email');
+            // Process form submission:
+            if (!$this->formWasSubmitted('url', $useRecaptcha)) {
+                throw new \Exception('recaptcha_not_passed');
+            }
+
             $view = $this->createEmailViewModel();
             $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
             $mailer->sendLink(
