@@ -193,7 +193,7 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function sendRecord($to, $from, $msg, $record, $view, $subject = null)
     {
         if (null === $subject) {
-            $subject = $this->getDefaultRecordSubject();
+            $subject = $this->getDefaultRecordSubject($record);
         }
         $body = $view->partial(
             'Email/record.phtml',
