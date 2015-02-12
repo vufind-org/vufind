@@ -200,7 +200,9 @@ class CartController extends AbstractBase
             );
         }
 
-        $view = $this->createEmailViewModel();
+        $view = $this->createEmailViewModel(
+            null, $this->translate('bulk_email_title')
+        );
         $view->records = $this->getRecordLoader()->loadBatch($ids);
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
@@ -220,14 +222,14 @@ class CartController extends AbstractBase
                 $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
                 $mailer->sendLink(
                     $view->to, $view->from, $view->message,
-                    $url, $this->getViewRenderer(), 'bulk_email_title'
+                    $url, $this->getViewRenderer(), $view->subject
                 );
                 if ($this->params()->fromPost('ccself')
                     && $view->from != $view->to
                 ) {
                     $mailer->sendLink(
                         $view->from, $view->from, $view->message,
-                        $url, $this->getViewRenderer(), 'bulk_email_title'
+                        $url, $this->getViewRenderer(), $view->subject
                     );
                 }
                 return $this->redirectToSource('info', 'email_success');

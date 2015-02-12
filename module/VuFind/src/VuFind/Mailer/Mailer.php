@@ -153,10 +153,9 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      */
     public function sendLink($to, $from, $msg, $url, $view, $subject = null)
     {
-        if (is_null($subject)) {
-            $subject = 'Library Catalog Search Result';
+        if (null === $subject) {
+            $subject = $this->getDefaultLinkSubject();
         }
-        $subject = $this->translate($subject);
         $body = $view->partial(
             'Email/share-link.phtml',
             array(
@@ -164,6 +163,16 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             )
         );
         return $this->send($to, $from, $subject, $body);
+    }
+
+    /**
+     * Get the default subject line for sendLink().
+     * 
+     * @return string
+     */
+    public function getDefaultLinkSubject()
+    {
+        return $this->translate('Library Catalog Search Result');
     }
 
     /**
@@ -176,14 +185,16 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
      * @param \Zend\View\Renderer\PhpRenderer   $view   View object (used to render
      * email templates)
+     * @param string                            $subject Subject for email (optional)
      *
      * @throws MailException
      * @return void
      */
-    public function sendRecord($to, $from, $msg, $record, $view)
+    public function sendRecord($to, $from, $msg, $record, $view, $subject = null)
     {
-        $subject = $this->translate('Library Catalog Record') . ': '
-            . $record->getBreadcrumb();
+        if (null === $subject) {
+            $subject = $this->getDefaultRecordSubject();
+        }
         $body = $view->partial(
             'Email/record.phtml',
             array(
@@ -191,5 +202,18 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             )
         );
         return $this->send($to, $from, $subject, $body);
+    }
+
+    /**
+     * Get the default subject line for sendRecord()
+     * 
+     * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
+     * 
+     * @return string
+     */
+    public function getDefaultRecordSubject($record)
+    {
+        return $this->translate('Library Catalog Record') . ': '
+            . $record->getBreadcrumb();
     }
 }

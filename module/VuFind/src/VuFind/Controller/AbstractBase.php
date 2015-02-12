@@ -121,11 +121,12 @@ class AbstractBase extends AbstractActionController
     /**
      * Create a new ViewModel to use as an email form.
      *
-     * @param array $params Parameters to pass to ViewModel constructor.
+     * @param array  $params         Parameters to pass to ViewModel constructor.
+     * @param string $defaultSubject Default subject line to use.
      *
      * @return ViewModel
      */
-    protected function createEmailViewModel($params = null)
+    protected function createEmailViewModel($params = null, $defaultSubject = null)
     {
         // Build view:
         $view = $this->createViewModel($params);
@@ -163,6 +164,9 @@ class AbstractBase extends AbstractActionController
             ) {
                 $view->from = $config->Mail->default_from;
             }
+        }
+        if (!isset($view->subject) || empty($view->subject)) {
+            $view->subject = $defaultSubject;
         }
 
         // Fail if we're missing a from and the form element is disabled:

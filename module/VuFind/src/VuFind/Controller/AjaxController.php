@@ -1031,18 +1031,20 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
-            $view = $this->createEmailViewModel();
             $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $view = $this->createEmailViewModel(
+                null, $mailer->getDefaultRecordSubject($record)
+            );
             $mailer->sendRecord(
                 $view->to, $view->from, $view->message, $record,
-                $this->getViewRenderer()
+                $this->getViewRenderer(), $view->subject
             );
             if ($this->params()->fromPost('ccself')
                 && $view->from != $view->to
             ) {
                 $mailer->sendRecord(
                     $view->from, $view->from, $view->message, $record,
-                    $this->getViewRenderer()
+                    $this->getViewRenderer(), $view->subject
                 );
             }
             return $this->output(
@@ -1093,18 +1095,21 @@ class AjaxController extends AbstractBase
                 throw new \Exception('recaptcha_not_passed');
             }
 
-            $view = $this->createEmailViewModel();
             $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $defaultSubject = $this->params()->fromQuery('cart')
+                ? $this->translate('bulk_email_title')
+                : $mailer->getDefaultLinkSubject();
+            $view = $this->createEmailViewModel(null, $defaultSubject);
             $mailer->sendLink(
                 $view->to, $view->from, $view->message, $url,
-                $this->getViewRenderer(), $this->params()->fromPost('subject')
+                $this->getViewRenderer(), $view->subject
             );
             if ($this->params()->fromPost('ccself')
                 && $view->from != $view->to
             ) {
                 $mailer->sendLink(
                     $view->from, $view->from, $view->message, $url,
-                    $this->getViewRenderer(), $this->params()->fromPost('subject')
+                    $this->getViewRenderer(), $view->subject
                 );
             }
             return $this->output(

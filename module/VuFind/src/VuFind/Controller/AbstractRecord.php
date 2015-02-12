@@ -358,24 +358,27 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Create view
-        $view = $this->createEmailViewModel();
+        $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+        $view = $this->createEmailViewModel(
+            null, $mailer->getDefaultRecordSubject($driver)
+        );
+
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
                 $mailer->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
-                    $this->getViewRenderer()
+                    $this->getViewRenderer(), $view->subject
                 );
                 if ($this->params()->fromPost('ccself')
                     && $view->from != $view->to
                 ) {
                     $mailer->sendRecord(
                         $view->from, $view->from, $view->message, $driver,
-                        $this->getViewRenderer()
+                        $this->getViewRenderer(), $view->subject
                     );
                 }
                 $this->flashMessenger()->setNamespace('info')

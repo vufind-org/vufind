@@ -81,7 +81,8 @@ class SearchController extends AbstractSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $view = $this->createEmailViewModel();
+        $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+        $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
         $view->url = $this->params()->fromPost(
@@ -115,17 +116,16 @@ class SearchController extends AbstractSearch
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
                 $mailer->sendLink(
                     $view->to, $view->from, $view->message,
-                    $view->url, $this->getViewRenderer()
+                    $view->url, $this->getViewRenderer(), $view->subject
                 );
                 if ($this->params()->fromPost('ccself')
                     && $view->from != $view->to
                 ) {
                     $mailer->sendLink(
                         $view->from, $view->from, $view->message,
-                        $view->url, $this->getViewRenderer()
+                        $view->url, $this->getViewRenderer(), $view->subject
                     );
                 }
                 $this->flashMessenger()->setNamespace('info')
