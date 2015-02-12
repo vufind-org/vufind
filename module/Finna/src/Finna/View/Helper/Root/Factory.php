@@ -95,20 +95,4 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         return new RecordImage();
     }
 
-    /**
-     * Construct page view helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Header
-     */
-    public static function getPage(ServiceManager $sm)
-    {
-        $routeMatch = $sm->getServiceLocator()->get('Application')
-            ->getMvcEvent()->getRouteMatch();
-        $controller = $routeMatch->getParam('controller');
-        $action = $routeMatch->getParam('action');
-
-        return new Page($controller, $action);
-    }
 }
