@@ -5,6 +5,10 @@
     <label for="email_from"><?=$this->transEsc('From')?>:</label>
     <input id="email_from" type="text" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
   <? endif; ?>
+  <? if ($this->editableSubject): ?>
+    <label for="email_subject"><?=$this->transEsc('email_subject')?>:</label>
+    <input id="email_subject" type="text" name="subject" value="<?=isset($this->subject) ? $this->subject : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>"/>
+  <? endif; ?>
   <label for="email_message"><?=$this->transEsc('Message')?>:</label>
   <textarea id="email_message" name="message"><?=isset($this->message) ? $this->message : ''?></textarea>
 </div>

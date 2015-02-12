@@ -12,6 +12,14 @@
     </div>
   </div>
 <? endif; ?>
+<? if ($this->editableSubject): ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="email_subject"><?=$this->transEsc('email_subject')?>:</label>
+    <div class="col-sm-9">
+      <input type="text" id="email_subject" oninvalid="$('#modal .fa-spinner').remove()" name="subject" value="<?=isset($this->subject) ? $this->subject : ''?>" size="40" class="form-control"/>
+    </div>
+  </div>
+<? endif; ?>
 <div class="form-group">
   <label class="col-sm-3 control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
   <div class="col-sm-9">

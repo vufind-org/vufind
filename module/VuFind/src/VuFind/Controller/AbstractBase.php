@@ -135,6 +135,8 @@ class AbstractBase extends AbstractActionController
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $view->disableFrom
             = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
+        $view->editableSubject = isset($config->Mail->user_editable_subjects)
+            && $config->Mail->user_editable_subjects;
         $user = $this->getUser();
 
         // Send parameters back to view so form can be re-populated:
@@ -142,6 +144,9 @@ class AbstractBase extends AbstractActionController
             $view->to = $this->params()->fromPost('to');
             if (!$view->disableFrom) {
                 $view->from = $this->params()->fromPost('from');
+            }
+            if ($view->editableSubject) {
+                $view->subject = $this->params()->fromPost('subject');
             }
             $view->message = $this->params()->fromPost('message');
         }
