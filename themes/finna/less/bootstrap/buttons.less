@@ -16,7 +16,7 @@
   background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
   border: 1px solid transparent;
   white-space: nowrap;
-  .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @border-radius-large);
+  .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @finna-button-radius);
   .user-select(none);
 
   &,
@@ -64,6 +64,22 @@
     height: 35px;
     margin-bottom: 2px;
     transition: background 0.1s ease-in-out;
+    display:inline-block;
+    float: right;
+    margin-right: 3px;
+    text-align: center;
+    width: 10%;
+}
+// Here we style the fake arrow for dropdown
+.navbar-form .btn[type="submit"]:before {
+    width: 15px;
+    content: "\e027";
+    font-family: "icomoon";
+    position: absolute;
+    margin-right: -30px;
+    z-index: 0;
+    color: grey;
+    margin-left: -7%;
 }
 .navbar-form .btn[type="submit"]:hover {
     background:darken(@btn-primary-bg, 5%);   
@@ -84,9 +100,11 @@
     font-size: 12px;
     font-weight: bold;
     background: rgba(1,1,1,0.4);
-    border-radius: 15px;
-    margin-top: 6px;
+    border-radius: @finna-button-radius;
+    margin-top: 3px;
     margin-left: 10px;
+    vertical-align: top;
+    line-height: 25px;
     @media(max-width:@screen-xs-max) {
          float:right;   
     }
@@ -105,20 +123,128 @@
     color: #666666;
     padding: 6px 3px 9px 2px;
     position: absolute;
-    top: 40px;
+    top: 41px;
     left: 0px;
     width: 206px;
-    height: 33px;
-    z-index: 10000;
+    height: 35px;
     box-shadow: 0px 15px 20px -12px #000;   
     @media (max-width: @screen-sm-min) {
-        top: 36px;   
+        top: 41px;   
     }
 }
+.searchbox .checkbox label input {
+    display: none;
+}
 .searchbox .checkbox label {
-    margin-left: 11px;   
+    margin-left: 10px;
+    line-height: 24px;  
+}
+.searchbox .checkbox label:before{
+    content: "\f096";
+    font-family: 'Fontawesome';
+    font-size: 20px;
+    vertical-align: top;
 }
 
+//== Styling Finna checkboxes
+.checkboxFilter .checkbox {
+    padding: 5px 0px 5px 20px;   
+}
+.checkboxFilter label {
+    font-size: 14px;
+    font-weight: normal;   
+}
+.checkboxFilter label.checkbox input {
+    border: none;
+    background: transparent;
+    margin-right: 10px;
+    margin-top: 4px;
+}
+.checkboxFilter label.checkbox input:before {
+    content: "\f096";
+    font-family: 'FontAwesome';
+    margin-right: -1px;
+    font-size: 21px;
+    background: white;
+    margin: -4px;
+    position: absolute;
+    margin-left: -1px;
+}
+.searchbox .checkbox.checked label:before, .checkboxFilter label.checkbox input:checked:before  {
+    font-family: 'Fontawesome';
+    content: "\f14a"; 
+}
+// Default styling of Finna Jump menus
+.jumpMenu {
+    border: none;
+    background: transparent;
+    color: #fff;
+    padding: 0px 20px 0px 10px;
+    z-index: 1;
+    position: relative;
+}
+.jumpMenuStyle {
+    background: @brand-primary;
+    padding: 8px 0px 10px;
+    border-radius: @finna-button-radius;
+}
+.jumpMenu option {
+    background: #fff;
+    color: @gray;
+    border: 1px solid @gray-lighter;
+    padding: 8px 2px;
+}
+.jumpMenu option:hover {
+    background:  @brand-primary;  
+}
+.jumpMenuForm i {
+  color: #fff;
+  top: 0px;
+  position: relative;
+  margin-left: -20px;
+  z-index: 0;
+  width: 20px;
+  text-align: left;
+}
+
+// fixes for ie & others
+@media(min-width:@screen-md-min) {
+    .sortForm {
+        min-width: 30%;   
+    }
+    .limitForm {
+        min-width: 30%;   
+    }
+}
+// List & grid view
+.view-buttons {
+    margin-right: 10px;   
+}
+.view-buttons, .view-buttons a {
+    display: inline-block;
+    color: #464646;
+    font-weight: bold;
+    
+}
+.view-buttons i {
+    font-size: 18px;
+    padding: 8px 9px;
+    vertical-align: middle;
+    background: @link-color;
+    color: #fff;
+    border-radius: @finna-button-radius;   
+}
+.view-buttons a {
+    .opacity(0.6);
+    transition: opacity 0.1s linear;
+    &:hover {
+     .opacity(1);   
+    }
+}
+.view-buttons span {
+    line-height: 33px;
+    margin-right: 5px;
+}
 .btn-default {
   .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
 }

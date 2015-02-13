@@ -6,6 +6,7 @@
   } else {
       $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
   }
+  $this->layout()->logosection = true;
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
@@ -49,7 +50,7 @@
 
   // Set up Finna Main Tabs:
   //$this->layout()->finnaMainTabs = '...';
-
+  
   // Enable cart if appropriate:
   $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
   // Enable bulk options if appropriate:
@@ -59,10 +60,7 @@
   $this->headScript()->appendFile("check_item_statuses.js");
   $this->headScript()->appendFile("check_save_statuses.js");
 ?>
-
-<div class="row">
-  <div class="<?=$this->layoutClass('mainbody')?>">
-    <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
+<?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
       <? foreach ($this->results->getRecommendations('top') as $current): ?>
         <?=$this->recommend($current)?>
@@ -70,17 +68,20 @@
     <? endif; ?>
     <?=$this->flashmessages()?>
     <div class="hidden-print search-controls row">
-      <div class="col-sm-6">
-      </div>
-
       <? if ($recordTotal > 0): ?>
-        <div class="col-sm-6 text-right">
-          <?=$this->render('search/controls/limit.phtml')?>
-          <?=$this->render('search/controls/sort.phtml')?>
+        <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right">
           <?=$this->render('search/controls/view.phtml')?>
+          <?=$this->render('search/controls/sort.phtml')?>
+          <?=$this->render('search/controls/limit.phtml')?>
+        </div>
+        <div class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8">
+            <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results))?>
         </div>
       <? endif; ?>
     </div>
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    
     <? /* End Listing Options */ ?>
 
     <? if ($recordTotal < 1): ?>
@@ -102,27 +103,13 @@
         <?=$this->recommend($current)?>
       <? endforeach; ?>
     <? else: ?>
-      <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+    <div class="row">
+      <form class="form-inline col-xs-12" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
         <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
         <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
-        <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
       </form>
-
-      <div class="searchtools hidden-print">
-        <strong><?=$this->transEsc('Search Tools')?>:</strong>
-        <i class="fa fa-bell"></i> <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><?=$this->transEsc('Get RSS Feed')?></a>
-        &mdash;
-        <i class="fa fa-envelope"></i> <a href="<?=$this->url('search-email')?>" class="mailSearch modal-link" id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
-        &mdash;
-        <? if (is_numeric($this->results->getSearchId())): ?>
-          <? if ($this->results->isSavedSearch()): ?>
-            <i class="fa fa-minus-square"></i> <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
-          <? else: ?>
-            <i class="fa fa-plus-square"></i> <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
-          <? endif; ?>
-        <? endif; ?>
-      </div>
+    </div>
     <? endif; ?>
   </div>
   <? /* End Main Listing */ ?>
@@ -135,3 +122,38 @@
   </div>
   <? /* End Narrow Search Options */ ?>
 </div>
+</div>
+<div class="container-fluid pagination-background">
+  <div class="container">
+    <div class="col-xs-12 text-center">
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+    </div>
+  </div>
+</div>
+<div class="container-fluid searchtools-background">
+  <div class="container">
+    <div class="row">
+      <div class="searchtools hidden-print">
+        <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
+        
+        <a href="<?=$this->url('search-email')?>" class="mailSearch modal-link" id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?></a>
+        
+        <? if (is_numeric($this->results->getSearchId())): ?>
+          <? if ($this->results->isSavedSearch()): ?>
+            <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-minus-square"></i> <?=$this->transEsc('save_search_remove')?></a>
+          <? else: ?>
+            <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><i class="fa fa-plus-square"></i> <?=$this->transEsc('save_search')?></a>
+          <? endif; ?>
+        <? endif; ?>
+      </div>
+  </div>
+</div>
+<div class="mobile-navigation visible-xs">
+        <div class="extra-link-1">    
+        </div>
+        <div class="extra-link-2">
+             <p class="back-to-top"> <i class="fa fa-handle-close"></i></p>
+             <p class="scroll-sidebar"><i class="fa fa-handle-open"></i></p>
+        </div>
+</div>
+

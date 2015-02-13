@@ -1,15 +1,14 @@
+<!-- Start of RecordView Core.phtml -->
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-  <div class="col-sm-3">
-    <div class="text-center">
+  <div class="col-sm-4">
+    <div class="cover-wrapper">
       <? /* Display thumbnail if appropriate: */ ?>
       <? $img = $this->recordImage($this->record($this->driver)) ?>
       <?= $img->render('record', array('small' => array('w' => 100, 'h' => 100, 'maxh' => 200), 'medium' => array('w' => 300, 'h' => 300, 'maxh' => 400))) ?>
       <? /* Display qrcode if appropriate: */ ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-      <? if($QRCode): ?>
-        <span class="hidden-xs">
-          <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
-        </span>
+      <? if ($QRCode): ?> 
+        <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
       <? endif; ?>
     </div>
 
@@ -20,15 +19,47 @@
     <?=$this->record($this->driver)->getPreviews()?>
   </div>
 
-  <div class="col-sm-9">
-    <h3 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
+  <div class="col-sm-8">
+    <h3 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
+    <div class="record-authors">
+    <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
+      <? if (isset($authors['main']) && !empty($authors['main'])): ?>
+        <span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></span>
+      <? endif; ?>
 
+      <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
+      
+        <?=$this->transEsc('Corporate Author')?>:
+        <span property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></span>
+      <br />
+      <? endif; ?>
+      <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
+      <? foreach ($publications as $field): ?>
+        <span property="publisher" typeof="Organization">
+            <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+        <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
+            <? endif; ?>
+            <? $pubName = $field->getName(); if (!empty($pubName)): ?>
+              <span property="name"><?=$this->escapeHtml($pubName)?></span>
+            <? endif; ?>
+            </span>
+            <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+              <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
+            <? endif; ?>
+            <br/>
+          <? endforeach; ?>
+      <? endif; ?>
+      <? if (isset($authors['secondary']) && !empty($authors['secondary'])): ?>
+      <?=$this->transEsc('Other Authors')?>:
+          <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
+      <? endif; ?>
+    </div>   
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
     <? if ($summary): ?>
-      <p><?=$this->truncate($summary, 300)?></p>
+      <p class="summary"><?=$this->truncate($summary, 300)?></p>
 
       <? if(strlen($summary) > 300): ?>
-        <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
+        <p class="summary"><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
       <? endif; ?>
     <? endif; ?>
 
@@ -40,7 +71,7 @@
     <? endif; ?>
 
     <?/* Display Main Details */?>
-    <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
+    <table class="table table-striped hide record-details" summary="<?=$this->transEsc('Bibliographic Details')?>">
       <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
       <tr>
         <th><?=$this->transEsc('Published in')?>:</th>
@@ -75,29 +106,7 @@
       </tr>
       <? endif; ?>
 
-      <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
-      <? if (isset($authors['main']) && !empty($authors['main'])): ?>
-      <tr>
-        <th><?=$this->transEsc('Main Author')?>: </th>
-        <td property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></td>
-      </tr>
-      <? endif; ?>
-
-      <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
-      <tr>
-        <th><?=$this->transEsc('Corporate Author')?>: </th>
-        <td property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></td>
-      </tr>
-      <? endif; ?>
-
-      <? if (isset($authors['secondary']) && !empty($authors['secondary'])): ?>
-      <tr>
-        <th><?=$this->transEsc('Other Authors')?>: </th>
-        <td>
-          <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
-        </td>
-      </tr>
-      <? endif; ?>
+      
 
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <tr>
@@ -166,7 +175,7 @@
         </td>
       </tr>
       <? endif; ?>
-
+<!--
       <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
       <tr>
         <th><?=$this->transEsc('Subjects')?>: </th>
@@ -185,6 +194,7 @@
         </td>
       </tr>
       <? endif; ?>
+      -->
 
       <? $childRecordCount = $this->driver->tryMethod('getChildRecordCount'); if ($childRecordCount): ?>
       <tr>
@@ -253,6 +263,8 @@
         </tr>
       <? endif; ?>
     </table>
+    <button class="btn btn-primary show-details-button" onclick="$('.record-details').toggleClass('hide', 2000);$('i', this).toggleClass('fa-flip-vertical', 100);"><?=$this->transEsc('Show details')?><i class="fa fa-arrow-down"></i></button>
     <?/* End Main Details */?>
   </div>
 </div>
+<!-- End of Results Core -->

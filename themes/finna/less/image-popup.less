@@ -56,8 +56,8 @@
         float: left;
         text-align: left;
 	    transition: height 0.3s ease-in-out;
-	    max-width:350px;
-	    min-width:20%;
+	    max-width: 350px;
+	    min-width: 20%;
     }
 
 }
@@ -68,7 +68,7 @@
 	width: 100%;
 	height: 90%;  
 
-    .image {    
+    & .image {    
         float: left;
 	    max-width: 68%;
 	    z-index: 99999999;
@@ -77,14 +77,14 @@
 	    margin-bottom: -5px;
 	    padding: 10px;
 	    margin-right: 20px;
-	    text-align:left;
+	    text-align: left;
 	    background-position: 75px 60px;
         
         & .loading {
 	        position: absolute;
 	        left: 55px;
 	        top: 92px;
-	        color: lightgrey;
+	        color: @gray-light;
         }
         &.loaded {
        	    background-image: none;	
@@ -116,7 +116,7 @@
         & img {
             display: none;
             position: relative;
-	        z-inde  x: 10;
+	        z-index: 10;
 	        max-height: 680px;
             max-width: 100%;
             width: auto;
@@ -201,7 +201,6 @@
         }     
     }
 }
-
 @media(max-width:@screen-md-max) {
     .imagepopup-holder .image {
         max-width: 500px;

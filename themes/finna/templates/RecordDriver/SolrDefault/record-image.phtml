@@ -12,6 +12,7 @@ $imageData = array('images' => $images, 'type' => $type);
 <?= $this->partial('RecordDriver/SolrDefault/record-image-navi.phtml', $imageData) ?>
 
 <? if ($mediumImage): ?>
+<i class="fa fa-zoom-in magnify"></i>
 <a class="image-popup-trigger" href="<?= $this->recordLink()->getUrl($this->driver) ?>#image">
 <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumImage);?>"/>
 </a>

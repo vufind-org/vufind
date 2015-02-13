@@ -278,7 +278,7 @@ function ajaxLogin(form) {
 
 $(document).ready(function() {
   // support "jump menu" dropdown boxes
-  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
+  $('select.jumpMenu').change(function(){ $(this).closest('form').submit(); });
 
   // Highlight previous links, grey out following
   $('.backlink')
