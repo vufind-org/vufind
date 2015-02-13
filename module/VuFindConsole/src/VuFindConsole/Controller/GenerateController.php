@@ -152,7 +152,9 @@ class GenerateController extends AbstractBase
         $method = MethodGenerator::fromReflection(
             $oldReflection->getMethod($factoryMethod)
         );
-        $this->createServiceClassAndUpdateFactory($method, $module);
+        $this->createServiceClassAndUpdateFactory(
+            $method, $oldReflection->getNamespaceName(), $module
+        );
         $generator->addMethodFromGenerator($method);
         $this->writeClass($generator, $module, true, $skipBackup);
 
@@ -164,13 +166,14 @@ class GenerateController extends AbstractBase
      * a new factory for the subclass.
      *
      * @param MethodGenerator $method Method to modify
+     * @param string          $ns     Namespace of old factory
      * @param string          $module Module in which to make changes
      *
      * @return void
      * @throws \Exception
      */
     protected function createServiceClassAndUpdateFactory(MethodGenerator $method,
-        $module
+        $ns, $module
     ) {
         $body = $method->getBody();
         $regex = '/new\s+([\w\\\\]*)\s*\(/m';
@@ -181,7 +184,10 @@ class GenerateController extends AbstractBase
             throw new \Exception("Found $count class names; expected 1.");
         }
         $className = $classNames[0];
-        $newClass = $this->createSubclassInModule($className, $module);
+        // Figure out fully qualified name for purposes of createSubclassInModule():
+        $fqClassName = (substr($className, 0, 1) != '\\')
+            ? "$ns\\$className" : $className;
+        $newClass = $this->createSubclassInModule($fqClassName, $module);
         $body = preg_replace(
             '/new\s+' . addslashes($className) . '\s*\(/m',
             'new \\' . $newClass . '(',
