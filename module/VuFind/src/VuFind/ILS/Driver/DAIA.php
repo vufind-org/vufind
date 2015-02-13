@@ -61,7 +61,7 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
      *
      * @var string
      */
-    protected $daiaidprefix;
+    protected $daiaIdPrefix;
 
     /**
      * DAIA response format
@@ -69,6 +69,13 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
      * @var string
      */
     protected $daiaResponseFormat;
+
+    /**
+     * DAIA legacySupport flag
+     *
+     * @var boolean
+     */
+    protected $legacySupport = false;
 
     /**
      * Initialize the driver.
@@ -85,6 +92,7 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
         // new [DAIA] section as fallback
         if (isset($this->config['Global']) && !isset($this->config['DAIA'])) {
             $this->config['DAIA'] = $this->config['Global'];
+            $this->legacySupport = true;
         }
 
         if (isset($this->config['DAIA']['baseUrl'])) {
@@ -98,11 +106,11 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
             $this->debug("No daiaResponseFormat setting found, using default: xml");
             $this->daiaResponseFormat = "xml";
         }
-        if (isset($this->config['DAIA']['daiaidprefix'])) {
-            $this->daiaidprefix = $this->config['DAIA']['daiaidprefix'];
+        if (isset($this->config['DAIA']['daiaIdPrefix'])) {
+            $this->daiaIdPrefix = $this->config['DAIA']['daiaIdPrefix'];
         } else {
-            $this->debug("No daiaidprefix setting found, using default: \"\"");
-            $this->daiaidprefix = "";
+            $this->debug("No daiaIdPrefix setting found, using default: ppn:");
+            $this->daiaIdPrefix = "ppn:";
         }
     }
 
@@ -247,12 +255,17 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
         );
 
         $params = array(
-            "id" => $this->daiaidprefix . $id,
+            "id" => $this->daiaIdPrefix . $id,
             "format" => $this->daiaResponseFormat,
         );
 
         try {
-            $result = $this->httpService->get($this->baseUrl, $params, null, $http_headers);
+            if ($this->legacySupport) {
+                // HttpRequest for DAIA legacy support as all the parameters are contained in the baseUrl
+                $result = $this->httpService->get($this->baseUrl . $id, array(), null, $http_headers);
+            } else {
+                $result = $this->httpService->get($this->baseUrl, $params, null, $http_headers);
+            }
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
