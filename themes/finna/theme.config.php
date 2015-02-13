@@ -14,6 +14,7 @@ return array(
         'vendor/dataTables.bootstrap.css',
         'vendor/magnific-popup.css',
         'dataTables.bootstrap.custom.css',
+        'vendor/slick.css',
         'finna.css'
     ),
     'js' => array(
@@ -21,7 +22,8 @@ return array(
         'image-popup.js',
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js',
-        'vendor/jquery.magnific-popup.min.js'
+        'vendor/jquery.magnific-popup.min.js',
+        'vendor/slick.min.js'
     ),
     'less' => array(
         'active' => false

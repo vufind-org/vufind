@@ -149,6 +149,9 @@ ol {
   margin-top: 0;
   margin-bottom: (@line-height-computed / 2);
   padding: 0;
+  & li {
+    list-style-type: none;   
+  }
   ul,
   ol {
     margin-bottom: 0;
@@ -292,3 +295,12 @@ address {
   font-style: normal;
   line-height: @line-height-base;
 }
+
+// text class styling for author and date
+.date-and-year {
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  font-weight: 500;	
+  margin-bottom: 5px;
+}
+
