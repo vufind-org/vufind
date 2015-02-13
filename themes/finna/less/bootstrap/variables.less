@@ -17,45 +17,25 @@
 @brand-primary: #00a3b5;
 @brand-secondary: #B3E3E9;
 @brand-third: #d8f4ed;
-@brand-fourth: #ebd4f0;
 @brand-success: #00b270;
 @brand-warning: #fff48c;
 @brand-danger: #ff461e;
 @brand-info: #b2e3ea;
-@logo-color: #fff;
+@logo-color: #FFF;
 
 //== CUstom Finna styling
-@background-image-url: url('../images/background_1.jpg');
-@background-start-color: rgba(1,1,1,0.3);
-@background-end-color:  rgba(1,1,1,0.8);
-@background-start-percent: 10%;
-@background-end-percent: 100%;
+@background-image-url: url('https://www.finna.fi/interface/themes/national/images/header_background_2.jpg');
 @header-height: 43px;
 @navbar-logo-height: 35px;
 @logo-height: 66px;
 @header-background-color: rgba(10,10,10,0.8);
 @footer-background: #464646;
-@finna-main-header-background: @brand-secondary;
-@finna-record-header-background: @gray-lighter;
+@home-top-background: @brand-third;
+@finna-main-header-background: @brand-third;
 @field-margin-vertical: 20px;
 @field-margin-horizontal: 15px;
 @background-image-gradient: #000, #000, 55%, 30%;
 @finna-text-shadow: 1px 1px 1px black;
-@finna-search-input-width: 59.5%; //== THIS HAS TO BE %
-@finna-button-radius: 10px; // Defines all button radiuses
-
-//== Finna home page
-@home-top-background: @brand-third;
-@home-middle-background: #fff;
-@infobox-background: #fff;
-@infobox-border: 5px solid @gray-lighter;
-@infobox-text-color: #464646;
-@infobox-box-shadow: none;
-
-//== Finna facets
-@facet-background:  @gray;
-@facet-text-color: @body-bg;
-@facet-link-hover-background: rgba(1,1,1,0.05);
 
 //== Generated horizontal carousel styles
     //== This is full background
@@ -71,9 +51,6 @@
    //== Styling the text color of each slide
 @carousel-slide-text-color: rgb(252, 255, 217);
 
-//== Myreresearch custom styles
-@myresearch-header-background: #b0e9db;
-
 //== Scaffolding
 //
 // ## Settings for some of the most global styles.
@@ -82,7 +59,6 @@
 @text-color: @gray;
 @link-color: @brand-primary;
 @link-hover-color: @link-color;
-@link-hover-decoration: #fff;
 @padding-base-vertical: 6px;
 @padding-base-horizontal: 12px;
 @padding-large-vertical: 10px;
@@ -101,7 +77,7 @@
 //
 //## Font, line-height, and color for body text, headings, and more.
 
-@font-family-sans-serif: "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-sans-serif: 'Helvetica Neue';
 @font-family-serif: PT Serif;
 @font-family-monospace: Monaco;
 @font-family-base: @font-family-sans-serif;
@@ -260,12 +236,12 @@
 @dropdown-link-active-color: #fff;
 @dropdown-link-active-bg: @component-active-bg;
 @dropdown-link-color: @gray-dark;
-@dropdown-link-hover-color: @dropdown-link-color;
-@dropdown-link-hover-bg: rgba(1,1,1,0.1);
+@dropdown-link-hover-color: #fff;
+@dropdown-link-hover-bg: @dropdown-link-active-bg;
 @dropdown-link-disabled-color: @gray-light;
 @dropdown-header-color: @gray-light;
 @dropdown-caret-color: #000;
-@dropdown-fallback-border: none;
+@dropdown-fallback-border:none;
 
 //-- Z-index master list
 //
@@ -327,7 +303,7 @@
 @grid-gutter-width:         30px;
 // Navbar collapse
 //** Point at which the navbar becomes uncollapsed.
-@grid-float-breakpoint:     @screen-md-min;
+@grid-float-breakpoint:     @screen-sm-min;
 //** Point at which the navbar begins collapsing.
 @grid-float-breakpoint-max: (@grid-float-breakpoint - 1);
 
@@ -357,19 +333,19 @@
 //##
 
 // Basics of a navbar
-@navbar-height:                    45px;
+@navbar-height:                    40px;
 @navbar-margin-bottom:             0px;
 @navbar-border-radius:             @border-radius-base;
 @navbar-padding-horizontal:        floor((@grid-gutter-width / 2));
-@navbar-padding-vertical:          0px;
-@navbar-collapse-max-height:       auto;
+@navbar-padding-vertical:          ((@navbar-height - @line-height-computed) / 2);
+@navbar-collapse-max-height:       340px;
 
 @navbar-default-color:             #777;
 @navbar-default-bg:                #fff;
 @navbar-default-border:            darken(@navbar-default-bg, 6.5%);
 
 // Navbar links
-@navbar-default-link-color:                #fff;
+@navbar-default-link-color:                #777;
 @navbar-default-link-hover-color:          #333;
 @navbar-default-link-hover-bg:             transparent;
 @navbar-default-link-active-color:         #555;
@@ -419,7 +395,7 @@
 //##
 
 //=== Shared nav styles
-@nav-link-padding:                          0px 15px;
+@nav-link-padding:                          10px 15px;
 @nav-link-hover-bg:                         rgba(255,255,255,0.2);
 
 @nav-disabled-link-color:                   @gray-light;
@@ -428,11 +404,9 @@
 @nav-open-link-hover-color:                 #fff;
 
 //== Tabs
-@nav-tabs-background-color:                 #fff;
-@nav-tabs-border-color:                     @brand-secondary;
-@nav-tabs-link-hover-border-color:          @brand-secondary;
+@nav-tabs-border-color:                     #ddd;
 
-@tabs-border-radius:                        10px;
+@nav-tabs-link-hover-border-color:          @gray-lighter;
 
 @nav-tabs-active-link-hover-bg:             @body-bg;
 @nav-tabs-active-link-hover-color:          @gray;
@@ -450,7 +424,7 @@
 //== Pagination
 //
 //##
-@pagination-background:                @gray-lighter;
+
 @pagination-color:                     @link-color;
 @pagination-bg:                        #fff;
 @pagination-border:                    #ddd;
@@ -472,11 +446,11 @@
 //
 //##
 
-@pager-bg:                             @link-color;
+@pager-bg:                             @pagination-bg;
 @pager-border:                         @pagination-border;
 @pager-border-radius:                  15px;
 
-@pager-hover-bg:                       @brand-primary;
+@pager-hover-bg:                       @pagination-hover-bg;
 
 @pager-active-bg:                      @pagination-active-bg;
 @pager-active-color:                   @pagination-active-color;
@@ -589,8 +563,7 @@
 //== Modals
 //
 //##
-@modal-header-background: @brand-primary;
-@modal-header-color: @body-bg;
+
 //** Padding applied to the modal body
 @modal-inner-padding:         20px;
 
@@ -624,7 +597,7 @@
 //
 //## Define alert colors, border radius, and padding.
 
-@alert-padding:               10px 15px;
+@alert-padding:               15px;
 @alert-border-radius:         @border-radius-base;
 @alert-link-font-weight:      bold;
 
@@ -769,7 +742,7 @@
 //** Badge background color in active nav link
 @badge-active-bg:             #fff;
 @badge-font-size:             0.9em;
-@badge-font-weight:           300;
+@badge-font-weight:           200;
 @badge-line-height:           1;
 @badge-border-radius:         10px;
 
@@ -861,8 +834,3 @@
 
 //** Horizontal offset for forms and lists.
 @component-offset-horizontal: 180px;
-
-@cursor-disabled: pointer;
-@progress-border-radius: none;
-@panel-heading-padding: 0;
-@panel-footer-padding: 0;
