@@ -226,6 +226,24 @@ class ExportTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test getLabelForFormat
+     *
+     * @ return void
+     */
+    public function testGetLabel()
+    {
+        $config = [
+            'foo' => [],
+            'bar' => ['label' => 'baz'],
+        ];
+        $export = $this->getExport(array(), $config);
+        // test "use section label as default"
+        $this->assertEquals('foo', $export->getLabelForFormat('foo'));
+        // test "override with label setting"
+        $this->assertEquals('baz', $export->getLabelForFormat('bar'));
+    }
+
+    /**
      * Get a fake MARCXML record
      *
      * @param string $id ID to put in record.
