@@ -4,6 +4,7 @@ namespace VuFindConsole\Module\Configuration;
 $config = array(
     'controllers' => array(
         'invokables' => array(
+            'generate' => 'VuFindConsole\Controller\GenerateController',
             'harvest' => 'VuFindConsole\Controller\HarvestController',
             'import' => 'VuFindConsole\Controller\ImportController',
             'language' => 'VuFindConsole\Controller\LanguageController',

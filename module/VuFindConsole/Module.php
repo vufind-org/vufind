@@ -76,6 +76,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
     public function getConsoleUsage(Console $console)
     {
         return array(
+            'generate extendservice' => 'Override a service with a new child class',
             'harvest harvest_oai' => 'OAI-PMH harvester',
             'harvest merge-marc' => 'MARC merge tool',
             'import import-xsl' => 'XSLT importer',
