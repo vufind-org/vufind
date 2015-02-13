@@ -224,12 +224,12 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message representing a record.
      *
-     * @param string                            $to     Recipient email address
-     * @param string                            $from   Sender email address
-     * @param string                            $msg    User notes to include in
+     * @param string                            $to      Recipient email address
+     * @param string                            $from    Sender email address
+     * @param string                            $msg     User notes to include in
      * message
-     * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
-     * @param \Zend\View\Renderer\PhpRenderer   $view   View object (used to render
+     * @param \VuFind\RecordDriver\AbstractBase $record  Record being emailed
+     * @param \Zend\View\Renderer\PhpRenderer   $view    View object (used to render
      * email templates)
      * @param string                            $subject Subject for email (optional)
      * @param string                            $cc      CC recipient (null for none)

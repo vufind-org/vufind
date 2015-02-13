@@ -357,7 +357,7 @@ class GenerateController extends AbstractBase
         // Create backup of configuration
         $this->backUpFile($configPath);
 
-        $config = require $configPath;
+        $config = include $configPath;
         $current = & $config;
         $finalStep = array_pop($path);
         foreach ($path as $step) {
