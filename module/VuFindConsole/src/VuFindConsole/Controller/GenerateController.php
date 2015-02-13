@@ -27,7 +27,9 @@
  */
 namespace VuFindConsole\Controller;
 use Zend\Code\Generator\ClassGenerator;
+use Zend\Code\Generator\MethodGenerator;
 use Zend\Code\Generator\FileGenerator;
+use Zend\Code\Reflection\ClassReflection;
 use Zend\Console\Console;
 
 /**
@@ -122,7 +124,148 @@ class GenerateController extends AbstractBase
      */
     protected function cloneFactory($factory, $module)
     {
-        throw new \Exception('Factories not supported yet.');
+        // Make sure we can figure out how to handle the factory; it should
+        // either be a [controller, method] array or a "controller::method"
+        // string; anything else will cause a problem.
+        $parts = is_string($factory) ? explode('::', $factory) : $factory;
+        if (!is_array($parts) || count($parts) != 2 || !class_exists($parts[0])
+            || !method_exists($parts[0], $parts[1])
+        ) {
+            throw new \Exception('Unexpected factory configuration format.');
+        }
+        list($factoryClass, $factoryMethod) = $parts;
+        $newFactoryClass = $this->generateLocalClassName($factoryClass, $module);
+        if (!class_exists($newFactoryClass)) {
+            $this->createClassInModule($newFactoryClass, $module);
+            $skipBackup = true;
+        } else {
+            $skipBackup = false;
+        }
+        if (method_exists($newFactoryClass, $factoryMethod)) {
+            throw new \Exception("$newFactoryClass::$factoryMethod already exists.");
+        }
+
+        $oldReflection = new ClassReflection($factoryClass);
+        $newReflection = new ClassReflection($newFactoryClass);
+
+        $generator = ClassGenerator::fromReflection($newReflection);
+        $method = MethodGenerator::fromReflection(
+            $oldReflection->getMethod($factoryMethod)
+        );
+        $this->createServiceClassAndUpdateFactory($method, $module);
+        $generator->addMethodFromGenerator($method);
+        $this->writeClass($generator, $module, true, $skipBackup);
+
+        return $newFactoryClass . '::' . $factoryMethod;
+    }
+
+    /**
+     * Given a factory method, extend the class being constructed and create
+     * a new factory for the subclass.
+     *
+     * @param MethodGenerator $method Method to modify
+     * @param string          $module Module in which to make changes
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function createServiceClassAndUpdateFactory(MethodGenerator $method,
+        $module
+    ) {
+        $body = $method->getBody();
+        $regex = '/new\s+([\w\\\\]*)\s*\(/m';
+        preg_match_all($regex, $body, $matches);
+        $classNames = $matches[1];
+        $count = count($classNames);
+        if ($count != 1) {
+            throw new \Exception("Found $count class names; expected 1.");
+        }
+        $className = $classNames[0];
+        $newClass = $this->createSubclassInModule($className, $module);
+        $body = preg_replace(
+            '/new\s+' . addslashes($className) . '\s*\(/m',
+            'new \\' . $newClass . '(',
+            $body
+        );
+        $method->setBody($body);
+    }
+
+    /**
+     * Determine the name of a local replacement class within the specified
+     * module.
+     *
+     * @param string $class  Name of class to extend/replace
+     * @param string $module Module in which to create the new class
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function generateLocalClassName($class, $module)
+    {
+        // Determine the name of the new class by exploding the old class and
+        // replacing the namespace:
+        $parts = explode('\\', trim($class, '\\'));
+        if (count($parts) < 2) {
+            throw new \Exception('Expected a namespaced class; found ' . $class);
+        }
+        $parts[0] = $module;
+        return implode('\\', $parts);
+    }
+
+    /**
+     * Extend a specified class within a specified module. Return the name of
+     * the new subclass.
+     *
+     * @param string $class  Name of class to create
+     * @param string $module Module in which to create the new class
+     * @param string $parent Parent class (null for no parent)
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function createClassInModule($class, $module, $parent = null)
+    {
+        $generator = new ClassGenerator($class, null, null, $parent);
+        return $this->writeClass($generator, $module);
+    }
+
+    /**
+     * Write a class to disk.
+     *
+     * @param ClassGenerator $classGenerator Representation of class to write
+     * @param string         $module         Module in which to write class
+     * @param bool           $allowOverwrite Allow overwrite of existing file?
+     * @param bool           $skipBackup     Should we skip backing up the file?
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function writeClass(ClassGenerator $classGenerator, $module,
+        $allowOverwrite = false, $skipBackup = false
+    ) {
+        // Use the class name parts from the previous step to determine a path
+        // and filename, then create the new path.
+        $parts = explode('\\', $classGenerator->getNamespaceName());
+        array_unshift($parts, 'module', $module, 'src');
+        $this->createTree($parts);
+
+        // Generate the new class:
+        $generator = FileGenerator::fromArray(['classes' => [$classGenerator]]);
+        $filename = $classGenerator->getName() . '.php';
+        $fullPath = APPLICATION_PATH . '/' . implode('/', $parts) . '/' . $filename;
+        if (file_exists($fullPath)) {
+            if ($allowOverwrite) {
+                if (!$skipBackup) {
+                    $this->backUpFile($fullPath);
+                }
+            } else {
+                throw new \Exception("$fullPath already exists.");
+            }
+        }
+        if (!file_put_contents($fullPath, $generator->generate())) {
+            throw new \Exception("Problem writing to $fullPath.");
+        }
+        Console::writeLine("Saved file: $fullPath");
     }
 
     /**
@@ -130,44 +273,18 @@ class GenerateController extends AbstractBase
      * the new subclass.
      *
      * @param string $class  Name of class to extend
-     * @param string $module Module in which to create the new invokable
+     * @param string $module Module in which to create the new class
      *
      * @return string
      * @throws \Exception
      */
     protected function createSubclassInModule($class, $module)
     {
-        // Determine the name of the new class by exploding the old class and
-        // replacing the namespace:
-        $parts = explode('\\', $class);
-        if (count($parts) < 2) {
-            throw new \Exception('Expected a namespaced class; found ' . $class);
-        }
-        $parts[0] = $module;
-        $newClass = implode('\\', $parts);
-
-        // Use the class name parts from the previous step to determine a path
-        // and filename, then create the new path.
-        $filename = array_pop($parts) . '.php';
-        array_unshift($parts, 'module', $module, 'src');
-        $this->createTree($parts);
-
-        // Generate the new class:
-        $generator = FileGenerator::fromArray(
-            [
-                'classes' => [new ClassGenerator($newClass, null, null, "\\$class")]
-            ]
-        );
-        $fullPath = APPLICATION_PATH . '/' . implode('/', $parts) . '/' . $filename;
-        if (file_exists($fullPath)) {
-            throw new \Exception("$fullPath already exists.");
-        }
-        if (!file_put_contents($fullPath, $generator->generate())) {
-            throw new \Exception("Problem writing to $fullPath.");
-        }
-        Console::writeLine("Generated new file: $fullPath");
-
-        // Send back the name of the new class:
+        // Normalize leading backslashes; in some contexts we will
+        // have them and in others we may not.
+        $class = trim($class, '\\');
+        $newClass = $this->generateLocalClassName($class, $module);
+        $this->createClassInModule($newClass, $module, "\\$class");
         return $newClass;
     }
 
@@ -197,6 +314,23 @@ class GenerateController extends AbstractBase
     }
 
     /**
+     * Create a backup of a file.
+     *
+     * @param string $filename File to back up
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function backUpFile($filename)
+    {
+        $backup = $filename . '.' . time() . '.bak';
+        if (!copy($filename, $backup)) {
+            throw new \Exception("Problem generating backup file: $backup");
+        }
+        Console::writeLine("Created backup: $backup");
+    }
+
+    /**
      * Update the configuration of a target module.
      *
      * @param array  $path    Representation of path in config array
@@ -215,11 +349,7 @@ class GenerateController extends AbstractBase
         }
 
         // Create backup of configuration
-        $backup = $configPath . '.' . time() . '.bak';
-        if (!copy($configPath, $backup)) {
-            throw new \Exception("Problem generating backup file: $backup");
-        }
-        Console::writeLine("Created configuration backup: $backup");
+        $this->backUpFile($configPath);
 
         $config = require $configPath;
         $current = & $config;
