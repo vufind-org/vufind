@@ -15,7 +15,8 @@
 // Container that the modal scrolls within
 .modal {
   display: none;
-  overflow: hidden;
+  overflow: auto;
+  overflow-y: scroll;
   position: fixed;
   top: 0;
   right: 0;
@@ -33,11 +34,7 @@
     .translate(0, -25%);
     .transition-transform(~"0.3s ease-out");
   }
-  &.in .modal-dialog { .translate(0, 0) }
-}
-.modal-open .modal {
-  overflow-x: hidden;
-  overflow-y: auto;
+  &.in .modal-dialog { .translate(0, 0)}
 }
 
 // Shell div to position the modal with bottom padding
@@ -57,15 +54,17 @@
   .box-shadow(0 3px 9px rgba(0,0,0,.5));
   background-clip: padding-box;
   // Remove focus outline from opened modal
-  outline: 0;
+  outline: none;
 }
 
 // Modal background
 .modal-backdrop {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
+  bottom: 0;
   left: 0;
+  z-index: @zindex-modal-background;
   background-color: @modal-backdrop-bg;
   // Fade for backdrop
   &.fade { .opacity(0); }
@@ -75,19 +74,22 @@
 // Modal header
 // Top section of the modal w/ title and dismiss
 .modal-header {
+  background: @brand-primary;
+  color: @body-bg;
+  border-radius: 15px 15px 0px 0px;
   padding: @modal-title-padding;
   border-bottom: 1px solid @modal-header-border-color;
   min-height: (@modal-title-padding + @modal-title-line-height);
-  background: @modal-header-background;
-  color: @modal-header-color;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-
 }
 // Close icon
 .modal-header .close {
-  margin-top: -2px;
-  color: @modal-header-color;
+margin-top: -2px;
+background: black;
+color: white;
+padding: 0px 7px 6px 7px;
+border-radius: 60px;
+font-weight: 400;
+line-height: 1em;
 }
 
 // Title text within header
@@ -105,7 +107,8 @@
 
 // Footer (for actions)
 .modal-footer {
-  padding: @modal-inner-padding;
+  margin-top: 15px;
+  padding: (@modal-inner-padding - 1) @modal-inner-padding @modal-inner-padding;
   text-align: right; // right align buttons
   border-top: 1px solid @modal-footer-border-color;
   &:extend(.clearfix all); // clear it in case folks use .pull-* classes on buttons
@@ -123,15 +126,6 @@
   .btn-block + .btn-block {
     margin-left: 0;
   }
-}
-
-// Measure scrollbar width for padding body during modal show/hide
-.modal-scrollbar-measure {
-  position: absolute;
-  top: -9999px;
-  width: 50px;
-  height: 50px;
-  overflow: scroll;
 }
 
 // Scale up the modal

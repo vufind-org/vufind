@@ -12,17 +12,15 @@ return array(
     'css' => array(
         'vendor/dataTables.bootstrap.css',
         'vendor/magnific-popup.css',
-        'vendor/slick.css',
         'dataTables.bootstrap.custom.css',
-        'finna.css',
+        'finna.css'
     ),
     'js' => array(
         'finna.js',
         'image-popup.js',
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js',
-        'vendor/jquery.magnific-popup.min.js',
-        'vendor/slick.min.js'
+        'vendor/jquery.magnific-popup.min.js'
     ),
     'less' => array(
         'active' => false

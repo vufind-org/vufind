@@ -7,22 +7,17 @@
   padding-left: 0;
   margin: @line-height-computed 0;
   list-style: none;
-  text-align: right;
-  & .pager-text {
-    font-size: 16px;
-    margin: 0px 10px;
-  }
+  text-align: center;
   &:extend(.clearfix all);
   li {
     display: inline;
     > a,
     > span {
       display: inline-block;
-      padding: 4px 7px 2px;
-      color: #fff;
+      padding: 5px 14px;
       background-color: @pager-bg;
-      border-radius: 50%;
-      font-size: 16px;
+      border: 1px solid @pager-border;
+      border-radius: @pager-border-radius;
     }
 
     > a:hover,
@@ -51,7 +46,8 @@
     > a:hover,
     > a:focus,
     > span {
-      background-color: @pager-disabled-color;
+      color: @pager-disabled-color;
+      background-color: @pager-bg;
       cursor: not-allowed;
     }
   }

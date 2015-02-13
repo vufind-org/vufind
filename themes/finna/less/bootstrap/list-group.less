@@ -4,10 +4,10 @@
 // --------------------------------------------------
 
 .sidebar h4 {
-    padding: 15px 20px;
-    background: @brand-primary;
-    color: @btn-primary-color;
-    font-size: @font-size-h3;
+    padding:20px;
+    background:@brand-primary;
+    color:@btn-primary-color;
+    font-size:@font-size-h3;
     margin-top:0px;
 }
 // Base class
@@ -21,7 +21,7 @@
 }
 
 
-// Individual list items FACETS
+// Individual list items
 //
 // Use on `li`s or `div`s within the `.list-group` parent.
 
@@ -35,9 +35,7 @@
   font-size: 1.05em;
   vertical-align: middle;
   background-color: @list-group-bg;
-  &:hover {
-    background: @facet-link-hover-background;
-  }
+
 
   // Align badges within list items
   > .badge {
@@ -50,8 +48,8 @@
   // title custom coloring
   
   &.title {
-    background: @facet-background;
-    color: @facet-text-color;
+    background:@gray;
+    color:#fff;
   }
   
 }
@@ -102,7 +100,7 @@ a.list-group-item {
     transition: background 0.2s ease-in-out;
 }
 .list-group.filters .list-group-item.active:hover {
-    background: rgba(150,100,100,0.2);
+    background: rgba(100,100,100,0.2);
     text-decoration: line-through;
 }
 .list-group.facet .list-group-item.title {

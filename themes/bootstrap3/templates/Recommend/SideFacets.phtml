@@ -68,25 +68,23 @@
               <input type="hidden" name="<?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>range[]" value="<?=$this->escapeHtmlAttr($title)?>"/>
               <div class="row">
                 <? $extraInputAttribs = ($rangeFacets[$title]['type'] == 'date') ? 'maxlength="4" ' : ''; ?>
-                <div class="col-xs-12">
-                  <span class="sr-only">
+                <div class="col-sm-6">
                   <label for="<?=$this->escapeHtmlAttr($title)?>from">
-                    <?=$this->transEsc('date_from')?> 
+                    <?=$this->transEsc('date_from')?>:
                   </label>
-                  </span>
                   <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" value="<?=isset($rangeFacets[$title]['values'][0])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][0]):''?>" <?=$extraInputAttribs?>/>
-                   - 
-                  <span class="sr-only"><label for="<?=$this->escapeHtmlAttr($title)?>to">
-                    <?=$this->transEsc('date_to')?>
+                </div>
+                <div class="col-sm-6">
+                  <label for="<?=$this->escapeHtmlAttr($title)?>to">
+                    <?=$this->transEsc('date_to')?>:
                   </label>
-                  </span>
                   <input type="text" class="form-control" name="<?=$this->escapeHtmlAttr($title)?>to" id="<?=$this->escapeHtmlAttr($title)?>to" value="<?=isset($rangeFacets[$title]['values'][1])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][1]):''?>" <?=$extraInputAttribs?>/>
                 </div>
               </div>
               <? if ($rangeFacets[$title]['type'] == 'date'): ?>
                 <div class="slider-container"><input type="text" class="hidden" id="<?=$this->escapeHtmlAttr($title)?><?=$this->escapeHtml($rangeFacets[$title]['type'])?>Slider"/></div>
               <? endif; ?>
-              <input class="btn btn-default btn-primary" type="submit" value="<?=$this->transEsc('Set')?>"/>
+              <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Set')?>"/>
             </form>
           </li>
           <? if ($rangeFacets[$title]['type'] == 'date'): ?>

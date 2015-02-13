@@ -17,20 +17,11 @@ var finna = (function() {
             $(this).attr('href', $(this).attr('href') + hash);
         });
     };
-    
-    var initFixFooter = function() {
-        var detectHeight = $(window).height() - $('header').height() - $('section.searchlayout').height() - $('section.main').height() - $('footer').height();
-        if (detectHeight > 0) {
-            var expandedFooter = $('footer').height() + detectHeight;
-            $('footer').height(expandedFooter);
-            }
-    };
-    
+
     var my = {
         isTouchDevice: isTouchDevice,
         init: function() {    
             initAnchorNavigationLinks();
-            initFixFooter();
             finna.imagePopup.init();
         },
     };
