@@ -42,13 +42,14 @@
         </li>
       <? endif; ?>
 
-              <? if ($this->feedback()->tabEnabled()): ?>
-      <li>
+      <? if ($this->feedback()->tabEnabled()): ?>
+        <li>
         <a id="feedbackLink" class="modal-link" href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope"></i> <?=$this->transEsc("Feedback")?></a>
       </li>
       <? endif; ?>
+
       <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
-        <li class="dropdown">
+      <li class="dropdown">
           <form method="post" name="themeForm" action="" id="themeForm">
             <input type="hidden" name="ui"/>
           </form>
@@ -60,6 +61,7 @@
           </ul>
         </li>
       <? endif; ?>
+
       <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
         <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
         <? if ($this->layout()->userLang != $langCode): ?>
@@ -69,31 +71,24 @@
         <? endif ?>
         <? endforeach; ?>
       <? endif; ?>
-
     </ul>
- 
-</div>
+  </div>
 
-        <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-
-    <ul role="navigation" class="nav navbar-nav nav-absolute">
-
-        <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
-          <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" class="modal-link" title="<?=$this->transEsc("Your Account")?>"><i class="fa fa-home"></i> <?=$this->transEsc("Your Account")?></a>
-        </li>
-        <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
-          <a href="<?=$this->url('myresearch-logout')?>" class="modal-link" title="<?=$this->transEsc("Log Out")?>"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>
-        </li>
-        <li id="loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
-          <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-            <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
-          <? else: ?>
-            <a href="<?=$this->url('myresearch-userlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in fa-flip-horizontal"></i> <?=$this->transEsc("Login")?></a>
-          <? endif; ?>
-        </li>
-
-  </ul>
+  <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+  <ul role="navigation" class="nav navbar-nav nav-absolute">  
+    <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+      <a href="<?=$this->url('myresearch-home', array(), array('query' => array('redirect' => 0)))?>" class="modal-link" title="<?=$this->transEsc("Your Account")?>"><i class="fa fa-home"></i> <?=$this->transEsc("Your Account")?></a>
+    </li>
+    <li class="logoutOptions<? if(!$account->isLoggedIn()): ?> hidden<? endif ?>">
+      <a href="<?=$this->url('myresearch-logout')?>" class="modal-link" title="<?=$this->transEsc("Log Out")?>"><i class="fa fa-sign-out"></i> <?=$this->transEsc("Log Out")?></a>
+    </li>
+    <li id="loginOptions"<? if($account->isLoggedIn()): ?> class="hidden"<? endif ?>>
+      <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+      <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
+      <? else: ?>
+      <a href="<?=$this->url('myresearch-userlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in fa-flip-horizontal"></i> <?=$this->transEsc("Login")?></a>
       <? endif; ?>
-
-  
+    </li>    
+  </ul>
+  <? endif; ?>
 <? endif; ?>
