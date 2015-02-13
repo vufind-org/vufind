@@ -11,7 +11,6 @@
   margin-top: 10px;
   list-style: none;
   &:extend(.clearfix all);
-
   > li {
     position: relative;
     display: block;
@@ -75,18 +74,24 @@
 
 // Give the tabs something to sit on
 .nav-tabs {
-  border-bottom: 1px solid @nav-tabs-border-color;
+  border-bottom: 3px solid @nav-tabs-border-color;
   > li {
     float: left;
     // Make the list-items overlay the bottom border
-    margin-bottom: -1px;
+    margin-bottom: -3px;
 
     // Actual tabs (as links)
     > a {
-      margin-right: 2px;
+      font-size: 1.1em;
+      font-weight: 500;
+      background-color: @nav-tabs-border-color;
+      color: @gray;
+      margin-right: 3px;
       line-height: @line-height-base;
-      border: 1px solid transparent;
-      border-radius: @border-radius-base @border-radius-base 0 0;
+      padding: .6em .5em;
+      border: 2px solid transparent;
+      margin-bottom: -1px;
+      border-radius: @tabs-border-radius @tabs-border-radius 0 0;
       &:hover {
         border-color: @nav-tabs-link-hover-border-color @nav-tabs-link-hover-border-color @nav-tabs-border-color;
       }
@@ -98,8 +103,8 @@
       &:hover,
       &:focus {
         color: @nav-tabs-active-link-hover-color;
-        background-color: @nav-tabs-active-link-hover-bg;
-        border: 1px solid @nav-tabs-active-link-hover-border-color;
+        background-color: @body-bg;
+        border: 3px solid @nav-tabs-border-color;
         border-bottom-color: transparent;
         cursor: default;
       }
@@ -111,20 +116,54 @@
     .nav-tabs-justified();
   }
 }
+@media (max-width:@screen-xs-max) {
+.nav-tabs {
+    text-align: center;
+    border-bottom: 3px solid @gray-light; 
+    & #details {
+       display: none;  
+    }
+    & > li {
+        
+        word-wrap: break-word;   
+    }
+    & > li > a {
+        padding: 0px 10px 10px;
+        background-color: transparent;
+        border: none;
+        border-bottom: 5px solid transparent;
+        margin:0;
+       & i {
+          display: block;
+          min-height: 14px;
+       }
+    } 
+      & > li.active > a {
+      &,
+      &:hover,
+      &:focus {
+         border: none;
+         border-bottom: 5px solid @link-color;   
+         }
+      }
+   }
+}
 
-
-// Pills
+// Pills This is the toolbar 
 // -------------------------
 .nav-pills {
+  padding: 10px 0px;
+  border-top: 1px solid @gray-lighter;
+  border-bottom: 1px solid @gray-lighter;
   > li {
     float: left;
-
+    margin: 5px 0px;
     // Links rendered as pills
     > a {
       border-radius: @nav-pills-border-radius;
     }
     + li {
-      margin-left: 2px;
+      margin-left: 0px;
     }
 
     // Active state
@@ -230,7 +269,34 @@
   }
 }
 
-
+  // hidden navigation bar
+  .nav.searchbox .fixedbar.attached {
+    background: rgba(0, 0, 0, 0.9);
+    position: fixed;
+    z-index: 1000;
+    height: 50px;
+    top: 0px;
+    width: 100%;
+    left: 0px;
+  }
+  .nav.searchbox .navbar-form {
+  
+  &.attached {
+    z-index: 1000;
+    margin: 0px;
+    position: fixed;
+    top: 5px;
+    transition: none;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    & .btn-link {
+      display: none;  
+    }   
+  }
+  & .nav.searchbox {
+   margin: 0;   
+  }
+}
 // Dropdowns
 // -------------------------
 
@@ -241,3 +307,40 @@
   // Remove the top rounded corners here since there is a hard edge above the menu
   .border-top-radius(0);
 }
+
+// Fix dropdowns in navbar for wide screen
+@media (min-width: @screen-md-min) {
+    .navbar .dropdown-menu > li > a {
+        width: 280px; 
+        white-space: normal;
+        outline: 1px solid rgba(255,255,255,0.7);
+        transition: none;
+    }
+}
+
+// Mobile navigation
+.mobile-navigation {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    width: auto;
+    z-index: 1000;
+    & p {
+     float:right;
+     margin: 0px;
+     padding: 13px;
+     margin-left: 5px;
+     background: rgba(1,1,1,0.7);
+     color: #fff;
+    }
+    & .back-to-top {
+        display: none;   
+    }
+    & i {
+        font-size: 20px;
+        vertical-align: -5px;
+        font-weight: 900;
+    }    
+}
+
+

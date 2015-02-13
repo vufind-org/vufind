@@ -12,23 +12,26 @@
   font-weight: @btn-font-weight;
   text-align: center;
   vertical-align: middle;
+  touch-action: manipulation;
   cursor: pointer;
   background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
   border: 1px solid transparent;
   white-space: nowrap;
-  .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @border-radius-large);
+  .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @border-radius-base);
   .user-select(none);
 
   &,
   &:active,
   &.active {
-    &:focus {
+    &:focus,
+    &.focus {
       .tab-focus();
     }
   }
 
   &:hover,
-  &:focus {
+  &:focus,
+  &.focus {
     color: @btn-default-color;
     text-decoration: none;
   }
@@ -43,7 +46,7 @@
   &.disabled,
   &[disabled],
   fieldset[disabled] & {
-    cursor: not-allowed;
+    cursor: @cursor-disabled;
     pointer-events: none; // Future-proof disabling of clicks
     .opacity(.65);
     .box-shadow(none);
@@ -53,71 +56,6 @@
 
 // Alternate buttons
 // --------------------------------------------------
-.navbar-form .btn[type="submit"] {
-    color:@btn-primary-bg; 
-    padding:6px 0px;
-    border-radius:0px 15px 15px 0px;
-    padding: 3px 0px;
-    border-radius: 15px;
-    margin-left: -1px;
-    margin-top: 2px;
-    height: 35px;
-    margin-bottom: 2px;
-    transition: background 0.1s ease-in-out;
-}
-.navbar-form .btn[type="submit"]:hover {
-    background:darken(@btn-primary-bg, 5%);   
-}
-.navbar-form .btn[type="submit"] i {
-    font-size: @font-size-icon-large;
-    color:@btn-default-bg;
-    vertical-align: inherit;
-    font-weight: 500;
-
-}
-.searchHomeContent .btn-link {
-    font-size: 1.2em;
-    margin-top: 5px;
-}
-.nav.searchbox .btn-link {
-    color: #fff; 
-    font-size: 12px;
-    font-weight: bold;
-    background: rgba(1,1,1,0.4);
-    border-radius: 15px;
-    margin-top: 6px;
-    margin-left: 10px;
-    @media(max-width:@screen-xs-max) {
-         float:right;   
-    }
-    @media(min-width:@screen-sm-min) and (max-width:@screen-sm-max) {
-         float:right;
-         margin-right: 17%;
-    }
-}
-.searchbox .checkbox {
-    display: block;
-    clear: none;
-    float: left;
-    margin: 5px 0 0 12px;
-    background: none repeat scroll 0 0 #FFFFFF;
-    border-radius: 0px 0px 0px 0px;
-    color: #666666;
-    padding: 6px 3px 9px 2px;
-    position: absolute;
-    top: 40px;
-    left: 0px;
-    width: 206px;
-    height: 33px;
-    z-index: 10000;
-    box-shadow: 0px 15px 20px -12px #000;   
-    @media (max-width: @screen-sm-min) {
-        top: 36px;   
-    }
-}
-.searchbox .checkbox label {
-    margin-left: 11px;   
-}
 
 .btn-default {
   .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
@@ -150,11 +88,11 @@
 .btn-link {
   color: @link-color;
   font-weight: normal;
-  cursor: pointer;
   border-radius: 0;
 
   &,
   &:active,
+  &.active,
   &[disabled],
   fieldset[disabled] & {
     background-color: transparent;
@@ -205,8 +143,6 @@
 .btn-block {
   display: block;
   width: 100%;
-  padding-left: 0;
-  padding-right: 0;
 }
 
 // Vertically space out multiple block buttons

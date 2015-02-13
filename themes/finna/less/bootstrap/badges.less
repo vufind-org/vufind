@@ -3,12 +3,12 @@
 // --------------------------------------------------
 
 
-// Base classes
+// Base class
 .badge {
   display: inline-block;
   min-width: 10px;
-  padding: 2px 6px 3px;
-  font-size: @badge-font-size;
+  padding: 3px 7px;
+  font-size: @font-size-small;
   font-weight: @badge-font-weight;
   color: @badge-color;
   line-height: @badge-line-height;
@@ -17,7 +17,6 @@
   text-align: center;
   background-color: @badge-bg;
   border-radius: @badge-border-radius;
-  margin-top: 0px;
 
   // Empty badges collapse automatically (not available in IE8)
   &:empty {
@@ -33,24 +32,30 @@
     top: 0;
     padding: 1px 5px;
   }
-}
 
-// Hover state, but only for links
-a.badge {
-  &:hover,
-  &:focus {
-    color: @badge-link-hover-color;
-    text-decoration: none;
-    cursor: pointer;
+  // Hover state, but only for links
+  a& {
+    &:hover,
+    &:focus {
+      color: @badge-link-hover-color;
+      text-decoration: none;
+      cursor: pointer;
+    }
   }
-}
 
-// Account for counters in navs
-a.list-group-item.active > .badge,
-.nav-pills > .active > a > .badge {
-  color: @badge-active-color;
-  background-color: @badge-active-bg;
-}
-.nav-pills > li > a > .badge {
-  margin-left: 3px;
+  // Account for badges in navs
+  .list-group-item.active > &,
+  .nav-pills > .active > a > & {
+    color: @badge-active-color;
+    background-color: @badge-active-bg;
+  }
+  .list-group-item > & {
+    float: right;
+  }
+  .list-group-item > & + & {
+    margin-right: 5px;
+  }
+  .nav-pills > li > a > & {
+    margin-left: 3px;
+  }
 }
