@@ -64,11 +64,9 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getHeader(ServiceManager $sm)
     {
         $locator = $sm->getServiceLocator();
-        $translator = $locator->get('VuFind\Translator');
-        $menuConfig = $locator->get('VuFind\Config')->get('header-navigation');
-        $urlHelper = $sm->get('url');
+        $menuConfig = $locator->get('VuFind\Config')->get('navibar');
 
-        return new Header($menuConfig, $translator, $urlHelper);
+        return new Header($menuConfig);
     }
 
     /**
