@@ -10,10 +10,9 @@
 
 .navbar {
   position: relative;
-  min-height: @navbar-height; // Ensure a navbar always shows (e.g., without a .navbar-brand in collapsed mode)
+  min-height: @navbar-height; // set navbar height
   margin-bottom: @navbar-margin-bottom;
   border: 1px solid transparent;
-
   // Prevent floats from breaking the navbar
   &:extend(.clearfix all);
 
@@ -48,16 +47,22 @@
 // content for the user's viewport.
 
 .navbar-collapse {
+  max-height: @navbar-collapse-max-height;
   overflow-x: visible;
+  color: #fff;
   padding-right: @navbar-padding-horizontal;
   padding-left:  @navbar-padding-horizontal;
-  border-top: 1px solid transparent;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+  border-top: 1px solid #000;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
   &:extend(.clearfix all);
   -webkit-overflow-scrolling: touch;
 
   &.in {
     overflow-y: auto;
+    & .dropdown-menu a {
+        color: @navbar-default-link-color;
+        transition:all 0.2s ease-in-out;
+    }
   }
 
   @media (min-width: @grid-float-breakpoint) {
@@ -67,7 +72,6 @@
 
     &.collapse {
       display: block !important;
-      visibility: visible !important;
       height: auto !important;
       padding-bottom: 0; // Override default setting
       overflow: visible !important;
@@ -84,17 +88,6 @@
     .navbar-fixed-bottom & {
       padding-left: 0;
       padding-right: 0;
-    }
-  }
-}
-
-.navbar-fixed-top,
-.navbar-fixed-bottom {
-  .navbar-collapse {
-    max-height: @navbar-collapse-max-height;
-
-    @media (max-device-width: @screen-xs-min) and (orientation: landscape) {
-      max-height: 200px;
     }
   }
 }
@@ -163,18 +156,20 @@
 
 .navbar-brand {
   float: left;
-  padding: @navbar-padding-vertical @navbar-padding-horizontal;
+  // padding: @navbar-padding-vertical @navbar-padding-horizontal @navbar-padding-vertical 0px;
   font-size: @font-size-large;
-  line-height: @line-height-computed;
-  height: @navbar-height;
-
+  line-height: @navbar-height;
+  .navbar-logo {
+    font-size: @navbar-logo-height;
+    color: @logo-color;
+  }
+  & img  {
+     height: @navbar-logo-height;
+     width: auto;
+  }
   &:hover,
   &:focus {
     text-decoration: none;
-  }
-
-  > img {
-    display: block;
   }
 
   @media (min-width: @grid-float-breakpoint) {
@@ -193,19 +188,19 @@
 
 .navbar-toggle {
   position: relative;
-  float: right;
+  float: left;
   margin-right: @navbar-padding-horizontal;
-  padding: 9px 10px;
-  .navbar-vertical-align(34px);
+  color: #fff;
+  padding: @navbar-height/3.5 5px @navbar-height/4 5px;
+  margin-left: -5px;
   background-color: transparent;
   background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
   border: 1px solid transparent;
-  border-radius: @border-radius-base;
 
   // We remove the `outline` here, but later compensate by attaching `:hover`
   // styles to `:focus`.
   &:focus {
-    outline: 0;
+    outline: none;
   }
 
   // Bars
@@ -232,11 +227,9 @@
 
 .navbar-nav {
   margin: (@navbar-padding-vertical / 2) -@navbar-padding-horizontal;
-
   > li > a {
-    padding-top:    10px;
-    padding-bottom: 10px;
-    line-height: @line-height-computed;
+    line-height: @navbar-height;
+    color: @navbar-default-link-color;
   }
 
   @media (max-width: @grid-float-breakpoint-max) {
@@ -249,15 +242,18 @@
       background-color: transparent;
       border: 0;
       box-shadow: none;
+      transition: background-color 0.2s ease-in-out;
       > li > a,
       .dropdown-header {
         padding: 5px 15px 5px 25px;
       }
       > li > a {
         line-height: @line-height-computed;
+        white-space: normal;
         &:hover,
         &:focus {
           background-image: none;
+          background-color: @nav-link-hover-bg;
         }
       }
     }
@@ -275,7 +271,23 @@
         padding-bottom: @navbar-padding-vertical;
       }
     }
+
+    &.navbar-right:last-child {
+      margin-right: -@navbar-padding-horizontal;
+    }
   }
+}
+
+
+// Component alignment
+//
+// Repurpose the pull utilities as their own navbar utilities to avoid specificity
+// issues with parents and chaining. Only do this when the navbar is uncollapsed
+// though so that navbar contents properly stack and align in mobile.
+
+@media (min-width: @grid-float-breakpoint) {
+  .navbar-left  { .pull-left(); }
+  .navbar-right { .pull-right(); }
 }
 
 
@@ -285,13 +297,13 @@
 // our navbars.
 
 .navbar-form {
-  margin-left: -@navbar-padding-horizontal;
-  margin-right: -@navbar-padding-horizontal;
-  padding: 10px @navbar-padding-horizontal;
+  padding: 0px;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
-  @shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 0 rgba(255,255,255,.1);
-  .box-shadow(@shadow);
+  background-color: @navbar-default-bg;
+  border-radius: @border-radius-large;
+ 
+
 
   // Mixin behavior for optimum display
   .form-inline();
@@ -299,10 +311,6 @@
   .form-group {
     @media (max-width: @grid-float-breakpoint-max) {
       margin-bottom: 5px;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
     }
   }
 
@@ -311,13 +319,18 @@
 
   // Undo 100% width for pull classes
   @media (min-width: @grid-float-breakpoint) {
-    width: auto;
+    
     border: 0;
     margin-left: 0;
     margin-right: 0;
     padding-top: 0;
     padding-bottom: 0;
     .box-shadow(none);
+
+    // Outdent the form if last child to line up with content down the page
+    &.navbar-right:last-child {
+      margin-right: -@navbar-padding-horizontal;
+    }
   }
 }
 
@@ -331,7 +344,6 @@
 }
 // Menu position and menu caret support for dropups via extra dropup class
 .navbar-fixed-bottom .navbar-nav > li > .dropdown-menu {
-  .border-top-radius(@navbar-border-radius);
   .border-bottom-radius(0);
 }
 
@@ -363,30 +375,13 @@
     float: left;
     margin-left: @navbar-padding-horizontal;
     margin-right: @navbar-padding-horizontal;
-  }
-}
 
-
-// Component alignment
-//
-// Repurpose the pull utilities as their own navbar utilities to avoid specificity
-// issues with parents and chaining. Only do this when the navbar is uncollapsed
-// though so that navbar contents properly stack and align in mobile.
-//
-// Declared after the navbar components to ensure more specificity on the margins.
-
-@media (min-width: @grid-float-breakpoint) {
-  .navbar-left  { .pull-left(); }
-  .navbar-right {
-    .pull-right();
-    margin-right: -@navbar-padding-horizontal;
-
-    ~ .navbar-right {
+    // Outdent the form if last child to line up with content down the page
+    &.navbar-right:last-child {
       margin-right: 0;
     }
   }
 }
-
 
 // Alternate navbars
 // --------------------------------------------------
@@ -462,6 +457,10 @@
       &:focus {
         background-color: @navbar-default-link-active-bg;
         color: @navbar-default-link-active-color;
+        &:after {
+            font-family: "icomoon";
+            content:'X';
+        }
       }
     }
 
@@ -508,20 +507,6 @@
     }
   }
 
-  .btn-link {
-    color: @navbar-default-link-color;
-    &:hover,
-    &:focus {
-      color: @navbar-default-link-hover-color;
-    }
-    &[disabled],
-    fieldset[disabled] & {
-      &:hover,
-      &:focus {
-        color: @navbar-default-link-disabled-color;
-      }
-    }
-  }
 }
 
 // Inverse navbar
@@ -633,8 +618,10 @@
           }
         }
       }
+      
+      
     }
-  }
+}
 
   .navbar-link {
     color: @navbar-inverse-link-color;
@@ -643,18 +630,16 @@
     }
   }
 
-  .btn-link {
-    color: @navbar-inverse-link-color;
-    &:hover,
-    &:focus {
-      color: @navbar-inverse-link-hover-color;
+}
+
+// Specified Finna styles for navbar
+.nav-absolute {
+    position: absolute;
+    right: 15px;
+    top: 0px;
+}
+@media (max-width: @grid-float-breakpoint-max) {
+    .navbar-nav li.logoutOptions {
+        display: inline-block;   
     }
-    &[disabled],
-    fieldset[disabled] & {
-      &:hover,
-      &:focus {
-        color: @navbar-inverse-link-disabled-color;
-      }
-    }
-  }
 }
