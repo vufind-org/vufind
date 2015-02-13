@@ -959,7 +959,7 @@ class SolrMarc extends SolrDefault
                     } elseif ($split[1] == "false") {
                         $result = false;
                     } else {
-                        $result =$split[1];
+                        $result = $split[1];
                     }
                     $matches[$i][$key] = $result;
                 } else {

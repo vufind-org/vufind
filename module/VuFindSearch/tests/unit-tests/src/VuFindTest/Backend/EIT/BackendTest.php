@@ -26,15 +26,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\EIT;
 
 use VuFindSearch\Backend\EIT\Backend;
 use VuFindSearch\Backend\EIT\QueryBuilder;
 use VuFindSearch\Backend\EIT\Response\RecordCollectionFactory;
-use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
-use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;
 
 /**

@@ -95,7 +95,7 @@ class Results extends \VuFind\Search\Base\Results
                                     ? $this->translate($value)
                                     : $this->getParams()->fixPrimoFacetValue($value),
                             'isApplied' =>
-                                $this->getParams()->hasFilter("$field:".$value),
+                                $this->getParams()->hasFilter("$field:" . $value),
                             'operator' => 'AND', 'count' => $count
                         );
                     }

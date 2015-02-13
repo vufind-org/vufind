@@ -49,7 +49,7 @@ class IpRegEx implements PermissionProviderInterface
     /**
      * Constructor
      *
-     * @param Request              $request       Request object
+     * @param Request $request Request object
      */
     public function __construct(Request $request)
     {

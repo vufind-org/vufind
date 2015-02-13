@@ -71,21 +71,21 @@ class Pazpar2 extends SolrDefault
     protected function xmlToArray($xml)
     {
         $array = array();
-        foreach ($xml as $key=>$data) {
+        foreach ($xml as $key => $data) {
             $children = array();
             // Attributes
             if (count($data->attributes()) > 0) {
                 $children['_attr_'] = array();
-                foreach ($data->attributes() as $name=>$attr) {
-                    $children['_attr_'][$name] =(string) $attr;
+                foreach ($data->attributes() as $name => $attr) {
+                    $children['_attr_'][$name] = (string) $attr;
                 }
             }
             // If there's no children, we're at data
             if ($data->count() == 0) {
                 if (!isset($children['_attr_'])) {
-                    $children =(string) $data; // Flatten
+                    $children = (string) $data; // Flatten
                 } else {
-                    $children[$key] =(string) $data;
+                    $children[$key] = (string) $data;
                 }
             } else {
                 // If there's children, recurse on this XML
@@ -111,8 +111,8 @@ class Pazpar2 extends SolrDefault
         // Top-level Attributes
         if (count($xml->attributes()) > 0) {
             $array['_attr_'] = array();
-            foreach ($xml->attributes() as $key=>$attr) {
-                $array['_attr_'][$key] =(string) $attr;
+            foreach ($xml->attributes() as $key => $attr) {
+                $array['_attr_'][$key] = (string) $attr;
             }
         }
         return $array;

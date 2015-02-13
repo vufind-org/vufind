@@ -256,10 +256,10 @@ class Koha extends AbstractBase
             $sqlStmt->execute(array(':id' => $id));
             foreach ($sqlStmt->fetchAll() as $row) {
                 $fineLst[] = array(
-                    'amount' => (null == $row['AMOUNT'])? 0 : $row['AMOUNT'],
+                    'amount' => (null == $row['AMOUNT']) ? 0 : $row['AMOUNT'],
                     'checkout' => $row['CHECKOUT'],
-                    'fine' => (null == $row['FINE'])? 'Unknown' : $row['FINE'],
-                    'balance' => (null == $row['BALANCE'])? 0 : $row['BALANCE'],
+                    'fine' => (null == $row['FINE']) ? 'Unknown' : $row['FINE'],
+                    'balance' => (null == $row['BALANCE']) ? 0 : $row['BALANCE'],
                     'duedate' => $row['DUEDATE'],
                     'id' => $row['BIBNO']
                 );

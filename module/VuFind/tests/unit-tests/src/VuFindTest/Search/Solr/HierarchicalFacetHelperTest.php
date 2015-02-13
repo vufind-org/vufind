@@ -26,11 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFindTest\Search\Solr;
 
 use VuFindTest\Unit\TestCase;
-use Zend\EventManager\Event;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 /**

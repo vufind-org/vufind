@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Config\Reader;
 
 use Zend\Config\Reader\ReaderInterface;
@@ -66,7 +65,7 @@ class CacheDecorator implements ReaderInterface
      *
      * @return void
      */
-    public function __construct (ReaderInterface $reader, StorageInterface $storage)
+    public function __construct(ReaderInterface $reader, StorageInterface $storage)
     {
         $this->reader  = $reader;
         $this->storage = $storage;

@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-
 namespace VuFindTest\Cache\Storage\Adapter;
 
 use VuFind\Cache\Storage\Adapter\NoCacheAdapter;

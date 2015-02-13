@@ -478,7 +478,7 @@ class Holds
         foreach ($details as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {
-                $queryString[] = $key. "=" .urlencode($param);
+                $queryString[] = $key . "=" . urlencode($param);
             }
         }
 

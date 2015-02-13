@@ -242,7 +242,7 @@ class SideFacets extends AbstractFacets
             if (isset($facetSet[$hierarchicalFacet])) {
                 if (!$this->hierarchicalFacetHelper) {
                     throw new \Exception(
-                        get_class($this). ': hierarchical facet helper unavailable'
+                        get_class($this) . ': hierarchical facet helper unavailable'
                     );
                 }
 

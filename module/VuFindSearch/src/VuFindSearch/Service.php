@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch;
 
 use VuFindSearch\Backend\BackendInterface;
@@ -355,7 +354,7 @@ class Service
                 $this,
                 $args,
                 function ($o) {
-                    return ($o instanceOf BackendInterface);
+                    return ($o instanceof BackendInterface);
                 }
             );
             if (!$response->stopped()) {

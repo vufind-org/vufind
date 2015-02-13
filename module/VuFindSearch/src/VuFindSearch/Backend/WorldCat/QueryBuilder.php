@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\WorldCat;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -135,7 +134,7 @@ class QueryBuilder
                     $excludes[] = join(" OR ", $thisGroup);
                 } else {
                     $groups[]
-                        = join(" ".$params->getOperator()." ", $thisGroup);
+                        = join(" " . $params->getOperator() . " ", $thisGroup);
                 }
             } else {
                 // Basic Search

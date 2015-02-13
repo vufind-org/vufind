@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/GPL-3.0 GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-
 namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException;
@@ -90,7 +89,6 @@ class Sierra extends AbstractBase
         $fullNumber = ".b" . $bareNumber . $checkdigit;
         return $fullNumber;
     }
-
 
     /**
      * Uses the bib number in VuFind to look up the database ids for the associated
@@ -255,10 +253,10 @@ class Sierra extends AbstractBase
             while ($row = pg_fetch_row($results)) {
                 if ($instructors[$row[2]] != null) {
                     $fakeId = $row[2] . "-" . $j;
-                    $instructors[$fakeId] = $row[0] . " (" . $row[1]. ")";
+                    $instructors[$fakeId] = $row[0] . " (" . $row[1] . ")";
                     $j++;
                 } else {
-                    $instructors[$row[2]] = $row[0] . " (" . $row[1]. ")";
+                    $instructors[$row[2]] = $row[0] . " (" . $row[1] . ")";
                 }
             }
             return $instructors;
@@ -445,9 +443,9 @@ class Sierra extends AbstractBase
                             FROM
                             sierra_view.item_view
                         LEFT JOIN sierra_view.location
-                        ON (item_view.location_code = location.code) 
-                        LEFT JOIN sierra_view.location_name 
-                        ON (location.id = location_name.location_id) 
+                        ON (item_view.location_code = location.code)
+                        LEFT JOIN sierra_view.location_name
+                        ON (location.id = location_name.location_id)
                         LEFT JOIN sierra_view.checkout
                         ON (item_view.id = checkout.item_record_id)
                         LEFT JOIN sierra_view.varfield_view

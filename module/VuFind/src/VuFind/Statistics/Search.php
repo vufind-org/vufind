@@ -75,7 +75,7 @@ class Search extends AbstractBase
                 $sources = $driver->getFullList('searchSource');
                 $hashes = array();
                 // Generate hashes (faster than grouping by looping)
-                for ($i=0;$i<count($summary);$i++) {
+                for ($i = 0;$i<count($summary);$i++) {
                     if (!isset($sources[$i]['searchSource'])) {
                         $sources[$i]['searchSource'] = 'Search';
                     } else {
@@ -95,15 +95,15 @@ class Search extends AbstractBase
                 }
                 $top = array();
                 // For each source
-                foreach ($hashes as $source=>$records) {
+                foreach ($hashes as $source => $records) {
                     // Using a reference to consolidate code dramatically
-                    $reference =& $top;
+                    $reference = & $top;
                     if ($bySource) {
                         $top[$source] = array();
-                        $reference =& $top[$source];
+                        $reference = & $top[$source];
                     }
                     // For each record
-                    foreach ($records as $phrase=>$count) {
+                    foreach ($records as $phrase => $count) {
                         $value = ($phrase == '' || $phrase == '*:*')
                             ? '(empty)'
                             : $phrase;
@@ -113,7 +113,7 @@ class Search extends AbstractBase
                             'source' => $source
                         );
                         // Insert sort (limit to listLength)
-                        for ($i=0;$i<$listLength-1 && $i<count($reference);$i++) {
+                        for ($i = 0;$i<$listLength-1 && $i<count($reference);$i++) {
                             if ($count > $reference[$i]['count']) {
                                 // Insert in order
                                 array_splice($reference, $i, 0, array($newRecord));

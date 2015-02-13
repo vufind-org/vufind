@@ -61,13 +61,16 @@
         <? foreach ($this->tabs as $tab => $obj): ?>
         <? // add current tab to breadcrumbs if applicable:
           $desc = $obj->getDescription();
-          $isCurrent = (strtolower($this->activeTab) == strtolower($tab));
-          if ($isCurrent) {
+          $tab_classes = array();
+          if (0 === strcasecmp($this->activeTab, $tab)) {
+            $tab_classes[] = 'active';
             $this->layout()->breadcrumbs .= ' <li class="active">' . $this->transEsc($desc) . '</li>';
             $activeTabObj = $obj;
           }
+          if (!$obj->isVisible()) { $tab_classes = 'hidden'; }
+          if (!$obj->supportsAjax()) { $tab_classes = 'noajax'; }
         ?>
-        <li<?=$isCurrent ? ' class="active"' : ''?>>
+        <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
           <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
         </li>
         <? endforeach; ?>
