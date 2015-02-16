@@ -44,7 +44,7 @@ use \PHPQRCode;
 class Loader extends \VuFind\ImageLoader
 {
     /**
-     * property to hold VuFind configuration settings
+     * VuFind configuration settings
      *
      * @var \Zend\Config\Config
      */

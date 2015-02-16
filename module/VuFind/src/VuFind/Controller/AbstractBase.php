@@ -61,7 +61,7 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
-     * preDispatch -- block access when appropriate.
+     * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
      *

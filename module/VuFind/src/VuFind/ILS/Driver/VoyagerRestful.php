@@ -588,7 +588,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
-     * checkRequestIsValid
+     * Check if request is valid
      *
      * This is responsible for determining if an item is requestable
      *
@@ -622,7 +622,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
-     * checkStorageRetrievalRequestIsValid
+     * Check if storage retrieval request is valid
      *
      * This is responsible for determining if an item is requestable
      *
@@ -2694,7 +2694,7 @@ EOT;
     }
 
     /**
-     * checkILLRequestIsValid
+     * Check if ILL Request is valid
      *
      * This is responsible for determining if an item is requestable
      *

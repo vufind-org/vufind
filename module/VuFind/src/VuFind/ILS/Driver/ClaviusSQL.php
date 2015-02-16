@@ -31,8 +31,6 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
 /**
  * VuFind Driver for Clavius SQL (version: 0.1 dev)
  *
- * last updated: 09/06/2012
- *
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Josef Moravec <josef.moravec@knihovna-uo.cz>
@@ -151,7 +149,6 @@ class ClaviusSQL extends AbstractBase
       *
       * @return array An associative array with key = department ID,
       * value = department name.
-      *
       */
     public function getDepartments()
     {
@@ -181,7 +178,6 @@ class ClaviusSQL extends AbstractBase
       *
       * @return array An associative array with key = fine code,
       * value = fine description
-      *
       */
     public function getFineTypes()
     {
@@ -213,7 +209,6 @@ class ClaviusSQL extends AbstractBase
       * @throws ILSException
       *
       * @return array An associative array with key = fund ID, value = fund name.
-      *
       */
     public function getFunds()
     {

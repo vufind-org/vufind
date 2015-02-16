@@ -164,8 +164,7 @@ class Converter
     }
 
     /**
-     * public method for conversion of a date string to admin defined
-     * date string.
+     * Convert a date string to admin-defined format.
      *
      * @param string $createFormat The format of the date string to be changed
      * @param string $dateString   The date string

@@ -197,7 +197,7 @@ class Ezb implements DriverInterface
      *
      * @param string   $state    The state attribute value to extract
      * @param string   $coverage The coverage string to associate with the state
-     * @param array    &$records The array of results to update
+     * @param array    $records  The array of results to update
      * @param DOMXpath $xpath    The XPath object containing parsed XML
      *
      * @return void
@@ -239,7 +239,7 @@ class Ezb implements DriverInterface
      *
      * @param string   $state    The state attribute value to extract
      * @param string   $coverage The coverage string to associate with the state
-     * @param array    &$records The array of results to update
+     * @param array    $records  The array of results to update
      * @param DOMXpath $xpath    The XPath object containing parsed XML
      *
      * @return void

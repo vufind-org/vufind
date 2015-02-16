@@ -61,7 +61,7 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * preDispatch -- add Summon message.
+     * Use preDispatch event to add Summon message.
      *
      * @return void
      */

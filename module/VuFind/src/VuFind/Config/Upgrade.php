@@ -1154,7 +1154,7 @@ class Upgrade
      * Read the specified file and return an associative array of this format
      * containing all comments extracted from the file:
      *
-     * array =>
+     * [
      *   'sections' => array
      *     'section_name_1' => array
      *       'before' => string ("Comments found at the beginning of this section")
@@ -1168,6 +1168,7 @@ class Upgrade
      *        ...
      *      'section_name_n' => array (same keys as section_name_1)
      *   'after' => string ("Comments found at the very end of the file")
+     * ]
      *
      * @param string $filename Name of ini file to read.
      *

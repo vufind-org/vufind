@@ -85,7 +85,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * prepID
+     * Prepare ID
      *
      * This function returns the correct record id format as defined
      * in the Innovative.ini file.
