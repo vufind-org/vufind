@@ -1,0 +1,13 @@
+[search]
+advanced_search = 'search-advanced'
+browse = 'browse-home'
+history = 'search-history'
+
+[organisations]
+organisations = 'content-organisations'
+
+[about]
+about = 'content-about'
+
+[help]
+help = 'content-help'

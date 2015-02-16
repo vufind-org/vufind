@@ -6,15 +6,16 @@ return array(
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
-            'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage'
+            'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
+            'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar'
         )
     ),
     'css' => array(
         'vendor/dataTables.bootstrap.css',
         'vendor/magnific-popup.css',
-        'vendor/slick.css',
         'dataTables.bootstrap.custom.css',
-        'finna.css',
+        'vendor/slick.css',
+        'finna.css'
     ),
     'js' => array(
         'finna.js',
