@@ -32,8 +32,6 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
 /**
  * VuFind Driver for Koha (version: 3.02)
  *
- * last updated: 12/21/2010
- *
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Altaf Mahmud, System Programmer <altaf.mahmud@gmail.com>
