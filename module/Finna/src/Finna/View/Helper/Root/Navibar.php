@@ -165,7 +165,8 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      *
      * @return void
      */
-    protected function parseMenuConfig() {
+    protected function parseMenuConfig()
+    {
         $translator = $this->getView()->plugin('translate');
 
         $parseUrl = function ($url) {
