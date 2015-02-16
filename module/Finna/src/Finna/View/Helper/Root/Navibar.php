@@ -1,6 +1,6 @@
 <?php
 /**
- * Header view helper
+ * Navibar view helper
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace Finna\View\Helper\Root;
 
 /**
- * Header view helper
+ * Navibar view helper
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -36,7 +36,7 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Header extends \Zend\View\Helper\AbstractHelper
+class Navibar extends \Zend\View\Helper\AbstractHelper
 {
     /**
      * Url view helper
@@ -71,9 +71,9 @@ class Header extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Returns header view helper.
+     * Returns Navibar view helper.
      *
-     * @return FInna\View\Helper\Root\Header
+     * @return FInna\View\Helper\Root\Navibar
      */
     public function __invoke()
     {
@@ -85,13 +85,13 @@ class Header extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Returns rendered header layout.
+     * Returns rendered navibar layout.
      *
      * @return string
      */
     public function render()
     {
-        return $this->getView()->render('header.phtml');    
+        return $this->getView()->render('navibar.phtml');    
     }
 
     /**

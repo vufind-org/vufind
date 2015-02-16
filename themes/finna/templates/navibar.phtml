@@ -4,19 +4,19 @@
     <span class="sr-only">Toggle navigation</span>
     <i class="fa fa-bars"></i>
   </button>
-  <? if ($this->resolver('header-logo.phtml')): ?><a role="logo" class="navbar-brand" href="<?=$this->url('home')?>"><?=$this->render('header-logo.phtml')?><span class="sr-only"><?=$this->transEsc("Home")?></span></a><? endif ?>
+  <? if ($this->resolver('navibar-logo.phtml')): ?><a role="logo" class="navbar-brand" href="<?=$this->url('home')?>"><?=$this->render('navibar-logo.phtml')?><span class="sr-only"><?=$this->transEsc("Home")?></span></a><? endif ?>
 </div>
 <? if (!isset($this->layout()->renderingError)): ?>
   <div class="collapse navbar-collapse" id="header-collapse">
     <ul role="navigation" class="nav navbar-nav">
-      <? foreach ($this->header()->getMenuItems() as $key => $val): ?>
+      <? foreach ($this->navibar()->getMenuItems() as $key => $val): ?>
       <? if (count($val['items']) > 1): ?>
       <li class="dropdown" id="<?= $val['label'] ?>">
         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-nav-<?= $val['label'] ?>"></i><?= $this->transEsc($val['label']) ?> <b class="caret"></b></a>
         <ul class="dropdown-menu">
           <? foreach ($val['items'] as $itemKey => $itemVal): ?>
           <li>
-            <a href="<?= $this->header()->getMenuItemUrl($itemVal) ?>">
+            <a href="<?= $this->navibar()->getMenuItemUrl($itemVal) ?>">
               <div><?= $this->transEsc($itemVal['label']) ?></div>
               <? if(isset($itemVal['desc'])): ?>
               <div class="description"><?= $this->transEsc($itemVal['desc']) ?></div>
@@ -28,7 +28,7 @@
       </li>
       <? else: ?>
       <? $val = $val['items'][0]; ?>
-      <li><a href="<?= $this->header()->getMenuItemUrl($val) ?>"><i class="fa fa-nav-<?= $val['label'] ?>"></i><?= $this->transEsc($val['label']) ?></a></li>
+      <li><a href="<?= $this->navibar()->getMenuItemUrl($val) ?>"><i class="fa fa-nav-<?= $val['label'] ?>"></i><?= $this->transEsc($val['label']) ?></a></li>
       <? endif; ?>
       <? endforeach; ?>
       <li class="custom">
@@ -66,7 +66,7 @@
         <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
         <? if ($this->layout()->userLang != $langCode): ?>
         <li>
-          <a class="preserve-anchor" href="<?=$this->header()->getLanguageUrl($langCode)?>"><?=$this->displayLanguageOption($langName)?></a>
+          <a class="preserve-anchor" href="<?=$this->navibar()->getLanguageUrl($langCode)?>"><?=$this->displayLanguageOption($langName)?></a>
         </li>
         <? endif ?>
         <? endforeach; ?>
