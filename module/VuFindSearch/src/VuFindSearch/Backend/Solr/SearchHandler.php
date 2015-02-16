@@ -219,7 +219,6 @@ class SearchHandler
      * Return the filter query.
      *
      * @return string
-     *
      */
     public function getFilterQuery()
     {
@@ -358,7 +357,6 @@ class SearchHandler
      * @param bool   $advanced Is the search an advanced search string?
      *
      * @return string
-     *
      */
     protected function createQueryString($search, $advanced = false)
     {

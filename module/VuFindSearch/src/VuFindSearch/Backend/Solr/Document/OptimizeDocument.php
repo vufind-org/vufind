@@ -43,14 +43,14 @@ class OptimizeDocument extends AbstractDocument
 {
 
     /**
-     * waitFlush attribute value
+     * Value for waitFlush attribute
      *
      * @var boolean
      */
     protected $waitFlush;
 
     /**
-     * waitSearch attribute value.
+     * Value for waitSearch attribute
      *
      * @var boolean
      */
