@@ -20,7 +20,7 @@
     <label for="format"><?=$this->transEsc('Format')?>:</label>
     <select name="format" id="format">
       <? foreach ($this->exportOptions as $exportOption): ?>
-        <option value="<?=$this->escapeHtmlAttr($exportOption)?>"><?=$this->transEsc($exportOption)?></option>
+        <option value="<?=$this->escapeHtmlAttr($exportOption)?>"><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
       <? endforeach; ?>
     </select>
     <br/>

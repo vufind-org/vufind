@@ -81,7 +81,11 @@ class SearchController extends AbstractSearch
     {
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $view = $this->createEmailViewModel();
+        $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+        $view = $this->createEmailViewModel(null, $mailer->getDefaultLinkSubject());
+        $mailer->setMaxRecipients($view->maxRecipients);
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('email');
         $view->url = $this->params()->fromPost(
             'url', $this->params()->fromQuery(
                 'url', $this->getRequest()->getServer()->get('HTTP_REFERER')
@@ -109,23 +113,16 @@ class SearchController extends AbstractSearch
         }
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+                $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                    ? $view->from : null;
                 $mailer->sendLink(
                     $view->to, $view->from, $view->message,
-                    $view->url, $this->getViewRenderer()
+                    $view->url, $this->getViewRenderer(), $view->subject, $cc
                 );
-                if ($this->params()->fromPost('ccself')
-                    && $view->from != $view->to
-                ) {
-                    $mailer->sendLink(
-                        $view->from, $view->from, $view->message,
-                        $view->url, $this->getViewRenderer()
-                    );
-                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirect()->toUrl($view->url);

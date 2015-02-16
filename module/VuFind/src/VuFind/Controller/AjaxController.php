@@ -1021,7 +1021,7 @@ class AjaxController extends AbstractBase
         try {
             // Check captcha
             $this->recaptcha()->setErrorMode('throw');
-            $useRecaptcha = $this->recaptcha()->active('sms');
+            $useRecaptcha = $this->recaptcha()->active('email');
             // Process form submission:
             if (!$this->formWasSubmitted('id', $useRecaptcha)) {
                 throw new \Exception('recaptcha_not_passed');
@@ -1031,20 +1031,17 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
-            $view = $this->createEmailViewModel();
             $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $view = $this->createEmailViewModel(
+                null, $mailer->getDefaultRecordSubject($record)
+            );
+            $mailer->setMaxRecipients($view->maxRecipients);
+            $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                ? $view->from : null;
             $mailer->sendRecord(
                 $view->to, $view->from, $view->message, $record,
-                $this->getViewRenderer()
+                $this->getViewRenderer(), $view->subject, $cc
             );
-            if ($this->params()->fromPost('ccself')
-                && $view->from != $view->to
-            ) {
-                $mailer->sendRecord(
-                    $view->from, $view->from, $view->message, $record,
-                    $this->getViewRenderer()
-                );
-            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );
@@ -1085,20 +1082,26 @@ class AjaxController extends AbstractBase
 
         // Attempt to send the email:
         try {
-            $view = $this->createEmailViewModel();
+            // Check captcha
+            $this->recaptcha()->setErrorMode('throw');
+            $useRecaptcha = $this->recaptcha()->active('email');
+            // Process form submission:
+            if (!$this->formWasSubmitted('url', $useRecaptcha)) {
+                throw new \Exception('recaptcha_not_passed');
+            }
+
             $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+            $defaultSubject = $this->params()->fromQuery('cart')
+                ? $this->translate('bulk_email_title')
+                : $mailer->getDefaultLinkSubject();
+            $view = $this->createEmailViewModel(null, $defaultSubject);
+            $mailer->setMaxRecipients($view->maxRecipients);
+            $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                ? $view->from : null;
             $mailer->sendLink(
                 $view->to, $view->from, $view->message, $url,
-                $this->getViewRenderer(), $this->params()->fromPost('subject')
+                $this->getViewRenderer(), $view->subject, $cc
             );
-            if ($this->params()->fromPost('ccself')
-                && $view->from != $view->to
-            ) {
-                $mailer->sendLink(
-                    $view->from, $view->from, $view->message, $url,
-                    $this->getViewRenderer(), $this->params()->fromPost('subject')
-                );
-            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );
