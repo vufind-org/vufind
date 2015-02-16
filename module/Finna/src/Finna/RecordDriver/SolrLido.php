@@ -704,8 +704,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             if ($node->linkResource) {
                 $attributes = $node->attributes();
                 if (!$attributes->type
-                    || (($size != 'large' && $attributes->type == 'thumb') 
-                    || $size == 'large' && $attributes->type == 'large' 
+                    || (($size != 'large' && $attributes->type == 'thumb')
+                    || $size == 'large' && $attributes->type == 'large'
                     || $attributes->type == 'zoomview')
                 ) {
                     $url = (string)$node->linkResource;
@@ -791,33 +791,5 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             return $this->simpleXML;
         }
         return simplexml_load_string($this->fields['fullrecord']);
-    }
-
-    /**
-     * Check if a URL (typically from getURLs()) is blacklisted based on the URL
-     * itself and optionally its description.
-     *
-     * @param string $url  URL
-     * @param string $desc Optional description of the URL
-     *
-     * @return boolean Whether the URL is blacklisted
-     */
-    protected function urlBlacklisted($url, $desc = '')
-    {
-        if (!isset($this->recordConfig->Record->url_blacklist)) {
-            return false;
-        }
-        foreach ($this->recordConfig->Record->url_blacklist as $rule) {
-            if (substr($rule, 0, 1) == '/' && substr($rule, -1, 1) == '/') {
-                if (preg_match($rule, $url)
-                    || ($desc !== '' && preg_match($rule, $desc))
-                ) {
-                    return true;
-                }
-            } elseif ($rule == $url || $rule == $desc) {
-                return true;
-            }
-        }
-        return false;
     }
 }
