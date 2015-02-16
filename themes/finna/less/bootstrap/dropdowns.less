@@ -34,7 +34,7 @@
   display: none; // none by default, but block on "open" of the menu
   float: left;
   min-width: 160px;
-  padding: 5px 0;
+  padding: 0px 1px;
   margin: 2px 0 0; // override default ul
   list-style: none;
   font-size: @font-size-base;
@@ -42,7 +42,7 @@
   border: 1px solid @dropdown-fallback-border; // IE8 fallback
   border: 1px solid @dropdown-border;
   border-radius: @border-radius-base;
-  .box-shadow(0 6px 12px rgba(0,0,0,.175));
+  .box-shadow(0 6px 12px rgba(0,0,0,.275));
   background-clip: padding-box;
 
   // Aligns the dropdown menu to right
@@ -57,11 +57,16 @@
   .divider {
     .nav-divider(@dropdown-divider-bg);
   }
-
+  > li {
+        border-bottom: 1px solid @gray-lighter;   
+  }
+  > li:last-child {
+        border-bottom: none;   
+      }
   // Links within the dropdown menu
   > li > a {
     display: block;
-    padding: 3px 20px;
+    padding: 5px 15px;
     clear: both;
     font-weight: normal;
     line-height: @line-height-base;
