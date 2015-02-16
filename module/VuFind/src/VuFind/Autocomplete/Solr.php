@@ -108,8 +108,6 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * setConfig
-     *
      * Set parameters that affect the behavior of the autocomplete handler.
      * These values normally come from the search configuration file.
      *
@@ -141,8 +139,6 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * initSearchObject
-     *
      * Initialize the search object used for finding recommendations.
      *
      * @return void
@@ -156,8 +152,6 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * mungeQuery
-     *
      * Process the user query to make it suitable for a Solr query.
      *
      * @param string $query Incoming user query
@@ -176,8 +170,6 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * getSuggestions
-     *
      * This method returns an array of strings matching the user's query for
      * display in the autocomplete box.
      *
@@ -291,8 +283,6 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * setDisplayField
-     *
      * Set the display field list.  Useful for child classes.
      *
      * @param array $new Display field list.
@@ -305,8 +295,6 @@ class Solr implements AutocompleteInterface
     }
 
     /**
-     * setSortField
-     *
      * Set the sort field list.  Useful for child classes.
      *
      * @param string $new Sort field list.

@@ -123,8 +123,6 @@ class Editions implements RelatedInterface
     }
 
     /**
-     * getResults
-     *
      * Get an array of Record Driver objects representing other editions of the one
      * passed to the constructor.
      *
