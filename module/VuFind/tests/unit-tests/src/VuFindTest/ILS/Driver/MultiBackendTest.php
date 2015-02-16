@@ -2228,11 +2228,11 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $methodReturn = $driver->supportsMethod('getStatus', $patron);
         $this->assertTrue($methodReturn);
 
-        //Case: The method doesn't exists in any of the drivers
-            //Result: A return of false
+        //Case: No parameters are given
+            //Result: A return of true
 
-        $methodReturn = $driver->supportsMethod('fail', null);
-        $this->assertFalse($methodReturn);
+        $methodReturn = $driver->supportsMethod('getStatus', null);
+        $this->assertTrue($methodReturn);
 
         //Case: getLoginDrivers and getDefaultLoginDriver are always supported
             //Result: A return of true
