@@ -52,8 +52,6 @@ class VisualFacets extends AbstractFacets
     protected $facets;
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * VisualFacets:[ini section]:[ini name]
@@ -77,8 +75,6 @@ class VisualFacets extends AbstractFacets
     }
 
     /**
-     * init
-     *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
      * @param \Zend\StdLib\Parameters    $request Parameter object representing user
      * request.

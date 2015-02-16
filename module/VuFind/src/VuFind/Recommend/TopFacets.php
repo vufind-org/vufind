@@ -57,8 +57,6 @@ class TopFacets extends AbstractFacets
     protected $baseSettings;
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * TopFacets:[ini section]:[ini name]
@@ -91,8 +89,6 @@ class TopFacets extends AbstractFacets
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may

@@ -60,8 +60,6 @@ interface RecommendInterface
     public function setConfig($settings);
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may

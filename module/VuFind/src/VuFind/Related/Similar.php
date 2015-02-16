@@ -63,8 +63,6 @@ class Similar implements RelatedInterface
     }
 
     /**
-     * init
-     *
      * Establishes base settings for making recommendations.
      *
      * @param string                            $settings Settings from config.ini

@@ -128,8 +128,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -202,8 +200,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -430,5 +426,4 @@ class SideFacets extends AbstractFacets
     {
         return $this->hierarchicalFacetSortOptions;
     }
-
 }

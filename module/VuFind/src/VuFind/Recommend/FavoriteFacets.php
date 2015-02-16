@@ -41,8 +41,6 @@ namespace VuFind\Recommend;
 class FavoriteFacets extends SideFacets
 {
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.

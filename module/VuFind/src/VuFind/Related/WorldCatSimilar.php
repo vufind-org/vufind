@@ -39,8 +39,6 @@ namespace VuFind\Related;
 class WorldCatSimilar extends Similar
 {
     /**
-     * init
-     *
      * Establishes base settings for making recommendations.
      *
      * @param string                            $settings Settings from config.ini
