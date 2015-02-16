@@ -390,6 +390,7 @@ class ClaviusSQL extends AbstractBase
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($id, $details)
@@ -467,6 +468,7 @@ class ClaviusSQL extends AbstractBase
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
@@ -512,6 +514,7 @@ class ClaviusSQL extends AbstractBase
      *   <li>title - The title of the item (optional - only used if the record
      * cannot be found in VuFind's index).</li>
      * </ul>
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyHolds($patron)
@@ -574,6 +577,7 @@ class ClaviusSQL extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
@@ -808,6 +812,7 @@ class ClaviusSQL extends AbstractBase
      *   <li>item_id - this is used to match up renew responses and must match
      * the item_id in the renew response</li>
      * </ul>
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($user, $history = false)

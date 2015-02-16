@@ -202,6 +202,7 @@ class PICA extends DAIA
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($patron)
@@ -376,6 +377,7 @@ class PICA extends DAIA
      * @param string $recordId Record identifier
      *
      * @return bool            True on success
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function renew($recordId)
@@ -411,6 +413,7 @@ class PICA extends DAIA
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyFines($patron)
@@ -477,6 +480,7 @@ class PICA extends DAIA
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyHolds($patron)

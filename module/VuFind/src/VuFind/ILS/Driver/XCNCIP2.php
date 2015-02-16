@@ -485,6 +485,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConsortialHoldings($id, array $patron = null,
@@ -582,6 +583,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
@@ -890,6 +892,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
@@ -965,6 +968,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
@@ -993,6 +997,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($function, $params = null)
@@ -1030,6 +1035,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * or may be ignored.
      *
      * @return string A location ID
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron, $holdDetails = null)
@@ -1053,6 +1059,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron, $holdDetails = null)
@@ -1139,6 +1146,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param patron $patron An array of patron data
      *
      * @return bool True if request is valid, false if not
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)

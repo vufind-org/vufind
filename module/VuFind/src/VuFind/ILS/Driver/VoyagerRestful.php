@@ -308,6 +308,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($function, $params = null)
@@ -451,6 +452,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array $holdingsRow The holdings row to analyze.
      *
      * @return bool Whether an item is holdable
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function isILLRequestAllowed($holdingsRow)
@@ -709,6 +711,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
@@ -777,6 +780,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @return false|string      The default pickup location for the patron or false
      * if the user has to choose.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
@@ -798,6 +802,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @return false|string      The default request group for the patron or false if
      * the user has to choose.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultRequestGroup($patron = false, $holdDetails = null)
@@ -2776,6 +2781,7 @@ EOT;
      *
      * @return bool|array False if request not allowed, or an array of
      * locations.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
@@ -3210,6 +3216,7 @@ EOT;
      *
      * @return bool True if the method can be called with the given parameters,
      * false otherwise.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function supportsMethod($method, $params)

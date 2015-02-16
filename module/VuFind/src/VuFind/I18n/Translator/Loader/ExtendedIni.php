@@ -99,6 +99,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return TextDomain
      * @throws InvalidArgumentException
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function load($locale, $filename)

@@ -131,6 +131,7 @@ class DPLATerms implements RecommendInterface
      * request.
      *
      * @return void
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function init($params, $request)

@@ -276,6 +276,7 @@ class Sierra extends AbstractBase
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $instructor, $department)
@@ -588,6 +589,7 @@ class Sierra extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)

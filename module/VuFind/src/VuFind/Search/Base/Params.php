@@ -1583,6 +1583,7 @@ class Params implements ServiceLocatorAwareInterface
      * will be favored.
      *
      * @return void
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function activateAllFacets($preferredSection = false)
@@ -1602,6 +1603,7 @@ class Params implements ServiceLocatorAwareInterface
      * @param array $ids Record IDs to load
      *
      * @return void
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setQueryIDs($ids)

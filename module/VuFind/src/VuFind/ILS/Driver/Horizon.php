@@ -270,6 +270,7 @@ class Horizon extends AbstractBase
      * @param array  $patron Patron Array
      *
      * @return array Keyed data
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function processHoldingRow($id, $row, $patron)
@@ -991,6 +992,7 @@ class Horizon extends AbstractBase
      *                     does not use acquisitions.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
