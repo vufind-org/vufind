@@ -49,8 +49,6 @@ namespace VuFind\Recommend;
 interface RecommendInterface
 {
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -74,8 +72,6 @@ interface RecommendInterface
     public function init($params, $request);
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.

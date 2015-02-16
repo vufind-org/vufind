@@ -154,9 +154,7 @@ class EuropeanaResults implements RecommendInterface,
     }
 
     /**
-     * getURL
-     *
-     * This method builds the url which will be send to retrieve the RSS results
+     * Build the url which will be send to retrieve the RSS results
      *
      * @param string $targetUrl        Base URL
      * @param string $requestParam     Parameter name to add

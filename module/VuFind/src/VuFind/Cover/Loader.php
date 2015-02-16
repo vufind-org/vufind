@@ -42,21 +42,21 @@ use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
 class Loader extends \VuFind\ImageLoader
 {
     /**
-     * filename constructed from ISBN
+     * Filename constructed from ISBN
      *
      * @var string
      */
     protected $localFile = '';
 
     /**
-     * valid image sizes to request
+     * Valid image sizes to request
      *
      * @var array
      */
     protected $validSizes = array('small', 'medium', 'large');
 
     /**
-     * property to hold VuFind configuration settings
+     * VuFind configuration settings
      *
      * @var \Zend\Config\Config
      */
@@ -77,7 +77,7 @@ class Loader extends \VuFind\ImageLoader
     protected $client;
 
     /**
-     * directory to store downloaded images
+     * Directory to store downloaded images
      *
      * @var string
      */

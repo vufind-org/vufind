@@ -144,7 +144,7 @@ class AuthorFacets implements RecommendInterface
     /**
      * Process similar authors from an author search
      *
-     * @return  array     Facets data arrays
+     * @return array Facets data arrays
      */
     public function getSimilarAuthors()
     {

@@ -1,6 +1,6 @@
 <?php
 /**
- * publishDateVis
+ * PubDateVisAjax Recommendations Module
  *
  * PHP version 5
  *
@@ -123,9 +123,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * getVisFacets
-     *
-     * Basic get
+     * Get visual facet details.
      *
      * @return array
      */
@@ -141,9 +139,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * getZooming
-     *
-     * Basic get
+     * Get zoom setting
      *
      * @return array
      */
@@ -156,9 +152,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * getFacetFields
-     *
-     * Basic get
+     * Get facet fields
      *
      * @return array
      */
@@ -168,7 +162,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * getSearchParams
+     * Get search parameters
      *
      * @return string of params
      */

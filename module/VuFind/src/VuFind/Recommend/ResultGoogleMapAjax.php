@@ -94,7 +94,7 @@ class ResultGoogleMapAjax implements RecommendInterface
     }
 
     /**
-     * getSearchParams
+     * Get search parameters
      *
      * @return string of params
      */

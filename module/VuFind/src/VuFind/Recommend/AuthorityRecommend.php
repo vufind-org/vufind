@@ -21,10 +21,8 @@
  *
  * @category VuFind2
  * @package  Recommendations
- * @author   Lutz Biedinger (National Library of Ireland)
- * <vufind-tech@lists.sourceforge.net>
- * @author   Ronan McHugh (National Library of Ireland)
- * <vufind-tech@lists.sourceforge.net>
+ * @author   Lutz Biedinger <vufind-tech@lists.sourceforge.net>
+ * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -39,12 +37,13 @@ use VuFindSearch\Backend\Exception\RequestErrorException,
  * i.e. searches for a pseudonym will provide the user with a link
  * to the official name (according to the Authority index)
  *
+ * Originally developed at the National Library of Ireland by Lutz
+ * Biedinger and Ronan McHugh.
+ *
  * @category VuFind2
  * @package  Recommendations
- * @author   Lutz Biedinger (National Library of Ireland)
- * <vufind-tech@lists.sourceforge.net>
- * @author   Ronan McHugh (National Library of Ireland)
- * <vufind-tech@lists.sourceforge.net>
+ * @author   Lutz Biedinger <vufind-tech@lists.sourceforge.net>
+ * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -237,8 +236,6 @@ class AuthorityRecommend implements RecommendInterface
     }
 
     /**
-     * inArrayR
-     *
      * Helper function to do recursive searches of multi-dimensional arrays.
      *
      * @param string $needle   Search term

@@ -77,8 +77,7 @@ class Map extends AbstractBase
     }
 
     /**
-     * getGoogleMapMarker - gets the JSON needed to display the record on a Google
-     * map.
+     * Get the JSON needed to display the record on a Google map.
      *
      * @return string
      */

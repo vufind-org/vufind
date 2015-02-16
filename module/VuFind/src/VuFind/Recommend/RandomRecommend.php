@@ -21,8 +21,7 @@
  *
  * @category VuFind2
  * @package  Recommendations
- * @author   Luke O'Sullivan (Swansea University)
- * <vufind-tech@lists.sourceforge.net>
+ * @author   Luke O'Sullivan <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -36,10 +35,11 @@ use VuFindSearch\Query\Query,
  *
  * This class provides random recommendations based on the Solr random field
  *
+ * Originally developed by Luke O'Sullivan at Swansea University.
+ *
  * @category VuFind2
  * @package  Recommendations
- * @author   Luke O'Sullivan (Swansea University)
- * <vufind-tech@lists.sourceforge.net>
+ * @author   Luke O'Sullivan <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */

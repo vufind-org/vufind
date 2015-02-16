@@ -223,8 +223,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getFacetSet
-     *
      * Get facet information from the search results.
      *
      * @return array
@@ -255,8 +253,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getDateFacets
-     *
      * Return year-based date facet information in a format processed for use in the
      * view.
      *
@@ -268,8 +264,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getFullDateFacets
-     *
      * Return year/month/day-based date facet information in a format processed for
      * use in the view.
      *
@@ -281,8 +275,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getGenericRangeFacets
-     *
      * Return generic range facet information in a format processed for use in the
      * view.
      *
@@ -294,8 +286,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getNumericRangeFacets
-     *
      * Return numeric range facet information in a format processed for use in the
      * view.
      *
@@ -377,8 +367,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getRangeFacets
-     *
      * Return range facet information in a format processed for use in the view.
      *
      * @param string $property Name of property containing active range facets
