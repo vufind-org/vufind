@@ -15,7 +15,9 @@
   border: 1px solid transparent;
   // Prevent floats from breaking the navbar
   &:extend(.clearfix all);
-
+  & .dropdown .dropdown-menu > li > a > div:not(.description) {
+        font-weight: bold;   
+  }
   @media (min-width: @grid-float-breakpoint) {
     border-radius: @navbar-border-radius;
   }
@@ -69,7 +71,6 @@
     width: auto;
     border-top: 0;
     box-shadow: none;
-
     &.collapse {
       display: block !important;
       height: auto !important;
@@ -79,7 +80,12 @@
 
     &.in {
       overflow-y: visible;
+      & .dropdown-menu a {
+        color: @gray;
+        transition: none;
+      }
     }
+    
 
     // Undo the collapse side padding for navbars with containers to ensure
     // alignment of right-aligned contents.
@@ -246,6 +252,9 @@
       .dropdown-header {
         padding: 5px 15px 5px 25px;
       }
+      > li {
+        border-bottom: none;   
+      }
       > li > a {
         line-height: @line-height-computed;
         white-space: normal;
@@ -339,7 +348,6 @@
 // Menu position and menu carets
 .navbar-nav > li > .dropdown-menu {
   margin-top: 0;
-  .border-top-radius(0);
 }
 // Menu position and menu caret support for dropups via extra dropup class
 .navbar-fixed-bottom .navbar-nav > li > .dropdown-menu {
