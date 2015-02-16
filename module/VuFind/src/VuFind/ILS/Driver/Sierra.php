@@ -38,7 +38,6 @@ use VuFind\Exception\ILS as ILSException;
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @license  http://opensource.org/licenses/GPL-3.0 GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
- *
  */
 class Sierra extends AbstractBase
 {

@@ -346,7 +346,7 @@ class PICA extends DAIA
     }
 
     /**
-     * get the number of renewals
+     * Get the number of renewals
      *
      * @param string $barcode Barcode of the medium
      *
@@ -619,7 +619,7 @@ class PICA extends DAIA
     // protected functions to connect to PICA
 
     /**
-     * post something to a foreign host
+     * Post something to a foreign host
      *
      * @param string $file         POST target URL
      * @param string $data_to_send POST data
@@ -660,7 +660,7 @@ class PICA extends DAIA
     }
 
     /**
-     * gets a PPN by its barcode
+     * Gets a PPN by its barcode
      *
      * @param string $barcode Barcode to use for lookup
      *
@@ -684,7 +684,7 @@ class PICA extends DAIA
     }
 
     /**
-     * gets holdings of magazine and journal exemplars
+     * Gets holdings of magazine and journal exemplars
      *
      * @param string $ppn PPN identifier
      *

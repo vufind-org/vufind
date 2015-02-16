@@ -128,7 +128,6 @@ class Horizon extends AbstractBase
      * @param string $status Item status code
      *
      * @return array
-     *
      */
     protected function parseStatus($status)
     {

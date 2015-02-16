@@ -189,7 +189,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param string $status status as retrieved from db
      *
      * @return string the message to be displayed
-     *
      */
     protected function getStatusText($indi, $status)
     {

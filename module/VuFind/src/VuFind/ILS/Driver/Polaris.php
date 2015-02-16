@@ -164,7 +164,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * return human-readable date from text like Date(1360051200000-0800)
+     * Return human-readable date from text like Date(1360051200000-0800)
      *
      * @param string $jsontime Input
      *

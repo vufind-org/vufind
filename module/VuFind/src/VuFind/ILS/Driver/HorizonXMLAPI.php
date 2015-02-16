@@ -548,23 +548,23 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $initResponse = $this->makeRequest($params);
 
         if ($initResponse->request_confirm) {
-
-              $confirmParams =  array("session" => $session,
-                        "profile" => $this->wsProfile,
-                        "bibkey" => $requestDetails['bibId'],
-                        "aspect" => "advanced",
-                        "lang" => "eng",
-                        "menu" => "request",
-                        "submenu" => "none",
-                        "source" => "~!horizon",
-                        "uri" => "",
-                        "link" => "direct",
-                        "request_finish" => "Request",
-                        "cl" => "PlaceRequestjsp",
-                        "pickuplocation" => $requestDetails['pickuplocation'],
-                        "notifyby" => $requestDetails['notify'],
-                        "GetXML" => "true"
-                        );
+            $confirmParams =  array(
+                "session" => $session,
+                "profile" => $this->wsProfile,
+                "bibkey" => $requestDetails['bibId'],
+                "aspect" => "advanced",
+                "lang" => "eng",
+                "menu" => "request",
+                "submenu" => "none",
+                "source" => "~!horizon",
+                "uri" => "",
+                "link" => "direct",
+                "request_finish" => "Request",
+                "cl" => "PlaceRequestjsp",
+                "pickuplocation" => $requestDetails['pickuplocation'],
+                "notifyby" => $requestDetails['notify'],
+                "GetXML" => "true"
+            );
 
             $request = $this->makeRequest($confirmParams);
 

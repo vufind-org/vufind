@@ -163,10 +163,10 @@ class AlephTranslator
     }
 
     /**
-     * tab15 callback (modify $tab15 by reference)
+     * Callback for tab15 (modify $tab15 by reference)
      *
      * @param array  $matches preg_match() return array
-     * @param array  &$tab15  result array to generate
+     * @param array  $tab15   result array to generate
      * @param string $charset character set
      *
      * @return void
@@ -191,10 +191,10 @@ class AlephTranslator
     }
 
     /**
-     * tab40 callback (modify $tab40 by reference)
+     * Callback for tab40 (modify $tab40 by reference)
      *
      * @param array  $matches preg_match() return array
-     * @param array  &$tab40  result array to generate
+     * @param array  $tab40   result array to generate
      * @param string $charset character set
      *
      * @return void
@@ -210,11 +210,11 @@ class AlephTranslator
     }
 
     /**
-     * sub-library callback (modify $tab_sub_library by reference)
+     * Sub-library callback (modify $tab_sub_library by reference)
      *
-     * @param array  $matches          preg_match() return array
-     * @param array  &$tab_sub_library result array to generate
-     * @param string $charset          character set
+     * @param array  $matches         preg_match() return array
+     * @param array  $tab_sub_library result array to generate
+     * @param string $charset         character set
      *
      * @return void
      */
