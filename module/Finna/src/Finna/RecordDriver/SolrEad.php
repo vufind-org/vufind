@@ -158,7 +158,7 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Return an associative array of image URLs associated with this record 
+     * Return an associative array of image URLs associated with this record
      * (key = URL, value = description), if available; false otherwise.
      *
      * @param string $size Size of requested images

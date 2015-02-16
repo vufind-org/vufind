@@ -66,7 +66,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
      * Return record description in JSON format.
      *
      * @return mixed \Zend\Http\Response
-
      */
     public function getDescriptionAjax()
     {

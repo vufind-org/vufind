@@ -40,7 +40,6 @@ class NatLibFi extends \VuFind\Content\AbstractCover
 {
     /**
      * Constructor
-     *
      */
     public function __construct()
     {
@@ -57,6 +56,7 @@ class NatLibFi extends \VuFind\Content\AbstractCover
      * pointing to an ISBN object and 'issn' pointing to a string)
      *
      * @return string|bool
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getUrl($key, $size, $ids)

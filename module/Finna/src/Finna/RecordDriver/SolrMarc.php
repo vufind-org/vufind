@@ -112,10 +112,12 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 'number' => $partOrderCounter,
                 'id' => $partId,
                 'title' => $partTitle,
-                'author' => implode('; ', $partAuthors), // For backward compatibility
                 'authors' => $partAuthors,
                 'uniformTitle' => $uniformTitle,
-                'duration' => $duration ? substr($duration, 0, 2) . ':' . substr($duration, 2, 2) . ':' . substr($duration, 4, 2) : '',
+                'duration' => $duration
+                    ? substr($duration, 0, 2) . ':' . substr($duration, 2, 2)
+                        . ':' . substr($duration, 4, 2)
+                    : '',
                 'presenters' => $partPresenters,
                 'arrangers' => $partArrangers,
                 'otherAuthors' => $partOtherAuthors,

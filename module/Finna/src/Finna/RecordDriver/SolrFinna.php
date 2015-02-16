@@ -30,12 +30,12 @@ namespace Finna\RecordDriver;
 /**
  * Additional functionality for Finna Solr records.
  *
- *
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ *
  * @SuppressWarnings(PHPMD.ExcessivePublicCount)
  */
 trait SolrFinna
@@ -43,7 +43,7 @@ trait SolrFinna
 
     /**
      * Returns an array of parameter to send to Finna's cover generator.
-     * Fallbacks to VuFind's getThumbnail if no record image with the 
+     * Fallbacks to VuFind's getThumbnail if no record image with the
      * given index was found.
      *
      * @param string $size  Size of thumbnail
@@ -52,7 +52,7 @@ trait SolrFinna
      * @return string|array|bool
      */
     public function getRecordImage($size = 'small', $index = 0)
-    {        
+    {
         if ($urls = $this->getAllThumbnails($size)) {
             $urls = array_keys($urls);
             if ($index == 0) {
@@ -68,7 +68,7 @@ trait SolrFinna
         }
         return parent::getThumbnail($size);
     }
-    
+
     /**
      * Return building from index.
      *
@@ -85,7 +85,7 @@ trait SolrFinna
      * @return string.
      */
     public function getRecordType()
-    {     
+    {
         return $this->fields['recordtype'];
     }
 
@@ -139,7 +139,7 @@ trait SolrFinna
     {
         return false;
     }
-    
+
     /**
      * Return URL to copyright information.
      *
