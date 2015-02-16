@@ -100,7 +100,7 @@ finna.imagePopup = (function(finna) {
                         });
                         
                         // Prevent navigation button CSS-transitions on touch-devices
-                        if (finna.isTouchDevice()) {
+                        if (finna.layout.isTouchDevice()) {
                             $(".mfp-container .mfp-arrow-right, .mfp-container .mfp-arrow-left").addClass('touch-device');
                         }                        
 

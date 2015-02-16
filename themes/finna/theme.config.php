@@ -20,6 +20,7 @@ return array(
     'js' => array(
         'finna.js',
         'image-popup.js',
+        'finna-layout.js',
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js',
         'vendor/jquery.magnific-popup.min.js',
