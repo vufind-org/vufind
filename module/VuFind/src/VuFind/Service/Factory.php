@@ -508,10 +508,17 @@ class Factory
         return new \VuFind\Record\Loader(
             $sm->get('VuFind\Search'),
             $sm->get('VuFind\RecordDriverPluginManager'),
-            static::getRecordCache($sm)
+            $sm->get('VuFind\Record\Cache')
         );
     }
-
+    
+    /**
+     * Construct the record cache.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Record\Cache
+     */
     public static function getRecordCache(ServiceManager $sm)
     {
         return new \VuFind\Record\Cache(
