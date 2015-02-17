@@ -1045,9 +1045,8 @@ max_tag_length = 64
 ; between search modules. Keys are search backend names, values are labels for use in
 ; the user interface (subject to translation).
 [SearchTabs]
-;Solr = Catalog
-;Summon = Summon
-;WorldCat = WorldCat
+;Solr = tabs_local
+;Primo = tabs_pci
 
 ; Uncomment portions of this section to label searches from particular sources in the
 ; search history display.  Keys are search backend names, values are labels for use in
