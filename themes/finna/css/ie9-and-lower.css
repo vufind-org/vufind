@@ -1,0 +1,5 @@
+/* remove content icons from ie9 and lower since we cannot hide them */
+.jump-menu-style.controls:before, .jump-menu-style.prefilter-select:before {
+	content:'';
+	background: none;
+}

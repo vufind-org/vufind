@@ -17,6 +17,9 @@
           'rel' => 'search'
         )
       );
+      
+      // IE-specific stylesheet
+      $this->headLink()->appendStylesheet('ie9-and-lower.css', 'screen', 'lte IE 9');
     ?>
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
@@ -176,7 +179,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span class="sr-only"><?=$this->transEsc('close') ?></span></button>
             <h4 id="modalTitle" class="modal-title"></h4>
           </div>
           <div class="modal-body"><?=$this->transEsc('Loading') ?>...</div>
