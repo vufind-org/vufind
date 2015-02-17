@@ -40,8 +40,10 @@ use VuFind\RecordDriver\PluginManager as RecordFactory,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Cache
+class Cache implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+    
     const FAVORITE             = 'favorite';
 
     protected $cachePolicy = 0;
@@ -115,6 +117,12 @@ class Cache
     ) {
         if (in_array($source, $this->cachableSources)) {
             $cId = $this->getCacheId($recordId, $source, $userId);
+            $this->debug(
+                'createOrUpdate cache for record: ' . $recordId .
+                ' , userid: ' . $userId . 
+                ' , source: ' . $source . 
+                ' , cId: ' . $cId               
+            );
             $this->recordTable->updateRecord(
                 $cId, $source, $rawData, $recordId, $userId, $sessionId, $resourceId
             );
@@ -166,12 +174,23 @@ class Cache
 
             $userId = isset($_SESSION['Account'])
                 ? $_SESSION['Account']->userId : null;
-            $cacheIds[] = $this->getCacheId(
+
+            $cacheId = $this->getCacheId(
                 $details['id'], $details['source'], $userId
+            );
+            $cacheIds[] = $cacheId;
+            
+            $this->debug(
+                "lookup cache for id: " . $details['id'] . 
+                ", source: " .  $details['source'] . 
+                ", userId: " . $userId . 
+                ", calculated cId: " .  $cacheId
             );
         }
         $cachedRecords = $this->recordTable->findRecord($cacheIds);
 
+        $this->debug('records found: ' . count($cachedRecords));
+        
         $vufindRecords = array();
         foreach ($cachedRecords as $cachedRecord) {
             $factory = $this->recordFactories[$cachedRecord['source']];
