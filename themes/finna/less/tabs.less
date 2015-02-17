@@ -1,0 +1,37 @@
+.finna-main-tabs {
+    background-color: @brand-secondary;
+    margin-bottom: 30px;
+
+    & ul.nav-tabs {
+        border-bottom: none;
+        margin: 0;
+
+        > li {
+            color: #fff;
+            margin: 0 4px 0 0;
+
+            > a {
+                background-color: @brand-primary;
+                padding: 10px 15px 10px 15px;
+                margin-bottom: 0;
+                border: 0;
+                border-radius: 0;
+                font-size: 1em;
+                font-weight: bold;
+                color: #fff;
+                transition: none;
+            }
+
+            &.active {
+                > a {
+                    background-color: #fff;
+                    color: #4d4d4d;
+                    border: none;
+                }
+            }
+        }
+    }
+}
+.main.template-name-advanced .finna-main-tabs {
+    padding-top: 25px;
+}

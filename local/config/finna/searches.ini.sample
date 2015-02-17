@@ -85,10 +85,10 @@ Title               = Title
 ;JournalTitle        = "Journal Title"
 Author              = Author
 Subject             = Subject
-CallNumber          = "Call Number"
-Classification      = Classification
-ISN                 = "ISBN/ISSN"
-tag                 = Tag
+;CallNumber          = "Call Number"
+;Classification      = Classification
+;ISN                 = "ISBN/ISSN"
+;tag                 = Tag
 
 ; This section defines which search options will be included on the advanced
 ; search screen.  All the notes above [Basic_Searches] also apply here.
