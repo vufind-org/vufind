@@ -123,6 +123,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @throws \Exception
      * @return array             An array of query results
+     *
      * @link http://www.exlibrisgroup.org/display/PrimoOI/Brief+Search
      */
     public function query($institution, $terms, $params = null)
@@ -323,7 +324,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * small wrapper for sendRequest, process to simplify error handling.
+     * Small wrapper for sendRequest, process to simplify error handling.
      *
      * @param string $qs     Query string
      * @param string $method HTTP method
@@ -351,7 +352,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * translate Primo's XML into array of arrays.
+     * Translate Primo's XML into array of arrays.
      *
      * @param array $data The raw xml from Primo
      *

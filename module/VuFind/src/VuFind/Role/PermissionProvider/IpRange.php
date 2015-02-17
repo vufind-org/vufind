@@ -86,6 +86,7 @@ class IpRange implements PermissionProviderInterface
      * @param array  $rangeIP  single ip or range of addresses
      *
      * @return bool
+     *
      * @todo Implement IPv6 check
      */
     protected function checkIP($remoteIP, $rangeIP)

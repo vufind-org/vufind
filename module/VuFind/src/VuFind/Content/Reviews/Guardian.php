@@ -50,6 +50,7 @@ class Guardian extends \VuFind\Content\AbstractBase
      * @throws \Exception
      * @return array     Returns array with review data.
      * @author Eoghan Ó Carragáin <eoghan.ocarragain@gmail.com>
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)

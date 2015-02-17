@@ -141,7 +141,7 @@ class Solr extends AbstractBase
      *
      * @param string $parentID The starting point for the current recursion
      * (equivlent to Solr field hierarchy_parent_id)
-     * @param string &$count   The total count of items in the tree
+     * @param string $count    The total count of items in the tree
      * before this recursion
      *
      * @return string
@@ -257,7 +257,7 @@ class Solr extends AbstractBase
      *
      * @param string $parentID The starting point for the current recursion
      * (equivlent to Solr field hierarchy_parent_id)
-     * @param string &$count   The total count of items in the tree
+     * @param string $count    The total count of items in the tree
      * before this recursion
      *
      * @return string

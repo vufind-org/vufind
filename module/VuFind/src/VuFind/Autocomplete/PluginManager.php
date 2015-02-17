@@ -50,8 +50,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     }
 
     /**
-     * getSuggestions
-     *
      * This returns an array of suggestions based on current request parameters.
      * This logic is present in the factory class so that it can be easily shared
      * by multiple AJAX handlers.

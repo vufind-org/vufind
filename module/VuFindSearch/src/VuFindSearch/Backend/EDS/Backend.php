@@ -368,7 +368,6 @@ class Backend extends AbstractBackend
      * @param QueryBuilder $queryBuilder Query builder
      *
      * @return void
-     *
      */
     public function setQueryBuilder(QueryBuilder $queryBuilder)
     {

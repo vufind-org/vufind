@@ -83,8 +83,6 @@ class Editions implements RelatedInterface
     }
 
     /**
-     * init
-     *
      * Establishes base settings for making recommendations.
      *
      * @param string                            $settings Settings from config.ini
@@ -125,8 +123,6 @@ class Editions implements RelatedInterface
     }
 
     /**
-     * getResults
-     *
      * Get an array of Record Driver objects representing other editions of the one
      * passed to the constructor.
      *

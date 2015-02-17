@@ -44,6 +44,7 @@ use VuFind\Exception\Forbidden as ForbiddenException,
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class AbstractBase extends AbstractActionController
@@ -60,7 +61,7 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
-     * preDispatch -- block access when appropriate.
+     * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
      *

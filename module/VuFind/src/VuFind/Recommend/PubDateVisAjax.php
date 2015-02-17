@@ -1,6 +1,6 @@
 <?php
 /**
- * publishDateVis
+ * PubDateVisAjax Recommendations Module
  *
  * PHP version 5
  *
@@ -69,8 +69,6 @@ class PubDateVisAjax implements RecommendInterface
     protected $dateFacets = array();
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -94,8 +92,6 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -113,8 +109,6 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -129,9 +123,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * getVisFacets
-     *
-     * Basic get
+     * Get visual facet details.
      *
      * @return array
      */
@@ -147,9 +139,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * getZooming
-     *
-     * Basic get
+     * Get zoom setting
      *
      * @return array
      */
@@ -162,9 +152,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * getFacetFields
-     *
-     * Basic get
+     * Get facet fields
      *
      * @return array
      */
@@ -174,7 +162,7 @@ class PubDateVisAjax implements RecommendInterface
     }
 
     /**
-     * getSearchParams
+     * Get search parameters
      *
      * @return string of params
      */

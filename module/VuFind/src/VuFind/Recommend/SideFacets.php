@@ -128,8 +128,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -202,8 +200,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -227,8 +223,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getFacetSet
-     *
      * Get facet information from the search results.
      *
      * @return array
@@ -259,8 +253,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getDateFacets
-     *
      * Return year-based date facet information in a format processed for use in the
      * view.
      *
@@ -272,8 +264,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getFullDateFacets
-     *
      * Return year/month/day-based date facet information in a format processed for
      * use in the view.
      *
@@ -285,8 +275,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getGenericRangeFacets
-     *
      * Return generic range facet information in a format processed for use in the
      * view.
      *
@@ -298,8 +286,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getNumericRangeFacets
-     *
      * Return numeric range facet information in a format processed for use in the
      * view.
      *
@@ -381,8 +367,6 @@ class SideFacets extends AbstractFacets
     }
 
     /**
-     * getRangeFacets
-     *
      * Return range facet information in a format processed for use in the view.
      *
      * @param string $property Name of property containing active range facets
@@ -430,5 +414,4 @@ class SideFacets extends AbstractFacets
     {
         return $this->hierarchicalFacetSortOptions;
     }
-
 }

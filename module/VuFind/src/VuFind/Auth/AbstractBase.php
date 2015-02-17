@@ -155,6 +155,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @throws AuthException
      * @return User New user row.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function create($request)
@@ -172,6 +173,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @throws AuthException
      * @return User New user row.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function updatePassword($request)
@@ -189,6 +191,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * send user after login (some drivers may override this).
      *
      * @return bool|string
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getSessionInitiator($target)

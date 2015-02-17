@@ -65,7 +65,7 @@ class SummonrecordController extends AbstractRecord
     }
 
     /**
-     * preDispatch -- add Summon message.
+     * Use preDispatch event to add Summon message.
      *
      * @return void
      */

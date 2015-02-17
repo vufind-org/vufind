@@ -683,8 +683,8 @@ class AjaxController extends AbstractBase
      *
      * @param array $fields Solr fields to retrieve data from
      *
-     * @author   Chris Hallberg <crhallberg@gmail.com>
-     * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
+     * @author Chris Hallberg <crhallberg@gmail.com>
+     * @author Lutz Biedinger <lutz.biedinger@gmail.com>
      *
      * @return \Zend\Http\Response
      */
@@ -718,8 +718,8 @@ class AjaxController extends AbstractBase
     /**
      * Get entry information on entries tied to a specific map location
      *
-     * @author   Chris Hallberg <crhallberg@gmail.com>
-     * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
+     * @author Chris Hallberg <crhallberg@gmail.com>
+     * @author Lutz Biedinger <lutz.biedinger@gmail.com>
      *
      * @return mixed
      */
@@ -748,8 +748,8 @@ class AjaxController extends AbstractBase
      *
      * @param array $fields Solr fields to retrieve data from
      *
-     * @author   Chris Hallberg <crhallberg@gmail.com>
-     * @author   Till Kinstler <kinstler@gbv.de>
+     * @author Chris Hallberg <crhallberg@gmail.com>
+     * @author Till Kinstler <kinstler@gbv.de>
      *
      * @return \Zend\Http\Response
      */

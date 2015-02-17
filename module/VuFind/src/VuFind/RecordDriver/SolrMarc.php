@@ -682,7 +682,7 @@ class SolrMarc extends SolrDefault
     /**
      * Get hierarchical place names (MARC field 752)
      *
-     * returns an array of formatted hierarchical place names, consisting of all
+     * Returns an array of formatted hierarchical place names, consisting of all
      * alpha-subfields, concatenated for display
      *
      * @return array

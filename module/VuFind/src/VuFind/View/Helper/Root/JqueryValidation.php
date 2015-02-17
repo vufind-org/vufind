@@ -1,6 +1,6 @@
 <?php
 /**
- * jqueryValidation view helper
+ * View helper for jQuery validation
  *
  * PHP version 5
  *

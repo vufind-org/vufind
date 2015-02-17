@@ -80,6 +80,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($function, $params = null)
@@ -175,6 +176,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron, $holdDetails = null)
@@ -253,6 +255,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
@@ -545,23 +548,23 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $initResponse = $this->makeRequest($params);
 
         if ($initResponse->request_confirm) {
-
-              $confirmParams =  array("session" => $session,
-                        "profile" => $this->wsProfile,
-                        "bibkey" => $requestDetails['bibId'],
-                        "aspect" => "advanced",
-                        "lang" => "eng",
-                        "menu" => "request",
-                        "submenu" => "none",
-                        "source" => "~!horizon",
-                        "uri" => "",
-                        "link" => "direct",
-                        "request_finish" => "Request",
-                        "cl" => "PlaceRequestjsp",
-                        "pickuplocation" => $requestDetails['pickuplocation'],
-                        "notifyby" => $requestDetails['notify'],
-                        "GetXML" => "true"
-                        );
+            $confirmParams =  array(
+                "session" => $session,
+                "profile" => $this->wsProfile,
+                "bibkey" => $requestDetails['bibId'],
+                "aspect" => "advanced",
+                "lang" => "eng",
+                "menu" => "request",
+                "submenu" => "none",
+                "source" => "~!horizon",
+                "uri" => "",
+                "link" => "direct",
+                "request_finish" => "Request",
+                "cl" => "PlaceRequestjsp",
+                "pickuplocation" => $requestDetails['pickuplocation'],
+                "notifyby" => $requestDetails['notify'],
+                "GetXML" => "true"
+            );
 
             $request = $this->makeRequest($confirmParams);
 

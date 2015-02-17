@@ -113,6 +113,7 @@ class Sample extends AbstractBase
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
      * number, barcode.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHolding($id, array $patron = null)
@@ -129,6 +130,7 @@ class Sample extends AbstractBase
      * @param string $id The record id to retrieve the info for
      *
      * @return mixed     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
@@ -152,6 +154,7 @@ class Sample extends AbstractBase
      * whatever that may mean.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
@@ -169,6 +172,7 @@ class Sample extends AbstractBase
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
      * @return mixed An array of associative arrays representing reserve items.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
@@ -186,6 +190,7 @@ class Sample extends AbstractBase
      *
      * @return mixed           Associative array of patron info on successful login,
      * null on unsuccessful login.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)

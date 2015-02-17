@@ -71,6 +71,7 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
      * @param Console $console Console adapter
      *
      * @return array
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConsoleUsage(Console $console)

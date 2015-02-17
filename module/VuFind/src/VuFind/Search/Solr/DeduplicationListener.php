@@ -284,6 +284,7 @@ class DeduplicationListener
      * @param array  $sourcePriority  Array of source priorities keyed by source id
      *
      * @return array Local record data
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function appendDedupRecordFields($localRecordData, $dedupRecordData,

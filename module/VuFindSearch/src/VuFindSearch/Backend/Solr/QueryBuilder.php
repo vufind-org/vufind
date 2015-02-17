@@ -301,7 +301,6 @@ class QueryBuilder implements QueryBuilderInterface
      * @return string
      *
      * @see self::reduceQueryGroup()
-     *
      */
     protected function reduceQueryGroupComponents(AbstractQuery $component)
     {
@@ -335,7 +334,6 @@ class QueryBuilder implements QueryBuilderInterface
      * @param SearchHandler $handler Search handler
      *
      * @return string
-     *
      */
     protected function createSearchString($string, SearchHandler $handler = null)
     {

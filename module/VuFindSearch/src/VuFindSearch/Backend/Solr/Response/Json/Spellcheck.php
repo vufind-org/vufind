@@ -194,7 +194,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return integer
      *
-     * @see    http://www.php.net/manual/en/arrayobject.uksort.php
+     * @see http://www.php.net/manual/en/arrayobject.uksort.php
      */
     public function compareTermLength($a, $b)
     {
