@@ -231,8 +231,8 @@ class CollectionsController extends AbstractBase
      * Function to sort the results and find the position of the from
      * value in the result set; if the value doesn't exist, it's inserted.
      *
-     * @param array  &$result Array to sort
-     * @param string $from    Position to find
+     * @param array  $result Array to sort
+     * @param string $from   Position to find
      *
      * @return int
      */
@@ -266,7 +266,7 @@ class CollectionsController extends AbstractBase
     /**
      * Function to normalize the names so they sort properly
      *
-     * @param array &$result Array to sort (passed by reference to use less
+     * @param array $result Array to sort (passed by reference to use less
      * memory)
      *
      * @return array $resultOut

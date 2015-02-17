@@ -270,7 +270,7 @@ class Record extends AbstractHelper
     }
 
     /**
-     * collects ISBN, LCCN, and OCLC numbers to use in calling preview APIs
+     * Collects ISBN, LCCN, and OCLC numbers to use in calling preview APIs
      *
      * @return array
      */

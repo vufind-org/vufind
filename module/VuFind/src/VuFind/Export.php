@@ -90,7 +90,7 @@ class Export
                     if (isset($this->mainConfig->Export->$option)
                         && $this->mainConfig->Export->$option == true
                     ) {
-                            $this->bulkOptions[] = $option;
+                        $this->bulkOptions[] = $option;
                     }
                 }
             }
@@ -324,5 +324,18 @@ class Export
     {
         return isset($this->exportConfig->$format->headers)
             ? $this->exportConfig->$format->headers : array();
+    }
+
+    /**
+     * Get the display label for the specified export format.
+     *
+     * @param string $format Format identifier
+     *
+     * @return string
+     */
+    public function getLabelForFormat($format)
+    {
+        return isset($this->exportConfig->$format->label)
+            ? $this->exportConfig->$format->label : $format;
     }
 }

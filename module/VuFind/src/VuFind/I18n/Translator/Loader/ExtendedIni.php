@@ -92,13 +92,14 @@ class ExtendedIni implements FileLoaderInterface
     }
 
     /**
-     * load(): defined by LoaderInterface.
+     * Load method defined by FileLoaderInterface.
      *
      * @param string $locale   Locale to read from language file
      * @param string $filename Language file to read (not used)
      *
      * @return TextDomain
      * @throws InvalidArgumentException
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function load($locale, $filename)

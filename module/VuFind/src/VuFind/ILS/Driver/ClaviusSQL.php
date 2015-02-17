@@ -31,8 +31,6 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
 /**
  * VuFind Driver for Clavius SQL (version: 0.1 dev)
  *
- * last updated: 09/06/2012
- *
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Josef Moravec <josef.moravec@knihovna-uo.cz>
@@ -151,7 +149,6 @@ class ClaviusSQL extends AbstractBase
       *
       * @return array An associative array with key = department ID,
       * value = department name.
-      *
       */
     public function getDepartments()
     {
@@ -181,7 +178,6 @@ class ClaviusSQL extends AbstractBase
       *
       * @return array An associative array with key = fine code,
       * value = fine description
-      *
       */
     public function getFineTypes()
     {
@@ -213,7 +209,6 @@ class ClaviusSQL extends AbstractBase
       * @throws ILSException
       *
       * @return array An associative array with key = fund ID, value = fund name.
-      *
       */
     public function getFunds()
     {
@@ -390,6 +385,7 @@ class ClaviusSQL extends AbstractBase
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($id, $details)
@@ -467,6 +463,7 @@ class ClaviusSQL extends AbstractBase
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
@@ -512,6 +509,7 @@ class ClaviusSQL extends AbstractBase
      *   <li>title - The title of the item (optional - only used if the record
      * cannot be found in VuFind's index).</li>
      * </ul>
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyHolds($patron)
@@ -574,6 +572,7 @@ class ClaviusSQL extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
@@ -808,6 +807,7 @@ class ClaviusSQL extends AbstractBase
      *   <li>item_id - this is used to match up renew responses and must match
      * the item_id in the renew response</li>
      * </ul>
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($user, $history = false)

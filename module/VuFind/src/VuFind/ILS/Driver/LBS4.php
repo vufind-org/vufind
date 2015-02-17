@@ -111,6 +111,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($function, $params = null)
@@ -188,7 +189,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param string $status status as retrieved from db
      *
      * @return string the message to be displayed
-     *
      */
     protected function getStatusText($indi, $status)
     {
@@ -218,6 +218,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHolding($ppn, array $patron = null)
@@ -347,6 +348,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param array  $callnumber The callnumber of the item
      *
      * @return string On success, a string to be displayed near the item
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getNote($loanind, $locid, $callnumber)
@@ -380,6 +382,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      *
      * @return string On success, a url string to be displayed as
      * storage link.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getStorage($locid, $callnumber)
@@ -699,6 +702,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param string $id The record id to retrieve the info for
      *
      * @return mixed     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)

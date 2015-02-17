@@ -133,7 +133,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * small wrapper for sendRequest, process to simplify error handling.
+     * Small wrapper for sendRequest, process to simplify error handling.
      *
      * @param string $qs     Query string
      * @param string $method HTTP method

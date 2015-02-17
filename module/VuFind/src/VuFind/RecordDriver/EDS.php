@@ -109,7 +109,7 @@ class EDS extends SolrDefault
     }
 
     /**
-     * obtain an array or authors indicated on the record
+     * Obtain an array or authors indicated on the record
      *
      * @return array
      */
@@ -561,6 +561,7 @@ class EDS extends SolrDefault
      * @param string $format Export format
      *
      * @return bool
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function exportDisabled($format)

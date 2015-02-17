@@ -39,7 +39,7 @@ namespace VuFind\Db\Table;
 class ChangeTracker extends Gateway
 {
     /**
-     * date/time format for database
+     * Date/time format for database
      *
      * @var string
      */

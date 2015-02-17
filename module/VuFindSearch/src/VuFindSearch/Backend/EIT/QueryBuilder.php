@@ -54,7 +54,6 @@ class QueryBuilder
 
     /**
      * Constructor
-     *
      */
     public function __construct()
     {

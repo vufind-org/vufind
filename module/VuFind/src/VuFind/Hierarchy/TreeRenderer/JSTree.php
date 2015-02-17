@@ -255,8 +255,6 @@ class JSTree extends AbstractBase
     }
 
     /**
-     * transformCollectionXML
-     *
      * Transforms Collection XML to Desired Format
      *
      * @param string $context     The Context in which the tree is being displayed

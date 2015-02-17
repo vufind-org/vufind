@@ -86,8 +86,6 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * get
-     *
      * This method is responsible for connecting to Wikipedia via the REST API
      * and pulling the content for the relevant author.
      *

@@ -73,8 +73,6 @@ class SimilarItemsCarousel extends AbstractBase
     }
 
     /**
-     * getResults
-     *
      * Get an array of Record Driver objects representing items similar to the one
      * passed to the constructor.
      *

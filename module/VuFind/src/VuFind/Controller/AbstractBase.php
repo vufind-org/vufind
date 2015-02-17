@@ -44,6 +44,7 @@ use VuFind\Exception\Forbidden as ForbiddenException,
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class AbstractBase extends AbstractActionController
@@ -60,7 +61,7 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
-     * preDispatch -- block access when appropriate.
+     * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
      *
@@ -121,11 +122,12 @@ class AbstractBase extends AbstractActionController
     /**
      * Create a new ViewModel to use as an email form.
      *
-     * @param array $params Parameters to pass to ViewModel constructor.
+     * @param array  $params         Parameters to pass to ViewModel constructor.
+     * @param string $defaultSubject Default subject line to use.
      *
      * @return ViewModel
      */
-    protected function createEmailViewModel($params = null)
+    protected function createEmailViewModel($params = null, $defaultSubject = null)
     {
         // Build view:
         $view = $this->createViewModel($params);
@@ -134,6 +136,10 @@ class AbstractBase extends AbstractActionController
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $view->disableFrom
             = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
+        $view->editableSubject = isset($config->Mail->user_editable_subjects)
+            && $config->Mail->user_editable_subjects;
+        $view->maxRecipients = isset($config->Mail->maximum_recipients)
+            ? intval($config->Mail->maximum_recipients) : 1;
         $user = $this->getUser();
 
         // Send parameters back to view so form can be re-populated:
@@ -141,6 +147,9 @@ class AbstractBase extends AbstractActionController
             $view->to = $this->params()->fromPost('to');
             if (!$view->disableFrom) {
                 $view->from = $this->params()->fromPost('from');
+            }
+            if ($view->editableSubject) {
+                $view->subject = $this->params()->fromPost('subject');
             }
             $view->message = $this->params()->fromPost('message');
         }
@@ -163,6 +172,9 @@ class AbstractBase extends AbstractActionController
             ) {
                 $view->from = $config->Mail->default_from;
             }
+        }
+        if (!isset($view->subject) || empty($view->subject)) {
+            $view->subject = $defaultSubject;
         }
 
         // Fail if we're missing a from and the form element is disabled:

@@ -202,6 +202,7 @@ class PICA extends DAIA
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($patron)
@@ -345,7 +346,7 @@ class PICA extends DAIA
     }
 
     /**
-     * get the number of renewals
+     * Get the number of renewals
      *
      * @param string $barcode Barcode of the medium
      *
@@ -376,6 +377,7 @@ class PICA extends DAIA
      * @param string $recordId Record identifier
      *
      * @return bool            True on success
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function renew($recordId)
@@ -411,6 +413,7 @@ class PICA extends DAIA
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyFines($patron)
@@ -477,6 +480,7 @@ class PICA extends DAIA
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyHolds($patron)
@@ -615,7 +619,7 @@ class PICA extends DAIA
     // protected functions to connect to PICA
 
     /**
-     * post something to a foreign host
+     * Post something to a foreign host
      *
      * @param string $file         POST target URL
      * @param string $data_to_send POST data
@@ -656,7 +660,7 @@ class PICA extends DAIA
     }
 
     /**
-     * gets a PPN by its barcode
+     * Gets a PPN by its barcode
      *
      * @param string $barcode Barcode to use for lookup
      *
@@ -680,7 +684,7 @@ class PICA extends DAIA
     }
 
     /**
-     * gets holdings of magazine and journal exemplars
+     * Gets holdings of magazine and journal exemplars
      *
      * @param string $ppn PPN identifier
      *

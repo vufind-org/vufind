@@ -55,10 +55,9 @@ class Params extends \VuFind\Search\Base\Params
     protected $extraFilterList = array();
 
     /**
-     * property to determine if the request using this parameters objects is for
-     * setup only.
+     * Is the request using this parameters objects for setup only?
      *
-     * @var boolean
+     * @var bool
      */
     public $isSetupOnly = false;
 

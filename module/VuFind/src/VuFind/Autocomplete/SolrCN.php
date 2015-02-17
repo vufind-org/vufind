@@ -42,8 +42,6 @@ namespace VuFind\Autocomplete;
 class SolrCN extends Solr
 {
     /**
-     * setConfig
-     *
      * Set parameters that affect the behavior of the autocomplete handler.
      * These values normally come from the search configuration file.
      *
@@ -58,8 +56,6 @@ class SolrCN extends Solr
     }
 
     /**
-     * mungeQuery
-     *
      * Process the user query to make it suitable for a Solr query.
      *
      * @param string $query Incoming user query

@@ -43,7 +43,7 @@ use VuFind\Config\Locator as ConfigLocator,
 class InstallController extends AbstractBase
 {
     /**
-     * preDispatch -- block access when appropriate.
+     * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
      *

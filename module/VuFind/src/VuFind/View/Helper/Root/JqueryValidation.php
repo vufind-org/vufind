@@ -1,6 +1,6 @@
 <?php
 /**
- * jqueryValidation view helper
+ * View helper for jQuery validation
  *
  * PHP version 5
  *
@@ -79,7 +79,7 @@ class JqueryValidation extends AbstractHelper
                 $output .= ',';
             }
             $translator = $this->getView()->plugin('translate');
-            $message = $translator($message);
+            $message = addslashes($translator($message));
             $output .= "$rule:'$message'";
             $first = false;
         }

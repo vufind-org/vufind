@@ -75,6 +75,7 @@ class BookSite extends \VuFind\Content\AbstractBase
      * @throws \Exception
      * @return array     Returns array with review data.
      * @author Joe Atzberger
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
