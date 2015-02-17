@@ -1,0 +1,14 @@
+<? $list = $this->params->getSortList(); if (!empty($list)): ?>
+  <form class="form-inline jumpMenuForm sortForm" action="<?=$this->currentPath()?>" method="get" name="sort">
+    <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
+    <label for="sort_options_1" class="hidden-sm hidden-xs"><?=$this->transEsc('Sort')?></label>
+    <span class="jump-menu-style controls fa-arrow-down">
+    <select id="sort_options_1" name="sort" class="jumpMenu form-control">
+      <? foreach ($list as $sortType => $sortData): ?>
+        <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected']?' selected="selected"':''?>><?=$this->transEsc($sortData['desc'])?></option>
+      <? endforeach; ?>
+    </select>
+    </span>
+    <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEsc("Set")?>" /></noscript>
+  </form>
+<? endif; ?>

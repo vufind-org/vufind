@@ -160,36 +160,108 @@
     content: "\f14a"; 
 }
 // Default styling of Finna Jump menus
-.jumpMenu {
-    border: none;
-    background: transparent;
-    color: #fff;
-    padding: 0px 20px 0px 10px;
-    z-index: 1;
-    position: relative;
+
+.jump-menu-style {
+	border: none;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	padding: 0;
+	position: relative;
+	width: auto;
+	z-index: 1;
+	display: inline-block;
+    min-width: 60px;
+    font-weight: 500;
+	& select {
+        font-family: "Helvetica Neue", arial;
+        background-color: transparent;
+    	border: 0 none;
+    	box-shadow: none;
+    	color: @body-bg;
+    	display: block;
+    	font-size: 100%;
+    	line-height: 1em;
+    	margin: 0;
+    	padding: .5em;
+    	width: 100%;
+    	-webkit-box-sizing: border-box;
+    	-moz-box-sizing: border-box;
+    	box-sizing: border-box;
+    	-webkit-appearance: none;
+    	-moz-appearance: none;
+    	appearance: none;
+    	&:focus {
+	        outline: none;
+	        box-shadow: none;
+    	}
+    }
+    & option {
+        background: @body-bg;
+        color: @gray;
+        padding: 5px;
+        &:hover {
+            background-color: @gray-light;   
+        }
+    }
+    
+	&:before {
+    	display: block;
+    	font-size: 1em;
+    	height: 100%;
+    	padding: 0 20px 0px 2px;
+    	position: absolute;
+    	top: 0;
+    	right: 0px;
+    	text-align: center;
+    	width: 1em;
+    	z-index: -1;    
+	}
+	&.controls {
+	    border-radius: @finna-button-radius;
+        background-color: @brand-primary;
+        line-height: 2.5em;
+        border-top-right-radius: 10px;
+    	border-bottom-right-radius: 10px;
+    	margin-bottom: 10px;
+    	& option:checked {
+            background: @btn-primary-bg;
+            color: @body-bg;
+    	}
+	}
+	&.controls:before {
+	    background: @btn-primary-bg;
+	    border-top-right-radius: 10px;
+	    border-bottom-right-radius: 10px;
+	    color: @body-bg;
+	}
+	&.prefilter-select {
+        color: rgb(136, 136, 136);
+        font-weight: bold;
+        display: inline-block;
+        padding-right: 17px;
+        padding-top: 1px;
+        position: relative;
+        background: transparent;
+        line-height: 35px;
+        width: 21%;
+        & select {
+          color: @gray;   
+        }
+    }   
+	&.prefilter-select:before {
+	    top: 1px;
+	    right: 12px;
+	    background: @body-bg;
+	}
 }
-.jumpMenuStyle {
-    background: @brand-primary;
-    padding: 8px 0px 10px;
-    border-radius: @finna-button-radius;
+.jump-menu-style select::-ms-expand {
+	display: none; /* to ie 10 */
 }
-.jumpMenu option {
-    background: #fff;
-    color: @gray;
-    border: 1px solid @gray-lighter;
-    padding: 8px 2px;
-}
-.jumpMenu option:hover {
-    background:  @brand-primary;  
-}
-.jumpMenuForm i {
-  color: #fff;
-  top: 0px;
-  position: relative;
-  margin-left: -20px;
-  z-index: 0;
-  width: 20px;
-  text-align: left;
+:-moz-any(.prefilter-select,.jump-menu-style.controls):before {
+    background-color:  @body-bg; /* this is necessary for overcome the caret default browser */
+    pointer-events: none; /* https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events  */
+	z-index: 1; /* this is necessary for overcome the pseudo element */ 
 }
 
 // fixes for ie & others
@@ -203,7 +275,8 @@
 }
 // List & grid view
 .view-buttons {
-    margin-right: 10px;   
+    margin-right: 10px;
+    margin-bottom: 10px;
 }
 .view-buttons, .view-buttons a {
     display: inline-block;
