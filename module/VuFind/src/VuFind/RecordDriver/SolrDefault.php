@@ -193,26 +193,20 @@ class SolrDefault extends AbstractBase
      */
     public function getAllSubjectHeadings()
     {
-        $topic = isset($this->fields['topic']) ? $this->fields['topic'] : array();
-        $geo = isset($this->fields['geographic']) ?
-            $this->fields['geographic'] : array();
-        $genre = isset($this->fields['genre']) ? $this->fields['genre'] : array();
+        $headings = [];
+        foreach (['topic', 'geographic', 'genre', 'era'] as $field) {
+            if (isset($this->fields[$field])) {
+                $headings = array_merge($headings, $this->fields[$field]);
+            }
+        }
 
         // The Solr index doesn't currently store subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.  Other record
         // drivers (i.e. MARC) can offer this data in a more granular format.
-        $retval = array();
-        foreach ($topic as $t) {
-            $retval[] = array($t);
-        }
-        foreach ($geo as $g) {
-            $retval[] = array($g);
-        }
-        foreach ($genre as $g) {
-            $retval[] = array($g);
-        }
-
-        return $retval;
+        $callback = function ($i) {
+            return array($i);
+        };
+        return array_map($callback, array_unique($headings));
     }
 
     /**
