@@ -61,7 +61,6 @@ class Feed extends AbstractRenderer
         $this->_setItemsPerPage($this->dom, $this->base);
         $this->_setQuery($this->dom, $this->base);
         $this->_setLinks($this->dom, $this->base);
-        // TODO other custom elements
         if ($this->called) {
             $this->_appendNamespaces();
         }
