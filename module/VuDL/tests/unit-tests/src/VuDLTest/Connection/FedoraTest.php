@@ -42,9 +42,9 @@ class FedoraTest extends \VuFindTest\Unit\TestCase
     {
         $subject = $this->getMock(
             '\VuDL\Connection\Fedora',
-            array('getDatastreamContent'),
+            array('getDatastreamContent', 'getDatastreamHeaders'),
             array((object) array(
-                'Fedora' => (object) array(
+                'Fedora'=>(object) array(
                     'url_base' => 'http://jsontest.com/',
                     'query_url' => 'QUERY',
                     'adminUser' => 'ADMIN',
@@ -56,7 +56,14 @@ class FedoraTest extends \VuFindTest\Unit\TestCase
             $this->onConsecutiveCalls(
                 '<hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/vudl-system:CLASS1"/><hasModel xmlns="info:fedora/fedora-system:def/model#" rdf:resource="info:fedora/vudl-system:CLASS2"/>',
                 '<xml><a><b id="c"></b></a></xml>',
+                'xlink:href="test_passed"',
                 '<dc:title>T</dc:title><dc:id>ID</dc:id>'
+            )
+        );
+        $subject->method('getDatastreamHeaders')->will(
+            $this->onConsecutiveCalls(
+                array('HTTP/1.1 200 OK'),
+                array('HTTP/1.1 404 EVERYTHING IS WRONG')
             )
         );
 
@@ -69,7 +76,7 @@ class FedoraTest extends \VuFindTest\Unit\TestCase
 
         $this->assertTrue(is_array($subject->getDatastreamHeaders('id', 'fake')));
 
-        $this->assertEquals(array('title' => 'T','id' => 'ID'), $subject->getDetails('id'));
+        $this->assertEquals(array('title'=>'T','id'=>'ID'), $subject->getDetails('id'));
         // Detail formatting tested in Solr
 
         $this->assertEquals('Zend\Http\Client', get_class($subject->getHttpClient('url')));
