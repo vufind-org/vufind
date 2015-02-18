@@ -1371,6 +1371,198 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Send user's library cards to the view
+     *
+     * @return mixed
+     */
+    public function librarycardsAction()
+    {
+        if (!($user = $this->getUser())) {
+            return $this->forceLogin();
+        }
+
+        // Check for "delete card" request; parameter may be in GET or POST depending
+        // on calling context.
+        $deleteId = $this->params()->fromPost(
+            'delete', $this->params()->fromQuery('delete')
+        );
+        if ($deleteId) {
+            // If the user already confirmed the operation, perform the delete now;
+            // otherwise prompt for confirmation:
+            $confirm = $this->params()->fromPost(
+                'confirm', $this->params()->fromQuery('confirm')
+            );
+            if ($confirm) {
+                $success = $this->performDeleteLibraryCard($deleteId);
+                if ($success !== true) {
+                    return $success;
+                }
+            } else {
+                return $this->confirmDeleteLibraryCard($deleteId);
+            }
+        }
+
+        return $this->createViewModel(
+            array('libraryCards' => $user->getLibraryCards())
+        );
+    }
+
+    /**
+     * Process the "edit library card" submission.
+     *
+     * @param \VuFind\Db\Row\User $user Logged in user
+     *
+     * @return object|bool        Response object if redirect is
+     * needed, false if form needs to be redisplayed.
+     */
+    protected function processEditLibraryCard($user)
+    {
+        $cardName = $this->params()->fromPost('card_name', '');
+        $target = $this->params()->fromPost('target', '');
+        $username = $this->params()->fromPost('username', '');
+        $password = $this->params()->fromPost('password', '');
+
+        if (!$username || !$password) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('authentication_error_blank');
+            return false;
+        }
+
+        // Check that the credentials are correct
+        $request = $this->getRequest();
+        if (!$this->getAuthManager()->validateCredentials($request)) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('authentication_error_invalid');
+            return false;
+        }
+
+        if ($target) {
+            $username = "$target.$username";
+        }
+
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        try {
+            $user->saveLibraryCard(
+                $id == 'NEW' ? null : $id, $cardName, $username, $password
+            );
+        } catch(\VuFind\Exception\LibraryCard $e) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage($e->getMessage());
+            return false;
+        }
+
+        return $this->redirect()->toRoute('myresearch-librarycards');
+    }
+
+    /**
+     * Send user's library card to the edit view
+     *
+     * @return mixed
+     */
+    public function editlibrarycardAction()
+    {
+        // User must be logged in to edit library cards:
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+
+        // Process form submission:
+        if ($this->formWasSubmitted('submit')) {
+            if ($redirect = $this->processEditLibraryCard($user)) {
+                return $redirect;
+            }
+        }
+
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
+
+        $target = null;
+        $username = $card->cat_username;
+        if (in_array('MultiILS', $this->getAuthManager()->getSelectableAuthOptions())
+            && strstr($username, '.')
+        ) {
+            list($target, $username) = explode('.', $username, 2);
+        }
+        $request = array(
+            'target' => $target,
+            'username' => $username,
+            'password' => $card->cat_password
+        );
+
+        // Send the card to the view:
+        return $this->createViewModel(
+            array(
+                'request' => $request,
+                'card' => $card
+            )
+        );
+    }
+
+    /**
+     * Creates a confirmation box to delete or not delete the current list
+     *
+     * @return mixed
+     */
+    public function deletelibraryCardAction()
+    {
+        // User must be logged in to edit library cards:
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+
+        // Get requested library card ID:
+        $cardID = $this->params()
+            ->fromPost('cardID', $this->params()->fromQuery('cardID'));
+
+        // Have we confirmed this?
+        $confirm = $this->params()->fromPost(
+            'confirm', $this->params()->fromQuery('confirm')
+        );
+        if ($confirm) {
+            $user->deleteLibraryCard($cardID);
+
+            // Success Message
+            $this->flashMessenger()->setNamespace('info')
+                ->addMessage('Library Card Deleted');
+            // Redirect to MyResearch library cards
+            return $this->redirect()->toRoute('myresearch-librarycards');
+        }
+
+        // If we got this far, we must display a confirmation message:
+        return $this->confirm(
+            'confirm_delete_library_card_brief',
+            $this->url()->fromRoute('myresearch-deletelibrarycard'),
+            $this->url()->fromRoute('userLibraryCard', array('id' => $cardID)),
+            'confirm_delete_library_card_text', array('listID' => $cardID)
+        );
+    }
+
+    /**
+     * Activates a library card
+     *
+     * @return \Zend\Http\Response
+     */
+    public function selectlibraryCardAction()
+    {
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+
+        $cardID = $this->params()->fromQuery('cardID');
+        $user->activateLibraryCard($cardID);
+
+        $this->setFollowupUrlToReferer();
+        if ($url = $this->getFollowupUrl()) {
+            $this->clearFollowupUrl();
+            return $this->redirect()->toUrl($url);
+        }
+        return $this->redirect()->toRoute('myresearch-home');
+    }
+
+    /**
      * Helper function for verification hashes
      *
      * @param string $hash User-unique hash string from request

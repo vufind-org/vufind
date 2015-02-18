@@ -703,7 +703,10 @@ $nonTabRecordActions = array(
 );
 
 // Define list-related routes -- route name => MyResearch action
-$listRoutes = array('userList' => 'MyList', 'editList' => 'EditList');
+$listRoutes = array(
+    'userList' => 'MyList', 'editList' => 'EditList',
+    'editLibraryCard' => 'EditLibraryCard'
+);
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = array(
@@ -728,7 +731,8 @@ $staticRoutes = array(
     'MyResearch/Email', 'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home',
     'MyResearch/ILLRequests', 'MyResearch/Logout',
-    'MyResearch/NewPassword', 'MyResearch/Profile',
+    'MyResearch/NewPassword', 'MyResearch/Profile', 'MyResearch/LibraryCards',
+    'MyResearch/SelectLibraryCard', 'MyResearch/DeleteLibraryCard',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
     'MyResearch/StorageRetrievalRequests', 'MyResearch/UserLogin',
     'MyResearch/Verify',
