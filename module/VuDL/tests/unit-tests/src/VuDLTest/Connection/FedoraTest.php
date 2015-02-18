@@ -44,7 +44,7 @@ class FedoraTest extends \VuFindTest\Unit\TestCase
             '\VuDL\Connection\Fedora',
             array('getDatastreamContent', 'getDatastreamHeaders'),
             array((object) array(
-                'Fedora'=>(object) array(
+                'Fedora' => (object) array(
                     'url_base' => 'http://jsontest.com/',
                     'query_url' => 'QUERY',
                     'adminUser' => 'ADMIN',
@@ -76,7 +76,7 @@ class FedoraTest extends \VuFindTest\Unit\TestCase
 
         $this->assertTrue(is_array($subject->getDatastreamHeaders('id', 'fake')));
 
-        $this->assertEquals(array('title'=>'T','id'=>'ID'), $subject->getDetails('id'));
+        $this->assertEquals(array('title' => 'T','id' => 'ID'), $subject->getDetails('id'));
         // Detail formatting tested in Solr
 
         $this->assertEquals('Zend\Http\Client', get_class($subject->getHttpClient('url')));
