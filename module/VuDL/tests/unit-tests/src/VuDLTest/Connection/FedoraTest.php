@@ -74,7 +74,7 @@ class FedoraTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals('<xml><a><b id="c"></b></a></xml>', $subject->getDatastreams('id'));
         $this->assertEquals('SimpleXMLElement', get_class($subject->getDatastreams('id', true)));
 
-        $this->assertTrue(is_array($subject->getDatastreamHeaders('id', 'fake')));
+        $this->assertEquals(array('test_passed', 'fake'), $subject->getCopyright('id', array('passed' => 'fake')));
 
         $this->assertEquals(array('title' => 'T','id' => 'ID'), $subject->getDetails('id'));
         // Detail formatting tested in Solr
