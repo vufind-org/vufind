@@ -1,14 +1,15 @@
-      <div class="col-sm-6">
+    <div class="row"> 
+      <div class="col-sm-9">
+      <h4 class="search-result-header">
       <? if ($this->results->getResultTotal() > 0): ?>
-        <?=$this->transEsc("Showing")?>
-        <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
-        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($this->results->getResultTotal())?></strong>
         <? if (isset($this->overrideSearchHeading)): ?>
           <?=$this->overrideSearchHeading?>
         <? elseif ($this->params->getsearchType() == 'basic'): ?>
-          <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($this->lookfor)?>'</strong>
+          <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong>
         <? endif; ?>
       <? else: ?>
-        <p class="lead"><?=$this->transEsc('nohit_heading')?></p>
+        <?=$this->transEsc('nohit_heading')?>
       <? endif; ?>
+      </h4>
       </div>
+    </div>

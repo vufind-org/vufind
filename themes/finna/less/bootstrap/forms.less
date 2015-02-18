@@ -121,13 +121,10 @@ output {
   background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
   border: 1px solid @input-border;
   border-radius: @input-border-radius;
-  padding: 0px 5px;
+  padding: 2px 5px;
   .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
   .transition(~"border-color ease-in-out .15s, box-shadow ease-in-out .15s");
   vertical-align: middle !important;
-  -moz-appearance: none; /* Firefox */
-  -webkit-appearance: none; /* Safari and Chrome */
-  appearance: none;
   // Customize the `:focus` state to imitate native WebKit styles.
   .form-control-focus();
 
@@ -276,7 +273,6 @@ input[type="checkbox"],
     font-size: @font-size-large;
     color: rgb(102, 102, 102);
     margin-left: 10px;
-    margin-top: 3px;
 }
 /* --- Autocomplete and form adjust accordingly --- */
 .twitter-typeahead {
@@ -293,24 +289,7 @@ input[type="checkbox"],
     margin-left: 0px; // Reset margin if we wrap this element inside typeahead
     width: 100%;   
 }
-.navbar-form select.form-control {
-  border: none;
-  box-shadow: none;
-  font-size: @font-size-base;
-  color: rgb(136, 136, 136);
-  font-weight: bold;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  display: inline-block;
-  width: 25%;
-  padding-right: 17px;
-  padding-top: 3px;
-  position: relative;
-  z-index: 1; // fake the arrow button
-  background: transparent;
-  line-height: 35px;
-}
+
 .search-controls .form-control {
     display:inline-block;
 }
