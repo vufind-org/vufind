@@ -453,7 +453,7 @@
 
     <lst name="lcc">
       <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/lcc_browse.db</str>
-      <str name="field">callnumber-a</str>
+      <str name="field">callnumber-raw</str>
       <str name="normalizer">org.vufind.util.LCCallNormalizer</str>
     </lst>
 
