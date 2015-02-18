@@ -7,47 +7,47 @@
 // --------------------------------------------------
 
 .btn {
-  display: inline-block;
-  margin-bottom: 0; // For input.btn
-  font-weight: @btn-font-weight;
-  text-align: center;
-  vertical-align: middle;
-  cursor: pointer;
-  background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
-  border: 1px solid transparent;
-  white-space: nowrap;
-  .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @finna-button-radius);
-  .user-select(none);
+    display: inline-block;
+    margin-bottom: 0; // For input.btn
+    font-weight: @btn-font-weight;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
+    border: 1px solid transparent;
+    white-space: nowrap;
+    .button-size(@padding-base-vertical; @padding-base-horizontal; @font-size-base; @line-height-base; @finna-button-radius);
+    .user-select(none);
 
-  &,
-  &:active,
-  &.active {
-    &:focus {
-      .tab-focus();
+    &,
+    &:active,
+    &.active {
+        &:focus {
+            .tab-focus();
+        }
     }
-  }
-
-  &:hover,
-  &:focus {
-    color: @btn-default-color;
-    text-decoration: none;
-  }
-
-  &:active,
-  &.active {
-    outline: 0;
-    background-image: none;
-    .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
-  }
-
-  &.disabled,
-  &[disabled],
-  fieldset[disabled] & {
-    cursor: not-allowed;
-    pointer-events: none; // Future-proof disabling of clicks
-    .opacity(.65);
-    .box-shadow(none);
-  }
+    
+    &:hover,
+    &:focus {
+        color: @btn-default-color;
+        text-decoration: none;
+    }
+    
+    &:active,
+    &.active {
+        outline: 0;
+        background-image: none;
+        .box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+    }
+    
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        cursor: not-allowed;
+        pointer-events: none; // Future-proof disabling of clicks
+        .opacity(.65);
+        .box-shadow(none);
+    }
 }
 
 
@@ -91,11 +91,11 @@
     vertical-align: top;
     line-height: 25px;
     @media(max-width:@screen-xs-max) {
-         float:right;   
+        float:right;   
     }
     @media(min-width:@screen-sm-min) and (max-width:@screen-sm-max) {
-         float:right;
-         margin-right: 17%;
+        float:right;
+        margin-right: 17%;
     }
 }
 .searchbox .checkbox {
@@ -162,39 +162,40 @@
 // Default styling of Finna Jump menus
 
 .jump-menu-style {
-	border: none;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	box-sizing: border-box;
-	padding: 0;
-	position: relative;
-	width: auto;
-	z-index: 1;
-	display: inline-block;
+    border: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0;
+    position: relative;
+    width: auto;
+    z-index: 1;
+    display: inline-block;
     min-width: 60px;
     font-weight: 500;
-	& select {
+    
+    & select {
         font-family: "Helvetica Neue", arial;
         background-color: transparent;
-    	border: 0 none;
-    	box-shadow: none;
-    	color: @body-bg;
-    	display: block;
-    	font-size: 100%;
-    	line-height: 1em;
-    	margin: 0;
-    	padding: .5em;
-    	width: 100%;
-    	-webkit-box-sizing: border-box;
-    	-moz-box-sizing: border-box;
-    	box-sizing: border-box;
-    	-webkit-appearance: none;
-    	-moz-appearance: none;
-    	appearance: none;
-    	&:focus {
-	        outline: none;
-	        box-shadow: none;
-    	}
+        border: 0 none;
+        box-shadow: none;
+        color: @body-bg;
+        display: block;
+        font-size: 100%;
+        line-height: 1em;
+        margin: 0;
+        padding: .5em;
+        width: 100%;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        &:focus {
+            outline: none;
+            box-shadow: none;
+        }
     }
     & option {
         background: @body-bg;
@@ -205,37 +206,38 @@
         }
     }
     
-	&:before {
-    	display: block;
-    	font-size: 1em;
-    	height: 100%;
-    	padding: 0 20px 0px 2px;
-    	position: absolute;
-    	top: 0;
-    	right: 0px;
-    	text-align: center;
-    	width: 1em;
-    	z-index: -1;    
-	}
-	&.controls {
-	    border-radius: @finna-button-radius;
+    &:before {
+        display: block;
+        font-size: 1em;
+        height: 100%;
+        padding: 0 20px 0px 2px;
+        position: absolute;
+        top: 0;
+        right: 0px;
+        text-align: center;
+        width: 1em;
+        z-index: -1;    
+    }
+    &.controls {
+        border-radius: @finna-button-radius;
         background-color: @brand-primary;
         line-height: 2.5em;
         border-top-right-radius: 10px;
-    	border-bottom-right-radius: 10px;
-    	margin-bottom: 10px;
-    	& option:checked {
+        border-bottom-right-radius: 10px;
+        margin-bottom: 10px;
+        
+        & option:checked {
             background: @btn-primary-bg;
             color: @body-bg;
-    	}
-	}
-	&.controls:before {
-	    background: @btn-primary-bg;
-	    border-top-right-radius: 10px;
-	    border-bottom-right-radius: 10px;
-	    color: @body-bg;
-	}
-	&.prefilter-select {
+        }   
+    }
+    &.controls:before {
+        background: @btn-primary-bg;
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+        color: @body-bg;
+    }
+    &.prefilter-select {
         color: rgb(136, 136, 136);
         font-weight: bold;
         display: inline-block;
@@ -244,35 +246,28 @@
         position: relative;
         background: transparent;
         line-height: 35px;
-        width: 21%;
+        width: 26%;
+        
         & select {
           color: @gray;   
         }
     }   
-	&.prefilter-select:before {
-	    top: 1px;
-	    right: 12px;
-	    background: @body-bg;
-	}
+    &.prefilter-select:before {
+        top: 1px;
+        right: 12px;
+        background: @body-bg;
+    }
 }
 .jump-menu-style select::-ms-expand {
-	display: none; /* to ie 10 */
+    display: none; /* to ie 10 */
 }
 :-moz-any(.prefilter-select,.jump-menu-style.controls):before {
     background-color:  @body-bg; /* this is necessary for overcome the caret default browser */
     pointer-events: none; /* https://developer.mozilla.org/en-US/docs/Web/CSS/pointer-events  */
-	z-index: 1; /* this is necessary for overcome the pseudo element */ 
+    z-index: 1; /* this is necessary for overcome the pseudo element */ 
 }
 
-// fixes for ie & others
-@media(min-width:@screen-md-min) {
-    .sortForm {
-        min-width: 30%;   
-    }
-    .limitForm {
-        min-width: 30%;   
-    }
-}
+
 // List & grid view
 .view-buttons {
     margin-right: 10px;
