@@ -87,6 +87,14 @@ class ResultFeed extends AbstractHelper
         $manager->setInvokableClass(
             'dublincoreentry', 'VuFind\Feed\Writer\Extension\DublinCore\Entry'
         );
+        $manager->setInvokableClass(
+            'opensearchrendererfeed',
+            'VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed'
+        );
+        $manager->setInvokableClass(
+            'opensearchfeed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
+        );
+        FeedWriter::registerExtension('OpenSearch');
     }
 
     /**
@@ -125,12 +133,44 @@ class ResultFeed extends AbstractHelper
             $results->getParams()->getView()
         );
 
+        $params = $results->getParams();
+
+        $feed->addLink(
+            $baseUrl . $results->getUrlQuery()->setPage(1, false),
+            'first',
+            $params->getView()
+        );
+        if($params->getPage() > 1) {
+            $feed->addLink(
+                $baseUrl . $results->getUrlQuery()->setPage($params->getPage()-1, false),
+                'previous',
+                $params->getView()
+            );
+        }
+        $lastPage = ceil($results->getResultTotal() / $params->getLimit());
+        if($params->getPage() < $lastPage) {
+            $feed->addLink(
+                $baseUrl . $results->getUrlQuery()->setPage($params->getPage()+1, false),
+                'next',
+                $params->getView()
+            );
+        }
+        $feed->addLink(
+            $baseUrl . $results->getUrlQuery()->setPage($lastPage, false),
+            'last',
+            $params->getView()
+        );
+
         $records = $results->getResults();
         $feed->setDescription(
-            $translator('Displaying the top') . ' ' . count($records)
-            . ' ' . $translator('search results of') . ' '
-            . $results->getResultTotal() . ' ' . $translator('found')
+            $translator('Showing') . ' ' . $results->getStartRecord() . '-' .
+            $results->getEndRecord() . ' ' . $translator('of') . ' ' . $results->getResultTotal()
         );
+
+        $feed->setTotalResults($results->getResultTotal());
+        $feed->setItemsPerPage($params->getLimit());
+        $feed->setStartIndex(($params->getPage()-1) * $params->getLimit());
+        $feed->setSearchTerms($params->getQuery()->getString());
 
         foreach ($records as $current) {
             $this->addEntry($feed, $current);
