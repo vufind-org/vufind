@@ -179,8 +179,11 @@ class Bootstrapper
         // the config file if this doesn't work -- different systems may vary in
         // their behavior here.
         setlocale(
-            LC_MONETARY,
-            ["{$this->config->Site->locale}.UTF-8", $this->config->Site->locale]
+            LC_ALL, [
+                "{$this->config->Site->locale}.UTF8",
+                "{$this->config->Site->locale}.UTF-8",
+                $this->config->Site->locale
+            ]
         );
         date_default_timezone_set($this->config->Site->timezone);
     }

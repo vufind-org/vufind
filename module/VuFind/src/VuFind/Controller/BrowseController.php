@@ -611,13 +611,10 @@ class BrowseController extends AbstractBase
             if (isset($this->config->Browse->alphabetical_order)
                 && $this->config->Browse->alphabetical_order
             ) {
-                if (isset($this->config->Site->locale)) {
-                    setlocale(LC_ALL, $this->config->Site->locale . ".utf8");
-                    $callback = function ($a, $b) {
-                        return strcoll($a['displayText'], $b['displayText']);
-                    };
-                    usort($result[$facet]['list'], $callback);
-                }
+                $callback = function ($a, $b) {
+                    return strcoll($a['displayText'], $b['displayText']);
+                };
+                usort($result[$facet]['list'], $callback);
             }
             return $result[$facet]['list'];
         } else {
