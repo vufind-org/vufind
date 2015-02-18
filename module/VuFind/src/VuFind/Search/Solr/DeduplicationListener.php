@@ -107,8 +107,8 @@ class DeduplicationListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'pre', array($this, 'onSearchPre'));
-        $manager->attach('VuFind\Search', 'post', array($this, 'onSearchPost'));
+        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
     }
 
     /**
@@ -172,7 +172,7 @@ class DeduplicationListener
         $params = $event->getParam('params');
         $buildingPriority = $this->determineBuildingPriority($params);
 
-        $idList = array();
+        $idList = [];
         // Find out the best records and list their IDs:
         $result = $event->getTarget();
         foreach ($result->getRecords() as $record) {
@@ -186,7 +186,7 @@ class DeduplicationListener
             $priority = 99999;
             $undefPriority = 99999;
             // Find the document that matches the source priority best:
-            $dedupData = array();
+            $dedupData = [];
             foreach ($localIds as $localId) {
                 $localPriority = null;
                 list($source) = explode('.', $localId, 2);
@@ -211,10 +211,10 @@ class DeduplicationListener
                     $dedupId = $localId;
                     $priority = $localPriority;
                 }
-                $dedupData[$source] = array(
+                $dedupData[$source] = [
                     'id' => $localId,
                     'priority' => isset($localPriority) ? $localPriority : 99999
-                );
+                ];
             }
             $fields['dedup_id'] = $dedupId;
             $idList[] = $dedupId;
@@ -315,7 +315,7 @@ class DeduplicationListener
      */
     protected function determineBuildingPriority($params)
     {
-        $result = array();
+        $result = [];
         foreach ($params->get('fq') as $fq) {
             if (strncmp($fq, 'building:', 9) == 0) {
                 if (preg_match(

@@ -149,9 +149,9 @@ class Options extends \VuFind\Search\Base\Options
                 $this->viewOptions[$key] = $value;
             }
         } elseif (isset($searchSettings->General->default_view)) {
-            $this->viewOptions = array($this->defaultView => $this->defaultView);
+            $this->viewOptions = [$this->defaultView => $this->defaultView];
         } else {
-            $this->viewOptions = array('list' => 'List');
+            $this->viewOptions = ['list' => 'List'];
         }
     }
 

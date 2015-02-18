@@ -70,14 +70,14 @@ class Highlight extends AbstractHelper
         // if $haystack already has highlighting markers in it, we may want to send
         // in a blank needle.
         if (!is_array($needle)) {
-            $needle = empty($needle) ? array() : array($needle);
+            $needle = empty($needle) ? [] : [$needle];
         }
 
         // Highlight search terms one phrase at a time; we just put in placeholders
         // for the start and end span tags at this point so we can do proper URL
         // encoding later.
         foreach ($needle as $phrase) {
-            $phrase = trim(str_replace(array('"', '*', '?'), '', $phrase));
+            $phrase = trim(str_replace(['"', '*', '?'], '', $phrase));
             if ($phrase != '') {
                 $phrase = preg_quote($phrase, '/');
                 $haystack = preg_replace(
@@ -89,8 +89,8 @@ class Highlight extends AbstractHelper
 
         // URL encode the string, then put in the highlight spans:
         $haystack = str_replace(
-            array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'),
-            array($this->startTag, $this->endTag),
+            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
+            [$this->startTag, $this->endTag],
             htmlspecialchars($haystack)
         );
 

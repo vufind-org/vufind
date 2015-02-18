@@ -91,19 +91,19 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
      *    </ul>
      * @param Zend2HttpClient $client   Zend2 HTTP client object (optional)
      */
-    public function __construct($settings = array(), $client = null)
+    public function __construct($settings = [], $client = null)
     {
         parent::__construct($settings);
         $this->client = is_object($client) ? $client : new Zend2HttpClient();
-        $this->client->setOptions(array('timeout' => 120));
+        $this->client->setOptions(['timeout' => 120]);
         $adapter = new CurlAdapter();
         $adapter->setOptions(
-            array(
-                'curloptions' => array(
+            [
+                'curloptions' => [
                     CURLOPT_SSL_VERIFYPEER => false,
                     CURLOPT_FOLLOWLOCATION => true,
-                )
-            )
+                ]
+            ]
         );
         $this->client->setAdapter($adapter);
     }

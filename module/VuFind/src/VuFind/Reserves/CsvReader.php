@@ -64,28 +64,28 @@ class CsvReader
      *
      * @var array
      */
-    protected $instructors = array();
+    protected $instructors = [];
 
     /**
      * Course data loaded from files
      *
      * @var array
      */
-    protected $courses = array();
+    protected $courses = [];
 
     /**
      * Department data loaded from files
      *
      * @var array
      */
-    protected $departments = array();
+    protected $departments = [];
 
     /**
      * Reserves data loaded from files
      *
      * @var array
      */
-    protected $reserves = array();
+    protected $reserves = [];
 
     /**
      * Flag indicating whether or not we have processed data yet.
@@ -114,7 +114,7 @@ class CsvReader
      */
     public function __construct($files, $delimiter = ',', $template = null)
     {
-        $this->files = is_array($files) ? $files : array($files);
+        $this->files = is_array($files) ? $files : [$files];
         $this->delimiter = $delimiter;
 
         // Provide default template if none passed in:
@@ -188,12 +188,12 @@ class CsvReader
             }
 
             $goodLines++;
-            $this->reserves[] = array(
+            $this->reserves[] = [
                 'BIB_ID' => $bibId,
                 'INSTRUCTOR_ID' => $instructor,
                 'COURSE_ID' => $course,
                 'DEPARTMENT_ID' => $department,
-            );
+            ];
         }
         fclose($fh);
         if ($goodLines == 0) {

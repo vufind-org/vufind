@@ -52,7 +52,7 @@ class SummonTest extends \PHPUnit_Framework_TestCase
             'http://api.summon.serialssolutions.com/2.0.0/image/isbn/'
             . 'mykey/9780739313121/small',
             $summon->getUrl(
-                'mykey', 'small', array('isbn' => new ISBN('0739313126'))
+                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
             )
         );
     }
@@ -65,6 +65,6 @@ class SummonTest extends \PHPUnit_Framework_TestCase
     public function testMissingIsbn()
     {
         $summon = new Summon();
-        $this->assertEquals(false, $summon->getUrl('mykey', 'small', array()));
+        $this->assertEquals(false, $summon->getUrl('mykey', 'small', []));
     }
 }

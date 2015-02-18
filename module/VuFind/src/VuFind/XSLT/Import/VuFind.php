@@ -287,14 +287,14 @@ class VuFind
         $tika = $settings->Tika->path;
 
         // We need to use this method to get the output from STDOUT into the file
-        $descriptorspec = array(
-            0 => array('pipe', 'r'),
-            1 => array('file', $output, 'w'),
-            2 => array('pipe', 'w')
-        );
-        return array(
-            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, array()
-        );
+        $descriptorspec = [
+            0 => ['pipe', 'r'],
+            1 => ['file', $output, 'w'],
+            2 => ['pipe', 'w']
+        ];
+        return [
+            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, []
+        ];
     }
 
     /**
@@ -342,7 +342,7 @@ class VuFind
         // Load the translation map and send back the appropriate value.  Note
         // that PHP's parse_ini_file() function is not compatible with SolrMarc's
         // style of properties map, so we are parsing this manually.
-        $map = array();
+        $map = [];
         $mapFile
             = ConfigLocator::getConfigPath($filename, 'import/translation_maps');
         foreach (file($mapFile) as $line) {
@@ -364,7 +364,7 @@ class VuFind
      */
     public static function stripArticles($in)
     {
-        static $articles = array('a', 'an', 'the');
+        static $articles = ['a', 'an', 'the'];
 
         $text = strtolower(trim($in));
 
@@ -390,7 +390,7 @@ class VuFind
     {
         // Ensure that $in is an array:
         if (!is_array($in)) {
-            $in = array($in);
+            $in = [$in];
         }
 
         // Start building return value:
@@ -424,7 +424,7 @@ class VuFind
     {
         // Ensure that $in is an array:
         if (!is_array($in)) {
-            $in = array($in);
+            $in = [$in];
         }
 
         foreach ($in as $current) {

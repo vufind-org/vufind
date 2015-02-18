@@ -84,7 +84,7 @@ class HierarchyController extends AbstractBase
         $config = $this->getConfig();
         $limit = isset($config->Hierarchy->treeSearchLimit)
             ? $config->Hierarchy->treeSearchLimit : -1;
-        $resultIDs = array();
+        $resultIDs = [];
         $hierarchyID = $this->params()->fromQuery('hierarchyID');
         $lookfor = $this->params()->fromQuery('lookfor', '');
         $searchType = $this->params()->fromQuery('type', 'AllFields');
@@ -93,20 +93,20 @@ class HierarchyController extends AbstractBase
             ->get('VuFind\SearchResultsPluginManager')->get('Solr');
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
-        $facets = $results->getFullFieldFacets(array('id'), false, $limit+1);
+        $facets = $results->getFullFieldFacets(['id'], false, $limit+1);
 
         $callback = function ($data) {
             return $data['value'];
         };
         $resultIDs = isset($facets['id']['data']['list'])
-            ? array_map($callback, $facets['id']['data']['list']) : array();
+            ? array_map($callback, $facets['id']['data']['list']) : [];
 
         $limitReached = ($limit > 0 && count($resultIDs) > $limit);
 
-        $returnArray = array(
+        $returnArray = [
             "limitReached" => $limitReached,
             "results" => array_slice($resultIDs, 0, $limit)
-        );
+        ];
         return $this->outputJSON(json_encode($returnArray));
     }
 

@@ -97,9 +97,9 @@ class Amazon extends \VuFind\Content\AbstractCover
     public function getUrl($key, $size, $ids)
     {
         try {
-            $params = array(
+            $params = [
                 'ResponseGroup' => 'Images', 'AssociateTag' => $this->associate
-            );
+            ];
             // TODO: add support for 13-digit ISBNs (requires extra lookup)
             $isbn = isset($ids['isbn']) ? $ids['isbn']->get10() : false;
             if (!$isbn) {

@@ -121,7 +121,7 @@ class PrimoBackendFactory implements FactoryInterface
         $client = $this->serviceLocator->get('VuFind\Http')->createClient();
         $timeout = isset($this->primoConfig->General->timeout)
             ? $this->primoConfig->General->timeout : 30;
-        $client->setOptions(array('timeout' => $timeout));
+        $client->setOptions(['timeout' => $timeout]);
 
         $connector = new Connector($id, $this->getInstCode(), $client, $port);
         $connector->setLogger($this->logger);
@@ -136,9 +136,9 @@ class PrimoBackendFactory implements FactoryInterface
     protected function getInstCode()
     {
         $codes = isset($this->primoConfig->Institutions->code)
-            ? $this->primoConfig->Institutions->code : array();
+            ? $this->primoConfig->Institutions->code : [];
         $regex = isset($this->primoConfig->Institutions->regex)
-            ? $this->primoConfig->Institutions->regex : array();
+            ? $this->primoConfig->Institutions->regex : [];
         if (empty($codes) || empty($regex) || count($codes) != count($regex)) {
             throw new \Exception('Check [Institutions] settings in Primo.ini');
         }

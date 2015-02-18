@@ -54,7 +54,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @var array
      */
-    protected $parentLists = array();
+    protected $parentLists = [];
 
     /**
      * Constructor
@@ -87,7 +87,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         return isset($this->config->Details)
             ? $this->config->Details->toArray()
-            : array();
+            : [];
     }
 
     /**
@@ -117,7 +117,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if (empty($detailsList)) {
             throw new \Exception('Missing [Details] in VuDL.ini');
         }
-        $details = array();
+        $details = [];
         foreach ($detailsList as $key => $title) {
             $keys = explode(',', $key);
             $field = false;
@@ -132,13 +132,13 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
             if (count($keys) == 1) {
                 if (isset($record[$keys[0]])) {
-                    $details[$field] = array(
+                    $details[$field] = [
                         'title' => $title,
                         'value' => $record[$keys[0]]
-                    );
+                    ];
                 }
             } else {
-                $value = array();
+                $value = [];
                 foreach ($keys as $k) {
                     if (isset($record[$k])) {
                         if (is_array($record[$k])) {
@@ -148,10 +148,10 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         }
                     }
                 }
-                $details[$field] = array(
+                $details[$field] = [
                     'title' => $title,
                     'value' => $value
-                );
+                ];
             }
         }
         return $details;
@@ -169,13 +169,13 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected function traceParents($tree, $id)
     {
         // BFS from top (root id) to target $id
-        $queue = array(
-            array(
+        $queue = [
+            [
                 'id' => $this->getRootId(),
-                'path' => array()
-            )
-        );
-        $ret = array();
+                'path' => []
+            ]
+        ];
+        $ret = [];
         while (!empty($queue)) {
             $current = array_shift($queue);
             $record = $tree[$current['id']];
@@ -190,10 +190,10 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 } else { // Add to queue for more
                     array_push(
                         $queue,
-                        array(
+                        [
                             'id' => $cid,
                             'path' => $path
-                        )
+                        ]
                     );
                 }
             }

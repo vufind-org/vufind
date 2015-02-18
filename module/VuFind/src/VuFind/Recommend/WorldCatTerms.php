@@ -136,7 +136,7 @@ class WorldCatTerms implements RecommendInterface
         // this will make it easier to only display content in the template if
         // we have something worth displaying.
         if (is_array($terms)) {
-            $desiredKeys = array('exact', 'broader', 'narrower');
+            $desiredKeys = ['exact', 'broader', 'narrower'];
             foreach ($terms as $key => $value) {
                 if (empty($value) || !in_array($key, $desiredKeys)) {
                     unset($terms[$key]);

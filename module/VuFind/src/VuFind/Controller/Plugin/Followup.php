@@ -116,7 +116,7 @@ class Followup extends AbstractPlugin
      *
      * @return void
      */
-    public function store($extras = array(), $overrideUrl = null)
+    public function store($extras = [], $overrideUrl = null)
     {
         // Store the current URL:
         $this->session->url = !empty($overrideUrl)

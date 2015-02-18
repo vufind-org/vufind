@@ -53,7 +53,7 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
     {
         $q = new Query('query1', 'handler1');
         $qb = new QueryBuilder();
-        $expected = array(array('lookfor' => 'query1', 'index' => 'handler1'));
+        $expected = [['lookfor' => 'query1', 'index' => 'handler1']];
         $result = $qb->build($q)->get('query');
         $this->assertEquals($expected, $result);
     }
@@ -69,14 +69,14 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
         // inside another query group containing a collection of queries.
         $q1 = new Query('query1', 'handler1', 'OR');
         $q2 = new Query('query2', 'handler2', 'AND');
-        $qsub = new QueryGroup('AND', array($q1, $q2));
-        $q = new QueryGroup('AND', array($qsub));
+        $qsub = new QueryGroup('AND', [$q1, $q2]);
+        $q = new QueryGroup('AND', [$qsub]);
 
         $qb = new QueryBuilder();
-        $expected = array(
-            array('lookfor' => 'query1', 'index' => 'handler1', 'op' => 'OR'),
-            array('lookfor' => 'query2', 'index' => 'handler2', 'op' => 'AND')
-        );
+        $expected = [
+            ['lookfor' => 'query1', 'index' => 'handler1', 'op' => 'OR'],
+            ['lookfor' => 'query2', 'index' => 'handler2', 'op' => 'AND']
+        ];
         $result = $qb->build($q)->get('query');
         $this->assertEquals($expected, $result);
     }

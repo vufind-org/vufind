@@ -168,7 +168,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             sprintf(
                 '<= %s %s', $response->getStatusCode(),
                 $response->getReasonPhrase()
-            ), array('time' => $time)
+            ), ['time' => $time]
         );
 
         if (!$response->isSuccess()) {
@@ -201,7 +201,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      */
     public function record($id)
     {
-        return $this->query('record', new ParamBag(array('id' => $id)));
+        return $this->query('record', new ParamBag(['id' => $id]));
     }
 
     /**
@@ -308,6 +308,6 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      */
     public function bytarget($id)
     {
-        return $this->query('bytarget', new ParamBag(array('id' => $id)));
+        return $this->query('bytarget', new ParamBag(['id' => $id]));
     }
 }

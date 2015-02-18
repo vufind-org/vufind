@@ -62,8 +62,8 @@ class DeleteDocument extends AbstractDocument
      */
     public function __construct()
     {
-        $this->keys    = array();
-        $this->queries = array();
+        $this->keys    = [];
+        $this->queries = [];
     }
 
     /**

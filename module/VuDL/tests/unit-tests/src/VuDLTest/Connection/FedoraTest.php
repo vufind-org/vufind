@@ -42,15 +42,15 @@ class FedoraTest extends \VuFindTest\Unit\TestCase
     {
         $subject = $this->getMock(
             '\VuDL\Connection\Fedora',
-            array('getDatastreamContent', 'getDatastreamHeaders'),
-            array((object) array(
-                'Fedora' => (object) array(
+            ['getDatastreamContent', 'getDatastreamHeaders'],
+            [(object) [
+                'Fedora' => (object) [
                     'url_base' => 'http://jsontest.com/',
                     'query_url' => 'QUERY',
                     'adminUser' => 'ADMIN',
                     'adminPass' => 'ADMINPASS'
-                )
-            ))
+                ]
+            ]]
         );
         $subject->method('getDatastreamContent')->will(
             $this->onConsecutiveCalls(
@@ -62,21 +62,21 @@ class FedoraTest extends \VuFindTest\Unit\TestCase
         );
         $subject->method('getDatastreamHeaders')->will(
             $this->onConsecutiveCalls(
-                array('HTTP/1.1 200 OK'),
-                array('HTTP/1.1 404 EVERYTHING IS WRONG')
+                ['HTTP/1.1 200 OK'],
+                ['HTTP/1.1 404 EVERYTHING IS WRONG']
             )
         );
 
         $this->assertEquals('http://jsontest.com/', $subject->getBase());
 
-        $this->assertEquals(array('CLASS1','CLASS2'), $subject->getClasses('id'));
+        $this->assertEquals(['CLASS1','CLASS2'], $subject->getClasses('id'));
 
         $this->assertEquals('<xml><a><b id="c"></b></a></xml>', $subject->getDatastreams('id'));
         $this->assertEquals('SimpleXMLElement', get_class($subject->getDatastreams('id', true)));
 
-        $this->assertEquals(array('test_passed', 'fake'), $subject->getCopyright('id', array('passed' => 'fake')));
+        $this->assertEquals(['test_passed', 'fake'], $subject->getCopyright('id', ['passed' => 'fake']));
 
-        $this->assertEquals(array('title' => 'T','id' => 'ID'), $subject->getDetails('id'));
+        $this->assertEquals(['title' => 'T','id' => 'ID'], $subject->getDetails('id'));
         // Detail formatting tested in Solr
 
         $this->assertEquals('Zend\Http\Client', get_class($subject->getHttpClient('url')));

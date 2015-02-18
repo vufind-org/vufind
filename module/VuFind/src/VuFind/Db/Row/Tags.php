@@ -68,17 +68,17 @@ class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
         $tag = $this;
         $callback = function ($select) use ($tag, $source, $sort, $offset, $limit) {
             $select->columns(
-                array(
+                [
                     new Expression(
-                        'DISTINCT(?)', array('resource.id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'DISTINCT(?)', ['resource.id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ), '*'
-                )
+                ]
             );
             $select->join(
-                array('rt' => 'resource_tags'),
+                ['rt' => 'resource_tags'],
                 'resource.id = rt.resource_id',
-                array()
+                []
             );
             $select->where->equalTo('rt.tag_id', $tag->id);
 

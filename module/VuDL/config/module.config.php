@@ -1,98 +1,98 @@
 <?php
 namespace VuDL\Module\Configuration;
 
-$config = array(
-    'controllers' => array(
-        'invokables' => array(
+$config = [
+    'controllers' => [
+        'invokables' => [
             'vudl' => 'VuDL\Controller\VudlController'
-        ),
-    ),
-    'service_manager' => array(
-        'factories' => array(
+        ],
+    ],
+    'service_manager' => [
+        'factories' => [
             'VuDL\Connection\Manager' => 'VuDL\Factory::getConnectionManager',
             'VuDL\Connection\Fedora' => 'VuDL\Factory::getConnectionFedora',
             'VuDL\Connection\Solr' => 'VuDL\Factory::getConnectionSolr',
-        ),
-    ),
-    'vufind' => array(
-        'plugin_managers' => array(
-            'recorddriver' => array(
-                'factories' => array(
+        ],
+    ],
+    'vufind' => [
+        'plugin_managers' => [
+            'recorddriver' => [
+                'factories' => [
                     'solrvudl' => 'VuDL\Factory::getRecordDriver',
-                ),
-            ),
-        ),
-    ),
-    'router' => array(
-        'routes' => array(
-            'files' => array(
+                ],
+            ],
+        ],
+    ],
+    'router' => [
+        'routes' => [
+            'files' => [
                 'type' => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
+                'options' => [
                     'route'    => '/files/:id/:type'
-                )
-            ),
-            'vudl-about' => array(
+                ]
+            ],
+            'vudl-about' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => array(
+                'options' => [
                     'route'    => '/VuDL/About',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'VuDL',
                         'action'     => 'About',
-                    )
-                )
-            ),
-            'vudl-default-collection' => array(
+                    ]
+                ]
+            ],
+            'vudl-default-collection' => [
                 'type' => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
+                'options' => [
                     'route'    => '/Collection[/]',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'VuDL',
                         'action'     => 'Collections'
-                    )
-                )
-            ),
-            'vudl-grid' => array(
+                    ]
+                ]
+            ],
+            'vudl-grid' => [
                 'type' => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
+                'options' => [
                     'route'    => '/Grid/:id',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'VuDL',
                         'action'     => 'Grid'
-                    )
-                )
-            ),
-            'vudl-home' => array(
+                    ]
+                ]
+            ],
+            'vudl-home' => [
                 'type' => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
+                'options' => [
                     'route'    => '/VuDL/Home[/]',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'VuDL',
                         'action'     => 'Home',
-                    )
-                )
-            ),
-            'vudl-record' => array(
+                    ]
+                ]
+            ],
+            'vudl-record' => [
                 'type' => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
+                'options' => [
                     'route'    => '/Item/:id',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'VuDL',
                         'action'     => 'Record'
-                    )
-                )
-            ),
-            'vudl-sibling' => array(
+                    ]
+                ]
+            ],
+            'vudl-sibling' => [
                 'type' => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
+                'options' => [
                     'route'    => '/Vudl/Sibling/',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'VuDL',
                         'action'     => 'Sibling'
-                    )
-                )
-            ),
-        )
-    ),
-);
+                    ]
+                ]
+            ],
+        ]
+    ],
+];
 
 return $config;

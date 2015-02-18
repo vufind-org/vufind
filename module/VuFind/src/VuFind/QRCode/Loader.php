@@ -62,9 +62,9 @@ class Loader extends \VuFind\ImageLoader
      *
      * @var string
      */
-    protected $params = array(
+    protected $params = [
         'level' => "L", 'size' => "3", 'margin' => "4"
-    );
+    ];
 
     /**
      * Constructor
@@ -91,7 +91,7 @@ class Loader extends \VuFind\ImageLoader
      * @return void
      */
     public function loadQRCode($text,
-        $params = array('level' => "L", 'size' => "3", 'margin' => "4")
+        $params = ['level' => "L", 'size' => "3", 'margin' => "4"]
     ) {
         // Sanitize parameters:
         $this->text = $text;

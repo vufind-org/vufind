@@ -64,7 +64,7 @@ class QueryBuilder
         $queries = $this->abstractQueryToArray($query);
 
         // Send back results
-        $params = new ParamBag(array('query' => $queries));
+        $params = new ParamBag(['query' => $queries]);
         return $params;
     }
 
@@ -103,7 +103,7 @@ class QueryBuilder
     protected function abstractQueryToArray(AbstractQuery $query)
     {
         if ($query instanceof Query) {
-            return array('1' => $this->queryToEdsQuery($query));
+            return ['1' => $this->queryToEdsQuery($query)];
         } else {
             return $this->queryGroupToArray($query);
         }
@@ -118,7 +118,7 @@ class QueryBuilder
      */
     protected function queryGroupToArray(QueryGroup $query)
     {
-        $groups =  array();
+        $groups =  [];
         foreach ($query->getQueries() as $params) {
             // Advanced Search
             if ($params instanceof QueryGroup) {

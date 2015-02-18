@@ -79,7 +79,7 @@ class Service
      */
     public function __construct()
     {
-        $this->backends = array();
+        $this->backends = [];
     }
 
     /**
@@ -246,7 +246,7 @@ class Service
             } else {
                 // Default case: retrieve n random records:
                 $response = false;
-                $retrievedIndexes = array();
+                $retrievedIndexes = [];
                 for ($i = 0; $i < $limit; $i++) {
                     $nextIndex = rand(0, $total_records - 1);
                     while (in_array($nextIndex, $retrievedIndexes)) {
@@ -315,7 +315,7 @@ class Service
      */
     public function setEventManager(EventManagerInterface $events)
     {
-        $events->setIdentifiers(array('VuFind\Search', 'VuFindSearch'));
+        $events->setIdentifiers(['VuFind\Search', 'VuFindSearch']);
         $this->events = $events;
     }
 

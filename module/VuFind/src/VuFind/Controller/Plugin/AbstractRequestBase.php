@@ -86,7 +86,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
      */
     public function resetValidation()
     {
-        $this->getSession()->validIds = array();
+        $this->getSession()->validIds = [];
     }
 
     /**
@@ -118,7 +118,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         $controller = $this->getController();
         $params = $controller->params();
 
-        $keyValueArray = array();
+        $keyValueArray = [];
         foreach ($linkData as $details) {
             // We expect most parameters to come via query, but some (mainly ID) may
             // be in the route:
@@ -137,7 +137,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         // FIRST and then override it with GET values in order to ensure that
         // the user doesn't bypass the hashkey verification by manipulating POST
         // values.
-        $gatheredDetails = $params->fromPost('gatheredDetails', array());
+        $gatheredDetails = $params->fromPost('gatheredDetails', []);
 
         // Make sure the bib ID is included, even if it's not loaded as part of
         // the validation loop below.
@@ -255,7 +255,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         // Load config:
         $dateArray = isset($checkHolds['defaultRequiredDate'])
              ? explode(":", $checkHolds['defaultRequiredDate'])
-             : array(0, 1, 0);
+             : [0, 1, 0];
 
         // Process special "driver" prefix and adjust default date
         // settings accordingly:
@@ -263,7 +263,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
             $useDriver = true;
             array_shift($dateArray);
             if (count($dateArray) < 3) {
-                $dateArray = array(0, 1, 0);
+                $dateArray = [0, 1, 0];
             }
         } else {
             $useDriver = false;
@@ -272,7 +272,7 @@ abstract class AbstractRequestBase extends AbstractPlugin
         // If the driver setting is active, try it out:
         if ($useDriver && $catalog) {
             $check = $catalog->checkCapability(
-                'getHoldDefaultRequiredDate', array($patron, $holdInfo)
+                'getHoldDefaultRequiredDate', [$patron, $holdInfo]
             );
             if ($check) {
                 $result = $catalog->getHoldDefaultRequiredDate($patron, $holdInfo);

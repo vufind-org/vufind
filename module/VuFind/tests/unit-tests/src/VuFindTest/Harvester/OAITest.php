@@ -65,7 +65,7 @@ class OAITest extends \VuFindTest\Unit\TestCase
      */
     public function testConfig()
     {
-        $config = array(
+        $config = [
             'url' => 'http://localhost',
             'set' => 'myset',
             'metadataPrefix' => 'fakemdprefix',
@@ -81,7 +81,7 @@ class OAITest extends \VuFindTest\Unit\TestCase
             'verbose' => true,
             'sanitize' => true,
             'badXMLLog' => '/my/xml.log',
-        );
+        ];
         $oai = new OAI('test', $config, $this->getMockClient());
 
         // Special cases where config key != class property:
@@ -94,7 +94,7 @@ class OAITest extends \VuFindTest\Unit\TestCase
 
         // Special case where value is transformed:
         $this->assertEquals(
-            array($config['injectHeaderElements']),
+            [$config['injectHeaderElements']],
             $this->getProperty($oai, 'injectHeaderElements')
         );
 
@@ -124,21 +124,21 @@ class OAITest extends \VuFindTest\Unit\TestCase
         $response->expects($this->any())
             ->method('getBody')
             ->will($this->returnValue('<?xml version="1.0"?><OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"><responseDate>2013-10-11T10:06:06Z</responseDate><request verb="ListSets" metadataPrefix="oai_dc" resumptionToken="" submit="Go">http://vu61162/vufind3/OAI/Server</request><ListSets><set><setSpec>Audio (Music)</setSpec><setName>Audio (Music)</setName></set><set><setSpec>Audio (Non-Music)</setSpec><setName>Audio (Non-Music)</setName></set></ListSets></OAI-PMH>'));
-        $config = array(
+        $config = [
             'url' => 'http://localhost',
             'injectSetName' => 'setnametag',
             'verbose' => true,
             'dateGranularity' => 'mygranularity',
-        );
+        ];
         $oai = new OAI('test', $config, $client);
         $this->assertEquals(
             $config['injectSetName'], $this->getProperty($oai, 'injectSetName')
         );
         $this->assertEquals(
-            array(
+            [
                 'Audio (Music)' => 'Audio (Music)',
                 'Audio (Non-Music)' => 'Audio (Non-Music)'
-            ), $this->getProperty($oai, 'setNames')
+            ], $this->getProperty($oai, 'setNames')
         );
     }
 
@@ -152,12 +152,12 @@ class OAITest extends \VuFindTest\Unit\TestCase
         $client = $this->getMockClient();
         $client->expects($this->once())
             ->method('setOptions')
-            ->with($this->equalTo(array('sslverifypeer' => false)));
-        $config = array(
+            ->with($this->equalTo(['sslverifypeer' => false]));
+        $config = [
             'url' => 'http://localhost',
             'sslverifypeer' => false,
             'dateGranularity' => 'mygranularity',
-        );
+        ];
         $oai = new OAI('test', $config, $client);
     }
 
@@ -176,10 +176,10 @@ class OAITest extends \VuFindTest\Unit\TestCase
         $response->expects($this->any())
             ->method('getBody')
             ->will($this->returnValue($this->getIdentifyResponse()));
-        $config = array(
+        $config = [
             'url' => 'http://localhost',
             'verbose' => true,
-        );
+        ];
         $oai = new OAI('test', $config, $client);
         $this->assertEquals(
             'YYYY-MM-DDThh:mm:ssZ', $this->getProperty($oai, 'granularity')
@@ -213,10 +213,10 @@ class OAITest extends \VuFindTest\Unit\TestCase
             ->method('get')
             ->with($this->equalTo('Retry-After'))
             ->will($this->returnValue($header));
-        $config = array(
+        $config = [
             'url' => 'http://localhost',
             'verbose' => true,
-        );
+        ];
         $oai = new OAI('test', $config, $client);
         $this->assertEquals(
             'YYYY-MM-DDThh:mm:ssZ', $this->getProperty($oai, 'granularity')
@@ -237,10 +237,10 @@ class OAITest extends \VuFindTest\Unit\TestCase
         $response->expects($this->any())
             ->method('isSuccess')
             ->will($this->returnValue(false));
-        $config = array(
+        $config = [
             'url' => 'http://localhost',
             'verbose' => true,
-        );
+        ];
         $oai = new OAI('test', $config, $client);
     }
 
@@ -255,7 +255,7 @@ class OAITest extends \VuFindTest\Unit\TestCase
      */
     public function testMissingURLThrowsException()
     {
-        $oai = new OAI('test', array(), $this->getMockClient());
+        $oai = new OAI('test', [], $this->getMockClient());
     }
 
     // Internal API

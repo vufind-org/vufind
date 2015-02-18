@@ -92,7 +92,7 @@ class RandomRecommend implements RecommendInterface
      *
      * @var array
      */
-    protected $filters = array();
+    protected $filters = [];
 
     /**
      * Settings from configuration
@@ -141,7 +141,7 @@ class RandomRecommend implements RecommendInterface
         $this->settings = $settings;
 
         // Apply any settings that override the defaults by being non-empty:
-        $properties = array('backend', 'limit', 'displayMode', 'mode', 'minimum');
+        $properties = ['backend', 'limit', 'displayMode', 'mode', 'minimum'];
         $settings = explode(':', $settings);
         foreach ($properties as $i => $property) {
             if (!empty($settings[$i])) {
@@ -207,7 +207,7 @@ class RandomRecommend implements RecommendInterface
     public function getResults()
     {
         if (count($this->results) < $this->minimum) {
-            return array();
+            return [];
         }
         return $this->results;
     }

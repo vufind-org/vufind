@@ -98,7 +98,7 @@ class ErrorListener extends AbstractErrorListener
      */
     protected function analyzeJsonErrorResponse($body)
     {
-        $tags = array();
+        $tags = [];
         if (isset($body->error->msg)) {
             $reason = $body->error->msg;
             if (stristr($reason, 'org.apache.solr.search.SyntaxError')

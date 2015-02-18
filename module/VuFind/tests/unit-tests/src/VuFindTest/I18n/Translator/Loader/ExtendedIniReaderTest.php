@@ -48,10 +48,10 @@ class ExtendedIniReaderTest extends \VuFindTest\Unit\TestCase
     public function testNonJoinerOptions()
     {
         $reader = new ExtendedIniReader();
-        $input = array('foo="bar"', 'baz=""');
-        $output = array('foo' => 'bar', 'baz' => '');
+        $input = ['foo="bar"', 'baz=""'];
+        $output = ['foo' => 'bar', 'baz' => ''];
         $nonJoiner = html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8');
-        $nonJoinerOutput = array('foo' => 'bar', 'baz' => $nonJoiner);
+        $nonJoinerOutput = ['foo' => 'bar', 'baz' => $nonJoiner];
         // Test behavior with and without the $convertBlanks switch:
         $this->assertEquals($output, (array)$reader->getTextDomain($input, false));
         $this->assertEquals($nonJoinerOutput, (array)$reader->getTextDomain($input));

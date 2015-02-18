@@ -87,10 +87,10 @@ abstract class AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getFullList($field, $value = array())
+    public function getFullList($field, $value = [])
     {
         // Assume no statistics
-        return array();
+        return [];
     }
 
     /**
@@ -106,6 +106,6 @@ abstract class AbstractBase
     public function getBrowserStats($version, $limit)
     {
         // Assume no statistics
-        return array();
+        return [];
     }
 }

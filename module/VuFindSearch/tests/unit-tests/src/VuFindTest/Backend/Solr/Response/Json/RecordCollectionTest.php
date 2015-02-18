@@ -50,7 +50,7 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
      */
     public function testDefaults()
     {
-        $coll = new RecordCollection(array());
+        $coll = new RecordCollection([]);
         $this->assertEquals(
             'VuFindSearch\Backend\Solr\Response\Json\Spellcheck',
             get_class($coll->getSpellcheck())
@@ -60,8 +60,8 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
             'VuFindSearch\Backend\Solr\Response\Json\Facets',
             get_class($coll->getFacets())
         );
-        $this->assertEquals(array(), $coll->getGroups());
-        $this->assertEquals(array(), $coll->getHighlighting());
+        $this->assertEquals([], $coll->getGroups());
+        $this->assertEquals([], $coll->getHighlighting());
         $this->assertEquals(0, $coll->getOffset());
     }
 
@@ -73,9 +73,9 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
     public function testOffsets()
     {
         $coll = new RecordCollection(
-            array(
-                'response' => array('numFound' => 10, 'start' => 5)
-            )
+            [
+                'response' => ['numFound' => 10, 'start' => 5]
+            ]
         );
         for ($i = 0; $i < 5; $i++) {
             $coll->add($this->getMock('VuFindSearch\Response\RecordInterface'));
@@ -93,14 +93,14 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
      */
     public function testSpellingQuery()
     {
-        $input = array(
-            'responseHeader' => array(
-                'params' => array(
+        $input = [
+            'responseHeader' => [
+                'params' => [
                     'spellcheck.q' => 'foo',
                     'q' => 'bar',
-                )
-            )
-        );
+                ]
+            ]
+        ];
         $coll = new RecordCollection($input);
         $this->assertEquals('foo', $coll->getSpellcheck()->getQuery());
         unset($input['responseHeader']['params']['spellcheck.q']);
@@ -115,32 +115,32 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
      */
     public function testSpellingSuggestions()
     {
-        $input = array(
-            'spellcheck' => array(
-                'suggestions' => array(
-                    array(
+        $input = [
+            'spellcheck' => [
+                'suggestions' => [
+                    [
                         'frunkensteen',
-                        array(
+                        [
                             'numFound' => 6,
                             'startOffset' => 0,
                             'endOffset' => 12,
                             'origFreq' => 0,
-                            'suggestion' => array(
-                                array(
+                            'suggestion' => [
+                                [
                                 'word' => 'frankenstein',
                                 'freq' => 218,
-                                ),
-                                array(
+                                ],
+                                [
                                 'word' => 'funkenstein',
                                 'freq' => 10,
-                                ),
-                            ),
-                        ),
-                    ),
-                    array('correctlySpelled', false),
-                )
-            )
-        );
+                                ],
+                            ],
+                        ],
+                    ],
+                    ['correctlySpelled', false],
+                ]
+            ]
+        ];
         $coll = new RecordCollection($input);
         $spell = $coll->getSpellcheck();
         $this->assertEquals(1, count($spell));
@@ -153,17 +153,17 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
      */
     public function testReplace()
     {
-        $coll = new RecordCollection(array());
+        $coll = new RecordCollection([]);
         $r1 = new TestHarness();
-        $r1->setRawData(array('UniqueId' => 1));
+        $r1->setRawData(['UniqueId' => 1]);
         $r2 = new TestHarness();
-        $r2->setRawData(array('UniqueId' => 2));
+        $r2->setRawData(['UniqueId' => 2]);
         $r3 = new TestHarness();
-        $r3->setRawData(array('UniqueId' => 3));
+        $r3->setRawData(['UniqueId' => 3]);
         $coll->add($r1);
         $coll->add($r2);
         $coll->replace($r1, $r3);
-        $this->assertEquals(array($r3, $r2), $coll->getRecords());
+        $this->assertEquals([$r3, $r2], $coll->getRecords());
     }
 
     /**
@@ -175,13 +175,13 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
     {
         // Since shuffle is random, there is no 100% reliable way to test its
         // behavior, but we can at least test that it doesn't corrupt anything.
-        $coll = new RecordCollection(array());
+        $coll = new RecordCollection([]);
         $r1 = new TestHarness();
-        $r1->setRawData(array('UniqueId' => 1));
+        $r1->setRawData(['UniqueId' => 1]);
         $r2 = new TestHarness();
-        $r2->setRawData(array('UniqueId' => 2));
+        $r2->setRawData(['UniqueId' => 2]);
         $r3 = new TestHarness();
-        $r3->setRawData(array('UniqueId' => 3));
+        $r3->setRawData(['UniqueId' => 3]);
         $coll->add($r1);
         $coll->add($r2);
         $coll->add($r3);

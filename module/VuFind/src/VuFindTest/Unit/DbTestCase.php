@@ -57,14 +57,14 @@ abstract class DbTestCase extends TestCase
             $sm->setService('VuFind\DbAdapter', $dbFactory->getAdapter());
             $factory = new \VuFind\Db\Table\PluginManager(
                 new \Zend\ServiceManager\Config(
-                    array(
+                    [
                         'abstract_factories' =>
-                            array('VuFind\Db\Table\PluginFactory'),
-                        'factories' => array(
+                            ['VuFind\Db\Table\PluginFactory'],
+                        'factories' => [
                             'resource' => 'VuFind\Db\Table\Factory::getResource',
                             'user' => 'VuFind\Db\Table\Factory::getUser',
-                        )
-                    )
+                        ]
+                    ]
                 )
             );
             $factory->setServiceLocator($sm);
@@ -74,22 +74,22 @@ abstract class DbTestCase extends TestCase
             $sm->setAllowOverride(true);
             $sm->setService(
                 'config',
-                array(
-                    'vufind' => array(
-                        'pgsql_seq_mapping'  => array(
-                            'comments'       => array('id', 'comments_id_seq'),
-                            'oai_resumption' => array('id', 'oai_resumption_id_seq'),
-                            'resource'       => array('id', 'resource_id_seq'),
-                            'resource_tags'  => array('id', 'resource_tags_id_seq'),
-                            'search'         => array('id', 'search_id_seq'),
-                            'session'        => array('id', 'session_id_seq'),
-                            'tags'           => array('id', 'tags_id_seq'),
-                            'user'           => array('id', 'user_id_seq'),
-                            'user_list'      => array('id', 'user_list_id_seq'),
-                            'user_resource'  => array('id', 'user_resource_id_seq')
-                        )
-                    )
-                )
+                [
+                    'vufind' => [
+                        'pgsql_seq_mapping'  => [
+                            'comments'       => ['id', 'comments_id_seq'],
+                            'oai_resumption' => ['id', 'oai_resumption_id_seq'],
+                            'resource'       => ['id', 'resource_id_seq'],
+                            'resource_tags'  => ['id', 'resource_tags_id_seq'],
+                            'search'         => ['id', 'search_id_seq'],
+                            'session'        => ['id', 'session_id_seq'],
+                            'tags'           => ['id', 'tags_id_seq'],
+                            'user'           => ['id', 'user_id_seq'],
+                            'user_list'      => ['id', 'user_list_id_seq'],
+                            'user_resource'  => ['id', 'user_resource_id_seq']
+                        ]
+                    ]
+                ]
             );
         }
         return $sm;

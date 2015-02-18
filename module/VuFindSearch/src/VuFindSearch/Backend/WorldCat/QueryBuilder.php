@@ -118,12 +118,12 @@ class QueryBuilder
      */
     protected function queryGroupToString(QueryGroup $query)
     {
-        $groups = $excludes = array();
+        $groups = $excludes = [];
 
         foreach ($query->getQueries() as $params) {
             // Advanced Search
             if ($params instanceof QueryGroup) {
-                $thisGroup = array();
+                $thisGroup = [];
                 // Process each search group
                 foreach ($params->getQueries() as $group) {
                     // Build this group individually as a basic search
@@ -176,7 +176,7 @@ class QueryBuilder
         // The index may contain multiple parts -- we want to search all listed index
         // fields:
         $index = explode(':', $index);
-        $clauses = array();
+        $clauses = [];
         foreach ($index as $currentIndex) {
             $clauses[] = "{$currentIndex} all \"{$lookfor}\"";
         }

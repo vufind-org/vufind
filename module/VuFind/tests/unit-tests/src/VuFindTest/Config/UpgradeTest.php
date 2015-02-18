@@ -121,7 +121,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
 
         // Make sure that spelling recommendations are set up appropriately:
         $this->assertEquals(
-            array('TopFacets:ResultsTop', 'SpellingSuggestions'),
+            ['TopFacets:ResultsTop', 'SpellingSuggestions'],
             $results['searches.ini']['General']['default_top_recommend']
         );
         $this->assertTrue(
@@ -131,14 +131,14 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             )
         );
         $this->assertEquals(
-            array(
-                'Author' => array('AuthorFacets', 'SpellingSuggestions'),
-                'CallNumber' => array('TopFacets:ResultsTop')
-            ),
+            [
+                'Author' => ['AuthorFacets', 'SpellingSuggestions'],
+                'CallNumber' => ['TopFacets:ResultsTop']
+            ],
             $results['searches.ini']['TopRecommendations']
         );
         $this->assertEquals(
-            array('SummonDatabases', 'SpellingSuggestions'),
+            ['SummonDatabases', 'SpellingSuggestions'],
             $results['Summon.ini']['General']['default_top_recommend']
         );
         $this->assertTrue(
@@ -148,11 +148,11 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             )
         );
         $this->assertEquals(
-            array(),
+            [],
             $results['Summon.ini']['TopRecommendations']
         );
 
-        return array('configs' => $results, 'warnings' => $warnings);
+        return ['configs' => $results, 'warnings' => $warnings];
     }
 
     /**
@@ -373,7 +373,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertFalse(
             $this->callMethod(
-                $upgrader, 'fileContainsMeaningfulLines', array($meaningless)
+                $upgrader, 'fileContainsMeaningfulLines', [$meaningless]
             )
         );
         $meaningful = realpath(
@@ -381,7 +381,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertTrue(
             $this->callMethod(
-                $upgrader, 'fileContainsMeaningfulLines', array($meaningful)
+                $upgrader, 'fileContainsMeaningfulLines', [$meaningful]
             )
         );
     }

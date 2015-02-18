@@ -46,14 +46,14 @@ abstract class AbstractFacets implements RecommendInterface
      *
      * @var array
      */
-    protected $excludableFacets = array();
+    protected $excludableFacets = [];
 
     /**
      * Facets that are "ORed" instead of "ANDed."
      *
      * @var array
      */
-    protected $orFacets = array();
+    protected $orFacets = [];
 
     /**
      * Search results

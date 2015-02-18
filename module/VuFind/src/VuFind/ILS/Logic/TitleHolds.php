@@ -74,7 +74,7 @@ class TitleHolds
      *
      * @var array
      */
-    protected $hideHoldings = array();
+    protected $hideHoldings = [];
 
     /**
      * Constructor
@@ -140,7 +140,7 @@ class TitleHolds
     {
         // Cache results in a static array since the same holdings may be requested
         // multiple times during a run through the class:
-        static $holdings = array();
+        static $holdings = [];
 
         if (!isset($holdings[$id])) {
             $holdings[$id] = $this->catalog->getHolding($id);
@@ -194,10 +194,10 @@ class TitleHolds
         $checkHolds = $this->catalog->checkFunction(
             'Holds', compact('id', 'patron')
         );
-        $data = array(
+        $data = [
             'id' => $id,
             'level' => 'title'
-        );
+        ];
 
         if ($checkHolds != false) {
             $valid = $this->catalog->checkRequestIsValid($id, $data, $patron);
@@ -223,10 +223,10 @@ class TitleHolds
         $any_available = false;
         $addlink = false;
 
-        $data = array(
+        $data = [
             'id' => $id,
             'level' => 'title'
-        );
+        ];
 
         // Are holds allows?
         $checkHolds = $this->catalog->checkFunction(
@@ -290,9 +290,9 @@ class TitleHolds
         $queryString = implode('&', $queryString);
 
         // Build Params
-        return array(
+        return [
             'action' => 'Hold', 'record' => $data['id'], 'query' => $queryString,
             'anchor' => '#tabnav'
-        );
+        ];
     }
 }
