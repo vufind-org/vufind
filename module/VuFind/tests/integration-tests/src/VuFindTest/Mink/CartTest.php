@@ -47,7 +47,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Activate the cart:
         $this->changeConfigs(
-            array('config' => array('Site' => array('showBookBag' => true)))
+            ['config' => ['Site' => ['showBookBag' => true]]]
         );
 
         $session = $this->getMinkSession();

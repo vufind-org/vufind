@@ -45,7 +45,7 @@ class DbUpgrade extends AbstractPlugin
      *
      * @var array
      */
-    protected $dbCommands = array();
+    protected $dbCommands = [];
 
     /**
      * Database adapter
@@ -83,7 +83,7 @@ class DbUpgrade extends AbstractPlugin
             if (isset($matches[2])) {
                 $table = str_replace('`', '', $matches[2]);
                 if (!isset($this->dbCommands[$table])) {
-                    $this->dbCommands[$table] = array();
+                    $this->dbCommands[$table] = [];
                 }
                 $this->dbCommands[$table][] = $statement;
             }
@@ -147,7 +147,7 @@ class DbUpgrade extends AbstractPlugin
         if ($reload || !$this->tableInfo) {
             $metadata = new DbMetadata($this->getAdapter());
             $tables = $metadata->getTables();
-            $this->tableInfo = array();
+            $this->tableInfo = [];
             foreach ($tables as $current) {
                 $this->tableInfo[$current->getName()] = $current;
             }
@@ -181,7 +181,7 @@ class DbUpgrade extends AbstractPlugin
         $results = $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
 
         // Load details:
-        $retVal = array();
+        $retVal = [];
         foreach ($results as $current) {
             if (strtolower(substr($current->Collation, 0, 6)) == 'latin1') {
                 $retVal[$current->Field] = (array)$current;
@@ -203,7 +203,7 @@ class DbUpgrade extends AbstractPlugin
         $results = $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
 
         // Load details:
-        $retVal = array();
+        $retVal = [];
         foreach ($results as $current) {
             if (strtolower(substr($current->Collation, 0, 6)) == 'latin1') {
                 $retVal[$current->Name]
@@ -291,8 +291,8 @@ class DbUpgrade extends AbstractPlugin
     protected function getTableColumns($table)
     {
         $info = $this->getTableInfo(true);
-        $columns = isset($info[$table]) ? $info[$table]->getColumns() : array();
-        $retVal = array();
+        $columns = isset($info[$table]) ? $info[$table]->getColumns() : [];
+        $retVal = [];
         foreach ($columns as $current) {
             $retVal[strtolower($current->getName())] = $current;
         }
@@ -308,7 +308,7 @@ class DbUpgrade extends AbstractPlugin
     public function getMissingTables()
     {
         $tables = $this->getAllTables();
-        $missing = array();
+        $missing = [];
         foreach (array_keys($this->dbCommands) as $table) {
             if (!in_array(trim(strtolower($table)), $tables)) {
                 $missing[] = $table;
@@ -347,9 +347,9 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return array
      */
-    public function getMissingColumns($missingTables = array())
+    public function getMissingColumns($missingTables = [])
     {
-        $missing = array();
+        $missing = [];
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
             if (in_array($table, $missingTables)) {
@@ -363,7 +363,7 @@ class DbUpgrade extends AbstractPlugin
             $expectedColumns = $matches[1];
 
             // Create associative array of column name => SQL defining that column
-            $columnDefinitions = array();
+            $columnDefinitions = [];
             foreach ($expectedColumns as $i => $name) {
                 // Strip off any comments:
                 $parts = explode('--', $matches[0][$i]);
@@ -377,7 +377,7 @@ class DbUpgrade extends AbstractPlugin
             foreach ($expectedColumns as $column) {
                 if (!in_array(strtolower($column), $actualColumns)) {
                     if (!isset($missing[$table])) {
-                        $missing[$table] = array();
+                        $missing[$table] = [];
                     }
                     $missing[$table][] = $columnDefinitions[$column];
                 }
@@ -454,10 +454,10 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return array
      */
-    public function getModifiedColumns($missingTables = array(),
-        $missingColumns = array()
+    public function getModifiedColumns($missingTables = [],
+        $missingColumns = []
     ) {
-        $missing = array();
+        $missing = [];
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
             if (in_array($table, $missingTables)) {
@@ -475,7 +475,7 @@ class DbUpgrade extends AbstractPlugin
             $expectedTypes = $matches[2];
 
             // Create associative array of column name => SQL defining that column
-            $columnDefinitions = array();
+            $columnDefinitions = [];
             foreach ($expectedColumns as $i => $name) {
                 // Strip off any comments:
                 $parts = explode('--', $matches[0][$i]);
@@ -496,7 +496,7 @@ class DbUpgrade extends AbstractPlugin
                 $currentColumn = $actualColumns[$column];
                 if (!$this->typeMatches($currentColumn, $expectedTypes[$i])) {
                     if (!isset($missing[$table])) {
-                        $missing[$table] = array();
+                        $missing[$table] = [];
                     }
                     $missing[$table][] = $columnDefinitions[$column];
                 }

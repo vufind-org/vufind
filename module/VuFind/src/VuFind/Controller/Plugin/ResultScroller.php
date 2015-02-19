@@ -299,10 +299,10 @@ class ResultScroller extends AbstractPlugin
      */
     public function getScrollData($driver)
     {
-        $retVal = array(
+        $retVal = [
             'previousRecord' => null, 'nextRecord' => null,
             'currentPosition' => null, 'resultTotal' => null
-        );
+        ];
 
         // Do nothing if disabled or data missing:
         if ($this->enabled
@@ -391,7 +391,7 @@ class ResultScroller extends AbstractPlugin
             $searchObject->performAndProcessSearch();
         }
 
-        $retVal = array();
+        $retVal = [];
         foreach ($searchObject->getResults() as $record) {
             $retVal[] = $record->getResourceSource() . '|' . $record->getUniqueId();
         }

@@ -55,7 +55,7 @@ class Results extends \VuFind\Search\Solr\Results
         $this->responseFacets = $collection->getFacets();
 
         // Get the facets from which we will build our results:
-        $facets = $this->getFacetList(array('authorStr' => null));
+        $facets = $this->getFacetList(['authorStr' => null]);
         if (isset($facets['authorStr'])) {
             $params = $this->getParams();
             $this->resultTotal

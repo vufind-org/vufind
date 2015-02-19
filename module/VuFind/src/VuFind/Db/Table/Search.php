@@ -56,7 +56,7 @@ class Search extends Gateway
      */
     public function destroySession($sid)
     {
-        $this->delete(array('session_id' => $sid, 'saved' => 0));
+        $this->delete(['session_id' => $sid, 'saved' => 0]);
     }
 
     /**
@@ -110,7 +110,7 @@ class Search extends Gateway
      */
     public function getRowById($id, $exceptionIfMissing = true)
     {
-        $row = $this->select(array('id' => $id))->current();
+        $row = $this->select(['id' => $id])->current();
         if (empty($row) && $exceptionIfMissing) {
             throw new \Exception('Cannot find id ' . $id);
         }
@@ -148,7 +148,7 @@ class Search extends Gateway
      * @return void
      */
     public function saveSearch(\VuFind\Search\Results\PluginManager $manager,
-        $newSearch, $sessionId, $searchHistory = array()
+        $newSearch, $sessionId, $searchHistory = []
     ) {
         // Duplicate elimination
         foreach ($searchHistory as $oldSearch) {
@@ -178,11 +178,11 @@ class Search extends Gateway
 
         // If we got this far, we didn't find a saved duplicate, so we should
         // save the new search:
-        $data = array(
+        $data = [
             'session_id' => $sessionId,
             'created' => date('Y-m-d'),
             'search_object' => serialize(new minSO($newSearch))
-        );
+        ];
         $this->insert($data);
         $row = $this->getRowById($this->getLastInsertValue());
 

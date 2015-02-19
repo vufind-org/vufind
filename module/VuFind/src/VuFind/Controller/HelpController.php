@@ -52,7 +52,7 @@ class HelpController extends AbstractBase
     {
         $this->layout()->setTemplate('layout/help');
         return $this->createViewModel(
-            array('topic' => $this->params()->fromQuery('topic'))
+            ['topic' => $this->params()->fromQuery('topic')]
         );
     }
 }

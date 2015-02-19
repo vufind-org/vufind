@@ -52,7 +52,7 @@ class Tag implements AutocompleteInterface, \VuFind\Db\Table\DbTableAwareInterfa
      */
     public function getSuggestions($query)
     {
-        $tagList = array();
+        $tagList = [];
         $tagTable = $this->getTagsTable();
         $tags = $tagTable->matchText($query);
         if ($tags) {

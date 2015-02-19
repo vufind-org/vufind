@@ -164,14 +164,14 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         // Retrieve records a page at a time:
         $results = false;
         while (count($ids) > 0) {
-            $currentPage = array_splice($ids, 0, $pageSize, array());
+            $currentPage = array_splice($ids, 0, $pageSize, []);
             $query = new SummonQuery(
                 null,
-                array(
+                [
                     'idsToFetch' => $currentPage,
                     'pageNumber' => 1,
                     'pageSize' => $pageSize
-                )
+                ]
             );
             $next = $this->createRecordCollection(
                 $this->connector->query($query)
@@ -270,10 +270,10 @@ class Backend extends AbstractBackend implements RetrieveBatchInterface
         unset($params['query']);
 
         // Convert the options:
-        $options = array();
+        $options = [];
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
-        $arraySettings = array('facets', 'filters', 'groupFilters', 'rangeFilters');
+        $arraySettings = ['facets', 'filters', 'groupFilters', 'rangeFilters'];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }

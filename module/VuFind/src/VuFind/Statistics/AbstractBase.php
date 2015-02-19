@@ -117,7 +117,7 @@ abstract class AbstractBase
      */
     public function getDriversForSource($source, $getAll = false)
     {
-        $drivers = array();
+        $drivers = [];
 
         // For each mode
         if (isset($this->config->Statistics->mode)) {
@@ -199,7 +199,7 @@ abstract class AbstractBase
         $parts = explode(' ', $this->getBrowser($agent));
         $browser = $parts[0];
         $version = isset($parts[1]) ? $parts[1] : '';
-        return array(
+        return [
             'id'               => uniqid('', true),
             'datestamp'        => substr(date('c', strtotime('now')), 0, -6) . 'Z',
             'browser'          => $browser,
@@ -210,7 +210,7 @@ abstract class AbstractBase
                 : $server->get('HTTP_REFERER'),
             'url'              => $server->get('REQUEST_URI'),
             'session'          => $this->sessId
-        );
+        ];
     }
 
     /**

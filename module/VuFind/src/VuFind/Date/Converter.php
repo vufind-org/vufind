@@ -101,10 +101,10 @@ class Converter
         // These are date formats that we definitely know how to handle, and some
         // benefit from special processing. However, items not found in this list
         // will still be attempted in a generic fashion before giving up.
-        $validFormats = array(
+        $validFormats = [
             "m-d-Y", "m-d-y", "m/d/Y", "m/d/y", "U", "m-d-y H:i", "Y-m-d",
             "Y-m-d H:i"
-        );
+        ];
         $isValid = in_array($inputFormat, $validFormats);
         if ($isValid) {
             if ($inputFormat == 'U') {
@@ -118,9 +118,9 @@ class Converter
                 $regEx = '/0*([0-9]+)(-|\/)0*([0-9]+)(-|\/)0*([0-9]+)/';
                 $dateString = trim(preg_replace($regEx, '$1/$3/$5', $dateString));
             }
-            $errors = array(
-                'warning_count' => 0, 'error_count' => 0, 'errors' => array()
-            );
+            $errors = [
+                'warning_count' => 0, 'error_count' => 0, 'errors' => []
+            ];
             try {
                 $date = new DateTime($dateString, $this->timezone);
             } catch (\Exception $e) {

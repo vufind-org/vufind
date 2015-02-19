@@ -78,7 +78,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     public function testEmptyQueryError()
     {
         $conn = $this->createConnector();
-        $terms = array();
+        $terms = [];
         $result = $conn->query('dummyinst', $terms);
         $this->assertEquals(0, $result['recordCount']);
         $this->assertEquals('Primo API does not accept a null query', $result['error']);
@@ -92,10 +92,10 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     public function testQuery()
     {
         $conn = $this->createConnector('search-http');
-        $terms = array(
-            array('index' => 'Title', 'lookfor' => 'test'),
-            array('index' => 'Author', 'lookfor' => 'test'),
-        );
+        $terms = [
+            ['index' => 'Title', 'lookfor' => 'test'],
+            ['index' => 'Author', 'lookfor' => 'test'],
+        ];
         $result = $conn->query('dummyinst', $terms);
         $this->assertEquals(1245, $result['recordCount']);
         $this->assertEquals('Abstract Test', $result['documents'][0]['title']);
@@ -109,14 +109,14 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     public function testDifferentlyNamespacedQuery()
     {
         $conn = $this->createConnector('swansea-search-http');
-        $terms = array(
-            array('index' => 'Title', 'lookfor' => 'dummy query'),
-        );
-        $result = $conn->query('dummyinst', $terms, array('returnErr' => false));
+        $terms = [
+            ['index' => 'Title', 'lookfor' => 'dummy query'],
+        ];
+        $result = $conn->query('dummyinst', $terms, ['returnErr' => false]);
         $this->assertEquals(1, $result['recordCount']);
         $this->assertEquals('Lord', $result['documents'][0]['title']);
-        $this->assertEquals(array(), $result['didYouMean']);
-        $this->assertEquals(array('eng' => 1), $result['facets']['lang']);
+        $this->assertEquals([], $result['didYouMean']);
+        $this->assertEquals(['eng' => 1], $result['facets']['lang']);
     }
 
     /**
@@ -130,10 +130,10 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     public function testErrorInSuccessfulResponse()
     {
         $conn = $this->createConnector('error-with-success-http');
-        $terms = array(
-            array('index' => 'Title', 'lookfor' => 'dummy query'),
-        );
-        $result = $conn->query('dummyinst', $terms, array('returnErr' => false));
+        $terms = [
+            ['index' => 'Title', 'lookfor' => 'dummy query'],
+        ];
+        $result = $conn->query('dummyinst', $terms, ['returnErr' => false]);
     }
 
     /**

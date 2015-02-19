@@ -48,7 +48,7 @@ class ParamBag
      *
      * @var array
      */
-    protected $params = array();
+    protected $params = [];
 
     /**
      * Constructor.
@@ -57,7 +57,7 @@ class ParamBag
      *
      * @return void
      */
-    public function __construct(array $initial = array())
+    public function __construct(array $initial = [])
     {
         foreach ($initial as $name => $value) {
             $this->add($name, $value);
@@ -103,7 +103,7 @@ class ParamBag
         if (is_array($value)) {
             $this->params[$name] = $value;
         } else {
-            $this->params[$name] = array($value);
+            $this->params[$name] = [$value];
         }
     }
 
@@ -132,7 +132,7 @@ class ParamBag
     public function add($name, $value)
     {
         if (!isset($this->params[$name])) {
-            $this->params[$name] = array();
+            $this->params[$name] = [];
         }
         if (is_array($value)) {
             $this->params[$name] = array_merge($this->params[$name], $value);
@@ -191,7 +191,7 @@ class ParamBag
     public function exchangeArray(array $input)
     {
         $current = $this->params;
-        $this->params = array();
+        $this->params = [];
         foreach ($input as $key => $value) {
             $this->set($key, $value);
         }
@@ -208,7 +208,7 @@ class ParamBag
      */
     public function request()
     {
-        $request = array();
+        $request = [];
         foreach ($this->params as $name => $values) {
             if (!empty($values)) {
                 $request = array_merge(

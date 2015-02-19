@@ -116,7 +116,7 @@ class LessCompilerTest extends Unit\TestCase
     // adapted from http://php.net/manual/en/function.rmdir.php
     protected static function delTree($dir)
     {
-        $files = array_diff(scandir($dir), array('.', '..'));
+        $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
             is_dir("$dir/$file")
                 ? self::delTree("$dir/$file") : unlink("$dir/$file");
@@ -126,7 +126,7 @@ class LessCompilerTest extends Unit\TestCase
 
     public function testThemeCompile()
     {
-        $this->compiler->compile(array('child'));
+        $this->compiler->compile(['child']);
         $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
         $this->assertFalse(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
         unlink($this->testDest . 'themes/child/css/compiled.css');
@@ -134,7 +134,7 @@ class LessCompilerTest extends Unit\TestCase
 
     public function testAllCompile()
     {
-        $this->compiler->compile(array());
+        $this->compiler->compile([]);
         $this->assertTrue(file_exists($this->testDest . 'themes/child/css/compiled.css'));
         $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/compiled.css'));
         $this->assertTrue(file_exists($this->testDest . 'themes/parent/css/relative/relative.css'));

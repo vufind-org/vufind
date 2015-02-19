@@ -45,7 +45,7 @@ class Fedora extends AbstractBase
      *
      * @var array
      */
-    protected $datastreams = array();
+    protected $datastreams = [];
 
     /**
      * Get Fedora Base URL.
@@ -69,7 +69,7 @@ class Fedora extends AbstractBase
     public function getClasses($id)
     {
         $data = $this->getDatastreamContent($id, 'RELS-EXT');
-        $matches = array();
+        $matches = [];
         preg_match_all(
             '/rdf:resource="info:fedora\/vudl-system:([^"]+)/',
             $data,
@@ -146,13 +146,13 @@ class Fedora extends AbstractBase
      */
     public function getDetails($id, $format = false)
     {
-        $dc = array();
+        $dc = [];
         preg_match_all(
             '/<[^\/]*dc:([^ >]+)>([^<]+)/',
             $this->getDatastreamContent($id, 'DC'),
             $dc
         );
-        $details = array();
+        $details = [];
         foreach ($dc[2] as $i => $detail) {
             $details[$dc[1][$i]] = $detail;
         }
@@ -210,7 +210,7 @@ class Fedora extends AbstractBase
             . 'and $member <dc:identifier> $memberPID';
         $response = $this->query($query);
         $list = explode("\n", $response->getBody());
-        $items = array();
+        $items = [];
         for ($i = 1;$i<count($list);$i++) {
             if (empty($list[$i])) {
                 continue;
@@ -259,7 +259,7 @@ class Fedora extends AbstractBase
         $response = $this->query($query);
         $list = explode("\n", $response->getBody());
         if (count($list) > 2) {
-            $items = array();
+            $items = [];
             $sequenced = true;
             for ($i = 1;$i<count($list);$i++) {
                 if (empty($list[$i])) {
@@ -271,10 +271,10 @@ class Fedora extends AbstractBase
                     $sequenced = false;
                     break;
                 }
-                $items[] = array(
+                $items[] = [
                     'seq' => $seq,
                     'id' => $id
-                );
+                ];
             }
             if ($sequenced) {
                 usort(
@@ -300,7 +300,7 @@ class Fedora extends AbstractBase
             . 'order by $memberTitle';
         $response = $this->query($query);
         $list = explode("\n", $response->getBody());
-        $items = array();
+        $items = [];
         for ($i = 1;$i<count($list);$i++) {
             if (empty($list[$i])) {
                 continue;
@@ -334,15 +334,15 @@ class Fedora extends AbstractBase
         // Parse out relationships
         $response = $this->query($query);
         $list = explode("\n", trim($response->getBody(), "\n"));
-        $tree = array();
+        $tree = [];
         for ($i = 1;$i<count($list);$i++) {
             list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
             $parent = substr($parent, 12);
             if (!isset($tree[$parent])) {
-                $tree[$parent] = array(
-                    'children' => array(),
+                $tree[$parent] = [
+                    'children' => [],
                     'title' => $title
-                );
+                ];
             }
             $tree[$parent]['children'][] = $child;
         }
@@ -377,7 +377,7 @@ class Fedora extends AbstractBase
         if ($record == null) {
             return false;
         }
-        $ret = array();
+        $ret = [];
         // OCR
         if (isset($record['ocr-dirty'])) {
             $record['ocr-dirty'] = htmlentities(
@@ -399,7 +399,7 @@ class Fedora extends AbstractBase
         }
         if ($renderer != null) {
             $ret['div'] = $renderer
-                ->render('vudl/techinfo.phtml', array('record' => $record));
+                ->render('vudl/techinfo.phtml', ['record' => $record]);
         }
         return $ret;
     }
@@ -413,23 +413,23 @@ class Fedora extends AbstractBase
      */
     protected function getSizeAndTypeInfo($techInfo)
     {
-        $data = $type = array();
+        $data = $type = [];
         preg_match('/<size[^>]*>([^<]*)/', $techInfo, $data);
         preg_match('/mimetype="([^"]*)/', $techInfo, $type);
         $size_index = 0;
         if (count($data) > 1) {
             $bytes = intval($data[1]);
-            $sizes = array('bytes','KB','MB');
+            $sizes = ['bytes','KB','MB'];
             while ($size_index < count($sizes)-1 && $bytes > 1024) {
                 $bytes /= 1024;
                 $size_index++;
             }
-            return array(
+            return [
                 'size' => round($bytes, 1) . ' ' . $sizes[$size_index],
                 'type' => $type[1]
-            );
+            ];
         }
-        return array();
+        return [];
     }
 
     /**
@@ -450,10 +450,10 @@ class Fedora extends AbstractBase
             $license = $license[1];
             foreach ($setLicenses as $tell => $value) {
                 if (strpos($license, $tell)) {
-                    return array($license, $value);
+                    return [$license, $value];
                 }
             }
-            return array($license, false);
+            return [$license, false];
         }
         return null;
     }
@@ -466,15 +466,15 @@ class Fedora extends AbstractBase
      *
      * @return Response
      */
-    protected function query($query, $options = array())
+    protected function query($query, $options = [])
     {
-        $data = array(
+        $data = [
             'type'  => 'tuples',
             'flush' => false,
             'lang'  => 'itql',
             'format' => 'CSV',
             'query' => $query
-        );
+        ];
         foreach ($options as $key => $value) {
             $data[$key] = $value;
         }

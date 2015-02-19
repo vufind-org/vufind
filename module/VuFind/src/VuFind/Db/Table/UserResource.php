@@ -64,21 +64,21 @@ class UserResource extends Gateway
     ) {
         $callback = function ($select) use ($resourceId, $source, $listId, $userId) {
             $select->columns(
-                array(
+                [
                     new Expression(
-                        'DISTINCT(?)', array('user_resource.id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'DISTINCT(?)', ['user_resource.id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ), '*'
-                )
+                ]
             );
             $select->join(
-                array('r' => 'resource'), 'r.id = user_resource.resource_id',
-                array()
+                ['r' => 'resource'], 'r.id = user_resource.resource_id',
+                []
             );
             $select->join(
-                array('ul' => 'user_list'),
+                ['ul' => 'user_list'],
                 'user_resource.list_id = ul.id',
-                array('list_title' => 'title', 'list_id' => 'id')
+                ['list_title' => 'title', 'list_id' => 'id']
             );
             $select->where->equalTo('r.source', $source)
                 ->equalTo('r.record_id', $resourceId);
@@ -106,10 +106,10 @@ class UserResource extends Gateway
     public function createOrUpdateLink($resource_id, $user_id, $list_id,
         $notes = ''
     ) {
-        $params = array(
+        $params = [
             'resource_id' => $resource_id, 'list_id' => $list_id,
             'user_id' => $user_id
-        );
+        ];
         $result = $this->select($params)->current();
 
         // Only create row if it does not already exist:
@@ -150,7 +150,7 @@ class UserResource extends Gateway
             $select->where->equalTo('user_id', $user_id);
             if (!is_null($resource_id)) {
                 if (!is_array($resource_id)) {
-                    $resource_id = array($resource_id);
+                    $resource_id = [$resource_id];
                 }
                 $select->where->in('resource_id', $resource_id);
             }
@@ -172,21 +172,21 @@ class UserResource extends Gateway
     {
         $select = $this->sql->select();
         $select->columns(
-            array(
+            [
                 'users' => new Expression(
-                    'COUNT(DISTINCT(?))', array('user_id'),
-                    array(Expression::TYPE_IDENTIFIER)
+                    'COUNT(DISTINCT(?))', ['user_id'],
+                    [Expression::TYPE_IDENTIFIER]
                 ),
                 'lists' => new Expression(
-                    'COUNT(DISTINCT(?))', array('list_id'),
-                    array(Expression::TYPE_IDENTIFIER)
+                    'COUNT(DISTINCT(?))', ['list_id'],
+                    [Expression::TYPE_IDENTIFIER]
                 ),
                 'resources' => new Expression(
-                    'COUNT(DISTINCT(?))', array('resource_id'),
-                    array(Expression::TYPE_IDENTIFIER)
+                    'COUNT(DISTINCT(?))', ['resource_id'],
+                    [Expression::TYPE_IDENTIFIER]
                 ),
                 'total' => new Expression('COUNT(*)')
-            )
+            ]
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();

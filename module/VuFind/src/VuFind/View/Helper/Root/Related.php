@@ -82,7 +82,7 @@ class Related extends AbstractHelper
         // Set up the rendering context:
         $contextHelper = $this->getView()->plugin('context');
         $oldContext = $contextHelper($this->getView())->apply(
-            array('related' => $related)
+            ['related' => $related]
         );
 
         // Get the current related item module's class name, then start a loop

@@ -132,12 +132,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
 
         $auth_token = "PWS {$this->ws_api_id}:$signature";
-        $http_headers = array(
+        $http_headers = [
             "Content-type: application/json",
             "Accept: application/json",
             "PolarisDate: $date",
             "Authorization: $auth_token"
-        );
+        ];
 
         try {
             $client = $this->httpService->createClient($url);
@@ -189,7 +189,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getMyHolds($patron)
     {
-        $holds = array();
+        $holds = [];
         $response = $this->makeRequest(
             "patron/{$patron['cat_username']}/holdrequests/active", 'GET',
             $patron['cat_password']
@@ -199,7 +199,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $create = $this->formatJSONTime($holds_response->ActivationDate);
             $expire = $this->formatJSONTime($holds_response->ExpirationDate);
-            $holds[] = array(
+            $holds[] = [
                 'id'             => $holds_response->BibID,
                 'location' => $holds_response->PickupBranchName,
                 'reqnum'     => $holds_response->HoldRequestID,
@@ -207,7 +207,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'create'     => $create,
                 'position' => $holds_response->QueuePosition,
                 'title'      => $holds_response->Title,
-            );
+            ];
 
         }
         return $holds;
@@ -226,7 +226,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getStatus($id)
     {
-        $holding = array();
+        $holding = [];
         $response = $this->makeRequest("bib/$id/holdings");
         $holdings_response_array = $response->BibHoldingsGetRows;
 
@@ -248,7 +248,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $duedate = date("n-j-Y", strtotime($holdings_response->DueDate));
             }
 
-            $holding[] = array(
+            $holding[] = [
                 'availability' => $availability,
                 'id'                 => $id,
                 'status'         => $holdings_response->CircStatus,
@@ -259,7 +259,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 //'number'   => $holdings_response->ItemsIn,
                 'number'         => $copy_count,
                 'barcode'    => $holdings_response->Barcode,
-            );
+            ];
 
         }
         return $holding;
@@ -277,7 +277,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         $count = 0;
         foreach ($ids as $id) {
             $items[$count] = $this->getStatus($id);
@@ -346,7 +346,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // microtime is msec or sec?? seems to have changed
         $activationdate = '/Date(' . intval(microtime(true) * 1000) . ')/';
 
-        $jsonrequest = array(
+        $jsonrequest = [
             'PatronID' => $holdDetails['patron']['id'],
             'BibID'      => $holdDetails['id'],
             'ItemBarcode'  => '',
@@ -360,14 +360,14 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'UserID'                    => $userid,
             'RequestingOrgID' => $this->ws_requestingorgid,
             'TargetGUID'            => '',
-        );
+        ];
 
         $response = $this->makeRequest('holdrequest', 'POST', '', $jsonrequest);
 
         if ($response->StatusValue == 1) {
-            return array('success' => true,  'sysMessage' => $response->Message);
+            return ['success' => true,  'sysMessage' => $response->Message];
         } else {
-            return array('success' => false, 'sysMessage' => $response->Message);
+            return ['success' => false, 'sysMessage' => $response->Message];
         }
 
     }
@@ -397,20 +397,20 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (isset($this->ws_pickUpLocations)) {
             // hardcoded pickup locations in the .ini file? or...
             foreach ($this->ws_pickUpLocations as $code => $library) {
-                $locations[] = array(
+                $locations[] = [
                     'locationID'            => $code,
                     'locationDisplay' => $library
-                );
+                ];
             }
         } else {
             // we get them from the API
             $response = $this->makeRequest("organizations/branch");
             $locations_response_array = $response->OrganizationsGetRows;
             foreach ($locations_response_array as $location_response) {
-                $locations[] = array(
+                $locations[] = [
                     'locationID'            => $location_response->OrganizationID,
                     'locationDisplay' => $location_response->Name,
-                );
+                ];
             }
         }
         return $locations;
@@ -449,7 +449,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -473,7 +473,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        return array('count' => 0, 'results' => array());
+        return ['count' => 0, 'results' => []];
     }
 
     /**
@@ -491,7 +491,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function findReserves($course, $inst, $dept)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -514,7 +514,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             return null;
         }
 
-        $user = array();
+        $user = [];
 
         $user['id']                     = $response->PatronID;
         $user['firstname']      = null;

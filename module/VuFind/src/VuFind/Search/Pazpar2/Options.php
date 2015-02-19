@@ -48,7 +48,7 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
         $this->searchIni = $this->facetsIni = 'Pazpar2';
 
-        $this->limitOptions = array($this->defaultLimit);
+        $this->limitOptions = [$this->defaultLimit];
         
         // Load source settings
         $searchSettings = $configLoader->get($this->searchIni);
@@ -65,7 +65,7 @@ class Options extends \VuFind\Search\Base\Options
                 $defaultChecked
                     = is_object($searchSettings->SourcePreferences->defaultChecked)
                     ? $searchSettings->SourcePreferences->defaultChecked->toArray()
-                    : array($searchSettings->SourcePreferences->defaultChecked);
+                    : [$searchSettings->SourcePreferences->defaultChecked];
                 foreach ($defaultChecked as $current) {
                     $this->defaultSelectedShards[] = $current;
                 }

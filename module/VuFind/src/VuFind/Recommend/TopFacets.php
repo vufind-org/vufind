@@ -76,13 +76,13 @@ class TopFacets extends AbstractFacets
         // Load the desired facet information:
         $config = $this->configLoader->get($iniName);
         $this->facets = isset($config->$mainSection)
-            ? $config->$mainSection->toArray() : array();
+            ? $config->$mainSection->toArray() : [];
 
         // Load other relevant settings:
-        $this->baseSettings = array(
+        $this->baseSettings = [
             'rows' => $config->Results_Settings->top_rows,
             'cols' => $config->Results_Settings->top_cols
-        );
+        ];
 
         // Load boolean configurations:
         $this->loadBooleanConfigs($config, array_keys($this->facets));

@@ -109,7 +109,7 @@ class ExpandFacets implements RecommendInterface
 
         // All standard facets to display:
         $this->facets = isset($config->$mainSection) ?
-            $config->$mainSection->toArray() : array();
+            $config->$mainSection->toArray() : [];
     }
 
     /**

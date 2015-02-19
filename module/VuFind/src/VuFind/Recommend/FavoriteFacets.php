@@ -55,6 +55,6 @@ class FavoriteFacets extends SideFacets
 
         // Only display tags when enabled:
         $this->mainFacets = ($tagSetting && $tagSetting !== 'disabled')
-            ? array('tags' => 'Your Tags') : array();
+            ? ['tags' => 'Your Tags'] : [];
     }
 }

@@ -83,12 +83,12 @@ class ImageLoader implements \Zend\Log\LoggerAwareInterface
      *
      * @var array
      */
-    protected $allowedFileExtensions = array(
+    protected $allowedFileExtensions = [
         "gif" => "image/gif",
         "jpeg" => "image/jpeg", "jpg" => "image/jpeg",
         "png" => "image/png",
         "tiff" => "image/tiff", "tif" => "image/tiff"
-    );
+    ];
 
     /**
      * Setter for dependency
@@ -140,10 +140,10 @@ class ImageLoader implements \Zend\Log\LoggerAwareInterface
      *
      * @return string|bool
      */
-    protected function searchTheme($path, $formats = array(''))
+    protected function searchTheme($path, $formats = [''])
     {
         // Check all supported image formats:
-        $filenames = array();
+        $filenames = [];
         foreach ($formats as $format) {
             $filenames[] =  $path . $format;
         }
