@@ -169,10 +169,10 @@ class WorldShare extends AbstractBase implements
     	$target .= ((strpos($target, '?') !== false) ? '&' : '?')
     	. 'auth_method=WorldShare';
     	$this->session->lastUri = $target;
-    	$options = array(
-    			'services' => array('WorldCatDiscoveryAPI', 'refresh_token'),
+    	$options = [
+    			'services' => ['WorldCatDiscoveryAPI', 'refresh_token'],
     			'redirectUri' => $target
-    	);
+    	];
     	if ($this->wmsEnabled){
     		$options['services'][] = 'WMS_Availability';
     		$options['services'][] = 'WMS_NCIP';

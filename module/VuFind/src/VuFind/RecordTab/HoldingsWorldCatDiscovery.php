@@ -87,7 +87,7 @@ class HoldingsWorldCatDiscovery extends AbstractBase implements \VuFindHttp\Http
     
     /**
      * Get the EHoldings
-     * 
+     *
      */
     public function getEHoldings($openURLParameters)
     {
@@ -108,7 +108,7 @@ class HoldingsWorldCatDiscovery extends AbstractBase implements \VuFindHttp\Http
 	    			return $kbresponse[0]['url'];
 	    		}
     		} else {
-    			Throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
+    			throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
     		}
     		
     		

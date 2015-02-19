@@ -147,5 +147,5 @@ class Factory
     	return new WorldShare(
     			$sm->getServiceLocator()->get('VuFind\Config')
     	);
-    }    
+    }
 }

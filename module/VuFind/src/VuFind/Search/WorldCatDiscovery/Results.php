@@ -78,13 +78,13 @@ class Results extends \VuFind\Search\Base\Results
         // create a lookup array to determine order:
         $order = array_flip(array_keys($filter));
 
-        $facets = array();
+        $facets = [];
         foreach ($this->responseFacets as $facet) {
             $field = $facet->getFacetIndex()->getValue();
             if (isset($filter[$field])) {
-                $facetItemList = array();
+                $facetItemList = [];
                 foreach ($facet->getFacetItems() as $facetItem){
-                    $facetItemInfo = array();
+                    $facetItemInfo = [];
                     $facetItemInfo['value'] = $facetItem->getName()->getValue();
                     $facetItemInfo['displayText'] = $facetItem->getName()->getValue();
                     $facetItemInfo['count'] = $facetItem->getCount()->getValue();
@@ -92,17 +92,17 @@ class Results extends \VuFind\Search\Base\Results
                     $facetItemInfo['isApplied'] = false;
                     $facetItemList[] = $facetItemInfo;
                 }
-                $facets[$order[$field]] = array(
+                $facets[$order[$field]] = [
                     'displayName' => $field,
                     'label' => $filter[$field],
                     'list' => $facetItemList
-                );
+                ];
             }
         }
         ksort($facets);
 
         // Rewrite the sorted array with appropriate keys:
-        $finalResult = array();
+        $finalResult = [];
         foreach ($facets as $current) {
             $finalResult[$current['displayName']] = $current;
         }

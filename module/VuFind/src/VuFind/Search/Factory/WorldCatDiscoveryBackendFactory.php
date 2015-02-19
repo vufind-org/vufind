@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Search\Factory;
 
 use VuFindSearch\Backend\BackendInterface;
@@ -88,7 +87,7 @@ class WorldCatDiscoveryBackendFactory implements FactoryInterface
     {
         $config = $this->serviceLocator->get('VuFind\Config');
         
-        $configOptions = array();
+        $configOptions = [];
         
         if ($config->get('WorldCatDiscovery')){
         		$configOptions['wskey'] = $config->get('WorldCatDiscovery')->General->wskey;
@@ -98,7 +97,7 @@ class WorldCatDiscoveryBackendFactory implements FactoryInterface
         		$configOptions['databaseIDs'] = explode(",", $config->get('WorldCatDiscovery')->General->databaseIDs);
         } else {
         	throw new Exception('You do not have the proper properties setup in the WorldCatDiscovery ini file');
-        }	
+        }
 		
         //TODO: need to deal with what happens if the MultiDriver is being used with WMS
         if ($config->get('config')->Catalog->driver == 'WMS'){

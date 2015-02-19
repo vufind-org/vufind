@@ -66,7 +66,7 @@ class Params extends \VuFind\Search\Base\Params
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
         ? $config->Facet_Settings->facet_limit : 30;
 
-        $finalFacets = array();
+        $finalFacets = [];
         foreach (array_keys($this->getFacetConfig()) as $facetName) {
             $finalFacets[] = "{$facetName}:{$defaultFacetLimit}";
         }

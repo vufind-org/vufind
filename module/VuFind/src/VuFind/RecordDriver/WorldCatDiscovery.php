@@ -54,7 +54,7 @@ class WorldCatDiscovery extends SolrDefault
         // to put anything there for our purposes. Instead, we'll store the object
         // in a separate property and leave the fields array empty so that parent
         // functionality will use appropriate default behaviors.
-        $this->fields = array();
+        $this->fields = [];
         $this->rawObject = $data;
     }
     
@@ -98,13 +98,13 @@ class WorldCatDiscovery extends SolrDefault
         $subjects = $this->getRawObject()->getAbout();
         array_walk($subjects, function(&$subject)
         {
-            $subject = is_callable(array($subject, 'getName'))
+            $subject = is_callable([$subject, 'getName'])
                 ? $subject->getName() : null;
         });
         $subjects = array_unique(array_filter($subjects));
         array_walk($subjects, function(&$subject)
         {
-            $subject = array($subject);
+            $subject = [$subject];
         });
         return $subjects;
     }
@@ -117,8 +117,8 @@ class WorldCatDiscovery extends SolrDefault
     public function getAwards()
     {
         $obj = $this->getRawObject();
-        return is_callable(array($obj, 'getAwards'))
-            ? $obj->getAwards('586') : array();
+        return is_callable([$obj, 'getAwards'])
+            ? $obj->getAwards('586') : [];
     }
 
     /**
@@ -128,7 +128,6 @@ class WorldCatDiscovery extends SolrDefault
      */
     public function getCleanDOI()
     {
-
 
     }
 
@@ -184,12 +183,12 @@ class WorldCatDiscovery extends SolrDefault
             $manifestations = $response->getManifestations();
             array_walk($manifestations, function(&$manifestation)
             {
-                $manifestation = is_callable(array($manifestation, 'getISBN'))
+                $manifestation = is_callable([$manifestation, 'getISBN'])
                     ? $manifestation->getISBN() : null;
             });
             return $manifestations;
         }
-        return array();
+        return [];
     }
 
     /**
@@ -204,7 +203,7 @@ class WorldCatDiscovery extends SolrDefault
             // TODO: this doesn't work
             //return array($response->getIssn()->getValue());
         }
-        return array();
+        return [];
     }
 
     /**
@@ -214,7 +213,7 @@ class WorldCatDiscovery extends SolrDefault
      */
     public function getLanguages()
     {
-        return array($this->getRawObject()->getLanguage());
+        return [$this->getRawObject()->getLanguage()];
     }
 
     /**
@@ -224,7 +223,7 @@ class WorldCatDiscovery extends SolrDefault
      */
     public function getOCLC()
     {
-        return array($this->getRawObject()->getOCLCNumber()->getValue());
+        return [$this->getRawObject()->getOCLCNumber()->getValue()];
     }
 
     /**
@@ -243,13 +242,13 @@ class WorldCatDiscovery extends SolrDefault
                 $kbrequest[] = 'rft_id=' . $doi;
             } else {
                 if ($part = $record->getIsPartOf()) {
-                    if (is_callable(array($part, 'getVolume'))
+                    if (is_callable([$part, 'getVolume'])
                         && ($vol = $part->getVolume())
                     ) {
                         $kbrequest[] = "rft.issn=" . $vol->getPeriodical()->getIssn();
                         $kbrequest[] = "rft.volume=" . $vol->getVolumeNumber();
                     }
-                    if (is_callable(array($part, 'getIssueNumber'))) {
+                    if (is_callable([$part, 'getIssueNumber'])) {
                         $kbrequest[] = "rft.issue=" . $part->getIssueNumber();
                     }
                 }
@@ -259,7 +258,7 @@ class WorldCatDiscovery extends SolrDefault
         } elseif ($record instanceof \WorldCat\Discovery\Book
             && ($manifestations = $record->getManifestations())
             && isset($manifestations[0])
-            && is_callable(array($manifestations[0], 'getISBN'))
+            && is_callable([$manifestations[0], 'getISBN'])
         ) {
             $kbrequest[] = "rft.isbn=" . $manifestations[0]->getISBN();
         } else {
@@ -267,7 +266,6 @@ class WorldCatDiscovery extends SolrDefault
         }
         return implode('&', $kbrequest);
     }
-
 
     /**
      * Get the item's place of publication.
@@ -298,7 +296,7 @@ class WorldCatDiscovery extends SolrDefault
     {
         $author = $this->getRawObject()->getAuthor();
         
-        return is_callable(array($author, 'getName')) ? $author->getName() : '';
+        return is_callable([$author, 'getName']) ? $author->getName() : '';
     }
 
     /**
@@ -308,7 +306,7 @@ class WorldCatDiscovery extends SolrDefault
      */
     public function getPublicationDates()
     {
-        return array($this->getRawObject()->getDatePublished());
+        return [$this->getRawObject()->getDatePublished()];
     }
 
     /**
@@ -320,7 +318,7 @@ class WorldCatDiscovery extends SolrDefault
     {
         // WorldCat\Discovery\Bib needs its type mapping updated
         $publisher = $this->getRawObject()->getPublisher();
-        return $publisher ? array($publisher->get('schema:name')) : array();
+        return $publisher ? [$publisher->get('schema:name')] : [];
 
     }
 
@@ -371,7 +369,6 @@ class WorldCatDiscovery extends SolrDefault
         return (string)$this->getRawObject()->getOCLCNumber()->getValue();
     }
 
-
     /**
      * getGenres
      */
@@ -398,7 +395,7 @@ class WorldCatDiscovery extends SolrDefault
         $response = $this->getRawObject();
         if (is_a($response, 'WorldCat\Discovery\Book')){
             $edition = $response->getBookEdition();
-            return is_callable(array($edition, 'getValue'))
+            return is_callable([$edition, 'getValue'])
                 ? $edition->getValue() : '';
         }
         return '';
@@ -426,9 +423,9 @@ class WorldCatDiscovery extends SolrDefault
         $response = $this->getRawObject();
         if (is_a($response, 'WorldCat\Discovery\Article')){
             $parent = $response->getIsPartOf();
-            if ($parent && is_callable(array($parent, 'getVolume'))) {
+            if ($parent && is_callable([$parent, 'getVolume'])) {
                 $volume = $parent->getVolume();
-                if ($volume && is_callable(array($volume, 'getPeriodical'))) {
+                if ($volume && is_callable([$volume, 'getPeriodical'])) {
                     $name = $volume->getPeriodical()->getName();
                     if ($name) {
                         return $name->getValue();

@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\WorldCatDiscovery\Response;
 
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
@@ -102,7 +101,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         
         foreach ($results as $doc) {
-            $collection->add(call_user_func($this->recordFactory, array('doc' => $doc, 'offers' => $offers)));
+            $collection->add(call_user_func($this->recordFactory, ['doc' => $doc, 'offers' => $offers]));
         }
         return $collection;
     }

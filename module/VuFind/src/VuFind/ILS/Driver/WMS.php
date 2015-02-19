@@ -93,7 +93,6 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @throws ILSException
      * @return void
      */
-
     public function init()
     {
         if (empty($this->config)) {
@@ -137,9 +136,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected function getAccessToken()
     {
         if (empty($this->session->accessToken) || $this->session->accessToken->isExpired()){
-            $options = array(
-                    'services' => array('WorldCatDiscoveryAPI', 'WMS_Availability', 'WMS_NCIP','refresh_token')
-            );
+            $options = [
+                    'services' => ['WorldCatDiscoveryAPI', 'WMS_Availability', 'WMS_NCIP','refresh_token']
+            ];
             $wskey = new WSKey($this->wskey, $this->secret, $options);
             $accessToken = $wskey->getAccessTokenWithClientCredentials($this->institution, $this->institution);
             $this->session->accessToken = $accessToken;
@@ -167,10 +166,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
         if (($handle = fopen($pickupLocationsFile, "r")) !== false) {
             while (($data = fgetcsv($handle)) !== false) {
-                $this->pickupLocations[$data[0]][] = array(
+                $this->pickupLocations[$data[0]][] = [
                         'locationID' => $data[1],
                         'locationDisplay' => $data[2]
-                );
+                ];
             }
             fclose($handle);
         }
@@ -196,14 +195,14 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getPickUpLocations($patron, $holdDetails = null)
     {
-        $locations = array();
+        $locations = [];
         foreach (array_keys($this->agency) as $agency) {
             foreach ($this->pickupLocations[$agency] as $thisAgency) {
                 $locations[]
-                = array(
+                = [
                         'locationID' => $thisAgency['locationID'],
                         'locationDisplay' => $thisAgency['locationDisplay'],
-                );
+                ];
             }
         }
         return $locations;
@@ -249,12 +248,12 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Set timeout value
             $timeout = isset($this->config['Catalog']['http_timeout'])
             ? $this->config['Catalog']['http_timeout'] : 30;
-            $client->setOptions(array('timeout' => $timeout));
+            $client->setOptions(['timeout' => $timeout]);
             $authorizationHeader = 'Bearer ' . $this->getAccessToken()->getValue();
-            $client->setHeaders(array(
+            $client->setHeaders([
                     "Authorization" => $authorizationHeader,
                     "Accept" => 'application/xml'
-            ));
+            ]);
             $client->setRawBody($xml);
             $client->setEncType('application/xml');
             $result = $client->setMethod('POST')->send();
@@ -272,10 +271,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if (is_a($result, 'SimpleXMLElement')) {
             $result->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
 
-            if (count($result->xpath("//ns1:Problem")) > 0 ) {
+            if (count($result->xpath("//ns1:Problem")) > 0) {
                 $problemType = $result->xpath("//ns1:Problem/ns1:ProblemType");
                 $problemDetail = $result->xpath("//ns1:Problem/ns1:ProblemDetail");
-                throw new ILSException("NCIP Error - " . $problemType[0] . (isset($problemDetail[0]) ? ' - ' .$problemDetail[0]: '') . $xml);
+                throw new ILSException("NCIP Error - " . $problemType[0] . (isset($problemDetail[0]) ? ' - ' . $problemDetail[0] : '') . $xml);
             } else {
                 return $result;
             }
@@ -297,7 +296,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getStatus($id)
     {
-        $holding = array();
+        $holding = [];
         if ($this->recordLoader->load($id, 'WorldCatDiscovery')->getOffer($this->institution)){
             // Make the request to WMS_Availability web service
             $wmsAvailabilityRequest = "https://worldcat.org/circ/availability/sru/service?x-registryId=" . $this->institution;
@@ -308,9 +307,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 ->createClient($wmsAvailabilityRequest);
                 $adapter = new \Zend\Http\Client\Adapter\Curl();
                 $client->setAdapter($adapter);
-                $client->setHeaders(array(
+                $client->setHeaders([
                         "Authorization" => 'Bearer ' . $this->getAccessToken()->getValue()
-                    ));
+                    ]);
                 $wmsAvailabilityResponse = $client->setMethod('GET')->send();
             } catch (\Exception $e) {
                 throw new ILSException($e->getMessage());
@@ -320,7 +319,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
             foreach ($copies as $copy){
                 if ($copy->circulations->circulation) {
-                    $holding[] = array(
+                    $holding[] = [
                             'id' => $id,
                             'source' => 'WorldCatDiscovery',
                             'addLink' => 'check',
@@ -334,7 +333,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                             'item_id' => $copy->circulations->circulation->itemId,
                             'barcode' => $copy->circulations->circulation->itemId,
                             'requests_placed' => $copy->circulations->circulation->onHold->attributes()->value
-                    );
+                    ];
                 }
             }
         }
@@ -354,7 +353,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         foreach ($ids as $id) {
             $items[] = $this->getStatus($id);
         }
@@ -393,7 +392,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -410,11 +409,11 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function patronLogin($username, $password)
     {
-    	$patronInfo = array(
+    	$patronInfo = [
     			"principalID" => $this->session->accessToken->getUser()->getPrincipalID(),
     			"principalIDNS" => $this->session->accessToken->getUser()->getPrincipalIDNS(),
     			"institution" => $this->institution
-    	);
+    	];
         return $patronInfo;
     }
 
@@ -433,14 +432,14 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyTransactions($patron, $displayInfo = null)
     {
         if (empty($displayInfo)){
-            $displayInfo = array(
+            $displayInfo = [
                     'startElement' => '1',
                     'maximumCount' => '10',
                     'sortField' => 'Accrual Date',
                     'sortOrder' => 'Ascending'
-            );
+            ];
         }
-        $extras = array(
+        $extras = [
             '<ns1:LoanedItemsDesired/>',
             '<ns1:Ext>',
             '<ns2:ResponseElementControl>',
@@ -451,7 +450,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             '<ns2:SortOrderType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/sortordertype.scm">' . $displayInfo['sortOrder'] . '</ns2:SortOrderType>',
             '</ns2:ResponseElementControl>',
             '</ns1:Ext>'
-        );
+        ];
         $request = $this->getLookupUserRequest(
                 $patron['principalID'],
                 $patron['principalIDNS'],
@@ -459,7 +458,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
         $response = $this->sendRequest($request, $patron);
 
-        $retVal = array();
+        $retVal = [];
         $list = $response->xpath('ns1:LookupUserResponse/ns1:LoanedItem');
 
         foreach ($list as $current) {
@@ -483,15 +482,15 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             } else {
                 $tmp = "1";
             }
-            $retVal[] = array(
+            $retVal[] = [
                     'id' => $tmp,
                     'source' => 'WorldCatDiscovery',
                     'duedate' => $due,
                     'title' => (string)$title[0],
                     'item_id' => (string)$item_id[0],
                     'renewable' => true,
-                    'dueStatus' => ($dueTimestamp > time()) ? null: 'overdue',
-            );
+                    'dueStatus' => ($dueTimestamp > time()) ? null : 'overdue',
+            ];
         }
 
         return $retVal;
@@ -511,14 +510,14 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyFines($patron, $displayInfo = null)
     {
         if (empty($displayInfo)){
-            $displayInfo = array(
+            $displayInfo = [
                     'startElement' => '1',
                     'maximumCount' => '10',
                     'sortField' => 'Accrual Date',
                     'sortOrder' => 'Ascending'
-            );
+            ];
         }
-        $extras = array(
+        $extras = [
                 '<ns1:UserFiscalAccountDesired/>',
                 '<ns1:Ext>',
                 '<ns2:ResponseElementControl>',
@@ -529,7 +528,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 '<ns2:SortOrderType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/sortordertype.scm">' . $displayInfo['sortOrder'] . '</ns2:SortOrderType>',
                 '</ns2:ResponseElementControl>',
                 '</ns1:Ext>'
-        );
+        ];
         $request = $this->getLookupUserRequest(
                 $patron['principalID'],
                 $patron['principalIDNS'],
@@ -541,7 +540,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 'ns1:LookupUserResponse/ns1:UserFiscalAccount/ns1:AccountDetails'
         );
 
-        $fines = array();
+        $fines = [];
         $balance = 0;
         foreach ($list as $current) {
 
@@ -567,7 +566,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $id = null;
              }
             $balance += $amount;
-            $fines[] = array(
+            $fines[] = [
                     'amount' => $amount,
                     'balance' => $balance,
                     'checkout' => '',
@@ -576,7 +575,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'createdate' => $date,
                     'id' => $id,
                     'source' => 'WorldCatDiscovery'
-            );
+            ];
         }
         return $fines;
     }
@@ -595,14 +594,14 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getMyHolds($patron, $displayInfo = null)
     {
         if (empty($displayInfo)){
-            $displayInfo = array(
+            $displayInfo = [
                     'startElement' => '1',
                     'maximumCount' => '10',
                     'sortField' => 'Accrual Date',
                     'sortOrder' => 'Ascending'
-            );
+            ];
         }
-        $extras = array(
+        $extras = [
                 '<ns1:RequestedItemsDesired/>',
                 '<ns1:Ext>',
                 '<ns2:ResponseElementControl>',
@@ -613,7 +612,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 '<ns2:SortOrderType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/sortordertype.scm">' . $displayInfo['sortOrder'] . '</ns2:SortOrderType>',
                 '</ns2:ResponseElementControl>',
                 '</ns1:Ext>'
-        );
+        ];
         $request = $this->getLookupUserRequest(
                 $patron['principalID'],
                 $patron['principalIDNS'],
@@ -622,7 +621,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
         $response = $this->sendRequest($request, $patron);
 
-        $retVal = array();
+        $retVal = [];
         $list = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
         foreach ($list as $current) {
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
@@ -655,7 +654,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Only return requests of type Hold or Recall. Callslips/Stack
             // Retrieval requests are fetched using getMyStorageRetrievalRequests
             if ($requestType === "Hold" or $requestType === "Recall") {
-                $retVal[] = array(
+                $retVal[] = [
                         'id' => (string)$id[0],
                         'source' => 'WorldCatDiscovery',
                         'create' => (string)$created,
@@ -665,7 +664,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         'requestId' => (string)$requestId[0],
                         'item_id' =>  (isset($itemId[0])) ? (string)$itemId[0] : null,
                         'location' => (string)$pickupLocation[0],
-                );
+                ];
             }
         }
 
@@ -730,15 +729,15 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         );
 
         if ($success) {
-            return array(
+            return [
                     'success' => true,
                     "sysMessage" => 'Request Successful.'
-            );
+            ];
         } else {
-            return array(
+            return [
                     'success' => false,
                     "sysMessage" => 'Request Not Successful.'
-            );
+            ];
         }
     }
 
@@ -759,7 +758,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $details = $cancelDetails['details'];
         $userID = $cancelDetails['patron']['principalID'];
         $patron = $cancelDetails['patron'];
-        $response = array();
+        $response = [];
 
         foreach ($details as $cancelDetails) {
             list($itemId, $requestId) = explode("|", $cancelDetails);
@@ -774,18 +773,18 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $itemId = (string)$itemId;
             if ($userId) {
                 $count++;
-                $response[$itemId] = array(
+                $response[$itemId] = [
                         'success' => true,
                         'status' => 'hold_cancel_success',
-                );
+                ];
             } else {
-                $response[$itemId] = array(
+                $response[$itemId] = [
                         'success' => false,
                         'status' => 'hold_cancel_fail',
-                );
+                ];
             }
         }
-        $result = array('count' => $count, 'items' => $response);
+        $result = ['count' => $count, 'items' => $response];
         return $result;
     }
 
@@ -803,7 +802,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        $cancelDetails = $holdDetails['id']."|".$holdDetails['requestId'];
+        $cancelDetails = $holdDetails['id'] . "|" . $holdDetails['requestId'];
         return $cancelDetails;
     }
 
@@ -820,7 +819,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function renewMyItems($renewDetails)
     {
-        $details = array();
+        $details = [];
         foreach ($renewDetails['details'] as $renewId) {
             $request = $this->getRenewRequest(
                     $renewDetails['patron']['principalID'], $this->institution, $renewId
@@ -833,22 +832,22 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $tmp = split("T", $newDueDate);
                 $splitDate = $tmp[0];
                 $splitTime = $tmp[1];
-                $details[$renewId] = array(
+                $details[$renewId] = [
                         "success" => true,
                         "new_date" => $splitDate,
                         "new_time" => rtrim($splitTime, "Z"),
                         "item_id" => $renewId,
-                );
+                ];
 
             } else {
-                $details[$renewId] = array(
+                $details[$renewId] = [
                         "success" => false,
                         "item_id" => $renewId,
-                );
+                ];
             }
         }
 
-        return array(null, "details" => $details);
+        return [null, "details" => $details];
     }
 
     /**
@@ -883,7 +882,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $requestType, $requestScope, $lastInterestDate, $pickupLocation = null
     ) {
        
-		$messageBody = $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID);                
+		$messageBody = $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID);
 
 	    if ($requestScope = 'Bibliographic Item'){
 	        $messageBody .= $this->getBibIdXml($institution, $bibId);
@@ -1025,12 +1024,12 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getConfig($function, $params = null)
     {
         if ($function == 'Holds') {
-            return array(
+            return [
                     'HMACKeys' => 'id:item_id:level',
                     'extraHoldFields' => 'pickUpLocation:requiredByDate',
                     'defaultRequiredDate' => 'driver:0:2:0',
-            );
+            ];
         }
-        return array();
+        return [];
     }
 }

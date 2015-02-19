@@ -74,7 +74,7 @@ class TitleHolds
      *
      * @var array
      */
-    protected $hideHoldings = array();
+    protected $hideHoldings = [];
 
     /**
      * Constructor
@@ -141,7 +141,7 @@ class TitleHolds
     {
         // Cache results in a static array since the same holdings may be requested
         // multiple times during a run through the class:
-        static $holdings = array();
+        static $holdings = [];
 
         if (!isset($holdings[$id])) {
             $holdings[$id] = $this->catalog->getHolding($id);
@@ -197,7 +197,7 @@ class TitleHolds
             'Holds', compact('id', 'patron')
         );
         if ($checkHolds != false) {
-            $data = array('id' => $id, 'source' => $source, 'level' => 'title');
+            $data = ['id' => $id, 'source' => $source, 'level' => 'title'];
             $valid = $this->catalog->checkRequestIsValid($id, $data, $patron);
             if ($valid) {
                 return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
@@ -244,7 +244,7 @@ class TitleHolds
             }
 
             if ($addlink) {
-                $data = array('id' => $id, 'source' => $source, 'level' => 'title');
+                $data = ['id' => $id, 'source' => $source, 'level' => 'title'];
                 if ($checkHolds['function'] == 'getHoldLink') {
                     // Return opac link
                     return $this->catalog->getHoldLink($id, $data);
@@ -276,7 +276,7 @@ class TitleHolds
         foreach ($data as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {
-                $queryString[] = $key. '=' .urlencode($param);
+                $queryString[] = $key . '=' . urlencode($param);
             }
         }
 
@@ -285,10 +285,10 @@ class TitleHolds
         $queryString = implode('&', $queryString);
 
         // Build Params
-        return array(
+        return [
             'action' => 'Hold', 'record' => $data['id'], 'query' => $queryString,
             'source' => isset($data['source']) ? $data['source'] : 'VuFind',
             'anchor' => '#tabnav'
-        );
+        ];
     }
 }

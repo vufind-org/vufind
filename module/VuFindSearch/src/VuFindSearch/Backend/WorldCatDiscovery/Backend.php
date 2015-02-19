@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\WorldCatDiscovery;
 
 use Guzzle\Plugin\Log\LogPlugin;
@@ -50,7 +49,6 @@ use WorldCat\Discovery\Offer;
 
 use OCLC\Auth\WSKey;
 use OCLC\Auth\AccessToken;
-
 
 /**
  * WorldCat backend.
@@ -111,9 +109,9 @@ class Backend extends AbstractBackend
     {
         if (empty($this->session->accessToken) || $this->session->accessToken->isExpired()){
         	// need an if/else statement here about the WMS ILS Driver
-            $options = array(
-                    'services' => array('WorldCatDiscoveryAPI', 'refresh_token')
-            );
+            $options = [
+                    'services' => ['WorldCatDiscoveryAPI', 'refresh_token']
+            ];
             if ($this->wmsEnabled){
             	$options['services'][] = 'WMS_Availability';
             	$options['services'][] = 'WMS_NCIP';
@@ -142,7 +140,7 @@ class Backend extends AbstractBackend
             $params = new ParamBag();
         }
 
-        $options = array('dbIds' => $this->databaseIDs);
+        $options = ['dbIds' => $this->databaseIDs];
         $facets = $params->get('facets');
         if (!empty($facets)) {
             $options['facetFields'] = $facets;
@@ -183,7 +181,7 @@ class Backend extends AbstractBackend
      */
     public function retrieve($id, ParamBag $params = null)
     {
-        $options = array('heldBy' => $this->heldBy);
+        $options = ['heldBy' => $this->heldBy];
         $this->log(
             'debug',
             'Offer::findByOclcNumber(); id = ' . $id . '; options = '
