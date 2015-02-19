@@ -187,7 +187,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         // Perform encryption:
-        $cipher = new BlockCipher(new Mcrypt(array('algorithm' => 'blowfish')));
+        $cipher = new BlockCipher(new Mcrypt(['algorithm' => 'blowfish']));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
@@ -224,29 +224,29 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $userId = $this->id;
         $callback = function ($select) use ($userId, $resourceId, $listId, $source) {
             $select->columns(
-                array(
+                [
                     'id' => new Expression(
-                        'min(?)', array('tags.id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'min(?)', ['tags.id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ),
                     'tag',
                     'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', array('rt.resource_id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'COUNT(DISTINCT(?))', ['rt.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
                     )
-                )
+                ]
             );
             $select->join(
-                array('rt' => 'resource_tags'), 'tags.id = rt.tag_id', array()
+                ['rt' => 'resource_tags'], 'tags.id = rt.tag_id', []
             );
             $select->join(
-                array('r' => 'resource'), 'rt.resource_id = r.id', array()
+                ['r' => 'resource'], 'rt.resource_id = r.id', []
             );
             $select->join(
-                array('ur' => 'user_resource'), 'r.id = ur.resource_id', array()
+                ['ur' => 'user_resource'], 'r.id = ur.resource_id', []
             );
-            $select->group(array('tag'))
-                ->order(array('tag'));
+            $select->group(['tag'])
+                ->order(['tag']);
 
             $select->where->equalTo('ur.user_id', $userId)
                 ->equalTo('rt.user_id', $userId)
@@ -307,26 +307,26 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $userId = $this->id;
         $callback = function ($select) use ($userId) {
             $select->columns(
-                array(
+                [
                     '*',
                     'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', array('ur.resource_id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'COUNT(DISTINCT(?))', ['ur.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
                     )
-                )
+                ]
             );
             $select->join(
-                array('ur' => 'user_resource'), 'user_list.id = ur.list_id',
-                array(), $select::JOIN_LEFT
+                ['ur' => 'user_resource'], 'user_list.id = ur.list_id',
+                [], $select::JOIN_LEFT
             );
             $select->where->equalTo('user_list.user_id', $userId);
             $select->group(
-                array(
+                [
                     'user_list.id', 'user_list.user_id', 'title', 'description',
                     'created', 'public'
-                )
+                ]
             );
-            $select->order(array('title'));
+            $select->order(['title']);
         };
 
         $table = $this->getDbTable('UserList');
@@ -397,7 +397,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $resourceTable = $this->getDbTable('Resource');
         $resources = $resourceTable->findResources($ids, $source);
 
-        $resourceIDs = array();
+        $resourceIDs = [];
         foreach ($resources as $current) {
             $resourceIDs[] = $current->id;
         }
@@ -672,6 +672,6 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getRoles()
     {
-        return array('loggedin');
+        return ['loggedin'];
     }
 }

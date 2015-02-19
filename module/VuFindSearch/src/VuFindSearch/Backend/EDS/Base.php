@@ -95,7 +95,7 @@ abstract class EdsApi_REST_Base
      *      <li>profile - EBSCO profile to use for calls to the API. </li>
      *    </ul>
      */
-    public function __construct($settings = array())
+    public function __construct($settings = [])
     {
         if (is_array($settings)) {
             foreach ($settings as $key => $value) {
@@ -157,7 +157,7 @@ abstract class EdsApi_REST_Base
             'Create Session for profile: '
             . "$profile, guest: $isGuest, authToken: $authToken "
         );
-        $qs = array('profile' => $profile, 'guest' => $isGuest);
+        $qs = ['profile' => $profile, 'guest' => $isGuest];
         $url = $this->edsApiHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
         return $this->call($url, $headers, $qs);
@@ -183,7 +183,7 @@ abstract class EdsApi_REST_Base
         $this->debugPrint(
             "Get Record. an: $an, dbid: $dbId, $highlightTerms: $highlightTerms"
         );
-        $qs = array('an' => $an, 'dbid' => $dbId);
+        $qs = ['an' => $an, 'dbid' => $dbId];
         if (null != $highlightTerms) {
             $qs['highlightterms'] = $highlightTerms;
         }
@@ -228,7 +228,7 @@ abstract class EdsApi_REST_Base
         );
         $url = $this->authHost . '/uidauth';
         $org = isset($orgid) ? $orgid : $this->orgId;
-        $authInfo = array();
+        $authInfo = [];
         if (isset($username)) {
             $authInfo['UserId'] = $username;
         }
@@ -251,7 +251,7 @@ abstract class EdsApi_REST_Base
      */
     protected function createQSFromArray($params)
     {
-        $queryParameters = array();
+        $queryParameters = [];
         if (null != $params && is_array($params)) {
             foreach ($params as $key => $value) {
                 if (is_array($value)) {
@@ -292,7 +292,7 @@ abstract class EdsApi_REST_Base
      * @throws \EbscoEdsApiException
      * @return object         EDS API response (or an Error object).
      */
-    protected function call($baseUrl, $headerParams, $params = array(),
+    protected function call($baseUrl, $headerParams, $params = [],
         $method = 'GET', $message = null, $messageFormat = ""
     ) {
         // Build Query String Parameters
@@ -303,10 +303,10 @@ abstract class EdsApi_REST_Base
         }
         $this->debugPrint("Querystring to use: $queryString ");
         // Build headers
-        $headers = array(
+        $headers = [
             'Accept' => $this->accept,
             'Content-Type' => $this->contentType
-        );
+        ];
         if (null != $headerParams && !empty($headerParams)) {
             foreach ($headerParams as $key => $value) {
                 $headers[$key] = $value;
@@ -354,7 +354,7 @@ abstract class EdsApi_REST_Base
      */
     protected function setTokens($authenticationToken = null, $sessionToken = null)
     {
-        $headers = array();
+        $headers = [];
         if (!empty($authenticationToken)) {
             $headers['x-authenticationToken'] = $authenticationToken;
         }

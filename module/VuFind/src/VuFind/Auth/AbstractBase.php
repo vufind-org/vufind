@@ -253,7 +253,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getPasswordPolicy()
     {
-        $policy = array();
+        $policy = [];
         $config = $this->getConfig();
         if (isset($config->Authentication->minimum_password_length)) {
             $policy['minLength']
@@ -294,7 +294,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             throw new AuthException(
                 $this->translate(
                     'password_minimum_length',
-                    array('%%minlength%%' => $policy['minLength'])
+                    ['%%minlength%%' => $policy['minLength']]
                 )
             );
         }
@@ -304,7 +304,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             throw new AuthException(
                 $this->translate(
                     'password_maximum_length',
-                    array('%%maxlength%%' => $policy['maxLength'])
+                    ['%%maxlength%%' => $policy['maxLength']]
                 )
             );
         }

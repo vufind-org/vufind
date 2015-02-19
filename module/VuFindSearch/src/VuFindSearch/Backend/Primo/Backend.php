@@ -224,12 +224,12 @@ class Backend extends AbstractBackend
         $params = $params->getArrayCopy();
 
         // Convert the options:
-        $options = array();
+        $options = [];
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
-        $arraySettings = array(
+        $arraySettings = [
             'query', 'facets', 'filterList', 'groupFilters', 'rangeFilters'
-        );
+        ];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }

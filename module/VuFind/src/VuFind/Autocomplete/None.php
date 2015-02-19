@@ -52,7 +52,7 @@ class None implements AutocompleteInterface
     public function getSuggestions($query)
     {
         // No suggestions
-        return array();
+        return [];
     }
 
     /**

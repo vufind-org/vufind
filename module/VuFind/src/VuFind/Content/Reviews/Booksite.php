@@ -80,7 +80,7 @@ class BookSite extends \VuFind\Content\AbstractBase
      */
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
-        $reviews = array(); // Initialize return value
+        $reviews = []; // Initialize return value
 
         $isn = $this->getIsbn10($isbnObj);
         $url = $this->url . '/poca/book/tradereviews?apikey=' . $this->apiKey

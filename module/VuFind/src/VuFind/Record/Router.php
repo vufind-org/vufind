@@ -91,7 +91,7 @@ class Router
     public function getTabRouteDetails($driver, $tab = null)
     {
         $route = $this->getRouteDetails(
-            $driver, '', empty($tab) ? array() : array('tab' => $tab)
+            $driver, '', empty($tab) ? [] : ['tab' => $tab]
         );
 
         // If collections are active and the record route was selected, we need
@@ -126,7 +126,7 @@ class Router
      * @return array
      */
     public function getRouteDetails($driver, $routeSuffix = '',
-        $extraParams = array()
+        $extraParams = []
     ) {
         // Extract source and ID from driver or string:
         if (is_object($driver)) {
@@ -145,9 +145,9 @@ class Router
         $routeBase = ($source == 'VuFind')
             ? 'record' : strtolower($source . 'record');
 
-        return array(
+        return [
             'params' => $params, 'route' => $routeBase . $routeSuffix
-        );
+        ];
     }
 
     /**
@@ -168,6 +168,6 @@ class Router
             $source = $parts[0];
             $id = $parts[1];
         }
-        return array($source, $id);
+        return [$source, $id];
     }
 }

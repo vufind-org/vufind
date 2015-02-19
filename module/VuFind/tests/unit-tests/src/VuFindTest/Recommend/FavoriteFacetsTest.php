@@ -47,7 +47,7 @@ class FavoriteFacetsTest extends \VuFindTest\Unit\TestCase
     public function testFacetInitWithDisabledTags()
     {
         $configLoader = $this->getMockConfigLoader(
-            array('Social' => array('tags' => false))
+            ['Social' => ['tags' => false]]
         );
         $results = $this->getMockResults();
         $params = $results->getParams();
@@ -90,7 +90,7 @@ class FavoriteFacetsTest extends \VuFindTest\Unit\TestCase
             $facetHelper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters(array());
+            $request = new \Zend\StdLib\Parameters([]);
         }
         $sf = new FavoriteFacets($configLoader, $facetHelper);
         $sf->setConfig($settings);
@@ -107,7 +107,7 @@ class FavoriteFacetsTest extends \VuFindTest\Unit\TestCase
      *
      * @return \VuFind\Config\PluginManager
      */
-    protected function getMockConfigLoader($config = array(), $key = 'config')
+    protected function getMockConfigLoader($config = [], $key = 'config')
     {
         $loader = $this->getMockBuilder('VuFind\Config\PluginManager')
             ->disableOriginalConstructor()->getMock();

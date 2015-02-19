@@ -74,7 +74,7 @@ class Holds
      *
      * @var array
      */
-    protected $hideHoldings = array();
+    protected $hideHoldings = [];
 
     /**
      * Constructor
@@ -112,26 +112,26 @@ class Holds
      */
     protected function formatHoldings($holdings)
     {
-        $retVal = array();
+        $retVal = [];
 
         // Handle purchase history alongside other textual fields
         $textFieldNames = $this->catalog->getHoldingsTextFieldNames();
         $textFieldNames[] = 'purchase_history';
 
         foreach ($holdings as $groupKey => $items) {
-            $retVal[$groupKey] = array(
+            $retVal[$groupKey] = [
                 'items' => $items,
                 'location' => isset($items[0]['location'])
                     ? $items[0]['location']
                     : ''
-            );
+            ];
             // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
                 foreach ($textFieldNames as $fieldName) {
                     if (!empty($item[$fieldName])) {
                         $fields = is_array($item[$fieldName])
                             ? $item[$fieldName]
-                            : array($item[$fieldName]);
+                            : [$item[$fieldName]];
 
                         foreach ($fields as $field) {
                             if (empty($retVal[$groupKey][$fieldName])
@@ -159,7 +159,7 @@ class Holds
      */
     public function getHoldings($id, $ids = null)
     {
-        $holdings = array();
+        $holdings = [];
 
         // Get Holdings Data
         if ($this->catalog) {
@@ -207,7 +207,7 @@ class Holds
      */
     protected function standardHoldings($result)
     {
-        $holdings = array();
+        $holdings = [];
         if (count($result)) {
             foreach ($result as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
@@ -230,7 +230,7 @@ class Holds
      */
     protected function driverHoldings($result, $holdConfig)
     {
-        $holdings = array();
+        $holdings = [];
 
         if (count($result)) {
             foreach ($result as $copy) {
@@ -272,7 +272,7 @@ class Holds
      */
     protected function generateHoldings($result, $type, $holdConfig)
     {
-        $holdings = array();
+        $holdings = [];
         $any_available = false;
 
         $holds_override = isset($this->config->Catalog->allow_holds_override)
@@ -487,11 +487,11 @@ class Holds
         $queryString = implode('&', $queryString);
 
         // Build Params
-        return array(
+        return [
             'action' => $action, 'record' => $details['id'],
             'source' => isset($details['source']) ? $details['source'] : 'VuFind',
             'query' => $queryString, 'anchor' => "#tabnav"
-        );
+        ];
     }
 
     /**
@@ -504,9 +504,9 @@ class Holds
     protected function getBlockedDetails($holdDetails)
     {
         // Build Params
-        return array(
+        return [
             'action' => 'BlockedHold', 'record' => $holdDetails['id']
-        );
+        ];
     }
 
     /**
@@ -519,10 +519,10 @@ class Holds
     protected function getBlockedStorageRetrievalRequestDetails($details)
     {
         // Build Params
-        return array(
+        return [
             'action' => 'BlockedStorageRetrievalRequest',
             'record' => $details['id']
-        );
+        ];
     }
 
     /**
@@ -535,10 +535,10 @@ class Holds
     protected function getBlockedILLRequestDetails($details)
     {
         // Build Params
-        return array(
+        return [
             'action' => 'BlockedILLRequest',
             'record' => $details['id']
-        );
+        ];
     }
 
     /**

@@ -43,57 +43,57 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
  */
 class HierarchicalFacetHelperTest extends TestCase
 {
-    protected $facetList = array(
-        array(
+    protected $facetList = [
+        [
             'value' => '0/Book/',
             'displayText' => 'Book',
             'count' => 1000,
             'operator' => 'OR',
             'isApplied' => false
-        ),
-        array(
+        ],
+        [
             'value' => '0/AV/',
             'displayText' => 'Audiovisual',
             'count' => 600,
             'operator' => 'OR',
             'isApplied' => false
-        ),
-        array(
+        ],
+        [
             'value' => '0/Audio/',
             'displayText' => 'Sound',
             'count' => 400,
             'operator' => 'OR',
             'isApplied' => false
-        ),
-        array(
+        ],
+        [
             'value' => '1/Book/BookPart/',
             'displayText' => 'Book Part',
             'count' => 300,
             'operator' => 'OR',
             'isApplied' => false
-        ),
-        array(
+        ],
+        [
             'value' => '1/Book/Section/',
             'displayText' => 'Book Section',
             'count' => 200,
             'operator' => 'OR',
             'isApplied' => false
-        ),
-        array(
+        ],
+        [
             'value' => '1/Audio/Spoken/',
             'displayText' => 'Spoken Text',
             'count' => 100,
             'operator' => 'OR',
             'isApplied' => false
-        ),
-        array(
+        ],
+        [
             'value' => '1/Audio/Music/',
             'displayText' => '1/Audio/Music/',
             'count' => 50,
             'operator' => 'OR',
             'isApplied' => false
-        )
-    );
+        ]
+    ];
 
     /**
      * Hierarchical Facet Helper

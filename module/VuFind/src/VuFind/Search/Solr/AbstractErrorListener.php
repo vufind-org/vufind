@@ -107,7 +107,7 @@ abstract class AbstractErrorListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'error', array($this, 'onSearchError'));
+        $manager->attach('VuFind\Search', 'error', [$this, 'onSearchError']);
     }
 
     /**

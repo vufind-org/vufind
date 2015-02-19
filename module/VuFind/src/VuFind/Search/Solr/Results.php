@@ -176,7 +176,7 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function fixBadQueryGroup(QueryGroup $query)
     {
-        $newQueries = array();
+        $newQueries = [];
         $fixed = false;
 
         // Try to fix each query in the group; replace any query that needs to
@@ -236,29 +236,29 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         // Start building the facet list:
-        $list = array();
+        $list = [];
 
         // Loop through every field returned by the result set
         $fieldFacets = $this->responseFacets->getFieldFacets();
         foreach (array_keys($filter) as $field) {
-            $data = isset($fieldFacets[$field]) ? $fieldFacets[$field] : array();
+            $data = isset($fieldFacets[$field]) ? $fieldFacets[$field] : [];
             // Skip empty arrays:
             if (count($data) < 1) {
                 continue;
             }
             // Initialize the settings for the current field
-            $list[$field] = array();
+            $list[$field] = [];
             // Add the on-screen label
             $list[$field]['label'] = $filter[$field];
             // Build our array of values for this field
-            $list[$field]['list']  = array();
+            $list[$field]['list']  = [];
             // Should we translate values for the current facet?
             $translate
                 = in_array($field, $this->getOptions()->getTranslatedFacets());
             // Loop through values:
             foreach ($data as $value => $count) {
                 // Initialize the array of data about the current facet:
-                $currentSettings = array();
+                $currentSettings = [];
                 $currentSettings['value'] = $value;
                 $currentSettings['displayText']
                     = $translate ? $this->translate($value) : $value;

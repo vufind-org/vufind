@@ -42,7 +42,7 @@ class EbscoEdsApiException extends Exception
      *
      * @var array
      */
-    protected $apiErrorDetails = array();
+    protected $apiErrorDetails = [];
 
     /**
      * Constructor

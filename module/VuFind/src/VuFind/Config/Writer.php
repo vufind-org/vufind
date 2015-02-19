@@ -64,7 +64,7 @@ class Writer
      *
      * @throws \Exception
      */
-    public function __construct($filename, $content = null, $comments = array())
+    public function __construct($filename, $content = null, $comments = [])
     {
         $this->filename = $filename;
         if (null === $content) {
@@ -158,7 +158,7 @@ class Writer
     public function save()
     {
         // Create parent directory structure if necessary:
-        $stack = array();
+        $stack = [];
         $dirname = dirname($this->filename);
         while (!empty($dirname) && !is_dir($dirname)) {
             $stack[] = $dirname;
@@ -267,7 +267,7 @@ class Writer
                         = $comments['sections'][$key]['settings'][$key2];
                     $content .= $settingComments['before'];
                 } else {
-                    $settingComments = array();
+                    $settingComments = [];
                 }
                 if (is_array($elem2)) {
                     $content .= $this->buildContentArrayLines($key2, $elem2);

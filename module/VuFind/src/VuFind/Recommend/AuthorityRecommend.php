@@ -61,7 +61,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @var array
      */
-    protected $filters = array();
+    protected $filters = [];
 
     /**
      * Maximum number of results that will be accompanied by recommendations (set
@@ -83,7 +83,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @var array
      */
-    protected $recommendations = array();
+    protected $recommendations = [];
 
     /**
      * Results plugin manager
@@ -172,15 +172,15 @@ class AuthorityRecommend implements RecommendInterface
         // "Heading" search and IS NOT found in the "MainHeading" search defined
         // in authsearchspecs.yaml.
         $request = new Parameters(
-            array(
+            [
                 'join' => 'AND',
-                'bool0' => array('AND'),
-                'lookfor0' => array($this->lookfor),
-                'type0' => array('Heading'),
-                'bool1' => array('NOT'),
-                'lookfor1' => array($this->lookfor),
-                'type1' => array('MainHeading')
-            )
+                'bool0' => ['AND'],
+                'lookfor0' => [$this->lookfor],
+                'type0' => ['Heading'],
+                'bool1' => ['NOT'],
+                'lookfor1' => [$this->lookfor],
+                'type1' => ['MainHeading']
+            ]
         );
 
         // Initialise and process search (ignore Solr errors -- no reason to fail
@@ -201,10 +201,10 @@ class AuthorityRecommend implements RecommendInterface
         // above
         foreach ($results as $result) {
             // Extract relevant details:
-            $recordArray = array(
+            $recordArray = [
                 'id' => $result->getUniqueID(),
                 'heading' => $result->getBreadcrumb()
-            );
+            ];
 
             // check for duplicates before adding record to recordSet
             if (!$this->inArrayR($recordArray['heading'], $this->recommendations)) {

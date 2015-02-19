@@ -88,7 +88,7 @@ class ConsoleRouter extends SimpleRouteStack
         array_unshift($argv, "$script $controller $action");
         $argc -= 2;
 
-        return array($controller, $action);
+        return [$controller, $action];
     }
 
     /**
@@ -156,7 +156,7 @@ class ConsoleRouter extends SimpleRouteStack
         }
 
         $routeMatch = new RouteMatch(
-            array('controller' => $controller, 'action' => $actionName), 1
+            ['controller' => $controller, 'action' => $actionName], 1
         );
 
         // Override standard routing:

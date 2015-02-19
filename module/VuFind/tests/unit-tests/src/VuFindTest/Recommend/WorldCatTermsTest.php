@@ -46,20 +46,20 @@ class WorldCatTermsTest extends \VuFindTest\Unit\TestCase
      */
     public function testNormalOperation()
     {
-        $terms = array(
+        $terms = [
             'exact' => 'exact', 'junk' => 'junk'
-        );
+        ];
         $wcu = $this->getMockWorldCatUtils();
         $wcu->expects($this->once())->method('getRelatedTerms')
             ->with($this->equalTo('foo'), $this->equalTo('lcsh'))
             ->will($this->returnValue($terms));
         $results = $this->getMockResults();
-        $request = new \Zend\StdLib\Parameters(array());
+        $request = new \Zend\StdLib\Parameters([]);
         $module = new WorldCatTerms($wcu);
         $module->setConfig('');
         $module->init($results->getParams(), $request);
         $module->process($results);
-        $this->assertEquals(array('exact' => 'exact'), $module->getTerms());
+        $this->assertEquals(['exact' => 'exact'], $module->getTerms());
     }
 
     /**

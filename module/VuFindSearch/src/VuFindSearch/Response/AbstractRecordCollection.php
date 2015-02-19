@@ -44,7 +44,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @var array
      */
-    protected $records = array();
+    protected $records = [];
 
     /**
      * Source identifier

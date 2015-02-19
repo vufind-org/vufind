@@ -77,7 +77,7 @@ class GenerateController extends AbstractBase
         }
         $sourceType = $parts[$partCount - 2];
 
-        $supportedTypes = array('factories', 'invokables');
+        $supportedTypes = ['factories', 'invokables'];
         if (!in_array($sourceType, $supportedTypes)) {
             Console::writeLine(
                 'Unsupported service type; supported values: '

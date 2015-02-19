@@ -58,10 +58,10 @@ class Factory
         // Set up options based on global VuFind settings:
         $configReader = $sm->get('VuFind\Config');
         $globalConfig = $configReader->get('config');
-        $options = array(
+        $options = [
             'enabled' => isset($globalConfig->Hierarchy->showTree)
                 ? $globalConfig->Hierarchy->showTree : false
-        );
+        ];
 
         // Load driver-specific configuration:
         $driverConfig = $configReader->get($config);

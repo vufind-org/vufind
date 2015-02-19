@@ -57,14 +57,14 @@ class Minified
      *
      * @var array
      */
-    public $t = array();
+    public $t = [];
 
     /**
      * Filters
      *
      * @var array
      */
-    public $f = array();
+    public $f = [];
 
     /**
      * ID, start tIme, query Speed, Result total, search TYpe, search CLass id

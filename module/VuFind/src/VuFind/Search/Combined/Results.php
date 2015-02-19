@@ -49,7 +49,7 @@ class Results extends \VuFind\Search\Base\Results
     public function getFacetList($filter = null)
     {
         // Not relevant:
-        return array();
+        return [];
     }
 
     /**

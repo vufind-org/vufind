@@ -49,7 +49,7 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testFactory()
     {
-        $json = json_encode(array('response' => array('start' => 0, 'docs' => array(array(), array(), array()))));
+        $json = json_encode(['response' => ['start' => 0, 'docs' => [[], [], []]]]);
         $fact = new RecordCollectionFactory();
         $coll = $fact->factory(json_decode($json, true));
         $this->assertEquals(3, count($coll));

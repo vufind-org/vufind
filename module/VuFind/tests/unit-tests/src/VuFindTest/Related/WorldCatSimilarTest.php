@@ -48,7 +48,7 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
     {
         $driver = $this->getMock(
             'VuFind\RecordDriver\WorldCat',
-            array('tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle', 'getUniqueId', 'getResourceSource')
+            ['tryMethod', 'getPrimaryAuthor', 'getAllSubjectHeadings', 'getTitle', 'getUniqueId', 'getResourceSource']
         );
         $driver->expects($this->once())
             ->method('tryMethod')
@@ -59,7 +59,7 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
             ->will($this->returnValue('fakepa'));
         $driver->expects($this->once())
             ->method('getAllSubjectHeadings')
-            ->will($this->returnValue(array(array('fakesh1a', 'fakesh1b'), array('fakesh2'))));
+            ->will($this->returnValue([['fakesh1a', 'fakesh1b'], ['fakesh2']]));
         $driver->expects($this->once())
             ->method('getTitle')
             ->will($this->returnValue('faketitle'));
@@ -69,12 +69,12 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
         $driver->expects($this->once())
             ->method('getResourceSource')
             ->will($this->returnValue('WorldCat'));
-        $service = $this->getMock('VuFindSearch\Service', array('search'));
+        $service = $this->getMock('VuFindSearch\Service', ['search']);
         $expectedQuery = new Query('(srw.dd any "fakedc" or srw.au all "fakepa" or srw.su all "fakesh1a fakesh1b" or srw.su all "fakesh2" or srw.ti any "faketitle") not srw.no all "fakeid"');
-        $response = $this->getMock('VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection', array('getRecords'), array(array('offset' => 0, 'total' => 0)));
+        $response = $this->getMock('VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection', ['getRecords'], [['offset' => 0, 'total' => 0]]);
         $response->expects($this->once())
             ->method('getRecords')
-            ->will($this->returnValue(array('fakeresponse')));
+            ->will($this->returnValue(['fakeresponse']));
         $service->expects($this->once())
             ->method('search')
             ->with($this->equalTo('WorldCat'), $this->equalTo($expectedQuery), $this->equalTo(0), $this->equalTo(5))
@@ -82,6 +82,6 @@ class WorldCatSimilarTest extends \VuFindTest\Unit\TestCase
 
         $similar = new WorldCatSimilar($service);
         $similar->init('', $driver);
-        $this->assertEquals(array('fakeresponse'), $similar->getResults());
+        $this->assertEquals(['fakeresponse'], $similar->getResults());
     }
 }

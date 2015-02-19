@@ -65,7 +65,7 @@ class UrlQueryHelper
      *
      * @var array
      */
-    protected $defaultParams = array();
+    protected $defaultParams = [];
 
     /**
      * Should we suppress the standard query parameter?
@@ -151,13 +151,13 @@ class UrlQueryHelper
                         if ($current instanceof QueryGroup) {
                             $operator = $current->isNegated()
                                 ? 'NOT' : $current->getOperator();
-                            $params['bool' . $i] = array($operator);
+                            $params['bool' . $i] = [$operator];
                             foreach ($current->getQueries() as $inner) {
                                 if (!isset($params['lookfor' . $i])) {
-                                    $params['lookfor' . $i] = array();
+                                    $params['lookfor' . $i] = [];
                                 }
                                 if (!isset($params['type' . $i])) {
-                                    $params['type' . $i] = array();
+                                    $params['type' . $i] = [];
                                 }
                                 $params['lookfor' . $i][] = $inner->getString();
                                 $params['type' . $i][] = $inner->getHandler();
@@ -206,7 +206,7 @@ class UrlQueryHelper
         }
         $filters = $this->params->getFilters();
         if (!empty($filters)) {
-            $params['filter'] = array();
+            $params['filter'] = [];
             foreach ($filters as $field => $values) {
                 foreach ($values as $current) {
                     $params['filter'][] = $field . ':"' . $current . '"';
@@ -278,7 +278,7 @@ class UrlQueryHelper
 
         // Add the filter:
         if (!isset($params['filter'])) {
-            $params['filter'] = array();
+            $params['filter'] = [];
         }
         $params['filter'][] = $filter;
 
@@ -325,7 +325,7 @@ class UrlQueryHelper
         }
 
         // Remove the filter:
-        $newFilter = array();
+        $newFilter = [];
         if (isset($params['filter']) && is_array($params['filter'])) {
             foreach ($params['filter'] as $current) {
                 list($currentField, $currentValue)
@@ -483,7 +483,7 @@ class UrlQueryHelper
      *
      * @return string
      */
-    public function asHiddenFields($filter = array())
+    public function asHiddenFields($filter = [])
     {
         $retVal = '';
         foreach ($this->getParamArray() as $paramName => $paramValue) {
@@ -561,7 +561,7 @@ class UrlQueryHelper
      */
     protected function buildQueryString($a, $escape = true)
     {
-        $parts = array();
+        $parts = [];
         foreach ($a as $key => $value) {
             if (is_array($value)) {
                 foreach ($value as $current) {

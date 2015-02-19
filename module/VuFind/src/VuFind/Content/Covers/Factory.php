@@ -87,7 +87,7 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $finalConfig = isset($config->Contentcafe)
-            ? $config->Contentcafe : new \Zend\Config\Config(array());
+            ? $config->Contentcafe : new \Zend\Config\Config([]);
         return new ContentCafe($finalConfig);
     }
 

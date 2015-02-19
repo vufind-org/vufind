@@ -78,8 +78,8 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      *
      * @return Server
      */
-    protected function getServer($config = array(), $baseURL = 'http://foo',
-        $params = array()
+    protected function getServer($config = [], $baseURL = 'http://foo',
+        $params = []
     ) {
         // Force an email into the configuration if missing; this is required by the
         // server.

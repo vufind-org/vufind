@@ -54,7 +54,7 @@ abstract class AbstractPluginManager extends Base
     {
         parent::__construct($configuration);
         $this->addInitializer(
-            array('VuFind\ServiceManager\Initializer', 'initPlugin'), false
+            ['VuFind\ServiceManager\Initializer', 'initPlugin'], false
         );
     }
 

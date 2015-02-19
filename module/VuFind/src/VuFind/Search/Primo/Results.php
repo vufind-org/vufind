@@ -80,15 +80,15 @@ class Results extends \VuFind\Search\Base\Results
         // create a lookup array to determine order:
         $order = array_flip(array_keys($filter));
         // Loop through the facets returned by Primo.
-        $facetResult = array();
+        $facetResult = [];
         if (is_array($this->responseFacets)) {
             foreach ($this->responseFacets as $field => $current) {
                 $translate
                     = in_array($field, $this->getOptions()->getTranslatedFacets());
                 if (isset($filter[$field])) {
-                    $new = array();
+                    $new = [];
                     foreach ($current as $value => $count) {
-                        $new[] = array(
+                        $new[] = [
                             'value' => $value,
                             'displayText' =>
                                 $translate
@@ -97,7 +97,7 @@ class Results extends \VuFind\Search\Base\Results
                             'isApplied' =>
                                 $this->getParams()->hasFilter("$field:" . $value),
                             'operator' => 'AND', 'count' => $count
-                        );
+                        ];
                     }
 
                     $cmp = function ($x, $y) {
@@ -107,7 +107,7 @@ class Results extends \VuFind\Search\Base\Results
                     usort($new, $cmp);
 
                     // Basic reformatting of the data:
-                    $current = array('list' => $new);
+                    $current = ['list' => $new];
 
                     // Inject label from configuration:
                     $current['label'] = $filter[$field];
@@ -124,7 +124,7 @@ class Results extends \VuFind\Search\Base\Results
         ksort($facetResult);
 
         // Rewrite the sorted array with appropriate keys:
-        $finalResult = array();
+        $finalResult = [];
         foreach ($facetResult as $current) {
             $finalResult[$current['field']] = $current;
         }

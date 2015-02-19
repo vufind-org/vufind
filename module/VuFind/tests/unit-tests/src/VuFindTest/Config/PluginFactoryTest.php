@@ -52,7 +52,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
      *
      * @var array
      */
-    protected static $filesToDelete = array();
+    protected static $filesToDelete = [];
 
     /**
      * Plugin factory instance.
@@ -95,7 +95,7 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
         }
 
         // Mark for cleanup:
-        self::$filesToDelete = array($parentPath, $childPath);
+        self::$filesToDelete = [$parentPath, $childPath];
     }
 
     /**

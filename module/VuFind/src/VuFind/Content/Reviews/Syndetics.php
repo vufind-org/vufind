@@ -43,41 +43,41 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      *
      * @var array
      */
-    protected $sourceList = array(
-        'CHREVIEW' => array('title' => 'Choice Review',
+    protected $sourceList = [
+        'CHREVIEW' => ['title' => 'Choice Review',
                             'file' => 'CHREVIEW.XML',
-                            'div' => '<div id="syn_chreview"></div>'),
-        'NYREVIEW' => array('title' => 'New York Times Review',
+                            'div' => '<div id="syn_chreview"></div>'],
+        'NYREVIEW' => ['title' => 'New York Times Review',
                             'file' => 'NYREVIEW.XML',
-                            'div' => '<div id="syn_nyreview"></div>'),
-        'BLREVIEW' => array('title' => 'Booklist Review',
+                            'div' => '<div id="syn_nyreview"></div>'],
+        'BLREVIEW' => ['title' => 'Booklist Review',
                             'file' => 'BLREVIEW.XML',
-                            'div' => '<div id="syn_blreview"></div>'),
-        'PWREVIEW' => array('title' => "Publisher's Weekly Review",
+                            'div' => '<div id="syn_blreview"></div>'],
+        'PWREVIEW' => ['title' => "Publisher's Weekly Review",
                             'file' => 'PWREVIEW.XML',
-                            'div' => '<div id="syn_pwreview"></div>'),
-        'LJREVIEW' => array('title' => 'Library Journal Review',
+                            'div' => '<div id="syn_pwreview"></div>'],
+        'LJREVIEW' => ['title' => 'Library Journal Review',
                             'file' => 'LJREVIEW.XML',
-                            'div' => '<div id="syn_ljreview"></div>'),
-        'SLJREVIEW' => array('title' => 'School Library Journal Review',
+                            'div' => '<div id="syn_ljreview"></div>'],
+        'SLJREVIEW' => ['title' => 'School Library Journal Review',
                             'file' => 'SLJREVIEW.XML',
-                            'div' => '<div id="syn_sljreview"></div>'),
-        'HBREVIEW' => array('title' => 'Horn Book Review',
+                            'div' => '<div id="syn_sljreview"></div>'],
+        'HBREVIEW' => ['title' => 'Horn Book Review',
                             'file' => 'HBREVIEW.XML',
-                            'div' => '<div id="syn_hbreview"></div>'),
-        'KIRKREVIEW' => array('title' => 'Kirkus Book Review',
+                            'div' => '<div id="syn_hbreview"></div>'],
+        'KIRKREVIEW' => ['title' => 'Kirkus Book Review',
                             'file' => 'KIRKREVIEW.XML',
-                            'div' => '<div id="syn_kireview"></div>'),
-        'CRITICASREVIEW' => array('title' => 'Criticas Review',
+                            'div' => '<div id="syn_kireview"></div>'],
+        'CRITICASREVIEW' => ['title' => 'Criticas Review',
                             'file' => 'CRITICASREVIEW.XML',
-                            'div' => '<div id="syn_criticasreview"></div>'),
+                            'div' => '<div id="syn_criticasreview"></div>'],
         // These last two entries are probably typos -- retained for legacy
         // compatibility just in case they're actually used for something!
-        'KIREVIEW' => array('title' => 'Kirkus Book Review',
-                            'file' => 'KIREVIEW.XML'),
-        'CRITICASEREVIEW' => array('title' => 'Criti Case Review',
-                            'file' => 'CRITICASEREVIEW.XML')
-    );
+        'KIREVIEW' => ['title' => 'Kirkus Book Review',
+                            'file' => 'KIREVIEW.XML'],
+        'CRITICASEREVIEW' => ['title' => 'Criti Case Review',
+                            'file' => 'CRITICASEREVIEW.XML']
+    ];
 
     /**
      * This method is responsible for connecting to Syndetics and abstracting
@@ -104,7 +104,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         // Initialize return value
-        $review = array();
+        $review = [];
 
         // Find out if there are any reviews
         $isbn = $this->getIsbn10($isbnObj);

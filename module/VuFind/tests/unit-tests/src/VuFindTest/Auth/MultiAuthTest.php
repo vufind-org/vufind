@@ -53,9 +53,9 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
         }
         $serviceLocator = new \VuFind\Auth\PluginManager(
             new \Zend\ServiceManager\Config(
-                array(
-                    'abstract_factories' => array('VuFind\Auth\PluginFactory'),
-                )
+                [
+                    'abstract_factories' => ['VuFind\Auth\PluginFactory'],
+                ]
             )
         );
         $obj = clone($this->getAuthManager()->get('MultiAuth'));
@@ -71,11 +71,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
     public function getAuthConfig()
     {
         $config = new Config(
-            array(
+            [
                 'method_order' => 'Database,ILS'
-            ), true
+            ], true
         );
-        return new Config(array('MultiAuth' => $config), true);
+        return new Config(['MultiAuth' => $config], true);
     }
 
     /**
@@ -99,11 +99,11 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return \Zend\Http\Request
      */
-    protected function getLoginRequest($overrides = array())
+    protected function getLoginRequest($overrides = [])
     {
-        $post = $overrides + array(
+        $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
-        );
+        ];
         $request = new \Zend\Http\Request();
         $request->setPost(new \Zend\Stdlib\Parameters($post));
         return $request;
@@ -151,7 +151,7 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankUsername()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('username' => ''));
+        $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
 
@@ -163,7 +163,7 @@ class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankPassword()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('password' => ''));
+        $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }
 }

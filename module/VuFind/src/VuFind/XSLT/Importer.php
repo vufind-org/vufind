@@ -141,7 +141,7 @@ class Importer implements ServiceLocatorAwareInterface
         if (isset($options['General']['php_function'])) {
             $functions = is_array($options['General']['php_function'])
                 ? $options['General']['php_function']
-                : array($options['General']['php_function']);
+                : [$options['General']['php_function']];
             foreach ($functions as $function) {
                 $xsl->registerPHPFunctions($function);
             }
@@ -151,7 +151,7 @@ class Importer implements ServiceLocatorAwareInterface
         if (isset($options['General']['custom_class'])) {
             $classes = is_array($options['General']['custom_class'])
                 ? $options['General']['custom_class']
-                : array($options['General']['custom_class']);
+                : [$options['General']['custom_class']];
             $truncate = isset($options['General']['truncate_custom_class'])
                 ? $options['General']['truncate_custom_class'] : true;
             foreach ($classes as $class) {
