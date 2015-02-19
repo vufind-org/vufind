@@ -253,7 +253,7 @@ DROP TABLE IF EXISTS "user_card";
 CREATE TABLE `user_card` (
 id SERIAL,
 user_id int NOT NULL,
-description varchar(255) NOT NULL DEFAULT '',
+card_name varchar(255) NOT NULL DEFAULT '',
 cat_username varchar(50) NOT NULL DEFAULT '',
 cat_password varchar(50) DEFAULT NULL,
 cat_pass_enc varchar(110) DEFAULT NULL,

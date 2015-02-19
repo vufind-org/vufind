@@ -1402,9 +1402,7 @@ class MyResearchController extends AbstractBase
             }
         }
 
-        return $this->createViewModel(
-            array('libraryCards' => $user->getLibraryCards())
-        );
+        return $this->createViewModel(['libraryCards' => $user->getLibraryCards()]);
     }
 
     /**
@@ -1484,19 +1482,14 @@ class MyResearchController extends AbstractBase
         ) {
             list($target, $username) = explode('.', $username, 2);
         }
-        $request = array(
+        $request = [
             'target' => $target,
             'username' => $username,
             'password' => $card->cat_password
-        );
+        ];
 
         // Send the card to the view:
-        return $this->createViewModel(
-            array(
-                'request' => $request,
-                'card' => $card
-            )
-        );
+        return $this->createViewModel(['request' => $request, 'card' => $card]);
     }
 
     /**
@@ -1534,8 +1527,8 @@ class MyResearchController extends AbstractBase
         return $this->confirm(
             'confirm_delete_library_card_brief',
             $this->url()->fromRoute('myresearch-deletelibrarycard'),
-            $this->url()->fromRoute('userLibraryCard', array('id' => $cardID)),
-            'confirm_delete_library_card_text', array('listID' => $cardID)
+            $this->url()->fromRoute('userLibraryCard', ['id' => $cardID]),
+            'confirm_delete_library_card_text', ['listID' => $cardID]
         );
     }
 

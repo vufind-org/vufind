@@ -430,7 +430,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             return new \Zend\Db\ResultSet\ResultSet();
         }
         $userCard = $this->getDbTable('UserCard');
-        return $userCard->select(array('user_id' => $this->id));
+        return $userCard->select(['user_id' => $this->id]);
     }
 
     /**
@@ -455,12 +455,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             $row->cat_username = '';
             $row->cat_password = '';
         } else {
-            $row = $userCard->select(
-                array(
-                    'user_id' => $this->id,
-                    'id' => $id
-                )
-            )->current();
+            $row = $userCard->select(['user_id' => $this->id, 'id' => $id])
+                ->current();
             if ($this->passwordEncryptionEnabled()) {
                 $row->cat_password = $this->encryptOrDecrypt(
                     $row->cat_pass_enc, false
@@ -486,12 +482,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         $userCard = $this->getDbTable('UserCard');
-        $row = $userCard->select(
-            array(
-                'id' => $id,
-                'user_id' => $this->id
-            )
-        )->current();
+        $row = $userCard->select(['id' => $id, 'user_id' => $this->id])->current();
 
         if (empty($row)) {
             throw new \Exception('Library card not found');
@@ -521,12 +512,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
         $userCard = $this->getDbTable('UserCard');
-        $row = $userCard->select(
-            array(
-                'id' => $id,
-                'user_id' => $this->id
-            )
-        )->current();
+        $row = $userCard->select(['id' => $id, 'user_id' => $this->id])->current();
 
         if (!empty($row)) {
             $this->cat_username = $row->cat_username;
@@ -557,10 +543,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
 
         // Check that the username is not already in use in another card
         $row = $userCard->select(
-            array(
-                'user_id' => $this->id,
-                'cat_username' => $username
-            )
+            ['user_id' => $this->id, 'cat_username' => $username]
         )->current();
         if (!empty($row) && ($id === null || $row->id != $id)) {
             throw new \VuFind\Exception\LibraryCard(
@@ -570,12 +553,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
 
         $row = null;
         if ($id !== null) {
-            $row = $userCard->select(
-                array(
-                    'user_id' => $this->id,
-                    'id' => $id
-                )
-            )->current();
+            $row = $userCard->select(['user_id' => $this->id, 'id' => $id])
+                ->current();
         }
         if (empty($row)) {
             $row = $userCard->createRow();
@@ -611,10 +590,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
 
         $userCard = $this->getDbTable('UserCard');
         $row = $userCard->select(
-            array(
-                'user_id' => $this->id,
-                'cat_username' => $this->cat_username
-            )
+            ['user_id' => $this->id, 'cat_username' => $this->cat_username]
         )->current();
         if (empty($row)) {
             $row = $userCard->createRow();
