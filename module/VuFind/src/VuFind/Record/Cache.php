@@ -54,11 +54,11 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     protected $INCLUDE_SOURCE    = 0b01000; //  8
     protected $INCLUDE_USER_ID   = 0b10000; // 16
 
-    protected $recordFactories = array();
+    protected $recordFactories = [];
     protected $recordTable = null;
 
     protected $cachableSources = null;
-    protected $cachePolicies = array();
+    protected $cachePolicies = [];
 
     /**
      * Constructor
@@ -77,20 +77,20 @@ class Cache implements \Zend\Log\LoggerAwareInterface
                 $this->cachableSources
                     = preg_split("/[\s,]+/", $config->RecordCache->cachableSources);
             } else {
-                $this->cachableSources = array();
+                $this->cachableSources = [];
             }
 
             if (isset($config->RecordCache->cachePolicy)) {
                 $this->cachePolicies = $config->RecordCache->cachePolicy;
             } else {
-                $this->cachePolicies = array();
+                $this->cachePolicies = [];
             }
         }
 
         $this->recordTable = $dbTableManager->get('record');
-        $this->recordFactories['VuFind'] = array(
+        $this->recordFactories['VuFind'] = [
             $recordFactoryManager, 'getSolrRecord'
-        );
+        ];
         $this->recordFactories['WorldCat'] = function ($data)
         use ($recordFactoryManager) {
             $driver = $recordFactoryManager->get('WorldCat');
@@ -119,9 +119,9 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             $cId = $this->getCacheId($recordId, $source, $userId);
             $this->debug(
                 'createOrUpdate cache for record: ' . $recordId .
-                ' , userid: ' . $userId . 
-                ' , source: ' . $source . 
-                ' , cId: ' . $cId               
+                ' , userid: ' . $userId .
+                ' , source: ' . $source .
+                ' , cId: ' . $cId
             );
             $this->recordTable->updateRecord(
                 $cId, $source, $rawData, $recordId, $userId, $sessionId, $resourceId
@@ -155,7 +155,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     public function lookup($ids, $source = null)
     {
         if ($this->cachePolicy === $this->DISABLED) {
-            return array();
+            return [];
         }
 
         if (isset($source)) {
@@ -165,11 +165,11 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             $ids = $tmp;
         }
 
-        $cacheIds = array();
+        $cacheIds = [];
         foreach ($ids as $i => $details) {
             if (!is_array($details)) {
                 $parts = explode('|', $details, 2);
-                $details = array('source' => $parts[0],'id' => $parts[1]);
+                $details = ['source' => $parts[0],'id' => $parts[1]];
             }
 
             $userId = isset($_SESSION['Account'])
@@ -181,9 +181,9 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             $cacheIds[] = $cacheId;
             
             $this->debug(
-                "lookup cache for id: " . $details['id'] . 
-                ", source: " .  $details['source'] . 
-                ", userId: " . $userId . 
+                "lookup cache for id: " . $details['id'] .
+                ", source: " .  $details['source'] .
+                ", userId: " . $userId .
                 ", calculated cId: " .  $cacheId
             );
         }
@@ -191,7 +191,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
 
         $this->debug('records found: ' . count($cachedRecords));
         
-        $vufindRecords = array();
+        $vufindRecords = [];
         foreach ($cachedRecords as $cachedRecord) {
             $factory = $this->recordFactories[$cachedRecord['source']];
             $doc = json_decode($cachedRecord['data'], true);
@@ -259,7 +259,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     protected function getCacheId($recordId, $source = null, $userId = null)
     {
-        $cIdHelper = array();
+        $cIdHelper = [];
         if ($this->hasPolicy($this->INCLUDE_RECORD_ID)) {
             $cIdHelper['recordId'] = $recordId;
         }

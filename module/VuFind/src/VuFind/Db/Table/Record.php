@@ -64,13 +64,13 @@ class Record extends Gateway
             throw new \Exception('Record ID cannot be empty');
         }
         
-        $where = array(
+        $where = [
             'c_id' => $ids
-        );
+        ];
             
         $select = $this->select($where);
         
-        $records = array();
+        $records = [];
         $count = $select->count();
         for ($it = 0; $it < $count; $it++) {
             $records[] = $select->current();
@@ -96,7 +96,7 @@ class Record extends Gateway
     public function updateRecord($id, $source, $rawData,
         $recordId, $userId, $sessionId, $resourceId
     ) {
-        $records = $this->findRecord(array($id));
+        $records = $this->findRecord([$id]);
         if (empty($records)) {
             $record = $this->createRow();
         } else {
@@ -133,7 +133,7 @@ class Record extends Gateway
         $select->join(
             'user_resource',
             'record.resource_id = user_resource.resource_id',
-            array(), $select::JOIN_LEFT
+            [], $select::JOIN_LEFT
         );
         $select->where->equalTo('record.user_id', $userId);
         $select->where->isNull('user_resource.id');
@@ -155,7 +155,7 @@ class Record extends Gateway
      */
     public function delete($id)
     {
-        $records = $this->findRecord(array($id));
+        $records = $this->findRecord([$id]);
         if (!empty($records)) {
             $records[0]->delete();
         }

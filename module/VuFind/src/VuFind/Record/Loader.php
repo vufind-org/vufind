@@ -84,9 +84,9 @@ class Loader
      */
     public function load($id, $source = 'VuFind', $tolerateMissing = false)
     {
-        $results = array();
+        $results = [];
         if (isset($this->recordCache) && $this->recordCache->isPrimary()) {
-            $results = $this->recordCache->lookup(array("$source|$id"));
+            $results = $this->recordCache->lookup(["$source|$id"]);
         }
         if (count($results) === 0) {
             $results = $this->searchService->retrieve($source, $id)->getRecords();
@@ -94,7 +94,7 @@ class Loader
         if (isset($this->recordCache)
             && $this->recordCache->isFallback() && count($results) === 0
         ) {
-            $results = $this->recordCache->lookup(array("$source|$id"));
+            $results = $this->recordCache->lookup(["$source|$id"]);
         }
 
         if (count($results) > 0) {
@@ -123,7 +123,7 @@ class Loader
      */
     public function loadBatchForSource($ids, $source = 'VuFind')
     {
-        $cachedRecords = array();
+        $cachedRecords = [];
         if (isset($this->recordCache) && $this->recordCache->isPrimary()) {
             // try to load records from cache if source is cachable
             $cachedRecords = $this->recordCache->lookup($ids, $source);
@@ -135,7 +135,7 @@ class Loader
         }
             
         // try to load the missing records from the original $source
-        $genuineRecords = array();
+        $genuineRecords = [];
         if (count($ids) > 0) {
             $genuineRecords = $this->searchService->retrieveBatch(
                 $source, $ids
