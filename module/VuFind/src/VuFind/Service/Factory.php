@@ -666,6 +666,38 @@ class Factory
     }
 
     /**
+     * Construct the Session Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Zend\Session\SessionManager
+     */
+    public static function getSessionManager(ServiceManager $sm)
+    {
+        $config = $sm->get('VuFind\Config')->get('config');
+
+        $sitePath = '/';
+        if (isset($config->Session->limit_session_path)
+            && $config->Session->limit_session_path
+        ) {
+            $request = new \Zend\Http\PhpEnvironment\Request();
+            $sitePath = $request->getBasePath();
+        }
+        $onlySecure = isset($config->Session->only_secure)
+            ? $config->Session->only_secure
+            : false;
+        $sessionConfig = new \Zend\Session\Config\SessionConfig();
+        $sessionConfig->setOptions(
+            [
+                'cookie_path' => $sitePath,
+                'cookie_secure' => $onlySecure
+            ]
+        );
+
+        return new \Zend\Session\SessionManager($sessionConfig);
+    }
+
+    /**
      * Construct the Session Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.

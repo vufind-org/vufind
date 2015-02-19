@@ -172,6 +172,7 @@ $config = [
             'VuFind\SearchResultsPluginManager' => 'VuFind\Service\Factory::getSearchResultsPluginManager',
             'VuFind\SearchSpecsReader' => 'VuFind\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchStats' => 'VuFind\Service\Factory::getSearchStats',
+            'VuFind\SessionManager' => 'VuFind\Service\Factory::getSessionManager',
             'VuFind\SessionPluginManager' => 'VuFind\Service\Factory::getSessionPluginManager',
             'VuFind\SMS' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Service\Factory::getSolrWriter',
@@ -181,7 +182,6 @@ $config = [
             'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
         ],
         'invokables' => [
-            'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\Search'         => 'VuFindSearch\Service',
             'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
             'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper'
