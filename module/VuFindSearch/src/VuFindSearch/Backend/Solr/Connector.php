@@ -357,7 +357,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $client = $this->createClient($url, $method);
             $client->setRawBody($paramString);
             $client->setEncType(HttpClient::ENC_URLENCODED);
-            $client->setHeaders(array('Content-Length' => strlen($paramString)));
+            $client->setHeaders(['Content-Length' => strlen($paramString)]);
         } else {
             $url = $url . '?' . $paramString;
             $client = $this->createClient($url, $method);
@@ -391,7 +391,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             sprintf(
                 '<= %s %s', $response->getStatusCode(),
                 $response->getReasonPhrase()
-            ), array('time' => $time)
+            ), ['time' => $time]
         );
 
         if (!$response->isSuccess()) {
@@ -412,7 +412,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     {
         $client = new HttpClient();
         $client->setAdapter($this->adapter);
-        $client->setOptions(array('timeout' => $this->timeout));
+        $client->setOptions(['timeout' => $this->timeout]);
         $client->setUri($url);
         $client->setMethod($method);
         if ($this->proxy) {

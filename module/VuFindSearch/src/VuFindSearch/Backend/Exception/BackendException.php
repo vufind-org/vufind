@@ -46,7 +46,7 @@ class BackendException extends RuntimeException
      *
      * @var array
      */
-    protected $tags = array();
+    protected $tags = [];
 
     /**
      * Add a tag.

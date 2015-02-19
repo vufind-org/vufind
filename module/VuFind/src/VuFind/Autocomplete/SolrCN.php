@@ -65,17 +65,17 @@ class SolrCN extends Solr
     protected function mungeQuery($query)
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
-        $forbidden = array(':', '(', ')', '*', '+', '"');
+        $forbidden = [':', '(', ')', '*', '+', '"'];
         $query = str_replace($forbidden, " ", $query);
 
         // Assign display fields and sort order based on the query -- if the
         // first character is a number, give Dewey priority; otherwise, give
         // LC priority:
         if (is_numeric(substr(trim($query), 0, 1))) {
-            $this->setDisplayField(array('dewey-full', 'callnumber-a'));
+            $this->setDisplayField(['dewey-full', 'callnumber-a']);
             $this->setSortField("dewey-sort,callnumber");
         } else {
-            $this->setDisplayField(array('callnumber-a', 'dewey-full'));
+            $this->setDisplayField(['callnumber-a', 'dewey-full']);
             $this->setSortField("callnumber,dewey-sort");
         }
 

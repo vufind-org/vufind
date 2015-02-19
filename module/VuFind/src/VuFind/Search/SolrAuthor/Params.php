@@ -94,15 +94,15 @@ class Params extends \VuFind\Search\Solr\Params
         // Load the AuthorModuleRecommendations configuration if available, use
         // standard defaults otherwise:
         if (isset($ss->AuthorModuleRecommendations)) {
-            $recommend = array();
+            $recommend = [];
             foreach ($ss->AuthorModuleRecommendations as $section => $content) {
-                $recommend[$section] = array();
+                $recommend[$section] = [];
                 foreach ($content as $current) {
                     $recommend[$section][] = $current;
                 }
             }
         } else {
-            $recommend = array('side' => array('ExpandFacets:Author'));
+            $recommend = ['side' => ['ExpandFacets:Author']];
         }
 
         return $recommend;

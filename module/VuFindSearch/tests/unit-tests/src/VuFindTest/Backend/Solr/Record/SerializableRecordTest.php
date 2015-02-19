@@ -48,7 +48,7 @@ class SerializableRecordTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetFields()
     {
-        $fields = array('a' => 'b');
+        $fields = ['a' => 'b'];
         $sr = new SerializableRecord($fields);
         $this->assertEquals($fields, $sr->getFields());
     }

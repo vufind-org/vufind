@@ -77,12 +77,12 @@ class Results extends \VuFind\Search\Base\Results
             $this->resultTotal = $collection->getTotal();
 
             //Add a publication date facet
-            $this->responseFacets[] = array(
+            $this->responseFacets[] = [
                         'fieldName' => 'PublicationDate',
                         'displayName' => 'PublicationDate',
                         'displayText' => 'Publication Date',
-                        'counts' => array()
-            );
+                        'counts' => []
+            ];
 
             // Construct record drivers for all the items in the response:
             $this->results = $collection->getRecords();
@@ -100,7 +100,7 @@ class Results extends \VuFind\Search\Base\Results
     public function getFacetList($filter = null)
     {
         // Loop through the facets returned by EDS
-        $facetResult = array();
+        $facetResult = [];
         if (is_array($this->responseFacets)) {
             // Get the filter list -- we'll need to check it below:
             $filterList = $this->getParams()->getFilters();
@@ -124,7 +124,7 @@ class Results extends \VuFind\Search\Base\Results
                     // an active filter for the current field?
                     $orField = '~' . $field;
                     $itemsToCheck = isset($filterList[$field])
-                    ? $filterList[$field] : array();
+                    ? $filterList[$field] : [];
                     if (isset($filterList[$orField])) {
                         $itemsToCheck += $filterList[$orField];
                     }
@@ -162,7 +162,7 @@ class Results extends \VuFind\Search\Base\Results
         ksort($facetResult);
 
         // Rewrite the sorted array with appropriate keys:
-        $finalResult = array();
+        $finalResult = [];
         foreach ($facetResult as $current) {
             $finalResult[$current['displayName']] = $current;
         }

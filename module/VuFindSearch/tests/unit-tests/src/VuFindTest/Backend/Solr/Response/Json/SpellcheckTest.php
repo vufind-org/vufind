@@ -50,19 +50,19 @@ class SpellcheckTest extends TestCase
     public function testMerge()
     {
         $s1 = new Spellcheck(
-            array(
-                array('this is a phrase', array()),
-                array('foo', array()),
-                array('foobar', array())
-            ),
+            [
+                ['this is a phrase', []],
+                ['foo', []],
+                ['foobar', []]
+            ],
             'fake query'
         );
         $s2 = new Spellcheck(
-            array(
-                array('is a', array()),
-                array('bar', array()),
-                array('foo bar', array())
-            ),
+            [
+                ['is a', []],
+                ['bar', []],
+                ['foo bar', []]
+            ],
             'fake query'
         );
         $s1->mergeWith($s2);
@@ -77,9 +77,9 @@ class SpellcheckTest extends TestCase
      */
     public function testDoubleMerge()
     {
-        $s1 = new Spellcheck(array(array('a', array())), 'fake');
-        $s2 = new Spellcheck(array(array('b', array())), 'fake');
-        $s3 = new Spellcheck(array(array('c', array())), 'fake');
+        $s1 = new Spellcheck([['a', []]], 'fake');
+        $s2 = new Spellcheck([['b', []]], 'fake');
+        $s3 = new Spellcheck([['c', []]], 'fake');
         $s1->mergeWith($s2);
         $s1->mergeWith($s3);
         $this->assertCount(3, $s1);
@@ -94,8 +94,8 @@ class SpellcheckTest extends TestCase
      */
     public function testExactDuplication()
     {
-        $s1 = new Spellcheck(array(array('a', array())), 'fake');
-        $s2 = new Spellcheck(array(array('a', array())), 'fake');
+        $s1 = new Spellcheck([['a', []]], 'fake');
+        $s2 = new Spellcheck([['a', []]], 'fake');
         $s1->mergeWith($s2);
         $this->assertCount(1, $s1);
     }
@@ -107,7 +107,7 @@ class SpellcheckTest extends TestCase
      */
     public function testGetQuery()
     {
-        $s = new Spellcheck(array(), 'test');
+        $s = new Spellcheck([], 'test');
         $this->assertEquals('test', $s->getQuery());
     }
 }

@@ -49,13 +49,13 @@ class TermsTest extends TestCase
      */
     public function testTerms()
     {
-        $field1 = array(array('a', 1), array('b', 2), array('c', 3));
+        $field1 = [['a', 1], ['b', 2], ['c', 3]];
         $terms = new Terms(
-            array(
-                'terms' => array(
+            [
+                'terms' => [
                     'field1' => $field1,
-                )
-            )
+                ]
+            ]
         );
 
         $this->assertEquals('ArrayIterator', get_class($terms->getIterator()));

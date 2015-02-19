@@ -107,10 +107,10 @@ class RecordController extends AbstractRecord
         $catalog = $this->getILS();
         $checkHolds = $catalog->checkFunction(
             'Holds',
-            array(
+            [
                 'id' => $driver->getUniqueID(),
                 'patron' => $patron
-            )
+            ]
         );
         if (!$checkHolds) {
             return $this->forwardTo('Record', 'Home');
@@ -133,10 +133,10 @@ class RecordController extends AbstractRecord
         // Send various values to the view so we can build the form:
         $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
         $requestGroups = $catalog->checkCapability(
-            'getRequestGroups', array($driver->getUniqueID(), $patron)
-        ) ? $catalog->getRequestGroups($driver->getUniqueID(), $patron) : array();
+            'getRequestGroups', [$driver->getUniqueID(), $patron]
+        ) ? $catalog->getRequestGroups($driver->getUniqueID(), $patron) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
-            ? explode(":", $checkHolds['extraHoldFields']) : array();
+            ? explode(":", $checkHolds['extraHoldFields']) : [];
 
         // Process form submissions if necessary:
         if (!is_null($this->params()->fromPost('placeHold'))) {
@@ -158,7 +158,7 @@ class RecordController extends AbstractRecord
                 // if successful, we will redirect and can stop here.
 
                 // Add Patron Data to Submitted Data
-                $holdDetails = $gatheredDetails + array('patron' => $patron);
+                $holdDetails = $gatheredDetails + ['patron' => $patron];
 
                 // Attempt to place the hold:
                 $function = (string)$checkHolds['function'];
@@ -166,13 +166,13 @@ class RecordController extends AbstractRecord
 
                 // Success: Go to Display Holds
                 if (isset($results['success']) && $results['success'] == true) {
-                    $msg = array(
+                    $msg = [
                         'html' => true,
                         'msg' => 'hold_place_success_html',
-                        'tokens' => array(
+                        'tokens' => [
                             '%%url%%' => $this->url()->fromRoute('myresearch-holds')
-                        ),
-                    );
+                        ],
+                    ];
                     $this->flashMessenger()->setNamespace('info')->addMessage($msg);
                     return $this->redirectToRecord('#top');
                 } else {
@@ -216,7 +216,7 @@ class RecordController extends AbstractRecord
                 || $gatheredDetails['level'] != 'copy');
 
         return $this->createViewModel(
-            array(
+            [
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
                 'defaultPickup' => $defaultPickup,
@@ -228,7 +228,7 @@ class RecordController extends AbstractRecord
                 'requestGroupNeeded' => $requestGroupNeeded,
                 'helpText' => isset($checkHolds['helpText'])
                     ? $checkHolds['helpText'] : null
-            )
+            ]
         );
     }
 
@@ -250,10 +250,10 @@ class RecordController extends AbstractRecord
         $catalog = $this->getILS();
         $checkRequests = $catalog->checkFunction(
             'StorageRetrievalRequests',
-            array(
+            [
                 'id' => $driver->getUniqueID(),
                 'patron' => $patron
-            )
+            ]
         );
         if (!$checkRequests) {
             return $this->forwardTo('Record', 'Home');
@@ -278,7 +278,7 @@ class RecordController extends AbstractRecord
         // Send various values to the view so we can build the form:
         $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
         $extraFields = isset($checkRequests['extraFields'])
-            ? explode(":", $checkRequests['extraFields']) : array();
+            ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
         if (!is_null($this->params()->fromPost('placeStorageRetrievalRequest'))) {
@@ -286,7 +286,7 @@ class RecordController extends AbstractRecord
             // if successful, we will redirect and can stop here.
 
             // Add Patron Data to Submitted Data
-            $details = $gatheredDetails + array('patron' => $patron);
+            $details = $gatheredDetails + ['patron' => $patron];
 
             // Attempt to place the hold:
             $function = (string)$checkRequests['function'];
@@ -329,7 +329,7 @@ class RecordController extends AbstractRecord
         }
 
         return $this->createViewModel(
-            array(
+            [
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
                 'defaultPickup' => $defaultPickup,
@@ -338,7 +338,7 @@ class RecordController extends AbstractRecord
                 'defaultRequiredDate' => $defaultRequired,
                 'helpText' => isset($checkRequests['helpText'])
                     ? $checkRequests['helpText'] : null
-            )
+            ]
         );
     }
 
@@ -360,10 +360,10 @@ class RecordController extends AbstractRecord
         $catalog = $this->getILS();
         $checkRequests = $catalog->checkFunction(
             'ILLRequests',
-            array(
+            [
                 'id' => $driver->getUniqueID(),
                 'patron' => $patron
-            )
+            ]
         );
         if (!$checkRequests) {
             return $this->forwardTo('Record', 'Home');
@@ -388,7 +388,7 @@ class RecordController extends AbstractRecord
         // Send various values to the view so we can build the form:
 
         $extraFields = isset($checkRequests['extraFields'])
-            ? explode(":", $checkRequests['extraFields']) : array();
+            ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
         if (!is_null($this->params()->fromPost('placeILLRequest'))) {
@@ -396,7 +396,7 @@ class RecordController extends AbstractRecord
             // if successful, we will redirect and can stop here.
 
             // Add Patron Data to Submitted Data
-            $details = $gatheredDetails + array('patron' => $patron);
+            $details = $gatheredDetails + ['patron' => $patron];
 
             // Attempt to place the hold:
             $function = (string)$checkRequests['function'];
@@ -443,7 +443,7 @@ class RecordController extends AbstractRecord
         $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
 
         return $this->createViewModel(
-            array(
+            [
                 'gatheredDetails' => $gatheredDetails,
                 'pickupLibraries' => $pickupLibraries,
                 'pickupLocations' => $pickupLocations,
@@ -452,7 +452,7 @@ class RecordController extends AbstractRecord
                 'defaultRequiredDate' => $defaultRequired,
                 'helpText' => isset($checkRequests['helpText'])
                     ? $checkRequests['helpText'] : null
-            )
+            ]
         );
     }
 

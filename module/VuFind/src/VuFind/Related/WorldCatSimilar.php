@@ -49,7 +49,7 @@ class WorldCatSimilar extends Similar
     public function init($settings, $driver)
     {
         // Create array of query parts:
-        $parts = array();
+        $parts = [];
 
         // Add Dewey class to query
         $deweyClass = $driver->tryMethod('getDeweyCallNumber');

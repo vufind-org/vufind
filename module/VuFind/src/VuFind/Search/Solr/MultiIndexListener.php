@@ -86,7 +86,7 @@ class MultiIndexListener
         array $stripfields, array $specs
     ) {
         $this->specs       = $specs;
-        $this->active      = array();
+        $this->active      = [];
         $this->backend     = $backend;
         $this->shards      = $shards;
         $this->stripfields = $stripfields;
@@ -101,7 +101,7 @@ class MultiIndexListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'pre', array($this, 'onSearchPre'));
+        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
     }
 
     /**
@@ -129,12 +129,12 @@ class MultiIndexListener
                 // an array to prevent invalid argument warnings.
                 $shards = $params->get('shards');
                 $shards = explode(
-                    ',', implode(',', (is_array($shards) ? $shards : array()))
+                    ',', implode(',', (is_array($shards) ? $shards : []))
                 );
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);
                 $backend->getQueryBuilder()->setSpecs($specs);
-                $facets = $params->get('facet.field') ?: array();
+                $facets = $params->get('facet.field') ?: [];
                 $params->set('facet.field', array_diff($facets, $fields));
             }
         }
@@ -152,7 +152,7 @@ class MultiIndexListener
      */
     protected function getFields(array $shards)
     {
-        $fields = array();
+        $fields = [];
         foreach ($this->stripfields as $name => $strip) {
             if (isset($this->shards[$name])) {
                 $uri = $this->shards[$name];
@@ -173,7 +173,7 @@ class MultiIndexListener
      */
     protected function getSearchSpecs(array $fields)
     {
-        $specs  = array();
+        $specs  = [];
         $fields = array_merge(
             $fields,
             array_map(
@@ -184,7 +184,7 @@ class MultiIndexListener
             )
         );
         foreach ($this->specs as $handler => $spec) {
-            $specs[$handler] = array();
+            $specs[$handler] = [];
             foreach ($spec as $component => $settings) {
                 switch ($component) {
                 case 'QueryFields':
@@ -210,10 +210,10 @@ class MultiIndexListener
      */
     protected function stripSpecsQueryFields(array $settings, array $fields)
     {
-        $stripped = array();
+        $stripped = [];
         foreach ($settings as $field => $rule) {
             if (is_numeric($field)) {
-                $group = array();
+                $group = [];
                 $type  = reset($rule);
                 while (next($rule) !== false) {
                     if (!in_array(key($rule), $fields)) {

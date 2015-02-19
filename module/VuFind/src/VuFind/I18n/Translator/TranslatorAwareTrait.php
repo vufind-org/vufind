@@ -96,7 +96,7 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    public function translate($str, $tokens = array(), $default = null)
+    public function translate($str, $tokens = [], $default = null)
     {
         $msg = null === $this->translator
             ? $str : $this->translator->translate($str);
@@ -108,7 +108,7 @@ trait TranslatorAwareTrait
 
         // Do we need to perform substitutions?
         if (!empty($tokens)) {
-            $in = $out = array();
+            $in = $out = [];
             foreach ($tokens as $key => $value) {
                 $in[] = $key;
                 $out[] = $value;

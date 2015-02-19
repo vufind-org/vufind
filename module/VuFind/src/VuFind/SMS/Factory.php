@@ -62,9 +62,9 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
         switch (strtolower($type)) {
         case 'clickatell':
             $client = $sm->get('VuFind\Http')->createClient();
-            return new Clickatell($smsConfig, array('client' => $client));
+            return new Clickatell($smsConfig, ['client' => $client]);
         case 'mailer':
-            $options = array('mailer' => $sm->get('VuFind\Mailer'));
+            $options = ['mailer' => $sm->get('VuFind\Mailer')];
             if (isset($mainConfig->Site->email)) {
                 $options['defaultFrom'] = $mainConfig->Site->email;
             }

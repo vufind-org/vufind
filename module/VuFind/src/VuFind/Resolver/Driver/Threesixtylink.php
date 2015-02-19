@@ -97,7 +97,7 @@ class Threesixtylink implements DriverInterface
      */
     public function parseLinks($xmlstr)
     {
-        $records = array(); // array to return
+        $records = []; // array to return
 
         $xml = new DOMDocument();
         if (!@$xml->loadXML($xmlstr)) {
@@ -108,7 +108,7 @@ class Threesixtylink implements DriverInterface
         $linkGroups = $xpath->query("//ssopenurl:linkGroup[@type='holding']");
         if (!is_null($linkGroups)) {
             foreach ($linkGroups as $linkGroup) {
-                $record = array();
+                $record = [];
                 // select the deepest link returned
                 $elems = $xpath->query(
                     ".//ssopenurl:url[@type='article']", $linkGroup

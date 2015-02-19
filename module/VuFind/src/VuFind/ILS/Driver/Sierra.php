@@ -106,7 +106,7 @@ class Sierra extends AbstractBase
             . "(bib_view.id = bib_record_item_record_link.bib_record_id) "
             . "WHERE bib_view.record_num = $1;";
         $record_ids = pg_query_params(
-            $this->db, $get_record_ids_query, array($this->idStrip($id))
+            $this->db, $get_record_ids_query, [$this->idStrip($id)]
         );
         while ($record = pg_fetch_row($record_ids)) {
             $itemRecords[] = $record[0];
@@ -133,7 +133,7 @@ class Sierra extends AbstractBase
                 . "varfield_view.varfield_type_code = 'c' and "
                 . "varfield_view.record_num = $1;";
             $results = pg_query_params(
-                $this->db, $query, array($this->idStrip($id))
+                $this->db, $query, [$this->idStrip($id)]
             );
             $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
             $callnumber = $callnumberarray[0];
@@ -212,7 +212,7 @@ class Sierra extends AbstractBase
     {
         try {
             // Sierra does not allow for searching for reserves by departments.
-            $departments = array();
+            $departments = [];
             return $departments;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -247,7 +247,7 @@ class Sierra extends AbstractBase
                 . "t2.record_type_code = 'r' AND t2.varfield_type_code = 'r' AND "
                 . "t2.occ_num = '0' ORDER BY t1.field_content;";
             $results = pg_query($query);
-            $instructors = array();
+            $instructors = [];
             $j = 0;
             while ($row = pg_fetch_row($results)) {
                 if ($instructors[$row[2]] != null) {
@@ -300,7 +300,7 @@ class Sierra extends AbstractBase
                 . "ON (course_record_item_record_link.course_record_id = "
                 . "varfield_view.record_id) "
                 . "WHERE varfield_view.record_num = $1;";
-            $results = pg_query_params($this->db, $query, array($coursenum));
+            $results = pg_query_params($this->db, $query, [$coursenum]);
             while ($resultArray = pg_fetch_row($results)) {
                 $bareNumber = $resultArray[0];
                 $fullNumber = $this->createFullId($bareNumber);
@@ -324,7 +324,7 @@ class Sierra extends AbstractBase
     public function getFunds()
     {
         try {
-            $funds = array();
+            $funds = [];
             $query = "SELECT DISTINCT fund_master.code_num, fund_master.code
                 FROM sierra_view.fund_master;";
             $results = pg_query($this->db, $query);
@@ -352,7 +352,7 @@ class Sierra extends AbstractBase
     public function getStatus($id)
     {
         try {
-            $status = array();
+            $status = [];
             $itemIds = $this->getIds($id);
             // Use the database ids to get the item-level information (status,
             // location, and potentially call number) associated with that bib record
@@ -376,7 +376,7 @@ class Sierra extends AbstractBase
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
-                $results1 = pg_execute($this->db, "prep_query", array($item));
+                $results1 = pg_execute($this->db, "prep_query", [$item]);
                 while ($resultArray = pg_fetch_row($results1)) {
                     if ($resultArray[3] == "c") {
                         $callnumber = $resultArray[2];
@@ -395,14 +395,14 @@ class Sierra extends AbstractBase
                     $availability = false;
                 }
 
-                $itemInfo = array(
+                $itemInfo = [
                     "id" => $id,
                     "status" => $resultArray[0],
                     "location" => $resultArray[1],
                     "reserve" => "N",
                     "callnumber" => $finalcallnumber,
                     "availability" => $availability
-                    );
+                    ];
 
                 $status[] = $itemInfo;
             }
@@ -430,7 +430,7 @@ class Sierra extends AbstractBase
     public function getHolding($id, array $patron = null)
     {
         try {
-            $holdings = array();
+            $holdings = [];
             $itemIds = $this->getIds($id);
             // Use the database ids to get the item-level information (status,
             // location, and potentially call number) associated with that bib record
@@ -456,7 +456,7 @@ class Sierra extends AbstractBase
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
-                $results1 = pg_execute($this->db, "prep_query", array($item));
+                $results1 = pg_execute($this->db, "prep_query", [$item]);
                 while ($row1 = pg_fetch_row($results1)) {
                     if ($row1[4] == "b") {
                         $barcode = $row1[3];
@@ -479,7 +479,7 @@ class Sierra extends AbstractBase
                     $availability = false;
                 }
 
-                $itemInfo = array(
+                $itemInfo = [
                     "id" => $id,
                     "availability" => $availability,
                     "status" => $resultArray[0],
@@ -490,7 +490,7 @@ class Sierra extends AbstractBase
                     "returnDate" => false,
                     "number" => $number,
                     "barcode" => $barcode
-                    );
+                    ];
 
                 $holdings[] = $itemInfo;
             }
@@ -521,7 +521,7 @@ class Sierra extends AbstractBase
     public function getNewItems($page, $limit, $daysOld, $fundID)
     {
         try {
-            $newItems = array();
+            $newItems = [];
             $offset = $limit * ($page - 1);
             $daysOld = (int) $daysOld;
             if (is_int($daysOld) == false || $daysOld > 30) {
@@ -554,11 +554,11 @@ class Sierra extends AbstractBase
                 . "OFFSET CAST ($2 AS integer);";
             if ($fundID != null) {
                 $results = pg_query_params(
-                    $this->db, $query, array($limit, $offset, $fundID)
+                    $this->db, $query, [$limit, $offset, $fundID]
                 );
             } else {
                 $results = pg_query_params(
-                    $this->db, $query, array($limit, $offset)
+                    $this->db, $query, [$limit, $offset]
                 );
             }
             $newItems['count'] = (string) pg_num_rows($results);
@@ -569,7 +569,7 @@ class Sierra extends AbstractBase
                     $newItems['results'][]['id'] = $fullNumber;
                 }
             } else {
-                $newItems['results'] = array();
+                $newItems['results'] = [];
                 $newItems['results'][0]['id'] = null;
             }
             return $newItems;
@@ -595,7 +595,7 @@ class Sierra extends AbstractBase
     {
         try {
             // TODO
-            $history = array();
+            $history = [];
             return $history;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -616,7 +616,7 @@ class Sierra extends AbstractBase
     public function getStatuses($ids)
     {
         try {
-            $statuses = array();
+            $statuses = [];
             foreach ($ids as $id) {
                 $statuses[] = $this->getStatus($id);
             }
@@ -634,7 +634,7 @@ class Sierra extends AbstractBase
     public function getSuppressedAuthorityRecords()
     {
         try {
-            $authRecords = array();
+            $authRecords = [];
             $query = "SELECT record_metadata.record_num FROM "
                 . "sierra_view.authority_record LEFT JOIN "
                 . "sierra_view.record_metadata ON "
@@ -659,7 +659,7 @@ class Sierra extends AbstractBase
     public function getSuppressedRecords()
     {
         try {
-            $suppRecords = array();
+            $suppRecords = [];
             $query = "SELECT record_metadata.record_num FROM "
                 . "sierra_view.bib_record LEFT JOIN sierra_view.record_metadata "
                 . "ON (bib_record.record_id = record_metadata.id) "

@@ -60,14 +60,14 @@ class Manager
      *
      * @var array
      */
-    protected $cacheSettings = array();
+    protected $cacheSettings = [];
 
     /**
      * Actual cache objects generated from settings.
      *
      * @var array
      */
-    protected $caches = array();
+    protected $caches = [];
 
     /**
      * Constructor
@@ -89,7 +89,7 @@ class Manager
         $cacheBase = $this->getCacheDir();
 
         // Set up standard file-based caches:
-        foreach (array('config', 'cover', 'language', 'object') as $cache) {
+        foreach (['config', 'cover', 'language', 'object'] as $cache) {
             $this->createFileCache($cache, $cacheBase . $cache . 's');
         }
 
@@ -239,7 +239,7 @@ class Manager
             }
         }
         if (empty($opts)) {
-            $opts = array('cache_dir' => $dirName);
+            $opts = ['cache_dir' => $dirName];
         } elseif (is_array($opts)) {
             // If cache_dir was set in config.ini, the cache-specific name should
             // have been appended to the path to create the value $dirName.
@@ -248,10 +248,10 @@ class Manager
             // Dryrot
             throw new \Exception('$opts is neither array nor false');
         }
-        $this->cacheSettings[$cacheName] = array(
-            'adapter' => array('name' => 'filesystem', 'options' => $opts),
-            'plugins' => array('serializer')
-        );
+        $this->cacheSettings[$cacheName] = [
+            'adapter' => ['name' => 'filesystem', 'options' => $opts],
+            'plugins' => ['serializer']
+        ];
     }
 
     /**
@@ -263,9 +263,9 @@ class Manager
      */
     protected function createAPCCache($cacheName)
     {
-        $this->cacheSettings[$cacheName] = array(
+        $this->cacheSettings[$cacheName] = [
             'adapter' => 'APC',
-            'plugins' => array('serializer')
-        );
+            'plugins' => ['serializer']
+        ];
     }
 }

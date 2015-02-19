@@ -105,15 +105,15 @@ class UtilController extends AbstractBase
         ini_set('max_execution_time', '3600');
 
         $this->consoleOpts->setOptions(
-            array(\Zend\Console\Getopt::CONFIG_CUMULATIVE_PARAMETERS => true)
+            [\Zend\Console\Getopt::CONFIG_CUMULATIVE_PARAMETERS => true]
         );
         $this->consoleOpts->addRules(
-            array(
+            [
                 'h|help' => 'Get help',
                 'd-s' => 'Delimiter',
                 't-s' => 'Template',
                 'f-s' => 'File',
-            )
+            ]
         );
 
         if ($this->consoleOpts->getOption('h')
@@ -208,9 +208,9 @@ class UtilController extends AbstractBase
             $id = $course_id . '|' . $instructor_id . '|' . $department_id;
 
             if (!isset($index[$id])) {
-                $index[$id] = array(
+                $index[$id] = [
                     'id' => $id,
-                    'bib_id' => array(),
+                    'bib_id' => [],
                     'instructor_id' => $instructor_id,
                     'instructor' => isset($instructors[$instructor_id])
                         ? $instructors[$instructor_id] : '',
@@ -220,7 +220,7 @@ class UtilController extends AbstractBase
                     'department_id' => $department_id,
                     'department' => isset($departments[$department_id])
                         ? $departments[$department_id] : ''
-                );
+                ];
             }
             $index[$id]['bib_id'][] = $record['BIB_ID'];
         }
@@ -328,7 +328,7 @@ class UtilController extends AbstractBase
         }
 
         // Build list of records to delete:
-        $ids = array();
+        $ids = [];
 
         // Flat file mode:
         if ($mode == 'flat') {
@@ -398,10 +398,10 @@ class UtilController extends AbstractBase
     {
         // Setup Solr Connection
         $this->consoleOpts->addRules(
-            array(
+            [
                 'authorities' =>
                     'Delete authority records instead of bibliographic records'
-            )
+            ]
         );
         $backend = $this->consoleOpts->getOption('authorities')
             ? 'SolrAuth' : 'Solr';
@@ -444,14 +444,14 @@ class UtilController extends AbstractBase
         $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
         // Parse switches:
         $this->consoleOpts->addRules(
-            array(
+            [
                 'skip-xml|sx' => 'Skip the XML cache',
                 'skip-json|sj' => 'Skip the JSON cache'
-            )
+            ]
         );
         $hierarchies = $this->getServiceLocator()
             ->get('VuFind\SearchResultsPluginManager')->get('Solr')
-            ->getFullFieldFacets(array('hierarchy_top_id'));
+            ->getFullFieldFacets(['hierarchy_top_id']);
         foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
             $recordid = $hierarchy['value'];
             $count = $hierarchy['count'];
@@ -470,7 +470,7 @@ class UtilController extends AbstractBase
                     if (!$this->consoleOpts->getOption('skip-json')) {
                         Console::writeLine("\t\tJSON cache...");
                         $driver->getHierarchyDriver()->getTreeSource()->getJSON(
-                            $recordid, array('refresh' => true)
+                            $recordid, ['refresh' => true]
                         );
                     } else {
                         Console::writeLine("\t\tJSON skipped.");
@@ -479,7 +479,7 @@ class UtilController extends AbstractBase
                     if (!$this->consoleOpts->getOption('skip-xml')) {
                         Console::writeLine("\t\tXML cache...");
                         $driver->getHierarchyDriver()->getTreeSource()->getXML(
-                            $recordid, array('refresh' => true)
+                            $recordid, ['refresh' => true]
                         );
                     } else {
                         Console::writeLine("\t\tXML skipped.");

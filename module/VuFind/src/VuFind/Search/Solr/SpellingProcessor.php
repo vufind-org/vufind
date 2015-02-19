@@ -126,15 +126,15 @@ class SpellingProcessor
     public function tokenize($input)
     {
         // Blacklist of useless tokens:
-        $joins = array("AND", "OR", "NOT");
+        $joins = ["AND", "OR", "NOT"];
 
         // Strip out parentheses -- irrelevant for tokenization:
-        $paren = array("(" => " ", ")" => " ");
+        $paren = ["(" => " ", ")" => " "];
         $input = trim(strtr($input, $paren));
 
         // Base of this algorithm comes straight from PHP doc example by
         // benighted at gmail dot com: http://php.net/manual/en/function.strtok.php
-        $tokens = array();
+        $tokens = [];
         $token = strtok($input, " \t");
         while ($token !== false) {
             // find double quoted tokens
@@ -169,15 +169,15 @@ class SpellingProcessor
      */
     public function getSuggestions(Spellcheck $spellcheck, AbstractQuery $query)
     {
-        $allSuggestions = array();
+        $allSuggestions = [];
         foreach ($spellcheck as $term => $info) {
             if (!$this->shouldSkipTerm($query, $term, false)
                 && ($suggestions = $this->formatAndFilterSuggestions($query, $info))
             ) {
-                $allSuggestions[$term] = array(
+                $allSuggestions[$term] = [
                     'freq' => $info['origFreq'],
                     'suggestions' => $suggestions
-                );
+                ];
             }
         }
         // Fail over to secondary suggestions if primary failed:
@@ -206,7 +206,7 @@ class SpellingProcessor
             );
         }
         $limit = $this->getSpellingLimit();
-        $suggestions = array();
+        $suggestions = [];
         foreach ($info['suggestion'] as $suggestion) {
             if (count($suggestions) >= $limit) {
                 break;
@@ -251,7 +251,7 @@ class SpellingProcessor
      */
     public function processSuggestions($suggestions, $query, Params $params)
     {
-        $returnArray = array();
+        $returnArray = [];
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
             $inToken = false;
@@ -314,10 +314,10 @@ class SpellingProcessor
                 $label = $replacement;
             }
             // Basic spelling suggestion data
-            $returnArray[$targetTerm]['suggestions'][$label] = array(
+            $returnArray[$targetTerm]['suggestions'][$label] = [
                 'freq' => $freq,
                 'new_term' => $replacement
-            );
+            ];
 
             // Only generate expansions if enabled in config
             if ($this->expand) {

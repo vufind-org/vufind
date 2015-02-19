@@ -59,7 +59,7 @@ class OCLCIdentities implements AutocompleteInterface
     public function getSuggestions($query)
     {
         // Initialize return array:
-        $results = array();
+        $results = [];
 
         // Build target URL:
         $target = $this->url . '?query=' . urlencode($query);

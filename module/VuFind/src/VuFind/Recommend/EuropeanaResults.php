@@ -145,7 +145,7 @@ class EuropeanaResults implements RecommendInterface,
         $this->limit = isset($params[2]) && is_numeric($params[2])
                         && $params[2] > 0 ? intval($params[2]) : 5;
         $this->excludeProviders = (isset($params[3]) && !empty($params[3]))
-            ? $params[3] : array();
+            ? $params[3] : [];
         //make array
         if (!empty($this->excludeProviders)) {
             $this->excludeProviders = explode(',', $this->excludeProviders);
@@ -225,15 +225,15 @@ class EuropeanaResults implements RecommendInterface,
             );
         }
         $parsedFeed = FeedReader::import($this->targetUrl);
-        $resultsProcessed = array();
+        $resultsProcessed = [];
         foreach ($parsedFeed as $value) {
             $link = (string)$value->link;
             if (!empty($link)) {
-                $resultsProcessed[] = array(
+                $resultsProcessed[] = [
                     'title' => (string)$value->title,
                     'link' => substr($link, 0, strpos($link, '.srw')) . '.html',
                     'enclosure' => (string)$value->enclosure['url']
-                );
+                ];
             }
             if (count($resultsProcessed) == $this->limit) {
                 break;
@@ -241,11 +241,11 @@ class EuropeanaResults implements RecommendInterface,
         }
 
         if (!empty($resultsProcessed)) {
-            $this->results = array(
+            $this->results = [
                 'worksArray' => $resultsProcessed,
                 'feedTitle' => $this->searchSite,
                 'sourceLink' => $this->sitePath
-            );
+            ];
         } else {
             $this->results = false;
         }

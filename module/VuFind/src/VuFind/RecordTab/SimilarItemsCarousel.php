@@ -81,7 +81,7 @@ class SimilarItemsCarousel extends AbstractBase
     public function getResults()
     {
         $record = $this->getRecordDriver();
-        $params = new \VuFindSearch\ParamBag(array('rows' => 40));
+        $params = new \VuFindSearch\ParamBag(['rows' => 40]);
         return $this->searchService->similar(
             $record->getSourceIdentifier(), $record->getUniqueId(), $params
         );

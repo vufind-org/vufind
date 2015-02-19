@@ -79,7 +79,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @var array
      */
-    protected $dbs = array();
+    protected $dbs = [];
 
     /**
      * Constructor
@@ -117,15 +117,15 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $params->set('pwd', $this->pwd);
         $response = $this->call('GET', $params->getArrayCopy(), false);
         $xml = simplexml_load_string($response);
-        $finalDocs = array();
+        $finalDocs = [];
         foreach ($xml->SearchResults->records->rec as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());
         }
-        return array(
+        return [
             'docs' => $finalDocs,
             'offset' => $offset,
             'total' => (integer)$xml->Hits
-        );
+        ];
     }
 
     /**
@@ -154,7 +154,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     protected function call($method = 'GET', $params = null)
     {
         if ($params) {
-            $query = array();
+            $query = [];
             foreach ($params as $function => $value) {
                 if (is_array($value)) {
                     foreach ($value as $additional) {
@@ -208,14 +208,14 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         $this->client->resetParameters();
         $response = $this->call('GET', $params->getArrayCopy(), false);
         $xml = simplexml_load_string($response);
-        $finalDocs = array();
+        $finalDocs = [];
         foreach ($xml->SearchResults->records->rec as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());
         }
-        return array(
+        return [
             'docs' => $finalDocs,
             'offset' => 0,
             'total' => (integer)$xml->Hits
-        );
+        ];
     }
 }

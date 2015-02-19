@@ -154,7 +154,7 @@ class Innovative extends AbstractBase implements
         // beginning tr tag.
         $rows = preg_split("/<tr([^>]*)>/", $r);
         $count = 0;
-        $keys = array_pad(array(), 10, "");
+        $keys = array_pad([], 10, "");
 
         $loc_col_name      = $this->config['OPAC']['location_column'];
         $call_col_name     = $this->config['OPAC']['call_no_column'];
@@ -164,7 +164,7 @@ class Innovative extends AbstractBase implements
         $stat_avail        = $this->config['OPAC']['status_avail'];
         $stat_due          = $this->config['OPAC']['status_due'];
 
-        $ret = array();
+        $ret = [];
         foreach ($rows as $row) {
             // Split up the contents of the row based on the th or td tag, excluding
             // the tags themselves.
@@ -251,7 +251,7 @@ class Innovative extends AbstractBase implements
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         $count = 0;
         foreach ($ids as $id) {
             $items[$count] = $this->getStatus($id);
@@ -296,7 +296,7 @@ class Innovative extends AbstractBase implements
     public function getPurchaseHistory($id)
     {
         // TODO
-        return array();
+        return [];
     }
 
     /**
@@ -380,13 +380,13 @@ class Innovative extends AbstractBase implements
             // released under the GPL
             $api_contents = trim(strip_tags($result));
             $api_array_lines = explode("\n", $api_contents);
-            $api_data = array('PBARCODE' => false);
+            $api_data = ['PBARCODE' => false];
 
             foreach ($api_array_lines as $api_line) {
                 $api_line = str_replace("p=", "peq", $api_line);
                 $api_line_arr = explode("=", $api_line);
-                $regex_match = array("/\[(.*?)\]/","/\s/","/#/");
-                $regex_replace = array('','','NUM');
+                $regex_match = ["/\[(.*?)\]/","/\s/","/#/"];
+                $regex_replace = ['','','NUM'];
                 $key = trim(
                     preg_replace($regex_match, $regex_replace, $api_line_arr[0])
                 );
@@ -401,7 +401,7 @@ class Innovative extends AbstractBase implements
             }
 
             // return patron info
-            $ret = array();
+            $ret = [];
             $ret['id'] = $api_data['PBARCODE']; // or should I return patron id num?
             $names = explode(',', $api_data['PATRNNAME']);
             $ret['firstname'] = $names[1];
