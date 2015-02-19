@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'WorldCat\\Discovery\\' => array($vendorDir . '/worldcat/discovery/src'),
+    'Behat\\Mink\\' => array($vendorDir . '/behat/mink/src'),
 );
