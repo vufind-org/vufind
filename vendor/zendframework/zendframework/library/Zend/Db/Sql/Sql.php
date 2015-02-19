@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -129,17 +129,23 @@ class Sql
         return $statement;
     }
 
+    /**
+     * Get sql string using platform or sql object
+     *
+     * @param SqlInterface      $sqlObject
+     * @param PlatformInterface $platform
+     *
+     * @return string
+     */
     public function getSqlStringForSqlObject(SqlInterface $sqlObject, PlatformInterface $platform = null)
     {
         $platform = ($platform) ?: $this->adapter->getPlatform();
 
         if ($this->sqlPlatform) {
             $this->sqlPlatform->setSubject($sqlObject);
-            $sqlString = $this->sqlPlatform->getSqlString($platform);
-        } else {
-            $sqlString = $sqlObject->getSqlString($platform);
+            return $this->sqlPlatform->getSqlString($platform);
         }
 
-        return $sqlString;
+        return $sqlObject->getSqlString($platform);
     }
 }

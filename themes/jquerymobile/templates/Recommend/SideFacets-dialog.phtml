@@ -21,7 +21,7 @@
                     ? str_pad('', 4 * $thisFacet['level'] * 6, '&nbsp;', STR_PAD_LEFT)
                     : ''; ?>
                 <? if ($thisFacet['isApplied']): ?>
-                  <li data-icon="check" class="checked"><a href="" data-rel="back"><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="ui-li-count"><?=$this->localizedNumber($thisFacet['count'])?></span></li>
+                  <li data-icon="check" class="checked"><a rel="external" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>" data-rel="external"><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="ui-li-count"><?=$this->localizedNumber($thisFacet['count'])?></span></li>
                 <? else: ?>
                   <li><a rel="external" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="ui-li-count"><?=$this->localizedNumber($thisFacet['count'])?></span></li>
                 <? endif; ?>

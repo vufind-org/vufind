@@ -73,7 +73,7 @@ class Locator
      *
      * @return string
      */
-    public static function getBaseConfigPath($filename, $path='config/vufind')
+    public static function getBaseConfigPath($filename, $path = 'config/vufind')
     {
         return APPLICATION_PATH . '/' . $path . '/' . $filename;
     }

@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Search;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -110,7 +109,7 @@ class BackendManager implements SharedListenerAggregateInterface
                 )
             );
         }
-        if (!$backend instanceOf BackendInterface) {
+        if (!$backend instanceof BackendInterface) {
             throw new UnexpectedValueException(
                 sprintf(
                     'Object of class %s does not implement the expected interface',
@@ -163,7 +162,7 @@ class BackendManager implements SharedListenerAggregateInterface
             $listener = $events->attach(
                 'VuFind\Search',
                 'resolve',
-                array($this, 'onResolve')
+                [$this, 'onResolve']
             );
             $this->listeners->attach($events, $listener);
         }

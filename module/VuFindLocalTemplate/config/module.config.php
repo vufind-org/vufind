@@ -1,7 +1,7 @@
 <?php
 namespace VuFindLocalTemplate\Module\Configuration;
 
-$config = array(
-);
+$config = [
+];
 
 return $config;

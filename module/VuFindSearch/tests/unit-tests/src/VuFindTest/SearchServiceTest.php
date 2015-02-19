@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest;
 
 use VuFindSearch\Service;
@@ -35,6 +34,7 @@ use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Feature\RandomInterface;
+use VuFindSearch\Feature\SimilarInterface;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Response\AbstractRecordCollection;
 
@@ -68,7 +68,7 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $response = 'fake';
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $backend->expects($this->once())->method('retrieve')
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->returnValue($response));
@@ -91,7 +91,7 @@ class SearchServiceTest extends TestCase
     {
         $service = $this->getService();
         $backend = $this->getBackend();
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $exception = new BackendException('test');
         $backend->expects($this->once())->method('retrieve')
             ->with($this->equalTo('bar'), $this->equalTo($params))
@@ -138,8 +138,8 @@ class SearchServiceTest extends TestCase
 
         $service = $this->getService();
         $backend = $this->getBackend();
-        $params = new ParamBag(array('x' => 'y'));
-        $ids = array('bar', 'baz');
+        $params = new ParamBag(['x' => 'y']);
+        $ids = ['bar', 'baz'];
         $backend->expects($this->once(0))->method('retrieveBatch')
             ->with($this->equalTo($ids), $this->equalTo($params))
             ->will($this->returnValue('response'));
@@ -170,7 +170,7 @@ class SearchServiceTest extends TestCase
         $response2 = $this->getRecordCollection();
         $response2->expects($this->once())->method('first')
             ->will($this->returnValue($mockRecord));
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $backend->expects($this->at(0))->method('retrieve')
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->returnValue($response1));
@@ -182,7 +182,7 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('pre'), $this->equalTo($backend));
         $em->expects($this->at(1))->method('trigger')
             ->with($this->equalTo('post'), $this->equalTo($response1));
-        $service->retrieveBatch('foo', array('bar', 'baz'), $params);
+        $service->retrieveBatch('foo', ['bar', 'baz'], $params);
     }
 
     /**
@@ -199,9 +199,9 @@ class SearchServiceTest extends TestCase
 
         $service = $this->getService();
         $backend = $this->getBackend();
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $exception = new BackendException('test');
-        $ids = array('bar', 'baz');
+        $ids = ['bar', 'baz'];
         $backend->expects($this->once(0))->method('retrieveBatch')
             ->with($this->equalTo($ids), $this->equalTo($params))
             ->will($this->throwException($exception));
@@ -228,7 +228,7 @@ class SearchServiceTest extends TestCase
     {
         $service = $this->getService();
         $backend = $this->getBackend();
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $exception = new BackendException('test');
         $backend->expects($this->once())->method('retrieve')
             ->with($this->equalTo('bar'), $this->equalTo($params))
@@ -238,7 +238,7 @@ class SearchServiceTest extends TestCase
             ->with($this->equalTo('pre'), $this->equalTo($backend));
         $em->expects($this->at(1))->method('trigger')
             ->with($this->equalTo('error'), $this->equalTo($exception));
-        $service->retrieveBatch('foo', array('bar'), $params);
+        $service->retrieveBatch('foo', ['bar'], $params);
     }
 
     /**
@@ -254,7 +254,7 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $response = $this->getRecordCollection();
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         $backend->expects($this->once())->method('random')
@@ -290,7 +290,7 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $exception = new BackendException('test');
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         $backend->expects($this->once())->method('random')
@@ -324,7 +324,7 @@ class SearchServiceTest extends TestCase
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
 
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
@@ -339,7 +339,7 @@ class SearchServiceTest extends TestCase
         $responseForZero->expects($this->once())->method('getTotal')
             ->will($this->returnValue($total));
 
-        for ($i=1; $i<$limit+1; $i++) {
+        for ($i = 1; $i<$limit+1; $i++) {
             $response = $this->getRecordCollection();
             $response->expects($this->any())->method('first')
                 ->will($this->returnValue($this->getMock('VuFindSearch\Response\RecordInterface')));
@@ -374,7 +374,7 @@ class SearchServiceTest extends TestCase
         $backend = $this->getBackend();
         $responseForZero = $this->getRecordCollection();
 
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
@@ -412,7 +412,7 @@ class SearchServiceTest extends TestCase
         $responseForZero = $this->getRecordCollection();
         $response = $this->getRecordCollection();
 
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
@@ -457,7 +457,7 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $exception = new BackendException('test');
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // Exception at first search
@@ -487,7 +487,7 @@ class SearchServiceTest extends TestCase
         $responseForZero = $this->getRecordCollection();
         $exception = new BackendException('test');
 
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
@@ -530,7 +530,7 @@ class SearchServiceTest extends TestCase
         $response = $this->getRecordCollection();
         $exception = new BackendException('test');
 
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $query = new Query('test');
 
         // First Search Grabs 0 records but uses get total method
@@ -570,7 +570,7 @@ class SearchServiceTest extends TestCase
         $service = $this->getService();
         $backend = $this->getBackend();
         $response = 'fake';
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $backend->expects($this->once())->method('similar')
             ->with($this->equalTo('bar'), $this->equalTo($params))
             ->will($this->returnValue($response));
@@ -583,6 +583,20 @@ class SearchServiceTest extends TestCase
 
         // Put the backend back to the default:
         unset($this->backend);
+    }
+
+    /**
+     * Test similar action on bad backend.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage foo does not support similar()
+     */
+    public function testSimilarOnNonSupportingBackend()
+    {
+        $service = $this->getService();
+        $params = new ParamBag(['x' => 'y']);
+        $service->similar('foo', 'bar', $params);
     }
 
     /**
@@ -599,7 +613,7 @@ class SearchServiceTest extends TestCase
 
         $service = $this->getService();
         $backend = $this->getBackend();
-        $params = new ParamBag(array('x' => 'y'));
+        $params = new ParamBag(['x' => 'y']);
         $exception = new BackendException('test');
         $backend->expects($this->once())->method('similar')
             ->with($this->equalTo('bar'), $this->equalTo($params))
@@ -658,7 +672,7 @@ class SearchServiceTest extends TestCase
     protected function getService()
     {
         $em = $this->getMock('Zend\EventManager\EventManagerInterface');
-        $service = $this->getMock('VuFindSearch\Service', array('resolve'));
+        $service = $this->getMock('VuFindSearch\Service', ['resolve']);
         $service->expects($this->any())->method('resolve')
             ->will($this->returnValue($this->getBackend()));
         $service->setEventManager($em);
@@ -690,9 +704,8 @@ abstract class TestClassForRetrieveBatchInterface
  * Stub class to test similar.
  */
 abstract class TestBackendClassForSimilar
-    implements BackendInterface
+    implements BackendInterface, SimilarInterface
 {
-    abstract function similar();
 }
 
 /**

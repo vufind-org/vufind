@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ZfcRbac\\' => array($vendorDir . '/zf-commons/zfc-rbac/src'),
     'Zend\\' => array($vendorDir . '/zendframework/zendframework/library'),
     'ZendXml' => array($vendorDir . '/zendframework/zendxml/library'),
     'ZendService\\Amazon\\' => array($vendorDir . '/zendframework/zendservice-amazon/library'),
@@ -18,6 +19,7 @@ return array(
     'Symfony\\Component\\EventDispatcher\\' => array($vendorDir . '/symfony/event-dispatcher'),
     'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
     'SerialsSolutions' => array($vendorDir . '/serialssolutions/summon'),
+    'Rbac\\' => array($vendorDir . '/zfr/rbac/src'),
     'ProxyManager\\' => array($vendorDir . '/ocramius/proxy-manager/src'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
     'OCLC' => array($vendorDir . '/OCLC/Auth/src'),
@@ -26,5 +28,4 @@ return array(
     'Guzzle' => array($vendorDir . '/guzzle/guzzle/src'),
     'EasyRdf_' => array($vendorDir . '/easyrdf/easyrdf/lib'),
     'Behat\\Mink\\Driver' => array($vendorDir . '/behat/mink-zombie-driver/src'),
-    'Behat\\Mink' => array($vendorDir . '/behat/mink/src'),
 );

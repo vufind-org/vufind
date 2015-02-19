@@ -39,11 +39,21 @@ namespace VuFind\Db\Table;
 class User extends Gateway
 {
     /**
-     * Constructor
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
      */
-    public function __construct()
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     */
+    public function __construct(\Zend\Config\Config $config)
     {
         parent::__construct('user', 'VuFind\Db\Row\User');
+        $this->config = $config;
     }
 
     /**
@@ -57,7 +67,7 @@ class User extends Gateway
      */
     public function getByUsername($username, $create = true)
     {
-        $row = $this->select(array('username' => $username))->current();
+        $row = $this->select(['username' => $username])->current();
         if ($create && empty($row)) {
             $row = $this->createRow();
             $row->username = $username;
@@ -75,7 +85,7 @@ class User extends Gateway
      */
     public function getByEmail($email)
     {
-        $row = $this->select(array('email' => $email))->current();
+        $row = $this->select(['email' => $email])->current();
         return $row;
     }
 
@@ -95,6 +105,18 @@ class User extends Gateway
     }
 
     /**
+     * Construct the prototype for rows.
+     *
+     * @return object
+     */
+    protected function initializeRowPrototype()
+    {
+        $prototype = parent::initializeRowPrototype();
+        $prototype->setConfig($this->config);
+        return $prototype;
+    }
+
+    /**
      * Return a row by a verification hash
      *
      * @param string $hash User-unique hash string
@@ -103,7 +125,7 @@ class User extends Gateway
      */
     public function getByVerifyHash($hash)
     {
-        $row = $this->select(array('verify_hash' => $hash))->current();
+        $row = $this->select(['verify_hash' => $hash])->current();
         return $row;
     }
 }

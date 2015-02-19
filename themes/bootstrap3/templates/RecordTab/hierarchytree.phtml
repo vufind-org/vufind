@@ -51,7 +51,9 @@
       <input type="hidden" value="<?=isset($this->treeContext) ? $this->treeContext : 'Record'?>" class="hiddenContext" />
       <? if ($this->layout()->getTemplate() != 'layout/lightbox'): ?>
         <noscript>
-          <?=$this->tab->renderTree($this->url('home'))?>
+          <ul class="fa-ul">
+            <?=$this->tab->renderTree($this->url('home'))?>
+          </ul>
         </noscript>
       <? endif; ?>
     </div>

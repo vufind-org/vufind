@@ -37,7 +37,6 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-
 abstract class RecommendDeferredTestCase extends TestCase
 {
     /**
@@ -57,7 +56,7 @@ abstract class RecommendDeferredTestCase extends TestCase
             $results = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters(array());
+            $request = new \Zend\StdLib\Parameters([]);
         }
         $mod = new $class();
         $mod->setConfig($settings);

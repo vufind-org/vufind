@@ -68,10 +68,10 @@ trait StorageRetrievalRequestsTrait
         $catalog = $this->getILS();
         $checkRequests = $catalog->checkFunction(
             'StorageRetrievalRequests',
-            array(
+            [
                 'id' => $driver->getUniqueID(),
                 'patron' => $patron
-            )
+            ]
         );
         if (!$checkRequests) {
             return $this->redirectToRecord();
@@ -96,7 +96,7 @@ trait StorageRetrievalRequestsTrait
         // Send various values to the view so we can build the form:
         $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
         $extraFields = isset($checkRequests['extraFields'])
-            ? explode(":", $checkRequests['extraFields']) : array();
+            ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
         if (!is_null($this->params()->fromPost('placeStorageRetrievalRequest'))) {
@@ -104,7 +104,7 @@ trait StorageRetrievalRequestsTrait
             // if successful, we will redirect and can stop here.
 
             // Add Patron Data to Submitted Data
-            $details = $gatheredDetails + array('patron' => $patron);
+            $details = $gatheredDetails + ['patron' => $patron];
 
             // Attempt to place the hold:
             $function = (string)$checkRequests['function'];
@@ -147,7 +147,7 @@ trait StorageRetrievalRequestsTrait
         }
 
         $view = $this->createViewModel(
-            array(
+            [
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
                 'defaultPickup' => $defaultPickup,
@@ -156,7 +156,7 @@ trait StorageRetrievalRequestsTrait
                 'defaultRequiredDate' => $defaultRequired,
                 'helpText' => isset($checkRequests['helpText'])
                     ? $checkRequests['helpText'] : null
-            )
+            ]
         );
         $view->setTemplate('record/storageretrievalrequest');
         return $view;

@@ -123,7 +123,7 @@ class Params extends \VuFind\Search\Solr\Params
             ->get('Collection');
         return isset($searchSettings->Recommend)
             ? $searchSettings->Recommend->toArray()
-            : array('side' => array('CollectionSideFacets:Facets::Collection:true'));
+            : ['side' => ['CollectionSideFacets:Facets::Collection:true']];
     }
 
     /**

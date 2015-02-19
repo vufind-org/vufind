@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -107,6 +108,7 @@ class Factory
             // here may interfere with UI rendering. If we ignore it now, it will
             // still get handled appropriately later in processing.
             error_log($e->getMessage());
+            $catalog = null; // avoid unset variable notice
         }
 
         // Load remaining dependencies:

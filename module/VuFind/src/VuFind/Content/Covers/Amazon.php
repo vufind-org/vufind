@@ -40,6 +40,8 @@ use ZendService\Amazon\Amazon as AmazonService;
 class Amazon extends \VuFind\Content\AbstractCover
     implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Associate ID
      *
@@ -53,13 +55,6 @@ class Amazon extends \VuFind\Content\AbstractCover
      * @var string
      */
     protected $secret;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
 
     /**
      * Constructor
@@ -90,18 +85,6 @@ class Amazon extends \VuFind\Content\AbstractCover
     }
 
     /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
-
-    /**
      * Get image URL for a particular API key and set of IDs (or false if invalid).
      *
      * @param string $key  API key
@@ -114,9 +97,9 @@ class Amazon extends \VuFind\Content\AbstractCover
     public function getUrl($key, $size, $ids)
     {
         try {
-            $params = array(
+            $params = [
                 'ResponseGroup' => 'Images', 'AssociateTag' => $this->associate
-            );
+            ];
             // TODO: add support for 13-digit ISBNs (requires extra lookup)
             $isbn = isset($ids['isbn']) ? $ids['isbn']->get10() : false;
             if (!$isbn) {

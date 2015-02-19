@@ -123,7 +123,7 @@ class HierarchyTree extends AbstractBase
             $this->treeList
                 = $this->getRecordDriver()->tryMethod('getHierarchyTrees');
             if (null === $this->treeList) {
-                $this->treeList = array();
+                $this->treeList = [];
             }
         }
         return $this->treeList;

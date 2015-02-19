@@ -59,22 +59,22 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     public function testReadArray()
     {
-        $cfg = array('Test' => array('key1' => 'val1', 'key2' => 'val2'));
-        $comments = array(
-            'sections' => array(
-                'Test' => array(
+        $cfg = ['Test' => ['key1' => 'val1', 'key2' => 'val2']];
+        $comments = [
+            'sections' => [
+                'Test' => [
                     'before' => "; section head\n",
                     'inline' => '; inline',
-                    'settings' => array(
-                        'key1' => array(
+                    'settings' => [
+                        'key1' => [
                             'before' => "; key head\n",
                             'inline' => '; key inline'
-                        )
-                    )
-                )
-            ),
+                        ]
+                    ]
+                ]
+            ],
             'after' => "; the end\n"
-        );
+        ];
         $target = "; section head\n[Test]\t; inline\n; key head\n"
             . "key1             = \"val1\"\t; key inline\n"
             . "key2             = \"val2\"\n; the end\n";
@@ -101,7 +101,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     public function testStandardArray()
     {
-        $cfg = array('Test' => array('test' => array('val1', 'val2')));
+        $cfg = ['Test' => ['test' => ['val1', 'val2']]];
         $test = new Writer('fake.ini', $cfg);
         $expected = "[Test]\ntest[]           = \"val1\"\n"
             . "test[]           = \"val2\"\n\n";
@@ -116,7 +116,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     public function testOutOfOrderArray()
     {
-        $cfg = array('Test' => array('test' => array(6 => 'val1', 8 => 'val2')));
+        $cfg = ['Test' => ['test' => [6 => 'val1', 8 => 'val2']]];
         $test = new Writer('fake.ini', $cfg);
         $expected = "[Test]\ntest[6]          = \"val1\"\n"
             . "test[8]          = \"val2\"\n\n";
@@ -130,9 +130,9 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     public function testAssocArray()
     {
-        $cfg = array(
-            'Test' => array('test' => array('key1' => 'val1', 'key2' => 'val2'))
-        );
+        $cfg = [
+            'Test' => ['test' => ['key1' => 'val1', 'key2' => 'val2']]
+        ];
         $test = new Writer('fake.ini', $cfg);
         $expected = "[Test]\ntest['key1']     = \"val1\"\n"
             . "test['key2']     = \"val2\"\n\n";

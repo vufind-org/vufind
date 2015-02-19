@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\WorldCat;
 
 use VuFindSearch\Backend\WorldCat\QueryBuilder;
@@ -53,10 +52,10 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
         // @codingStandardsIgnoreStart
-        $tests = array(
-            array('basic', '(srw.au all "john smith" OR srw.pn all "john smith" OR srw.cn all "john smith")'),
-            array('advanced', '((srw.ti all "bananas" OR srw.se all "bananas")) AND ((srw.su all "oranges") OR (srw.su all "apples")) NOT (((srw.se all "pears")))')
-        );
+        $tests = [
+            ['basic', '(srw.au all "john smith" OR srw.pn all "john smith" OR srw.cn all "john smith")'],
+            ['advanced', '((srw.ti all "bananas" OR srw.se all "bananas")) AND ((srw.su all "oranges") OR (srw.su all "apples")) NOT (((srw.se all "pears")))']
+        ];
         // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();

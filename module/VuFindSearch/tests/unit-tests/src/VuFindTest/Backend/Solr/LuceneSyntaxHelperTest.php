@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
@@ -53,22 +52,22 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
 
         // Set up an array of expected inputs and outputs:
         // @codingStandardsIgnoreStart
-        $tests = array(
-            array('this not that', 'this NOT that'),        // capitalize not
-            array('this and that', 'this AND that'),        // capitalize and
-            array('this or that', 'this OR that'),          // capitalize or
-            array('apples and oranges (not that)', 'apples AND oranges (NOT that)'),
-            array('"this not that"', '"this not that"'),    // do not capitalize inside quotes
-            array('"this and that"', '"this and that"'),    // do not capitalize inside quotes
-            array('"this or that"', '"this or that"'),      // do not capitalize inside quotes
-            array('"apples and oranges (not that)"', '"apples and oranges (not that)"'),
-            array('this AND that', 'this AND that'),        // don't mess up existing caps
-            array('and and and', 'and AND and'),
-            array('andornot noted andy oranges', 'andornot noted andy oranges'),
-            array('(this or that) and (apples not oranges)', '(this OR that) AND (apples NOT oranges)'),
-            array('this aNd that', 'this AND that'),        // strange capitalization of AND
-            array('this nOt that', 'this NOT that'),        // strange capitalization of NOT
-        );
+        $tests = [
+            ['this not that', 'this NOT that'],        // capitalize not
+            ['this and that', 'this AND that'],        // capitalize and
+            ['this or that', 'this OR that'],          // capitalize or
+            ['apples and oranges (not that)', 'apples AND oranges (NOT that)'],
+            ['"this not that"', '"this not that"'],    // do not capitalize inside quotes
+            ['"this and that"', '"this and that"'],    // do not capitalize inside quotes
+            ['"this or that"', '"this or that"'],      // do not capitalize inside quotes
+            ['"apples and oranges (not that)"', '"apples and oranges (not that)"'],
+            ['this AND that', 'this AND that'],        // don't mess up existing caps
+            ['and and and', 'and AND and'],
+            ['andornot noted andy oranges', 'andornot noted andy oranges'],
+            ['(this or that) and (apples not oranges)', '(this OR that) AND (apples NOT oranges)'],
+            ['this aNd that', 'this AND that'],        // strange capitalization of AND
+            ['this nOt that', 'this NOT that'],        // strange capitalization of NOT
+        ];
         // @codingStandardsIgnoreEnd
 
         // Test all the operations:
@@ -112,23 +111,23 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
         $in = 'this or that and the other not everything else (not me)';
         $this->assertEquals(
             'this OR that AND the other NOT everything else (NOT me)',
-            $lh->capitalizeBooleans($in, array('AND', 'OR', 'NOT'))
+            $lh->capitalizeBooleans($in, ['AND', 'OR', 'NOT'])
         );
         $this->assertEquals(
             'this OR that and the other NOT everything else (NOT me)',
-            $lh->capitalizeBooleans($in, array('OR', 'NOT'))
+            $lh->capitalizeBooleans($in, ['OR', 'NOT'])
         );
         $this->assertEquals(
             'this or that and the other NOT everything else (NOT me)',
-            $lh->capitalizeBooleans($in, array('NOT'))
+            $lh->capitalizeBooleans($in, ['NOT'])
         );
         $this->assertEquals(
             'this or that AND the other not everything else (not me)',
-            $lh->capitalizeBooleans($in, array('AND'))
+            $lh->capitalizeBooleans($in, ['AND'])
         );
         $this->assertEquals(
             'this OR that and the other not everything else (not me)',
-            $lh->capitalizeBooleans($in, array('OR'))
+            $lh->capitalizeBooleans($in, ['OR'])
         );
     }
 
@@ -143,31 +142,31 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
 
         // Default behavior: do not capitalize:
         $this->assertEquals(
-            array(), $this->callMethod($lh, 'getBoolsToCap')
+            [], $this->callMethod($lh, 'getBoolsToCap')
         );
 
         // Test "capitalize all":
         $lh = new LuceneSyntaxHelper(false);
         $this->assertEquals(
-            array('AND', 'OR', 'NOT'), $this->callMethod($lh, 'getBoolsToCap')
+            ['AND', 'OR', 'NOT'], $this->callMethod($lh, 'getBoolsToCap')
         );
 
         // Test selective capitalization:
         $lh = new LuceneSyntaxHelper(' not ');
         $this->assertEquals(
-            array('AND', 'OR'), $this->callMethod($lh, 'getBoolsToCap')
+            ['AND', 'OR'], $this->callMethod($lh, 'getBoolsToCap')
         );
         $lh = new LuceneSyntaxHelper('NOT');
         $this->assertEquals(
-            array('AND', 'OR'), $this->callMethod($lh, 'getBoolsToCap')
+            ['AND', 'OR'], $this->callMethod($lh, 'getBoolsToCap')
         );
         $lh = new LuceneSyntaxHelper('AND,OR');
         $this->assertEquals(
-            array('NOT'), $this->callMethod($lh, 'getBoolsToCap')
+            ['NOT'], $this->callMethod($lh, 'getBoolsToCap')
         );
         $lh = new LuceneSyntaxHelper('and, or');
         $this->assertEquals(
-            array('NOT'), $this->callMethod($lh, 'getBoolsToCap')
+            ['NOT'], $this->callMethod($lh, 'getBoolsToCap')
         );
     }
 
@@ -209,26 +208,26 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
 
         // Set up an array of expected inputs and outputs:
         // @codingStandardsIgnoreStart
-        $tests = array(
-            array('"{a to b}"', '"{a to b}"'),              // don't capitalize inside quotes
-            array('"[a to b]"', '"[a to b]"'),
-            array('[a to b]', '([a TO b] OR [A TO B])'),    // expand alphabetic cases
-            array('[a TO b]', '([a TO b] OR [A TO B])'),
-            array('[a To b]', '([a TO b] OR [A TO B])'),
-            array('[a tO b]', '([a TO b] OR [A TO B])'),
-            array('{a to b}', '({a TO b} OR {A TO B})'),
-            array('{a TO b}', '({a TO b} OR {A TO B})'),
-            array('{a To b}', '({a TO b} OR {A TO B})'),
-            array('{a tO b}', '({a TO b} OR {A TO B})'),
-            array('[1900 to 1910]', '[1900 TO 1910]'),      // don't expand numeric cases
-            array('[1900 TO 1910]', '[1900 TO 1910]'),
-            array('{1900 to 1910}', '{1900 TO 1910}'),
-            array('{1900 TO 1910}', '{1900 TO 1910}'),
-            array('[a      to      b]', '([a TO b] OR [A TO B])'),   // handle extra spaces
+        $tests = [
+            ['"{a to b}"', '"{a to b}"'],              // don't capitalize inside quotes
+            ['"[a to b]"', '"[a to b]"'],
+            ['[a to b]', '([a TO b] OR [A TO B])'],    // expand alphabetic cases
+            ['[a TO b]', '([a TO b] OR [A TO B])'],
+            ['[a To b]', '([a TO b] OR [A TO B])'],
+            ['[a tO b]', '([a TO b] OR [A TO B])'],
+            ['{a to b}', '({a TO b} OR {A TO B})'],
+            ['{a TO b}', '({a TO b} OR {A TO B})'],
+            ['{a To b}', '({a TO b} OR {A TO B})'],
+            ['{a tO b}', '({a TO b} OR {A TO B})'],
+            ['[1900 to 1910]', '[1900 TO 1910]'],      // don't expand numeric cases
+            ['[1900 TO 1910]', '[1900 TO 1910]'],
+            ['{1900 to 1910}', '{1900 TO 1910}'],
+            ['{1900 TO 1910}', '{1900 TO 1910}'],
+            ['[a      to      b]', '([a TO b] OR [A TO B])'],   // handle extra spaces
             // special case for timestamps:
-            array('[1900-01-01t00:00:00z to 1900-12-31t23:59:59z]', '[1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z]'),
-            array('{1900-01-01T00:00:00Z       TO   1900-12-31T23:59:59Z}', '{1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z}')
-        );
+            ['[1900-01-01t00:00:00z to 1900-12-31t23:59:59z]', '[1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z]'],
+            ['{1900-01-01T00:00:00Z       TO   1900-12-31T23:59:59Z}', '{1900-01-01T00:00:00Z TO 1900-12-31T23:59:59Z}']
+        ];
         // @codingStandardsIgnoreEnd
 
         // Test all the operations:

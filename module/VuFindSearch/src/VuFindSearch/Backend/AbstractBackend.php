@@ -30,9 +30,7 @@ namespace VuFindSearch\Backend;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use VuFindSearch\Backend\BackendInterface;
-
-use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
+use Zend\Log\LoggerAwareInterface;
 
 /**
  * Abstract backend.
@@ -45,19 +43,14 @@ use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
  */
 abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Record collection factory.
      *
      * @var RecordCollectionFactoryInterface
      */
     protected $collectionFactory = null;
-
-    /**
-     * Logger, if any.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger = null;
 
     /**
      * Backend identifier.
@@ -76,18 +69,6 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
     public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
-    }
-
-    /**
-     * Set the Logger.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -138,21 +119,5 @@ abstract class AbstractBackend implements BackendInterface, LoggerAwareInterface
             $record->setSourceIdentifier($this->identifier);
         }
         return $response;
-    }
-
-    /**
-     * Send a message to the logger.
-     *
-     * @param string $level   Log level
-     * @param string $message Log message
-     * @param array  $context Log context
-     *
-     * @return void
-     */
-    protected function log($level, $message, array $context = array())
-    {
-        if ($this->logger) {
-            $this->logger->$level($message, $context);
-        }
     }
 }

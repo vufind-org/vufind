@@ -26,11 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr\Document;
-
-use VuFindSearch\Backend\Solr\Record\SerializableRecordInterface;
-use VuFindSearch\Response\RecordInterface;
 
 use XMLWriter;
 
@@ -47,14 +43,14 @@ class OptimizeDocument extends AbstractDocument
 {
 
     /**
-     * waitFlush attribute value
+     * Value for waitFlush attribute
      *
      * @var boolean
      */
     protected $waitFlush;
 
     /**
-     * waitSearch attribute value.
+     * Value for waitSearch attribute
      *
      * @var boolean
      */

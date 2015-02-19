@@ -42,12 +42,14 @@ use VuFind\I18n\Translator\TranslatorAwareInterface,
  */
 abstract class Options implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Available sort options
      *
      * @var array
      */
-    protected $sortOptions = array();
+    protected $sortOptions = [];
 
     /**
      * Overall default sort option
@@ -61,7 +63,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $defaultSortByHandler = array();
+    protected $defaultSortByHandler = [];
 
     /**
      * RSS-specific sort option
@@ -82,14 +84,14 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $advancedHandlers = array();
+    protected $advancedHandlers = [];
 
     /**
      * Basic search handlers
      *
      * @var array
      */
-    protected $basicHandlers = array();
+    protected $basicHandlers = [];
 
     /**
      * Special advanced facet settings
@@ -110,7 +112,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $defaultFilters = array();
+    protected $defaultFilters = [];
 
     /**
      * Default limit option
@@ -124,7 +126,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $limitOptions = array();
+    protected $limitOptions = [];
 
     /**
      * Default view option
@@ -138,14 +140,14 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $viewOptions = array();
+    protected $viewOptions = [];
 
     /**
      * Facet settings
      *
      * @var array
      */
-    protected $translatedFacets = array();
+    protected $translatedFacets = [];
 
     /**
      * Spelling setting
@@ -159,14 +161,14 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $shards = array();
+    protected $shards = [];
 
     /**
      * Default selected shards
      *
      * @var array
      */
-    protected $defaultSelectedShards = array();
+    protected $defaultSelectedShards = [];
 
     /**
      * Should we present shard checkboxes to the user?
@@ -204,13 +206,6 @@ abstract class Options implements TranslatorAwareInterface
     protected $facetsIni = 'facets';
 
     /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -219,7 +214,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        $this->limitOptions = array($this->defaultLimit);
+        $this->limitOptions = [$this->defaultLimit];
     }
 
     /**
@@ -728,31 +723,5 @@ abstract class Options implements TranslatorAwareInterface
         unset($vars['translator']);
         $vars = array_keys($vars);
         return $vars;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Options
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    public function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 }

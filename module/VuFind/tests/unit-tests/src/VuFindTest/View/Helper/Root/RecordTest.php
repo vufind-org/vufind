@@ -94,12 +94,12 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
-            ->with($this->equalTo(array('format' => 'foo')))
-            ->will($this->returnValue(array('bar' => 'baz')));
+            ->with($this->equalTo(['format' => 'foo']))
+            ->will($this->returnValue(['bar' => 'baz']));
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(array('bar' => 'baz')));
+            ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'), array(), $context
+            $this->loadRecordFixture('testbug1.json'), [], $context
         );
         $record->getView()->expects($this->at(0))->method('render')
             ->with($this->equalTo('RecordDriver/SolrMarc/format-class.phtml'))
@@ -173,19 +173,19 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
         $driver->expects($this->once())->method('getContainingLists')
             ->with($this->equalTo(42))
-            ->will($this->returnValue(array(1, 2, 3)));
+            ->will($this->returnValue([1, 2, 3]));
         $user = new \StdClass;
         $user->id = 42;
-        $expected = array(
-            'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => array(1, 2, 3)
-        );
+        $expected = [
+            'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3]
+        ];
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
             ->with($this->equalTo($expected))
-            ->will($this->returnValue(array('bar' => 'baz')));
+            ->will($this->returnValue(['bar' => 'baz']));
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(array('bar' => 'baz')));
-        $record = $this->getRecord($driver, array(), $context);
+            ->with($this->equalTo(['bar' => 'baz']));
+        $record = $this->getRecord($driver, [], $context);
         $record->getView()->expects($this->at(0))->method('render')
             ->will($this->throwException(new RuntimeException('boom')));
         $record->getView()->expects($this->at(1))->method('render')
@@ -203,15 +203,15 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
-            array(
+            [
                 'CleanISBN' => '0123456789',
                 'LCCN' => '12345',
-                'OCLC' => array('1', '2'),
-            )
+                'OCLC' => ['1', '2'],
+            ]
         );
         $record = $this->getRecord($driver);
         $this->assertEquals(
-            array('ISBN0123456789', 'LCCN12345', 'OCLC1', 'OCLC2'),
+            ['ISBN0123456789', 'LCCN12345', 'OCLC1', 'OCLC2'],
             $record->getPreviewIds()
         );
     }
@@ -241,13 +241,13 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     public function testGetPreviews()
     {
         $driver = $this->loadRecordFixture('testbug1.json');
-        $config = new \Zend\Config\Config(array('foo' => 'bar'));
+        $config = new \Zend\Config\Config(['foo' => 'bar']);
         $context = $this->getMockContext();
         $context->expects($this->exactly(2))->method('apply')
             ->with($this->equalTo(compact('driver', 'config')))
-            ->will($this->returnValue(array('bar' => 'baz')));
+            ->will($this->returnValue(['bar' => 'baz']));
         $context->expects($this->exactly(2))->method('restore')
-            ->with($this->equalTo(array('bar' => 'baz')));
+            ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord($driver, $config, $context);
         $record->getView()->expects($this->at(0))->method('render')
             ->with($this->equalTo('RecordDriver/SolrMarc/previewdata.phtml'))
@@ -267,12 +267,12 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
-            ->with($this->equalTo(array('lookfor' => 'foo')))
-            ->will($this->returnValue(array('bar' => 'baz')));
+            ->with($this->equalTo(['lookfor' => 'foo']))
+            ->will($this->returnValue(['bar' => 'baz']));
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(array('bar' => 'baz')));
+            ->with($this->equalTo(['bar' => 'baz']));
         $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'), array(), $context
+            $this->loadRecordFixture('testbug1.json'), [], $context
         );
         $record->getView()->expects($this->at(0))->method('render')
             ->with($this->equalTo('RecordDriver/SolrMarc/link-bar.phtml'))
@@ -289,13 +289,13 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         $context = $this->getMockContext();
         $context->expects($this->at(1))->method('renderInContext')
-            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(array('id' => 'VuFind|000105196', 'count' => 0, 'prefix' => 'bar')))
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'VuFind|000105196', 'count' => 0, 'prefix' => 'bar']))
             ->will($this->returnValue('success'));
         $context->expects($this->at(2))->method('renderInContext')
-            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(array('id' => 'VuFind|000105196', 'count' => 1, 'prefix' => 'bar')))
+            ->with($this->equalTo('record/checkbox.phtml'), $this->equalTo(['id' => 'VuFind|000105196', 'count' => 1, 'prefix' => 'bar']))
             ->will($this->returnValue('success'));
         $record = $this->getRecord(
-            $this->loadRecordFixture('testbug1.json'), array(), $context
+            $this->loadRecordFixture('testbug1.json'), [], $context
         );
         // We run the test twice to ensure that checkbox incrementing works properly:
         $this->assertEquals('success', $record->getCheckbox('bar', 'foo'));
@@ -314,10 +314,10 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
             ->with($this->equalTo(compact('driver', 'tab')))
-            ->will($this->returnValue(array('bar' => 'baz')));
+            ->will($this->returnValue(['bar' => 'baz']));
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(array('bar' => 'baz')));
-        $record = $this->getRecord($driver, array(), $context);
+            ->with($this->equalTo(['bar' => 'baz']));
+        $record = $this->getRecord($driver, [], $context);
         $record->getView()->expects($this->at(0))->method('render')
             ->with($this->equalTo('RecordTab/description.phtml'))
             ->will($this->returnValue('success'));
@@ -336,7 +336,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($record->getQrCode('core'));
 
         // Disabled mode:
-        $config = array('QRCode' => array('showInCore' => false));
+        $config = ['QRCode' => ['showInCore' => false]];
         $record = $this->getRecord($this->loadRecordFixture('testbug1.json'), $config);
         $this->assertFalse($record->getQrCode('core'));
 
@@ -354,16 +354,16 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         $driver = $this->loadRecordFixture('testbug1.json');
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
-            ->with($this->equalTo(array('driver' => $driver, 'extra' => 'xyzzy')))
-            ->will($this->returnValue(array('bar' => 'baz')));
+            ->with($this->equalTo(['driver' => $driver, 'extra' => 'xyzzy']))
+            ->will($this->returnValue(['bar' => 'baz']));
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(array('bar' => 'baz')));
-        $config = array('QRCode' => array('showInCore' => true));
+            ->with($this->equalTo(['bar' => 'baz']));
+        $config = ['QRCode' => ['showInCore' => true]];
         $record = $this->getRecord($driver, $config, $context, '2:qrcode-show');
         $record->getView()->expects($this->at(0))->method('render')
             ->with($this->equalTo('RecordDriver/SolrMarc/core-qrcode.phtml'))
             ->will($this->returnValue('success'));
-        $this->assertEquals('http://foo/bar?text=success&level=L&size=3&margin=4', $record->getQrCode('core', array('extra' => 'xyzzy')));
+        $this->assertEquals('http://foo/bar?text=success&level=L&size=3&margin=4', $record->getQrCode('core', ['extra' => 'xyzzy']));
     }
 
     /**
@@ -375,7 +375,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         // No thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
-        $driver->setRawData(array('Thumbnail' => false));
+        $driver->setRawData(['Thumbnail' => false]);
         $record = $this->getRecord($driver);
         $this->assertFalse($record->getThumbnail());
     }
@@ -389,7 +389,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         // Hard-coded thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
-        $driver->setRawData(array('Thumbnail' => 'http://foo/this.jpg'));
+        $driver->setRawData(['Thumbnail' => 'http://foo/this.jpg']);
         $record = $this->getRecord($driver);
         $this->assertEquals('http://foo/this.jpg', $record->getThumbnail());
     }
@@ -403,8 +403,8 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         // Hard-coded thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
-        $driver->setRawData(array('Thumbnail' => array('bar' => 'baz')));
-        $record = $this->getRecord($driver, array(), null, '1:cover-show');
+        $driver->setRawData(['Thumbnail' => ['bar' => 'baz']]);
+        $record = $this->getRecord($driver, [], null, '1:cover-show');
         $this->assertEquals('http://foo/bar?bar=baz', $record->getThumbnail());
     }
 
@@ -418,7 +418,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
         // Hard-coded thumbnail:
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $record = $this->getRecord($driver);
-        $this->assertEquals(array(), $record->getLinkDetails());
+        $this->assertEquals([], $record->getLinkDetails());
     }
 
     /**
@@ -430,17 +430,17 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
-            array(
-                'URLs' => array(
-                    array('route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link')
-                )
-            )
+            [
+                'URLs' => [
+                    ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link']
+                ]
+            ]
         );
-        $record = $this->getRecord($driver, array(), null, '1:fake-route', 2);
+        $record = $this->getRecord($driver, [], null, '1:fake-route', 2);
         $this->assertEquals(
-            array(
-                array('route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link', 'url' => 'http://proxy?_=http://server-foo/baz')
-            ),
+            [
+                ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link', 'url' => 'http://proxy?_=http://server-foo/baz']
+            ],
             $record->getLinkDetails()
         );
     }
@@ -456,17 +456,17 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
-            array(
-                'URLs' => array(
-                    array('bad' => 'junk')
-                )
-            )
+            [
+                'URLs' => [
+                    ['bad' => 'junk']
+                ]
+            ]
         );
         $record = $this->getRecord($driver);
         $this->assertEquals(
-            array(
-                array('route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link', 'url' => 'http://proxy?_=http://server-foo/baz')
-            ),
+            [
+                ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link', 'url' => 'http://proxy?_=http://server-foo/baz']
+            ],
             $record->getLinkDetails()
         );
     }
@@ -480,15 +480,15 @@ class RecordTest extends \PHPUnit_Framework_TestCase
     {
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         $driver->setRawData(
-            array(
-                'URLs' => array(
-                    array('route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link')
-                )
-            )
+            [
+                'URLs' => [
+                    ['route' => 'fake-route', 'prefix' => 'http://proxy?_=', 'desc' => 'a link']
+                ]
+            ]
         );
-        $record = $this->getRecord($driver, array(), null, '1:fake-route', 2);
+        $record = $this->getRecord($driver, [], null, '1:fake-route', 2);
         $this->assertEquals(
-            array('http://proxy?_=http://server-foo/baz'), $record->getUrlList()
+            ['http://proxy?_=http://server-foo/baz'], $record->getUrlList()
         );
     }
 
@@ -503,7 +503,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      *
      * @return Record
      */
-    protected function getRecord($driver, $config = array(), $context = null, $url = false, $serverurl = false)
+    protected function getRecord($driver, $config = [], $context = null, $url = false, $serverurl = false)
     {
         if (null === $context) {
             $context = $this->getMockContext();

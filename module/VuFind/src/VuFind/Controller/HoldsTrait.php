@@ -68,10 +68,10 @@ trait HoldsTrait
         $catalog = $this->getILS();
         $checkHolds = $catalog->checkFunction(
             'Holds',
-            array(
+            [
                 'id' => $driver->getUniqueID(),
                 'patron' => $patron
-            )
+            ]
         );
         if (!$checkHolds) {
             return $this->redirectToRecord();
@@ -94,10 +94,10 @@ trait HoldsTrait
         // Send various values to the view so we can build the form:
         $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
         $requestGroups = $catalog->checkCapability(
-            'getRequestGroups', array($driver->getUniqueID(), $patron)
-        ) ? $catalog->getRequestGroups($driver->getUniqueID(), $patron) : array();
+            'getRequestGroups', [$driver->getUniqueID(), $patron]
+        ) ? $catalog->getRequestGroups($driver->getUniqueID(), $patron) : [];
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
-            ? explode(":", $checkHolds['extraHoldFields']) : array();
+            ? explode(":", $checkHolds['extraHoldFields']) : [];
 
         // Process form submissions if necessary:
         if (!is_null($this->params()->fromPost('placeHold'))) {
@@ -119,7 +119,7 @@ trait HoldsTrait
                 // if successful, we will redirect and can stop here.
 
                 // Add Patron Data to Submitted Data
-                $holdDetails = $gatheredDetails + array('patron' => $patron);
+                $holdDetails = $gatheredDetails + ['patron' => $patron];
 
                 // Attempt to place the hold:
                 $function = (string)$checkHolds['function'];
@@ -127,13 +127,13 @@ trait HoldsTrait
 
                 // Success: Go to Display Holds
                 if (isset($results['success']) && $results['success'] == true) {
-                    $msg = array(
+                    $msg = [
                         'html' => true,
                         'msg' => 'hold_place_success_html',
-                        'tokens' => array(
+                        'tokens' => [
                             '%%url%%' => $this->url()->fromRoute('myresearch-holds')
-                        ),
-                    );
+                        ],
+                    ];
                     $this->flashMessenger()->setNamespace('info')->addMessage($msg);
                     return $this->redirectToRecord('#top');
                 } else {
@@ -177,7 +177,7 @@ trait HoldsTrait
                 || $gatheredDetails['level'] != 'copy');
 
         $view = $this->createViewModel(
-            array(
+            [
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
                 'defaultPickup' => $defaultPickup,
@@ -189,7 +189,7 @@ trait HoldsTrait
                 'requestGroupNeeded' => $requestGroupNeeded,
                 'helpText' => isset($checkHolds['helpText'])
                     ? $checkHolds['helpText'] : null
-            )
+            ]
         );
         $view->setTemplate('record/hold');
         return $view;

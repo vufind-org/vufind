@@ -59,7 +59,7 @@ class Amazon extends \VuFind\Content\AbstractAmazon
         $endpoint = 'webservices.amazon.com';
         $requestURI = '/onca/xml';
         $isbn = $this->getIsbn10($isbnObj);
-        $params = array(
+        $params = [
             'AWSAccessKeyId' => $key,
             'ItemId' => $isbn,
             'Service' => 'AWSECommerceService',
@@ -68,13 +68,13 @@ class Amazon extends \VuFind\Content\AbstractAmazon
             'Version' => '2010-10-10',
             'Timestamp' => gmdate('Y-m-d\TH:i:s\Z'),
             'AssociateTag' => $this->associate
-        );
+        ];
 
         // Alphabetize the parameters:
         ksort($params);
 
         // URL encode and assemble the parameters:
-        $encodedParams = array();
+        $encodedParams = [];
         foreach ($params as $key => $value) {
             $encodedParams[] = rawurlencode($key) . '=' . rawurlencode($value);
         }
@@ -93,10 +93,10 @@ class Amazon extends \VuFind\Content\AbstractAmazon
         $data = !$result->isSuccess()
             ? false : simplexml_load_string($result->getBody());
         if (!$data) {
-            return array();
+            return [];
         }
 
-        $result = array();
+        $result = [];
         $reviews = isset($data->Items->Item->CustomerReviews->Review)
             ? $data->Items->Item->CustomerReviews->Review : null;
         if (!empty($reviews)) {
@@ -120,13 +120,13 @@ class Amazon extends \VuFind\Content\AbstractAmazon
                 // CSS for iframe (explicit dimensions needed for IE
                 // compatibility -- using 100% has bad results there):
                 $css = "width: 700px; height: 500px;";
-                $result[] = array(
+                $result[] = [
                     'Rating' => '',
                     'Summary' => '',
                     'Copyright' => $this->getCopyright($isbn),
                     'Content' =>
                         "<iframe style=\"{$css}\" src=\"{$iframe}\"></iframe>"
-                );
+                ];
             }
         }
 

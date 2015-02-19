@@ -136,10 +136,10 @@ class CAS extends AbstractBase
         $user = $this->getUserTable()->getByUsername($username);
 
         // Has the user configured attributes to use for populating the user table?
-        $attribsToCheck = array(
+        $attribsToCheck = [
             "cat_username", "cat_password", "email", "lastname", "firstname",
             "college", "major", "home_library"
-        );
+        ];
         foreach ($attribsToCheck as $attribute) {
             if (isset($cas->$attribute)) {
                 $value = $casauth->getAttribute($cas->$attribute);
@@ -152,7 +152,7 @@ class CAS extends AbstractBase
         }
 
         // Save credentials if applicable:
-        if (!empty ($catPassword) && !empty($user->cat_username)) {
+        if (!empty($catPassword) && !empty($user->cat_username)) {
             $user->saveCredentials($user->cat_username, $catPassword);
         }
 
@@ -235,7 +235,7 @@ class CAS extends AbstractBase
     protected function getRequiredAttributes()
     {
         // Special case -- store username as-is to establish return array:
-        $sortedUserAttributes = array();
+        $sortedUserAttributes = [];
 
         // Now extract user attribute values:
         $cas = $this->getConfig()->CAS;
@@ -248,7 +248,7 @@ class CAS extends AbstractBase
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
                     throw new AuthException(
-                        "User attribute value of " . $value. " is missing!"
+                        "User attribute value of " . $value . " is missing!"
                     );
                 }
             }

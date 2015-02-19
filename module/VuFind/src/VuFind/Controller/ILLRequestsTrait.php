@@ -68,10 +68,10 @@ trait ILLRequestsTrait
         $catalog = $this->getILS();
         $checkRequests = $catalog->checkFunction(
             'ILLRequests',
-            array(
+            [
                 'id' => $driver->getUniqueID(),
                 'patron' => $patron
-            )
+            ]
         );
         if (!$checkRequests) {
             return $this->redirectToRecord();
@@ -96,7 +96,7 @@ trait ILLRequestsTrait
         // Send various values to the view so we can build the form:
 
         $extraFields = isset($checkRequests['extraFields'])
-            ? explode(":", $checkRequests['extraFields']) : array();
+            ? explode(":", $checkRequests['extraFields']) : [];
 
         // Process form submissions if necessary:
         if (!is_null($this->params()->fromPost('placeILLRequest'))) {
@@ -104,7 +104,7 @@ trait ILLRequestsTrait
             // if successful, we will redirect and can stop here.
 
             // Add Patron Data to Submitted Data
-            $details = $gatheredDetails + array('patron' => $patron);
+            $details = $gatheredDetails + ['patron' => $patron];
 
             // Attempt to place the hold:
             $function = (string)$checkRequests['function'];
@@ -151,7 +151,7 @@ trait ILLRequestsTrait
         $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
 
         $view = $this->createViewModel(
-            array(
+            [
                 'gatheredDetails' => $gatheredDetails,
                 'pickupLibraries' => $pickupLibraries,
                 'pickupLocations' => $pickupLocations,
@@ -160,7 +160,7 @@ trait ILLRequestsTrait
                 'defaultRequiredDate' => $defaultRequired,
                 'helpText' => isset($checkRequests['helpText'])
                     ? $checkRequests['helpText'] : null
-            )
+            ]
         );
         $view->setTemplate('record/illrequest');
         return $view;

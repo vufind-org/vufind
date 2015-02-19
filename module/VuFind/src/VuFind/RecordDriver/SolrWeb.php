@@ -50,7 +50,7 @@ class SolrWeb extends SolrDefault
     public function __construct($mainConfig = null, $recordConfig = null,
         $searchSettings = null
     ) {
-        $this->preferredSnippetFields = array('description', 'fulltext');
+        $this->preferredSnippetFields = ['description', 'fulltext'];
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
 

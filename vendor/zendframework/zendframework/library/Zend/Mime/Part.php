@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -27,7 +27,6 @@ class Part
     protected $content;
     protected $isStream = false;
     protected $filters = array();
-
 
     /**
      * create a new Mime Part.
@@ -60,7 +59,7 @@ class Part
      */
     public function isStream()
     {
-      return $this->isStream;
+        return $this->isStream;
     }
 
     /**
@@ -68,7 +67,7 @@ class Part
      * reading the content. very useful for large file attachments.
      *
      * @param string $EOL
-     * @return stream
+     * @return resource
      * @throws Exception\RuntimeException if not a stream or unable to append filter
      */
     public function getEncodedStream($EOL = Mime::LINEEND)
@@ -129,9 +128,14 @@ class Part
     public function getContent($EOL = Mime::LINEEND)
     {
         if ($this->isStream) {
-            $encodedStream = $this->getEncodedStream($EOL);
+            $encodedStream         = $this->getEncodedStream($EOL);
             $encodedStreamContents = stream_get_contents($encodedStream);
-            rewind($encodedStream);
+            $streamMetaData        = stream_get_meta_data($encodedStream);
+
+            if (isset($streamMetaData['seekable']) && $streamMetaData['seekable']) {
+                rewind($encodedStream);
+            }
+
             return $encodedStreamContents;
         }
         return Mime::encode($this->content, $this->encoding, $EOL);

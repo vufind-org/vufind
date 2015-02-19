@@ -171,7 +171,7 @@ class ResultFeed extends AbstractHelper
         }
         $author = $record->tryMethod('getPrimaryAuthor');
         if (!empty($author)) {
-            $entry->addAuthor(array('name' => $author));
+            $entry->addAuthor(['name' => $author]);
         }
         $formats = $record->tryMethod('getFormats');
         if (is_array($formats)) {

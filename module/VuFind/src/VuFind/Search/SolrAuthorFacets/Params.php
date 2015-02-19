@@ -51,7 +51,7 @@ class Params extends \VuFind\Search\Solr\Params
         parent::initFromRequest($request);
 
         // Force custom facet settings:
-        $this->facetConfig = array();
+        $this->facetConfig = [];
         $this->addFacet('authorStr');
         $this->setFacetOffset(($this->getPage() - 1) * $this->getLimit());
         $this->setFacetLimit($this->getLimit() * 10);
@@ -96,7 +96,7 @@ class Params extends \VuFind\Search\Solr\Params
     protected function getRecommendationSettings()
     {
         // No recommendations here:
-        return array();
+        return [];
     }
 
     /**

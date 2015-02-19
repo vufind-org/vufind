@@ -69,10 +69,11 @@
         "vufind-org/vufindcode": "*",
         "vufind-org/vufindhttp": "*",
         "worldcat/discovery" : ">=0.15.0",
-        "zendframework/zendframework": "2.2.7",
+        "zendframework/zendframework": "2.3.5",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",
-        "zendframework/zendservice-recaptcha": "2.*"
+        "zendframework/zendservice-recaptcha": "2.*",
+        "zf-commons/zfc-rbac": "~2.4"
     },
     "require-dev": {
         "behat/mink": "1.6.*",

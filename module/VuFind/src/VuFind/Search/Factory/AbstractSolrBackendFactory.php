@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\InjectHighlightingListener;
@@ -181,9 +180,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Spellcheck
         if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
             if (isset($config->Spelling->simple) && $config->Spelling->simple) {
-                $dictionaries = array('basicSpell');
+                $dictionaries = ['basicSpell'];
             } else {
-                $dictionaries = array('default', 'basicSpell');
+                $dictionaries = ['default', 'basicSpell'];
             }
             $spellingListener = new InjectSpellingListener($backend, $dictionaries);
             $spellingListener->attach($events);
@@ -250,7 +249,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function getHiddenFilters()
     {
         $search = $this->config->get($this->searchConfig);
-        $hf = array();
+        $hf = [];
 
         // Hidden filters
         if (isset($search->HiddenFilters)) {
@@ -278,16 +277,16 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $config = $this->config->get('config');
 
-        $handlers = array(
-            'select' => array(
+        $handlers = [
+            'select' => [
                 'fallback' => true,
-                'defaults' => array('fl' => '*,score'),
-                'appends'  => array('fq' => array()),
-            ),
-            'term' => array(
-                'functions' => array('terms'),
-            ),
-        );
+                'defaults' => ['fl' => '*,score'],
+                'appends'  => ['fq' => []],
+            ],
+            'term' => [
+                'functions' => ['terms'],
+            ],
+        ];
 
         foreach ($this->getHiddenFilters() as $filter) {
             array_push($handlers['select']['appends']['fq'], $filter);

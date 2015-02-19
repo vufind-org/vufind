@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -58,7 +57,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testRetrieve()
     {
         $resp = $this->loadResponse('single-record');
-        $conn = $this->getConnectorMock(array('retrieve'));
+        $conn = $this->getConnectorMock(['retrieve']);
         $conn->expects($this->once())
             ->method('retrieve')
             ->will($this->returnValue($resp->getBody()));
@@ -81,14 +80,14 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testRetrieveBatch()
     {
         $resp = $this->loadResponse('multi-record');
-        $conn = $this->getConnectorMock(array('search'));
+        $conn = $this->getConnectorMock(['search']);
         $conn->expects($this->once())
             ->method('search')
             ->will($this->returnValue($resp->getBody()));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
-        $coll = $back->retrieveBatch(array('12345', '125456', '234547'));
+        $coll = $back->retrieveBatch(['12345', '125456', '234547']);
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
@@ -110,7 +109,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testSimilar()
     {
         $resp = $this->loadResponse('morelikethis');
-        $conn = $this->getConnectorMock(array('similar'));
+        $conn = $this->getConnectorMock(['similar']);
         $conn->expects($this->once())
             ->method('similar')
             ->will($this->returnValue($resp->getBody()));
@@ -133,7 +132,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testTerms()
     {
         $resp = $this->loadResponse('terms');
-        $conn = $this->getConnectorMock(array('query'));
+        $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
             ->will($this->returnValue($resp->getBody()));
@@ -154,7 +153,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testBadJson()
     {
-        $conn = $this->getConnectorMock(array('query'));
+        $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
             ->will($this->returnValue('bad {'));
@@ -174,7 +173,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     {
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
-        $back->retrieve('foobar', new ParamBag(array('wt' => array('xml'))));
+        $back->retrieve('foobar', new ParamBag(['wt' => ['xml']]));
     }
 
     /**
@@ -189,7 +188,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     {
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
-        $back->retrieve('foobar', new ParamBag(array('json.nl' => array('bad'))));
+        $back->retrieve('foobar', new ParamBag(['json.nl' => ['bad']]));
     }
 
     /**
@@ -261,15 +260,15 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testRandom()
     {
         // Test that random sort parameter is added:
-        $params = $this->getMock('VuFindSearch\ParamBag', array('set'));
+        $params = $this->getMock('VuFindSearch\ParamBag', ['set']);
         $params->expects($this->once())->method('set')
             ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
         $back = $this->getMock(
-            'VuFindSearch\Backend\Solr\Backend', array('search', 'injectResponseWriter'),
-            array($this->getConnectorMock())
+            'VuFindSearch\Backend\Solr\Backend', ['search', 'injectResponseWriter'],
+            [$this->getConnectorMock()]
         );
         $back->expects($this->once())->method('injectResponseWriter');
         $back->expects($this->once())->method('search')
@@ -288,7 +287,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     protected function runRefineExceptionCall($msg)
     {
-        $conn = $this->getConnectorMock(array('query'));
+        $conn = $this->getConnectorMock(['query']);
         $e = new RemoteErrorException($msg, 400, new \Zend\Http\Response());
         $conn->expects($this->once())->method('query')
             ->with($this->equalTo('browse'))
@@ -322,9 +321,9 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return Connector
      */
-    protected function getConnectorMock(array $mock = array())
+    protected function getConnectorMock(array $mock = [])
     {
-        $map = new HandlerMap(array('select' => array('fallback' => true)));
-        return $this->getMock('VuFindSearch\Backend\Solr\Connector', $mock, array('http://example.org/', $map));
+        $map = new HandlerMap(['select' => ['fallback' => true]]);
+        return $this->getMock('VuFindSearch\Backend\Solr\Connector', $mock, ['http://example.org/', $map]);
     }
 }

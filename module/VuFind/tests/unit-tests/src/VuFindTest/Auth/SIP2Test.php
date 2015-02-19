@@ -64,12 +64,12 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
     public function getAuthConfig()
     {
         $config = new Config(
-            array(
+            [
                 'host' => 'my.fake.host',
                 'port' => '6002'
-            ), true
+            ], true
         );
-        return new Config(array('MultiAuth' => $config), true);
+        return new Config(['MultiAuth' => $config], true);
     }
 
     /**
@@ -80,11 +80,11 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
      *
      * @return \Zend\Http\Request
      */
-    protected function getLoginRequest($overrides = array())
+    protected function getLoginRequest($overrides = [])
     {
-        $post = $overrides + array(
+        $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
-        );
+        ];
         $request = new \Zend\Http\Request();
         $request->setPost(new \Zend\Stdlib\Parameters($post));
         return $request;
@@ -98,7 +98,7 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankUsername()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('username' => ''));
+        $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
 
@@ -110,7 +110,7 @@ class SIP2Test extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankPassword()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('password' => ''));
+        $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }
 }
