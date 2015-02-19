@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Pazpar2\Response;
 
 use VuFindSearch\Response\RecordInterface;
@@ -92,7 +91,7 @@ class Record implements RecordInterface
     }
 
     /**
-     * getXML()
+     * Get the XML document representation
      *
      * @return SimpleXMLElement
      */

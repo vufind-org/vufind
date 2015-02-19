@@ -75,6 +75,17 @@ abstract class AbstractBase implements TabInterface
     }
 
     /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax()
+    {
+        // Assume we can load by AJAX; subclasses may add rules.
+        return true;
+    }
+
+    /**
      * Set the record driver
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver

@@ -39,8 +39,6 @@ namespace VuFind\Related;
 class WorldCatEditions extends Editions
 {
     /**
-     * init
-     *
      * Establishes base settings for making recommendations.
      *
      * @param string                            $settings Settings from config.ini
@@ -79,7 +77,7 @@ class WorldCatEditions extends Editions
      */
     protected function getQueryParts($driver)
     {
-        $parts = array();
+        $parts = [];
         $oclcNum = $driver->tryMethod('getCleanOCLCNum');
         if (!empty($oclcNum)) {
             $oclcList = $this->wcUtils->getXOCLCNUM($oclcNum);

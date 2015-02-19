@@ -74,8 +74,6 @@ class WorldCatTerms implements RecommendInterface
     }
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -90,8 +88,6 @@ class WorldCatTerms implements RecommendInterface
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -109,8 +105,6 @@ class WorldCatTerms implements RecommendInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -142,7 +136,7 @@ class WorldCatTerms implements RecommendInterface
         // this will make it easier to only display content in the template if
         // we have something worth displaying.
         if (is_array($terms)) {
-            $desiredKeys = array('exact', 'broader', 'narrower');
+            $desiredKeys = ['exact', 'broader', 'narrower'];
             foreach ($terms as $key => $value) {
                 if (empty($value) || !in_array($key, $desiredKeys)) {
                     unset($terms[$key]);

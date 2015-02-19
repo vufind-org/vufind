@@ -6,130 +6,124 @@
  * it will be applied during indexing.
  */
 import org.marc4j.marc.Record;
-import org.solrmarc.tools.CallNumUtils;
 
 // define the base level indexer so that its methods can be called from the script.
 // note that the SolrIndexer code will set this value before the script methods are called.
 org.solrmarc.index.SolrIndexer indexer = null;
 
 /**
- * Extract the call number label from a record
- * @param record
- * @return Call number label
- */
+* Extract the call number label from a record
+* @param record
+* @return Call number label
+*/
 public String getFullCallNumber(Record record) {
 
-    return(getFullCallNumber(record, "099ab:090ab:050ab"));
+return(getFullCallNumber(record, "099ab:090ab:050ab"));
 }
 
 /**
- * Extract the call number label from a record
- * @param record
- * @return Call number label
- */
+* Extract the call number label from a record
+* @param record
+* @return Call number label
+*/
 public String getFullCallNumber(Record record, String fieldSpec) {
 
-    String val = indexer.getFirstFieldVal(record, fieldSpec);
+String val = indexer.getFirstFieldVal(record, fieldSpec);
 
-    if (val != null) {
-        return val.toUpperCase().replaceAll(" ", "");
-    } else {
-        return val;
-    }
+if (val != null) {
+return val.toUpperCase().replaceAll(" ", "");
+} else {
+return val;
+}
 }
 
 /**
- * Extract the call number label from a record
- * @param record
- * @return Call number label
- */
+* Extract the call number label from a record
+* @param record
+* @return Call number label
+*/
 public String getCallNumberLabel(Record record) {       
 
-    return getCallNumberLabel(record, "090a:050a");
+return getCallNumberLabel(record, "090a:050a");
 }
 
 /**
- * Extract the call number label from a record
- * @param record
- * @return Call number label
- */
+* Extract the call number label from a record
+* @param record
+* @return Call number label
+*/
 public String getCallNumberLabel(Record record, String fieldSpec) {
-    
-    String val = indexer.getFirstFieldVal(record, fieldSpec);
-    
-    if (val != null) {
-        int dotPos = val.indexOf(".");
-        if (dotPos > 0) {
-            val = val.substring(0, dotPos);
-        }
-        return val.toUpperCase();
-    } else {
-        return val;
-    }
+
+String val = indexer.getFirstFieldVal(record, fieldSpec);
+
+if (val != null) {
+int dotPos = val.indexOf(".");
+if (dotPos > 0) {
+    val = val.substring(0, dotPos);
+}
+return val.toUpperCase();
+} else {
+return val;
+}
 }
 
 /**
- * Extract the subject component of the call number
- *
- * Can return null
- *
- * @param record
- * @return Call number label
- */
+* Extract the subject component of the call number
+*
+* Can return null
+*
+* @param record
+* @return Call number label
+*/
 public String getCallNumberSubject(Record record) {
 
-    return(getCallNumberSubject(record, "090a:050a"));
+return(getCallNumberSubject(record, "090a:050a"));
 }
 
 /**
- * Extract the subject component of the call number
- *
- * Can return null
- *
- * @param record
- * @return Call number label
- */
+* Extract the subject component of the call number
+*
+* Can return null
+*
+* @param record
+* @return Call number label
+*/
 public String getCallNumberSubject(Record record, String fieldSpec) {
 
-    String val = indexer.getFirstFieldVal(record, fieldSpec);
+String val = indexer.getFirstFieldVal(record, fieldSpec);
 
-    if (val != null) {
-        String [] callNumberSubject = val.toUpperCase().split("[^A-Z]+");
-        if (callNumberSubject.length > 0)
-        {
-            return callNumberSubject[0];
-        }
-    }
-    return(null);
+if (val != null) {
+String [] callNumberSubject = val.toUpperCase().split("[^A-Z]+");
+if (callNumberSubject.length > 0)
+{
+    return callNumberSubject[0];
+}
+}
+return(null);
 }
 
 /**
- * Normalize a single LCCN
- * @param record
- * @param fieldSpec
- * @return String Normalized LCCN
- */
+* Normalize a single LCCN
+* @param record
+* @param fieldSpec
+* @return String Normalized LCCN
+*/
 public String getFullCallNumberNormalized(Record record) {
 
-    return(getFullCallNumberNormalized(record, "099ab:090ab:050ab"));
+return(getFullCallNumberNormalized(record, "099ab:090ab:050ab"));
 }
 
 /**
- * Normalize a single LCCN
- * @param record
- * @param fieldSpec
- * @return String Normalized LCCN
- */
+* Normalize a single LCCN
+* @param record
+* @param fieldSpec
+* @return String Normalized LCCN
+*/
 public String getFullCallNumberNormalized(Record record, String fieldSpec) {
 
     if (fieldSpec != null) {
         String cn = indexer.getFirstFieldVal(record, fieldSpec);
-        try {
-            return CallNumUtils.getLCShelfkey(cn, null);
-        } catch(Exception e) {
-            // Don't bail out of indexing just because of a weird call number!
-            //System.out.println("getFullCallNumberNormalized error: " + e);
-        }
+        return (new LCCallNumber(cn)).getShelfKey();
     }
     // If we got this far, we couldn't find a valid value:
     return null;

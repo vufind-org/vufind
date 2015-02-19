@@ -74,7 +74,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             $className = get_parent_class($className);
             if (empty($className)) {
                 // No setting found...
-                return array();
+                return [];
             }
         }
     }
@@ -92,7 +92,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     public function getTabsForRecord(\VuFind\RecordDriver\AbstractBase $driver,
         array $config, $request = null
     ) {
-        $tabs = array();
+        $tabs = [];
         foreach ($this->getTabServiceNames($driver, $config) as $tabKey => $svc) {
             if (!$this->has($svc)) {
                 continue;

@@ -131,7 +131,7 @@ class Cart
      */
     public function emptyCart()
     {
-        $this->items = array();
+        $this->items = [];
         $this->save();
     }
 
@@ -145,7 +145,7 @@ class Cart
      */
     public function addItem($item)
     {
-        return $this->addItems(array($item));
+        return $this->addItems([$item]);
     }
 
     /**
@@ -165,9 +165,9 @@ class Cart
         $this->save();
         if ($total > $this->maxSize) {
             $notAdded = $total-$this->maxSize;
-            return array('success' => false, 'notAdded' => $notAdded);
+            return ['success' => false, 'notAdded' => $notAdded];
         }
-        return array('success' => true);
+        return ['success' => true];
     }
 
     /**
@@ -179,7 +179,7 @@ class Cart
      */
     public function removeItems($items)
     {
-        $results = array();
+        $results = [];
         foreach ($this->items as $id) {
             if (!in_array($id, $items)) {
                 $results[] = $id;
@@ -261,7 +261,7 @@ class Cart
                 }
             }
         }
-        $this->items = $items ? $items : array();
+        $this->items = $items ? $items : [];
     }
 
     /**
@@ -272,8 +272,8 @@ class Cart
      */
     protected function save()
     {
-        $sources = array();
-        $ids = array();
+        $sources = [];
+        $ids = [];
 
         foreach ($this->items as $item) {
             // Break apart the source and the ID:

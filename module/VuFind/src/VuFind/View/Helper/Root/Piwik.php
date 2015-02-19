@@ -206,11 +206,11 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getSearchCustomVars($results)
     {
         if (!$this->customVars) {
-            return array();
+            return [];
         }
 
-        $facets = array();
-        $facetTypes = array();
+        $facets = [];
+        $facetTypes = [];
         $params = $results->getParams();
         foreach ($params->getFilterList() as $filterType => $filters) {
             $facetTypes[] = $filterType;
@@ -221,7 +221,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         $facets = implode("\t", $facets);
         $facetTypes = implode("\t", $facetTypes);
 
-        return array(
+        return [
             'Facets' => $facets,
             'FacetTypes' => $facetTypes,
             'SearchType' => $params->getSearchType(),
@@ -230,7 +230,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
             'Page' => $params->getPage(),
             'Limit' => $params->getLimit(),
             'View' => $params->getView()
-        );
+        ];
     }
 
     /**
@@ -263,11 +263,11 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         }
         $institutions = $institutions;
 
-        return array(
+        return [
             'RecordFormat' => $formats,
             'RecordData' => "$id|$author|$title",
             'RecordInstitution' => $institutions
-        );
+        ];
     }
 
     /**
@@ -277,7 +277,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
      */
     protected function getGenericCustomVars()
     {
-        return array();
+        return [];
     }
 
     /**

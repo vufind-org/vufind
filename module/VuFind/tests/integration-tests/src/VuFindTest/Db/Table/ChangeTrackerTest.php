@@ -116,6 +116,6 @@ class ChangeTrackerTest extends \VuFindTest\Unit\DbTestCase
         $this->assertEquals($row->last_record_change, '2012-01-17 20:46:10');
 
         // Clean up after ourselves:
-        $tracker->delete(array('core' => $core));
+        $tracker->delete(['core' => $core]);
     }
 }

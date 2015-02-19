@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -131,6 +131,8 @@ abstract class AbstractHelper extends BaseAbstractHelper
         'onvolumechange'     => true,
         'onwaiting'          => true,
         'role'               => true,
+        'aria-labelled-by'   => true,
+        'aria-described-by'  => true,
         'spellcheck'         => true,
         'style'              => true,
         'tabindex'           => true,
@@ -181,6 +183,7 @@ abstract class AbstractHelper extends BaseAbstractHelper
     public function setEncoding($encoding)
     {
         $this->getEscapeHtmlHelper()->setEncoding($encoding);
+        $this->getEscapeHtmlAttrHelper()->setEncoding($encoding);
         return $this;
     }
 

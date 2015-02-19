@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Search\Solr\V4;
 
 use VuFindSearch\Backend\Exception\HttpErrorException;
@@ -68,7 +67,7 @@ class ErrorListener extends AbstractErrorListener
         $backend = $event->getParam('backend_instance');
         if ($this->listenForBackend($backend)) {
             $error = $event->getTarget();
-            if ($error instanceOf HttpErrorException) {
+            if ($error instanceof HttpErrorException) {
                 $response = $error->getResponse();
 
                 $body = $response->getBody();
@@ -99,7 +98,7 @@ class ErrorListener extends AbstractErrorListener
      */
     protected function analyzeJsonErrorResponse($body)
     {
-        $tags = array();
+        $tags = [];
         if (isset($body->error->msg)) {
             $reason = $body->error->msg;
             if (stristr($reason, 'org.apache.solr.search.SyntaxError')

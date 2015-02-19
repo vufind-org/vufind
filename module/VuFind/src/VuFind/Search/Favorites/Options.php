@@ -48,10 +48,10 @@ class Options extends \VuFind\Search\Base\Options
         parent::__construct($configLoader);
 
         $this->defaultSort = 'title';
-        $this->sortOptions = array(
+        $this->sortOptions = [
             'title' => 'sort_title', 'author' => 'sort_author',
             'year DESC' => 'sort_year', 'year' => 'sort_year asc'
-        );
+        ];
     }
 
     /**

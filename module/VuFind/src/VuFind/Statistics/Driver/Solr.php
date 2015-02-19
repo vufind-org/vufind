@@ -98,19 +98,19 @@ class Solr extends AbstractBase
      *
      * @return array
      */
-    public function getFullList($field, $value = array('value' => '[* TO *]'))
+    public function getFullList($field, $value = ['value' => '[* TO *]'])
     {
-        $query = new Query($field.':'.$value['value']);
+        $query = new Query($field . ':' . $value['value']);
         $params = new ParamBag();
         $params->add('fl', $field);
         $start = 0;
         $limit = 1000;
-        $data = array();
+        $data = [];
         do {
             $response = $this->solrBackend->search($query, $start, $limit, $params);
             $records = $response->getRecords();
             foreach ($records as $doc) {
-                $data[] = array($field => $doc->$field);
+                $data[] = [$field => $doc->$field];
             }
             $start += $limit;
         } while (count($records) > 0);
@@ -134,7 +134,7 @@ class Solr extends AbstractBase
         $params->add('group.field', 'session');
         $start = 0;
         $limit = 1000;
-        $hashes = array();
+        $hashes = [];
         do {
             $response = $this->solrBackend->search($query, $start, $limit, $params);
             $groups = $response->getGroups();
@@ -142,7 +142,7 @@ class Solr extends AbstractBase
                 if ($version) {
                     // Version specific
                     $browser = $group['doclist']['docs'][0]['browser']
-                        .' '.$group['doclist']['docs'][0]['browserVersion'];
+                        . ' ' . $group['doclist']['docs'][0]['browserVersion'];
                     if (isset($hashes[$browser])) {
                         $hashes[$browser] ++;
                     } elseif (count($hashes) < $limit) {
@@ -159,17 +159,17 @@ class Solr extends AbstractBase
             }
             $start += $limit;
         } while (count($groups['session']['groups']) > 0);
-        $solrBrowsers = array();
-        foreach ($hashes as $browser=>$count) {
-            $newBrowser = array(
+        $solrBrowsers = [];
+        foreach ($hashes as $browser => $count) {
+            $newBrowser = [
                 'browserName' => $browser,
                 'count' => $count
-            );
+            ];
             // Insert sort (limit to listLength)
-            for ($i=0;$i<$listLength-1 && $i<count($solrBrowsers);$i++) {
+            for ($i = 0;$i<$listLength-1 && $i<count($solrBrowsers);$i++) {
                 if ($count > $solrBrowsers[$i]['count']) {
                     // Insert in order
-                    array_splice($solrBrowsers, $i, 0, array($newBrowser));
+                    array_splice($solrBrowsers, $i, 0, [$newBrowser]);
                     continue 2; // Skip the append after this loop
                 }
             }

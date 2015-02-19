@@ -97,14 +97,13 @@ class OutlineGenerator
      * @param object|bool $cache     Cache object (or false to disable caching)
      */
     public function __construct(Connection\Manager $connector, UrlHelper $url,
-        $routes = array(), $cache = false
+        $routes = [], $cache = false
     ) {
         $this->connector = $connector;
         $this->url = $url;
         $this->routes = $routes;
         $this->cache = $cache;
     }
-
 
     /**
      * Compares the cache date against a given date. If given date is newer,
@@ -140,10 +139,10 @@ class OutlineGenerator
         if ($this->cache) {
             $this->cache->setItem(
                 $key,
-                array(
-                    'moddate'=>date(DATE_ATOM),
-                    'outline'=>$data
-                )
+                [
+                    'moddate' => date(DATE_ATOM),
+                    'outline' => $data
+                ]
             );
             return $data;
         }
@@ -160,16 +159,16 @@ class OutlineGenerator
     protected function loadLists($root)
     {
         // Reset the state of the class:
-        $this->queue = $this->moddate = array();
-        $this->outline = array(
-            'counts'=>array(),
-            'names'=>array(),
-            'lists'=>array()
-        );
+        $this->queue = $this->moddate = [];
+        $this->outline = [
+            'counts' => [],
+            'names' => [],
+            'lists' => []
+        ];
         // Get lists
         $lists = $this->connector->getOrderedMembers($root);
         // Get list items
-        foreach ($lists as $i=>$list_id) {
+        foreach ($lists as $i => $list_id) {
             // Get list name
             $this->outline['names'][] = $this->connector->getLabel($list_id);
             $this->moddate[$i] = $this->connector->getModDate($list_id);
@@ -188,7 +187,7 @@ class OutlineGenerator
     protected function buildItem($id)
     {
         // Else, get all the data and save it to the cache
-        $list = array();
+        $list = [];
         // Get the file type
         $file = $this->connector->getDatastreams($id);
         preg_match_all(
@@ -207,7 +206,7 @@ class OutlineGenerator
             );
         }
         $details = $this->connector->getDetails($id, false);
-        return array(
+        return [
             'id' => $id,
             'fulltype' => $type,
             'mimetype' => $mimetype,
@@ -219,7 +218,7 @@ class OutlineGenerator
                 : $id,
             'datastreams' => $list[1],
             'mimetypes' => $list[2]
-        );
+        ];
     }
 
     /**
@@ -238,13 +237,13 @@ class OutlineGenerator
         }
 
         // Get data on all pages and docs
-        foreach ($this->queue as $parent=>$items) {
+        foreach ($this->queue as $parent => $items) {
             $this->outline['counts'][$parent] = count($items);
             if (count($items) < $start) {
                 continue;
             }
-            $this->outline['lists'][$parent] = array();
-            for ($i=$start;$i < $start + $pageLength;$i++) {
+            $this->outline['lists'][$parent] = [];
+            for ($i = $start;$i < $start + $pageLength;$i++) {
                 if ($i >= count($items)) {
                     break;
                 }
@@ -267,10 +266,10 @@ class OutlineGenerator
      */
     protected function injectUrls()
     {
-        foreach ($this->outline['lists'] as $key=>$list) {
-            foreach ($list as $id=>$item) {
+        foreach ($this->outline['lists'] as $key => $list) {
+            foreach ($list as $id => $item) {
                 foreach ($item['datastreams'] as $ds) {
-                    $routeParams = array('id' => $item['id'], 'type' => $ds);
+                    $routeParams = ['id' => $item['id'], 'type' => $ds];
                     $this->outline['lists'][$key][$id][strtolower($ds)]
                         = $this->url->fromRoute('files', $routeParams);
                 }

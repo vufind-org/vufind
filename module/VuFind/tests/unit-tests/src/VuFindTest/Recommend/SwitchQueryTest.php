@@ -61,10 +61,10 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
         $results = $this->getMockResults('a or b');
         $sq = $this->getSwitchQuery($results);
         $this->assertEquals(
-            array(
+            [
                 'switchquery_lowercasebools' => 'a OR b',
                 'switchquery_wildcard' => 'a or b*',
-            ),
+            ],
             $sq->getSuggestions()
         );
     }
@@ -79,7 +79,7 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
         $results = $this->getMockResults('a or b');
         $bm = $this->getMockBackendManager(false);
         $sq = $this->getSwitchQuery($results, ':unwantedbools,wildcard', $bm);
-        $this->assertEquals(array(), $sq->getSuggestions());
+        $this->assertEquals([], $sq->getSuggestions());
     }
 
     /**
@@ -92,7 +92,7 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
         $results = $this->getMockResults('id:foo');
         $sq = $this->getSwitchQuery($results);
         $this->assertEquals(
-            array(),
+            [],
             $sq->getSuggestions()
         );
     }
@@ -107,7 +107,7 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
         $results = $this->getMockResults('', 'advanced');
         $sq = $this->getSwitchQuery($results);
         $this->assertEquals(
-            array(),
+            [],
             $sq->getSuggestions()
         );
     }
@@ -122,10 +122,10 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
         $results = $this->getMockResults('AND NOT OR');
         $sq = $this->getSwitchQuery($results);
         $this->assertEquals(
-            array(
+            [
                 'switchquery_unwantedbools' => '"AND NOT OR"',
                 'switchquery_wildcard' => 'AND NOT OR*',
-            ),
+            ],
             $sq->getSuggestions()
         );
     }
@@ -140,9 +140,9 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
         $results = $this->getMockResults('"my phrase"');
         $sq = $this->getSwitchQuery($results);
         $this->assertEquals(
-            array(
+            [
                 'switchquery_unwantedquotes' => 'my phrase'
-            ),
+            ],
             $sq->getSuggestions()
         );
     }
@@ -157,9 +157,9 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
         $results = $this->getMockResults('abcd');
         $sq = $this->getSwitchQuery($results, ':wildcard:truncatechar');
         $this->assertEquals(
-            array(
+            [
                 'switchquery_truncatechar' => 'abc'
-            ),
+            ],
             $sq->getSuggestions()
         );
     }
@@ -173,7 +173,7 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
     {
         $results = $this->getMockResults('"my phrase"');
         $sq = $this->getSwitchQuery($results, ':unwantedquotes:truncatechar');
-        $this->assertEquals(array(), $sq->getSuggestions());
+        $this->assertEquals([], $sq->getSuggestions());
     }
 
     /**
@@ -195,7 +195,7 @@ class SwitchQueryTest extends \VuFindTest\Unit\TestCase
         }
         $sq = new SwitchQuery($bm);
         $sq->setConfig($settings);
-        $sq->init($results->getParams(), new \Zend\StdLib\Parameters(array()));
+        $sq->init($results->getParams(), new \Zend\StdLib\Parameters([]));
         $sq->process($results);
         return $sq;
     }

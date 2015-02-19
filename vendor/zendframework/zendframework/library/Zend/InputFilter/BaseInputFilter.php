@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -245,7 +245,7 @@ class BaseInputFilter implements
                 && $input->isRequired()
                 && $input->allowEmpty()
             ) {
-                if(!($input instanceOf EmptyContextInterface && $input->continueIfEmpty())) {
+                if (!($input instanceof EmptyContextInterface && $input->continueIfEmpty())) {
                     $this->validInputs[$name] = $input;
                     continue;
                 }
@@ -369,13 +369,14 @@ class BaseInputFilter implements
      * each specifying a single input.
      *
      * @param  mixed $name
+     * @throws Exception\InvalidArgumentException
      * @return InputFilterInterface
      */
     public function setValidationGroup($name)
     {
         if ($name === self::VALIDATE_ALL) {
             $this->validationGroup = null;
-            foreach($this->getInputs() as $input) {
+            foreach ($this->getInputs() as $input) {
                 if ($input instanceof InputFilterInterface) {
                     $input->setValidationGroup(self::VALIDATE_ALL);
                 }
@@ -462,6 +463,11 @@ class BaseInputFilter implements
             ));
         }
         $input = $this->inputs[$name];
+
+        if ($input instanceof InputFilterInterface) {
+            return $input->getValues();
+        }
+
         return $input->getValue();
     }
 
@@ -577,10 +583,20 @@ class BaseInputFilter implements
         foreach (array_keys($this->inputs) as $name) {
             $input = $this->inputs[$name];
 
+            if ($input instanceof CollectionInputFilter) {
+                $input->clearValues();
+                $input->clearRawValues();
+            }
+
             if (!isset($this->data[$name])) {
                 // No value; clear value in this input
                 if ($input instanceof InputFilterInterface) {
                     $input->setData(array());
+                    continue;
+                }
+
+                if ($input instanceof ArrayInput) {
+                    $input->setValue(array());
                     continue;
                 }
 

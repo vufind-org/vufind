@@ -78,7 +78,7 @@ class Resource extends Gateway
         if (empty($id)) {
             throw new \Exception('Resource ID cannot be empty');
         }
-        $select = $this->select(array('record_id' => $id, 'source' => $source));
+        $select = $this->select(['record_id' => $id, 'source' => $source]);
         $result = $select->current();
 
         // Create row if it does not already exist and creation is enabled:
@@ -132,7 +132,7 @@ class Resource extends Gateway
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function getFavorites($user, $list = null, $tags = array(),
+    public function getFavorites($user, $list = null, $tags = [],
         $sort = null, $offset = 0, $limit = null
     ) {
         // Set up base query:
@@ -140,16 +140,16 @@ class Resource extends Gateway
         return $this->select(
             function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $obj) {
                 $s->columns(
-                    array(
+                    [
                         new Expression(
-                            'DISTINCT(?)', array('resource.id'),
-                            array(Expression::TYPE_IDENTIFIER)
+                            'DISTINCT(?)', ['resource.id'],
+                            [Expression::TYPE_IDENTIFIER]
                         ), '*'
-                    )
+                    ]
                 );
                 $s->join(
-                    array('ur' => 'user_resource'), 'resource.id = ur.resource_id',
-                    array()
+                    ['ur' => 'user_resource'], 'resource.id = ur.resource_id',
+                    []
                 );
                 $s->where->equalTo('ur.user_id', $user);
 
@@ -216,9 +216,9 @@ class Resource extends Gateway
     public static function applySort($query, $sort, $alias = 'resource')
     {
         // Apply sorting, if necessary:
-        $legalSorts = array(
+        $legalSorts = [
             'title', 'title desc', 'author', 'author desc', 'year', 'year desc'
-        );
+        ];
         if (!empty($sort) && in_array(strtolower($sort), $legalSorts)) {
             // Strip off 'desc' to obtain the raw field name -- we'll need it
             // to sort null values to the bottom:
@@ -226,14 +226,14 @@ class Resource extends Gateway
             $rawField = trim($parts[0]);
 
             // Start building the list of sort fields:
-            $order = array();
+            $order = [];
 
             // The title field can't be null, so don't bother with the extra
             // isnull() sort in that case.
             if (strtolower($rawField) != 'title') {
                 $order[] = new Expression(
-                    'isnull(?)', array($alias . '.' . $rawField),
-                    array(Expression::TYPE_IDENTIFIER)
+                    'isnull(?)', [$alias . '.' . $rawField],
+                    [Expression::TYPE_IDENTIFIER]
                 );
             }
 

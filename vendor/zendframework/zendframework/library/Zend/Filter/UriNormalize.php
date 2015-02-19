@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -84,6 +84,11 @@ class UriNormalize extends AbstractFilter
      */
     public function filter($value)
     {
+        if (!is_scalar($value)) {
+            return $value;
+        }
+        $value = (string) $value;
+
         $defaultScheme = $this->defaultScheme ?: $this->enforcedScheme;
 
         // Reset default scheme if it is not a known scheme
@@ -96,7 +101,6 @@ class UriNormalize extends AbstractFilter
             if ($this->enforcedScheme && (!$uri->getScheme())) {
                 $this->enforceScheme($uri);
             }
-
         } catch (UriException $ex) {
             // We are unable to parse / enfore scheme with the given config and input
             return $value;

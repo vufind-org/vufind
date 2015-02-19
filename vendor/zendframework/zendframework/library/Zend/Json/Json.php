@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -160,9 +160,11 @@ class Json
      * @return mixed
      */
     protected static function _recursiveJsonExprFinder(
-        &$value, array &$javascriptExpressions, $currentKey = null
+        &$value,
+        array &$javascriptExpressions,
+        $currentKey = null
     ) {
-         if ($value instanceof Expr) {
+        if ($value instanceof Expr) {
             // TODO: Optimize with ascii keys, if performance is bad
             $magicKey = "____" . $currentKey . "_" . (count($javascriptExpressions));
             $javascriptExpressions[] = array(
@@ -285,6 +287,7 @@ class Json
     }
 
     /**
+     * @deprecated by https://github.com/zendframework/zf2/pull/6778
      * fromXml - Converts XML to JSON
      *
      * Converts a XML formatted string into a JSON formatted string.
@@ -352,7 +355,9 @@ class Json
 
         $inLiteral = false;
         foreach ($tokens as $token) {
-            if ($token == "") continue;
+            if ($token == "") {
+                continue;
+            }
 
             $prefix = str_repeat($ind, $indent);
             if (!$inLiteral && ($token == "{" || $token == "[")) {
@@ -381,5 +386,5 @@ class Json
             }
         }
         return $result;
-   }
+    }
 }

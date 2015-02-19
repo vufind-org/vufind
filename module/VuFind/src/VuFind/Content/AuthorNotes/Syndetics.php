@@ -43,13 +43,13 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      *
      * @var array
      */
-    protected $sourceList = array(
-        'ANOTES' => array(
+    protected $sourceList = [
+        'ANOTES' => [
             'title' => 'Author Notes',
             'file' => 'ANOTES.XML',
             'div' => '<div id="syn_anotes"></div>'
-        )
-    );
+        ]
+    ];
 
     /**
      * This method is responsible for connecting to Syndetics and abstracting
@@ -73,7 +73,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         // Initialize return value
-        $anotes = array();
+        $anotes = [];
 
         // Find out if there are any notes
         $isbn = $this->getIsbn10($isbnObj);

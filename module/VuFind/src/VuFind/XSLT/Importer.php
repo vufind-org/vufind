@@ -43,12 +43,7 @@ use DOMDocument, VuFind\Config\Locator as ConfigLocator,
  */
 class Importer implements ServiceLocatorAwareInterface
 {
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
 
     /**
      * Save an XML file to the Solr index using the specified configuration.
@@ -146,7 +141,7 @@ class Importer implements ServiceLocatorAwareInterface
         if (isset($options['General']['php_function'])) {
             $functions = is_array($options['General']['php_function'])
                 ? $options['General']['php_function']
-                : array($options['General']['php_function']);
+                : [$options['General']['php_function']];
             foreach ($functions as $function) {
                 $xsl->registerPHPFunctions($function);
             }
@@ -156,7 +151,7 @@ class Importer implements ServiceLocatorAwareInterface
         if (isset($options['General']['custom_class'])) {
             $classes = is_array($options['General']['custom_class'])
                 ? $options['General']['custom_class']
-                : array($options['General']['custom_class']);
+                : [$options['General']['custom_class']];
             $truncate = isset($options['General']['truncate_custom_class'])
                 ? $options['General']['truncate_custom_class'] : true;
             foreach ($classes as $class) {
@@ -190,28 +185,5 @@ class Importer implements ServiceLocatorAwareInterface
         }
 
         return $xsl;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Manager
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/
  */
 namespace VuDL\Connection;
-use VuFindHttp\HttpServiceInterface,
-    VuFindSearch\ParamBag;
+use VuFindSearch\ParamBag;
 
 /**
  * VuDL-Fedora connection class
@@ -71,10 +70,10 @@ class Solr extends AbstractBase
         // Get record
         $response = $this->search(
             new ParamBag(
-                array(
-                    'q'  => 'id:"'.$id.'"',
+                [
+                    'q'  => 'id:"' . $id . '"',
                     'fl' => 'modeltype_str_mv',
-                )
+                ]
             )
         );
         $record = json_decode($response);
@@ -102,9 +101,9 @@ class Solr extends AbstractBase
     {
         if ($response = $this->search(
             new ParamBag(
-                array(
-                    'q' => 'id:"'.$id.'"'
-                )
+                [
+                    'q' => 'id:"' . $id . '"'
+                ]
             )
         )) {
             $record = json_decode($response);
@@ -128,10 +127,10 @@ class Solr extends AbstractBase
         $labelField = 'dc_title_str';
         $response = $this->search(
             new ParamBag(
-                array(
-                    'q'     => 'id:"'.$id.'"',
+                [
+                    'q'     => 'id:"' . $id . '"',
                     'fl'    => $labelField,
-                )
+                ]
             )
         );
         $details = json_decode($response);
@@ -154,11 +153,11 @@ class Solr extends AbstractBase
         // Get members
         $response = $this->search(
             new ParamBag(
-                array(
-                    'q'  => 'relsext.isMemberOf:"'.$root.'"',
+                [
+                    'q'  => 'relsext.isMemberOf:"' . $root . '"',
                     'fl' => 'id,hierarchy_top_title',
                     'rows' => 100,
-                )
+                ]
             )
         );
         $children = json_decode($response);
@@ -166,15 +165,15 @@ class Solr extends AbstractBase
         if ($children->response->numFound > 0) {
             return array_map(
                 function ($n) {
-                    return array(
+                    return [
                         'id' => $n->id,
                         'title' => $n->hierarchy_top_title,
-                    );
+                    ];
                 },
                 $children->response->docs
             );
         }
-        return array();
+        return [];
     }
 
     /**
@@ -190,10 +189,10 @@ class Solr extends AbstractBase
         $modfield = 'fgs.lastModifiedDate';
         if ($response = $this->search(
             new ParamBag(
-                array(
-                    'q'     => 'id:"'.$id.'"',
+                [
+                    'q'     => 'id:"' . $id . '"',
                     'fl'    => $modfield,
-                )
+                ]
             )
         )) {
             $record = json_decode($response);
@@ -211,22 +210,22 @@ class Solr extends AbstractBase
      *
      * @return string $id
      */
-    public function getOrderedMembers($id, $extra_sort = array())
+    public function getOrderedMembers($id, $extra_sort = [])
     {
         // Try to find members in order
-        $seqField = 'sequence_'.str_replace(':', '_', $id).'_str';
-        $sort = array($seqField.' asc');
+        $seqField = 'sequence_' . str_replace(':', '_', $id) . '_str';
+        $sort = [$seqField . ' asc'];
         foreach ($extra_sort as $sf) {
             $sort[] = $sf;
         }
         $response = $this->search(
             new ParamBag(
-                array(
-                    'q'  => 'relsext.isMemberOf:"'.$id.'"',
+                [
+                    'q'  => 'relsext.isMemberOf:"' . $id . '"',
                     'sort'  => implode(',', $sort),
                     'fl' => 'id',
                     'rows' => 99999,
-                )
+                ]
             )
         );
         $data = json_decode($response);
@@ -256,8 +255,8 @@ class Solr extends AbstractBase
         if (isset($this->parentLists[$id])) {
             return $this->parentLists[$id];
         }
-        $queue = array($id);
-        $tree = array();
+        $queue = [$id];
+        $tree = [];
         while (!empty($queue)) {
             $current = array_shift($queue);
             if ($current == $this->getRootId()) {
@@ -265,10 +264,10 @@ class Solr extends AbstractBase
             }
             $response = $this->search(
                 new ParamBag(
-                    array(
-                        'q'     => 'id:"'.$current.'"',
+                    [
+                        'q'     => 'id:"' . $current . '"',
                         'fl'    => 'hierarchy_parent_id,hierarchy_parent_title',
-                    )
+                    ]
                 )
             );
             $data = json_decode($response);
@@ -277,13 +276,13 @@ class Solr extends AbstractBase
             }
             // Get info on our record
             $parents = $data->response->docs[0];
-            foreach ($parents->hierarchy_parent_id as $i=>$cid) {
+            foreach ($parents->hierarchy_parent_id as $i => $cid) {
                 array_push($queue, $cid);
                 if (!isset($tree[$cid])) {
-                    $tree[$cid] = array(
-                        'children' => array(),
+                    $tree[$cid] = [
+                        'children' => [],
                         'title' => $parents->hierarchy_parent_title[$i]
-                    );
+                    ];
                 }
                 if (!in_array($current, $tree[$cid]['children'])) {
                     $tree[$cid]['children'][] = $current;
@@ -310,10 +309,10 @@ class Solr extends AbstractBase
         $licenseField = 'license.mdRef';
         $response = $this->search(
             new ParamBag(
-                array(
-                    'q'     => 'id:"'.$id.'"',
+                [
+                    'q'     => 'id:"' . $id . '"',
                     'fl'    => $licenseField
-                )
+                ]
             )
         );
         $data = json_decode($response);
@@ -323,12 +322,12 @@ class Solr extends AbstractBase
         }
         $license = $docs->$licenseField;
         $license = $license[0];
-        foreach ($setLicenses as $tell=>$value) {
+        foreach ($setLicenses as $tell => $value) {
             if (strpos($license, $tell)) {
-                return array($license, $value);
+                return [$license, $value];
             }
         }
-        return array($license, false);
+        return [$license, false];
     }
 
     /**
@@ -343,7 +342,7 @@ class Solr extends AbstractBase
         // Remove global filters from the Solr connector
         $map = $this->solr->getMap();
         $params = $map->getParameters('select', 'appends');
-        $map->setParameters('select', 'appends', array());
+        $map->setParameters('select', 'appends', []);
         // Turn off grouping
         $paramBag->set('group', 'false');
         $paramBag->add('wt', 'json');

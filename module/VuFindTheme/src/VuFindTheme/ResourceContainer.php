@@ -43,21 +43,21 @@ class ResourceContainer
      *
      * @var array
      */
-    protected $less = array();
+    protected $less = [];
 
     /**
      * CSS files
      *
      * @var array
      */
-    protected $css = array();
+    protected $css = [];
 
     /**
      * Javascript files
      *
      * @var array
      */
-    protected $js = array();
+    protected $js = [];
 
     /**
      * Favicon
@@ -90,7 +90,7 @@ class ResourceContainer
     public function addLessCss($less)
     {
         if (!is_array($less) && !is_a($less, 'Traversable')) {
-            $less = array($less);
+            $less = [$less];
         }
         unset($less['active']);
         foreach ($less as $current) {
@@ -110,7 +110,7 @@ class ResourceContainer
     public function addCss($css)
     {
         if (!is_array($css) && !is_a($css, 'Traversable')) {
-            $css = array($css);
+            $css = [$css];
         }
         foreach ($css as $current) {
             if (!$this->dynamicallyParsed($current)) {
@@ -130,7 +130,7 @@ class ResourceContainer
     public function addJs($js)
     {
         if (!is_array($js) && !is_a($js, 'Traversable')) {
-            $js = array($js);
+            $js = [$js];
         }
         foreach ($js as $current) {
             $this->js[] = $current;

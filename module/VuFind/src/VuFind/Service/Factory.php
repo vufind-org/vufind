@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -309,7 +310,7 @@ class Factory
     public static function getHttp(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config')->get('config');
-        $options = array();
+        $options = [];
         if (isset($config->Proxy->host)) {
             $options['proxy_host'] = $config->Proxy->host;
             if (isset($config->Proxy->port)) {
@@ -317,7 +318,7 @@ class Factory
             }
         }
         $defaults = isset($config->Http)
-            ? $config->Http->toArray() : array();
+            ? $config->Http->toArray() : [];
         return new \VuFindHttp\HttpService($options, $defaults);
     }
 
@@ -443,7 +444,7 @@ class Factory
             $translator = $sm->get('VuFind\Translator');
             $recaptcha->setOption(
                 'custom_translations',
-                array(
+                [
                     'audio_challenge' =>
                         $translator->translate('recaptcha_audio_challenge'),
                     'cant_hear_this' =>
@@ -466,7 +467,7 @@ class Factory
                         $translator->translate('recaptcha_refresh_btn'),
                     'visual_challenge' =>
                         $translator->translate('recaptcha_visual_challenge')
-                )
+                ]
             );
         }
         return $recaptcha;
@@ -723,23 +724,31 @@ class Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Zend\I18n\Translator\Translator
+     * @return \Zend\I18n\Translator\TranslatorInterface
      */
     public static function getTranslator(ServiceManager $sm)
     {
-        $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
+        $factory = new \Zend\Mvc\Service\TranslatorServiceFactory();
         $translator = $factory->createService($sm);
 
         // Set up the ExtendedIni plugin:
         $config = $sm->get('VuFind\Config')->get('config');
-        $pathStack = array(
+        $pathStack = [
             APPLICATION_PATH  . '/languages',
             LOCAL_OVERRIDE_DIR . '/languages'
-        );
+        ];
         $fallbackLocales = $config->Site->language == 'en'
             ? 'en'
-            : array($config->Site->language, 'en');
-        $translator->getPluginManager()->setService(
+            : [$config->Site->language, 'en'];
+        try {
+            $pm = $translator->getPluginManager();
+        } catch (\Zend\Mvc\Exception\BadMethodCallException $ex) {
+            // If getPluginManager is missing, this means that the user has
+            // disabled translation in module.config.php or PHP's intl extension
+            // is missing. We can do no further configuration of the object.
+            return $translator;
+        }
+        $pm->setService(
             'extendedini',
             new \VuFind\I18n\Translator\Loader\ExtendedIni(
                 $pathStack, $fallbackLocales

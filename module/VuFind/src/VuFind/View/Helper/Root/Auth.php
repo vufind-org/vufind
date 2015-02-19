@@ -64,7 +64,7 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    protected function renderTemplate($name, $context = array())
+    protected function renderTemplate($name, $context = [])
     {
         // Set up the needed context in the view:
         $contextHelper = $this->getView()->plugin('context');
@@ -126,7 +126,7 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getCreateFields($context = array())
+    public function getCreateFields($context = [])
     {
         return $this->renderTemplate('create.phtml', $context);
     }
@@ -138,7 +138,7 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getLoginFields($context = array())
+    public function getLoginFields($context = [])
     {
         return $this->renderTemplate('loginfields.phtml', $context);
     }
@@ -150,7 +150,7 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getLogin($context = array())
+    public function getLogin($context = [])
     {
         return $this->renderTemplate('login.phtml', $context);
     }
@@ -162,7 +162,7 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getLoginDesc($context = array())
+    public function getLoginDesc($context = [])
     {
         return $this->renderTemplate('logindesc.phtml', $context);
     }
@@ -187,7 +187,7 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getNewPasswordForm($context = array())
+    public function getNewPasswordForm($context = [])
     {
         return $this->renderTemplate('newpassword.phtml', $context);
     }
@@ -199,7 +199,7 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function getPasswordRecoveryForm($context = array())
+    public function getPasswordRecoveryForm($context = [])
     {
         return $this->renderTemplate('recovery.phtml', $context);
     }
