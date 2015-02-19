@@ -53,7 +53,7 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
     {
         $q = new Query('query1');
         $qb = new QueryBuilder();
-        $expected = array('query1');
+        $expected = ['query1'];
         $result = $qb->build($q)->get('search');
         $this->assertEquals($expected, $result);
     }
@@ -68,6 +68,6 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
     public function testAdvanced()
     {
         $qb = new QueryBuilder();
-        $qb->build(new QueryGroup('AND', array()));
+        $qb->build(new QueryGroup('AND', []));
     }
 }

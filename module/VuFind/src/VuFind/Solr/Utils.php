@@ -57,7 +57,7 @@ class Utils
         if (!preg_match($regEx, $query, $matches)) {
             return false;
         }
-        return array('from' => trim($matches[1]), 'to' => trim($matches[2]));
+        return ['from' => trim($matches[1]), 'to' => trim($matches[2])];
     }
 
     /**
@@ -71,7 +71,7 @@ class Utils
     public static function sanitizeDate($date)
     {
         // Strip brackets; we'll assume guesses are correct.
-        $date = str_replace(array('[', ']'), '', $date);
+        $date = str_replace(['[', ']'], '', $date);
 
         // Special case -- first four characters are not a year:
         if (!preg_match('/^[0-9]{4}/', $date)) {
@@ -116,8 +116,8 @@ class Utils
         $year = substr($date, 0, 4);
 
         // Let's get rid of punctuation and normalize separators:
-        $date = str_replace(array('.', ' ', '?'), '', $date);
-        $date = str_replace(array('/', '--', '-0'), '-', $date);
+        $date = str_replace(['.', ' ', '?'], '', $date);
+        $date = str_replace(['/', '--', '-0'], '-', $date);
 
         // If multiple dates are &'ed together, take just the first:
         list($date) = explode('&', $date);

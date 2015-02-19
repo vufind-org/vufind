@@ -107,7 +107,7 @@ class Evergreen extends AbstractBase
      */
     public function getStatus($id)
     {
-        $holding = array();
+        $holding = [];
 
         // Build SQL Statement
         $sql = <<<HERE
@@ -121,7 +121,7 @@ HERE;
 
         // Execute SQL
         try {
-            $holding = array();
+            $holding = [];
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
@@ -146,14 +146,14 @@ HERE;
                 break;
             }
 
-            $holding[] = array(
+            $holding[] = [
                 'id' => $id,
                 'availability' => $available,
                 'status' => $row['status'],
                 'location' => $row['location'],
                 'reserve' => $reserve,
                 'callnumber' => $row['callnumber']
-            );
+            ];
         }
 
         return $holding;
@@ -172,7 +172,7 @@ HERE;
      */
     public function getStatuses($idList)
     {
-        $status = array();
+        $status = [];
         foreach ($idList as $id) {
             $status[] = $this->getStatus($id);
         }
@@ -196,7 +196,7 @@ HERE;
      */
     public function getHolding($id, array $patron = null)
     {
-        $holding = array();
+        $holding = [];
 
         // Build SQL Statement
         $sql = <<<HERE
@@ -252,7 +252,7 @@ HERE;
             } else {
                 $due_date = "";
             }
-            $holding[] = array(
+            $holding[] = [
                 'id' => $id,
                 'availability' => $available,
                 'status' => $row['status'],
@@ -262,7 +262,7 @@ HERE;
                 'duedate' => $due_date,
                 'number' => $row['copy_number'],
                 'barcode' => $row['barcode']
-            );
+            ];
         }
 
         return $holding;
@@ -278,12 +278,13 @@ HERE;
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
         // TODO
-        return array();
+        return [];
     }
 
     /**
@@ -323,7 +324,7 @@ HERE;
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             if (isset($row['id']) && ($row['id'] != '')) {
-                $return = array();
+                $return = [];
                 $return['id'] = $row['id'];
                 $return['firstname'] = $row['firstname'];
                 $return['lastname'] = $row['lastname'];
@@ -355,7 +356,7 @@ HERE;
      */
     public function getMyTransactions($patron)
     {
-        $transList = array();
+        $transList = [];
 
         $sql = "select circulation.target_copy as bib_id, " .
                "extract (year from circulation.due_date) as due_year, " .
@@ -377,8 +378,8 @@ HERE;
                     $due_date = "";
                 }
 
-                $transList[] = array('duedate' => $due_date,
-                                     'id' => $row['bib_id']);
+                $transList[] = ['duedate' => $due_date,
+                                     'id' => $row['bib_id']];
             }
             return $transList;
         } catch (PDOException $e) {
@@ -399,7 +400,7 @@ HERE;
      */
     public function getMyFines($patron)
     {
-        $fineList = array();
+        $fineList = [];
 
         $sql = "select billable_xact_summary.total_owed, " .
                "billable_xact_summary.balance_owed, " .
@@ -430,12 +431,12 @@ HERE;
                     $charge_date = "";
                 }
 
-                $fineList[] = array('amount' => $row['total_owed'],
+                $fineList[] = ['amount' => $row['total_owed'],
                                     'fine' => $row['last_billing_type'],
                                     'balance' => $row['balance_owed'],
                                     'checkout' => $charge_date,
                                     'duedate' => "",
-                                    'id' => $row['target_copy']);
+                                    'id' => $row['target_copy']];
             }
             return $fineList;
         } catch (PDOException $e) {
@@ -456,7 +457,7 @@ HERE;
      */
     public function getMyHolds($patron)
     {
-        $holdList = array();
+        $holdList = [];
 
         $sql = "select hold_request.hold_type, hold_request.current_copy, " .
                "extract (year from hold_request.expire_time) as exp_year, " .
@@ -491,11 +492,11 @@ HERE;
                     $exp_time = "";
                 }
 
-                $holdList[] = array('type' => $row['hold_type'],
+                $holdList[] = ['type' => $row['hold_type'],
                                     'id' => $row['current_copy'],
                                     'location' => $row['lib_name'],
                                     'expire' => $exp_time,
-                                    'create' => $req_time);
+                                    'create' => $req_time];
             }
             return $holdList;
         } catch (PDOException $e) {
@@ -541,7 +542,7 @@ HERE;
             }
 
             if ($row) {
-                $patron = array(
+                $patron = [
                     'firstname' => $row['first_given_name'],
                     'lastname' => $row['family_name'],
                     'address1' => $row['street1'],
@@ -549,7 +550,7 @@ HERE;
                     'zip' => $row['post_code'],
                     'phone' => $phone,
                     'group' => $row['usrgroup']
-                );
+                ];
                 return $patron;
             } else {
                 return null;
@@ -633,11 +634,12 @@ HERE;
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        $items = array();
+        $items = [];
 
         // Prevent unnecessary load
         // (Taken from Voyager driver - does Evergreen need this?)
@@ -721,7 +723,7 @@ HERE;
      */
     public function getSuppressedRecords()
     {
-        $list = array();
+        $list = [];
 
         $sql = "select copy.id as id " .
                "from $this->dbName.asset " .
@@ -753,7 +755,7 @@ HERE;
     public function getDepartments()
     {
         // TODO
-        return array();
+        return [];
     }
 
     /**
@@ -767,7 +769,7 @@ HERE;
     public function getInstructors()
     {
         // TODO
-        return array();
+        return [];
     }
 
     /**
@@ -781,7 +783,7 @@ HERE;
     public function getCourses()
     {
         // TODO
-        return array();
+        return [];
     }
 
     /**
@@ -795,11 +797,12 @@ HERE;
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {
         // TODO
-        return array();
+        return [];
     }
 }

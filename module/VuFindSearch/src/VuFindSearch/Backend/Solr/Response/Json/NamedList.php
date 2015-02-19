@@ -42,7 +42,6 @@ use Countable, Iterator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  * @see      http://wiki.apache.org/solr/SolJSON
- *
  */
 class NamedList implements Countable, Iterator
 {
@@ -79,7 +78,7 @@ class NamedList implements Countable, Iterator
      */
     public function toArray()
     {
-        $arr = array();
+        $arr = [];
         foreach ($this as $k => $v) {
             $arr[$k] = $v;
         }

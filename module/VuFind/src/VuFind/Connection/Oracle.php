@@ -221,7 +221,7 @@ class Oracle
      * @param resource $parsed       Result returned by prepare() method.
      * @param string   $place_holder The colon-prefixed bind variable placeholder
      * used in the statement.
-     * @param string   &$data        The PHP variable to be associatd with
+     * @param string   $data         The PHP variable to be associatd with
      * $place_holder
      * @param string   $data_type    The type of $data (string, integer, float,
      * long, date, row_id, clob, or blob)
@@ -318,7 +318,7 @@ class Oracle
      *
      * @return array|bool    Results on success, false on error.
      */
-    public function simpleSelect($sql, $fields = array())
+    public function simpleSelect($sql, $fields = [])
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {
@@ -345,11 +345,11 @@ class Oracle
      *
      * @return bool
      */
-    public function simpleDelete($table, $fields = array())
+    public function simpleDelete($table, $fields = [])
     {
-        $types   = array();
-        $data    = array();
-        $clauses = array();
+        $types   = [];
+        $data    = [];
+        $clauses = [];
 
         // Split all the fields up into arrays
         foreach ($fields as $field => $datum) {
@@ -391,12 +391,12 @@ class Oracle
      *
      * @return bool
      */
-    public function simpleInsert($table, $fields = array())
+    public function simpleInsert($table, $fields = [])
     {
-        $types   = array();
-        $data    = array();
-        $columns = array();
-        $values  = array();
+        $types   = [];
+        $data    = [];
+        $columns = [];
+        $values  = [];
 
         // Split all the fields up into arrays
         foreach ($fields as $field => $datum) {
@@ -448,7 +448,7 @@ class Oracle
      *
      * @return bool
      */
-    public function simpleSql($sql, $fields = array())
+    public function simpleSql($sql, $fields = [])
     {
         $stmt = $this->prepare($sql);
         foreach ($fields as $field => $datum) {

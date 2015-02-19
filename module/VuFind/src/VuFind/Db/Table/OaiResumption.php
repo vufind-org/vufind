@@ -70,7 +70,7 @@ class OaiResumption extends Gateway
      */
     public function findToken($token)
     {
-        return $this->select(array('id' => $token))->current();
+        return $this->select(['id' => $token])->current();
     }
 
     /**

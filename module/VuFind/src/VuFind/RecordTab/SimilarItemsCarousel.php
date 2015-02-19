@@ -73,8 +73,6 @@ class SimilarItemsCarousel extends AbstractBase
     }
 
     /**
-     * getResults
-     *
      * Get an array of Record Driver objects representing items similar to the one
      * passed to the constructor.
      *
@@ -83,7 +81,7 @@ class SimilarItemsCarousel extends AbstractBase
     public function getResults()
     {
         $record = $this->getRecordDriver();
-        $params = new \VuFindSearch\ParamBag(array('rows' => 40));
+        $params = new \VuFindSearch\ParamBag(['rows' => 40]);
         return $this->searchService->similar(
             $record->getSourceIdentifier(), $record->getUniqueId(), $params
         );

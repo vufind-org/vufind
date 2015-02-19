@@ -93,7 +93,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         $collection = new $this->collectionClass($response);
         //obtain path to records
-        $records = array();
+        $records = [];
         if (isset($response['SearchResult'])
             && isset($response['SearchResult']['Data'])
             && isset($response['SearchResult']['Data']['Records'])

@@ -199,7 +199,7 @@ class Backend extends AbstractBackend
 
         // create query parameters from VuFind data
         $queryString = !empty($query) ? $query->getAllTerms() : '';
-        $paramsStr = implode('&', null !== $params ? $params->request() : array());
+        $paramsStr = implode('&', null !== $params ? $params->request() : []);
         $this->debugPrint(
             "Query: $queryString, Limit: $limit, Offset: $offset, "
             . "Params: $paramsStr"
@@ -241,7 +241,7 @@ class Backend extends AbstractBackend
                 }
                 break;
             default:
-                $response = array();
+                $response = [];
                 break;
             }
         } catch(Exception $e) {
@@ -307,7 +307,7 @@ class Backend extends AbstractBackend
                 throw $e;
             }
         }
-        $collection = $this->createRecordCollection(array('Records' => $response));
+        $collection = $this->createRecordCollection(['Records' => $response]);
         $this->injectSourceIdentifier($collection);
         return $collection;
     }
@@ -322,12 +322,12 @@ class Backend extends AbstractBackend
     protected function paramBagToEBSCOSearchModel(ParamBag $params)
     {
         $params = $params->getArrayCopy();
-        $options = array();
+        $options = [];
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
-        $arraySettings = array(
+        $arraySettings = [
             'query', 'facets', 'filters', 'groupFilters', 'rangeFilters', 'limiters'
-        );
+        ];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings)
                 ? $param : $param[0];
@@ -368,7 +368,6 @@ class Backend extends AbstractBackend
      * @param QueryBuilder $queryBuilder Query builder
      *
      * @return void
-     *
      */
     public function setQueryBuilder(QueryBuilder $queryBuilder)
     {
@@ -436,7 +435,7 @@ class Backend extends AbstractBackend
             $results = $this->client->authenticate($username, $password, $orgId);
             $token = $results['AuthToken'];
             $timeout = $results['AuthTimeout'] + time();
-            $authTokenData = array('token' => $token, 'expiration' => $timeout);
+            $authTokenData = ['token' => $token, 'expiration' => $timeout];
             $this->cache->setItem('edsAuthenticationToken', $authTokenData);
         }
         return $token;
@@ -590,7 +589,7 @@ class Backend extends AbstractBackend
 
                 }
             } else {
-                $response = array();
+                $response = [];
             }
         }
         return $response;

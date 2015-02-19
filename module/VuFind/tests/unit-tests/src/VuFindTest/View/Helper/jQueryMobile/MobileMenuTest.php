@@ -46,7 +46,7 @@ class MobileMenuTest extends \PHPUnit_Framework_TestCase
      */
     public function testHeader()
     {
-        $extras = array('bar' => 'baz');
+        $extras = ['bar' => 'baz'];
         $mm = $this->getMobileMenu('header.phtml', $extras);
         $this->assertEquals('foo', $mm->header($extras));
     }
@@ -58,7 +58,7 @@ class MobileMenuTest extends \PHPUnit_Framework_TestCase
      */
     public function testFooter()
     {
-        $extras = array('bar' => 'baz');
+        $extras = ['bar' => 'baz'];
         $mm = $this->getMobileMenu('footer.phtml', $extras);
         $this->assertEquals('foo', $mm->footer($extras));
     }

@@ -128,7 +128,6 @@ class Horizon extends AbstractBase
      * @param string $status Item status code
      *
      * @return array
-     *
      */
     protected function parseStatus($status)
     {
@@ -188,11 +187,11 @@ class Horizon extends AbstractBase
             }
         }
 
-        $statusValues = array('available' => $available,
-                              'reserve'   => $reserve);
+        $statusValues = ['available' => $available,
+                              'reserve'   => $reserve];
 
         if (isset($duedate)) {
-            $statusValues += array('duedate' => $duedate);
+            $statusValues += ['duedate' => $duedate];
         }
         return $statusValues;
     }
@@ -209,7 +208,7 @@ class Horizon extends AbstractBase
         // Query holding information based on id field defined in
         // import/marc.properties
         // Expressions
-        $sqlExpressions = array(
+        $sqlExpressions = [
             "i.item# as ITEM_ID",
             "i.item_status as STATUS_CODE",
             "ist.descr as STATUS",
@@ -230,34 +229,34 @@ class Horizon extends AbstractBase
             "i.notes as NOTES",
             "ist.available_for_request IS_HOLDABLE",
 
-        );
+        ];
 
         // From
-        $sqlFrom = array("item i");
+        $sqlFrom = ["item i"];
 
         // inner Join
-        $sqlInnerJoin = array(
+        $sqlInnerJoin = [
             "item_status ist on i.item_status = ist.item_status",
             "location l on i.location = l.location",
-        );
+        ];
 
-        $sqlLeftOuterJoin = array(
+        $sqlLeftOuterJoin = [
            "circ_history ch on ch.item# = i.item#"
-        );
+        ];
 
         // Where
-        $sqlWhere = array(
+        $sqlWhere = [
             "i.bib# = " . addslashes($id),
             "i.staff_only = 0"
-        );
+        ];
 
-        $sqlArray = array(
+        $sqlArray = [
             'expressions' => $sqlExpressions,
             'from' => $sqlFrom,
             'innerJoin' => $sqlInnerJoin,
             'leftOuterJoin' => $sqlLeftOuterJoin,
             'where' => $sqlWhere
-        );
+        ];
 
         return $sqlArray;
     }
@@ -270,6 +269,7 @@ class Horizon extends AbstractBase
      * @param array  $patron Patron Array
      *
      * @return array Keyed data
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function processHoldingRow($id, $row, $patron)
@@ -284,7 +284,7 @@ class Horizon extends AbstractBase
             $duedate = $statusValues['duedate'];
         }
 
-        $holding = array(
+        $holding = [
             'id'              => $id,
             'availability'    => $statusValues['available'],
             'item_id'         => $row['ITEM_ID'],
@@ -298,16 +298,16 @@ class Horizon extends AbstractBase
             'requests_placed' => $row['REQUEST'],
             'is_holdable'     => $row['IS_HOLDABLE'],
 
-        );
+        ];
 
         // Only set the number key if there is actually volume data
         if ($row['NUMBER'] != '') {
-            $holding += array('number' => $row['NUMBER']);
+            $holding += ['number' => $row['NUMBER']];
         }
 
         // Only set the notes key if there are actually notes to display
         if ($row['NOTES'] != '') {
-            $holding += array('notes' => array($row['NOTES']));
+            $holding += ['notes' => [$row['NOTES']]];
         }
 
         return $holding;
@@ -334,7 +334,7 @@ class Horizon extends AbstractBase
         $sql = $this->buildSqlFromArray($sqlArray);
 
         try {
-            $holding = array();
+            $holding = [];
             $sqlStmt = mssql_query($sql);
             while ($row = mssql_fetch_assoc($sqlStmt)) {
                 $holding[] = $this->processHoldingRow($id, $row, $patron);
@@ -358,12 +358,12 @@ class Horizon extends AbstractBase
         $item_status  = $row['STATUS_CODE']; //get the item status code
         $statusValues = $this->parseStatus($item_status);
 
-        $status = array('id'           => $id,
+        $status = ['id'           => $id,
                         'availability' => $statusValues['available'],
                         'status'       => $row['STATUS'],
                         'location'     => $row['LOCATION'],
                         'reserve'      => $statusValues['reserve'],
-                        'callnumber'   => $row['CALLNUMBER']);
+                        'callnumber'   => $row['CALLNUMBER']];
 
         return $status;
     }
@@ -382,7 +382,7 @@ class Horizon extends AbstractBase
      */
     public function getStatus($id)
     {
-        $idList = array($id);
+        $idList = [$id];
         $status = $this->getStatuses($idList);
         return current($status);
     }
@@ -399,29 +399,29 @@ class Horizon extends AbstractBase
         // Query holding information based on id field defined in
         // import/marc.properties
         // Expressions
-        $sqlExpressions = array("i.bib# as ID",
+        $sqlExpressions = ["i.bib# as ID",
                                 "i.item_status as STATUS_CODE",
                                 "ist.descr as STATUS",
                                 "l.name as LOCATION",
-                                "i.call_reconstructed as CALLNUMBER");
+                                "i.call_reconstructed as CALLNUMBER"];
 
         // From
-        $sqlFrom = array("item i");
+        $sqlFrom = ["item i"];
 
         // inner Join
-        $sqlInnerJoin = array("item_status ist on i.item_status = ist.item_status",
-                              "location l on i.location = l.location");
+        $sqlInnerJoin = ["item_status ist on i.item_status = ist.item_status",
+                              "location l on i.location = l.location"];
 
         $bibIDs = implode(',', $idList);
 
         // Where
-        $sqlWhere = array("i.bib# in (" . $bibIDs . ")",
-                          "i.staff_only = 0");
+        $sqlWhere = ["i.bib# in (" . $bibIDs . ")",
+                          "i.staff_only = 0"];
 
-        $sqlArray = array('expressions' => $sqlExpressions,
+        $sqlArray = ['expressions' => $sqlExpressions,
                           'from'        => $sqlFrom,
                           'innerJoin'   => $sqlInnerJoin,
-                          'where'       => $sqlWhere);
+                          'where'       => $sqlWhere];
 
         return $sqlArray;
     }
@@ -447,14 +447,14 @@ class Horizon extends AbstractBase
 
         // Skip DB call if we have no valid IDs.
         if (empty($idList)) {
-            return array();
+            return [];
         }
 
         $sqlArray = $this->getStatusesSQL($idList);
         $sql      = $this->buildSqlFromArray($sqlArray);
 
         try {
-            $status  = array();
+            $status  = [];
             $sqlStmt = mssql_query($sql);
             while ($row = mssql_fetch_assoc($sqlStmt)) {
                 $id            = $row['ID'];
@@ -479,7 +479,7 @@ class Horizon extends AbstractBase
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -506,19 +506,19 @@ class Horizon extends AbstractBase
             "\" and pin# = \"" . addslashes($password) . "\"";
 
         try {
-            $user = array();
+            $user = [];
             $sqlStmt = mssql_query($sql);
             $row = mssql_fetch_assoc($sqlStmt);
             if ($row) {
                 list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
-                $user = array('id' => $username,
+                $user = ['id' => $username,
                               'firstname' => $firstname,
                               'lastname' => $lastname,
                               'cat_username' => $username,
                               'cat_password' => $password,
                               'email' => $row['EMAIL'],
                               'major' => null,
-                              'college' => null);
+                              'college' => null];
 
                 return $user;
             } else {
@@ -539,7 +539,7 @@ class Horizon extends AbstractBase
     protected function getHoldsSQL($patron)
     {
         // Expressions
-        $sqlExpressions = array(
+        $sqlExpressions = [
             "r.bib#           as BIB_NUM",
             "r.request#       as REQNUM",
             "r.item#          as ITEM_ID",
@@ -559,42 +559,42 @@ class Horizon extends AbstractBase
                              "as REQUEST_EXPIRE",
             "convert(varchar(12),dateadd(dd, r.request_date, '1 jan 1970'))  " .
                              "as CREATED"
-        );
+        ];
 
         // From
-        $sqlFrom = array("request r");
+        $sqlFrom = ["request r"];
 
         // Join
-        $sqlJoin = array(
+        $sqlJoin = [
             "borrower_barcode bb on bb.borrower# = r.borrower#",
             "location l          on l.location = r.pickup_location",
             "title t             on t.bib# = r.bib#"
-        );
+        ];
 
-        $sqlLeftOuterJoin = array(
+        $sqlLeftOuterJoin = [
             "item i             on i.item# = r.item#",
             "pubdate_inverted p on p.bib# = r.bib#"
-        );
+        ];
 
         // Where
-        $sqlWhere = array(
+        $sqlWhere = [
             "bb.bbarcode=\"" . addslashes($patron['id']) .
                "\""
-        );
+        ];
 
-        $sqlOrder = array(
+        $sqlOrder = [
             "SORT",
             "t.processed"
-        );
+        ];
 
-        $sqlArray = array(
+        $sqlArray = [
             'expressions'   => $sqlExpressions,
             'from'          => $sqlFrom,
             'join'          => $sqlJoin,
             'leftOuterJoin' => $sqlLeftOuterJoin,
             'where'         => $sqlWhere,
             'order'         => $sqlOrder
-        );
+        ];
 
         return $sqlArray;
     }
@@ -638,7 +638,7 @@ class Horizon extends AbstractBase
                 );
             }
 
-            return array(
+            return [
                 'id' => $row['BIB_NUM'],
                 'location'         => $row['LOCATION'],
                 'reqnum'           => $row['REQNUM'],
@@ -650,7 +650,7 @@ class Horizon extends AbstractBase
                 'volume'           => $row['VOLUME'],
                 'publication_year' => $row['PUBLICATION_YEAR'],
                 'title'            => $row['TITLE']
-            );
+            ];
         }
         return false;
     }
@@ -763,14 +763,14 @@ class Horizon extends AbstractBase
             $sqlStmt = mssql_query($sql);
 
             while ($row = mssql_fetch_assoc($sqlStmt)) {
-                 $fineList[] = array('amount'     => $row['AMOUNT'],
+                 $fineList[] = ['amount'     => $row['AMOUNT'],
                                      'checkout'   => $row['CHECKOUT'],
                                     'fine' => $row['FINE'],
                                      'balance'    => $row['BALANCE'],
                                      'createdate' => $row['CREATEDATE'],
                                      'duedate'    => $row['DUEDATE'],
                                      'id'         => $row['ID'],
-                                     'title'      => $row['TITLE']);
+                                     'title'      => $row['TITLE']];
             }
             return $fineList;
         } catch (\Exception $e) {
@@ -808,13 +808,13 @@ class Horizon extends AbstractBase
             $row = mssql_fetch_assoc($sqlStmt);
             if ($row) {
                 list($lastname,$firstname) = explode(', ', $row['FULLNAME']);
-                $profile = array('lastname' => $lastname,
+                $profile = ['lastname' => $lastname,
                                 'firstname' => $firstname,
                                 'address1' => $row['ADDRESS1'],
                                 'address2' => $row['ADDRESS2'],
                                 'zip' => $row['ZIP'],
                                 'phone' => $row['PHONE'],
-                                'group' => null);
+                                'group' => null];
                 return $profile;
             } else {
                 return null;
@@ -834,7 +834,7 @@ class Horizon extends AbstractBase
     protected function getTransactionSQL($patron)
     {
         // Expressions
-        $sqlExpressions = array(
+        $sqlExpressions = [
             "convert(varchar(12), dateadd(dd, i.due_date, '01 jan 1970')) " .
                             "as DUEDATE",
             "i.bib#          as BIB_NUM",
@@ -845,43 +845,43 @@ class Horizon extends AbstractBase
             "p.pubdate       as PUBLICATION_YEAR",
             "t.processed     as TITLE",
             "i.item#         as ITEM_NUM",
-        );
+        ];
 
         // From
-        $sqlFrom = array("circ c");
+        $sqlFrom = ["circ c"];
 
         // Join
-        $sqlJoin = array(
+        $sqlJoin = [
             "item i on i.item#=c.item#",
             "borrower b on b.borrower# = c.borrower#",
             "borrower_barcode bb on bb.borrower# = c.borrower#",
             "title t on t.bib# = i.bib#",
-        );
+        ];
 
         // Left Outer Join
-        $sqlLeftOuterJoin = array(
+        $sqlLeftOuterJoin = [
             "request r on r.item#=c.item#",
             "pubdate_inverted p on p.bib# = i.bib#"
-        );
+        ];
 
         // Where
-        $sqlWhere = array(
-            "bb.bbarcode=\"" . addslashes($patron['id']) . "\"");
+        $sqlWhere = [
+            "bb.bbarcode=\"" . addslashes($patron['id']) . "\""];
 
         // Order by
-        $sqlOrder = array(
+        $sqlOrder = [
             "i.due_date",
             "t.processed"
-        );
+        ];
 
-        $sqlArray = array(
+        $sqlArray = [
             'expressions'   => $sqlExpressions,
             'from'          => $sqlFrom,
             'join'          => $sqlJoin,
             'leftOuterJoin' => $sqlLeftOuterJoin,
             'where'         => $sqlWhere,
             'order'         => $sqlOrder
-        );
+        ];
 
         return $sqlArray;
     }
@@ -915,7 +915,7 @@ class Horizon extends AbstractBase
             }
         }
 
-        return array(
+        return [
             'id'               => $row['BIB_NUM'],
              'item_id'          => $row['ITEM_NUM'],
              'duedate'          => $dueDate,
@@ -926,7 +926,7 @@ class Horizon extends AbstractBase
              'volume'           => $row['VOLUME'],
              'publication_year' => $row['PUBLICATION_YEAR'],
              'title'            => $row['TITLE']
-        );
+        ];
     }
 
     /**
@@ -943,7 +943,7 @@ class Horizon extends AbstractBase
      */
     public function getMyTransactions($patron)
     {
-        $transList = array();
+        $transList = [];
         $sqlArray  = $this->getTransactionSQL($patron);
         $sql       = $this->buildSqlFromArray($sqlArray);
 
@@ -969,7 +969,7 @@ class Horizon extends AbstractBase
     public function getFunds()
     {
         // No funds for limiting in Horizon.
-        return array();
+        return [];
     }
 
     /**
@@ -991,6 +991,7 @@ class Horizon extends AbstractBase
      *                     does not use acquisitions.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
@@ -1012,7 +1013,7 @@ class Horizon extends AbstractBase
                     . "         datediff(dd, '01JAN1970', getdate()) - {$daysOld} "
                     . "order by nb.date desc ";
 
-            $results = array();
+            $results = [];
 
             // Set the rowcount limit before executing the query for IDs
             mssql_query($limitsql);
@@ -1023,13 +1024,13 @@ class Horizon extends AbstractBase
                 $results[] = $row['bib#'];
             }
 
-            $retVal = array('count' => count($results), 'results' => array());
+            $retVal = ['count' => count($results), 'results' => []];
             foreach ($results as $result) {
-                $retVal['results'][] = array('id' => $result);
+                $retVal['results'][] = ['id' => $result];
             }
             return $retVal;
         } else {
-            return array('count' => 0, 'results' => array());
+            return ['count' => 0, 'results' => []];
         }
     }
 
@@ -1088,7 +1089,7 @@ class Horizon extends AbstractBase
      */
     public function getSuppressedRecords()
     {
-        $list = array();
+        $list = [];
 
         $sql = "select bc.bib#" .
             "  from bib_control bc" .

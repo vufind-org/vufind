@@ -79,11 +79,11 @@ class QRCodeController extends AbstractBase
 
         $this->getLoader()->loadQRCode(
             $this->params()->fromQuery('text'),
-            array(
+            [
                 'level' => $this->params()->fromQuery('level', "L"),
                 'size' => $this->params()->fromQuery('size', "3"),
                 'margin' => $this->params()->fromQuery('margin', "4"),
-            )
+            ]
         );
         return $this->displayQRCode();
     }

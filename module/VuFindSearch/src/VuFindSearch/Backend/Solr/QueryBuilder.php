@@ -61,14 +61,14 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @var array
      */
-    protected $specs = array();
+    protected $specs = [];
 
     /**
      * Search specs for exact searches.
      *
      * @var array
      */
-    protected $exactSpecs = array();
+    protected $exactSpecs = [];
 
     /**
      * Should we create the hl.q parameter when appropriate?
@@ -100,7 +100,7 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @return void
      */
-    public function __construct(array $specs = array(),
+    public function __construct(array $specs = [],
         $defaultDismaxHandler = 'dismax'
     ) {
         $this->defaultDismaxHandler = $defaultDismaxHandler;
@@ -301,13 +301,12 @@ class QueryBuilder implements QueryBuilderInterface
      * @return string
      *
      * @see self::reduceQueryGroup()
-     *
      */
     protected function reduceQueryGroupComponents(AbstractQuery $component)
     {
         if ($component instanceof QueryGroup) {
             $reduced = array_map(
-                array($this, 'reduceQueryGroupComponents'), $component->getQueries()
+                [$this, 'reduceQueryGroupComponents'], $component->getQueries()
             );
             $searchString = $component->isNegated() ? 'NOT ' : '';
             $searchString .= sprintf(
@@ -335,7 +334,6 @@ class QueryBuilder implements QueryBuilderInterface
      * @param SearchHandler $handler Search handler
      *
      * @return string
-     *
      */
     protected function createSearchString($string, SearchHandler $handler = null)
     {

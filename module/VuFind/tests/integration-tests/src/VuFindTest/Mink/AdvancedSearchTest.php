@@ -47,7 +47,7 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Change the theme:
         $this->changeConfigs(
-            array('config' => array('Site' => array('theme' => 'bootstrap3')))
+            ['config' => ['Site' => ['theme' => 'bootstrap3']]]
         );
 
         // Go to the advanced search page

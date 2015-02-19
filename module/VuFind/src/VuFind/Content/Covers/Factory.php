@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -86,7 +87,7 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $finalConfig = isset($config->Contentcafe)
-            ? $config->Contentcafe : new \Zend\Config\Config(array());
+            ? $config->Contentcafe : new \Zend\Config\Config([]);
         return new ContentCafe($finalConfig);
     }
 

@@ -9,15 +9,15 @@
  */
 require_once('Zend/Loader/AutoloaderFactory.php');
 \Zend\Loader\AutoloaderFactory::factory(
-    array(
-        'Zend\Loader\StandardAutoloader' => array(
-            'namespaces' => array(
+    [
+        'Zend\Loader\StandardAutoloader' => [
+            'namespaces' => [
                 'VuFindSearch' => realpath(__DIR__ . '/../../src/VuFindSearch'),
                 'VuFindTest' => realpath(__DIR__ . '/src/VuFindTest'),
-            ),
+            ],
             'autoregister_zf' => true
-        )
-    )
+        ]
+    ]
 );
 
 define('PHPUNIT_SEARCH_FIXTURES', realpath(__DIR__ . '/fixtures'));

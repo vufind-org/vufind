@@ -204,9 +204,9 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         }
         $body = $view->partial(
             'Email/share-link.phtml',
-            array(
+            [
                 'msgUrl' => $url, 'to' => $to, 'from' => $from, 'message' => $msg
-            )
+            ]
         );
         return $this->send($to, $from, $subject, $body, $cc);
     }
@@ -245,9 +245,9 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         }
         $body = $view->partial(
             'Email/record.phtml',
-            array(
+            [
                 'driver' => $record, 'to' => $to, 'from' => $from, 'message' => $msg
-            )
+            ]
         );
         return $this->send($to, $from, $subject, $body, $cc);
     }

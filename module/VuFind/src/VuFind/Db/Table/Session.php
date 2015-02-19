@@ -58,7 +58,7 @@ class Session extends Gateway
      */
     public function getBySessionId($sid, $create = true)
     {
-        $row = $this->select(array('session_id' => $sid))->current();
+        $row = $this->select(['session_id' => $sid])->current();
         if ($create && empty($row)) {
             $row = $this->createRow();
             $row->session_id = $sid;

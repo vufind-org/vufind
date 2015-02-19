@@ -52,7 +52,7 @@ class LDAP extends AbstractBase
     protected function validateConfig()
     {
         // Check for missing parameters:
-        $requiredParams = array('host', 'port', 'basedn', 'username');
+        $requiredParams = ['host', 'port', 'basedn', 'username'];
         foreach ($requiredParams as $param) {
             if (!isset($this->config->LDAP->$param)
                 || empty($this->config->LDAP->$param)
@@ -78,7 +78,7 @@ class LDAP extends AbstractBase
 
         // Normalize all values to lowercase except for potentially case-sensitive
         // bind and basedn credentials.
-        $doNotLower = array('bind_username', 'bind_password', 'basedn');
+        $doNotLower = ['bind_username', 'bind_password', 'basedn'];
         return (in_array($name, $doNotLower)) ? $value : strtolower($value);
     }
 
@@ -258,10 +258,10 @@ class LDAP extends AbstractBase
     protected function processLDAPUser($username, $data)
     {
         // Database fields that we may be able to load from LDAP:
-        $fields = array(
+        $fields = [
             'firstname', 'lastname', 'email', 'cat_username', 'cat_password',
             'college', 'major'
-        );
+        ];
 
         // User object to populate from LDAP:
         $user = $this->getUserTable()->getByUsername($username);

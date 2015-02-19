@@ -79,7 +79,7 @@ class OpenLibrary
         $limit = 5, $offset = null, $publicFullText = true
     ) {
         // empty array to hold the result
-        $result = array();
+        $result = [];
 
         // normalise subject term
         $subject = $this->normaliseSubjectString($subject);
@@ -125,7 +125,7 @@ class OpenLibrary
     protected function processSubjectsApi($url, $limit, $publicFullText)
     {
         // empty array to hold the result
-        $result = array();
+        $result = [];
 
         // find out if there are any reviews
         $response = $this->client->setUri($url)->setMethod('GET')->send();
@@ -174,7 +174,7 @@ class OpenLibrary
     protected function normaliseSubjectString($subject)
     {
         // Normalise search term
-        $subject = str_replace(array('"', ',', '/'), '', $subject);
+        $subject = str_replace(['"', ',', '/'], '', $subject);
         $subject = trim(strtolower($subject));
         $subject = preg_replace("/\s+/", "_", $subject);
         return $subject;

@@ -75,7 +75,7 @@ class DPLATerms implements RecommendInterface
      *
      * @var array
      */
-    protected $formatMap = array(
+    protected $formatMap = [
         'authorStr'           => 'sourceResource.creator',
         'building'            => 'provider.name',
         'format'              => 'sourceResource.format',
@@ -83,19 +83,19 @@ class DPLATerms implements RecommendInterface
         'institution'         => 'provider.name',
         'language'            => 'sourceResource.language.name',
         'publishDate'         => 'sourceResource.date.begin',
-    );
+    ];
 
     /**
      * List of fields to retrieve from the API
      *
      * @var array
      */
-    protected $returnFields = array(
+    protected $returnFields = [
         'id',
         'dataProvider',
         'sourceResource.title',
         'sourceResource.description',
-    );
+    ];
 
     /**
      * Constructor
@@ -110,8 +110,6 @@ class DPLATerms implements RecommendInterface
     }
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -131,6 +129,7 @@ class DPLATerms implements RecommendInterface
      * request.
      *
      * @return void
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function init($params, $request)
@@ -139,8 +138,6 @@ class DPLATerms implements RecommendInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -168,10 +165,10 @@ class DPLATerms implements RecommendInterface
             $response = $this->client->send();
         } catch (TimeoutException $e) {
             error_log('DPLA API timeout -- skipping recommendations.');
-            return array();
+            return [];
         }
         if (!$response->isSuccess()) {
-            return array();
+            return [];
         }
         return $this->processResults($response->getBody());
     }
@@ -190,11 +187,11 @@ class DPLATerms implements RecommendInterface
             ? $search->getString()
             : '';
 
-        $params = array(
+        $params = [
             'q' => $lookfor,
             'fields' => implode(',', $this->returnFields),
             'api_key' => $this->apiKey
-        );
+        ];
         foreach ($filters as $field => $filter) {
             if (isset($this->formatMap[$field])) {
                 $params[$this->formatMap[$field]] = implode(',', $filter);
@@ -213,12 +210,12 @@ class DPLATerms implements RecommendInterface
     protected function processResults($response)
     {
         $body = json_decode($response);
-        $results = array();
+        $results = [];
         if ($body->count > 0) {
             $title = 'sourceResource.title';
             $desc = 'sourceResource.description';
             foreach ($body->docs as $i => $doc) {
-                $results[$i] = array(
+                $results[$i] = [
                     'title' => is_array($doc->$title)
                         ? current($doc->$title)
                         : $doc->$title,
@@ -226,7 +223,7 @@ class DPLATerms implements RecommendInterface
                         ? current($doc->dataProvider)
                         : $doc->dataProvider,
                     'link' => 'http://dp.la/item/' . $doc->id
-                );
+                ];
                 if (isset($doc->$desc)) {
                     $results[$i]['desc'] = is_array($doc->$desc)
                         ? current($doc->$desc)

@@ -64,7 +64,7 @@ class Writer
      *
      * @throws \Exception
      */
-    public function __construct($filename, $content = null, $comments = array())
+    public function __construct($filename, $content = null, $comments = [])
     {
         $this->filename = $filename;
         if (null === $content) {
@@ -158,7 +158,7 @@ class Writer
     public function save()
     {
         // Create parent directory structure if necessary:
-        $stack = array();
+        $stack = [];
         $dirname = dirname($this->filename);
         while (!empty($dirname) && !is_dir($dirname)) {
             $stack[] = $dirname;
@@ -175,7 +175,7 @@ class Writer
     }
 
     /**
-     * support method for buildContent -- format a value
+     * Support method for buildContent -- format a value
      *
      * @param mixed $e Value to format
      *
@@ -195,7 +195,7 @@ class Writer
     }
 
     /**
-     * support method for buildContent -- format a line
+     * Support method for buildContent -- format a line
      *
      * @param string $key   Configuration key
      * @param mixed  $value Configuration value
@@ -215,7 +215,7 @@ class Writer
     }
 
     /**
-     * support method for buildContent -- format an array into lines
+     * Support method for buildContent -- format an array into lines
      *
      * @param string $key   Configuration key
      * @param array  $value Configuration value
@@ -241,7 +241,7 @@ class Writer
     }
 
     /**
-     * write an ini file, adapted from
+     * Write an ini file, adapted from
      * http://php.net/manual/function.parse-ini-file.php
      *
      * @param array $assoc_arr Array to output
@@ -267,7 +267,7 @@ class Writer
                         = $comments['sections'][$key]['settings'][$key2];
                     $content .= $settingComments['before'];
                 } else {
-                    $settingComments = array();
+                    $settingComments = [];
                 }
                 if (is_array($elem2)) {
                     $content .= $this->buildContentArrayLines($key2, $elem2);

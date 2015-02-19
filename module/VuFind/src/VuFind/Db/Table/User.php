@@ -67,7 +67,7 @@ class User extends Gateway
      */
     public function getByUsername($username, $create = true)
     {
-        $row = $this->select(array('username' => $username))->current();
+        $row = $this->select(['username' => $username])->current();
         if ($create && empty($row)) {
             $row = $this->createRow();
             $row->username = $username;
@@ -85,7 +85,7 @@ class User extends Gateway
      */
     public function getByEmail($email)
     {
-        $row = $this->select(array('email' => $email))->current();
+        $row = $this->select(['email' => $email])->current();
         return $row;
     }
 
@@ -125,7 +125,7 @@ class User extends Gateway
      */
     public function getByVerifyHash($hash)
     {
-        $row = $this->select(array('verify_hash' => $hash))->current();
+        $row = $this->select(['verify_hash' => $hash])->current();
         return $row;
     }
 }

@@ -84,7 +84,7 @@ class Primo extends SolrDefault
      */
     public function getSecondaryAuthors()
     {
-        $authors = array();
+        $authors = [];
         if (isset($this->fields['creator'])) {
             for ($i = 1; $i < count($this->fields['creator']); $i++) {
                 if (isset($this->fields['creator'][$i])) {
@@ -103,7 +103,7 @@ class Primo extends SolrDefault
     public function getCreators()
     {
         return isset($this->fields['creator'])
-            ? $this->fields['creator'] : array();
+            ? $this->fields['creator'] : [];
     }
 
     /**
@@ -115,7 +115,7 @@ class Primo extends SolrDefault
     public function getAllSubjectHeadings()
     {
         $base = isset($this->fields['subjects'])
-            ? $this->fields['subjects'] : array();
+            ? $this->fields['subjects'] : [];
         $callback = function ($str) {
             return array_map('trim', explode(' -- ', $str));
         };
@@ -154,7 +154,7 @@ class Primo extends SolrDefault
     public function getFormats()
     {
         return isset($this->fields['format'])
-            ? (array)$this->fields['format'] : array();
+            ? (array)$this->fields['format'] : [];
     }
 
     /**
@@ -176,7 +176,7 @@ class Primo extends SolrDefault
     public function getDescription()
     {
         return isset($this->fields['description'])
-            ? $this->fields['description'] : array();
+            ? $this->fields['description'] : [];
     }
 
     /**
@@ -199,7 +199,7 @@ class Primo extends SolrDefault
      */
     public function getISSNs()
     {
-        $issns = array();
+        $issns = [];
         if (isset($this->fields['issn'])) {
             $issns = $this->fields['issn'];
         }
@@ -214,7 +214,7 @@ class Primo extends SolrDefault
     public function getLanguages()
     {
         return isset($this->fields['language'])
-            ? (array)$this->fields['language'] : array();
+            ? (array)$this->fields['language'] : [];
     }
 
     /**
@@ -231,9 +231,9 @@ class Primo extends SolrDefault
     public function getThumbnail($size = 'small')
     {
         if ($isbn = $this->getCleanISBN()) {
-            return array('size' => $size, 'isn' => $isbn);
+            return ['size' => $size, 'isn' => $isbn];
         }
-        return array('size' => $size, 'contenttype' => 'JournalArticle');
+        return ['size' => $size, 'contenttype' => 'JournalArticle'];
     }
 
     /**
@@ -252,10 +252,10 @@ class Primo extends SolrDefault
      */
     public function getURLs()
     {
-        $retVal = array();
+        $retVal = [];
 
         if (isset($this->fields['url'])) {
-            $retVal[] = array();
+            $retVal[] = [];
             $retVal[0]['url'] = $this->fields['url'];
             if (isset($this->fields['fulltext'])) {
                 $desc = $this->fields['fulltext'] == 'fulltext'
@@ -289,7 +289,7 @@ class Primo extends SolrDefault
      */
     protected function getSupportedCitationFormats()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -298,6 +298,7 @@ class Primo extends SolrDefault
      * @param string $format Export format
      *
      * @return bool
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function exportDisabled($format)

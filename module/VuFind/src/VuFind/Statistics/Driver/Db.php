@@ -68,7 +68,7 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      *
      * @return array
      */
-    public function getFullList($field, $value = array())
+    public function getFullList($field, $value = [])
     {
         // Use the model
         return $this->getDbTable('UserStatsFields')->getFields($field, $value)

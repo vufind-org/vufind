@@ -91,7 +91,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // Build parameters needed to display the control:
-        $params = array(
+        $params = [
             'openUrl' => $openUrl,
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)
@@ -104,7 +104,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                 ? false : $this->config->graphic_height,
             'openUrlEmbed' => $embed,
             'openUrlId' => $counter
-        );
+        ];
 
         // Render the subtemplate:
         return $this->context->__invoke($this->getView())->renderInContext(

@@ -91,7 +91,7 @@ class Record implements RecordInterface
     }
 
     /**
-     * getMarc()
+     * Get MARC record
      *
      * @return File_MARC_Record
      */

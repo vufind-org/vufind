@@ -156,11 +156,11 @@ class Backend extends AbstractBackend
         }
 
         $showParams = new ParamBag(
-            array('block' => 1, 'num' => $limit, 'start' => $offset)
+            ['block' => 1, 'num' => $limit, 'start' => $offset]
         );
         $response = $this->connector->show($showParams);
 
-        $hits = isset($response->hit) ? $response->hit : array();
+        $hits = isset($response->hit) ? $response->hit : [];
         $collection = $this->createRecordCollection(
             $hits, intval($response->merged), $offset
         );
@@ -179,7 +179,7 @@ class Backend extends AbstractBackend
     public function retrieve($id, ParamBag $params = null)
     {
         $response   = $this->connector->record($id);
-        $collection = $this->createRecordCollection(array($response), 1);
+        $collection = $this->createRecordCollection([$response], 1);
         $this->injectSourceIdentifier($collection);
         return $collection;
     }
@@ -246,6 +246,7 @@ class Backend extends AbstractBackend
      * @param int   $offset  Search offset
      *
      * @return RecordCollectionInterface
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function createRecordCollection($records, $total = 0, $offset = 0)

@@ -67,7 +67,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function getRecommendationSettings()
     {
-        return array('side' => 'FavoriteFacets');
+        return ['side' => 'FavoriteFacets'];
     }
 
     /**

@@ -68,7 +68,7 @@ class DeleteDocumentTest extends PHPUnit_Framework_TestCase
     public function testAsXMLMultiKey()
     {
         $document = new DeleteDocument();
-        $document->addKeys(array('foo', 'bar'));
+        $document->addKeys(['foo', 'bar']);
         $xml = $document->asXML();
         $this->assertXmlStringEqualsXmlString(
             '<delete><id>foo</id><id>bar</id></delete>',

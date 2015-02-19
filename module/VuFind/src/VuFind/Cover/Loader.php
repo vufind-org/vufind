@@ -42,21 +42,21 @@ use VuFindCode\ISBN, VuFind\Content\Covers\PluginManager as ApiManager;
 class Loader extends \VuFind\ImageLoader
 {
     /**
-     * filename constructed from ISBN
+     * Filename constructed from ISBN
      *
      * @var string
      */
     protected $localFile = '';
 
     /**
-     * valid image sizes to request
+     * Valid image sizes to request
      *
      * @var array
      */
-    protected $validSizes = array('small', 'medium', 'large');
+    protected $validSizes = ['small', 'medium', 'large'];
 
     /**
-     * property to hold VuFind configuration settings
+     * VuFind configuration settings
      *
      * @var \Zend\Config\Config
      */
@@ -77,7 +77,7 @@ class Loader extends \VuFind\ImageLoader
     protected $client;
 
     /**
-     * directory to store downloaded images
+     * Directory to store downloaded images
      *
      * @var string
      */
@@ -158,7 +158,7 @@ class Loader extends \VuFind\ImageLoader
     {
         return new \VuFind\Cover\Generator(
             $this->themeTools,
-            array('mode' => $this->config->Content->makeDynamicCovers)
+            ['mode' => $this->config->Content->makeDynamicCovers]
         );
     }
 
@@ -245,7 +245,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function getIdentifiers()
     {
-        $ids = array();
+        $ids = [];
         if ($this->isbn && $this->isbn->isValid()) {
             $ids['isbn'] = $this->isbn;
         }
@@ -351,7 +351,7 @@ class Loader extends \VuFind\ImageLoader
         // Try to find an icon:
         $iconFile = $this->searchTheme(
             'images/' . $this->size . '/' . $this->type,
-            array('.png', '.gif', '.jpg')
+            ['.png', '.gif', '.jpg']
         );
         if ($iconFile !== false) {
             // Most content-type headers match file extensions... but

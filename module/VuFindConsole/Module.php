@@ -56,13 +56,13 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
      */
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     /**
@@ -71,11 +71,12 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
      * @param Console $console Console adapter
      *
      * @return array
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConsoleUsage(Console $console)
     {
-        return array(
+        return [
             'generate extendservice' => 'Override a service with a new child class',
             'harvest harvest_oai' => 'OAI-PMH harvester',
             'harvest merge-marc' => 'MARC merge tool',
@@ -93,6 +94,6 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
             'util optimize' => 'Solr optimize tool',
             'util sitemap' => 'XML sitemap generator',
             'util suppressed' => 'Remove ILS-suppressed records from Solr',
-        );
+        ];
     }
 }

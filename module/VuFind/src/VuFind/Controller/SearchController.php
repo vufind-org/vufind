@@ -97,7 +97,7 @@ class SearchController extends AbstractSearch
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
-            return $this->forceLogin(null, array('emailurl' => $view->url));
+            return $this->forceLogin(null, ['emailurl' => $view->url]);
         }
 
         // Check if we have a URL in login followup data -- this should override
@@ -143,15 +143,15 @@ class SearchController extends AbstractSearch
      */
     protected function getIllustrationSettings($savedSearch = false)
     {
-        $illYes = array(
+        $illYes = [
             'text' => 'Has Illustrations', 'value' => 1, 'selected' => false
-        );
-        $illNo = array(
+        ];
+        $illNo = [
             'text' => 'Not Illustrated', 'value' => 0, 'selected' => false
-        );
-        $illAny = array(
+        ];
+        $illAny = [
             'text' => 'No Preference', 'value' => -1, 'selected' => false
-        );
+        ];
 
         // Find the selected value by analyzing facets -- if we find match, remove
         // the offending facet to avoid inappropriate items appearing in the
@@ -169,7 +169,7 @@ class SearchController extends AbstractSearch
         } else {
             $illAny['selected'] = true;
         }
-        return array($illYes, $illNo, $illAny);
+        return [$illYes, $illNo, $illAny];
     }
 
     /**
@@ -246,7 +246,7 @@ class SearchController extends AbstractSearch
         );
 
         // Build arrays of history entries
-        $saved = $unsaved = array();
+        $saved = $unsaved = [];
 
         // Loop through the history
         foreach ($searchHistory as $current) {
@@ -272,7 +272,7 @@ class SearchController extends AbstractSearch
         }
 
         return $this->createViewModel(
-            array('saved' => $saved, 'unsaved' => $unsaved)
+            ['saved' => $saved, 'unsaved' => $unsaved]
         );
     }
 
@@ -284,12 +284,12 @@ class SearchController extends AbstractSearch
     public function homeAction()
     {
         return $this->createViewModel(
-            array(
+            [
                 'results' => $this->getHomePageFacets(),
                 'hierarchicalFacets' => $this->getHierarchicalFacets(),
                 'hierarchicalFacetSortOptions'
                     => $this->getHierarchicalFacetSortSettings()
-            )
+            ]
         );
     }
 
@@ -306,10 +306,10 @@ class SearchController extends AbstractSearch
         }
 
         return $this->createViewModel(
-            array(
+            [
                 'fundList' => $this->newItems()->getFundList(),
                 'ranges' => $this->newItems()->getRanges()
-            )
+            ]
         );
     }
 
@@ -400,11 +400,11 @@ class SearchController extends AbstractSearch
         // send options to the view:
         $catalog = $this->getILS();
         return $this->createViewModel(
-            array(
+            [
                 'deptList' => $catalog->getDepartments(),
                 'instList' => $catalog->getInstructors(),
                 'courseList' =>  $catalog->getCourses()
-            )
+            ]
         );
     }
 
@@ -424,7 +424,7 @@ class SearchController extends AbstractSearch
             )
         );
         return $this->createViewModel(
-            array('params' => $params, 'results' => $results)
+            ['params' => $params, 'results' => $results]
         );
     }
 
@@ -577,7 +577,7 @@ class SearchController extends AbstractSearch
         case 'describe':
             $config = $this->getConfig();
             $xml = $this->getViewRenderer()->render(
-                'search/opensearch-describe.phtml', array('site' => $config->Site)
+                'search/opensearch-describe.phtml', ['site' => $config->Site]
             );
             break;
         default:
@@ -593,8 +593,7 @@ class SearchController extends AbstractSearch
     }
 
     /**
-     * Provide OpenSearch suggestions as specified here:
-     *
+     * Provide OpenSearch suggestions as specified at
      * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0
      *
      * @return \Zend\Http\Response
@@ -618,7 +617,7 @@ class SearchController extends AbstractSearch
         $headers = $response->getHeaders();
         $headers->addHeaderLine('Content-type', 'application/javascript');
         $response->setContent(
-            json_encode(array($query->get('lookfor', ''), $suggestions))
+            json_encode([$query->get('lookfor', ''), $suggestions])
         );
         return $response;
     }
@@ -645,7 +644,7 @@ class SearchController extends AbstractSearch
         $facetConfig = $this->getConfig('facets');
         return isset($facetConfig->SpecialFacets->hierarchical)
             ? $facetConfig->SpecialFacets->hierarchical->toArray()
-            : array();
+            : [];
     }
 
     /**
@@ -658,7 +657,7 @@ class SearchController extends AbstractSearch
         $facetConfig = $this->getConfig('facets');
         return isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
             ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
-            : array();
+            : [];
     }
 
 }

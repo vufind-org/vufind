@@ -49,10 +49,10 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
      */
     public function testDefaults()
     {
-        $rc = new RecordCollection(array());
+        $rc = new RecordCollection([]);
         $this->assertEquals(0, $rc->getTotal());
         $this->assertEquals(0, $rc->getOffset());
-        $this->assertEquals(array(), $rc->getFacets());
+        $this->assertEquals([], $rc->getFacets());
     }
 
     /**
@@ -62,7 +62,7 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
      */
     public function testNonDefaults()
     {
-        $rc = new RecordCollection(array('total' => 5, 'offset' => 2));
+        $rc = new RecordCollection(['total' => 5, 'offset' => 2]);
         $this->assertEquals(5, $rc->getTotal());
         $this->assertEquals(2, $rc->getOffset());
     }
