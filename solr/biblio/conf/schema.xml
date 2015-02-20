@@ -154,9 +154,7 @@
    <field name="callnumber" type="string" indexed="true" stored="true"/>
    <field name="callnumber-a" type="string" indexed="true" stored="true"/>
    <field name="callnumber-first" type="string" indexed="true" stored="true"/>
-   <field name="callnumber-first-code" type="string" indexed="true" stored="true"/>
    <field name="callnumber-subject" type="string" indexed="true" stored="true"/>
-   <field name="callnumber-subject-code" type="string" indexed="true" stored="true"/>
    <field name="callnumber-label" type="string" indexed="true" stored="true"/>
    <field name="callnumber-raw" type="string" indexed="true" stored="true" multiValued="true" />
    <field name="callnumber-search" type="callnumber" indexed="true" stored="true" multiValued="true" />
