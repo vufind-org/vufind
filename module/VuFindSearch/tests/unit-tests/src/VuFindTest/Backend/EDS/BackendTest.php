@@ -51,14 +51,14 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testRetrieve()
     {
-        $conn = $this->getConnectorMock(array('retrieve'));
+        $conn = $this->getConnectorMock(['retrieve']);
         $conn->expects($this->once())
             ->method('retrieve')
             ->will($this->returnValue($this->loadResponse('retrieve')));
 
         $back = $this->getBackend(
-            $conn, $this->getRCFactory(), null, null, array(),
-            array('getAuthenticationToken', 'getSessionToken')
+            $conn, $this->getRCFactory(), null, null, [],
+            ['getAuthenticationToken', 'getSessionToken']
         );
         $back->expects($this->any())
             ->method('getAuthenticationToken')
@@ -83,14 +83,14 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testSearch()
     {
-        $conn = $this->getConnectorMock(array('search'));
+        $conn = $this->getConnectorMock(['search']);
         $conn->expects($this->once())
             ->method('search')
             ->will($this->returnValue($this->loadResponse('search')));
 
         $back = $this->getBackend(
-            $conn, $this->getRCFactory(), null, null, array(),
-            array('getAuthenticationToken', 'getSessionToken')
+            $conn, $this->getRCFactory(), null, null, [],
+            ['getAuthenticationToken', 'getSessionToken']
         );
         $back->expects($this->any())
             ->method('getAuthenticationToken')
@@ -117,7 +117,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals('SourceType', $rawFacets[0]['Id']);
         $this->assertEquals('Source Type', $rawFacets[0]['Label']);
         $this->assertEquals(8, count($rawFacets[0]['AvailableFacetValues']));
-        $expected = array('Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)');
+        $expected = ['Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)'];
         $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
         $facets = $coll->getFacets();
         $this->assertEquals(count($facets), count($rawFacets));
@@ -147,12 +147,12 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         $conn = $this->getConnectorMock();
-        $config = array(
-            'EBSCO_Account' => array(
+        $config = [
+            'EBSCO_Account' => [
                 'user_name' => 'un', 'password' => 'pw', 'ip_auth' => true,
                 'profile' => 'pr', 'organization_id' => 'oi'
-            )
-        );
+            ]
+        ];
         $back = $this->getBackend($conn, $fact, null, null, $config);
         $this->assertEquals($fact, $back->getRecordCollectionFactory());
         $this->assertEquals($conn, $this->getProperty($back, 'client'));
@@ -190,11 +190,11 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = array())
+    protected function getConnectorMock(array $mock = [])
     {
         $client = $this->getMock('Zend\Http\Client');
         return $this->getMock(
-            'VuFindSearch\Backend\EDS\Zend2', $mock, array(array(), $client)
+            'VuFindSearch\Backend\EDS\Zend2', $mock, [[], $client]
         );
     }
 
@@ -208,7 +208,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * @param array                                                   $settings  Additional settings
      * @param array                                                   $mock      Methods to mock (or null for a real object)
      */
-    protected function getBackend($connector, $factory = null, $cache = null, $container = null, $settings = array(), $mock = null)
+    protected function getBackend($connector, $factory = null, $cache = null, $container = null, $settings = [], $mock = null)
     {
         if (null === $factory) {
             $factory = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
@@ -223,7 +223,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         if (null === $mock) {
             return new Backend($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
         } else {
-            $params = array($connector, $factory, $cache, $container, new \Zend\Config\Config($settings));
+            $params = [$connector, $factory, $cache, $container, new \Zend\Config\Config($settings)];
             return $this->getMock('VuFindSearch\Backend\EDS\Backend', $mock, $params);
         }
     }

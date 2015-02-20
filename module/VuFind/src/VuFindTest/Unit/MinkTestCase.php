@@ -182,7 +182,7 @@ abstract class MinkTestCase extends TestCase
         }
 
         // Reset the modified configs list.
-        $this->modifiedConfigs = array();
+        $this->modifiedConfigs = [];
     }
 
     /**

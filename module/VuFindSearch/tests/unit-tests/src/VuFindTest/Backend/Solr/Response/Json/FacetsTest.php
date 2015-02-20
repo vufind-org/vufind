@@ -50,12 +50,12 @@ class FacetsTest extends TestCase
     public function testFacets()
     {
         $facets = new Facets(
-            array(
-                'facet_fields' => array(
-                    'field1' => array(array('a', 1), array('b', 2))
-                ),
-                'facet_queries' => array(),
-            )
+            [
+                'facet_fields' => [
+                    'field1' => [['a', 1], ['b', 2]]
+                ],
+                'facet_queries' => [],
+            ]
         );
         $this->assertCount(0, $facets->getQueryFacets());
         $fieldFacets = $facets->getFieldFacets();

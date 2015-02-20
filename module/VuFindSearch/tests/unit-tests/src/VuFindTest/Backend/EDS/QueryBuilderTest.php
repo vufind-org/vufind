@@ -52,9 +52,9 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
         // @codingStandardsIgnoreStart
-        $tests = array(
-            array('advanced', array('AND,cheese', 'AND,SU:test'))
-        );
+        $tests = [
+            ['advanced', ['AND,cheese', 'AND,SU:test']]
+        ];
         // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();

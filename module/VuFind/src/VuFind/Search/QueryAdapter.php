@@ -64,14 +64,14 @@ abstract class QueryAdapter
         } elseif (isset($search['g'])) {
             $operator = $search['g'][0]['b'];
             return new QueryGroup(
-                $operator, array_map(array('self', 'deminify'), $search['g'])
+                $operator, array_map(['self', 'deminify'], $search['g'])
             );
         } else {
             // Special case: The outer-most group-of-groups.
             if (isset($search[0]['j'])) {
                 $operator = $search[0]['j'];
                 return new QueryGroup(
-                    $operator, array_map(array('self', 'deminify'), $search)
+                    $operator, array_map(['self', 'deminify'], $search)
                 );
             } else {
                 // Simple query
@@ -113,11 +113,11 @@ abstract class QueryAdapter
         $showName
     ) {
         // Groups and exclusions.
-        $groups = $excludes = array();
+        $groups = $excludes = [];
 
         foreach ($query->getQueries() as $search) {
             if ($search instanceof QueryGroup) {
-                $thisGroup = array();
+                $thisGroup = [];
                 // Process each search group
                 foreach ($search->getQueries() as $group) {
                     if ($group instanceof Query) {
@@ -170,11 +170,11 @@ abstract class QueryAdapter
     public static function fromRequest(Parameters $request, $defaultHandler)
     {
         $groupCount = 0;
-        $groups = array();
+        $groups = [];
 
         // Loop through each search group
         while (!is_null($lookfor = $request->get("lookfor{$groupCount}"))) {
-            $group = array();
+            $group = [];
             $lastBool = null;
 
             // Loop through each term inside the group
@@ -224,31 +224,31 @@ abstract class QueryAdapter
     {
         // Simple query:
         if ($query instanceof Query) {
-            return array(
-                array(
+            return [
+                [
                     'l' => $query->getString(),
                     'i' => $query->getHandler()
-                )
-            );
+                ]
+            ];
         }
 
         // Advanced query:
-        $retVal = array();
+        $retVal = [];
         $operator = $query->isNegated() ? 'NOT' : $query->getOperator();
         foreach ($query->getQueries() as $current) {
             if ($topLevel) {
-                $retVal[] = array(
+                $retVal[] = [
                     'g' => self::minify($current, false),
                     'j' => $operator
-                );
+                ];
             } elseif ($current instanceof QueryGroup) {
                 throw new \Exception('Not sure how to minify this query!');
             } else {
-                $currentArr = array(
+                $currentArr = [
                     'f' => $current->getHandler(),
                     'l' => $current->getString(),
                     'b' => $operator
-                );
+                ];
                 if (null !== ($op = $current->getOperator())) {
                     $currentArr['o'] = $op;
                 }

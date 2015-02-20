@@ -53,7 +53,7 @@ class Loader extends \VuFind\ImageLoader
      *
      * @var array
      */
-    protected $validSizes = array('small', 'medium', 'large');
+    protected $validSizes = ['small', 'medium', 'large'];
 
     /**
      * VuFind configuration settings
@@ -158,7 +158,7 @@ class Loader extends \VuFind\ImageLoader
     {
         return new \VuFind\Cover\Generator(
             $this->themeTools,
-            array('mode' => $this->config->Content->makeDynamicCovers)
+            ['mode' => $this->config->Content->makeDynamicCovers]
         );
     }
 
@@ -245,7 +245,7 @@ class Loader extends \VuFind\ImageLoader
      */
     protected function getIdentifiers()
     {
-        $ids = array();
+        $ids = [];
         if ($this->isbn && $this->isbn->isValid()) {
             $ids['isbn'] = $this->isbn;
         }
@@ -351,7 +351,7 @@ class Loader extends \VuFind\ImageLoader
         // Try to find an icon:
         $iconFile = $this->searchTheme(
             'images/' . $this->size . '/' . $this->type,
-            array('.png', '.gif', '.jpg')
+            ['.png', '.gif', '.jpg']
         );
         if ($iconFile !== false) {
             // Most content-type headers match file extensions... but

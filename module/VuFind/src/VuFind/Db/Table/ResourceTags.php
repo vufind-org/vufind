@@ -105,7 +105,7 @@ class ResourceTags extends Gateway
     public function checkForTags($ids)
     {
         // Set up return arrays:
-        $retVal = array('present' => array(), 'missing' => array());
+        $retVal = ['present' => [], 'missing' => []];
 
         // Look up IDs in the table:
         $callback = function ($select) use ($ids) {
@@ -143,15 +143,15 @@ class ResourceTags extends Gateway
     {
         $callback = function ($select) use ($tag, $userId, $listId) {
             $select->columns(
-                array(
+                [
                     'resource_id' => new Expression(
-                        'DISTINCT(?)', array('resource_tags.resource_id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'DISTINCT(?)', ['resource_tags.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ), '*'
-                )
+                ]
             );
             $select->join(
-                array('t' => 'tags'), 'resource_tags.tag_id = t.id', array()
+                ['t' => 'tags'], 'resource_tags.tag_id = t.id', []
             );
             $select->where->equalTo('t.tag', $tag)
                 ->where->equalTo('resource_tags.user_id', $userId);
@@ -174,17 +174,17 @@ class ResourceTags extends Gateway
     {
         $select = $this->sql->select();
         $select->columns(
-            array(
+            [
                 'users' => new Expression(
-                    'COUNT(DISTINCT(?))', array('user_id'),
-                    array(Expression::TYPE_IDENTIFIER)
+                    'COUNT(DISTINCT(?))', ['user_id'],
+                    [Expression::TYPE_IDENTIFIER]
                 ),
                 'resources' => new Expression(
-                    'COUNT(DISTINCT(?))', array('resource_id'),
-                    array(Expression::TYPE_IDENTIFIER)
+                    'COUNT(DISTINCT(?))', ['resource_id'],
+                    [Expression::TYPE_IDENTIFIER]
                 ),
                 'total' => new Expression('COUNT(*)')
-            )
+            ]
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
@@ -215,7 +215,7 @@ class ResourceTags extends Gateway
             $select->where->equalTo('user_id', $user);
             if (!is_null($resource)) {
                 if (!is_array($resource)) {
-                    $resource = array($resource);
+                    $resource = [$resource];
                 }
                 $select->where->in('resource_id', $resource);
             }
@@ -242,7 +242,7 @@ class ResourceTags extends Gateway
 
         // Check for orphans:
         if (count($potentialOrphans) > 0) {
-            $ids = array();
+            $ids = [];
             foreach ($potentialOrphans as $current) {
                 $ids[] = $current->tag_id;
             }
@@ -279,7 +279,7 @@ class ResourceTags extends Gateway
         $callback = function ($select) {
             $select->where->isNull('user_id');
         };
-        $this->update(array('user_id' => $id), $callback);
+        $this->update(['user_id' => $id], $callback);
     }
 
     /**
@@ -296,9 +296,9 @@ class ResourceTags extends Gateway
     ) {
         $callback = function ($select) use ($userId, $resourceId, $tagId) {
             $select->join(
-                array('r' => 'resource'),
+                ['r' => 'resource'],
                 'resource_tags.resource_id = r.id',
-                array("title" => "title")
+                ["title" => "title"]
             );
             if (!is_null($userId)) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
@@ -309,8 +309,8 @@ class ResourceTags extends Gateway
             if (!is_null($tagId)) {
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
-            $select->group(array("resource_id"));
-            $select->order(array("title"));
+            $select->group(["resource_id"]);
+            $select->order(["title"]);
         };
         return $this->select($callback);
     }
@@ -329,9 +329,9 @@ class ResourceTags extends Gateway
 
         $callback = function ($select) use ($userId, $resourceId, $tagId) {
             $select->join(
-                array('t' => 'tags'),
+                ['t' => 'tags'],
                 'resource_tags.tag_id = t.id',
-                array("tag" => "tag")
+                ["tag" => "tag"]
             );
             if (!is_null($userId)) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
@@ -342,8 +342,8 @@ class ResourceTags extends Gateway
             if (!is_null($tagId)) {
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
-            $select->group(array("tag_id"));
-            $select->order(array("tag"));
+            $select->group(["tag_id"]);
+            $select->order(["tag"]);
         };
         return $this->select($callback);
     }
@@ -361,9 +361,9 @@ class ResourceTags extends Gateway
     {
         $callback = function ($select) use ($userId, $resourceId, $tagId) {
             $select->join(
-                array('u' => 'user'),
+                ['u' => 'user'],
                 'resource_tags.user_id = u.id',
-                array("username" => "username")
+                ["username" => "username"]
             );
             if (!is_null($userId)) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
@@ -374,8 +374,8 @@ class ResourceTags extends Gateway
             if (!is_null($tagId)) {
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
-            $select->group(array("user_id"));
-            $select->order(array("username"));
+            $select->group(["user_id"]);
+            $select->order(["username"]);
         };
         return $this->select($callback);
     }
@@ -397,25 +397,25 @@ class ResourceTags extends Gateway
         $order = null, $page = null, $limit = 20
     ) {
         $order = (null !== $order)
-            ? array($order)
-            : array("username", "tag", "title");
+            ? [$order]
+            : ["username", "tag", "title"];
 
         $sql = $this->getSql();
         $select = $sql->select();
         $select->join(
-            array('t' => 'tags'),
+            ['t' => 'tags'],
             'resource_tags.tag_id = t.id',
-            array("tag" => "tag")
+            ["tag" => "tag"]
         );
         $select->join(
-            array('u' => 'user'),
+            ['u' => 'user'],
             'resource_tags.user_id = u.id',
-            array("username" => "username")
+            ["username" => "username"]
         );
         $select->join(
-            array('r' => 'resource'),
+            ['r' => 'resource'],
             'resource_tags.resource_id = r.id',
-            array("title" => "title")
+            ["title" => "title"]
         );
         if (null !== $userId) {
             $select->where->equalTo('resource_tags.user_id', $userId);

@@ -55,7 +55,10 @@ class SafeMoneyFormatTest extends \PHPUnit_Framework_TestCase
     {
         // store current default and set a value for consistency in testing
         $this->locale = setlocale(LC_MONETARY, 0);
-        setlocale(LC_MONETARY, 'en_US.UTF8');
+        $locales = ['en_US.UTF8', 'en_US.UTF-8', 'en_US'];
+        if (false === setlocale(LC_MONETARY, $locales)) {
+            $this->markTestSkipped('Problem setting up locale');
+        }
     }
 
     /**

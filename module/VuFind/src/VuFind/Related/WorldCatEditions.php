@@ -77,7 +77,7 @@ class WorldCatEditions extends Editions
      */
     protected function getQueryParts($driver)
     {
-        $parts = array();
+        $parts = [];
         $oclcNum = $driver->tryMethod('getCleanOCLCNum');
         if (!empty($oclcNum)) {
             $oclcList = $this->wcUtils->getXOCLCNUM($oclcNum);

@@ -116,6 +116,6 @@ class QueryBuilder
         // Clean and validate input:
         $index = $query->getHandler();
         $lookfor = $query->getString();
-        return array(compact('index', 'lookfor'));
+        return [compact('index', 'lookfor')];
     }
 }

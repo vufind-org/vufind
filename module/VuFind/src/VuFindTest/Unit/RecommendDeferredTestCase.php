@@ -56,7 +56,7 @@ abstract class RecommendDeferredTestCase extends TestCase
             $results = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters(array());
+            $request = new \Zend\StdLib\Parameters([]);
         }
         $mod = new $class();
         $mod->setConfig($settings);

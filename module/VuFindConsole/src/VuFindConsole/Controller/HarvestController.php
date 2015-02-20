@@ -50,7 +50,7 @@ class HarvestController extends AbstractBase
 
         // Parse switches:
         $this->consoleOpts->addRules(
-            array('from-s' => 'Harvest start date', 'until-s' => 'Harvest end date')
+            ['from-s' => 'Harvest start date', 'until-s' => 'Harvest end date']
         );
         $from = $this->consoleOpts->getOption('from');
         $until = $this->consoleOpts->getOption('until');
@@ -68,7 +68,7 @@ class HarvestController extends AbstractBase
         $argv = $this->consoleOpts->getRemainingArgs();
         if (isset($argv[0])) {
             if (isset($oaiSettings[$argv[0]])) {
-                $oaiSettings = array($argv[0] => $oaiSettings[$argv[0]]);
+                $oaiSettings = [$argv[0] => $oaiSettings[$argv[0]]];
             } else {
                 Console::writeLine("Could not load settings for {$argv[0]}.");
                 return $this->getFailureResponse();

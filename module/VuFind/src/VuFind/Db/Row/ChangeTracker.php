@@ -45,6 +45,6 @@ class ChangeTracker extends RowGateway
      */
     public function __construct($adapter)
     {
-        parent::__construct(array('core', 'id'), 'change_tracker', $adapter);
+        parent::__construct(['core', 'id'], 'change_tracker', $adapter);
     }
 }

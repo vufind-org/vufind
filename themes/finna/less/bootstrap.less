@@ -41,6 +41,10 @@ section.main.template-dir-search.template-name-results > .container, section.mai
 .record-view-header {
     background: @finna-record-header-background;
 }
+.search-result-header {
+    font-size: @finna-search-results-header-font-size;
+    margin: 0;
+}
 .logo {
     margin:@field-margin-vertical 0px 0px;   
 }
@@ -179,6 +183,9 @@ mark, .highlight {
 .row.result {
     padding-top: 15px;
     padding-bottom: 15px;
+    &:first-child {
+      padding-top: 0px;   
+    }
     @media (max-width: @screen-sm-min) {
         border-bottom: 1px solid rgba(100,100,100,0.1);
     }
@@ -316,11 +323,8 @@ mark, .highlight {
     filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='3');
 }
 .fa {cursor:default}
-.form-control {
-  @media(min-width:768px) {
-    
-  }
-}
+
+
 /* --- Image prosessing --- */
 .template-name-results .resultThumb img {
     width: 100%;   
@@ -368,6 +372,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   background: transparent;
   top: 3px;
   margin-right: -5px;
+  vertical-align: top;
   .tt-hint {display:none}
 }
 .tt-dropdown-menu {.list-group;margin-top:10px;}
@@ -535,7 +540,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   }
   .left img {max-width:100%; width:100%; height:auto; border: 4px solid lightgrey; }
   @media (max-width:767px) {
-    a {text-decoration:underline}
     .middle,.right {padding:0}
   }
   @media (max-width:530px) {
@@ -734,8 +738,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   speak: none;
   font-weight: normal;
   font-style: normal;
-  text-decoration:
-  inherit;
+  text-decoration: inherit;
   cursor: pointer;
   padding: 0;
   width: 10px;

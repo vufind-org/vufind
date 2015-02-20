@@ -1,0 +1,14 @@
+/* remove customized dropdown icons arrows for ie9 and lower since we cannot hide them */
+.jump-menu-style.controls:before, .jump-menu-style.prefilter-select:before {
+	content:'';
+	background: none;
+}
+/* fallback for non spinning icon */
+.fa-spinner {
+	background: url('../images/throbber.gif') no-repeat;
+	width: 20px;
+	height: 20px;	
+}
+.fa-spinner:before {
+	content:'';
+}

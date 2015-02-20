@@ -167,14 +167,14 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     $available = false;
                 }
 
-                $holding[] = array(
+                $holding[] = [
                     'id'             => $ppn,
                     'availability'   => $available,
                     'status'         => $status,
                     'location'       => $location,
                     'reserve'        => $reserve,
                     'callnumber'     => $label,
-                );
+                ];
             }
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -238,7 +238,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              . " order by o.signature";
         try {
             $sqlStmt = sybase_query($sql);
-            $holding = array();
+            $holding = [];
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $epn   = $row[0];
                 $loan_indi  = (string)$row[1];
@@ -256,7 +256,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     $location = $this->opaciln . "/" . $locid;
                 }
                 if ($row[6] != '') {
-                    $summary = array($row[6]);
+                    $summary = [$row[6]];
                 }
                 $material = $row[7];
 
@@ -288,7 +288,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     $available = false;
                 }
 
-                $holding[] = array(
+                $holding[] = [
                     'id'             => $ppn,
                     'availability'   => $available,
                     'status'         => $status,
@@ -298,7 +298,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     'duedate'        => $duedate,
                     'number'         => $volbar,
                     'barcode'        => $volbar,
-                    'notes'          => array($note),
+                    'notes'          => [$note],
                     'summary'        => $summary,
                     'is_holdable'    => $is_holdable,
                     'item_id'        => $epn,
@@ -306,7 +306,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     'storageRetrievalRequestLink' => $storage,
                     'checkStorageRetrievalRequest' => !empty($storage),
                     'material'       => $material,
-                );
+                ];
             }
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -458,7 +458,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         foreach ($ids as $id) {
             $items[] = $this->getStatus($id);
         }
@@ -503,11 +503,11 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              . " + 7*ascii(substring(convert(char(12),'" . $pin . "',104),7,1))"
              . " + 8*ascii(substring(convert(char(12),'" . $pin . "',104),8,1))";
         try {
-            $result = array();
+            $result = [];
             $sqlStmt = sybase_query($sql);
             $row = sybase_fetch_row($sqlStmt);
             if ($row) {
-                $result = array('id' => $barcode,
+                $result = ['id' => $barcode,
                               'firstname' => $row[1],
                               'lastname' => $row[2],
                               'cat_username' => $barcode,
@@ -517,7 +517,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                               'college' => $row[5],  // borrower_type
                               'address_id_nr' => $row[7],
                               'iln' => $row[8],
-                              'lang' => $row[9]);
+                              'lang' => $row[9]];
                 return $result;
             } else {
                 return null;
@@ -558,11 +558,11 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              . "   and b.borrower_bar='" . $user['id'] . "'"
              . "   order by a.address_code asc";
         try {
-            $result = array();
+            $result = [];
             $sqlStmt = sybase_query($sql);
             $row = sybase_fetch_row($sqlStmt);
             if ($row) {
-                $result = array(
+                $result = [
                           'firstname' => $row[1],
                           'lastname'  => $row[2],
                           'address1'  => $row[10] . ', ' . $row[9] . ' ' . $row[11],
@@ -570,7 +570,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                           'email'     => $row[3],
                           'phone'     => $row[12],
                           'group'     => $row[6],
-                          );
+                          ];
                 if ($row[6] == '81') {
                     $result['group'] = $this->translate('Staff');
                 } else if ($row[6] == '1') {
@@ -617,11 +617,11 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         $lang = $patron['lang'];
         $sql = "exec loans_requests_rm_003 " . $aid . ", " . $iln . ", " . $lang;
         try {
-            $result = array();
+            $result = [];
             $count = 0;
             $sqlStmt = sybase_query($sql);
             while ($row = sybase_fetch_row($sqlStmt)) {
-                $result[$count] = array(
+                $result[$count] = [
                     'id'      => $row[0]
                    ,'duedate' => substr($row[13], 0, 12)
                    ,'barcode' => $row[31]
@@ -631,14 +631,14 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                    ,'message' => $row[60]
                    ,'title'   => $this->picaRecode($row[44])
                    ,'item_id' => $row[7]
-                );
+                ];
                 $count++;
             }
             return $result;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
-        return array();
+        return [];
     }
 
     /**
@@ -673,24 +673,24 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             . " and l.iln=" . $iln
             . "";
         try {
-            $result = array();
+            $result = [];
             $sqlStmt = sybase_query($sql);
             $expire = $row[3]; // empty ?
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $title = $this->picaRecode($row[1]);
-                $result[] = array(
+                $result[] = [
                     'id'       => $this->prfz($row[0]),
                     'create'   => $row[2],
                     'expire'   => $expire,
                     //'location' => $row[4],
                     'title'    => $title
-                );
+                ];
             }
             return $result;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
-        return array();
+        return [];
     }
 
     /**
@@ -707,7 +707,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -752,7 +752,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             . " and r.costs_code not in (1, 2, 3, 4, 8)"
             . "";
         try {
-            $result = array();
+            $result = [];
             $sqlStmt = sybase_query($sql);
             while ($row = sybase_fetch_row($sqlStmt)) {
                 //$fine = $this->translate(('3'==$row[1])?'Overdue':'Dues');
@@ -762,7 +762,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $checkout = substr($row[3], 0,  12);
                 $duedate = substr($row[4], 0, 12);
                 $title = $this->picaRecode(substr($row[6], 0, 12));
-                $result[] = array(
+                $result[] = [
                     'id'      => $this->prfz($row[0]),
                     'amount'  => $amount,
                     'balance' => $amount, //wtf
@@ -770,13 +770,13 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     'duedate' => $duedate,
                     'fine'    => $fine,
                     'title'   => $title,
-                );
+                ];
             }
             return $result;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
-        return array();
+        return [];
     }
 
     /**

@@ -82,13 +82,20 @@
 }
 // Close icon
 .modal-header .close {
-margin-top: -9px;
-margin-right: -7px;
-color: white;
-padding: 0px 7px 6px 7px;
-font-weight: 500;
-font-size: 2em;
-line-height: 1em;
+    color: @body-bg;
+    padding: 0px 7px 6px 7px;
+    font-weight: 500;
+    min-height: 30px;
+    min-width: 30px;
+    font-size: 1.5em;
+    line-height: 1em;
+  &:after {
+    position: absolute;
+    font-family: 'icomoon';
+    content: '\e02e';
+    top: 14px;
+    right: 14px;
+  }
 }
 
 // Title text within header

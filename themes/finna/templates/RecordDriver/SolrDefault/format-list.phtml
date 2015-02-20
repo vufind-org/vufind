@@ -1,0 +1,3 @@
+<? $formats = $this->driver->getFormats(); if ($formats): ?>
+  <span class="iconlabel <?=$this->record($this->driver)->getFormatClass(end($formats))?>"><?=$this->transEsc(end($formats))?></span>
+<? endif; ?>

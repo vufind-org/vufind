@@ -119,7 +119,7 @@ class OpenLibrarySubjects implements RecommendInterface,
         if (isset($params[3])) {
             $this->subjectTypes = explode(',', $params[3]);
         } else {
-            $this->subjectTypes = array("topic");
+            $this->subjectTypes = ["topic"];
         }
 
         // A 4th parameter is not specified in searches.ini, if it exists
@@ -168,7 +168,7 @@ class OpenLibrarySubjects implements RecommendInterface,
     {
         // Only proceed if we have a request parameter value
         if (!empty($this->subject)) {
-            $result = array();
+            $result = [];
             $ol = new OpenLibrary($this->httpService->createClient());
             $result = $ol->getSubjects(
                 $this->subject, $this->publishedIn, $this->subjectTypes, true, false,
@@ -176,9 +176,9 @@ class OpenLibrarySubjects implements RecommendInterface,
             );
 
             if (!empty($result)) {
-                $this->result = array(
+                $this->result = [
                     'worksArray' => $result, 'subject' => $this->subject
-                );
+                ];
             }
         }
     }
@@ -201,7 +201,7 @@ class OpenLibrarySubjects implements RecommendInterface,
         $from = $request->get($field . 'from');
         $to = $request->get($field . 'to');
         if (!is_null($from) && !is_null($to)) {
-            $range = array('from' => $from, 'to' => $to);
+            $range = ['from' => $from, 'to' => $to];
         } else if (is_object($params)) {
             $currentFilters = $params->getFilters();
             if (isset($currentFilters[$field][0])) {

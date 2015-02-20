@@ -62,7 +62,7 @@ class SwitchQuery implements RecommendInterface
      *
      * @var array
      */
-    protected $suggestions = array();
+    protected $suggestions = [];
 
     /**
      * Names of checks that should be skipped. These should correspond
@@ -71,7 +71,7 @@ class SwitchQuery implements RecommendInterface
      *
      * @var array
      */
-    protected $skipChecks = array();
+    protected $skipChecks = [];
 
     /**
      * Names of transforms to apply. These should correspond
@@ -80,7 +80,7 @@ class SwitchQuery implements RecommendInterface
      *
      * @var array
      */
-    protected $transforms = array();
+    protected $transforms = [];
 
     /**
      * Search results object.
@@ -114,9 +114,9 @@ class SwitchQuery implements RecommendInterface
             return trim(strtolower($i));
         };
         $this->skipChecks = !empty($params[1])
-            ? array_map($callback, explode(',', $params[1])) : array();
+            ? array_map($callback, explode(',', $params[1])) : [];
         $this->transforms = !empty($params[2])
-            ? explode(',', $params[2]) : array();
+            ? explode(',', $params[2]) : [];
     }
 
     /**
@@ -304,9 +304,9 @@ class SwitchQuery implements RecommendInterface
     protected function getLuceneHelper()
     {
         $backend = $this->backendManager->get($this->backend);
-        $qb = is_callable(array($backend, 'getQueryBuilder'))
+        $qb = is_callable([$backend, 'getQueryBuilder'])
             ? $backend->getQueryBuilder() : false;
-        return $qb && is_callable(array($qb, 'getLuceneHelper'))
+        return $qb && is_callable([$qb, 'getLuceneHelper'])
             ? $qb->getLuceneHelper() : false;
     }
 

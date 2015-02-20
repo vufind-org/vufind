@@ -117,7 +117,7 @@ class UpgradeController extends AbstractBase
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
+        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
     }
 
     /**
@@ -308,7 +308,7 @@ class UpgradeController extends AbstractBase
             }
 
             // Check for missing columns.
-            $mT = $this->logsql ? $missingTables : array();
+            $mT = $this->logsql ? $missingTables : [];
             $missingCols = $this->dbUpgrade()->getMissingColumns($mT);
             if (!empty($missingCols)) {
                 // Only manipulate DB if we're not in logging mode:
@@ -327,7 +327,7 @@ class UpgradeController extends AbstractBase
             }
 
             // Check for modified columns.
-            $mC = $this->logsql ? $missingCols : array();
+            $mC = $this->logsql ? $missingCols : [];
             $modifiedCols = $this->dbUpgrade()->getModifiedColumns($mT, $mC);
             if (!empty($modifiedCols)) {
                 // Only manipulate DB if we're not in logging mode:
@@ -415,7 +415,7 @@ class UpgradeController extends AbstractBase
             return $this->forwardTo('Upgrade', 'Home');
         }
 
-        return $this->createViewModel(array('sql' => $this->session->sql));
+        return $this->createViewModel(['sql' => $this->session->sql]);
     }
 
     /**
@@ -453,7 +453,7 @@ class UpgradeController extends AbstractBase
             }
         }
 
-        return $this->createViewModel(array('dbrootuser' => $dbrootuser));
+        return $this->createViewModel(['dbrootuser' => $dbrootuser]);
     }
 
     /**
@@ -511,9 +511,9 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(
-            array(
+            [
                 'anonymousTags' => $this->params()->fromQuery('anonymousCnt')
-            )
+            ]
         );
     }
 
@@ -694,7 +694,7 @@ class UpgradeController extends AbstractBase
         // We're finally done -- display any warnings that we collected during
         // the process.
         $allWarnings = array_merge(
-            isset($this->cookie->warnings) ? $this->cookie->warnings : array(),
+            isset($this->cookie->warnings) ? $this->cookie->warnings : [],
             (array)$this->session->warnings
         );
         foreach ($allWarnings as $warning) {
@@ -703,13 +703,13 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(
-            array(
+            [
                 'configDir' => dirname(
                     ConfigLocator::getLocalConfigPath('config.ini', null, true)
                 ),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import',
                 'oldVersion' => $this->cookie->oldVersion
-            )
+            ]
         );
     }
 
@@ -725,7 +725,7 @@ class UpgradeController extends AbstractBase
         }
         $storage = $this->session->getManager()->getStorage();
         $storage[$this->session->getName()]
-            = new ArrayObject(array(), ArrayObject::ARRAY_AS_PROPS);
+            = new ArrayObject([], ArrayObject::ARRAY_AS_PROPS);
         return $this->forwardTo('Upgrade', 'Home');
     }
 }

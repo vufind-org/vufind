@@ -120,7 +120,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         foreach ($ids as $id) {
             $items[] = $this->getShortStatus($id);
         }
@@ -173,7 +173,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -206,7 +206,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
         $daia = $this->queryDAIA($id);
         // get Availability information from DAIA
         $documentlist = $daia->getElementsByTagName('document');
-        $status = array();
+        $status = [];
         for ($b = 0; $documentlist->item($b) !== null; $b++) {
             $itemlist = $documentlist->item($b)->getElementsByTagName('item');
             $ilslink = '';
@@ -214,7 +214,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                 $ilslink = $documentlist->item($b)->attributes
                     ->getNamedItem('href')->nodeValue;
             }
-            $emptyResult = array(
+            $emptyResult = [
                     'callnumber' => '-',
                     'availability' => '0',
                     'number' => 1,
@@ -228,9 +228,9 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                     'location' => '',
                     'ilslink' => $ilslink,
                     'label' => 'No samples'
-            );
+            ];
             for ($c = 0; $itemlist->item($c) !== null; $c++) {
-                $result = array(
+                $result = [
                     'callnumber' => '',
                     'availability' => '0',
                     'number' => ($c+1),
@@ -247,8 +247,8 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                     'location.id' => '',
                     'location.href' => '',
                     'label' => '',
-                    'notes' => array()
-                );
+                    'notes' => []
+                ];
                 $result['item_id'] = $itemlist->item($c)->attributes
                     ->getNamedItem('id')->nodeValue;
                 if ($itemlist->item($c)->attributes->getNamedItem('href') !== null) {
@@ -467,7 +467,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
         $label = "Unknown";
         $storage = "Unknown";
         $presenceOnly = '1';
-        $holding = array();
+        $holding = [];
         for ($c = 0; $itemlist->item($c) !== null; $c++) {
             $earliest_href = '';
             $storageElements = $itemlist->item($c)->getElementsByTagName('storage');
@@ -506,9 +506,9 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                 $unavailableElements = $itemlist->item($c)
                     ->getElementsByTagName('unavailable');
                 if ($unavailableElements->item(0) !== null) {
-                    $earliest = array();
-                    $queue = array();
-                    $hrefs = array();
+                    $earliest = [];
+                    $queue = [];
+                    $hrefs = [];
                     for ($n = 0; $unavailableElements->item($n) !== null; $n++) {
                         $unavailHref = $unavailableElements->item($n)->attributes
                             ->getNamedItem('href');
@@ -573,7 +573,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
             if ($earliest_queue > 0) {
                 $reserve = 'Y';
             }
-            $holding[] = array('availability' => $availability,
+            $holding[] = ['availability' => $availability,
                    'id' => $id,
                    'status' => "$status",
                    'location' => "$storage",
@@ -584,7 +584,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                    'leanable' => $leanable,
                    'recallhref' => $earliest_href,
                    'number' => ($c+1),
-                   'presenceOnly' => $presenceOnly);
+                   'presenceOnly' => $presenceOnly];
         }
         return $holding;
     }

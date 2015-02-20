@@ -59,7 +59,7 @@ class RC4
          * Email: ali[at]farhadi[dot]ir
          * Website: http://farhadi.ir/
          */
-        $s = array();
+        $s = [];
         for ($i = 0; $i<256; $i++) {
             $s[$i] = $i;
         }

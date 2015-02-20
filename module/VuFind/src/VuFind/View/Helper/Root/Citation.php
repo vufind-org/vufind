@@ -44,7 +44,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
      *
      * @var array
      */
-    protected $details = array();
+    protected $details = [];
 
     /**
      * Record driver
@@ -81,7 +81,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
     public function __invoke($driver)
     {
         // Build author list:
-        $authors = array();
+        $authors = [];
         $primary = $driver->tryMethod('getPrimaryAuthor');
         if (empty($primary)) {
             $primary = $driver->tryMethod('getCorporateAuthor');
@@ -116,15 +116,15 @@ class Citation extends \Zend\View\Helper\AbstractHelper
 
         // Store everything:
         $this->driver = $driver;
-        $this->details = array(
+        $this->details = [
             'authors' => $this->prepareAuthors($authors),
             'title' => trim($title), 'subtitle' => trim($subtitle),
             'pubPlace' => isset($pubPlaces[0]) ? $pubPlaces[0] : null,
             'pubName' => isset($publishers[0]) ? $publishers[0] : null,
             'pubDate' => isset($pubDates[0]) ? $pubDates[0] : null,
-            'edition' => empty($edition) ? array() : array($edition),
+            'edition' => empty($edition) ? [] : [$edition],
             'journal' => $driver->tryMethod('getContainerTitle')
-        );
+        ];
 
         return $this;
     }
@@ -149,7 +149,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
 
         // If we got this far, it's worth trying to reverse names (for example,
         // this may be dirty data from Summon):
-        $processed = array();
+        $processed = [];
         foreach ($authors as $name) {
             if (!strstr($name, ',')) {
                 $parts = explode(' ', $name);
@@ -197,11 +197,11 @@ class Citation extends \Zend\View\Helper\AbstractHelper
      */
     public function getCitationAPA()
     {
-        $apa = array(
+        $apa = [
             'title' => $this->getAPATitle(),
             'authors' => $this->getAPAAuthors(),
             'edition' => $this->getEdition()
-        );
+        ];
         // Show a period after the title if it does not already have punctuation
         // and is not followed by an edition statement:
         $apa['periodAfterTitle']
@@ -254,10 +254,10 @@ class Citation extends \Zend\View\Helper\AbstractHelper
      */
     public function getCitationMLA($etAlThreshold = 4, $volNumSeparator = '.')
     {
-        $mla = array(
+        $mla = [
             'title' => $this->getMLATitle(),
             'authors' => $this->getMLAAuthors($etAlThreshold)
-        );
+        ];
         $mla['periodAfterTitle'] = !$this->isPunctuated($mla['title']);
 
         // Behave differently for books vs. journals:
@@ -373,7 +373,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
                 $vol = $num;
                 $num = '';
             }
-            return array($vol, $num, $year);
+            return [$vol, $num, $year];
         } else {
             // Right now, we'll assume if day == 1, this is a monthly publication;
             // that's probably going to result in some bad citations, but it's the
@@ -381,7 +381,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
             $finalDate = $year
                 . (empty($month) ? '' : ', ' . $month)
                 . (($day > 1) ? ' ' . $day : '');
-            return array('', '', $finalDate);
+            return ['', '', $finalDate];
         }
     }
 
@@ -397,7 +397,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
         $str = $this->stripPunctuation($str);
 
         // Is it a standard suffix?
-        $suffixes = array('Jr', 'Sr');
+        $suffixes = ['Jr', 'Sr'];
         if (in_array($str, $suffixes)) {
             return true;
         }
@@ -506,7 +506,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
      */
     protected function isPunctuated($string)
     {
-        $punctuation = array('.', '?', '!');
+        $punctuation = ['.', '?', '!'];
         return (in_array(substr($string, -1), $punctuation));
     }
 
@@ -519,7 +519,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
      */
     protected function stripPunctuation($text)
     {
-        $punctuation = array('.', ',', ':', ';', '/');
+        $punctuation = ['.', ',', ':', ';', '/'];
         $text = trim($text);
         if (in_array(substr($text, -1), $punctuation)) {
             $text = substr($text, 0, -1);
@@ -559,11 +559,11 @@ class Citation extends \Zend\View\Helper\AbstractHelper
      */
     protected function capitalizeTitle($str)
     {
-        $exceptions = array('a', 'an', 'the', 'against', 'between', 'in', 'of',
-            'to', 'and', 'but', 'for', 'nor', 'or', 'so', 'yet', 'to');
+        $exceptions = ['a', 'an', 'the', 'against', 'between', 'in', 'of',
+            'to', 'and', 'but', 'for', 'nor', 'or', 'so', 'yet', 'to'];
 
         $words = explode(' ', $str);
-        $newwords = array();
+        $newwords = [];
         $followsColon = false;
         foreach ($words as $word) {
             // Capitalize words unless they are in the exception list...  but even
@@ -730,7 +730,7 @@ class Citation extends \Zend\View\Helper\AbstractHelper
      */
     protected function getPublisher()
     {
-        $parts = array();
+        $parts = [];
         if (isset($this->details['pubPlace'])
             && !empty($this->details['pubPlace'])
         ) {

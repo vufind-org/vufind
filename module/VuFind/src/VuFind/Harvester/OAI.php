@@ -102,14 +102,14 @@ class OAI
      *
      * @var array
      */
-    protected $idSearch = array();
+    protected $idSearch = [];
 
     /**
      * Replacements for regular expression matches
      *
      * @var array
      */
-    protected $idReplace = array();
+    protected $idReplace = [];
 
     /**
      * Directory for storing harvested files
@@ -179,14 +179,14 @@ class OAI
      *
      * @var array
      */
-    protected $injectHeaderElements = array();
+    protected $injectHeaderElements = [];
 
     /**
      * Associative array of setSpec => setName
      *
      * @var array
      */
-    protected $setNames = array();
+    protected $setNames = [];
 
     /**
      * Filename for logging harvested IDs (false for none)
@@ -256,7 +256,7 @@ class OAI
 
         // Disable SSL verification if requested:
         if (isset($settings['sslverifypeer']) && !$settings['sslverifypeer']) {
-            $this->client->setOptions(array('sslverifypeer' => false));
+            $this->client->setOptions(['sslverifypeer' => false]);
         }
 
         // Don't time out during harvest!!
@@ -319,7 +319,7 @@ class OAI
         // Normalize sets setting to an array:
         $sets = (array)$this->set;
         if (empty($sets)) {
-            $sets = array(null);
+            $sets = [null];
         }
 
         // Loop through all of the selected sets:
@@ -387,7 +387,7 @@ class OAI
     {
         // Remove timezone markers -- we don't want PHP to outsmart us by adjusting
         // the time zone!
-        $date = str_replace(array('T', 'Z'), array(' ', ''), $date);
+        $date = str_replace(['T', 'Z'], [' ', ''], $date);
 
         // Translate to a timestamp:
         return strtotime($date);
@@ -414,7 +414,7 @@ class OAI
      *
      * @return object        SimpleXML-formatted response.
      */
-    protected function sendRequest($verb, $params = array())
+    protected function sendRequest($verb, $params = [])
     {
         // Debug:
         if ($this->verbose) {
@@ -428,7 +428,7 @@ class OAI
             // Set up the request:
             $this->client->resetParameters();
             $this->client->setUri($this->baseURL);
-            $this->client->setOptions(array('timeout' => $this->timeout));
+            $this->client->setOptions(['timeout' => $this->timeout]);
 
             // Set authentication, if necessary:
             if ($this->httpUser && $this->httpPass) {
@@ -701,7 +701,7 @@ class OAI
 
         // On the first pass through the following loop, we want to get the
         // first page of sets without using a resumption token:
-        $params = array();
+        $params = [];
 
         // Grab set information until we have it all (at which point we will
         // break out of this otherwise-infinite loop):
@@ -770,11 +770,11 @@ class OAI
         $this->writeLine('Processing ' . count($records) . " records...");
 
         // Array for tracking successfully harvested IDs:
-        $harvestedIds = array();
+        $harvestedIds = [];
 
         // Array for tracking deleted IDs and string for tracking inner HTML
         // (both of these variables are used only when in 'combineRecords' mode):
-        $deletedIds = array();
+        $deletedIds = [];
         $innerXML = '';
 
         // Loop through the records:
@@ -845,7 +845,7 @@ class OAI
         // Determine start and end tags from configuration:
         $start = $this->combineRecordsTag;
         $tmp = explode(' ', $start);
-        $end = '</' . str_replace(array('<', '>'), '', $tmp[0]) . '>';
+        $end = '</' . str_replace(['<', '>'], '', $tmp[0]) . '>';
 
         // Assemble the document:
         return $start . $innerXML . $end;
@@ -893,7 +893,7 @@ class OAI
      */
     protected function getRecordsByDate($from = null, $set = null, $until = null)
     {
-        $params = array('metadataPrefix' => $this->metadataPrefix);
+        $params = ['metadataPrefix' => $this->metadataPrefix];
         if (!empty($from)) {
             $params['from'] = $from;
         }
@@ -915,7 +915,7 @@ class OAI
      */
     protected function getRecordsByToken($token)
     {
-        return $this->getRecords(array('resumptionToken' => (string)$token));
+        return $this->getRecords(['resumptionToken' => (string)$token]);
     }
 
     /**
@@ -935,12 +935,12 @@ class OAI
         $this->baseURL = $settings['url'];
 
         // Settings that may be mapped directly from $settings to class properties:
-        $mappableSettings = array(
+        $mappableSettings = [
             'set', 'metadataPrefix', 'idPrefix', 'idSearch', 'idReplace',
             'harvestedIdLog', 'injectId', 'injectSetSpec', 'injectSetName',
             'injectDate', 'injectHeaderElements', 'verbose', 'sanitize', 'badXMLLog',
             'httpUser', 'httpPass', 'timeout', 'combineRecords', 'combineRecordsTag',
-        );
+        ];
         foreach ($mappableSettings as $current) {
             if (isset($settings[$current])) {
                 $this->$current = $settings[$current];
@@ -955,7 +955,7 @@ class OAI
 
         // Normalize injectHeaderElements to an array:
         if (!is_array($this->injectHeaderElements)) {
-            $this->injectHeaderElements = array($this->injectHeaderElements);
+            $this->injectHeaderElements = [$this->injectHeaderElements];
         }
     }
 

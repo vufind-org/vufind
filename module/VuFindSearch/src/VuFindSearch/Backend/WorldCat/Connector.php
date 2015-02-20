@@ -110,11 +110,11 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $xml = simplexml_load_string($body);
         $error = isset($xml->diagnostic);
 
-        return array(
-            'docs' => $error ? array() : array($body),
+        return [
+            'docs' => $error ? [] : [$body],
             'offset' => 0,
             'total' => $error ? 0 : 1
-        );
+        ];
     }
 
     /**
@@ -136,16 +136,16 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $response = $this->call('POST', $params->getArrayCopy(), false);
 
         $xml = simplexml_load_string($response);
-        $docs = isset($xml->records->record) ? $xml->records->record : array();
-        $finalDocs = array();
+        $docs = isset($xml->records->record) ? $xml->records->record : [];
+        $finalDocs = [];
         foreach ($docs as $doc) {
             $finalDocs[] = $doc->recordData->asXML();
         }
-        return array(
+        return [
             'docs' => $finalDocs,
             'offset' => $offset,
             'total' => isset($xml->numberOfRecords) ? (int)$xml->numberOfRecords : 0
-        );
+        ];
     }
 
 }

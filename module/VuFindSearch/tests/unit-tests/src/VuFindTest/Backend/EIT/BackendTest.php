@@ -52,7 +52,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testRetrieve()
     {
-        $conn = $this->getConnectorMock(array('call'));
+        $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
             ->method('call')
             ->will($this->returnValue($this->loadResponse('retrieve')));
@@ -75,7 +75,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testSearch()
     {
-        $conn = $this->getConnectorMock(array('call'));
+        $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
             ->method('call')
             ->will($this->returnValue($this->loadResponse('search')));
@@ -163,12 +163,12 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = array())
+    protected function getConnectorMock(array $mock = [])
     {
         $client = $this->getMock('Zend\Http\Client');
         return $this->getMock(
             'VuFindSearch\Backend\EIT\Connector', $mock,
-            array('http://fake', $client, 'profile', 'pwd', 'dbs')
+            ['http://fake', $client, 'profile', 'pwd', 'dbs']
         );
     }
 

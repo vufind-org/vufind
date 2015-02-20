@@ -60,18 +60,18 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
     public function testSuggestions()
     {
         // Fake DB response:
-        $tags = array(
-            array('tag' => 'bar1'),
-            array('tag' => 'bar2'),
-        );
+        $tags = [
+            ['tag' => 'bar1'],
+            ['tag' => 'bar2'],
+        ];
 
         // Fake services:
-        $tagTable = $this->getMock('VuFind\Db\Table\Tags', array('matchText'));
+        $tagTable = $this->getMock('VuFind\Db\Table\Tags', ['matchText']);
         $tagTable->expects($this->once())->method('matchText')
             ->with($this->equalTo('foo'))
             ->will($this->returnValue($tags));
         $tableManager
-            = $this->getMock('VuFind\Db\Table\PluginManager', array('get'));
+            = $this->getMock('VuFind\Db\Table\PluginManager', ['get']);
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('Tags'))
             ->will($this->returnValue($tagTable));
@@ -80,6 +80,6 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
         $tag = new Tag();
         $tag->setDbTableManager($tableManager);
 
-        $this->assertEquals(array('bar1', 'bar2'), $tag->getSuggestions('foo'));
+        $this->assertEquals(['bar1', 'bar2'], $tag->getSuggestions('foo'));
     }
 }

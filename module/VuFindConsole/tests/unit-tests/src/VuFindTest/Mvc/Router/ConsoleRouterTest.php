@@ -48,7 +48,7 @@ class ConsoleRouterTest extends \PHPUnit_Framework_TestCase
     {
         $router = ConsoleRouter::factory();
         $router->setCliDir(__DIR__);
-        $request = $this->getMock('Zend\Console\Request', array('getScriptName'));
+        $request = $this->getMock('Zend\Console\Request', ['getScriptName']);
         $request->expects($this->any())->method('getScriptName')
             ->will($this->returnValue('ConsoleRouterTest.php'));
         $result = $router->match($request);

@@ -45,7 +45,7 @@ abstract class AbstractBase implements DriverInterface
      *
      * @var array
      */
-    protected $config = array();
+    protected $config = [];
 
     /**
      * Set configuration.

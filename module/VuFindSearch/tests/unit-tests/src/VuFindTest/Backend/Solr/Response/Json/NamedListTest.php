@@ -49,12 +49,12 @@ class NamedListTest extends TestCase
      */
     public function testIterate()
     {
-        $list = new NamedList(array(array('first term', 'info'), array('second term', 'info')));
-        $keys = array();
+        $list = new NamedList([['first term', 'info'], ['second term', 'info']]);
+        $keys = [];
         foreach ($list as $key => $value) {
             $keys [] = $key;
         }
-        $this->assertEquals(array('first term', 'second term'), $keys);
+        $this->assertEquals(['first term', 'second term'], $keys);
     }
 
     /**
@@ -64,7 +64,7 @@ class NamedListTest extends TestCase
      */
     public function testCountable()
     {
-        $list = new NamedList(array(array('first term', 'info'), array('second term', 'info')));
+        $list = new NamedList([['first term', 'info'], ['second term', 'info']]);
         $this->assertEquals(2, count($list));
     }
 
@@ -75,7 +75,7 @@ class NamedListTest extends TestCase
      */
     public function testToArray()
     {
-        $list = new NamedList(array(array('first term', 'info'), array('second term', 'info2')));
-        $this->assertEquals(array('first term' => 'info', 'second term' => 'info2'), $list->toArray());
+        $list = new NamedList([['first term', 'info'], ['second term', 'info2']]);
+        $this->assertEquals(['first term' => 'info', 'second term' => 'info2'], $list->toArray());
     }
 }

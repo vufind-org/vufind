@@ -122,10 +122,10 @@ class Solr implements AutocompleteInterface
         $this->handler = (isset($params[0]) && !empty($params[0])) ?
             $params[0] : null;
         $this->displayField = (isset($params[1]) && !empty($params[1])) ?
-            explode(',', $params[1]) : array($this->defaultDisplayField);
+            explode(',', $params[1]) : [$this->defaultDisplayField];
         $this->sortField = (isset($params[2]) && !empty($params[2])) ?
             $params[2] : null;
-        $this->filters = array();
+        $this->filters = [];
         if (count($params > 3)) {
             for ($x = 3; $x < count($params); $x += 2) {
                 if (isset($params[$x + 1])) {
@@ -161,7 +161,7 @@ class Solr implements AutocompleteInterface
     protected function mungeQuery($query)
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
-        $forbidden = array(':', '(', ')', '*', '+', '"');
+        $forbidden = [':', '(', ')', '*', '+', '"'];
         $query = str_replace($forbidden, " ", $query);
         if (substr($query, -1) != " ") {
             $query .= "*";
@@ -221,7 +221,7 @@ class Solr implements AutocompleteInterface
      */
     protected function getSuggestionsFromSearch($searchResults, $query, $exact)
     {
-        $results = array();
+        $results = [];
         foreach ($searchResults as $object) {
             $current = $object->getRawData();
             foreach ($this->displayField as $field) {

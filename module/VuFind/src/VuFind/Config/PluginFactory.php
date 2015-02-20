@@ -71,13 +71,13 @@ class PluginFactory implements AbstractFactoryInterface
      */
     protected function loadConfigFile($filename, $path = 'config/vufind')
     {
-        $configs = array();
+        $configs = [];
 
         $fullpath = Locator::getConfigPath($filename, $path);
 
         // Return empty configuration if file does not exist:
         if (!file_exists($fullpath)) {
-            return new Config(array());
+            return new Config([]);
         }
 
         // Retrieve and parse at least one configuration file, and possibly a whole
@@ -111,7 +111,7 @@ class PluginFactory implements AbstractFactoryInterface
                         ' ', '', $child->Parent_Config->override_full_sections
                     )
                 )
-                : array();
+                : [];
             foreach ($child as $section => $contents) {
                 if (in_array($section, $overrideSections)
                     || !isset($config->$section)

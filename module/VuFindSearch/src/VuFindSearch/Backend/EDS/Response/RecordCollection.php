@@ -86,7 +86,7 @@ class RecordCollection extends AbstractRecordCollection
     {
         return isset($this->response['SearchResult'])
             && isset($this->response['SearchResult']['AvailableFacets'])
-            ? $this->response['SearchResult']['AvailableFacets'] : array();
+            ? $this->response['SearchResult']['AvailableFacets'] : [];
     }
 
     /**
@@ -96,21 +96,21 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        $vufindFacetList = array();
+        $vufindFacetList = [];
         $facets = isset($this->response['SearchResult'])
             && isset($this->response['SearchResult']['AvailableFacets'])
-            ? $this->response['SearchResult']['AvailableFacets'] : array();
+            ? $this->response['SearchResult']['AvailableFacets'] : [];
         foreach ($facets as $facet) {
             $vufindFacet['displayName'] = $facet['Id'];
             $vufindFacet['displayText'] = $facet['Label'];
             $vufindFacet['fieldName'] = $facet['Id'];
-            $values = array();
+            $values = [];
             foreach ($facet['AvailableFacetValues'] as $availableFacetValue) {
-                $values[] = array(
+                $values[] = [
                     'value' => $availableFacetValue['Value'],
                     'count' => $availableFacetValue['Count'],
                     'displayText' => $availableFacetValue['Value']
-                );
+                ];
 
             }
             $vufindFacet['counts'] = $values;

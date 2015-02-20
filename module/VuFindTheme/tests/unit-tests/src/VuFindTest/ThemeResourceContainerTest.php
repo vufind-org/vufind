@@ -47,12 +47,12 @@ class ThemeResourceContainerTest extends Unit\TestCase
     public function testCss()
     {
         $container = new ResourceContainer();
-        $container->addCss(array('a', 'b', 'c'));
+        $container->addCss(['a', 'b', 'c']);
         $container->addCss('c');
         $container->addCss('d');
         $container->addLessCss('e.less');
         $container->addCss('e');
-        $this->assertEquals(array(), array_diff(array('a', 'b', 'c', 'd'), $container->getCss()));
+        $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getCss()));
     }
 
     /**
@@ -63,12 +63,12 @@ class ThemeResourceContainerTest extends Unit\TestCase
     public function testLess()
     {
         $container = new ResourceContainer();
-        $container->addCss(array('c', 'd.css'));
-        $container->addLessCss(array('active' => true, 'a', 'b', 'c'));
+        $container->addCss(['c', 'd.css']);
+        $container->addLessCss(['active' => true, 'a', 'b', 'c']);
         $container->addLessCss('c');
         $container->addLessCss('d');
-        $this->assertEquals(array(), array_diff(array('a', 'b', 'c', 'd'), $container->getLessCss()));
-        $this->assertEquals(array('c'), $container->getCss());
+        $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getLessCss()));
+        $this->assertEquals(['c'], $container->getCss());
     }
 
     /**
@@ -79,10 +79,10 @@ class ThemeResourceContainerTest extends Unit\TestCase
     public function testJs()
     {
         $container = new ResourceContainer();
-        $container->addJs(array('a', 'b', 'c'));
+        $container->addJs(['a', 'b', 'c']);
         $container->addJs('c');
         $container->addJs('d');
-        $this->assertEquals(array(), array_diff(array('a', 'b', 'c', 'd'), $container->getJs()));
+        $this->assertEquals([], array_diff(['a', 'b', 'c', 'd'], $container->getJs()));
     }
 
     /**

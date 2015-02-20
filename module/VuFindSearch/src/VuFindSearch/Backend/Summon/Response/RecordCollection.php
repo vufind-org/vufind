@@ -88,7 +88,7 @@ class RecordCollection extends AbstractRecordCollection
     public function getFacets()
     {
         return isset($this->response['facetFields'])
-            ? $this->response['facetFields'] : array();
+            ? $this->response['facetFields'] : [];
     }
 
     /**
@@ -103,7 +103,7 @@ class RecordCollection extends AbstractRecordCollection
         ) {
             return $this->response['didYouMeanSuggestions'];
         }
-        return array();
+        return [];
     }
 
     /**

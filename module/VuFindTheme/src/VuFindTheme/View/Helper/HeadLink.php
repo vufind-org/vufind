@@ -102,25 +102,25 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         $cssDirectory = $helperHome . 'themes/' . $currentTheme . '/css/less/';
 
         try {
-            $less_files = array(
+            $less_files = [
                 APPLICATION_PATH . '/themes/' . $currentTheme . '/' . $relPath
                     => $cssDirectory
-            );
+            ];
             $themeParents = array_keys($this->themeInfo->getThemeInfo());
-            $directories = array();
+            $directories = [];
             foreach ($themeParents as $theme) {
                 $directories[APPLICATION_PATH . '/themes/' . $theme . '/less/']
                     = $helperHome . 'themes/' . $theme . '/css/less/';
             }
             $css_file_name = \Less_Cache::Get(
                 $less_files,
-                array(
+                [
                     'cache_dir' => $home . 'css/less/',
                     'cache_method' => false,
                     'compress' => true,
                     'import_dirs' => $directories,
                     'output' => str_replace('.less', '.css', $file)
-                )
+                ]
             );
             $this->prependStylesheet(
                 $cssDirectory . $css_file_name, $media, $conditionalStylesheet
