@@ -56,11 +56,11 @@ class Feed extends AbstractRenderer
      */
     public function render()
     {
-        $this->_setTotalResults($this->dom, $this->base);
-        $this->_setStartIndex($this->dom, $this->base);
-        $this->_setItemsPerPage($this->dom, $this->base);
-        $this->_setQuery($this->dom, $this->base);
-        $this->_setLinks($this->dom, $this->base);
+        $this->setTotalResults($this->dom, $this->base);
+        $this->setStartIndex($this->dom, $this->base);
+        $this->setItemsPerPage($this->dom, $this->base);
+        $this->setQuery($this->dom, $this->base);
+        $this->setLinks($this->dom, $this->base);
         if ($this->called) {
             $this->_appendNamespaces();
         }
@@ -71,20 +71,23 @@ class Feed extends AbstractRenderer
      *
      * @return void
      */
-    protected function _appendNamespaces()
+    protected function appendNamespaces()
     {
-        $this->getRootElement()->setAttribute('xmlns:opensearch',
-            'http://a9.com/-/spec/opensearch/1.1/');
+        $this->getRootElement()->setAttribute(
+            'xmlns:opensearch',
+            'http://a9.com/-/spec/opensearch/1.1/'
+        );
     }
 
     /**
      * Set total results
      *
-     * @param  DOMDocument $dom
-     * @param  DOMElement $root
+     * @param DOMDocument $dom  the dom document
+     * @param DOMElement  $root the root element
+     *
      * @return void
      */
-    protected function _setTotalResults(DOMDocument $dom, DOMElement $root)
+    protected function setTotalResults(DOMDocument $dom, DOMElement $root)
     {
         $totalResults = $this->getDataContainer()->getOpensearchTotalResults();
         if ($totalResults !== null) {
@@ -99,11 +102,12 @@ class Feed extends AbstractRenderer
     /**
      * Set start index
      *
-     * @param  DOMDocument $dom
-     * @param  DOMElement $root
+     * @param DOMDocument $dom  the dom document
+     * @param DOMElement  $root the root element
+     *
      * @return void
      */
-    protected function _setStartIndex(DOMDocument $dom, DOMElement $root)
+    protected function setStartIndex(DOMDocument $dom, DOMElement $root)
     {
         $startIndex = $this->getDataContainer()->getOpensearchStartIndex();
         if ($startIndex !== null) {
@@ -118,11 +122,12 @@ class Feed extends AbstractRenderer
     /**
      * Set items per page
      *
-     * @param  DOMDocument $dom
-     * @param  DOMElement $root
+     * @param DOMDocument $dom  the dom document
+     * @param DOMElement  $root the root element
+     *
      * @return void
      */
-    protected function _setItemsPerPage(DOMDocument $dom, DOMElement $root)
+    protected function setItemsPerPage(DOMDocument $dom, DOMElement $root)
     {
         $itemsPerPage = $this->getDataContainer()->getOpensearchItemsPerPage();
         if ($itemsPerPage !== null) {
@@ -137,17 +142,18 @@ class Feed extends AbstractRenderer
     /**
      * Set the query element
      *
-     * @param  DOMDocument $dom
-     * @param  DOMElement $root
+     * @param DOMDocument $dom  the dom document
+     * @param DOMElement  $root the root element
+     *
      * @return void
      */
-    protected function _setQuery(DOMDocument $dom, DOMElement $root)
+    protected function setQuery(DOMDocument $dom, DOMElement $root)
     {
         $searchTerms = $this->getDataContainer()->getOpensearchSearchTerms();
         $startIndex = $this->getDataContainer()->getOpensearchStartIndex();
         if (!empty($searchTerms)) {
             $elem = $dom->createElement('opensearch:Query');
-            $elem->setAttribute('role','request');
+            $elem->setAttribute('role', 'request');
             $elem->setAttribute('searchTerms', $searchTerms);
             if ($startIndex !== null) {
                 $elem->setAttribute('startIndex', $startIndex);
@@ -160,11 +166,12 @@ class Feed extends AbstractRenderer
     /**
      * Set links
      *
-     * @param  DOMDocument $dom
-     * @param  DOMElement $root
+     * @param DOMDocument $dom  the dom document
+     * @param DOMElement  $root the root element
+     *
      * @return void
      */
-    protected function _setLinks(DOMDocument $dom, DOMElement $root)
+    protected function setLinks(DOMDocument $dom, DOMElement $root)
     {
         $links = $this->getDataContainer()->getOpensearchLinks();
         foreach ($links as $link) {

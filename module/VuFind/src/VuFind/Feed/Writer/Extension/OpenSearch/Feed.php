@@ -107,7 +107,8 @@ class Feed extends ParentFeed
     /**
      * Set feed encoding
      *
-     * @param  string $enc
+     * @param string $enc encoding to set
+     *
      * @return Feed
      */
     public function setEncoding($enc)
@@ -129,7 +130,7 @@ class Feed extends ParentFeed
     /**
      * Set total results
      *
-     * @param int $totalResults number to set.
+     * @param int $totalResults number to set
      *
      * @return Feed
      */
@@ -152,7 +153,7 @@ class Feed extends ParentFeed
     /**
      * Set start index
      *
-     * @param int $startIndex index to set.
+     * @param int $startIndex index to set
      *
      * @return Feed
      */
@@ -175,7 +176,7 @@ class Feed extends ParentFeed
     /**
      * Set items per page
      *
-     * @param int $itemsPerPage number to set.
+     * @param int $itemsPerPage number to set
      *
      * @return Feed
      */
@@ -198,7 +199,7 @@ class Feed extends ParentFeed
     /**
      * Set search terms
      *
-     * @param string $searchTerms search terms.
+     * @param string $searchTerms search terms
      *
      * @return Feed
      */
@@ -221,19 +222,25 @@ class Feed extends ParentFeed
     /**
      * Add a link
      *
-     * @param string $role the role of the link.
-     * @param string $url the url of the link.
-     * @param string $type the mime type of the link.
+     * @param string $url  the url of the link
+     * @param string $role the role of the link
+     * @param string $type the mime type of the link
      *
      * @return Feed
      */
     public function addOpensearchLink($url, $role = null, $type = null)
     {
         if (empty($url) || !is_string($url) || !Uri::factory($url)->isValid()) {
-            throw new Exception\InvalidArgumentException('Invalid parameter: "url"" must be a non-empty string and valid URI/IRI');
+            throw new Exception\InvalidArgumentException(
+                'Invalid parameter: "url" must be '
+                . 'a non-empty string and valid URI/IRI'
+            );
         }
         if (!in_array(strtolower($type), array('rss', 'rdf', 'atom'))) {
-            throw new Exception\InvalidArgumentException('Invalid parameter: "type"; You must declare the type of feed the link points to, i.e. RSS, RDF or Atom');
+            throw new Exception\InvalidArgumentException(
+                'Invalid parameter: "type"; You must declare the type of '
+                . 'feed the link points to, i.e. RSS, RDF or Atom'
+            );
         }
         $link = array();
         $link['url'] = $url;

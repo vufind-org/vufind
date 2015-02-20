@@ -134,7 +134,8 @@ class ResultFeed extends AbstractHelper
         );
         $feed->setDescription(
             $translator('Showing') . ' ' . $results->getStartRecord() . '-' .
-            $results->getEndRecord() . ' ' . $translator('of') . ' ' . $results->getResultTotal()
+            $results->getEndRecord() . ' ' . $translator('of') . ' ' .
+            $results->getResultTotal()
         );
 
         $params = $results->getParams();
@@ -145,17 +146,19 @@ class ResultFeed extends AbstractHelper
             'first',
             $params->getView()
         );
-        if($params->getPage() > 1) {
+        if ($params->getPage() > 1) {
             $feed->addOpensearchLink(
-                $baseUrl . $results->getUrlQuery()->setPage($params->getPage()-1, false),
+                $baseUrl . $results->getUrlQuery()
+                    ->setPage($params->getPage()-1, false),
                 'previous',
                 $params->getView()
             );
         }
         $lastPage = ceil($results->getResultTotal() / $params->getLimit());
-        if($params->getPage() < $lastPage) {
+        if ($params->getPage() < $lastPage) {
             $feed->addOpensearchLink(
-                $baseUrl . $results->getUrlQuery()->setPage($params->getPage()+1, false),
+                $baseUrl . $results->getUrlQuery()
+                    ->setPage($params->getPage()+1, false),
                 'next',
                 $params->getView()
             );
