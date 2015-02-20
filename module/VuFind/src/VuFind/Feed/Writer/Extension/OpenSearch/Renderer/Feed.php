@@ -86,7 +86,7 @@ class Feed extends AbstractRenderer
      */
     protected function _setTotalResults(DOMDocument $dom, DOMElement $root)
     {
-        $totalResults = $this->getDataContainer()->getTotalResults();
+        $totalResults = $this->getDataContainer()->getOpensearchTotalResults();
         if ($totalResults !== null) {
             $elem = $dom->createElement('opensearch:totalResults');
             $text = $dom->createTextNode($totalResults);
@@ -105,7 +105,7 @@ class Feed extends AbstractRenderer
      */
     protected function _setStartIndex(DOMDocument $dom, DOMElement $root)
     {
-        $startIndex = $this->getDataContainer()->getStartIndex();
+        $startIndex = $this->getDataContainer()->getOpensearchStartIndex();
         if ($startIndex !== null) {
             $elem = $dom->createElement('opensearch:startIndex');
             $text = $dom->createTextNode($startIndex);
@@ -124,7 +124,7 @@ class Feed extends AbstractRenderer
      */
     protected function _setItemsPerPage(DOMDocument $dom, DOMElement $root)
     {
-        $itemsPerPage = $this->getDataContainer()->getItemsPerPage();
+        $itemsPerPage = $this->getDataContainer()->getOpensearchItemsPerPage();
         if ($itemsPerPage !== null) {
             $elem = $dom->createElement('opensearch:itemsPerPage');
             $text = $dom->createTextNode($itemsPerPage);
@@ -143,8 +143,8 @@ class Feed extends AbstractRenderer
      */
     protected function _setQuery(DOMDocument $dom, DOMElement $root)
     {
-        $searchTerms = $this->getDataContainer()->getSearchTerms();
-        $startIndex = $this->getDataContainer()->getStartIndex();
+        $searchTerms = $this->getDataContainer()->getOpensearchSearchTerms();
+        $startIndex = $this->getDataContainer()->getOpensearchStartIndex();
         if (!empty($searchTerms)) {
             $elem = $dom->createElement('opensearch:Query');
             $elem->setAttribute('role','request');
@@ -166,7 +166,7 @@ class Feed extends AbstractRenderer
      */
     protected function _setLinks(DOMDocument $dom, DOMElement $root)
     {
-        $links = $this->getDataContainer()->getLinks();
+        $links = $this->getDataContainer()->getOpensearchLinks();
         foreach ($links as $link) {
             $elem = $dom->createElement('atom:link');
             if ($link['role'] != null) {

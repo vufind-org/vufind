@@ -133,7 +133,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setTotalResults($totalResults)
+    public function setOpensearchTotalResults($totalResults)
     {
         $this->totalResults = $totalResults;
         return $this;
@@ -144,7 +144,7 @@ class Feed extends ParentFeed
      *
      * @return int
      */
-    public function getTotalResults()
+    public function getOpensearchTotalResults()
     {
         return $this->totalResults;
     }
@@ -156,7 +156,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setStartIndex($startIndex)
+    public function setOpensearchStartIndex($startIndex)
     {
         $this->startIndex = $startIndex;
         return $this;
@@ -167,7 +167,7 @@ class Feed extends ParentFeed
      *
      * @return int
      */
-    public function getStartIndex()
+    public function getOpensearchStartIndex()
     {
         return $this->startIndex;
     }
@@ -179,7 +179,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setItemsPerPage($itemsPerPage)
+    public function setOpensearchItemsPerPage($itemsPerPage)
     {
         $this->itemsPerPage = $itemsPerPage;
         return $this;
@@ -190,7 +190,7 @@ class Feed extends ParentFeed
      *
      * @return int
      */
-    public function getItemsPerPage()
+    public function getOpensearchItemsPerPage()
     {
         return $this->itemsPerPage;
     }
@@ -202,7 +202,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function setSearchTerms($searchTerms)
+    public function setOpensearchSearchTerms($searchTerms)
     {
         $this->searchTerms = $searchTerms;
         return $this;
@@ -213,7 +213,7 @@ class Feed extends ParentFeed
      *
      * @return string
      */
-    public function getSearchTerms()
+    public function getOpensearchSearchTerms()
     {
         return $this->searchTerms;
     }
@@ -227,7 +227,7 @@ class Feed extends ParentFeed
      *
      * @return Feed
      */
-    public function addLink($url, $role = null, $type = null)
+    public function addOpensearchLink($url, $role = null, $type = null)
     {
         if (empty($url) || !is_string($url) || !Uri::factory($url)->isValid()) {
             throw new Exception\InvalidArgumentException('Invalid parameter: "url"" must be a non-empty string and valid URI/IRI');
@@ -248,7 +248,7 @@ class Feed extends ParentFeed
      *
      * @return string
      */
-    public function getLinks()
+    public function getOpensearchLinks()
     {
         return $this->links;
     }

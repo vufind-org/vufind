@@ -135,13 +135,13 @@ class ResultFeed extends AbstractHelper
 
         $params = $results->getParams();
 
-        $feed->addLink(
+        $feed->addOpensearchLink(
             $baseUrl . $results->getUrlQuery()->setPage(1, false),
             'first',
             $params->getView()
         );
         if($params->getPage() > 1) {
-            $feed->addLink(
+            $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()->setPage($params->getPage()-1, false),
                 'previous',
                 $params->getView()
@@ -149,13 +149,13 @@ class ResultFeed extends AbstractHelper
         }
         $lastPage = ceil($results->getResultTotal() / $params->getLimit());
         if($params->getPage() < $lastPage) {
-            $feed->addLink(
+            $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()->setPage($params->getPage()+1, false),
                 'next',
                 $params->getView()
             );
         }
-        $feed->addLink(
+        $feed->addOpensearchLink(
             $baseUrl . $results->getUrlQuery()->setPage($lastPage, false),
             'last',
             $params->getView()
@@ -167,10 +167,10 @@ class ResultFeed extends AbstractHelper
             $results->getEndRecord() . ' ' . $translator('of') . ' ' . $results->getResultTotal()
         );
 
-        $feed->setTotalResults($results->getResultTotal());
-        $feed->setItemsPerPage($params->getLimit());
-        $feed->setStartIndex(($params->getPage()-1) * $params->getLimit());
-        $feed->setSearchTerms($params->getQuery()->getString());
+        $feed->setOpensearchTotalResults($results->getResultTotal());
+        $feed->setOpensearchItemsPerPage($params->getLimit());
+        $feed->setOpensearchStartIndex(($params->getPage()-1) * $params->getLimit());
+        $feed->setOpensearchSearchTerms($params->getQuery()->getString());
 
         foreach ($records as $current) {
             $this->addEntry($feed, $current);
