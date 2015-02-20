@@ -72,10 +72,10 @@ class SolrCN extends Solr
         // first character is a number, give Dewey priority; otherwise, give
         // LC priority:
         if (is_numeric(substr(trim($query), 0, 1))) {
-            $this->setDisplayField(['dewey-full', 'callnumber-a']);
+            $this->setDisplayField(['dewey-full', 'callnumber-raw']);
             $this->setSortField("dewey-sort,callnumber");
         } else {
-            $this->setDisplayField(['callnumber-a', 'dewey-full']);
+            $this->setDisplayField(['callnumber-raw', 'dewey-full']);
             $this->setSortField("callnumber,dewey-sort");
         }
 
