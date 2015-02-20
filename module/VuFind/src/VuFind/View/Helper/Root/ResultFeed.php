@@ -132,9 +132,14 @@ class ResultFeed extends AbstractHelper
             $baseUrl . $results->getUrlQuery()->getParams(false),
             $results->getParams()->getView()
         );
+        $feed->setDescription(
+            $translator('Showing') . ' ' . $results->getStartRecord() . '-' .
+            $results->getEndRecord() . ' ' . $translator('of') . ' ' . $results->getResultTotal()
+        );
 
         $params = $results->getParams();
 
+        // add atom links for easier paging
         $feed->addOpensearchLink(
             $baseUrl . $results->getUrlQuery()->setPage(1, false),
             'first',
@@ -161,17 +166,13 @@ class ResultFeed extends AbstractHelper
             $params->getView()
         );
 
-        $records = $results->getResults();
-        $feed->setDescription(
-            $translator('Showing') . ' ' . $results->getStartRecord() . '-' .
-            $results->getEndRecord() . ' ' . $translator('of') . ' ' . $results->getResultTotal()
-        );
-
+        // add opensearch fields
         $feed->setOpensearchTotalResults($results->getResultTotal());
         $feed->setOpensearchItemsPerPage($params->getLimit());
-        $feed->setOpensearchStartIndex(($params->getPage()-1) * $params->getLimit());
+        $feed->setOpensearchStartIndex($results->getStartRecord() - 1);
         $feed->setOpensearchSearchTerms($params->getQuery()->getString());
 
+        $records = $results->getResults();
         foreach ($records as $current) {
             $this->addEntry($feed, $current);
         }
