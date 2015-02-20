@@ -236,13 +236,13 @@ class Feed extends ParentFeed
                 . 'a non-empty string and valid URI/IRI'
             );
         }
-        if (!in_array(strtolower($type), array('rss', 'rdf', 'atom'))) {
+        if (!in_array(strtolower($type), ['rss', 'rdf', 'atom'])) {
             throw new Exception\InvalidArgumentException(
                 'Invalid parameter: "type"; You must declare the type of '
                 . 'feed the link points to, i.e. RSS, RDF or Atom'
             );
         }
-        $link = array();
+        $link = [];
         $link['url'] = $url;
         $link['role'] = $role;
         $link['type'] = $type;
