@@ -7,6 +7,7 @@ return array(
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
+            'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar'
         )
     ),
