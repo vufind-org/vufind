@@ -106,10 +106,6 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
 
         $helper = new ResultFeed();
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
-        $mockTranslator = function ($str) {
-            return $str;
-        };
-        $helper->setTranslatorHelper($mockTranslator);
         $feed = $helper->__invoke($results, '/test/path');
         $this->assertTrue(is_object($feed));
         $rss = $feed->export('rss');
