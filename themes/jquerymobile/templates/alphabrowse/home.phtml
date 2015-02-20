@@ -61,12 +61,7 @@
               <? $query = array('from' => implode($item['useInstead'])) + $baseQuery; ?>
               <? $searchLink = $this->escapeHtmlAttr($this->url('alphabrowse-home', array(), array('query' => $query))); ?>
             <? else: ?>
-              <? if ($item['count'] < 5): ?>
-                <? $query = array('type' => 'ids', 'lookfor' => implode(' ', $item['ids'])); ?>
-              <? else: ?>
-                <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => '"' . addcslashes($item['heading'], '"') . '"'); ?>
-              <? endif; ?>
-              <? $searchLink = $this->escapeHtmlAttr($this->url('search-results', array(), array('query' => $query))); ?>
+              <? $searchLink = $this->escapeHtmlAttr($this->alphabrowse()->getUrl($this->source, $item)); ?>
             <? endif; ?>
           <? endif; ?>
           <a class="ui-link-inherit" data-ajax="false" href="<?=$searchLink ?>">
