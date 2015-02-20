@@ -63,19 +63,13 @@
           <tr>
         <? endif; ?>
           <td class="<?=$this->source ?>">
-            <? if ($item['count'] > 0): ?>
-              <?/* linking using bib ids is generally more reliable than
-                doing searches for headings, but headings give shorter
-                queries and don't look as strange. */?>
-              <? if ($item['count'] < 5): ?>
-                <? $query = array('type' => 'ids', 'lookfor' => implode(' ', $item['ids'])); ?>
+            <b>
+              <? if ($url = $this->alphabrowse()->getUrl($this->source, $item)): ?>
+                <a href="<?=$this->escapeHtmlAttr($url)?>"><?=$this->escapeHtml($item['heading'])?></a>
               <? else: ?>
-                <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => '"' . addcslashes($item['heading'], '"') . '"'); ?>
+                <?=$this->escapeHtml($item['heading'])?>
               <? endif; ?>
-              <b><a href="<?=$this->escapeHtmlAttr($this->url('search-results', array(), array('query' => $query)))?>"><?=$this->escapeHtml($item['heading'])?></a></b>
-            <? else: ?>
-              <b><?=$this->escapeHtml($item['heading'])?></b>
-            <? endif; ?>
+            </b>
 
             <? if (count($item['useInstead']) > 0): ?>
               <div>
