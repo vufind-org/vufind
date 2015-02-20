@@ -1,4 +1,4 @@
-<solr persistent="true" sharedLib="lib">
+<solr persistent="true" sharedLib="solr/lib">
   <cores adminPath="/admin/multicore">
     <core name="biblio" instanceDir="biblio"/>
     <core name="authority" instanceDir="authority"/>
