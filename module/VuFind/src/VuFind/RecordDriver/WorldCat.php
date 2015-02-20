@@ -152,18 +152,23 @@ class WorldCat extends SolrMarc
     }
 
     /**
-     * Get the call number associated with the record (empty string if none).
-     * If both LC and Dewey call numbers exist, LC will be favored.
+     * Get the call numbers associated with the record (empty string if none).
      *
-     * @return string
+     * @return array
      */
-    public function getCallNumber()
+    public function getCallNumbers()
     {
-        $callNo = $this->getFirstFieldValue('090', ['a', 'b']);
-        if (empty($callNo)) {
-            $callNo = $this->getFirstFieldValue('050', ['a', 'b']);
+        $retVal = [];
+        foreach (['090', '050'] as $field) {
+            $callNo = $this->getFirstFieldValue($field, ['a', 'b']);
+            if (!empty($callNo)) {
+                $retVal[] = $callNo;
+            }
         }
-        return empty($callNo) ? $this->getDeweyCallNumber() : $callNo;
+        if (!empty($dewey = $this->getDeweyCallNumber())) {
+            $retVal[] = $dewey;
+        }
+        return $retVal;
     }
 
     /**
