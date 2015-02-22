@@ -244,6 +244,7 @@ $config = [
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
                     'shibboleth' => 'VuFind\Auth\Shibboleth',
+                    'shibboleth2' => 'VuFind\Auth\Shibboleth2',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ],
                 'aliases' => [
