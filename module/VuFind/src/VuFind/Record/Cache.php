@@ -54,8 +54,8 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     protected $INCLUDE_SOURCE    = 0b01000; //  8
     protected $INCLUDE_USER_ID   = 0b10000; // 16
 
-    protected $recordFactories = [];
     protected $recordTable = null;
+    protected $recordFactoryManager = null;
 
     protected $cachableSources = null;
     protected $cachePolicies = [];
@@ -86,18 +86,9 @@ class Cache implements \Zend\Log\LoggerAwareInterface
                 $this->cachePolicies = [];
             }
         }
-
+        
         $this->recordTable = $dbTableManager->get('record');
-        $this->recordFactories['VuFind'] = [
-            $recordFactoryManager, 'getSolrRecord'
-        ];
-        $this->recordFactories['WorldCat'] = function ($data)
-        use ($recordFactoryManager) {
-            $driver = $recordFactoryManager->get('WorldCat');
-            $driver->setRawData($data);
-            $driver->setSourceIdentifier('WorldCat');
-            return $driver;
-        };
+        $this->recordFactoryManager = $recordFactoryManager;
     }
 
     /**
@@ -193,10 +184,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         
         $vufindRecords = [];
         foreach ($cachedRecords as $cachedRecord) {
-            $factory = $this->recordFactories[$cachedRecord['source']];
-            $doc = json_decode($cachedRecord['data'], true);
-
-            $vufindRecords[] = call_user_func($factory, $doc);
+            $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
         }
 
         return $vufindRecords;
@@ -275,5 +263,37 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         $md5 = md5(json_encode($cIdHelper));
 
         return $md5;
+    }
+    /**
+     * Helper function to get vufind records form cached index specific record data
+     *
+     * @param string $cachedRecord json encoded representation of index specific
+     *                             record data
+     *
+     * @return \VuFind\RecordDriver
+     */
+    protected function getVuFindRecord($cachedRecord)
+    {
+        $source = $cachedRecord['source'];
+        $doc = json_decode($cachedRecord['data'], true);
+    
+        if ($source === 'VuFind' || $source === 'Solr') {
+            if (isset($doc['recordtype'])) {
+                $key = 'Solr' . ucwords($doc['recordtype']);
+                $recordType = $this->recordFactoryManager->has($key)
+                ? $key
+                : 'SolrDefault';
+            } else {
+                $recordType = 'SolrDefault';
+            }
+        } else {
+            $recordType = $source;
+        }
+    
+        $driver = $this->recordFactoryManager->get($recordType);
+        $driver->setRawData($doc);
+        $driver->setSourceIdentifier($source);
+         
+        return $driver;
     }
 }
