@@ -108,5 +108,65 @@ class Shibboleth extends  AbstractBase
         $config = $this->getConfig();
         return false;
     }
+
+    /**
+     * Perform cleanup at logout time.
+     *
+     * @param string $url URL to redirect user to after logging out.
+     *
+     * @return string     Redirect URL (usually same as $url, but modified in
+     * some authentication modules).
+     */
+    public function logout($url)
+    {
+        // If single log-out is enabled, use a special URL:
+        $config = $this->getConfig();
+        if (isset($config->Shibboleth->logout)
+            && !empty($config->Shibboleth->logout)
+        ) {
+            $url = $config->Shibboleth->logout . '?return=' . urlencode($url);
+        }
+
+        // Send back the redirect URL (possibly modified):
+        return $url;
+    }
+
+
+    // ToDo: check if still need
+    /**
+     * Get the URL to establish a session (needed when the internal VuFind login
+     * form is inadequate).  Returns false when no session initiator is needed.
+     *
+     * @param string $target Full URL where external authentication method should
+     * send user after login (some drivers may override this).
+     *
+     * @return bool|string
+     */
+    public function getSessionInitiator($target)
+    {
+        $config = $this->getConfig();
+        if (isset($config->Shibboleth->target)) {
+            $shibTarget = $config->Shibboleth->target;
+        } else {
+            $shibTarget = $target;
+        }
+        $append = (strpos($shibTarget, '?') !== false) ? '&' : '?';
+        $sessionInitiator = $config->Shibboleth->login
+            . '?target=' . urlencode($shibTarget)
+            . urlencode($append . 'auth_method=Shibboleth'); 
+                                                    // makes it possible to
+                                                    // handle logins when using
+                                                    // an auth method that
+                                                    // proxies others
+
+        if (isset($config->Shibboleth->provider_id)) {
+            $sessionInitiator = $sessionInitiator . '&providerId=' .
+                urlencode($config->Shibboleth->provider_id);
+        }
+
+        return $sessionInitiator;
+    }
+
+
 }
 
