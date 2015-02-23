@@ -5,18 +5,19 @@
 
 .breadcrumb {
   margin: 0px;
-  margin-top:  10px;
+  margin-top:  15px;
   list-style: none;
   border-radius: @border-radius-base;
 
   > li {
     display: inline-block;
     background-color: @breadcrumb-bg;
+    margin: 0px -2px;
     padding: @breadcrumb-padding-vertical @breadcrumb-padding-horizontal;
     + li:before {
-      font-family: "icomoon";
-      content: "\e025"; // Unicode space added since inline-block means non-collapsing white-space
+      content: @breadcrumb-separator; // Unicode space added since inline-block means non-collapsing white-space
       color: @breadcrumb-color;
+      font-size: 12px;
     }     
   }
   > li a {

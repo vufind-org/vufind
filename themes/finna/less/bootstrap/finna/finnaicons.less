@@ -28,7 +28,7 @@
     cursor: pointer;
 }
 .iconlabel {
-  color: #464646;
+  color: @gray;
   background: none;
   padding: 0px;
   font-weight: 400;
@@ -78,7 +78,7 @@
 .iconlabel.kirja:before, .iconlabel.kirjanosa:before, .iconlabel.book:before {
     content: "\e616";
 }
-.fa-www-link:before {
+.fa-www-link:before, .iconlabel.electronic:before {
     content: "\e615";
 }
 .fa-handle-left:before, .slick-prev:before {
@@ -166,7 +166,8 @@
 .fa-sign-in:before {
     content: "\e042";
 }
-.fa-logout:before {
+.fa-sign-out:before {
+    vertical-align: middle;
     content: "\e042";
 }
 .fa-home:before {
@@ -389,24 +390,34 @@
 .nav-pills .fa.fa-asterisk {
     padding: 6px 7px;
 }
-@media(max-width:767px) {
-.nav-pills .fa {
-    font-size: 16px;
-    padding: 8px 9px 9px 9px;
-    color: #fff;
-    background: #00a2b5;
-    border-radius: 50%;
-    margin-left:2px;
-}
-
-.nav-pills .fa.fa-asterisk {
-    padding: 8px 10px;
-}
+@media(max-width: @screen-sm-max) {
+    .nav-pills .fa {
+        font-size: 16px;
+        padding: 8px 9px 9px 9px;
+        color: #fff;
+        background: #00a2b5;
+        border-radius: 50%;
+        margin-left:2px;
+    }
+    
+    .nav-pills .fa.fa-asterisk {
+        padding: 8px 10px;
+    }
 }
 .nav-pills .fa.fa-phone {
     background: #64d448;
 }
 /* Addthis icons for sharing styling */
+.addthis-share-buttons {
+    margin-right: 5px !important;
+    @media(max-width:@screen-xs-max) {
+        clear: left;
+    }
+    @media(min-width:@screen-md-min) and (max-width:@screen-md-max) {
+        clear: both;
+        margin-left: 5px !important;
+    }
+}
 .addthis_default_style .at300b {
     padding: 0px !important;
 }
