@@ -54,6 +54,25 @@
     </div>
   </div>
 
+<? if ($this->related()->getList($this->driver) != null ): ?>
+<div class="panel panel-default">
+<div class="panel-heading" data-toggle="collapse" data-parent="#accordion_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-target="#related-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" style="cursor: pointer">
+<h4 class="panel-title">
+<a class="accordion-toogle">
+<?=$this->transEsc("Related Items")?>
+</a>
+</h4>
+</div>
+<div id="related-collapse_<?=escapeJSAttr($this->driver->getUniqueId())?>" class="panel-collapse collapse">
+<div class="panel-body">
+<? foreach ($this->related()->getList($this->driver) as $current): ?>
+<?=$this->related()->render($current)?>
+<? endforeach; ?>
+</div>
+</div>
+</div>
+<? endif; ?>
+
   <? if (count($this->tabs) > 0): ?>
     <? foreach ($this->tabs as $tab => $obj): ?>
       <? if ($tab == 'HierarchyTree') continue; ?>
