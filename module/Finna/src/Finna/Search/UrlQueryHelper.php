@@ -43,12 +43,13 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
      *
      * @return void
      */
-    public function __clone() {
+    public function __clone()
+    {
         $this->params = clone($this->params);
     }
 
     /**
-     * Remove all filters,
+     * Remove all filters.
      *
      * @return void
      */
@@ -71,7 +72,7 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     }
 
     /**
-     * Return query string with search id.
+     * Sets search id in the params and returns resulting query string.
      *
      * @param string $class Search class.
      * @param int    $id    Search id.

@@ -53,9 +53,7 @@ class Factory extends \VuFind\Search\Results\Factory
     public static function getSolr(ServiceManager $sm)
     {
         $solr = parent::getSolr($sm);
-        $solr = Factory::initUrlQueryHelper($solr, $sm);
-
-        return $solr;
+        return Factory::initUrlQueryHelper($solr, $sm);
     }
 
     /**
@@ -69,10 +67,7 @@ class Factory extends \VuFind\Search\Results\Factory
     {
         $factory = new PluginFactory();
         $primo = $factory->createServiceWithName($sm, 'primo', 'Primo');
-
-        $primo = Factory::initUrlQueryHelper($primo, $sm);
-
-        return $primo;
+        return Factory::initUrlQueryHelper($primo, $sm);
     }
 
     /**
