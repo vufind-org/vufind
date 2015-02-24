@@ -59,9 +59,8 @@ class Record extends Gateway
      */
     public function findRecord($ids)
     {
-        
         if (empty($ids)) {
-            throw new \Exception('Record ID cannot be empty');
+            return [];
         }
         
         $where = [
