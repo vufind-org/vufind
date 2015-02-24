@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,7 +23,7 @@
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Search;
 
@@ -34,7 +34,7 @@ namespace Finna\Search;
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
 {
@@ -43,12 +43,13 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
      *
      * @return void
      */
-    public function __clone() {
+    public function __clone()
+    {
         $this->params = clone($this->params);
     }
 
     /**
-     * Remove all filters,
+     * Remove all filters.
      *
      * @return void
      */
@@ -71,7 +72,7 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     }
 
     /**
-     * Return query string with search id.
+     * Sets search id in the params and returns resulting query string.
      *
      * @param string $class Search class.
      * @param int    $id    Search id.

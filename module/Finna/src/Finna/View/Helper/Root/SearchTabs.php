@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -54,13 +54,6 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     protected $session;
 
     /**
-     * Authentication manager
-     *
-     * @var Manager
-     */
-    protected $auth;
-
-    /**
      * Active search class
      *
      * @var string
@@ -70,7 +63,6 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     /**
      * Constructor
      *
-     * @param Manager        $auth    Authentication manager
      * @param SessionManager $session Session manager
      * @param PluginManager  $table   Database manager
      * @param PluginManager  $results Search results plugin manager
@@ -78,12 +70,11 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
      * @param Url            $url     URL helper
      */
     public function __construct(
-        \VuFind\Auth\Manager $auth, \Zend\Session\SessionManager $session,
+        \Zend\Session\SessionManager $session,
         \VuFind\Db\Table\PluginManager $table,
         \VuFind\Search\Results\PluginManager $results,
         array $config, \Zend\View\Helper\Url $url
     ) {
-        $this->auth = $auth;
         $this->session = $session;
         $this->table = $table;
         parent::__construct($results, $config, $url);
@@ -141,7 +132,8 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                     if ($filters) {
                         $tab['url'] .= '&' .
                             $helper->buildQueryString(
-                                array('filter' => $filters), false);
+                                array('filter' => $filters), false
+                            );
                     }
                 }
             }
@@ -200,8 +192,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
      *
      * @param int $id Search id
      *
-     * @return mixed array of filters or false if on error or
-     * if the search has no filters.
+     * @return mixed array of filters or false if the given search has no filters.
      */
     protected function getSearchFilters($id)
     {
@@ -210,10 +201,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         }
 
         $sessId = $this->session->getId();
-        $user = $this->auth->isLoggedIn();
-
-        $userId = $user ? $user->id : false;
-        if ($search->session_id == $sessId || $search->user_id == $userId) {
+        if ($search->session_id == $sessId) {
             $minSO = $search->getSearchObject();
             $savedSearch = $minSO->deminify($this->results);
 

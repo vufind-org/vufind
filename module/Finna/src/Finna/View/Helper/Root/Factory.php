@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -108,7 +108,6 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $config = isset($config->SearchTabs)
             ? $config->SearchTabs->toArray() : array();
         return new SearchTabs(
-            $locator->get('VuFind\AuthManager'),
             $locator->get('VuFind\SessionManager'),
             $locator->get('VuFind\DbTablePluginManager'),
             $locator->get('VuFind\SearchResultsPluginManager'),

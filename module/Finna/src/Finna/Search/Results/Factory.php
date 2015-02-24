@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2014.
+ * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,7 +23,7 @@
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\Search\Results;
 use Finna\Search\UrlQueryHelper,
@@ -37,7 +37,7 @@ use Finna\Search\UrlQueryHelper,
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  *
  * @codeCoverageIgnore
  */
@@ -53,9 +53,7 @@ class Factory extends \VuFind\Search\Results\Factory
     public static function getSolr(ServiceManager $sm)
     {
         $solr = parent::getSolr($sm);
-        $solr = Factory::initUrlQueryHelper($solr, $sm);
-
-        return $solr;
+        return Factory::initUrlQueryHelper($solr, $sm);
     }
 
     /**
@@ -69,10 +67,7 @@ class Factory extends \VuFind\Search\Results\Factory
     {
         $factory = new PluginFactory();
         $primo = $factory->createServiceWithName($sm, 'primo', 'Primo');
-
-        $primo = Factory::initUrlQueryHelper($primo, $sm);
-
-        return $primo;
+        return Factory::initUrlQueryHelper($primo, $sm);
     }
 
     /**
