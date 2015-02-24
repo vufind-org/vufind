@@ -239,7 +239,7 @@ $(document).ready(function(){
   $('#tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
-    Lightbox.addCloseAction(function() {
+    return Lightbox.open({controller:parts[parts.length-3], action:'AddTag', get:{id:id}, onClose:function() {
       var recordId = $('#record_id').val();
       var recordSource = $('.hiddenSource').val();
 
@@ -264,8 +264,7 @@ $(document).ready(function(){
           }
         });
       }
-    });
-    return Lightbox.open({controller:parts[parts.length-3], action:'AddTag', get:{id:id}});
+    }});
   });
   // Form handlers
   Lightbox.addFormCallback('saveRecord', function() {

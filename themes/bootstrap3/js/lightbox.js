@@ -189,6 +189,7 @@ var Lightbox = {
       this.openingURL = url;
     }
     this.LAST = options;
+    console.log(this.LAST);
     return false;
   },
 
@@ -294,6 +295,7 @@ var Lightbox = {
     // If we have an action: parse
     var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
     var options = POST ? {post:data, onResponse:callback} : {onResponse:callback};
+    if(this.LAST.onClose) options.onClose = this.LAST.onClose;
     if($form.attr('action')) {
       // Parse action location
       var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
