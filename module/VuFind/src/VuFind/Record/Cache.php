@@ -186,6 +186,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function setPolicy($cachePolicy)
     {
+        $cachePolicy = ucfirst($cachePolicy);
         $policy = $this->cacheConfig->$cachePolicy;
         if (isset($policy)) {
             $this->cachableSources 
