@@ -315,6 +315,8 @@ class Loader extends \VuFind\Cover\Loader
             );
             imagefill($imageGDResized, 0, 0, $background);
 
+            $quality = 90;
+
             // If both dimensions are smaller than the new image,
             // just copy to center. Otherwise resample to fit if necessary.
             if ($width < $reqWidth && $height < $reqHeight) {
@@ -323,7 +325,7 @@ class Loader extends \VuFind\Cover\Loader
                 imagecopy(
                     $imageGDResized, $imageGD, $imgX, $imgY, 0, 0, $width, $height
                 );
-                if (!@imagejpeg($imageGDResized, $finalFile)) {
+                if (!@imagejpeg($imageGDResized, $finalFile, $quality)) {
                     return false;
                 }
             } elseif ($width > $reqWidth || $height > $reqHeight) {
@@ -346,11 +348,11 @@ class Loader extends \VuFind\Cover\Loader
                         $newWidth, $newHeight, $width, $height
                     );
                 }
-                if (!@imagejpeg($imageGDResized, $finalFile)) {
+                if (!@imagejpeg($imageGDResized, $finalFile, $quality)) {
                     return false;
                 }
             } else {
-                if (!@imagejpeg($imageGD, $finalFile)) {
+                if (!@imagejpeg($imageGD, $finalFile, $quality)) {
                     return false;
                 }
             }
