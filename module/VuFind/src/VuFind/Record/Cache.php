@@ -59,7 +59,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
 
     protected $cachableSources = null;
     protected $cachePolicies = [];
-
+    
     /**
      * Constructor
      *
@@ -85,6 +85,12 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             } else {
                 $this->cachePolicies = [];
             }
+        }
+        
+        // due to legacy resasons add 'VuFind' to cachable sources if 
+        // record from source 'Solr' are cacheable.
+        if ( in_array('Solr', $this->cachableSources) ) {
+            $this->cachableSources[] = 'VuFind';
         }
         
         $this->recordTable = $dbTableManager->get('record');
@@ -163,21 +169,24 @@ class Cache implements \Zend\Log\LoggerAwareInterface
                 $details = ['source' => $parts[0],'id' => $parts[1]];
             }
 
-            $userId = isset($_SESSION['Account'])
-                ? $_SESSION['Account']->userId : null;
+            if (in_array($details['source'], $this->cachableSources)) {
+                $userId = isset($_SESSION['Account'])
+                    ? $_SESSION['Account']->userId : null;
+    
+                $cacheId = $this->getCacheId(
+                    $details['id'], $details['source'], $userId
+                );
+                $cacheIds[] = $cacheId;
 
-            $cacheId = $this->getCacheId(
-                $details['id'], $details['source'], $userId
-            );
-            $cacheIds[] = $cacheId;
-            
-            $this->debug(
-                "lookup cache for id: " . $details['id'] .
-                ", source: " .  $details['source'] .
-                ", userId: " . $userId .
-                ", calculated cId: " .  $cacheId
-            );
+                $this->debug(
+                    "lookup cache for id: " . $details['id'] .
+                    ", source: " .  $details['source'] .
+                    ", userId: " . $userId .
+                    ", calculated cId: " .  $cacheId
+                );
+            }
         }
+        
         $cachedRecords = $this->recordTable->findRecord($cacheIds);
 
         $this->debug('records found: ' . count($cachedRecords));
