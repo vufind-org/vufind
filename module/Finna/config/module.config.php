@@ -52,7 +52,9 @@ $config = array(
         'invokables' => array(
             'ajax' => 'Finna\Controller\AjaxController',
             'contentpage' => 'Finna\Controller\ContentController',
-            'cover' => 'Finna\Controller\CoverController'
+            'cover' => 'Finna\Controller\CoverController',
+            'primo' => 'Finna\Controller\PrimoController',
+            'search' => 'Finna\Controller\SearchController'
         ),
     ),
     'service_manager' => array(
@@ -73,6 +75,12 @@ $config = array(
                 'aliases' => array(
                     // Allow Solr core names to be used as aliases for services:
                     'biblio' => 'Solr',
+                )
+            ),
+            'search_results' => array(
+                'factories' => array(
+                    'solr' => 'Finna\Search\Results\Factory::getSolr',
+                    'primo' => 'Finna\Search\Results\Factory::getPrimo'
                 )
             ),
             'content_covers' => array(
