@@ -65,7 +65,7 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
      */
     public function getBreadcrumb()
     {
-        return $this->__call('getBreadcrumb', array());
+        return $this->__call('getBreadcrumb', []);
     }
 
     /**
@@ -76,6 +76,6 @@ class TestHarness extends \VuFind\RecordDriver\AbstractBase
      */
     public function getUniqueID()
     {
-        return $this->__call('getUniqueID', array());
+        return $this->__call('getUniqueID', []);
     }
 }

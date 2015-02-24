@@ -30,7 +30,6 @@ namespace VuFindSearch\Backend\EDS;
 require_once dirname(__FILE__) . '/Base.php';
 use Zend\Http\Client as Zend2HttpClient;
 use Zend\Log\LoggerAwareInterface;
-use Zend\Log\LoggerInterface;
 use Zend\Http\Client\Adapter\Curl as CurlAdapter;
 
 /**
@@ -44,30 +43,13 @@ use Zend\Http\Client\Adapter\Curl as CurlAdapter;
  */
 class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
      /**
      * The HTTP Request object to execute EDS API transactions
      * @var Zend2HttpClient
      */
     protected $client;
-
-    /**
-     * Logger object for debug info (or false for no debugging).
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Set the logger to use
-     *
-     * @param LoggerInterface $logger Logger to set
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
 
     /**
      * Print a message if debug is enabled.
@@ -109,19 +91,19 @@ class Zend2 extends EdsApi_REST_Base implements LoggerAwareInterface
      *    </ul>
      * @param Zend2HttpClient $client   Zend2 HTTP client object (optional)
      */
-    public function __construct($settings = array(), $client = null)
+    public function __construct($settings = [], $client = null)
     {
         parent::__construct($settings);
         $this->client = is_object($client) ? $client : new Zend2HttpClient();
-        $this->client->setOptions(array('timeout'=>120));
+        $this->client->setOptions(['timeout' => 120]);
         $adapter = new CurlAdapter();
         $adapter->setOptions(
-            array(
-                'curloptions' => array(
+            [
+                'curloptions' => [
                     CURLOPT_SSL_VERIFYPEER => false,
                     CURLOPT_FOLLOWLOCATION => true,
-                )
-            )
+                ]
+            ]
         );
         $this->client->setAdapter($adapter);
     }

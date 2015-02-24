@@ -1,7 +1,4 @@
 <?php
-use Zend\Loader\AutoloaderFactory;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfig;
 
 // Set flag that we're in test mode
 define('VUFIND_PHPUNIT_RUNNING', 1);
@@ -25,7 +22,7 @@ chdir(APPLICATION_PATH);
 // Ensure vendor/ is on include_path; some PEAR components may not load correctly
 // otherwise (i.e. File_MARC may cause a "Cannot redeclare class" error by pulling
 // from the shared PEAR directory instead of the local copy):
-$pathParts = array();
+$pathParts = [];
 $pathParts[] = APPLICATION_PATH . '/vendor';
 $pathParts[] = get_include_path();
 set_include_path(implode(PATH_SEPARATOR, $pathParts));

@@ -19,10 +19,10 @@
         "issues": "http://vufind.org/jira"
     },
     "require": {
-        "zendframework/zend-http": "2.2.*"
+        "zendframework/zend-http": ">=2.2"
     },
     "require-dev": {
-        "zendframework/zend-uri": "2.2.*"
+        "zendframework/zend-uri": ">=2.2"
     },
     "autoload": {
         "psr-0": {

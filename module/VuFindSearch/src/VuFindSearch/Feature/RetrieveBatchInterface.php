@@ -26,12 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Feature;
-
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
-use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
 

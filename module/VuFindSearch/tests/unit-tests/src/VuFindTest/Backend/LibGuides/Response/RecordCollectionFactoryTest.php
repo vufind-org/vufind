@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\LibGuides\Response;
 
 use VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory;
@@ -50,7 +49,7 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testFactory()
     {
-        $resp = array('documents' => array(array(), array(), array()));
+        $resp = ['documents' => [[], [], []]];
         $fact = new RecordCollectionFactory();
         $coll = $fact->factory($resp);
         $this->assertEquals(3, count($coll));

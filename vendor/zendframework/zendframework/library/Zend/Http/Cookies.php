@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -12,7 +12,6 @@ namespace Zend\Http;
 use ArrayIterator;
 use Zend\Http\Header\SetCookie;
 use Zend\Uri;
-
 
 /**
  * A Zend\Http\Cookies object is designed to contain and maintain HTTP cookies, and should
@@ -60,7 +59,7 @@ class Cookies extends Headers
     const COOKIE_STRING_CONCAT_STRICT = 3;
 
     /**
-     * @var \Zend\Http\Cookies
+     * @var array
      */
     protected $cookies = array();
 
@@ -161,9 +160,12 @@ class Cookies extends Headers
      * @throws Exception\InvalidArgumentException if invalid URI specified
      * @return array|string
      */
-    public function getMatchingCookies($uri, $matchSessionCookies = true,
-        $retAs = self::COOKIE_OBJECT, $now = null)
-    {
+    public function getMatchingCookies(
+        $uri,
+        $matchSessionCookies = true,
+        $retAs = self::COOKIE_OBJECT,
+        $now = null
+    ) {
         if (is_string($uri)) {
             $uri = Uri\UriFactory::factory($uri, 'http');
         } elseif (!$uri instanceof Uri\Uri) {
@@ -331,7 +333,7 @@ class Cookies extends Headers
 
     /**
      * Create a new Cookies object and automatically load into it all the
-     * cookies set in an Http_Response object. If $uri is set, it will be
+     * cookies set in a Response object. If $uri is set, it will be
      * considered as the requested URI for setting default domain and path
      * of the cookie.
      *

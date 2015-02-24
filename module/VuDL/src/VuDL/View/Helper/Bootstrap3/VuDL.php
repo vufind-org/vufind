@@ -47,7 +47,7 @@ class VuDL extends \Zend\View\Helper\AbstractHelper
      */
     public function formatTechInfo($techInfo)
     {
-        $old = array(
+        $old = [
             '/<(\/[^>]+)>/',
             '/<([^>]+)>/',
             '/\/&gt;/',
@@ -55,8 +55,8 @@ class VuDL extends \Zend\View\Helper\AbstractHelper
             '/<div>\s*<\/div>/',
             '/(?<=<div>)([^<]+)<div>/',
             '/<div>/'
-        );
-        $new = array(
+        ];
+        $new = [
             '&lt;\1&gt;</div>',
             '<div>&lt;\1&gt;',
             '/&gt;</div>',
@@ -69,7 +69,7 @@ class VuDL extends \Zend\View\Helper\AbstractHelper
                 . " : 'xml'"
                 . '">\1</a><div>',
             '<div class="xml">'
-        );
+        ];
         return preg_replace($old, $new, $techInfo);
     }
 }

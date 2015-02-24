@@ -43,24 +43,7 @@ use VuFind\Exception\ILS as ILSException;
 class Innovative extends AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Initialize the driver.
@@ -102,7 +85,7 @@ class Innovative extends AbstractBase implements
     }
 
     /**
-     * prepID
+     * Prepare ID
      *
      * This function returns the correct record id format as defined
      * in the Innovative.ini file.
@@ -171,7 +154,7 @@ class Innovative extends AbstractBase implements
         // beginning tr tag.
         $rows = preg_split("/<tr([^>]*)>/", $r);
         $count = 0;
-        $keys = array_pad(array(), 10, "");
+        $keys = array_pad([], 10, "");
 
         $loc_col_name      = $this->config['OPAC']['location_column'];
         $call_col_name     = $this->config['OPAC']['call_no_column'];
@@ -181,14 +164,14 @@ class Innovative extends AbstractBase implements
         $stat_avail        = $this->config['OPAC']['status_avail'];
         $stat_due          = $this->config['OPAC']['status_due'];
 
-        $ret = array();
+        $ret = [];
         foreach ($rows as $row) {
             // Split up the contents of the row based on the th or td tag, excluding
             // the tags themselves.
             $cols = preg_split("/<t(h|d)([^>]*)>/", $row);
 
             // for each th or td section, do the following.
-            for ($i=0; $i < sizeof($cols); $i++) {
+            for ($i = 0; $i < sizeof($cols); $i++) {
                 // replace non blocking space encodings with a space.
                 $cols[$i] = str_replace("&nbsp;", " ", $cols[$i]);
                 // remove html comment tags
@@ -268,7 +251,7 @@ class Innovative extends AbstractBase implements
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         $count = 0;
         foreach ($ids as $id) {
             $items[$count] = $this->getStatus($id);
@@ -307,12 +290,13 @@ class Innovative extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
         // TODO
-        return array();
+        return [];
     }
 
     /**
@@ -326,6 +310,7 @@ class Innovative extends AbstractBase implements
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($id, $details)
@@ -335,7 +320,7 @@ class Innovative extends AbstractBase implements
 
         //Build request link
         $link = $this->config['Catalog']['url'] . '/search?/.b' . $id_ . '/.b' .
-            $id_ . '/1%2C1%2C1%2CB/request~b'. $id_;
+            $id_ . '/1%2C1%2C1%2CB/request~b' . $id_;
         //$link = $this->config['Catalog']['url'] . '/record=b' . $id_;
 
         return $link;
@@ -395,13 +380,13 @@ class Innovative extends AbstractBase implements
             // released under the GPL
             $api_contents = trim(strip_tags($result));
             $api_array_lines = explode("\n", $api_contents);
-            $api_data = array('PBARCODE' => false);
+            $api_data = ['PBARCODE' => false];
 
             foreach ($api_array_lines as $api_line) {
                 $api_line = str_replace("p=", "peq", $api_line);
                 $api_line_arr = explode("=", $api_line);
-                $regex_match = array("/\[(.*?)\]/","/\s/","/#/");
-                $regex_replace = array('','','NUM');
+                $regex_match = ["/\[(.*?)\]/","/\s/","/#/"];
+                $regex_replace = ['','','NUM'];
                 $key = trim(
                     preg_replace($regex_match, $regex_replace, $api_line_arr[0])
                 );
@@ -416,7 +401,7 @@ class Innovative extends AbstractBase implements
             }
 
             // return patron info
-            $ret = array();
+            $ret = [];
             $ret['id'] = $api_data['PBARCODE']; // or should I return patron id num?
             $names = explode(',', $api_data['PATRNNAME']);
             $ret['firstname'] = $names[1];

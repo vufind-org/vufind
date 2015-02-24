@@ -109,7 +109,7 @@ class AbstractRecord extends AbstractBase
         if (!($user = $this->getUser())) {
             // Remember comment since POST data will be lost:
             return $this->forceLogin(
-                null, array('comment' => $this->params()->fromPost('comment'))
+                null, ['comment' => $this->params()->fromPost('comment')]
             );
         }
 
@@ -305,7 +305,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Find out if the item is already part of any lists; save list info/IDs
-        $listIds = array();
+        $listIds = [];
         $resources = $user->getSavedData(
             $driver->getUniqueId(), null, $driver->getResourceSource()
         );
@@ -314,26 +314,26 @@ class AbstractRecord extends AbstractBase
         }
 
         // Loop through all user lists and sort out containing/non-containing lists
-        $containingLists = $nonContainingLists = array();
+        $containingLists = $nonContainingLists = [];
         foreach ($user->getLists() as $list) {
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
             if (in_array($list->id, $listIds)) {
-                $containingLists[] = array(
+                $containingLists[] = [
                     'id' => $list->id, 'title' => $list->title
-                );
+                ];
             } else {
-                $nonContainingLists[] = array(
+                $nonContainingLists[] = [
                     'id' => $list->id, 'title' => $list->title
-                );
+                ];
             }
         }
 
         $view = $this->createViewModel(
-            array(
+            [
                 'containingLists' => $containingLists,
                 'nonContainingLists' => $nonContainingLists
-            )
+            ]
         );
         $view->setTemplate('record/save');
         return $view;
@@ -358,25 +358,24 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Create view
-        $view = $this->createEmailViewModel();
+        $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+        $view = $this->createEmailViewModel(
+            null, $mailer->getDefaultRecordSubject($driver)
+        );
+        $mailer->setMaxRecipients($view->maxRecipients);
+
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                    ? $view->from : null;
+                $mailer->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
-                    $this->getViewRenderer()
+                    $this->getViewRenderer(), $view->subject, $cc
                 );
-                if ($this->params()->fromPost('ccself')
-                    && $view->from != $view->to
-                ) {
-                    $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
-                        $view->from, $view->from, $view->message, $driver,
-                        $this->getViewRenderer()
-                    );
-                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();
@@ -418,7 +417,7 @@ class AbstractRecord extends AbstractBase
             try {
                 $body = $this->getViewRenderer()->partial(
                     'Email/record-sms.phtml',
-                    array('driver' => $driver, 'to' => $view->to)
+                    ['driver' => $driver, 'to' => $view->to]
                 );
                 $sms->text($view->provider, $view->to, null, $body);
                 $this->flashMessenger()->setNamespace('info')

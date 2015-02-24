@@ -38,12 +38,7 @@ namespace VuFind\Statistics\Driver;
  */
 class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
 {
-    /**
-     * Database table plugin manager
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tableManager;
+    use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
      * Write a message to the log.
@@ -62,7 +57,7 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
         // Make sure the browser version is a legal length.
         $userData['browserVersion'] = substr($userData['browserVersion'], 0, 8);
 
-        $this->getTable('UserStatsFields')->save($data, $userData);
+        $this->getDbTable('UserStatsFields')->save($data, $userData);
     }
 
     /**
@@ -73,10 +68,10 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      *
      * @return array
      */
-    public function getFullList($field, $value = array())
+    public function getFullList($field, $value = [])
     {
         // Use the model
-        return $this->getTable('UserStatsFields')->getFields($field, $value)
+        return $this->getDbTable('UserStatsFields')->getFields($field, $value)
             ->toArray();
     }
 
@@ -90,45 +85,7 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      */
     public function getBrowserStats($version, $limit)
     {
-        $userStats = $this->getTable('UserStats');
+        $userStats = $this->getDbTable('UserStats');
         return $userStats->getBrowserStats($version, $limit);
-    }
-
-    /**
-     * Get the table plugin manager.  Throw an exception if it is missing.
-     *
-     * @throws \Exception
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    public function getDbTableManager()
-    {
-        if (null === $this->tableManager) {
-            throw new \Exception('DB table manager missing.');
-        }
-        return $this->tableManager;
-    }
-
-    /**
-     * Set the table plugin manager.
-     *
-     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
-     *
-     * @return void
-     */
-    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
-    {
-        $this->tableManager = $manager;
-    }
-
-    /**
-     * Get a database table object.
-     *
-     * @param string $table Name of table to retrieve
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    protected function getTable($table)
-    {
-        return $this->getDbTableManager()->get($table);
     }
 }

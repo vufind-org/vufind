@@ -27,8 +27,6 @@
  */
 namespace VuFind\Search\Solr;
 
-use Zend\Mvc\Controller\AbstractActionController;
-
 /**
  * Functions for manipulating facets
  *
@@ -44,8 +42,8 @@ class HierarchicalFacetHelper
      * Helper method for building hierarchical facets:
      * Sort a facet list according to the given sort order
      *
-     * @param array &$facetList Facet list returned from Solr
-     * @param bool  $topLevel   Whether to sort only top level
+     * @param array $facetList Facet list returned from Solr
+     * @param bool  $topLevel  Whether to sort only top level
      *
      * @return void
      */
@@ -91,14 +89,13 @@ class HierarchicalFacetHelper
      * @see http://blog.tekerson.com/2009/03/03/
      * converting-a-flat-array-with-parent-ids-to-a-nested-tree/
      * Based on this example
-     *
      */
     public function buildFacetArray($facet, $facetList, $urlHelper = false)
     {
         // getParamArray() is expensive, so call it just once and pass it on
         $paramArray = $urlHelper !== false ? $urlHelper->getParamArray() : null;
         // Create a keyed (for conversion to hierarchical) array of facet data
-        $keyedList = array();
+        $keyedList = [];
         foreach ($facetList as $item) {
             $keyedList[$item['value']] = $this->createFacetItem(
                 $facet, $item, $urlHelper, $paramArray
@@ -106,7 +103,7 @@ class HierarchicalFacetHelper
         }
 
         // Convert the keyed array to a hierarchical array
-        $result = array();
+        $result = [];
         foreach ($keyedList as &$item) {
             if ($item['level'] > 0) {
                 $keyedList[$item['parent']]['children'][] = &$item;
@@ -130,11 +127,11 @@ class HierarchicalFacetHelper
      */
     public function flattenFacetHierarchy($facetList)
     {
-        $results = array();
+        $results = [];
         foreach ($facetList as $facetItem) {
             $children = !empty($facetItem['children'])
                 ? $facetItem['children']
-                : array();
+                : [];
             unset($facetItem['children']);
             $results[] = $facetItem;
             if ($children) {
@@ -232,7 +229,7 @@ class HierarchicalFacetHelper
         $item['hasAppliedChildren'] = false;
         $item['href'] = $href;
         $item['exclude'] = $exclude;
-        $item['children'] = array();
+        $item['children'] = [];
 
         return $item;
     }

@@ -79,7 +79,6 @@ class EdsrecordController extends AbstractRecord
             && $config->Record->next_prev_navigation);
     }
 
-
      /**
      * Is IP Authentication being used?
      *

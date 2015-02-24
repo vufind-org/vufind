@@ -51,10 +51,10 @@ class Options extends \VuFind\Search\Solr\Options
         // It's important to remember here we are talking about on-screen
         //   sort values, not what is sent to Solr, since this screen
         //   is really using facet sorting.
-        $this->sortOptions = array(
+        $this->sortOptions = [
             'relevance' => 'sort_author_relevance',
             'author' => 'sort_author_author'
-        );
+        ];
 
         // No spell check needed in author module:
         $this->spellcheck = false;

@@ -47,13 +47,13 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      */
     public function testNewCatalogLoginSuccess()
     {
-        $user = $this->getMockUser(array('saveCredentials'));
+        $user = $this->getMockUser(['saveCredentials']);
         $user->expects($this->once())->method('saveCredentials')->with($this->equalTo('user'), $this->equalTo('pass'));
-        $manager = $this->getMockManager(array('isLoggedIn', 'updateSession'));
+        $manager = $this->getMockManager(['isLoggedIn', 'updateSession']);
         $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue($user));
         $manager->expects($this->once())->method('updateSession')->with($this->equalTo($user));
-        $details = array('foo' => 'bar');
-        $connection = $this->getMockConnection(array('patronLogin'));
+        $details = ['foo' => 'bar'];
+        $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->returnValue($details));
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals($details, $auth->newCatalogLogin('user', 'pass'));
@@ -66,10 +66,10 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      */
     public function testNewCatalogFailure()
     {
-        $manager = $this->getMockManager(array('isLoggedIn'));
+        $manager = $this->getMockManager(['isLoggedIn']);
         $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue(false));
         $details = false;
-        $connection = $this->getMockConnection(array('patronLogin'));
+        $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->returnValue($details));
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals($details, $auth->newCatalogLogin('user', 'pass'));
@@ -83,7 +83,7 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
     public function testNewCatalogFailureByException()
     {
         $manager = $this->getMockManager();
-        $connection = $this->getMockConnection(array('patronLogin'));
+        $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->throwException(new \VuFind\Exception\ILS('kaboom')));
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals(false, $auth->newCatalogLogin('user', 'pass'));
@@ -96,7 +96,7 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      */
     public function testLoggedOutStoredLoginAttempt()
     {
-        $manager = $this->getMockManager(array('isLoggedIn'));
+        $manager = $this->getMockManager(['isLoggedIn']);
         $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue(false));
         $auth = $this->getAuthenticator($manager);
         $this->assertEquals(false, $auth->storedCatalogLogin());
@@ -109,14 +109,14 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      */
     public function testSuccessfulStoredLoginAttempt()
     {
-        $user = $this->getMockUser(array('__get', '__isset', 'getCatPassword'));
+        $user = $this->getMockUser(['__get', '__isset', 'getCatPassword']);
         $user->expects($this->any())->method('__get')->with($this->equalTo('cat_username'))->will($this->returnValue('user'));
         $user->expects($this->any())->method('__isset')->with($this->equalTo('cat_username'))->will($this->returnValue(true));
         $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
-        $manager = $this->getMockManager(array('isLoggedIn'));
+        $manager = $this->getMockManager(['isLoggedIn']);
         $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue($user));
-        $details = array('foo' => 'bar');
-        $connection = $this->getMockConnection(array('patronLogin'));
+        $details = ['foo' => 'bar'];
+        $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->returnValue($details));
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals($details, $auth->storedCatalogLogin());
@@ -133,14 +133,14 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      */
     public function testUnsuccessfulStoredLoginAttempt()
     {
-        $user = $this->getMockUser(array('__get', '__isset', 'clearCredentials', 'getCatPassword'));
+        $user = $this->getMockUser(['__get', '__isset', 'clearCredentials', 'getCatPassword']);
         $user->expects($this->any())->method('__get')->with($this->equalTo('cat_username'))->will($this->returnValue('user'));
         $user->expects($this->any())->method('__isset')->with($this->equalTo('cat_username'))->will($this->returnValue(true));
         $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
         $user->expects($this->once())->method('clearCredentials');
-        $manager = $this->getMockManager(array('isLoggedIn'));
+        $manager = $this->getMockManager(['isLoggedIn']);
         $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue($user));
-        $connection = $this->getMockConnection(array('patronLogin'));
+        $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->returnValue(false));
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals(false, $auth->storedCatalogLogin());
@@ -153,14 +153,14 @@ class ILSAuthenticatorTest extends \VuFindTest\Unit\TestCase
      */
     public function testExceptionDuringStoredLoginAttempt()
     {
-        $user = $this->getMockUser(array('__get', '__isset', 'clearCredentials', 'getCatPassword'));
+        $user = $this->getMockUser(['__get', '__isset', 'clearCredentials', 'getCatPassword']);
         $user->expects($this->any())->method('__get')->with($this->equalTo('cat_username'))->will($this->returnValue('user'));
         $user->expects($this->any())->method('__isset')->with($this->equalTo('cat_username'))->will($this->returnValue(true));
         $user->expects($this->any())->method('getCatPassword')->will($this->returnValue('pass'));
         $user->expects($this->once())->method('clearCredentials');
-        $manager = $this->getMockManager(array('isLoggedIn'));
+        $manager = $this->getMockManager(['isLoggedIn']);
         $manager->expects($this->any())->method('isLoggedIn')->will($this->returnValue($user));
-        $connection = $this->getMockConnection(array('patronLogin'));
+        $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->throwException(new \VuFind\Exception\ILS('kaboom')));
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals(false, $auth->storedCatalogLogin());
