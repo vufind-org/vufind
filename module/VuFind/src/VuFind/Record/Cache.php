@@ -44,21 +44,17 @@ class Cache implements \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     
-    const FAVORITE             = 'favorite';
+    const POLICY_FAVORITE = 'Favorite';
+    const POLICY_DEFAULT = 'Default';
 
-    protected $cachePolicy = 0;
-    protected $DISABLED          = 0b00000; //  0
-    protected $PRIMARY           = 0b00001; //  1
-    protected $FALLBACK          = 0b00010; //  2
-    protected $INCLUDE_RECORD_ID = 0b00100; //  4
-    protected $INCLUDE_SOURCE    = 0b01000; //  8
-    protected $INCLUDE_USER_ID   = 0b10000; // 16
+    protected $cacheConfig = null;
 
     protected $recordTable = null;
     protected $recordFactoryManager = null;
 
-    protected $cachableSources = null;
-    protected $cachePolicies = [];
+    protected $operatingMode = 'disabled';
+    protected $cachableSources = [];
+    protected $cacheIdComponents = ['userId'];
     
     /**
      * Constructor
@@ -72,29 +68,11 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         Config $config,
         DbTableManager $dbTableManager
     ) {
-        if (isset($config->RecordCache)) {
-            if (isset($config->RecordCache->cachableSources)) {
-                $this->cachableSources
-                    = preg_split("/[\s,]+/", $config->RecordCache->cachableSources);
-            } else {
-                $this->cachableSources = [];
-            }
-
-            if (isset($config->RecordCache->cachePolicy)) {
-                $this->cachePolicies = $config->RecordCache->cachePolicy;
-            } else {
-                $this->cachePolicies = [];
-            }
-        }
-        
-        // due to legacy resasons add 'VuFind' to cachable sources if 
-        // record from source 'Solr' are cacheable.
-        if ( in_array('Solr', $this->cachableSources) ) {
-            $this->cachableSources[] = 'VuFind';
-        }
-        
+        $this->cacheConfig = $config;
         $this->recordTable = $dbTableManager->get('record');
         $this->recordFactoryManager = $recordFactoryManager;
+        
+        $this->setPolicy(Cache::POLICY_DEFAULT);
     }
 
     /**
@@ -151,7 +129,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function lookup($ids, $source = null)
     {
-        if ($this->cachePolicy === $this->DISABLED) {
+        if ($this->operatingMode === 'disabled') {
             return [];
         }
 
@@ -208,8 +186,19 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function setPolicy($cachePolicy)
     {
-        if (isset($this->cachePolicies[$cachePolicy])) {
-            $this->cachePolicy = $this->cachePolicies[$cachePolicy];
+        $policy = $this->cacheConfig->$cachePolicy;
+        if (isset($policy)) {
+            $this->cachableSources 
+                = preg_split("/[\s,]+/", $policy->cachableSources);
+            $this->operatingMode = $policy->operatingMode;
+            $this->cacheIdComponents 
+                = preg_split("/[\s,]+/", $policy->cacheIdComponents);
+        }
+        
+        // due to legacy resasons add 'VuFind' to cachable sources if
+        // record from source 'Solr' are cacheable.
+        if ( in_array('Solr', $this->cachableSources) ) {
+            $this->cachableSources[] = 'VuFind';
         }
     }
 
@@ -220,7 +209,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function isPrimary()
     {
-        return $this->hasPolicy($this->PRIMARY);
+        return ($this->operatingMode === "primary");
     }
 
     /**
@@ -230,19 +219,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function isFallback()
     {
-        return $this->hasPolicy($this->FALLBACK);
-    }
-
-    /**
-     * Convenience method checking policies
-     *
-     * @param int $policy cache policy
-     *
-     * @return bool
-     */
-    protected function hasPolicy($policy)
-    {
-        return (($this->cachePolicy & $policy) === $policy);
+        return ($this->operatingMode === "fallback");
     }
 
     /**
@@ -256,19 +233,16 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     protected function getCacheId($recordId, $source = null, $userId = null)
     {
+        $source = ($source == 'Solr') ? 'VuFind' : $source;
+
         $cIdHelper = [];
-        if ($this->hasPolicy($this->INCLUDE_RECORD_ID)) {
-            $cIdHelper['recordId'] = $recordId;
-        }
+        $cIdHelper['recordId'] = $recordId;
+        $cIdHelper['source']   = $source;
 
-        if ($this->hasPolicy($this->INCLUDE_SOURCE)) {
-            $source = ($source == 'Solr') ? 'VuFind' : $source;
-            $cIdHelper['source']   = $source;
-        }
-
-        if ($this->hasPolicy($this->INCLUDE_USER_ID)) {
+        if (in_array('userId', $this->cacheIdComponents)) {
             $cIdHelper['userId']   = $userId;
         }
+        
         $md5 = md5(json_encode($cIdHelper));
 
         return $md5;

@@ -171,7 +171,7 @@ class Results extends BaseResults
         }
 
         $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
-        $recordLoader->setCachePolicy(Cache::FAVORITE);
+        $recordLoader->setCachePolicy(Cache::POLICY_FAVORITE);
         $this->results = $recordLoader->loadBatch($recordsToRequest);
     }
 

@@ -245,7 +245,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
 
         // Persist record in the database for "offline" use
         if ($recordCache = $this->getRecordCache()) {
-            $recordCache->setPolicy(Cache::FAVORITE);
+            $recordCache->setPolicy(Cache::POLICY_FAVORITE);
             $recordCache->createOrUpdate(
                 $resource->record_id, $user->id, $resource->source,
                 $this->getRawData(), null, $resource->id
