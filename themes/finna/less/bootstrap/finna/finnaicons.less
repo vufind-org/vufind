@@ -12,7 +12,7 @@
     font-style: normal;
 }
 
-[class^="fa-"], [class*=" fa-"], .iconlabel:before, .slick-prev, .slick-next, .slick-dots li  {
+[class^="fa-"], [class*=" fa-"], .iconlabel:before, .slick-prev, .slick-next, .slick-dots li, .openUrlEmbed:before  {
     font-family: 'icomoon';
     speak: none;
     text-transform: none;
@@ -28,19 +28,19 @@
     cursor: pointer;
 }
 .iconlabel {
-  color: #464646;
+  color: @gray;
   background: none;
   padding: 0px;
   font-weight: 400;
   margin-right: 10px;
-  font-size: 14px;
+  font-size: 1.1em;
+  &:before {
+      padding-right: 3px;
+  }
 }
 .template-name-results .iconlabel {
   letter-spacing: 0px;
-  font-size: 13px;
-}
-.iconlabel:before {
-  padding-right: 3px;
+  font-size: 1em;
 }
 .fa-spinner {
   margin-left: 5px;
@@ -65,12 +65,25 @@
 /* ---  set  navbar logo display only the logo --- */
 .navbar-header .fa-finnalogo {
   width: 30px;
+  height: 40px;
+  background: url('../images/finna-logo.png'); // fallback if no svg support
+  background: url('../images/finna-logo.svg');
   overflow: hidden;
   vertical-align: middle;
+  background-repeat: no-repeat;
+  background-position: 0px 2px;
+  background-size: 340%;
 }
-.fa-finnalogo:before {
-    content: "\e60b";
-    font-weight:300;
+
+.logo .finnalogo {
+    display: inline-block;
+    width: 200px;
+    height: 63px;
+    background: url('../images/finna-logo.png'); // fallback if no svg support
+    background: url('../images/finna-logo.svg');
+    &:hover {
+        cursor: pointer;    
+    }
 }
 .iconlabel.ekirja:before, .iconlabel.ekirjanosa:before, .iconlabel.elektroninen:before {
     content: "\e617";
@@ -78,7 +91,7 @@
 .iconlabel.kirja:before, .iconlabel.kirjanosa:before, .iconlabel.book:before {
     content: "\e616";
 }
-.fa-www-link:before {
+.fa-www-link:before, .iconlabel.electronic:before, .fa-external-link:before, .openUrlEmbed:before {
     content: "\e615";
 }
 .fa-handle-left:before, .slick-prev:before {
@@ -166,11 +179,15 @@
 .fa-sign-in:before {
     content: "\e042";
 }
-.fa-logout:before {
+.fa-sign-out:before {
+    vertical-align: middle;
     content: "\e042";
 }
 .fa-home:before {
     content: "\e041";
+}
+.navbar .fa-home:before {
+    color: @navbar-default-link-color;  
 }
 .fa-public:before {
     content: "\e040";
@@ -389,24 +406,34 @@
 .nav-pills .fa.fa-asterisk {
     padding: 6px 7px;
 }
-@media(max-width:767px) {
-.nav-pills .fa {
-    font-size: 16px;
-    padding: 8px 9px 9px 9px;
-    color: #fff;
-    background: #00a2b5;
-    border-radius: 50%;
-    margin-left:2px;
-}
-
-.nav-pills .fa.fa-asterisk {
-    padding: 8px 10px;
-}
+@media(max-width: @screen-sm-max) {
+    .nav-pills .fa {
+        font-size: 16px;
+        padding: 8px 9px 9px 9px;
+        color: #fff;
+        background: #00a2b5;
+        border-radius: 50%;
+        margin-left:2px;
+    }
+    
+    .nav-pills .fa.fa-asterisk {
+        padding: 8px 10px;
+    }
 }
 .nav-pills .fa.fa-phone {
     background: #64d448;
 }
 /* Addthis icons for sharing styling */
+.addthis-share-buttons {
+    margin-right: 5px !important;
+    @media(max-width:@screen-xs-max) {
+        clear: left;
+    }
+    @media(min-width:@screen-md-min) and (max-width:@screen-md-max) {
+        clear: both;
+        margin-left: 5px !important;
+    }
+}
 .addthis_default_style .at300b {
     padding: 0px !important;
 }
@@ -459,7 +486,7 @@
     color: #a94442;  
 }
 .fa-x:before {
-    content:"";
+    content:"" !important;
 }
 .sidebar .list-group-item i.fa.fa-square-o {
 display: none;

@@ -160,7 +160,9 @@
       <? if (!empty($this->layout()->finnaMainTabs)): ?>
       <div class="container-fluid finna-main-tabs">
         <div class="container">
-          <?=$this->layout()->finnaMainTabs?>
+          <div class="row">
+              <?=$this->layout()->finnaMainTabs?>
+          </div>
         </div>
       </div>
       <? endif; ?>

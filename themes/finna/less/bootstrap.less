@@ -338,7 +338,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 #modal .modal-body > h2:first-child {display:none}
 .tab-content {padding:4px}
 
-/* --- Finna records ... */
+/* --- Finna local records ... */
 .template-name-view #record h3 {
        margin:0;
        margin-bottom: 3px;
@@ -346,14 +346,23 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .record-authors {
     .date-and-year();
 }
+.record-details {
+    & th {
+        width: 30%;    
+    }
+}
+
 .show-details-button {
     margin-bottom: 5px;
     cursor: pointer;
 }
 .record-details {
-    margin:10px 0px;
-    
+    margin:10px 0px;  
 }
+.physical-details {
+    color: @gray-light;
+}
+
 @media(max-width:@screen-xs-max) {
     .cover-wrapper, .record-title, .record-authors {
         text-align: center;
@@ -371,7 +380,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .twitter-typeahead {
   background: transparent;
   top: 3px;
-  margin-right: -5px;
   vertical-align: top;
   .tt-hint {display:none}
 }
@@ -640,7 +648,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   text-decoration: none;
 }
 .sidebar .list-group-item i.fa.fa-square-o, .sidebar .list-group-item i.fa.fa-check-square-o {
-    font-size: 22px;
     vertical-align: middle;
 }
 
@@ -744,6 +751,11 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   width: 10px;
   margin-left: -16px;
   margin-right: 4px;
+  @media(max-width:@screen-xs-max) {
+    margin-top:-3px;
+    margin-right: 10px;
+    font-size: 1.3em;
+  }
 }
 .facet .jstree-default .jstree-open > .jstree-ocl:before {
   content: "\e027";
@@ -772,6 +784,9 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
   padding: 5px 10px 5px 20px;
   background: whitesmoke;
   border-bottom:2px solid @body-bg;
+  @media(max-width:@screen-xs-max) {
+    font-size: 1.15em;   
+  }
 }
 .jstree-facet .jstree-container-ul {
   padding: 0;
@@ -793,7 +808,30 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
   cursor: pointer;
   text-decoration: line-through;
 }
-
+//== PCI
+.template-dir-primo.template-name-search .row.result, .sourcePrimo {
+    border-bottom: 1px solid @gray-lighter;
+    & .summary {
+        color: @gray-light;
+    }
+}
+.sourcePrimo .summary {
+    font-size: 1.1em;
+}
+.primo-available-online {
+    padding: 5px;
+    border: 3px solid @gray-lighter;
+    & p {
+        margin: 0px;   
+    }
+    & a {
+        display: block;   
+    }
+}
+.primo-available-online-record, .local-available-online-record {
+    margin: 10px 0px;
+    font-size: 1.1em;
+}
 //== PCI FACETS
 #creationdateFilter, #publishDateFilter {
     & input[type="text"] {
@@ -824,7 +862,11 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     }
 }
 
-
+//== CONTENT PAGES
+.content-section {
+    padding-bottom: 20px;
+    border-bottom: 1px solid @gray-lighter;
+}
 //Finna mixins
 
 .resetMarginsPaddings {

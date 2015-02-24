@@ -27,14 +27,14 @@
 //== CUstom Finna styling
 @background-image-url: url('../images/background_1.jpg');
 @background-start-color: rgba(1,1,1,0.3);
-@background-end-color:  rgba(1,1,1,0.8);
+@background-end-color:  rgba(1,1,1,0.7);
 @background-start-percent: 10%;
 @background-end-percent: 100%;
 @header-height: 43px;
 @navbar-logo-height: 35px;
 @logo-height: 66px;
 @header-background-color: rgba(10,10,10,0.8);
-@footer-background: #464646;
+@footer-background: @gray;
 @finna-main-header-background: @brand-secondary;
 @finna-record-header-background: @gray-lighter;
 @field-margin-vertical: 20px;
@@ -45,12 +45,15 @@
 @finna-button-radius: 10px; // Defines all button radiuses
 @finna-search-results-header-font-size: 1.5em;
 
+//== Finna custom tooltip
+@finna-tooltip-opacity: 0.7;
+
 //== Finna home page
 @home-top-background: @brand-third;
 @home-middle-background: #fff;
 @infobox-background: #fff;
 @infobox-border: 5px solid @gray-lighter;
-@infobox-text-color: #464646;
+@infobox-text-color: @gray;
 @infobox-box-shadow: none;
 
 //== Finna facets
@@ -60,7 +63,7 @@
 
 //== Generated horizontal carousel styles
     //== This is full background
-@carousel-background: @gray-darker;
+@carousel-background: @gray-dark;
    //== Styling the header of carousel
 @carousel-header-background: rgba(140, 140, 140, 0.8);
 @carousel-header-color: #fff;
@@ -176,13 +179,13 @@
 //** Default background color used for all tables.
 @table-bg:                      transparent;
 //** Background color used for `.table-striped`.
-@table-bg-accent:               #f9f9f9;
+@table-bg-accent:               #F7F7F7;
 //** Background color used for `.table-hover`.
 @table-bg-hover:                #f5f5f5;
 @table-bg-active:               @table-bg-hover;
 
 //** Border color for table and cell borders.
-@table-border-color:            #ddd;
+@table-border-color:            transparent;
 
 
 //== Buttons
@@ -735,7 +738,7 @@
 //** Thumbnail background color
 @thumbnail-bg:                @body-bg;
 //** Thumbnail border color
-@thumbnail-border:            #ddd;
+@thumbnail-border:            none;
 //** Thumbnail border radius
 @thumbnail-border-radius:     @border-radius-base;
 
@@ -777,7 +780,7 @@
 //##
 
 @breadcrumb-padding-vertical:   5px;
-@breadcrumb-padding-horizontal: 15px;
+@breadcrumb-padding-horizontal: 5px;
 //** Breadcrumb background color
 @breadcrumb-bg:                 rgba(1, 1, 1, 0.4);
 //** Breadcrumb text color
@@ -785,7 +788,7 @@
 //** Text color of current page in the breadcrumb
 @breadcrumb-active-color:       #fff;
 //** Textual separator for between breadcrumb elements
-@breadcrumb-separator:          "/";
+@breadcrumb-separator:          "/ ";
 
 
 //== Carousel
