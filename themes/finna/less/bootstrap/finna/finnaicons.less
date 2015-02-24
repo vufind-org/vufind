@@ -12,7 +12,7 @@
     font-style: normal;
 }
 
-[class^="fa-"], [class*=" fa-"], .iconlabel:before, .slick-prev, .slick-next, .slick-dots li  {
+[class^="fa-"], [class*=" fa-"], .iconlabel:before, .slick-prev, .slick-next, .slick-dots li, .openUrlEmbed:before  {
     font-family: 'icomoon';
     speak: none;
     text-transform: none;
@@ -33,14 +33,14 @@
   padding: 0px;
   font-weight: 400;
   margin-right: 10px;
-  font-size: 14px;
+  font-size: 1.1em;
+  &:before {
+      padding-right: 3px;
+  }
 }
 .template-name-results .iconlabel {
   letter-spacing: 0px;
-  font-size: 13px;
-}
-.iconlabel:before {
-  padding-right: 3px;
+  font-size: 1em;
 }
 .fa-spinner {
   margin-left: 5px;
@@ -65,12 +65,25 @@
 /* ---  set  navbar logo display only the logo --- */
 .navbar-header .fa-finnalogo {
   width: 30px;
+  height: 40px;
+  background: url('../images/finna-logo.png'); // fallback if no svg support
+  background: url('../images/finna-logo.svg');
   overflow: hidden;
   vertical-align: middle;
+  background-repeat: no-repeat;
+  background-position: 0px 2px;
+  background-size: 340%;
 }
-.fa-finnalogo:before {
-    content: "\e60b";
-    font-weight:300;
+
+.logo .finnalogo {
+    display: inline-block;
+    width: 200px;
+    height: 63px;
+    background: url('../images/finna-logo.png'); // fallback if no svg support
+    background: url('../images/finna-logo.svg');
+    &:hover {
+        cursor: pointer;    
+    }
 }
 .iconlabel.ekirja:before, .iconlabel.ekirjanosa:before, .iconlabel.elektroninen:before {
     content: "\e617";
@@ -78,7 +91,7 @@
 .iconlabel.kirja:before, .iconlabel.kirjanosa:before, .iconlabel.book:before {
     content: "\e616";
 }
-.fa-www-link:before, .iconlabel.electronic:before {
+.fa-www-link:before, .iconlabel.electronic:before, .fa-external-link:before, .openUrlEmbed:before {
     content: "\e615";
 }
 .fa-handle-left:before, .slick-prev:before {
@@ -172,6 +185,9 @@
 }
 .fa-home:before {
     content: "\e041";
+}
+.navbar .fa-home:before {
+    color: @navbar-default-link-color;  
 }
 .fa-public:before {
     content: "\e040";
@@ -470,7 +486,7 @@
     color: #a94442;  
 }
 .fa-x:before {
-    content:"";
+    content:"" !important;
 }
 .sidebar .list-group-item i.fa.fa-square-o {
 display: none;
