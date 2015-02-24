@@ -45,7 +45,7 @@
         </li>
         <? if ($this->related()->getList($this->driver) != null ): ?>
         <li>
-        <a id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toogle="tab" data-target="#similar-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
+        <a id="related_<?=escapeJSAttr($this->driver->getUniqueId())?>" data-toogle="tab" data-target="#related-tab_<?=escapeJSAttr($this->driver->getUniqueId())?>">
 <?=$this->transEsc("Related Items")?>
         </a>
         </li>
@@ -62,7 +62,7 @@
   <?=$this->record($this->driver)->getToolbar()?>
     </div>
     <? if ($this->related()->getList($this->driver) != null): ?>
-      <div class="tab-pane" id="similar_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
+      <div class="tab-pane" id="related_<?=escapeJSAttr($this->driver->getUniqueId())?>-tab">
   <? foreach ($this->related()->getList($this->driver) as $current): ?>
     <?=$this->related()->render($current)?>
   <? endforeach; ?>
