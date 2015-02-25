@@ -48,7 +48,7 @@ class ThemeInjectTemplateListenerTest extends Unit\TestCase
     {
         $l = new InjectTemplateListener();
         $this->assertEquals(
-            '', $this->callMethod($l, 'deriveModuleNamespace', array('dummy'))
+            '', $this->callMethod($l, 'deriveModuleNamespace', ['dummy'])
         );
     }
 
@@ -61,7 +61,7 @@ class ThemeInjectTemplateListenerTest extends Unit\TestCase
     {
         $l = new InjectTemplateListener();
         $this->assertEquals(
-            'testcase', $this->callMethod($l, 'inflectName', array('testCase'))
+            'testcase', $this->callMethod($l, 'inflectName', ['testCase'])
         );
     }
 }

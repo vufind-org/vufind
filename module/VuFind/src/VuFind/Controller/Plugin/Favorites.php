@@ -84,7 +84,7 @@ class Favorites extends AbstractPlugin
 
             // Add the information to the user's account:
             $tags = isset($params['mytags'])
-                ? $tagParser->parse($params['mytags']) : array();
+                ? $tagParser->parse($params['mytags']) : [];
             $user->saveResource($resource, $list, $tags, '', false);
         }
     }
@@ -102,11 +102,11 @@ class Favorites extends AbstractPlugin
     public function delete($ids, $listID, $user)
     {
         // Sort $ids into useful array:
-        $sorted = array();
+        $sorted = [];
         foreach ($ids as $current) {
             list($source, $id) = explode('|', $current, 2);
             if (!isset($sorted[$source])) {
-                $sorted[$source] = array();
+                $sorted[$source] = [];
             }
             $sorted[$source][] = $id;
         }

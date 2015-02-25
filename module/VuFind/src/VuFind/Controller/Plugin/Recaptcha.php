@@ -47,7 +47,7 @@ class Recaptcha extends AbstractPlugin
     /**
      * String array of forms where ReCaptcha is active
      */
-    protected $domains = array();
+    protected $domains = [];
 
     /**
      * Captcha activated in config
@@ -90,7 +90,7 @@ class Recaptcha extends AbstractPlugin
      */
     public function setErrorMode($mode)
     {
-        if (in_array($mode, array('flash', 'throw'))) {
+        if (in_array($mode, ['flash', 'throw'])) {
             $this->errorMode = $mode;
             return true;
         }

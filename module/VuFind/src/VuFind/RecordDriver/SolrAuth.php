@@ -75,7 +75,7 @@ class SolrAuth extends SolrMarc
     {
         return isset($this->fields['see_also'])
             && is_array($this->fields['see_also'])
-            ? $this->fields['see_also'] : array();
+            ? $this->fields['see_also'] : [];
     }
 
     /**
@@ -87,7 +87,7 @@ class SolrAuth extends SolrMarc
     {
         return isset($this->fields['use_for'])
             && is_array($this->fields['use_for'])
-            ? $this->fields['use_for'] : array();
+            ? $this->fields['use_for'] : [];
     }
 
     /**
@@ -101,7 +101,7 @@ class SolrAuth extends SolrMarc
         if (!empty($lccn)) {
             return $lccn;
         }
-        $lccns = $this->getFieldArray('700', array('0'));
+        $lccns = $this->getFieldArray('700', ['0']);
         foreach ($lccns as $lccn) {
             if (substr($lccn, 0, '5') == '(DLC)') {
                 return substr($lccn, 5);

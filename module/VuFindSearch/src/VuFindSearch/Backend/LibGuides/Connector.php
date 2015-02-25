@@ -29,7 +29,6 @@
  */
 namespace VuFindSearch\Backend\LibGuides;
 use Zend\Http\Client as HttpClient;
-use Zend\Log\LoggerInterface;
 
 /**
  * LibGuides connector.
@@ -41,14 +40,9 @@ use Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Connector
+class Connector implements \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Logger instance.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * The HTTP_Request object used for API transactions
@@ -100,18 +94,6 @@ class Connector
     }
 
     /**
-     * Set logger instance.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
      * Execute a search.  adds all the querystring parameters into
      * $this->client and returns the parsed response
      *
@@ -135,14 +117,12 @@ class Connector
                 = array_slice($result['documents'], $offset, $limit);
         } catch (\Exception $e) {
             if ($returnErr) {
-                if ($this->logger) {
-                    $this->logger->debug($e->getMessage());
-                }
-                $result = array(
+                $this->debug($e->getMessage());
+                $result = [
                     'recordCount' => 0,
-                    'documents' => array(),
+                    'documents' => [],
                     'error' => $e->getMessage()
-                );
+                ];
             } else {
                 throw $e;
             }
@@ -153,7 +133,7 @@ class Connector
     }
 
     /**
-     * small wrapper for sendRequest, process to simplify error handling.
+     * Small wrapper for sendRequest, process to simplify error handling.
      *
      * @param string $qs     Query string
      * @param string $method HTTP method
@@ -163,9 +143,7 @@ class Connector
      */
     protected function call($qs, $method = 'GET')
     {
-        if ($this->logger) {
-            $this->logger->debug("{$method}: {$this->host}{$qs}");
-        }
+        $this->debug("{$method}: {$this->host}{$qs}");
         $this->client->resetParameters();
         if ($method == 'GET') {
             $baseUrl = $this->host . $qs;
@@ -196,23 +174,23 @@ class Connector
             throw new \Exception('LibGuides did not return any data');
         }
 
-        $items = array();
+        $items = [];
 
         // Extract titles and URLs from response:
         $regex = '/<a href="([^"]*)"[^>]*>([^<]*)</';
         $count = preg_match_all($regex, $data, $matches);
 
         for ($i = 0; $i < $count; $i++) {
-            $items[] = array(
+            $items[] = [
                 'id' => $matches[1][$i],    // ID = URL
                 'title' => $matches[2][$i],
-            );
+            ];
         }
 
-        $results = array(
+        $results = [
             'recordCount' => count($items),
             'documents' => $items
-        );
+        ];
 
         return $results;
     }
@@ -228,14 +206,14 @@ class Connector
     {
         // defaults for params (vary by version)
         if ($this->apiVersion < 2) {
-            $args = array(
+            $args = [
                 'iid' => $this->iid,
                 'type' => 'guides',
                 'more' => 'false',
                 'sortby' => 'relevance',
-            );
+            ];
         } else {
-            $args = array(
+            $args = [
                 'site_id' => $this->iid,
                 'sort_by' => 'relevance',
                 'widget_type' => 1,
@@ -249,7 +227,7 @@ class Connector
                 'enable_group_search_limit' => 0,
                 'enable_subject_search_limit' => 0,
                 'widget_embed_type' => 2,
-            );
+            ];
             // remap v1 --> v2 params:
             if (isset($params['search'])) {
                 $params['search_terms'] = $params['search'];

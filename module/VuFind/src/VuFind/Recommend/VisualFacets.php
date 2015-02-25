@@ -52,8 +52,6 @@ class VisualFacets extends AbstractFacets
     protected $facets;
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * VisualFacets:[ini section]:[ini name]
@@ -67,7 +65,7 @@ class VisualFacets extends AbstractFacets
     public function setConfig($settings)
     {
         $settings = explode(':', $settings);
-        $mainSection = empty($settings[0]) ? 'Visual_Settings':$settings[0];
+        $mainSection = empty($settings[0]) ? 'Visual_Settings' : $settings[0];
         $iniName = isset($settings[1]) ? $settings[1] : 'facets';
 
         // Load the desired facet information:
@@ -77,7 +75,10 @@ class VisualFacets extends AbstractFacets
     }
 
     /**
-     * init
+     * Called at the end of the Search Params objects' initFromRequest() method.
+     * This method is responsible for setting search parameters needed by the
+     * recommendation module and for reading any existing search parameters that may
+     * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
      * @param \Zend\StdLib\Parameters    $request Parameter object representing user
@@ -99,7 +100,7 @@ class VisualFacets extends AbstractFacets
     public function getPivotFacetSet()
     {
         // Avoid fatal error in case of unexpected results object (e.g. EmptySet):
-        return is_callable(array($this->results, 'getPivotFacetList'))
-            ? $this->results->getPivotFacetList() : array();
+        return is_callable([$this->results, 'getPivotFacetList'])
+            ? $this->results->getPivotFacetList() : [];
     }
 }

@@ -72,7 +72,7 @@ class VuFindSitemap extends VuFind
 
         // Extract the keywords from the XML:
         preg_match_all('/<keyword[^>]*>([^<]*)</ms', $xml, $matches);
-        $keywords = array();
+        $keywords = [];
         if (isset($matches[1])) {
             foreach ($matches[1] as $current) {
                 $keywords[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
@@ -85,12 +85,12 @@ class VuFindSitemap extends VuFind
             ? html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8') : '';
 
         // Send back the extracted fields:
-        return array(
+        return [
             'title' => $title,
             'keywords' => $keywords,
             'description' => $description,
             'fulltext' => $final,
-        );
+        ];
     }
 
     /**
@@ -114,7 +114,7 @@ class VuFindSitemap extends VuFind
         preg_match_all(
             '/<meta name="keywords" content="([^"]*)"/ms', $xml, $matches
         );
-        $keywords = array();
+        $keywords = [];
         if (isset($matches[1])) {
             foreach ($matches[1] as $current) {
                 $keywords[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
@@ -127,12 +127,12 @@ class VuFindSitemap extends VuFind
             ? html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8') : '';
 
         // Send back the extracted fields:
-        return array(
+        return [
             'title' => $title,
             'keywords' => $keywords,
             'description' => $description,
             'fulltext' => $title . ' ' . static::harvestWithTika($htmlFile),
-        );
+        ];
     }
 
     /**
@@ -151,7 +151,7 @@ class VuFindSitemap extends VuFind
         preg_match_all(
             '/<meta name="subject" content="([^"]*)"/ms', $html, $matches
         );
-        $subjects = array();
+        $subjects = [];
         if (isset($matches[1])) {
             foreach ($matches[1] as $current) {
                 $subjects[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
@@ -162,7 +162,7 @@ class VuFindSitemap extends VuFind
         preg_match_all(
             '/<meta name="category" content="([^"]*)"/ms', $html, $matches
         );
-        $categories = array();
+        $categories = [];
         if (isset($matches[1])) {
             foreach ($matches[1] as $current) {
                 $categories[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
@@ -175,11 +175,11 @@ class VuFindSitemap extends VuFind
         );
         $useCount = isset($matches[1][0]) ? $matches[1][0] : 1;
 
-        return array(
+        return [
             'category' => $categories,
             'subject' => $subjects,
             'use_count' => $useCount,
-        );
+        ];
     }
 
     /**
@@ -193,7 +193,7 @@ class VuFindSitemap extends VuFind
     {
         $xml = '';
         foreach ($fields as $key => $value) {
-            $value = is_array($value) ? $value : array($value);
+            $value = is_array($value) ? $value : [$value];
             foreach ($value as $current) {
                 if (!empty($current)) {
                     $xml .= '<field name="' . $key . '">'
@@ -232,7 +232,7 @@ class VuFindSitemap extends VuFind
     {
         $parser = static::getParser();
         if ($parser == 'None') {
-            return array();
+            return [];
         }
 
         // Grab the HTML and write it to disk:

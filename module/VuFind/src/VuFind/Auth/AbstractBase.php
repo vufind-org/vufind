@@ -28,7 +28,6 @@
  */
 namespace VuFind\Auth;
 use VuFind\Db\Row\User, VuFind\Exception\Auth as AuthException;
-use Zend\Log\LoggerInterface;
 
 /**
  * Abstract authentication base class
@@ -43,6 +42,10 @@ use Zend\Log\LoggerInterface;
 abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Has the configuration been validated?
      *
@@ -58,65 +61,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     protected $config = null;
 
     /**
-     * Database table plugin manager
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tableManager;
-
-    /**
-     * Translator
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator;
-
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return TranslatorAwareInterface
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-    }
-
-    /**
      * Get configuration (load automatically if not previously set).  Throw an
      * exception if the configuration is invalid.
      *
@@ -128,6 +72,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         // Validate configuration if not already validated:
         if (!$this->configValidated) {
             $this->validateConfig();
+            $this->configValidated = true;
         }
 
         return $this->config;
@@ -210,6 +155,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @throws AuthException
      * @return User New user row.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function create($request)
@@ -227,6 +173,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @throws AuthException
      * @return User New user row.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function updatePassword($request)
@@ -244,6 +191,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * send user after login (some drivers may override this).
      *
      * @return bool|string
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getSessionInitiator($target)
@@ -305,7 +253,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function getPasswordPolicy()
     {
-        $policy = array();
+        $policy = [];
         $config = $this->getConfig();
         if (isset($config->Authentication->minimum_password_length)) {
             $policy['minLength']
@@ -329,32 +277,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Get the table plugin manager.  Throw an exception if it is missing.
-     *
-     * @throws \Exception
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    public function getDbTableManager()
-    {
-        if (null === $this->tableManager) {
-            throw new \Exception('DB table manager missing.');
-        }
-        return $this->tableManager;
-    }
-
-    /**
-     * Set the table plugin manager.
-     *
-     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
-     *
-     * @return void
-     */
-    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
-    {
-        $this->tableManager = $manager;
-    }
-
-    /**
      * Verify that a password fulfills the password policy. Throws exception if
      * the password is invalid.
      *
@@ -372,7 +294,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             throw new AuthException(
                 $this->translate(
                     'password_minimum_length',
-                    array('%%minlength%%' => $policy['minLength'])
+                    ['%%minlength%%' => $policy['minLength']]
                 )
             );
         }
@@ -382,35 +304,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             throw new AuthException(
                 $this->translate(
                     'password_maximum_length',
-                    array('%%maxlength%%' => $policy['maxLength'])
+                    ['%%maxlength%%' => $policy['maxLength']]
                 )
             );
         }
-    }
-
-    /**
-     * Translate a string
-     *
-     * @param string $str    String to translate
-     * @param array  $tokens Tokens to inject into the translated string
-     *
-     * @return string
-     * @todo Use TranslatorAwareTrait instead when it's implemented
-     */
-    public function translate($str, $tokens = array())
-    {
-        $msg = $this->translator->translate($str);
-
-        // Do we need to perform substitutions?
-        if (!empty($tokens)) {
-            $in = $out = array();
-            foreach ($tokens as $key => $value) {
-                $in[] = $key;
-                $out[] = $value;
-            }
-            $msg = str_replace($in, $out, $msg);
-        }
-
-        return $msg;
     }
 }

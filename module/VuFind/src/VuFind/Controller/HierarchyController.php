@@ -84,7 +84,7 @@ class HierarchyController extends AbstractBase
         $config = $this->getConfig();
         $limit = isset($config->Hierarchy->treeSearchLimit)
             ? $config->Hierarchy->treeSearchLimit : -1;
-        $resultIDs = array();
+        $resultIDs = [];
         $hierarchyID = $this->params()->fromQuery('hierarchyID');
         $lookfor = $this->params()->fromQuery('lookfor', '');
         $searchType = $this->params()->fromQuery('type', 'AllFields');
@@ -93,20 +93,20 @@ class HierarchyController extends AbstractBase
             ->get('VuFind\SearchResultsPluginManager')->get('Solr');
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
-        $facets = $results->getFullFieldFacets(array('id'), false, $limit+1);
+        $facets = $results->getFullFieldFacets(['id'], false, $limit+1);
 
         $callback = function ($data) {
             return $data['value'];
         };
         $resultIDs = isset($facets['id']['data']['list'])
-            ? array_map($callback, $facets['id']['data']['list']) : array();
+            ? array_map($callback, $facets['id']['data']['list']) : [];
 
         $limitReached = ($limit > 0 && count($resultIDs) > $limit);
 
-        $returnArray = array(
+        $returnArray = [
             "limitReached" => $limitReached,
             "results" => array_slice($resultIDs, 0, $limit)
-        );
+        ];
         return $this->outputJSON(json_encode($returnArray));
     }
 
@@ -130,10 +130,6 @@ class HierarchyController extends AbstractBase
                     $this->params()->fromQuery('hierarchyID')
                 );
                 if ($results) {
-                    $baseUrl = $this->url()->fromRoute('home');
-                    $results = str_replace(
-                        '%%%%VUFIND-BASE-URL%%%%', rtrim($baseUrl, '/'), $results
-                    );
                     return $this->output($results);
                 }
             }
@@ -145,6 +141,38 @@ class HierarchyController extends AbstractBase
         return $this->output(
             "<error>" . $this->translate("hierarchy_tree_error") . "</error>"
         );
+    }
+
+    /**
+     * Gets a Hierarchy Tree
+     *
+     * @return mixed
+     */
+    public function gettreejsonAction()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        // Retrieve the record from the index
+        $id = $this->params()->fromQuery('id');
+        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        try {
+            if ($recordDriver = $loader->load($id)) {
+                $results = $recordDriver->getHierarchyDriver()
+                    ->getTreeRenderer($recordDriver)->getJSON(
+                        $this->params()->fromQuery('hierarchyID'),
+                        $this->params()->fromQuery('context')
+                    );
+                if ($results) {
+                    return $this->outputJSON($results);
+                } else {
+                    return $this->outputJSON($results, 204); // No Content
+                }
+            }
+        } catch (\Exception $e) {
+            // Let exceptions fall through to error condition below:
+        }
+
+        // If we got this far, something went wrong:
+        return $this->outputJSON('error', 503); // Service Unavailable
     }
 
     /**

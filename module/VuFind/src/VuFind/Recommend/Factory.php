@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -67,7 +68,7 @@ class Factory
         return new AuthorInfo(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
             $sm->getServiceLocator()->get('VuFind\Http')->createClient(),
-            isset ($config->Content->authors) ? $config->Content->authors : ''
+            isset($config->Content->authors) ? $config->Content->authors : ''
         );
     }
 

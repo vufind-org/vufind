@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Summon;
 
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
@@ -106,12 +105,12 @@ class QueryBuilder
      */
     protected function queryGroupToString(QueryGroup $query)
     {
-        $groups = $excludes = array();
+        $groups = $excludes = [];
 
         foreach ($query->getQueries() as $params) {
             // Advanced Search
             if ($params instanceof QueryGroup) {
-                $thisGroup = array();
+                $thisGroup = [];
                 // Process each search group
                 foreach ($params->getQueries() as $group) {
                     // Build this group individually as a basic search
@@ -122,7 +121,7 @@ class QueryBuilder
                     $excludes[] = join(" OR ", $thisGroup);
                 } else {
                     $groups[]
-                        = join(" ".$params->getOperator()." ", $thisGroup);
+                        = join(" " . $params->getOperator() . " ", $thisGroup);
                 }
             } else {
                 // Basic Search

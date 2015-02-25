@@ -55,7 +55,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function initSearch($request)
     {
-        $this->recordsToRequest = $request->get('id', array());
+        $this->recordsToRequest = $request->get('id', []);
 
         // We always want to display the entire list as one page:
         $this->setLimit(count($this->recordsToRequest));
@@ -82,6 +82,6 @@ class Params extends \VuFind\Search\Base\Params
     protected function getRecommendationSettings()
     {
         // No recommendation modules in mixed list view currently:
-        return array();
+        return [];
     }
 }

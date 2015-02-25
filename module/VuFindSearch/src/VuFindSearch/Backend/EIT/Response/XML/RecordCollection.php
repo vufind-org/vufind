@@ -27,7 +27,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\EIT\Response\XML;
 
 use VuFindSearch\Response\AbstractRecordCollection;
@@ -81,7 +80,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return array(); // not supported by EIT
+        return []; // not supported by EIT
     }
 
     /**

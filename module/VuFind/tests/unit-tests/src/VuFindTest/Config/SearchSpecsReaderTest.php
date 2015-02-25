@@ -66,6 +66,6 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     {
         $reader = $this->getServiceManager()->get('VuFind\SearchSpecsReader');
         $specs = $reader->get('notreallyasearchspecs.yaml');
-        $this->assertEquals(array(), $specs);
+        $this->assertEquals([], $specs);
     }
 }

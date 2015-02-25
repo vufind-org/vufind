@@ -3,17 +3,15 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
 namespace Zend\Http\Client\Adapter;
 
 use Traversable;
-use Zend\Http\Client;
 use Zend\Http\Client\Adapter\AdapterInterface as HttpAdapter;
 use Zend\Http\Client\Adapter\Exception as AdapterException;
-use Zend\Http\Request;
 use Zend\Stdlib\ArrayUtils;
 
 /**
@@ -203,8 +201,17 @@ class Curl implements HttpAdapter, StreamInterface
         }
 
         if (isset($this->config['timeout'])) {
-            // Set timeout
-            curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, $this->config['timeout']);
+            if (defined('CURLOPT_CONNECTTIMEOUT_MS')) {
+                curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT_MS, $this->config['timeout'] * 1000);
+            } else {
+                curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, $this->config['timeout']);
+            }
+
+            if (defined('CURLOPT_TIMEOUT_MS')) {
+                curl_setopt($this->curl, CURLOPT_TIMEOUT_MS, $this->config['timeout'] * 1000);
+            } else {
+                curl_setopt($this->curl, CURLOPT_TIMEOUT, $this->config['timeout']);
+            }
         }
 
         if (isset($this->config['maxredirects'])) {
@@ -338,7 +345,7 @@ class Curl implements HttpAdapter, StreamInterface
         $curlHttp = ($httpVersion == 1.1) ? CURL_HTTP_VERSION_1_1 : CURL_HTTP_VERSION_1_0;
 
         // mark as HTTP request and set HTTP method
-        curl_setopt($this->curl, $curlHttp, true);
+        curl_setopt($this->curl, CURLOPT_HTTP_VERSION, $curlHttp);
         curl_setopt($this->curl, $curlMethod, $curlValue);
 
         if ($this->outputStream) {
@@ -377,7 +384,7 @@ class Curl implements HttpAdapter, StreamInterface
          * Make sure POSTFIELDS is set after $curlMethod is set:
          * @link http://de2.php.net/manual/en/function.curl-setopt.php#81161
          */
-        if ($method == 'POST') {
+        if (in_array($method, array('POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'), true)) {
             curl_setopt($this->curl, CURLOPT_POSTFIELDS, $body);
         } elseif ($curlMethod == CURLOPT_UPLOAD) {
             // this covers a PUT by file-handle:
@@ -387,11 +394,6 @@ class Curl implements HttpAdapter, StreamInterface
             curl_setopt($this->curl, CURLOPT_INFILESIZE, $this->config['curloptions'][CURLOPT_INFILESIZE]);
             unset($this->config['curloptions'][CURLOPT_INFILE]);
             unset($this->config['curloptions'][CURLOPT_INFILESIZE]);
-        } elseif ($method == 'PUT') {
-            // This is a PUT by a setRawData string, not by file-handle
-            curl_setopt($this->curl, CURLOPT_POSTFIELDS, $body);
-        } elseif ($method == 'PATCH') {
-            curl_setopt($this->curl, CURLOPT_POSTFIELDS, $body);
         }
 
         // set additional curl options

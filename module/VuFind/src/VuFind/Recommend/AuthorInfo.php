@@ -29,6 +29,7 @@ namespace VuFind\Recommend;
 use VuFind\Connection\Wikipedia;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Query\Query;
+use Zend\I18n\Translator\TranslatorInterface;
 
 /**
  * AuthorInfo Recommendations Module
@@ -45,6 +46,10 @@ use VuFindSearch\Query\Query;
  */
 class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait {
+        setTranslator as setTranslatorThroughTrait;
+    }
+
     /**
      * HTTP client
      *
@@ -58,13 +63,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      * @var Wikipedia
      */
     protected $wikipedia;
-
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
 
     /**
      * Saved search results
@@ -113,8 +111,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -123,11 +119,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      */
     public function setConfig($settings)
     {
-        $translator = $this->getTranslator();
-        $this->wikipedia->setLanguage(
-            is_object($translator) ? $translator->getLocale() : 'en'
-        );
-
         $parts = explode(':', $settings);
         if (isset($parts[0]) && !empty($parts[0])
             && strtolower(trim($parts[0])) !== 'false'
@@ -139,30 +130,19 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     /**
      * Set a translator
      *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
+     * @param TranslatorInterface $translator Translator
      *
-     * @return AuthorInfo
+     * @return TranslatorAwareInterface
      */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    public function setTranslator(TranslatorInterface $translator)
     {
-        $this->translator = $translator;
+        $this->setTranslatorThroughTrait($translator);
         $this->wikipedia->setTranslator($translator);
+        $this->wikipedia->setLanguage($this->getTranslatorLocale());
         return $this;
     }
 
     /**
-     * Get translator object.
-     *
-     * @return \Zend\I18n\Translator\Translator
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -180,8 +160,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -233,7 +211,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         $last = $nameParts[0];
         // - move all names up an index, move last name to last
         // - Last, First M. -> First M. Last
-        for ($i=1;$i<count($nameParts);$i++) {
+        for ($i = 1;$i<count($nameParts);$i++) {
             $nameParts[$i-1] = $nameParts[$i];
         }
         $nameParts[count($nameParts)-1] = $last;
