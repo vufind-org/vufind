@@ -70,33 +70,6 @@ class SolrMarc extends SolrDefault
     protected $titleHoldLogic;
 
     /**
-     * Search results plugin manager
-     *
-     * @var \VuFind\Search\Results\PluginManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Constructor
-     *
-     * @param \Zend\Config\Config   $mainConfig     VuFind main configuration (omit
-     * for built-in defaults)
-     * @param \Zend\Config\Config   $recordConfig   Record-specific configuration
-     * file (omit to use $mainConfig as  $recordConfig)
-     * @param \Zend\Config\Config   $searchSettings Search-specific configuration
-     * file
-     * @param PluginManager         $results        Results plugin manager
-     */
-    public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null,
-        \VuFind\Search\Results\PluginManager $results = null
-    ) {
-        parent::__construct($mainConfig, $recordConfig, $searchSettings);
-
-        $this->resultsManager = $results;
-    }
-
-    /**
      * Set raw data to initialize the object.
      *
      * @param mixed $data Raw data representing the record; Record Model
@@ -1170,39 +1143,5 @@ class SolrMarc extends SolrDefault
     public function getConsortialIDs()
     {
         return $this->getFieldArray('035', 'a', true);
-    }
-
-    /**
-     * Get the number of component parts belonging to this record
-     *
-     * @return int Number of records
-     */
-    public function getComponentPartCount()
-    {
-        // Shortcut: if this record is not the top record, let's not find out the
-        // count. This assumes that component parts cannot have component parts.
-        if (empty($this->fields['is_hierarchy_id'])
-            || is_null($this->resultsManager)
-        ) {
-            return 0;
-        }
-
-        if (is_null($this->resultsManager)) {
-            return 0;
-        }
-        $solr = $this->resultsManager->get('Solr');
-        $params = $solr->getParams();
-        $options = $params->getOptions();
-        $options->spellcheckEnabled(false);
-        $options->disableHighlighting();
-        $params->resetFacetConfig();
-        $params->setLimit(0);
-        $params->setSort('', true);
-        $params->setBasicSearch('hierarchy_parent_id:"'
-            . addcslashes($this->fields['is_hierarchy_id'], '"') . '"'
-        );
-        $solr->performAndProcessSearch();
-
-        return $solr->getResultTotal();
     }
 }
