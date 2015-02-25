@@ -7,15 +7,15 @@ var Zoomy = {
     this.showMinimap = true;
     this.canvas.width  = Math.floor(this.canvas.clientWidth);
     this.canvas.height = Math.floor(this.canvas.clientHeight);
-    addEventListener('resize', function() {
-      Zoomy.canvas.width  = Math.floor(Zoomy.canvas.clientWidth);
-      Zoomy.canvas.height = Math.floor(Zoomy.canvas.clientHeight);
-      Zoomy.width = Zoomy.canvas.width;
-      Zoomy.height = Zoomy.canvas.height;
-      Zoomy.minimap = null;
-      Zoomy.rebound();
-      Zoomy.draw();
-    }, false);
+
+
+
+
+
+
+
+
+
     addEventListener('mousemove', Zoomy.mouseHandle, false);
     addEventListener('touchmove', Zoomy.mouseHandle, false);
     addEventListener('mouseup', function(e) {
@@ -46,6 +46,18 @@ var Zoomy = {
 
     Math.TWO_PI = Math.PI*2;
     Math.HALF_PI = Math.PI/2;
+  },
+  resize: function() {
+    if(typeof this.canvas === "undefined") {
+      return;
+    }
+    this.canvas.width  = Math.floor(this.canvas.clientWidth);
+    this.canvas.height = Math.floor(this.canvas.clientHeight);
+    this.width = this.canvas.width;
+    this.height = this.canvas.height;
+    this.minimap = null;
+    this.rebound();
+    this.draw();
   },
   initMinimap: function() {
     var aspectRatio = this.image.width / this.image.height;
