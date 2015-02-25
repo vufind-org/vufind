@@ -106,10 +106,6 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
 
         $helper = new ResultFeed();
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
-        $mockTranslator = function ($str) {
-            return $str;
-        };
-        $helper->setTranslatorHelper($mockTranslator);
         $feed = $helper->__invoke($results, '/test/path');
         $this->assertTrue(is_object($feed));
         $rss = $feed->export('rss');
@@ -123,8 +119,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         // Now re-parse it and check for some expected values:
         $parsedFeed = \Zend\Feed\Reader\Reader::importString($rss);
         $this->assertEquals(
-            $parsedFeed->getDescription(),
-            'Displaying the top 2 search results of 2 found'
+            'Showing 1-2 of 2', $parsedFeed->getDescription()
         );
         $items = [];
         $i = 0;
@@ -132,8 +127,9 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
             $items[$i++] = $item;
         }
         $this->assertEquals(
-            $items[1]->getTitle(), 'Journal of rational emotive therapy : '
-            . 'the journal of the Institute for Rational-Emotive Therapy.'
+            'Journal of rational emotive therapy : '
+            . 'the journal of the Institute for Rational-Emotive Therapy.',
+            $items[1]->getTitle()
         );
     }
 }
