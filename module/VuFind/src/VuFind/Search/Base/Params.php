@@ -95,7 +95,7 @@ class Params implements ServiceLocatorAwareInterface
      *
      * @var array
      */
-    protected $selectedShards = array();
+    protected $selectedShards = [];
 
     /**
      * View
@@ -116,42 +116,42 @@ class Params implements ServiceLocatorAwareInterface
      *
      * @var array
      */
-    protected $recommend = array();
+    protected $recommend = [];
 
     /**
      * Are recommendations turned on?
      *
      * @var bool
      */
-    protected $recommendationEnabled = array();
+    protected $recommendationEnabled = [];
 
     /**
      * Main facet configuration
      *
      * @var array
      */
-    protected $facetConfig = array();
+    protected $facetConfig = [];
 
     /**
      * Checkbox facet configuration
      *
      * @var array
      */
-    protected $checkboxFacets = array();
+    protected $checkboxFacets = [];
 
     /**
      * Applied filters
      *
      * @var array
      */
-    protected $filterList = array();
+    protected $filterList = [];
 
     /**
      * Facets in "OR" mode
      *
      * @var array
      */
-    protected $orFacets = array();
+    protected $orFacets = [];
 
     /**
      * Override Query
@@ -274,9 +274,9 @@ class Params implements ServiceLocatorAwareInterface
     protected function initShards($request)
     {
         $legalShards = array_keys($this->getOptions()->getShards());
-        $requestShards = $request->get('shard', array());
+        $requestShards = $request->get('shard', []);
         if (!is_array($requestShards)) {
-            $requestShards = array($requestShards);
+            $requestShards = [$requestShards];
         }
 
         // If a shard selection list is found as an incoming parameter,
@@ -650,8 +650,8 @@ class Params implements ServiceLocatorAwareInterface
     public function getDisplayQuery()
     {
         // Set up callbacks:
-        $translate = array($this, 'translate');
-        $showField = array($this->getOptions(), 'getHumanReadableFieldName');
+        $translate = [$this, 'translate'];
+        $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
 
         // Build display query:
         return QueryAdapter::display($this->getQuery(), $translate, $showField);
@@ -669,7 +669,7 @@ class Params implements ServiceLocatorAwareInterface
     {
         $enabled = $this->recommendationsEnabled();
         if (null === $location) {
-            $active = array();
+            $active = [];
             foreach ($enabled as $current) {
                 if (isset($this->recommend[$current])) {
                     $active[$current] = $this->recommend[$current];
@@ -678,7 +678,7 @@ class Params implements ServiceLocatorAwareInterface
             return $active;
         }
         return in_array($location, $enabled) && isset($this->recommend[$location])
-            ? $this->recommend[$location] : array();
+            ? $this->recommend[$location] : [];
     }
 
     /**
@@ -694,9 +694,9 @@ class Params implements ServiceLocatorAwareInterface
     public function recommendationsEnabled($new = null)
     {
         if (true === $new) {
-            $this->recommendationEnabled = array('top', 'side', 'noresults');
+            $this->recommendationEnabled = ['top', 'side', 'noresults'];
         } else if (false === $new) {
-            $this->recommendationEnabled = array();
+            $this->recommendationEnabled = [];
         } else if (null !== $new) {
             $this->recommendationEnabled = $new;
         }
@@ -716,7 +716,7 @@ class Params implements ServiceLocatorAwareInterface
         // Bypass settings if recommendations are disabled.
         $enabled = $this->recommendationsEnabled();
         if (empty($enabled)) {
-            return array();
+            return [];
         }
 
         // Load the necessary settings to determine the appropriate recommendations
@@ -730,7 +730,7 @@ class Params implements ServiceLocatorAwareInterface
 
         // Load a type-specific recommendations setting if possible, or the default
         // otherwise:
-        $recommend = array();
+        $recommend = [];
 
         if (in_array('top', $enabled)) {
             if (null !== $handler
@@ -800,10 +800,10 @@ class Params implements ServiceLocatorAwareInterface
         $manager = $sm->get('VuFind\RecommendPluginManager');
 
         // Process recommendations for each location:
-        $this->recommend = array(
-            'top' => array(), 'side' => array(), 'noresults' => array(),
-            'bottom' => array(),
-        );
+        $this->recommend = [
+            'top' => [], 'side' => [], 'noresults' => [],
+            'bottom' => [],
+        ];
         foreach ($settings as $location => $currentSet) {
             // If the current location is disabled, skip processing!
             if (empty($currentSet)) {
@@ -812,7 +812,7 @@ class Params implements ServiceLocatorAwareInterface
             // Make sure the current location's set of recommendations is an array;
             // if it's a single string, this normalization will simplify processing.
             if (!is_array($currentSet)) {
-                $currentSet = array($currentSet);
+                $currentSet = [$currentSet];
             }
             // Now loop through all recommendation settings for the location.
             foreach ($currentSet as $current) {
@@ -860,7 +860,7 @@ class Params implements ServiceLocatorAwareInterface
         $value = trim($value);
 
         // Send back the results:
-        return array($field, $value);
+        return [$field, $value];
     }
 
     /**
@@ -949,9 +949,9 @@ class Params implements ServiceLocatorAwareInterface
     public function removeAllFilters($field = null)
     {
         if ($field == null) {
-            $this->filterList = array();
+            $this->filterList = [];
         } else {
-            $this->filterList[$field] = array();
+            $this->filterList[$field] = [];
         }
     }
 
@@ -1003,7 +1003,7 @@ class Params implements ServiceLocatorAwareInterface
         // relevant information to the array.
         list($fieldName) = explode(':', $filter);
         $this->checkboxFacets[$fieldName]
-            = array('desc' => $desc, 'filter' => $filter);
+            = ['desc' => $desc, 'filter' => $filter];
     }
 
     /**
@@ -1036,7 +1036,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function resetFacetConfig()
     {
-        $this->facetConfig = array();
+        $this->facetConfig = [];
     }
 
     /**
@@ -1061,9 +1061,9 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Get a list of checkbox filters to skip if necessary:
         $skipList = $excludeCheckboxFilters
-            ? $this->getCheckboxFacetValues() : array();
+            ? $this->getCheckboxFacetValues() : [];
 
-        $list = array();
+        $list = [];
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
             list($operator, $field) = $this->parseOperatorAndFieldName($field);
@@ -1097,12 +1097,12 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
-        return array(
+        return [
             'value'       => $value,
             'displayText' => $translate ? $this->translate($value) : $value,
             'field'       => $field,
             'operator'    => $operator,
-        );
+        ];
     }
 
     /**
@@ -1124,7 +1124,7 @@ class Params implements ServiceLocatorAwareInterface
         } else {
             $operator = 'AND';
         }
-        return array($operator, $field);
+        return [$operator, $field];
     }
 
     /**
@@ -1134,11 +1134,11 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function getCheckboxFacetValues()
     {
-        $list = array();
+        $list = [];
         foreach ($this->checkboxFacets as $current) {
             list($field, $value) = $this->parseFilter($current['filter']);
             if (!isset($list[$field])) {
-                $list[$field] = array();
+                $list[$field] = [];
             }
             $list[$field][] = $value;
         }
@@ -1154,7 +1154,7 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Build up an array of checkbox facets with status booleans and
         // toggle URLs.
-        $facets = array();
+        $facets = [];
         foreach ($this->checkboxFacets as $field => $details) {
             $facets[$field] = $details;
             if ($this->hasFilter($details['filter'])) {
@@ -1293,7 +1293,7 @@ class Params implements ServiceLocatorAwareInterface
     ) {
         $rangeFacets = $request->get($requestParam);
         if (!empty($rangeFacets)) {
-            $ranges = is_array($rangeFacets) ? $rangeFacets : array($rangeFacets);
+            $ranges = is_array($rangeFacets) ? $rangeFacets : [$rangeFacets];
             foreach ($ranges as $range) {
                 // Load start and end of range:
                 $from = $request->get($range . 'from');
@@ -1389,8 +1389,8 @@ class Params implements ServiceLocatorAwareInterface
     protected function initDateFilters($request)
     {
         return $this->initGenericRangeFilters(
-            $request, 'daterange', array($this, 'formatYearForDateRange'),
-            array($this, 'buildDateRangeFilter')
+            $request, 'daterange', [$this, 'formatYearForDateRange'],
+            [$this, 'buildDateRangeFilter']
         );
     }
 
@@ -1407,8 +1407,8 @@ class Params implements ServiceLocatorAwareInterface
     protected function initFullDateFilters($request)
     {
         return $this->initGenericRangeFilters(
-            $request, 'fulldaterange', array($this, 'formatDateForFullDateRange'),
-            array($this, 'buildFullDateRangeFilter')
+            $request, 'fulldaterange', [$this, 'formatDateForFullDateRange'],
+            [$this, 'buildFullDateRangeFilter']
         );
     }
 
@@ -1425,8 +1425,8 @@ class Params implements ServiceLocatorAwareInterface
     protected function initNumericRangeFilters($request)
     {
         return $this->initGenericRangeFilters(
-            $request, 'numericrange', array($this, 'formatValueForNumericRange'),
-            array($this, 'buildNumericRangeFilter')
+            $request, 'numericrange', [$this, 'formatValueForNumericRange'],
+            [$this, 'buildNumericRangeFilter']
         );
     }
 
@@ -1499,12 +1499,12 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getViewList()
     {
-        $list = array();
+        $list = [];
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
-            $list[$key] = array(
+            $list[$key] = [
                 'desc' => $value,
                 'selected' => ($key == $this->getView())
-            );
+            ];
         }
         return $list;
     }
@@ -1519,12 +1519,12 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Loop through all the current limits
         $valid = $this->getOptions()->getLimitOptions();
-        $list = array();
+        $list = [];
         foreach ($valid as $limit) {
-            $list[$limit] = array(
+            $list[$limit] = [
                 'desc' => $limit,
                 'selected' => ($limit == $this->getLimit())
-            );
+            ];
         }
         return $list;
     }
@@ -1539,12 +1539,12 @@ class Params implements ServiceLocatorAwareInterface
     {
         // Loop through all the current filter fields
         $valid = $this->getOptions()->getSortOptions();
-        $list = array();
+        $list = [];
         foreach ($valid as $sort => $desc) {
-            $list[$sort] = array(
+            $list[$sort] = [
                 'desc' => $desc,
                 'selected' => ($sort == $this->getSort())
-            );
+            ];
         }
         return $list;
     }
@@ -1583,6 +1583,7 @@ class Params implements ServiceLocatorAwareInterface
      * will be favored.
      *
      * @return void
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function activateAllFacets($preferredSection = false)
@@ -1602,6 +1603,7 @@ class Params implements ServiceLocatorAwareInterface
      * @param array $ids Record IDs to load
      *
      * @return void
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setQueryIDs($ids)
@@ -1742,7 +1744,7 @@ class Params implements ServiceLocatorAwareInterface
             $orFields
                 = array_map('trim', explode(',', $config->$facetSettings->orFacets));
         } else {
-            $orFields = array();
+            $orFields = [];
         }
         foreach ($config->$facetList as $key => $value) {
             $useOr = (isset($orFields[0]) && $orFields[0] == '*')

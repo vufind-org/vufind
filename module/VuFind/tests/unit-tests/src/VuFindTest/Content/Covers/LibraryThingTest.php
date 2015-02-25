@@ -51,7 +51,7 @@ class LibraryThingTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             'http://covers.librarything.com/devkey/mykey/small/isbn/9780739313121',
             $loader->getUrl(
-                'mykey', 'small', array('isbn' => new ISBN('0739313126'))
+                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
             )
         );
     }
@@ -64,6 +64,6 @@ class LibraryThingTest extends \PHPUnit_Framework_TestCase
     public function testMissingIsbn()
     {
         $loader = new LibraryThing();
-        $this->assertEquals(false, $loader->getUrl('mykey', 'small', array()));
+        $this->assertEquals(false, $loader->getUrl('mykey', 'small', []));
     }
 }

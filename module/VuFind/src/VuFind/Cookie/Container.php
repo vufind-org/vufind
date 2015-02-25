@@ -64,7 +64,7 @@ class Container
      */
     public function getAllValues()
     {
-        $retVal = array();
+        $retVal = [];
         foreach ($_COOKIE as $key => $value) {
             if (substr($key, 0, strlen($this->groupName)) == $this->groupName) {
                 $retVal[substr($key, strlen($this->groupName))] = $value;

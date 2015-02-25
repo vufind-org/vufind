@@ -109,7 +109,7 @@ class AdapterFactory
         case 'mysqli':
             $options['charset'] = isset($this->config->Database->charset)
                 ? $this->config->Database->charset : 'utf8';
-            $options['options'] = array('buffer_results' => true);
+            $options['options'] = ['buffer_results' => true];
             break;
         }
 
@@ -158,13 +158,13 @@ class AdapterFactory
         $password = !is_null($overridePass) ? $overridePass : $password;
 
         // Set up default options:
-        $options = array(
+        $options = [
             'driver' => $this->getDriverName($type),
             'hostname' => $host,
             'username' => $username,
             'password' => $password,
             'database' => $dbName
-        );
+        ];
 
         return $this->getAdapterFromOptions($options);
     }

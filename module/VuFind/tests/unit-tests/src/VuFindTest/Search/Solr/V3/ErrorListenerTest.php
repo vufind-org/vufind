@@ -61,7 +61,7 @@ class ErrorListenerTest extends TestCase
         $backend  = $this->getMockForAbstractClass('VuFindSearch\Backend\BackendInterface');
 
         $exception = HttpErrorException::createFromResponse($response);
-        $params    = array('backend_instance' => $backend);
+        $params    = ['backend_instance' => $backend];
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
@@ -79,7 +79,7 @@ class ErrorListenerTest extends TestCase
         $backend  = $this->getMockForAbstractClass('VuFindSearch\Backend\BackendInterface');
 
         $exception = HttpErrorException::createFromResponse($response);
-        $params    = array('backend_instance' => $backend);
+        $params    = ['backend_instance' => $backend];
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);

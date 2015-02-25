@@ -155,7 +155,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         // shelf) status, collecting any other statuses we find along the
         // way...
         $notCharged = false;
-        $otherStatuses = array();
+        $otherStatuses = [];
         foreach ($statusArray as $status) {
             switch ($status) {
             case 'Disponible':
@@ -170,7 +170,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         // If we found other statuses or if we failed to find "Not Charged,"
         // the item is not available!
         $available = (count($otherStatuses) == 0 && $notCharged);
-        return array('available' => $available, 'otherStatuses' => $otherStatuses);
+        return ['available' => $available, 'otherStatuses' => $otherStatuses];
     }
 
     /**
@@ -317,7 +317,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         }
         $prestados = 0;
         $reservados = 0;
-        $possibleQueries = array($items);
+        $possibleQueries = [$items];
 
         // Loop through the possible queries and try each in turn -- the first one
         // that yields results will cause the function to return.
@@ -332,7 +332,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             }
 
             // Build Array of Item Information
-            $data = array();
+            $data = [];
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $prestados = $this->sacaStatus($row['CPY_ID_NBR']);
                 $reservados = $this->sacaReservas($row['CPY_ID_NBR']);
@@ -341,14 +341,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                         $multiple = $this->translate("Multiple Locations");
                         $textoLoc = $this->translate("Multiple");
                         $textoSign = $this->translate("Multiple Locations");
-                        $data[$row['BIB_ITM_NBR']] = array(
+                        $data[$row['BIB_ITM_NBR']] = [
                             'id' => $id,
                             'status' => $prestados,
-                            'status_array' => array($prestados),
+                            'status_array' => [$prestados],
                             'location' => $textoLoc,
                             'reserve' => $reservados,
                             'callnumber' => $textoSign
-                        );
+                        ];
                     } else {
                         $multiple = $row['LOCATION'];
                         if ($multiple == 'Deposito2') {
@@ -357,14 +357,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                         if ($multiple == 'Deposito') {
                             $multiple = "Depósito";
                         }
-                        $data[$row['BIB_ITM_NBR']] = array(
+                        $data[$row['BIB_ITM_NBR']] = [
                             'id' => $id,
                             'status' => $prestados,
-                            'status_array' => array($prestados),
+                            'status_array' => [$prestados],
                             'location' => $multiple,
                             'reserve' => $reservados,
                             'callnumber' => $row['CALLNUMBER']
-                        );
+                        ];
                     }
                 } else {
                     $status_array = & $data[$row['BIB_ITM_NBR']]['status_array'];
@@ -376,14 +376,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             // If we found any information, break out of the foreach loop;
             // we don't need to try any more queries.
             if (count($data) == 0) {
-                $data[$id] = array(
+                $data[$id] = [
                     'id' => $id,
                     'status' => $prestados,
-                    'status_array' => array($prestados),
+                    'status_array' => [$prestados],
                     'location' => $this->translate("No copies"),
                     'reserve' => $reservados,
                     'callnumber' => $this->translate("No copies")
-                );
+                ];
                 break;
             }
             if (count($data) > 0) {
@@ -391,7 +391,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             }
         }
         // Process the raw data into final status information:
-        $status = array();
+        $status = [];
         foreach ($data as $current) {
             // Get availability/status info based on the array of status codes:
             $availability = $this->determineAvailability($current['status_array']);
@@ -420,7 +420,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     public function getStatuses($idList)
     {
-        $status = array();
+        $status = [];
 
         foreach ($idList as $id) {
             $status[] = $this->getStatus($id);
@@ -457,7 +457,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             "and CPY_ID.BIB_ITM_NBR = '$id' " .
             "order by SHLF_LIST_SRT_FORM ASC, CPY_ID.CPY_ID_NBR ASC";
 
-        $possibleQueries = array($items);
+        $possibleQueries = [$items];
 
         // Loop through the possible queries and try each in turn -- the first one
         // that yields results will cause us to break out of the loop.
@@ -471,7 +471,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             }
 
             // Build Holdings Array
-            $data = array();
+            $data = [];
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 // Determine Location
                 $loc = $row['LOCATION'];
@@ -483,8 +483,8 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                 }
 
                 $status = $this->sacaStatus($row['CPY_ID_NBR']);
-                $availability = $this->determineAvailability(array($status));
-                $currentItem = array(
+                $availability = $this->determineAvailability([$status]);
+                $currentItem = [
                     'id' => $id,
                     'availability' => $availability['available'],
                     'status' => $status,
@@ -498,7 +498,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                     'number' => count($data) +1,
                     'item_id' => $row['CPY_ID_NBR'],
                     'barcode' => $row['BRCDE_NBR']
-                );
+                ];
                 $data[] = $currentItem;
             }
             // If we found data, we can leave the foreach loop -- we don't need to
@@ -529,11 +529,11 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             "WHERE CPY_ID.BIB_ITM_NBR = '$id' " .
             "order by CPY_ID.SHLF_LIST_KEY_NBR ASC, CPY_ID.CPY_ID_NBR ASC";
         try {
-            $data = array();
+            $data = [];
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $data[] = array('issue' => $row['ENUMCHRON']);
+                $data[] = ['issue' => $row['ENUMCHRON']];
             }
             return $data;
         } catch (PDOException $e) {
@@ -564,7 +564,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             if (isset($row['LOGIN']) && ($row['LOGIN'] != '')) {
-                return array(
+                return [
                     'id' => $row['LOGIN'],
                     'firstname' => $row['FIRST_NAME'],
                     'lastname' => $lname,
@@ -575,7 +575,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                     // might be worth investigating further if needed later.
                     'email' => null,
                     'major' => null,
-                    'college' => null);
+                    'college' => null];
             } else {
                 return null;
             }
@@ -598,7 +598,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     public function getMyTransactions($patron)
     {
-        $transList = array();
+        $transList = [];
 
         $sql = "SELECT TO_CHAR(CIRT_ITM.CIRT_ITM_DUE_DTE,'DD/MM/YYYY') " .
             "AS DUEDATE, CIRT_ITM.BIB_ITM_NBR AS BIB_ID " .
@@ -609,8 +609,8 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $transList[] = array('duedate' => $row['DUEDATE'],
-                                     'id' => $row['BIB_ID']);
+                $transList[] = ['duedate' => $row['DUEDATE'],
+                                     'id' => $row['BIB_ID']];
             }
             return $transList;
         } catch (PDOException $e) {
@@ -631,7 +631,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     public function getMyFines($patron)
     {
-        $fineList = array();
+        $fineList = [];
 
         $sql = "SELECT UNIQUE TO_CHAR(CIRT_ITM.CIRT_ITM_CHRG_OUT_DTE,'DD/MM/YYYY') "
             . "AS ORIG_CHARGE_DATE, "
@@ -645,9 +645,9 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $fineList[] = array('checkout' => $row['ORIG_CHARGE_DATE'],
+                $fineList[] = ['checkout' => $row['ORIG_CHARGE_DATE'],
                                     'duedate' => $row['DUE_DATE'],
-                                    'id' => $row['BIB_ID']);
+                                    'id' => $row['BIB_ID']];
             }
             return $fineList;
         } catch (PDOException $e) {
@@ -668,7 +668,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     public function getMyHolds($patron)
     {
-        $holdList = array();
+        $holdList = [];
 
         $sql = "SELECT CIRTN_HLD.BIB_ITM_NBR AS BIB_ID, " .
             "CIRTN_HLD.CIRTN_HLD_LCTN_ORG_NBR AS PICKUP_LOCATION, " .
@@ -682,11 +682,11 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $holdList[] = array('type' => $row['HOLD_RECALL_TYPE'],
+                $holdList[] = ['type' => $row['HOLD_RECALL_TYPE'],
                                     'id' => $row['BIB_ID'],
                                     'location' => $row['PICKUP_LOCATION'],
                                     'expire' => $row['EXPIRE_DATE'],
-                                    'create' => $row['CREATE_DATE']);
+                                    'create' => $row['CREATE_DATE']];
             }
             return $holdList;
         } catch (PDOException $e) {
@@ -729,14 +729,14 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             if ($row) {
-                $patron = array('firstname' => $row['FIRST_NAME'],
+                $patron = ['firstname' => $row['FIRST_NAME'],
                                 'lastname' => $row['LAST_NAME'],
                                 'address1' => $row['ADDRESS_LINE1'],
                                 'address2' => $row['ADDRESS_LINE2'],
                                 'zip' => $row['ZIP_POSTAL'],
                                 'phone' => $row['TFNO'],
                                 'email' => $row['EMAIL'],
-                                'group' => $row['PATRON_GROUP_NAME']);
+                                'group' => $row['PATRON_GROUP_NAME']];
                 return $patron;
             } else {
                 return null;
@@ -757,6 +757,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @param array  $details  Item details from getHoldings return array
      *
      * @return string          URL to ILS's OPAC's place hold screen.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($recordId, $details)
@@ -781,11 +782,12 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        $items = array();
+        $items = [];
 
         // Prevent unnecessary load on voyager
         if ($daysOld > 30) {
@@ -845,7 +847,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     public function getFunds()
     {
-        $list = array();
+        $list = [];
 
         $sql = "select distinct * from " .
                "(select initcap(lower(FUND.FUND_NME)) as name from FUND) " .
@@ -874,11 +876,12 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {
-        $recordList = array();
+        $recordList = [];
 
         $dept = str_replace("'", "", $dept);
         $dept = str_replace("\"", "", $dept);
@@ -948,7 +951,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      */
     public function getSuppressedRecords()
     {
-        $list = array();
+        $list = [];
         $sql = "SELECT BIB_AUT_ITM_NBR as BIB_ID " .
             "FROM CTLGG_TRSTN_ACTVT_LOG " .
             "WHERE STATS_TRSTN_TYP_CDE = 4 " .

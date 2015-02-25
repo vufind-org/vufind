@@ -61,7 +61,7 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * preDispatch -- add Summon message.
+     * Use preDispatch event to add Summon message.
      *
      * @return void
      */
@@ -80,7 +80,7 @@ class SummonController extends AbstractSearch
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
+        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
     }
 
     /**
@@ -119,7 +119,7 @@ class SummonController extends AbstractSearch
     public function homeAction()
     {
         return $this->createViewModel(
-            array('results' => $this->getHomePageFacets())
+            ['results' => $this->getHomePageFacets()]
         );
     }
 
@@ -153,13 +153,13 @@ class SummonController extends AbstractSearch
             $params = $results->getParams();
             $facetsToShow = isset($config->Advanced_Facets)
                  ? $config->Advanced_Facets
-                 : array('Language' => 'Language', 'ContentType' => 'Format');
+                 : ['Language' => 'Language', 'ContentType' => 'Format'];
             if (isset($config->Advanced_Facet_Settings->orFacets)) {
                 $orFields = array_map(
                     'trim', explode(',', $config->Advanced_Facet_Settings->orFacets)
                 );
             } else {
-                $orFields = array();
+                $orFields = [];
             }
             foreach ($facetsToShow as $facet => $label) {
                 $useOr = (isset($orFields[0]) && $orFields[0] == '*')

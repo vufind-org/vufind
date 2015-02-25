@@ -69,16 +69,16 @@ class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
      */
     public function testComparison()
     {
-        $l1 = array('1' => 'one', '2' => 'two', '3' => 'three');
-        $l2 = array('2' => 'two', '4' => 'four');
+        $l1 = ['1' => 'one', '2' => 'two', '3' => 'three'];
+        $l2 = ['2' => 'two', '4' => 'four'];
         $c = new Controller();
-        $expected = array(
-            'notInL1' => array(4),
-            'notInL2' => array(1, 3),
+        $expected = [
+            'notInL1' => [4],
+            'notInL2' => [1, 3],
             'l1Percent' => '150.00',
             'l2Percent' => '66.67'
-        );
-        $this->assertEquals($expected, $this->callMethod($c, 'compareLanguages', array($l1, $l2)));
+        ];
+        $this->assertEquals($expected, $this->callMethod($c, 'compareLanguages', [$l1, $l2]));
     }
 
     /**
@@ -122,8 +122,8 @@ class DevtoolsControllerTest extends \VuFindTest\Unit\TestCase
      */
     protected function getMockController()
     {
-        $config = new Config(array('Languages' => array('en' => 'English')));
-        $c = $this->getMock('VuFindDevTools\Controller\DevtoolsController', array('getConfig'));
+        $config = new Config(['Languages' => ['en' => 'English']]);
+        $c = $this->getMock('VuFindDevTools\Controller\DevtoolsController', ['getConfig']);
         $c->expects($this->any())->method('getConfig')->will($this->returnValue($config));
         return $c;
     }

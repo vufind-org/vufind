@@ -43,8 +43,6 @@ class Tag implements AutocompleteInterface, \VuFind\Db\Table\DbTableAwareInterfa
     use \VuFind\Db\Table\DbTableAwareTrait;
 
     /**
-     * getSuggestions
-     *
      * This method returns an array of strings matching the user's query for
      * display in the autocomplete box.
      *
@@ -54,7 +52,7 @@ class Tag implements AutocompleteInterface, \VuFind\Db\Table\DbTableAwareInterfa
      */
     public function getSuggestions($query)
     {
-        $tagList = array();
+        $tagList = [];
         $tagTable = $this->getTagsTable();
         $tags = $tagTable->matchText($query);
         if ($tags) {
@@ -66,8 +64,6 @@ class Tag implements AutocompleteInterface, \VuFind\Db\Table\DbTableAwareInterfa
     }
 
     /**
-     * setConfig
-     *
      * Set parameters that affect the behavior of the autocomplete handler.
      * These values normally come from the search configuration file.
      *

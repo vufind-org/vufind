@@ -41,8 +41,6 @@ namespace VuFind\Recommend;
 class FavoriteFacets extends SideFacets
 {
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -57,6 +55,6 @@ class FavoriteFacets extends SideFacets
 
         // Only display tags when enabled:
         $this->mainFacets = ($tagSetting && $tagSetting !== 'disabled')
-            ? array('tags' => 'Your Tags') : array();
+            ? ['tags' => 'Your Tags'] : [];
     }
 }

@@ -96,7 +96,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getStatus($id)
     {
-        $holding = array();
+        $holding = [];
 
         // Strip off the prefix from vtls exports
         $db_id = str_replace("vtls", "", $id);
@@ -133,7 +133,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                "AND   d.bibid    = :bib_id";
 
         // Bind our bib_id and execute
-        $fields = array("bib_id:string" => $db_id);
+        $fields = ["bib_id:string" => $db_id];
         $result = $this->db->simpleSelect($sql, $fields);
 
         // If there are no results, lets try again because it has no items
@@ -144,7 +144,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             $result = $this->db->simpleSelect($sql, $fields);
 
             if (count($result) > 0) {
-                $new_holding = array(
+                $new_holding = [
                     'id'           => $id,
                     'availability' => false,
                     'reserve'      => "Y",
@@ -152,7 +152,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     'location'     => "Toowoomba",
                     'campus'       => "Toowoomba",
                     'callnumber'   => $result[0]['CALL_NUMBER']
-                    );
+                    ];
 
                 switch ($result[0]['CALL_NUMBER']) {
                 case 'ELECTRONIC RESOURCE' :
@@ -282,7 +282,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 }
             }
 
-            $holding[] = array(
+            $holding[] = [
                 'id'           => $id,
                 'availability' => $available,
                 'status'       => $row['STATUS'],
@@ -290,7 +290,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 'reserve'      => $row['RESERVE'],
                 'campus'       => $campus,
                 'callnumber'   => $row['BIB_CALL_NUM']
-                );
+                ];
         }
 
         return $holding;
@@ -309,7 +309,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getStatuses($idList)
     {
-        $status = array();
+        $status = [];
         foreach ($idList as $id) {
             $status[] = $this->getStatus($id);
         }
@@ -335,7 +335,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         // Strip off the prefix from vtls exports
         $db_id = str_replace("vtls", "", $id);
-        $fields = array("bib_id:string" => $db_id);
+        $fields = ["bib_id:string" => $db_id];
 
         $holds = "SELECT d1.itemid, MAX(h1.request_control_number) AS req_num " .
             "FROM   dbadmin.itemdetl2 d1, dbadmin.hlrcdetl h1 " .
@@ -436,7 +436,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 $call_num = $row['BIB_CALL_NUM'];
             }
 
-            $temp = array(
+            $temp = [
                 "id"            => $id,
                 "availability"  => $available,
                 "status"        => $row['STATUS'],
@@ -451,7 +451,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 "itemclass"     => $row['ITEM_CLASS'],
                 "units"         => $row['UNITS'],
                 "resitemclass"  => $row['RESERVE_ITEM_CLASS']
-                );
+                ];
 
             // Add to the holdings array
             $holding[] = $temp;
@@ -484,7 +484,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "FROM   patron_type_patron p, patron_barcode b " .
             "WHERE  b.patron_id = p.patron_id " .
             "AND    b.barcode   = :patron";
-        $fields = array("patron:string" => $patron_id);
+        $fields = ["patron:string" => $patron_id];
         $result = $this->db->simpleSelect($sql, $fields);
 
         // We should have 1 row and only 1 row.
@@ -495,19 +495,19 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // A matrix of patron types and locations
         // TODO: Make this configurable through Virtua.ini.
-        $type_list = array(
-            'Externals'    => array('AX', 'AD', 'BX', 'BD', 'EX', 'ED', 'GX', 'GD',
-                'RX', 'SX', 'SD', 'XS', 'CC', 'RD'),
-            'Super User'   => array('LP', 'OC'),
+        $type_list = [
+            'Externals'    => ['AX', 'AD', 'BX', 'BD', 'EX', 'ED', 'GX', 'GD',
+                'RX', 'SX', 'SD', 'XS', 'CC', 'RD'],
+            'Super User'   => ['LP', 'OC'],
             // 1  => Toowoomba
-            '1' => array('AU', 'AM', 'BU', 'BM', 'EU', 'EM', 'GU', 'GM', 'RI', 'SU',
-                'SM', 'SC', 'RB', 'OT', 'ST', 'FC', 'LS'),
+            '1' => ['AU', 'AM', 'BU', 'BM', 'EU', 'EM', 'GU', 'GM', 'RI', 'SU',
+                'SM', 'SC', 'RB', 'OT', 'ST', 'FC', 'LS'],
             // 5  => Springfield
-            '5' => array('US', 'ES', 'PS', 'AS', 'GS', 'TS', 'TAS', 'EPS', 'XVS',
-                'XPS'),
+            '5' => ['US', 'ES', 'PS', 'AS', 'GS', 'TS', 'TAS', 'EPS', 'XVS',
+                'XPS'],
             // 4  => Fraser Coast
-            '4' => array('UF', 'PF', 'AF')
-            );
+            '4' => ['UF', 'PF', 'AF']
+            ];
         // Where is the patron from?
         $location = "";
         foreach ($type_list as $loc => $patron_types) {
@@ -517,32 +517,32 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         }
         // Requestable Statuses
         // TODO: Make this configurable through Virtua.ini.
-        $status_list = array(
+        $status_list = [
             "4401", // At Repair
             "4705", // ON HOLD
             "5400", // Being Processed
             "5401", // On Display
             "5402", // 24 Hour Hold
             "5700"  // IN TRANSIT
-            );
+            ];
         // Who can place reservations on available items
-        $available_locs = array(
-            '1' => array('5', '4'),
-            '4' => array(),
-            '5' => array()
-            );
+        $available_locs = [
+            '1' => ['5', '4'],
+            '4' => [],
+            '5' => []
+            ];
         // Who can place reservations on UNavailable items
-        $unavailable_locs = array(
-            '1' => array('1', '5', '4'),
-            '4' => array(),
-            '5' => array('5')
-            );
+        $unavailable_locs = [
+            '1' => ['1', '5', '4'],
+            '4' => [],
+            '5' => ['5']
+            ];
         // Who can place reservations on STATUS items
-        $status_locs = array(
-            '1' => array('1', '5', '4'),
-            '4' => array(),
-            '5' => array('5')
-            );
+        $status_locs = [
+            '1' => ['1', '5', '4'],
+            '4' => [],
+            '5' => ['5']
+            ];
 
         // Set a flag for super users, better then
         //  the full function call inside the loop
@@ -559,8 +559,8 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         /*
          * Finished our basic tests, the real logic starts here
          */
-        $sorted = array(); // We'll put items from the patron's location in here
-        $return = array(); // Everything else in here
+        $sorted = []; // We'll put items from the patron's location in here
+        $return = []; // Everything else in here
         foreach ($holdings as $h) {
             // Super Users (eg. Off-Camp, and Lending) can request anything
             if ($super_user) {
@@ -842,7 +842,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     protected function renderSubPattern($data)
     {
         $return_string = "";
-        $sub_pattern = array();
+        $sub_pattern = [];
         $i = 0;
         foreach ($data['pattern'] as $p) {
             // Is this chrono pattern element?
@@ -852,7 +852,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             //   and clear the array
             if ($is_ch_pattern === false) {
                 $return_string .= $this->renderPartSubPattern($sub_pattern);
-                $sub_pattern = array();
+                $sub_pattern = [];
             }
 
             // Add the current element to the array
@@ -864,7 +864,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             //   on it's own and clear the array again
             if ($is_ch_pattern === false) {
                 $return_string .= $this->renderPartSubPattern($sub_pattern);
-                $sub_pattern = array();
+                $sub_pattern = [];
             }
             $i++;
         }
@@ -885,7 +885,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function renderOtherPattern($data)
     {
-        $return = array();
+        $return = [];
         $i = 0;
         foreach ($data['data'] as $d) {
             switch ($data['pattern_code'][$i]) {
@@ -913,15 +913,15 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     protected function renderPattern($patterns, $field)
     {
-        $return = array();
+        $return = [];
         // Check we have a pattern and the pattern exists
         if (isset($field['pattern']) && isset($patterns[$field['pattern']])) {
             // Enumeration, Chonology and Other fields
-            $enum_chrono = array(
+            $enum_chrono = [
                 'a', 'b', 'c', 'd', 'e', 'f', 'i', 'j', 'k', 'l', 'm'
-            );
-            $this_en_ch  = array('pattern' => array(), 'data' => array());
-            $this_other  = array('pattern' => array(), 'data' => array());
+            ];
+            $this_en_ch  = ['pattern' => [], 'data' => []];
+            $this_other  = ['pattern' => [], 'data' => []];
 
             $pattern = $patterns[$field['pattern']];
             // Foreach subfield
@@ -961,26 +961,26 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     protected function renderSerialHoldings($holdings_marc)
     {
         // Convert to one line per tag
-        $data_set = array();
+        $data_set = [];
         foreach ($holdings_marc as $row) {
             if ($row['SUBFIELD_DATA'] != null
                 && trim($row['SUBFIELD_DATA']) != ""
             ) {
-                $data_set[$row['FIELD_SEQUENCE']][] = array(
+                $data_set[$row['FIELD_SEQUENCE']][] = [
                     'tag'  => trim($row['FIELD_TAG']),
                     'code' => trim($row['SUBFIELD_CODE']),
                     'data' => trim($row['SUBFIELD_DATA'])
-                );
+                ];
             }
         }
 
         // Prepare the set for sorting on '8' subfields, also move the tag data out
-        $sort_set = array();
+        $sort_set = [];
         // Loop through each sequence
         foreach ($data_set as $row) {
             $sort = '';
             $tag  = '';
-            $data = array();
+            $data = [];
 
             // And each subfield
             foreach ($row as $subfield) {
@@ -994,17 +994,17 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     $sort_order = sprintf("%05d", $sort_order);
                 } else {
                     // Everything else goes in the data bucket
-                    $data[] = array(
+                    $data[] = [
                         'code' => $subfield['code'],
                         'data' => $subfield['data']
-                    );
+                    ];
                 }
             }
 
-            $sort_set[$sort_rule . "." . $sort_order] = array(
+            $sort_set[$sort_rule . "." . $sort_order] = [
                 'tag'  => $tag,
                 'data' => $data
-            );
+            ];
         }
 
         // Sort the float array
@@ -1012,22 +1012,22 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Remove the prediction patterns from the list
         //  and drop sort orders or holdings.
-        $patterns = array();
-        $holdings_data = array();
+        $patterns = [];
+        $holdings_data = [];
         foreach ($sort_set as $sort => $row) {
             $rule = explode('.', $sort);
             if ($row['tag'] == 853) {
                 $patterns[$rule[0]] = $row['data'];
             } else {
-                $holdings_data[] = array(
+                $holdings_data[] = [
                     'pattern' => $rule[0],
                     'data'    => $row['data']
-                );
+                ];
             }
         }
 
         // Render all the holdings now
-        $rendered_list = array();
+        $rendered_list = [];
         foreach ($holdings_data as $row) {
             $rendered_list[] = $this->renderPattern($patterns, $row);
         }
@@ -1050,7 +1050,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         // Strip off the prefix from vtls exports
         $db_id = str_replace("vtls", "", $id);
-        $fields = array("bib_id:string" => $db_id);
+        $fields = ["bib_id:string" => $db_id];
 
         // Let's go check if this bib id is for a serial
         $sql = "SELECT h.holdingsid, l.name " .
@@ -1063,7 +1063,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Results indicate serial holdings
         if (count($result) == 0) {
-            return array();
+            return [];
         }
 
         $sql = "SELECT * " .
@@ -1073,9 +1073,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "AND i.field_tag in ('853', '863', '866') " .
             "ORDER BY i.field_sequence, i.subfield_sequence";
 
-        $data = array();
+        $data = [];
         foreach ($result as $row) {
-            $fields = array("hid:string" => $row['HOLDINGSID']);
+            $fields = ["hid:string" => $row['HOLDINGSID']];
             $hresult = $this->db->simpleSelect($sql, $fields);
             $data[$row['NAME']] = $this->renderSerialHoldings($hresult);
         }
@@ -1101,16 +1101,16 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             return null;
         }
 
-        $data_set = array();
+        $data_set = [];
         foreach ($hresult as $row) {
             if ($row['SUBFIELD_DATA'] != null
                 && trim($row['SUBFIELD_DATA']) != ""
             ) {
-                $data_set[$row['ID'] . "_" . $row['FIELD_SEQUENCE']][] = array(
+                $data_set[$row['ID'] . "_" . $row['FIELD_SEQUENCE']][] = [
                     'id'   => trim($row['ID']),
                     'code' => trim($row['SUBFIELD_CODE']),
                     'data' => trim($row['SUBFIELD_DATA'])
-                    );
+                    ];
             }
         }
         return $data_set;
@@ -1146,13 +1146,13 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "  WHERE  UPPER(p.barcode)    = UPPER(:barcode) " .
             ")";
 
-        $fields = array("barcode:string" => $barcode);
+        $fields = ["barcode:string" => $barcode];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             // Valid Password
             if ($result[0]['PASSWORD'] == $password) {
-                $user = array();
+                $user = [];
                 $split      = strpos($result[0]['NAME'], ',');
                 $last_name  = trim(substr($result[0]['NAME'], 0, $split));
                 $first_name = trim(substr($result[0]['NAME'], $split + 1));
@@ -1201,7 +1201,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "AND   t.patron_type_id = pt.patron_type_id " .
             "AND   p.patron_id      = :patron_id";
 
-        $fields = array("patron_id:string" => $patron['id']);
+        $fields = ["patron_id:string" => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
@@ -1213,7 +1213,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 $first_name = substr($first_name, 0, $split);
             }
 
-            $patron = array(
+            $patron = [
                 'firstname' => trim($first_name),
                 'lastname'  => trim($last_name),
                 'address1'  => trim($result[0]['STREET_ADDRESS_1']),
@@ -1221,7 +1221,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                 'zip'       => trim($result[0]['POSTAL_CODE']),
                 'phone'     => trim($result[0]['TELEPHONE_PRIMARY']),
                 'group'     => trim($result[0]['PATRON_TYPE'])
-                );
+                ];
 
             if ($result[0]['CITY'] != null) {
                 if (strlen($patron['address2']) > 0) {
@@ -1250,7 +1250,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getMyFines($patron)
     {
-        $fineList = array();
+        $fineList = [];
 
         $sql = "SELECT a.assessment_amount fine_amount, f.description, " .
             "a.balance, a.item_due_date due_date, i.bibid bib_id " .
@@ -1261,18 +1261,18 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "AND   a.fine_code_id = f.fine_code_id " .
             "AND   a.patron_id    = :patron_id";
 
-        $fields = array("patron_id:string" => $patron['id']);
+        $fields = ["patron_id:string" => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
-                $fineList[] = array(
+                $fineList[] = [
                     "amount"   => $row['FINE_AMOUNT'] * 100,
                     "fine"     => $row['DESCRIPTION'],
                     "balance"  => $row['BALANCE'] * 100,
                     "duedate"  => $row['DUE_DATE'],
                     "id"       => "vtls" . sprintf("%09d", (int)$row['BIB_ID'])
-                    );
+                    ];
             }
         }
         return $fineList;
@@ -1291,7 +1291,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getMyHolds($patron)
     {
-        $holdList = array();
+        $holdList = [];
 
         $sql = "SELECT h.bibid, l.name pickup_location, h.pickup_any_location, " .
             "h.date_last_needed, h.date_placed, h.request_control_number " .
@@ -1299,18 +1299,18 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "WHERE h.pickup_location = l.location_id " .
             "AND   h.patron_id       = :patron_id";
 
-        $fields = array("patron_id:string" => $patron['id']);
+        $fields = ["patron_id:string" => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
-                $holdList[] = array(
+                $holdList[] = [
                     "id"       => "vtls" . sprintf("%09d", (int)$row['BIBID']),
                     "location" => $row['PICKUP_LOCATION'],
                     "expire"   => $row['DATE_LAST_NEEDED'],
                     "create"   => $row['DATE_PLACED'],
                     "reqnum"   => $row['REQUEST_CONTROL_NUMBER']
-                    );
+                    ];
             }
         }
         return $holdList;
@@ -1330,7 +1330,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getMyTransactions($patron)
     {
-        $transList = array();
+        $transList = [];
 
         $bib_reqs = "SELECT h.bibid, count(*) as bib_req " .
             "FROM   hlrcdetl h " .
@@ -1350,19 +1350,19 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "AND    c.patron_id = :patron_id " .
             "ORDER BY c.due_date";
 
-        $fields = array("patron_id:string" => $patron['id']);
+        $fields = ["patron_id:string" => $patron['id']];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
             foreach ($result as $row) {
-                $transList[] = array(
+                $transList[] = [
                     'duedate' => $row['DUE_DATE'],
                     'barcode' => $row['BARCODE'],
                     'renew'   => $row['RENEW_COUNT'],
                     'request' => $row['REQ_COUNT'],
                     // IDs need to show as 'vtls000589589'
                     'id'      => "vtls" . sprintf("%09d", (int)$row['BIBID'])
-                    );
+                    ];
             }
         }
         return $transList;
@@ -1378,7 +1378,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getCourses()
     {
-        $courseList = array();
+        $courseList = [];
 
         $sql = "SELECT DISTINCT l.course_id " .
             "FROM reserve_list_v l, reserve_item_v i " .
@@ -1407,11 +1407,12 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst = false, $dept = false)
     {
-        $recordList = array();
+        $recordList = [];
 
         $sql = "SELECT DISTINCT d.bibid " .
             "FROM reserve_item_v i, reserve_list_v l, itemdetl2 d " .
@@ -1419,7 +1420,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "AND SYSDATE BETWEEN i.Begin_date AND i.End_date " .
             "AND i.Item_id = d.itemid " .
             "AND l.Course_id = :course";
-        $fields = array("course:string" => $course);
+        $fields = ["course:string" => $course];
         $result = $this->db->simpleSelect($sql, $fields);
 
         if (count($result) > 0) {
@@ -1460,23 +1461,23 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $sql = "SELECT campus, open_time, close_time, status " .
             "FROM usq_sr_open_normal n " .
             "WHERE UPPER(dayofweek) = UPPER(:dow)";
-        $fields = array("dow:string" => date("l", $time));
+        $fields = ["dow:string" => date("l", $time)];
         $result = $this->db->simpleSelect($sql, $fields);
         if (count($result) == 0) {
-            return array();
+            return [];
         }
 
         // Create our return data structure
-        $times = array();
+        $times = [];
         foreach ($result as $row) {
             // Remember times come out with no date, add in today.
-            $times[$row['CAMPUS']] = array(
+            $times[$row['CAMPUS']] = [
                 'open'   => "$today " .
                     date($time_format, strtotime($row['OPEN_TIME'])),
                 'close'  => "$today " .
                     date($time_format, strtotime($row['CLOSE_TIME'])),
                 'status' => $row['STATUS']
-                );
+                ];
         }
 
         // Opening hours exceptions
@@ -1496,11 +1497,11 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "AND   to_date(:today,'dd/mm/yyyy') " .
             "BETWEEN e.except_date_from AND e.except_date_to " .
             "AND   app_$day = 1";
-        $fields = array("today:string" => date("d/m/Y", $time));
+        $fields = ["today:string" => date("d/m/Y", $time)];
         $exceptions = $this->db->simpleSelect($sql, $fields);
 
         foreach ($exceptions as $row) {
-            $times[$row['CAMPUS']] = array(
+            $times[$row['CAMPUS']] = [
                 // Remember times come out with no date, add in today.
                 'open'   => "$today "
                     . date($time_format, strtotime($row['OPEN_TIME'])),
@@ -1508,7 +1509,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
                     . date($time_format, strtotime($row['CLOSE_TIME'])),
                 'status' => $row['STATUS'],
                 'reason' => $row['REASON']
-            );
+            ];
         }
         return $times;
     }
@@ -1536,27 +1537,27 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $last_date = $holdDetails['requiredBy'];
 
         // Assume an error response:
-        $response = array('success' => false, 'status' => "hold_error_fail");
+        $response = ['success' => false, 'status' => "hold_error_fail"];
 
         // Get the iPortal server
         $web_server = $this->config['Catalog']['webhost'];
 
         // Validate input
         //  * Request level
-        $allowed_req_levels = array(
+        $allowed_req_levels = [
             'item'   => 0,
             'bib'    => 1,
             'volume' => 2
-            );
+            ];
         if (!in_array($req_level, array_keys($allowed_req_levels))) {
             return $response;
         }
         //  * Pickup Location
-        $allowed_pickup_locs = array(
+        $allowed_pickup_locs = [
             'Toowoomba'    => '10000',
             'Fraser Coast' => '40000',
             'Springfield'  => '50000'
-            );
+            ];
         if (!in_array($pickup_loc, array_keys($allowed_pickup_locs))) {
             return $response;
         }
@@ -1611,6 +1612,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @param array $holdDetails An array of item data
      *
      * @return string Data for use in a form field
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getCancelHoldDetails($holdDetails)
@@ -1628,6 +1630,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function cancelHolds($cancelDetails)
@@ -1690,7 +1693,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $web_server = $this->config['Catalog']['webhost'];
 
         $virtua_url = "http://$web_server/cgi-bin/chameleon";
-        $postParams = array(
+        $postParams = [
             "SourceScreen" => "INITREQ",
             "conf" => ".&#047;chameleon.conf",
             "elementcount" => "1",
@@ -1705,7 +1708,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             "patronid" => $patron['cat_username'],
             "patronpassword" => $patron['cat_password'],
             "patronhost" => $this->config['Catalog']['patron_host']
-        );
+        ];
 
         // Get the response
         $result = $this->httpRequest($virtua_url, $postParams);
@@ -1731,6 +1734,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * @param array $checkOutDetails An array of item data
      *
      * @return string Data for use in a form field
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRenewDetails($checkOutDetails)
@@ -1757,7 +1761,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Get items out on loan at the moment
         $result = $this->getMyTransactions($patron);
         // Make it more accessible - by barcode
-        $initial = array();
+        $initial = [];
         foreach ($result as $row) {
             $initial[$row['barcode']] = $row;
         }
@@ -1797,7 +1801,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         $result = $this->getMyTransactions($patron);
 
         // Foreach item currently on loan
-        $return = array();
+        $return = [];
         foreach ($result as $row) {
             // Did we even attempt to renew?
             if (in_array($row['barcode'], $item_list)) {
@@ -1825,7 +1829,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      */
     public function getSuppressedAuthorityRecords()
     {
-        $list = array();
+        $list = [];
 
         $sql = "select auth_id " .
             "from state_record_authority " .

@@ -42,7 +42,7 @@ class SearchRequestModel
      *
      * @var array
      */
-    protected $query = array();
+    protected $query = [];
 
     /**
      * Whether or not to return facets with the search results. valid values are
@@ -57,7 +57,7 @@ class SearchRequestModel
      *
      * @var array
      */
-    protected $facetFilters = array();
+    protected $facetFilters = [];
 
     /**
      * Sort option to apply
@@ -71,7 +71,7 @@ class SearchRequestModel
      *
      * @var array
      */
-    protected $limiters = array();
+    protected $limiters = [];
 
     /**
      * Mode to be effective in the search
@@ -85,7 +85,7 @@ class SearchRequestModel
      *
      * @var string
      */
-    protected $expanders = array();
+    protected $expanders = [];
 
     /**
      * Requested level of detail to return the results with
@@ -121,7 +121,7 @@ class SearchRequestModel
      *
      * @var array
      */
-    protected $actions = array();
+    protected $actions = [];
 
     /**
      * Constructor
@@ -130,7 +130,7 @@ class SearchRequestModel
      *
      * @param array $parameters parameters to populate request
      */
-    public function __construct($parameters = array())
+    public function __construct($parameters = [])
     {
         $this->setParameters($parameters);
     }
@@ -168,7 +168,7 @@ class SearchRequestModel
      *
      * @return void
      */
-    public function setParameters($parameters = array())
+    public function setParameters($parameters = [])
     {
         foreach ($parameters as $key => $values) {
             switch($key) {
@@ -214,7 +214,7 @@ class SearchRequestModel
      */
     public function convertToQueryStringParameterArray()
     {
-        $qs = array();
+        $qs = [];
         if (isset($this->query) && 0 < sizeof($this->query)) {
             $qs['query-x'] = $this->query;
         }

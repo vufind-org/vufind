@@ -50,7 +50,7 @@ class QueryAdapterTest extends TestCase
      */
     public function testConversions()
     {
-        $cases = array('basic', 'advanced');
+        $cases = ['basic', 'advanced'];
         $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/';
         foreach ($cases as $case) {
             // Load minified, unminified, and Query object data:
@@ -85,7 +85,7 @@ class QueryAdapterTest extends TestCase
      */
     public function testEmptyRequest()
     {
-        $req = new \Zend\Stdlib\Parameters(array());
+        $req = new \Zend\Stdlib\Parameters([]);
         $this->assertEquals(new Query(), QueryAdapter::fromRequest($req, 'AllFields'));
     }
 
@@ -97,10 +97,10 @@ class QueryAdapterTest extends TestCase
     public function testDisplay()
     {
         // Array of fixture directory => expected display query
-        $cases = array(
+        $cases = [
             'basic' => 'john smith',
             'advanced' => '(CallNumber:oranges AND toc:bananas AND ISN:pears) OR (Title:cars OR Subject:trucks) NOT ((AllFields:squid))'
-        );
+        ];
 
         // Create simple closure to fill in for translation callbacks:
         $echo = function ($str) {

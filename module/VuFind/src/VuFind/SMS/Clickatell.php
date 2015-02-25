@@ -53,7 +53,7 @@ class Clickatell extends AbstractBase
      * @param array               $options Additional options (client may be an HTTP
      * client object)
      */
-    public function __construct(\Zend\Config\Config $config, $options = array())
+    public function __construct(\Zend\Config\Config $config, $options = [])
     {
         parent::__construct($config, $options);
         $this->client = isset($options['client'])
@@ -98,9 +98,9 @@ class Clickatell extends AbstractBase
      */
     public function getCarriers()
     {
-        return array(
-            'Clickatell' => array('name' => 'Clickatell', 'domain' => null)
-        );
+        return [
+            'Clickatell' => ['name' => 'Clickatell', 'domain' => null]
+        ];
     }
 
     /**

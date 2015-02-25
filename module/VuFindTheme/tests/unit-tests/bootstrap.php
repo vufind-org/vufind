@@ -9,13 +9,13 @@
  */
 require_once('Zend/Loader/AutoloaderFactory.php');
 \Zend\Loader\AutoloaderFactory::factory(
-    array(
-        'Zend\Loader\StandardAutoloader' => array(
-            'namespaces' => array(
+    [
+        'Zend\Loader\StandardAutoloader' => [
+            'namespaces' => [
                 'VuFindTheme' => realpath(__DIR__ . '/../../src/VuFindTheme'),
                 'VuFindTest' => realpath(__DIR__ . '/src/VuFindTest'),
-            ),
+            ],
             'autoregister_zf' => true
-        )
-    )
+        ]
+    ]
 );

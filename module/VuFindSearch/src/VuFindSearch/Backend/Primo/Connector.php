@@ -123,12 +123,13 @@ class Connector implements \Zend\Log\LoggerAwareInterface
      *
      * @throws \Exception
      * @return array             An array of query results
+     *
      * @link http://www.exlibrisgroup.org/display/PrimoOI/Brief+Search
      */
     public function query($institution, $terms, $params = null)
     {
         // defaults for params
-        $args = array(
+        $args = [
             "phrase" => false,
             "onCampus" => true,
             "didYouMean" => false,
@@ -137,7 +138,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             "limit" => 20,
             "sort" => null,
             "returnErr" => true,
-        );
+        ];
         if (isset($params)) {
             $args = array_merge($args, $params);
         }
@@ -148,12 +149,12 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         } catch (\Exception $e) {
             if ($args["returnErr"]) {
                 $this->debug($e->getMessage());
-                return array(
+                return [
                     'recordCount' => 0,
-                    'documents' => array(),
-                    'facets' => array(),
+                    'documents' => [],
+                    'facets' => [],
                     'error' => $e->getMessage()
-                );
+                ];
             } else {
                 throw $e;
             }
@@ -195,7 +196,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         // we have to build a querystring because I think adding them
         //   incrementally is implemented as a dictionary, but we are allowed
         //   multiple querystring parameters with the same key.
-        $qs = array();
+        $qs = [];
 
         // QUERYSTRING: query (search terms)
         // re: phrase searches, turns out we can just pass whatever we got
@@ -323,7 +324,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * small wrapper for sendRequest, process to simplify error handling.
+     * Small wrapper for sendRequest, process to simplify error handling.
      *
      * @param string $qs     Query string
      * @param string $method HTTP method
@@ -351,7 +352,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * translate Primo's XML into array of arrays.
+     * Translate Primo's XML into array of arrays.
      *
      * @param array $data The raw xml from Primo
      *
@@ -400,7 +401,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         // Get results set data and add to $items array
         // This foreach grabs all the child elements of sear:DOC,
         //   except those with namespaces
-        $items = array();
+        $items = [];
 
         $docset = $sxe->xpath('//sear:DOC');
         if (empty($docset) && isset($sxe->JAGROOT->RESULT->DOCSET->DOC)) {
@@ -408,7 +409,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         }
 
         foreach ($docset as $doc) {
-            $item = array();
+            $item = [];
             // Due to a bug in the primo API, the first result has
             //   a namespace (prim:) while the rest of the results do not.
             //   Those child elements do not get added to $doc.
@@ -507,7 +508,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         //  which has the name of the facet as an attribute.
         // We only get the first level of elements
         //   because child elements have a namespace prefix
-        $facets = array();
+        $facets = [];
 
         $facetSet = $sxe->xpath('//sear:FACET');
         if (empty($facetSet)) {
@@ -532,18 +533,18 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             }
         }
 
-        $didYouMean = array();
+        $didYouMean = [];
         $suggestions = $sxe->xpath('//sear:QUERYTRANSFORMS');
         foreach ($suggestions as $suggestion) {
             $didYouMean[] = (string)$suggestion->attributes()->QUERY;
         }
 
-        return array(
+        return [
             'recordCount' => $totalhits,
             'documents' => $items,
             'facets' => $facets,
             'didYouMean' => $didYouMean
-        );
+        ];
     }
 
     /**
@@ -559,7 +560,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     {
         // Query String Parameters
         if (isset($recordId)) {
-            $qs   = array();
+            $qs   = [];
             $qs[] = "query=any,contains,\"$recordId\"";
             $qs[] = "institution=$inst_code";
             $qs[] = "onCampus=true";

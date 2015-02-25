@@ -61,11 +61,11 @@ class NoILSTest extends \VuFindTest\Unit\TestCase
     public function setUp()
     {
         $this->loader = $this->getMock(
-            'VuFind\Record\Loader', array(),
-            array(
+            'VuFind\Record\Loader', [],
+            [
                 $this->getMock('VuFindSearch\Service'),
                 $this->getMock('VuFind\RecordDriver\PluginManager')
-            )
+            ]
         );
         $this->driver = new NoILS($this->loader);
         $this->driver->init();
@@ -109,7 +109,7 @@ class NoILSTest extends \VuFindTest\Unit\TestCase
     public function testMarcHoldingsVisibility()
     {
         $this->driver
-            ->setConfig(array('settings' => array('useHoldings' => 'marc')));
+            ->setConfig(['settings' => ['useHoldings' => 'marc']]);
         $this->assertTrue($this->driver->hasHoldings('foo'));
     }
 
@@ -120,9 +120,9 @@ class NoILSTest extends \VuFindTest\Unit\TestCase
      */
     public function testUnsupportedFunctions()
     {
-        $this->assertEquals(array(), $this->driver->getPurchaseHistory('foo'));
+        $this->assertEquals([], $this->driver->getPurchaseHistory('foo'));
         $this->assertEquals(null, $this->driver->patronLogin('foo', 'bar'));
-        $this->assertEquals(array(), $this->driver->getNewItems(1, 20, 30));
+        $this->assertEquals([], $this->driver->getNewItems(1, 20, 30));
         $this->assertFalse($this->driver->getConfig('Holds'));
     }
 }

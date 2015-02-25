@@ -118,11 +118,11 @@ class Connector implements \Zend\Log\LoggerAwareInterface
         } catch (\Exception $e) {
             if ($returnErr) {
                 $this->debug($e->getMessage());
-                $result = array(
+                $result = [
                     'recordCount' => 0,
-                    'documents' => array(),
+                    'documents' => [],
                     'error' => $e->getMessage()
-                );
+                ];
             } else {
                 throw $e;
             }
@@ -133,7 +133,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * small wrapper for sendRequest, process to simplify error handling.
+     * Small wrapper for sendRequest, process to simplify error handling.
      *
      * @param string $qs     Query string
      * @param string $method HTTP method
@@ -174,23 +174,23 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             throw new \Exception('LibGuides did not return any data');
         }
 
-        $items = array();
+        $items = [];
 
         // Extract titles and URLs from response:
         $regex = '/<a href="([^"]*)"[^>]*>([^<]*)</';
         $count = preg_match_all($regex, $data, $matches);
 
         for ($i = 0; $i < $count; $i++) {
-            $items[] = array(
+            $items[] = [
                 'id' => $matches[1][$i],    // ID = URL
                 'title' => $matches[2][$i],
-            );
+            ];
         }
 
-        $results = array(
+        $results = [
             'recordCount' => count($items),
             'documents' => $items
-        );
+        ];
 
         return $results;
     }
@@ -206,14 +206,14 @@ class Connector implements \Zend\Log\LoggerAwareInterface
     {
         // defaults for params (vary by version)
         if ($this->apiVersion < 2) {
-            $args = array(
+            $args = [
                 'iid' => $this->iid,
                 'type' => 'guides',
                 'more' => 'false',
                 'sortby' => 'relevance',
-            );
+            ];
         } else {
-            $args = array(
+            $args = [
                 'site_id' => $this->iid,
                 'sort_by' => 'relevance',
                 'widget_type' => 1,
@@ -227,7 +227,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
                 'enable_group_search_limit' => 0,
                 'enable_subject_search_limit' => 0,
                 'widget_embed_type' => 2,
-            );
+            ];
             // remap v1 --> v2 params:
             if (isset($params['search'])) {
                 $params['search_terms'] = $params['search'];

@@ -43,7 +43,7 @@ class CommitDocument extends AbstractDocument
 {
 
     /**
-     * commitWithin attribute value.
+     * Value for commitWithin attribute
      *
      * @var integer
      */

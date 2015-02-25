@@ -52,8 +52,8 @@ class BackendTest extends TestCase
     public function testGetConnector()
     {
         $connector = $this->getMock(
-            'VuFindSearch\Backend\Pazpar2\Connector', array(),
-            array('http://fake', $this->getMock('Zend\Http\Client'))
+            'VuFindSearch\Backend\Pazpar2\Connector', [],
+            ['http://fake', $this->getMock('Zend\Http\Client')]
         );
         $back = new Backend(
             $connector,
@@ -69,7 +69,7 @@ class BackendTest extends TestCase
      */
     public function testSearch()
     {
-        $conn = $this->getConnectorMock(array('search', 'show', 'stat'));
+        $conn = $this->getConnectorMock(['search', 'show', 'stat']);
         $conn->expects($this->once())
             ->method('search')
             ->will($this->returnValue($this->loadResponse('pp2search')));
@@ -148,11 +148,11 @@ class BackendTest extends TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = array())
+    protected function getConnectorMock(array $mock = [])
     {
         $client = $this->getMock('Zend\Http\Client');
         return $this->getMock(
-            'VuFindSearch\Backend\Pazpar2\Connector', $mock, array('fake', $client)
+            'VuFindSearch\Backend\Pazpar2\Connector', $mock, ['fake', $client]
         );
     }
 

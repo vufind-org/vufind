@@ -80,7 +80,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return array(); // not supported by EIT
+        return []; // not supported by EIT
     }
 
     /**

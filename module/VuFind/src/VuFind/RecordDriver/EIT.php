@@ -88,13 +88,13 @@ class EIT extends SolrDefault
     public function getAllSubjectHeadings()
     {
         $su = isset($this->controlInfo['artinfo']['su'])
-            ? $this->controlInfo['artinfo']['su'] : array();
+            ? $this->controlInfo['artinfo']['su'] : [];
 
         // The EIT index doesn't currently subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.
-        $retval = array();
+        $retval = [];
         foreach ($su as $s) {
-            $retval[] = array($s);
+            $retval[] = [$s];
         }
         return $retval;
     }
@@ -151,7 +151,7 @@ class EIT extends SolrDefault
      */
     public function getDateSpan()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -162,14 +162,14 @@ class EIT extends SolrDefault
      */
     public function getDeduplicatedAuthors()
     {
-        $authors = array(
+        $authors = [
             'main' => $this->getPrimaryAuthor(),
             'secondary' => $this->getSecondaryAuthors()
-        );
+        ];
 
         // The secondary author array may contain a corporate or primary author;
         // let's be sure we filter out duplicate values.
-        $duplicates = array();
+        $duplicates = [];
         if (!empty($authors['main'])) {
             $duplicates[] = $authors['main'];
         }
@@ -202,7 +202,7 @@ class EIT extends SolrDefault
             return $this->controlInfo['artinfo']['doctype'];
         }
         return isset($this->controlInfo['artinfo']['doctype'])
-            ? array($this->controlInfo['artinfo']['doctype']) : array();
+            ? [$this->controlInfo['artinfo']['doctype']] : [];
     }
 
     /**
@@ -231,13 +231,13 @@ class EIT extends SolrDefault
     public function getPublicationDates()
     {
         if (isset($this->controlInfo['pubinfo']['dt']['@attributes']['year'])) {
-            return array(
+            return [
                 $this->controlInfo['pubinfo']['dt']['@attributes']['year']
-            );
+            ];
         } else if (isset($this->controlInfo['pubinfo']['dt'])) {
-            return array($this->controlInfo['pubinfo']['dt']);
+            return [$this->controlInfo['pubinfo']['dt']];
         } else {
-            return array();
+            return [];
         }
     }
 
@@ -249,7 +249,7 @@ class EIT extends SolrDefault
     public function getPublishers()
     {
         return isset($this->controlInfo['pubinfo']['pub'])
-            ? array($this->controlInfo['pubinfo']['pub']) : array();
+            ? [$this->controlInfo['pubinfo']['pub']] : [];
     }
 
     /**
@@ -260,7 +260,7 @@ class EIT extends SolrDefault
     public function getSecondaryAuthors()
     {
         return is_array($this->controlInfo['artinfo']['aug']['au'])
-            ? $this->controlInfo['artinfo']['aug']['au'] : array();
+            ? $this->controlInfo['artinfo']['aug']['au'] : [];
     }
 
     /**
@@ -290,11 +290,11 @@ class EIT extends SolrDefault
         ) {
             return is_array($this->controlInfo['artinfo']['ab'])
                 ? $this->controlInfo['artinfo']['ab']
-                : array($this->controlInfo['artinfo']['ab']);
+                : [$this->controlInfo['artinfo']['ab']];
         }
 
         // If we got this far, no description was found:
-        return array();
+        return [];
     }
 
         /**
@@ -327,14 +327,14 @@ class EIT extends SolrDefault
         // If non-empty, map internal URL array to expected return format;
         // otherwise, return empty array:
         if (isset($this->fields['fields']['plink'])) {
-            $links = array($this->fields['fields']['plink']);
+            $links = [$this->fields['fields']['plink']];
             $desc = $this->translate('View this record in EBSCOhost');
             $filter = function ($url) use ($desc) {
                 return compact('url', 'desc');
             };
             return array_map($filter, $links);
         } else {
-            return array();
+            return [];
         }
     }
 

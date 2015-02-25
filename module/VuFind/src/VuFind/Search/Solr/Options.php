@@ -43,21 +43,21 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var array
      */
-    protected $hiddenFilters = array();
+    protected $hiddenFilters = [];
 
     /**
      * Hierarchical facets
      *
      * @var array
      */
-    protected $hierarchicalFacets = array();
+    protected $hierarchicalFacets = [];
 
     /**
      * Hierarchical facet separators
      *
      * @var array
      */
-    protected $hierarchicalFacetSeparators = array();
+    protected $hierarchicalFacetSeparators = [];
 
     /**
      * Constructor
@@ -119,10 +119,10 @@ class Options extends \VuFind\Search\Base\Options
                 $this->sortOptions[$key] = $value;
             }
         } else {
-            $this->sortOptions = array('relevance' => 'sort_relevance',
+            $this->sortOptions = ['relevance' => 'sort_relevance',
                 'year' => 'sort_year', 'year asc' => 'sort_year asc',
                 'callnumber' => 'sort_callnumber', 'author' => 'sort_author',
-                'title' => 'sort_title');
+                'title' => 'sort_title'];
         }
         // Load view preferences (or defaults if none in .ini file):
         if (isset($searchSettings->Views)) {
@@ -130,9 +130,9 @@ class Options extends \VuFind\Search\Base\Options
                 $this->viewOptions[$key] = $value;
             }
         } elseif (isset($searchSettings->General->default_view)) {
-            $this->viewOptions = array($this->defaultView => $this->defaultView);
+            $this->viewOptions = [$this->defaultView => $this->defaultView];
         } else {
-            $this->viewOptions = array('list' => 'List');
+            $this->viewOptions = ['list' => 'List'];
         }
 	// Load list view for result (full or tabs,accordion or something else)
 	if (isset($searchSettings->List->view)) {
@@ -197,7 +197,7 @@ class Options extends \VuFind\Search\Base\Options
                 $defaultChecked
                     = is_object($searchSettings->ShardPreferences->defaultChecked)
                     ? $searchSettings->ShardPreferences->defaultChecked->toArray()
-                    : array($searchSettings->ShardPreferences->defaultChecked);
+                    : [$searchSettings->ShardPreferences->defaultChecked];
                 foreach ($defaultChecked as $current) {
                     $this->defaultSelectedShards[] = $current;
                 }

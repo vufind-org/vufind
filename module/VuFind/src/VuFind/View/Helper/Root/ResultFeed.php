@@ -26,7 +26,10 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use DateTime, Zend\Feed\Writer\Writer as FeedWriter, Zend\Feed\Writer\Feed,
+use DateTime,
+    VuFind\I18n\Translator\TranslatorAwareInterface,
+    Zend\Feed\Writer\Writer as FeedWriter,
+    Zend\Feed\Writer\Feed,
     Zend\View\Helper\AbstractHelper;
 
 /**
@@ -38,39 +41,9 @@ use DateTime, Zend\Feed\Writer\Writer as FeedWriter, Zend\Feed\Writer\Feed,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class ResultFeed extends AbstractHelper
+class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
 {
-    /**
-     * Translator helper
-     *
-     * @var object
-     */
-    protected $translator = false;
-
-    /**
-     * Get access to the translator helper.
-     *
-     * @return object
-     */
-    public function getTranslatorHelper()
-    {
-        if (!$this->translator) {
-            $this->translator = $this->getView()->plugin('translate');
-        }
-        return $this->translator;
-    }
-
-    /**
-     * Override the translator helper (useful for testing purposes).
-     *
-     * @param object $translator New translator object.
-     *
-     * @return void
-     */
-    public function setTranslatorHelper($translator)
-    {
-        $this->translator = $translator;
-    }
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Set up Dublin Core extension.
@@ -87,6 +60,14 @@ class ResultFeed extends AbstractHelper
         $manager->setInvokableClass(
             'dublincoreentry', 'VuFind\Feed\Writer\Extension\DublinCore\Entry'
         );
+        $manager->setInvokableClass(
+            'opensearchrendererfeed',
+            'VuFind\Feed\Writer\Extension\OpenSearch\Renderer\Feed'
+        );
+        $manager->setInvokableClass(
+            'opensearchfeed', 'VuFind\Feed\Writer\Extension\OpenSearch\Feed'
+        );
+        FeedWriter::registerExtension('OpenSearch');
     }
 
     /**
@@ -112,9 +93,8 @@ class ResultFeed extends AbstractHelper
 
         // Create the parent feed
         $feed = new Feed();
-        $translator = $this->getTranslatorHelper();
         $feed->setTitle(
-            $translator('Results for') . ' '
+            $this->translate('Results for') . ' '
             . $results->getParams()->getDisplayQuery()
         );
         $feed->setLink(
@@ -124,14 +104,50 @@ class ResultFeed extends AbstractHelper
             $baseUrl . $results->getUrlQuery()->getParams(false),
             $results->getParams()->getView()
         );
-
-        $records = $results->getResults();
         $feed->setDescription(
-            $translator('Displaying the top') . ' ' . count($records)
-            . ' ' . $translator('search results of') . ' '
-            . $results->getResultTotal() . ' ' . $translator('found')
+            $this->translate('Showing') . ' ' . $results->getStartRecord() . '-'
+            . $results->getEndRecord() . ' ' . $this->translate('of') . ' '
+            . $results->getResultTotal()
         );
 
+        $params = $results->getParams();
+
+        // add atom links for easier paging
+        $feed->addOpensearchLink(
+            $baseUrl . $results->getUrlQuery()->setPage(1, false),
+            'first',
+            $params->getView()
+        );
+        if ($params->getPage() > 1) {
+            $feed->addOpensearchLink(
+                $baseUrl . $results->getUrlQuery()
+                    ->setPage($params->getPage()-1, false),
+                'previous',
+                $params->getView()
+            );
+        }
+        $lastPage = ceil($results->getResultTotal() / $params->getLimit());
+        if ($params->getPage() < $lastPage) {
+            $feed->addOpensearchLink(
+                $baseUrl . $results->getUrlQuery()
+                    ->setPage($params->getPage()+1, false),
+                'next',
+                $params->getView()
+            );
+        }
+        $feed->addOpensearchLink(
+            $baseUrl . $results->getUrlQuery()->setPage($lastPage, false),
+            'last',
+            $params->getView()
+        );
+
+        // add opensearch fields
+        $feed->setOpensearchTotalResults($results->getResultTotal());
+        $feed->setOpensearchItemsPerPage($params->getLimit());
+        $feed->setOpensearchStartIndex($results->getStartRecord() - 1);
+        $feed->setOpensearchSearchTerms($params->getQuery()->getString());
+
+        $records = $results->getResults();
         foreach ($records as $current) {
             $this->addEntry($feed, $current);
         }
@@ -171,7 +187,7 @@ class ResultFeed extends AbstractHelper
         }
         $author = $record->tryMethod('getPrimaryAuthor');
         if (!empty($author)) {
-            $entry->addAuthor(array('name' => $author));
+            $entry->addAuthor(['name' => $author]);
         }
         $formats = $record->tryMethod('getFormats');
         if (is_array($formats)) {

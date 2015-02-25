@@ -109,13 +109,13 @@ class EDS extends SolrDefault
     }
 
     /**
-     * obtain an array or authors indicated on the record
+     * Obtain an array or authors indicated on the record
      *
      * @return array
      */
     protected function getItemsAuthorsArray()
     {
-        $authors = array();
+        $authors = [];
         if (isset($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
                 if ('Au' == $item['Group']) {
@@ -134,7 +134,7 @@ class EDS extends SolrDefault
     public function getCustomLinks()
     {
         return isset($this->fields['CustomLinks']) ?
-        $this->fields['CustomLinks'] : array();
+        $this->fields['CustomLinks'] : [];
     }
 
     /**
@@ -182,15 +182,15 @@ class EDS extends SolrDefault
      */
     public function getItems()
     {
-        $items = array();
+        $items = [];
         if (isset($this->fields['Items']) && !empty($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
-                $items[] = array(
+                $items[] = [
                     'Label' => isset($item['Label']) ? $item['Label'] : '',
                     'Group' => isset($item['Group']) ? $item['Group'] : '',
                     'Data'  => isset($item['Data'])
                         ? $this->toHTML($item['Data'], $item['Group']) : ''
-                );
+                ];
             }
         }
         return $items;
@@ -273,7 +273,7 @@ class EDS extends SolrDefault
      */
     public function getItemsSubjects()
     {
-        $subjects = array();
+        $subjects = [];
         if (isset($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
                 if ('Su' == $item['Group']) {
@@ -348,7 +348,7 @@ class EDS extends SolrDefault
      */
     public function getAuthors()
     {
-        $authors = array();
+        $authors = [];
         if (isset($this->fields['RecordInfo']['BibRecord']['BibRelationships'])) {
             $bibRels
                 = & $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
@@ -432,9 +432,9 @@ class EDS extends SolrDefault
 
         // Any group can be added here, but we only use Au (Author)
         // Other groups, not present here, won't be transformed to HTML links
-        $allowed_searchlink_groups = array('au','su');
+        $allowed_searchlink_groups = ['au','su'];
 
-        $xml_to_html_tags = array(
+        $xml_to_html_tags = [
                 '<jsection'    => '<section',
                 '</jsection'   => '</section',
                 '<highlight'   => '<span class="highlight"',
@@ -471,7 +471,7 @@ class EDS extends SolrDefault
                 '</superscript' => '</sup',
                 '<relatesTo'   => '<sup',
                 '</relatesTo'  => '</sup'
-        );
+        ];
 
         //  The XML data is escaped, let's unescape html entities (e.g. &lt; => <)
         $data = html_entity_decode($data, ENT_QUOTES, "utf-8");
@@ -533,7 +533,7 @@ class EDS extends SolrDefault
      */
     protected function replaceBRWithCommas($data, $group)
     {
-        $groupsToReplace = array('au','su');
+        $groupsToReplace = ['au','su'];
         if (in_array($group, $groupsToReplace)) {
             $br =  '/<br \/>/';
             $comma = ', ';
@@ -552,7 +552,7 @@ class EDS extends SolrDefault
      */
     protected function getSupportedCitationFormats()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -561,6 +561,7 @@ class EDS extends SolrDefault
      * @param string $format Export format
      *
      * @return bool
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function exportDisabled($format)

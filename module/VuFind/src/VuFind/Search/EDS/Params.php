@@ -45,20 +45,19 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $dateFacetSettings = array();
+    protected $dateFacetSettings = [];
 
     /**
      * Additional filters to display as side facets
      *
      * @var array
      */
-    protected $extraFilterList = array();
+    protected $extraFilterList = [];
 
     /**
-     * property to determine if the request using this parameters objects is for
-     * setup only.
+     * Is the request using this parameters objects for setup only?
      *
-     * @var boolean
+     * @var bool
      */
     public $isSetupOnly = false;
 
@@ -136,7 +135,7 @@ class Params extends \VuFind\Search\Base\Params
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
             ? $config->Facet_Settings->facet_limit : 30;
 
-        $finalFacets = array();
+        $finalFacets = [];
         foreach ($this->getFullFacetSettings() as $facet) {
             // See if parameters are included as part of the facet name;
             // if not, override them with defaults.
@@ -211,7 +210,7 @@ class Params extends \VuFind\Search\Base\Params
     public function createBackendLimiterParameters(ParamBag $params)
     {
         //group limiters with same id together
-        $edsLimiters = array();
+        $edsLimiters = [];
         foreach ($this->limiters as $limiter) {
             if (isset($limiter) && !empty($limiter)) {
                 // split the id/value
@@ -308,7 +307,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getFullFacetSettings()
     {
-        return isset($this->fullFacetSettings) ? $this->fullFacetSettings : array();
+        return isset($this->fullFacetSettings) ? $this->fullFacetSettings : [];
     }
 
     /**
@@ -389,12 +388,12 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getViewList()
     {
-        $list = array();
+        $list = [];
         foreach ($this->getOptions()->getViewOptions() as $key => $value) {
-            $list[$key] = array(
+            $list[$key] = [
                 'desc' => $value,
                 'selected' => ($key == $this->getView() . '|' . $this->getEdsView())
-            );
+            ];
         }
         return $list;
     }
@@ -409,8 +408,8 @@ class Params extends \VuFind\Search\Base\Params
     public function getDisplayQuery()
     {
         // Set up callbacks:
-        $translate = array($this, 'translate');
-        $showField = array($this->getOptions(), 'getHumanReadableFieldName');
+        $translate = [$this, 'translate'];
+        $showField = [$this->getOptions(), 'getHumanReadableFieldName'];
 
         // Build display query:
         return QueryAdapter::display($this->getQuery(), $translate, $showField);

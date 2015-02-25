@@ -46,20 +46,20 @@ class ExportTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetBulkOptions()
     {
-        $config = array(
-            'BulkExport' => array(
+        $config = [
+            'BulkExport' => [
                 'enabled' => 1,
                 'options' => 'foo:bar:baz',
-            ),
-            'Export' => array(
+            ],
+            'Export' => [
                 'foo' => 1,
                 'bar' => 1,
                 'baz' => 0,
                 'xyzzy' => 1,
-            ),
-        );
+            ],
+        ];
         $export = $this->getExport($config);
-        $this->assertEquals(array('foo', 'bar'), $export->getBulkOptions());
+        $this->assertEquals(['foo', 'bar'], $export->getBulkOptions());
     }
 
     /**
@@ -69,11 +69,11 @@ class ExportTest extends \PHPUnit_Framework_TestCase
      */
     public function testNeedsRedirect()
     {
-        $config = array(
-            'foo' => array('redirectUrl' => 'http://foo'),
-            'bar' => array(),
-        );
-        $export = $this->getExport(array(), $config);
+        $config = [
+            'foo' => ['redirectUrl' => 'http://foo'],
+            'bar' => [],
+        ];
+        $export = $this->getExport([], $config);
         $this->assertTrue($export->needsRedirect('foo'));
         $this->assertFalse($export->needsRedirect('bar'));
     }
@@ -87,7 +87,7 @@ class ExportTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             "a\nb\nc\n",
-            $this->getExport()->processGroup('foo', array("a\n", "b\n", "c\n"))
+            $this->getExport()->processGroup('foo', ["a\n", "b\n", "c\n"])
         );
     }
 
@@ -98,20 +98,20 @@ class ExportTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessGroupXML()
     {
-        $config = array(
-            'foo' => array(
-                'combineNamespaces' => array('marc21|http://www.loc.gov/MARC21/slim'),
+        $config = [
+            'foo' => [
+                'combineNamespaces' => ['marc21|http://www.loc.gov/MARC21/slim'],
                 'combineXpath' => '/marc21:collection/marc21:record',
-            ),
-        );
+            ],
+        ];
         $this->assertEquals(
             "<?xml version=\"1.0\"?>\n"
             . '<collection xmlns="http://www.loc.gov/MARC21/slim">'
             . '<record><id>a</id></record><record><id>b</id></record></collection>',
             trim(
-                $this->getExport(array(), $config)->processGroup(
+                $this->getExport([], $config)->processGroup(
                     'foo',
-                    array($this->getFakeMARCXML('a'), $this->getFakeMARCXML('b'))
+                    [$this->getFakeMARCXML('a'), $this->getFakeMARCXML('b')]
                 )
             )
         );
@@ -124,12 +124,12 @@ class ExportTest extends \PHPUnit_Framework_TestCase
      */
     public function testRecordSupportsFormat()
     {
-        $config = array(
-            'foo' => array('requiredMethods' => array('getTitle')),
-            'bar' => array('requiredMethods' => array('getThingThatDoesNotExist'))
-        );
+        $config = [
+            'foo' => ['requiredMethods' => ['getTitle']],
+            'bar' => ['requiredMethods' => ['getThingThatDoesNotExist']]
+        ];
 
-        $export = $this->getExport(array(), $config);
+        $export = $this->getExport([], $config);
         $primo = new \VuFind\RecordDriver\Primo();
         $solr = new \VuFind\RecordDriver\SolrDefault();
 
@@ -155,14 +155,14 @@ class ExportTest extends \PHPUnit_Framework_TestCase
     {
         // Use RefWorks and EndNote as our test data, since these are the items
         // turned on by default if no main config is passed in.
-        $config = array(
-            'RefWorks' => array('requiredMethods' => array('getTitle')),
-            'EndNote' => array('requiredMethods' => array('getThingThatDoesNotExist'))
-        );
+        $config = [
+            'RefWorks' => ['requiredMethods' => ['getTitle']],
+            'EndNote' => ['requiredMethods' => ['getThingThatDoesNotExist']]
+        ];
 
-        $export = $this->getExport(array(), $config);
+        $export = $this->getExport([], $config);
         $solr = new \VuFind\RecordDriver\SolrDefault();
-        $this->assertEquals(array('RefWorks'), $export->getFormatsForRecord($solr));
+        $this->assertEquals(['RefWorks'], $export->getFormatsForRecord($solr));
     }
 
     /**
@@ -172,28 +172,28 @@ class ExportTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetFormatsForRecords()
     {
-        $mainConfig = array(
-            'BulkExport' => array(
+        $mainConfig = [
+            'BulkExport' => [
                 'enabled' => 1,
                 'options' => 'anything:marc',
-            ),
-            'Export' => array(
+            ],
+            'Export' => [
                 'anything' => 1,
                 'marc' => 1,
-            ),
-        );
-        $exportConfig = array(
-            'anything' => array('requiredMethods' => array('getTitle')),
-            'marc' => array('requiredMethods' => array('getMarcRecord'))
-        );
+            ],
+        ];
+        $exportConfig = [
+            'anything' => ['requiredMethods' => ['getTitle']],
+            'marc' => ['requiredMethods' => ['getMarcRecord']]
+        ];
         $export = $this->getExport($mainConfig, $exportConfig);
         $solrDefault = new \VuFind\RecordDriver\SolrDefault();
         $solrMarc = new \VuFind\RecordDriver\SolrMarc();
 
         // Only $solrMarc supports the 'marc' option, so we should lose the 'marc' option when we add
         // the non-supporting $solrDefault to the array:
-        $this->assertEquals(array('anything', 'marc'), $export->getFormatsForRecords(array($solrMarc)));
-        $this->assertEquals(array('anything'), $export->getFormatsForRecords(array($solrMarc, $solrDefault)));
+        $this->assertEquals(['anything', 'marc'], $export->getFormatsForRecords([$solrMarc]));
+        $this->assertEquals(['anything'], $export->getFormatsForRecords([$solrMarc, $solrDefault]));
     }
 
     /**
@@ -203,9 +203,9 @@ class ExportTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetHeaders()
     {
-        $config = array('foo' => array('headers' => array('bar')));
-        $export = $this->getExport(array(), $config);
-        $this->assertEquals(array('bar'), $export->getHeaders('foo')->toArray());
+        $config = ['foo' => ['headers' => ['bar']]];
+        $export = $this->getExport([], $config);
+        $this->assertEquals(['bar'], $export->getHeaders('foo')->toArray());
     }
 
     /**
@@ -215,14 +215,32 @@ class ExportTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetRedirectUrl()
     {
-        $mainConfig = array('config' => array('this' => 'that=true'));
+        $mainConfig = ['config' => ['this' => 'that=true']];
         $template = 'http://result?src={encodedCallback}&fallbacktest={config|config|unset|default}&configtest={encodedConfig|config|this|default}';
-        $exportConfig = array('foo' => array('redirectUrl' => $template));
+        $exportConfig = ['foo' => ['redirectUrl' => $template]];
         $export = $this->getExport($mainConfig, $exportConfig);
         $this->assertEquals(
             'http://result?src=http%3A%2F%2Fcallback&fallbacktest=default&configtest=that%3Dtrue',
             $export->getRedirectUrl('foo', 'http://callback')
         );
+    }
+
+    /**
+     * Test getLabelForFormat
+     *
+     * @ return void
+     */
+    public function testGetLabel()
+    {
+        $config = [
+            'foo' => [],
+            'bar' => ['label' => 'baz'],
+        ];
+        $export = $this->getExport([], $config);
+        // test "use section label as default"
+        $this->assertEquals('foo', $export->getLabelForFormat('foo'));
+        // test "override with label setting"
+        $this->assertEquals('baz', $export->getLabelForFormat('bar'));
     }
 
     /**
@@ -246,7 +264,7 @@ class ExportTest extends \PHPUnit_Framework_TestCase
      *
      * @return Export
      */
-    protected function getExport($main = array(), $export = array())
+    protected function getExport($main = [], $export = [])
     {
         return new Export(new Config($main), new Config($export));
     }

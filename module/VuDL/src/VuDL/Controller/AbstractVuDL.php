@@ -93,7 +93,7 @@ class AbstractVuDL extends \VuFind\Controller\AbstractBase
     protected function getLicenses()
     {
         $cfg = $this->getVuDLConfig();
-        return isset($cfg->Licenses) ? $cfg->Licenses->toArray() : array();
+        return isset($cfg->Licenses) ? $cfg->Licenses->toArray() : [];
     }
 
     /**
@@ -104,6 +104,6 @@ class AbstractVuDL extends \VuFind\Controller\AbstractBase
     protected function getVuDLRoutes()
     {
         $cfg = $this->getVuDLConfig();
-        return isset($cfg->Routes) ? $cfg->Routes->toArray() : array();
+        return isset($cfg->Routes) ? $cfg->Routes->toArray() : [];
     }
 }

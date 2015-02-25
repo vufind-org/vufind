@@ -47,7 +47,7 @@ class MobileMenu extends AbstractHelper
      *
      * @return string
      */
-    public function header($extras = array())
+    public function header($extras = [])
     {
         $context = $this->getView()->plugin('context');
         return $context($this->getView())->renderInContext('header.phtml', $extras);
@@ -61,7 +61,7 @@ class MobileMenu extends AbstractHelper
      *
      * @return string
      */
-    public function footer($extras = array())
+    public function footer($extras = [])
     {
         $context = $this->getView()->plugin('context');
         return $context($this->getView())->renderInContext('footer.phtml', $extras);

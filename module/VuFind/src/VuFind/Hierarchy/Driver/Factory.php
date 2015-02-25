@@ -38,6 +38,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -57,10 +58,10 @@ class Factory
         // Set up options based on global VuFind settings:
         $configReader = $sm->get('VuFind\Config');
         $globalConfig = $configReader->get('config');
-        $options = array(
+        $options = [
             'enabled' => isset($globalConfig->Hierarchy->showTree)
                 ? $globalConfig->Hierarchy->showTree : false
-        );
+        ];
 
         // Load driver-specific configuration:
         $driverConfig = $configReader->get($config);

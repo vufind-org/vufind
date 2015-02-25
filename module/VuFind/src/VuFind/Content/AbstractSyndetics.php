@@ -85,7 +85,7 @@ abstract class AbstractSyndetics extends AbstractBase
     protected function getHttpClient($url)
     {
         $client = parent::getHttpClient($url);
-        $client->setOptions(array('timeout' => $this->timeout));
+        $client->setOptions(['timeout' => $this->timeout]);
         return $client;
     }
 

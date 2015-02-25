@@ -59,7 +59,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @var array
      */
-    protected $extraDetails = array();
+    protected $extraDetails = [];
 
     /**
      * Main VuFind configuration
@@ -80,7 +80,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @var array
      */
-    protected $fields = array();
+    protected $fields = [];
 
     /**
      * Constructor
@@ -243,7 +243,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         // Add the information to the user's account:
         $user->saveResource(
             $resource, $list,
-            isset($params['mytags']) ? $params['mytags'] : array(),
+            isset($params['mytags']) ? $params['mytags'] : [],
             isset($params['notes']) ? $params['notes'] : ''
         );
     }
@@ -262,7 +262,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         $data = $db->getSavedData(
             $this->getUniqueId(), $this->getResourceSource(), $list_id, $user_id
         );
-        $notes = array();
+        $notes = [];
         foreach ($data as $current) {
             if (!empty($current->notes)) {
                 $notes[] = $current->notes;
@@ -339,9 +339,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         if (is_null($types)) {
             $types = isset($this->recordConfig->Record->related) ?
-                $this->recordConfig->Record->related : array();
+                $this->recordConfig->Record->related : [];
         }
-        $retVal = array();
+        $retVal = [];
         foreach ($types as $current) {
             $parts = explode(':', $current);
             $type = $parts[0];
@@ -436,7 +436,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         if ($this->mainConfig->Record->citation_formats === false
             || $this->mainConfig->Record->citation_formats === 'false'
         ) {
-            return array();
+            return [];
         }
 
         // Whitelist:
@@ -455,7 +455,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     protected function getSupportedCitationFormats()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -480,10 +480,10 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return mixed
      */
-    public function tryMethod($method, $params = array())
+    public function tryMethod($method, $params = [])
     {
-        return is_callable(array($this, $method))
-            ? call_user_func_array(array($this, $method), $params)
+        return is_callable([$this, $method])
+            ? call_user_func_array([$this, $method], $params)
             : null;
     }
 }

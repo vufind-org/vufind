@@ -467,7 +467,7 @@ function registerAjaxEmailSearch() {
 function registerAjaxBulkEmail() {
     $('#modalDialog form[name="bulkEmail"]').unbind('submit').submit(function(){
         if (!$(this).valid()) { return false; }
-        var url = path + '/AJAX/JSON?' + $.param({method:'emailSearch', 'subject':'bulk_email_title'});
+        var url = path + '/AJAX/JSON?' + $.param({method:'emailSearch', 'cart':'1'});
         var ids = [];
         $(':input[name="ids[]"]', this).each(function() {
             ids.push(encodeURIComponent('id[]') + '=' + encodeURIComponent(this.value));

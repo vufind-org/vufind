@@ -130,9 +130,9 @@ class SummonBackendFactory implements FactoryInterface
         $client = $this->serviceLocator->get('VuFind\Http')->createClient();
         $timeout = isset($this->summonConfig->General->timeout)
             ? $this->summonConfig->General->timeout : 30;
-        $client->setOptions(array('timeout' => $timeout));
+        $client->setOptions(['timeout' => $timeout]);
 
-        $options = array('authedUser' => $this->isAuthed());
+        $options = ['authedUser' => $this->isAuthed()];
         $connector = new Connector($id, $key, $options, $client);
         $connector->setLogger($this->logger);
         return $connector;

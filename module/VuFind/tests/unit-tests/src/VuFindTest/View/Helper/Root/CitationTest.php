@@ -44,269 +44,269 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
      *
      * @var    array
      */
-    protected $citations = array(
+    protected $citations = [
         // @codingStandardsIgnoreStart
-        array(
-            'raw' => array(
-                'SecondaryAuthors' => array('Shafer, Kathleen Newton'),
+        [
+            'raw' => [
+                'SecondaryAuthors' => ['Shafer, Kathleen Newton'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => '',
                 'Edition' => '',
-                'PlacesOfPublication' => array('St. Louis'),
-                'Publishers' => array('Mosby'),
-                'PublicationDates' => array('1958')
-            ),
+                'PlacesOfPublication' => ['St. Louis'],
+                'Publishers' => ['Mosby'],
+                'PublicationDates' => ['1958']
+            ],
             'apa' => 'Shafer, K. N. (1958). <span style="font-style:italic;">Medical-surgical nursing</span>. St. Louis: Mosby.',
             'mla' => 'Shafer, Kathleen Newton. <span style="font-style:italic;">Medical-surgical Nursing</span>. St. Louis: Mosby, 1958.',
             'chicago' => 'Shafer, Kathleen Newton. <span style="font-style:italic;">Medical-surgical Nursing</span>. St. Louis: Mosby, 1958.',
-        ),
-        array(
-            'raw' => array(
-                'SecondaryAuthors' => array('Lewis, S.M.'),
+        ],
+        [
+            'raw' => [
+                'SecondaryAuthors' => ['Lewis, S.M.'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => 'assessment and management of clinical problems.',
                 'Edition' => '7th ed. /',
-                'PlacesOfPublication' => array('St. Louis, Mo.'),
-                'Publishers' => array('Mosby Elsevier'),
-                'PublicationDates' => array('2007')
-            ),
+                'PlacesOfPublication' => ['St. Louis, Mo.'],
+                'Publishers' => ['Mosby Elsevier'],
+                'PublicationDates' => ['2007']
+            ],
             'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span> (7th ed.). St. Louis, Mo: Mosby Elsevier.',
             'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
-        ),
-        array(  // subtitle embedded in title
-            'raw' => array(
-                'SecondaryAuthors' => array('Lewis, S.M.'),
+        ],
+        [  // subtitle embedded in title
+            'raw' => [
+                'SecondaryAuthors' => ['Lewis, S.M.'],
                 'Title' => 'Medical-surgical nursing: assessment and management of clinical problems.',
                 'Edition' => '7th ed. /',
-                'PlacesOfPublication' => array('St. Louis, Mo.'),
-                'Publishers' => array('Mosby Elsevier'),
-                'PublicationDates' => array('2007')
-            ),
+                'PlacesOfPublication' => ['St. Louis, Mo.'],
+                'Publishers' => ['Mosby Elsevier'],
+                'PublicationDates' => ['2007']
+            ],
             'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span> (7th ed.). St. Louis, Mo: Mosby Elsevier.',
             'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
-        ),
-        array(
-            'raw' => array(
-                'SecondaryAuthors' => array('Lewis, S.M.'),
+        ],
+        [
+            'raw' => [
+                'SecondaryAuthors' => ['Lewis, S.M.'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => 'assessment and management of clinical problems.',
                 'Edition' => '1st ed.',
-                'PlacesOfPublication' => array('St. Louis, Mo.'),
-                'Publishers' => array('Mosby Elsevier'),
-                'PublicationDates' => array('2007')
-            ),
+                'PlacesOfPublication' => ['St. Louis, Mo.'],
+                'Publishers' => ['Mosby Elsevier'],
+                'PublicationDates' => ['2007']
+            ],
             'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Assessment and management of clinical problems</span>. St. Louis, Mo: Mosby Elsevier.',
             'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. St. Louis, Mo: Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Assessment and Management of Clinical Problems</span>. St. Louis, Mo: Mosby Elsevier, 2007.',
-        ),
-        array(
-            'raw' => array(
-                'SecondaryAuthors' => array('Lewis, S.M., Weirdlynamed'),
+        ],
+        [
+            'raw' => [
+                'SecondaryAuthors' => ['Lewis, S.M., Weirdlynamed'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => 'why?',
                 'Edition' => '7th ed.',
-                'PlacesOfPublication' => array('St. Louis, Mo.'),
-                'Publishers' => array('Mosby Elsevier'),
-                'PublicationDates' => array('2007')
-            ),
+                'PlacesOfPublication' => ['St. Louis, Mo.'],
+                'Publishers' => ['Mosby Elsevier'],
+                'PublicationDates' => ['2007']
+            ],
             'apa' => 'Lewis, S. (2007). <span style="font-style:italic;">Medical-surgical nursing: Why?</span> (7th ed.). St. Louis, Mo: Mosby Elsevier.',
             'mla' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> 7th ed. St. Louis, Mo: Mosby Elsevier, 2007.',
-        ),
-        array(
-            'raw' => array(
-                'SecondaryAuthors' => array('Lewis, S.M., IV'),
+        ],
+        [
+            'raw' => [
+                'SecondaryAuthors' => ['Lewis, S.M., IV'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => 'why?',
                 'Edition' => '1st ed.',
-                'PlacesOfPublication' => array('St. Louis, Mo.'),
-                'Publishers' => array('Mosby Elsevier'),
-                'PublicationDates' => array('2007')
-            ),
+                'PlacesOfPublication' => ['St. Louis, Mo.'],
+                'Publishers' => ['Mosby Elsevier'],
+                'PublicationDates' => ['2007']
+            ],
             'apa' => 'Lewis, S., IV. (2007). <span style="font-style:italic;">Medical-surgical nursing: Why?</span> St. Louis, Mo: Mosby Elsevier.',
             'mla' => 'Lewis, S.M., IV. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> St. Louis, Mo: Mosby Elsevier, 2007.',
             'chicago' => 'Lewis, S.M., IV. <span style="font-style:italic;">Medical-surgical Nursing: Why?</span> St. Louis, Mo: Mosby Elsevier, 2007.',
-        ),
-        array(
-            'raw' => array(
-                'SecondaryAuthors' => array('Burch, Philip H., Jr.'),
+        ],
+        [
+            'raw' => [
+                'SecondaryAuthors' => ['Burch, Philip H., Jr.'],
                 'ShortTitle' => 'The New Deal to the Carter administration',
                 'Subtitle' => '',
                 'Edition' => '',
-                'PlacesOfPublication' => array('New York :'),
-                'Publishers' => array('Holmes & Meier,'),
-                'PublicationDates' => array('1980.')
-            ),
+                'PlacesOfPublication' => ['New York :'],
+                'Publishers' => ['Holmes & Meier,'],
+                'PublicationDates' => ['1980.']
+            ],
             'apa' => 'Burch, P. H., Jr. (1980). <span style="font-style:italic;">The New Deal to the Carter administration</span>. New York: Holmes &amp; Meier.',
             'mla' => 'Burch, Philip H., Jr. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
             'chicago' => 'Burch, Philip H., Jr. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
-        ),
-        array(
-            'raw' => array(
-                'SecondaryAuthors' => array('Burch, Philip H., Jr.', 'Coauthor, Fictional', 'Fakeperson, Third, III'),
+        ],
+        [
+            'raw' => [
+                'SecondaryAuthors' => ['Burch, Philip H., Jr.', 'Coauthor, Fictional', 'Fakeperson, Third, III'],
                 'ShortTitle' => 'The New Deal to the Carter administration',
                 'Subtitle' => '',
                 'Edition' => '',
-                'PlacesOfPublication' => array('New York :'),
-                'Publishers' => array('Holmes & Meier,'),
-                'PublicationDates' => array('1980.')
-            ),
+                'PlacesOfPublication' => ['New York :'],
+                'Publishers' => ['Holmes & Meier,'],
+                'PublicationDates' => ['1980.']
+            ],
             'apa' => 'Burch, P. H., Jr., Coauthor, F., &amp; Fakeperson, T., III. (1980). <span style="font-style:italic;">The New Deal to the Carter administration</span>. New York: Holmes &amp; Meier.',
             'mla' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
             'chicago' => 'Burch, Philip H., Jr., Fictional Coauthor, and Third Fakeperson, III. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier, 1980.',
-        ),
-        array(
-            'raw' => array(
-                'SecondaryAuthors' => array('Burch, Philip H., Jr.', 'Coauthor, Fictional', 'Fakeperson, Third, III', 'Mob, Writing', 'Manypeople, Letsmakeup'),
+        ],
+        [
+            'raw' => [
+                'SecondaryAuthors' => ['Burch, Philip H., Jr.', 'Coauthor, Fictional', 'Fakeperson, Third, III', 'Mob, Writing', 'Manypeople, Letsmakeup'],
                 'ShortTitle' => 'The New Deal to the Carter administration',
                 'Subtitle' => '',
                 'Edition' => '',
                 'PlacesOfPublication' => '',
                 'Publishers' => '',
                 'PublicationDates' => ''
-            ),
+            ],
             'apa' => 'Burch, P. H., Jr., Coauthor, F., Fakeperson, T., III, Mob, W., &amp; Manypeople, L. <span style="font-style:italic;">The New Deal to the Carter administration</span>.',
             'mla' => 'Burch, Philip H., Jr., et al. <span style="font-style:italic;">The New Deal to the Carter Administration</span>.',
             'chicago' => 'Burch, Philip H., Jr., Fictional Coauthor, Third Fakeperson, III, Writing Mob, and Letsmakeup Manypeople. <span style="font-style:italic;">The New Deal to the Carter Administration</span>.',
-        ),
-        array(
-            'raw' => array(
-                'SecondaryAuthors' => array('Burch, Philip H., Jr.', 'Anonymous, 1971-1973', 'Elseperson, Firstnamery, 1971-1973'),
+        ],
+        [
+            'raw' => [
+                'SecondaryAuthors' => ['Burch, Philip H., Jr.', 'Anonymous, 1971-1973', 'Elseperson, Firstnamery, 1971-1973'],
                 'ShortTitle' => 'The New Deal to the Carter administration',
                 'Subtitle' => '',
                 'Edition' => '',
-                'PlacesOfPublication' => array('New York'),
-                'Publishers' => array('Holmes & Meier')
-            ),
+                'PlacesOfPublication' => ['New York'],
+                'Publishers' => ['Holmes & Meier']
+            ],
             'apa' => 'Burch, P. H., Jr., Anonymous, &amp; Elseperson, F. <span style="font-style:italic;">The New Deal to the Carter administration</span>. New York: Holmes &amp; Meier.',
             'mla' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier.',
             'chicago' => 'Burch, Philip H., Jr., Anonymous, and Firstnamery Elseperson. <span style="font-style:italic;">The New Deal to the Carter Administration</span>. New York: Holmes &amp; Meier.',
-        ),
-        array(  // eight authors
-            'raw' => array(
-                'SecondaryAuthors' => array('One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person', 'Seven, Person', 'Eight, Person'),
+        ],
+        [  // eight authors
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person', 'Seven, Person', 'Eight, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
                 'ContainerIssue' => 7,
-                'PublicationDates' => array('1999'),
+                'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
-            ),
+            ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
-        ),
-        array(  // seven authors
-            'raw' => array(
-                'SecondaryAuthors' => array('One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person', 'Seven, Person'),
+        ],
+        [  // seven authors
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person', 'Seven, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
                 'ContainerIssue' => 7,
-                'PublicationDates' => array('1999'),
+                'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
-            ),
+            ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., &amp; Seven, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, and Person Seven. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
-        ),
-        array(  // six authors
-            'raw' => array(
-                'SecondaryAuthors' => array('One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person'),
+        ],
+        [  // six authors
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
                 'ContainerIssue' => 7,
-                'PublicationDates' => array('1999'),
+                'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
-            ),
+            ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., &amp; Six, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, and Person Six. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
-        ),
-        array(  // two authors
-            'raw' => array(
-                'SecondaryAuthors' => array('One, Person', 'Two, Person'),
+        ],
+        [  // two authors
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person', 'Two, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
                 'ContainerIssue' => 7,
-                'PublicationDates' => array('1999'),
+                'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
-            ),
+            ],
             'apa' => 'One, P., &amp; Two, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, and Person Two. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person, and Person Two. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
-        ),
-        array(  // one author
-            'raw' => array(
-                'SecondaryAuthors' => array('One, Person'),
+        ],
+        [  // one author
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
                 'ContainerIssue' => 7,
-                'PublicationDates' => array('1999'),
+                'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
-            ),
+            ],
             'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
-        ),
-        array(  // eight authors in "first name first" format.
-            'raw' => array(
-                'SecondaryAuthors' => array('Person One', 'Person Two', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight'),
+        ],
+        [  // eight authors in "first name first" format.
+            'raw' => [
+                'SecondaryAuthors' => ['Person One', 'Person Two', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
                 'ContainerIssue' => 7,
-                'PublicationDates' => array('1999'),
+                'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
-            ),
+            ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person, Person Two, Person Three, Person Four, Person Five, Person Six, Person Seven, and Person Eight. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
-        ),
-        array(  // ten authors in "first name first" format.
-            'raw' => array(
-                'SecondaryAuthors' => array('Person One', 'Person Two', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight', 'Person Nine', 'Person Ten'),
+        ],
+        [  // ten authors in "first name first" format.
+            'raw' => [
+                'SecondaryAuthors' => ['Person One', 'Person Two', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight', 'Person Nine', 'Person Ten'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
                 'ContainerIssue' => 7,
-                'PublicationDates' => array('1999'),
+                'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
-            ),
+            ],
             'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Ten, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
-        ),
-        array(  // DOI
-            'raw' => array(
-                'SecondaryAuthors' => array('One, Person'),
+        ],
+        [  // DOI
+            'raw' => [
+                'SecondaryAuthors' => ['One, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
                 'ContainerVolume' => 1,
                 'ContainerIssue' => 7,
-                'PublicationDates' => array('1999'),
+                'PublicationDates' => ['1999'],
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21,
                 'CleanDOI' => 'testDOI'
-            ),
+            ],
             'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21. doi:testDOI',
             'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.',
             'chicago' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1, no. 7 (1999): 19-21.',
-        )
+        ]
         // @codingStandardsIgnoreEnd
-    );
+    ];
 
     /**
      * Setup test case.

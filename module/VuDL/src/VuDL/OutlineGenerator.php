@@ -97,7 +97,7 @@ class OutlineGenerator
      * @param object|bool $cache     Cache object (or false to disable caching)
      */
     public function __construct(Connection\Manager $connector, UrlHelper $url,
-        $routes = array(), $cache = false
+        $routes = [], $cache = false
     ) {
         $this->connector = $connector;
         $this->url = $url;
@@ -139,10 +139,10 @@ class OutlineGenerator
         if ($this->cache) {
             $this->cache->setItem(
                 $key,
-                array(
+                [
                     'moddate' => date(DATE_ATOM),
                     'outline' => $data
-                )
+                ]
             );
             return $data;
         }
@@ -159,12 +159,12 @@ class OutlineGenerator
     protected function loadLists($root)
     {
         // Reset the state of the class:
-        $this->queue = $this->moddate = array();
-        $this->outline = array(
-            'counts' => array(),
-            'names' => array(),
-            'lists' => array()
-        );
+        $this->queue = $this->moddate = [];
+        $this->outline = [
+            'counts' => [],
+            'names' => [],
+            'lists' => []
+        ];
         // Get lists
         $lists = $this->connector->getOrderedMembers($root);
         // Get list items
@@ -187,7 +187,7 @@ class OutlineGenerator
     protected function buildItem($id)
     {
         // Else, get all the data and save it to the cache
-        $list = array();
+        $list = [];
         // Get the file type
         $file = $this->connector->getDatastreams($id);
         preg_match_all(
@@ -206,7 +206,7 @@ class OutlineGenerator
             );
         }
         $details = $this->connector->getDetails($id, false);
-        return array(
+        return [
             'id' => $id,
             'fulltype' => $type,
             'mimetype' => $mimetype,
@@ -218,7 +218,7 @@ class OutlineGenerator
                 : $id,
             'datastreams' => $list[1],
             'mimetypes' => $list[2]
-        );
+        ];
     }
 
     /**
@@ -242,7 +242,7 @@ class OutlineGenerator
             if (count($items) < $start) {
                 continue;
             }
-            $this->outline['lists'][$parent] = array();
+            $this->outline['lists'][$parent] = [];
             for ($i = $start;$i < $start + $pageLength;$i++) {
                 if ($i >= count($items)) {
                     break;
@@ -269,7 +269,7 @@ class OutlineGenerator
         foreach ($this->outline['lists'] as $key => $list) {
             foreach ($list as $id => $item) {
                 foreach ($item['datastreams'] as $ds) {
-                    $routeParams = array('id' => $item['id'], 'type' => $ds);
+                    $routeParams = ['id' => $item['id'], 'type' => $ds];
                     $this->outline['lists'][$key][$id][strtolower($ds)]
                         = $this->url->fromRoute('files', $routeParams);
                 }

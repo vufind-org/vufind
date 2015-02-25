@@ -77,8 +77,7 @@ class Map extends AbstractBase
     }
 
     /**
-     * getGoogleMapMarker - gets the JSON needed to display the record on a Google
-     * map.
+     * Get the JSON needed to display the record on a Google map.
      *
      * @return string
      */
@@ -86,16 +85,16 @@ class Map extends AbstractBase
     {
         $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
         if (empty($longLat)) {
-            return json_encode(array());
+            return json_encode([]);
         }
         $longLat = explode(',', $longLat);
-        $markers = array(
-            array(
+        $markers = [
+            [
                 'title' => (string) $this->getRecordDriver()->getBreadcrumb(),
                 'lon' => $longLat[0],
                 'lat' => $longLat[1]
-            )
-        );
+            ]
+        ];
         return json_encode($markers);
     }
 

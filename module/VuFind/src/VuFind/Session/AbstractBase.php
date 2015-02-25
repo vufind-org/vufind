@@ -82,6 +82,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      * @param string $sess_name Session name
      *
      * @return void
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function open($sess_path, $sess_name)
@@ -125,6 +126,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
      * @return void
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function gc($sess_maxlifetime)

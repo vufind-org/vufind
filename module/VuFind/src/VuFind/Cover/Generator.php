@@ -44,7 +44,7 @@ class Generator
      *
      * @var array
      */
-    protected $settings = array();
+    protected $settings = [];
     /**
      * Reserved color
      */
@@ -60,10 +60,10 @@ class Generator
      * @param \VuFindTheme\ThemeInfo $themeTools For font loading
      * @param array                  $settings   Overwrite styles
      */
-    public function __construct($themeTools, $settings = array())
+    public function __construct($themeTools, $settings = [])
     {
         $this->themeTools = $themeTools;
-        $default = array(
+        $default = [
             'mode'         => 'grid',
             'authorFont'   => 'DroidSerif-Bold.ttf',
             'fontSize'     => 7,
@@ -76,7 +76,7 @@ class Generator
             'titleFont'    => 'DroidSerif-Bold.ttf',
             'topPadding'   => 19,
             'wrapWidth'    => 80,
-        );
+        ];
         foreach ($settings as $i => $setting) {
             $default[$i] = $setting;
         }
@@ -111,6 +111,7 @@ class Generator
      * @param string $callnumber Callnumber of the book
      *
      * @return string contents of image file
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function generateSolid($title, $author, $callnumber)
@@ -400,7 +401,7 @@ class Generator
     protected function fontPath($font)
     {
         // Check all supported image formats:
-        $filenames = array('css/font/' . $font);
+        $filenames = ['css/font/' . $font];
         $fileMatch = $this->themeTools->findContainingTheme($filenames, true);
         return empty($fileMatch) ? false : $fileMatch;
     }
