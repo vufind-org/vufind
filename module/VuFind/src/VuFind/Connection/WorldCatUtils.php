@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
-use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config,
-    Zend\Log\LoggerInterface;
+use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config;
 
 /**
  * World Cat Utilities
@@ -42,12 +41,7 @@ use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Config\Config,
  */
 class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * WorldCat configuration
@@ -92,38 +86,12 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     ) {
         // Legacy compatibility -- prior to VuFind 2.4, this parameter was a string.
         if (!($config instanceof Config)) {
-            $config = new Config(array('id' => $config));
+            $config = new Config(['id' => $config]);
         }
         $this->config = $config;
         $this->client = $client;
         $this->silent = $silent;
         $this->ip = $ip;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
     }
 
     /**
@@ -206,7 +174,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         $response = json_decode($this->retrieve($url));
 
         // Fetch results
-        $isbns = array();
+        $isbns = [];
         if (isset($response->list)) {
             foreach ($response->list as $line) {
                 // Filter out non-ISBN characters and validate the length of
@@ -242,10 +210,10 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         $response = json_decode($this->retrieve($url));
 
         // Fetch results
-        $results = array();
+        $results = [];
         if (isset($response->list)) {
             foreach ($response->list as $line) {
-                $values = isset($line->oclcnum) ? $line->oclcnum : array();
+                $values = isset($line->oclcnum) ? $line->oclcnum : [];
                 foreach ($values as $data) {
                     // Filter out non-numeric characters and validate the length of
                     // whatever is left behind; this will prevent us from treating
@@ -279,7 +247,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         $this->debug("XISSN: $url");
 
         // Fetch results
-        $issns = array();
+        $issns = [];
         $xml = $this->retrieve($url);
         if (!empty($xml)) {
             $data = simplexml_load_string($xml);
@@ -307,8 +275,8 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     {
         // Some common prefixes and suffixes that we do not want to treat as first
         // or last names:
-        static $badChunks = array('jr', 'sr', 'ii', 'iii', 'iv', 'v', 'vi', 'vii',
-            'viii', 'ix', 'x', 'junior', 'senior', 'esq', 'mr', 'mrs', 'miss', 'dr');
+        static $badChunks = ['jr', 'sr', 'ii', 'iii', 'iv', 'v', 'vi', 'vii',
+            'viii', 'ix', 'x', 'junior', 'senior', 'esq', 'mr', 'mrs', 'miss', 'dr'];
 
         // Clean up the input string:
         $current = str_replace('.', '', strtolower($current));
@@ -333,7 +301,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     protected function getIdentitiesQuery($name)
     {
         // Clean up user query and try to find name components within it:
-        $name = trim(str_replace(array('"', ',', '-'), ' ', $name));
+        $name = trim(str_replace(['"', ',', '-'], ' ', $name));
         $parts = explode(' ', $name);
         $first = $last = '';
         foreach ($parts as $current) {
@@ -378,11 +346,11 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         $subjects = isset($current->fastHeadings->fast) ?
             $current->fastHeadings->fast : null;
         if (isset($subjects->tag)) {
-            $subjects = array($subjects);
+            $subjects = [$subjects];
         }
 
         // Collect subjects for current name:
-        $retVal = array();
+        $retVal = [];
         if (!is_null($subjects) && count($subjects) > 0) {
             foreach ($subjects as $currentSubject) {
                 if ($currentSubject['tag'] == '650') {
@@ -451,7 +419,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         }
 
         // Loop through data and collect names and related subjects:
-        $output = array();
+        $output = [];
         foreach ($data->records->record as $current) {
             // Build current name string:
             $current = isset($current->recordData->Identity->nameInfo) ?
@@ -529,9 +497,9 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         }
 
         // Initialize arrays:
-        $exact = array();
-        $broader = array();
-        $narrower = array();
+        $exact = [];
+        $broader = [];
+        $narrower = [];
 
         while ($record = $marc->next()) {
             // Get exact terms; only save it if it is not a subset of the requested
@@ -572,11 +540,11 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
             natcasesort($broader);
             natcasesort($narrower);
         }
-        return array(
+        return [
             'exact' => array_unique($exact),
             'broader' => array_unique($broader),
             'narrower' => array_unique($narrower)
-        );
+        ];
     }
 
     /**

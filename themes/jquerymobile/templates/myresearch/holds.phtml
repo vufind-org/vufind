@@ -102,8 +102,13 @@
             <? endif; ?>
 
             <p>
-              <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?> |
-              <strong><?=$this->transEsc('Expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
+              <? if (!empty($ilsDetails['create'])): ?>
+                <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?>
+                <? if (!empty($ilsDetails['expire'])): ?>|<? endif; ?>
+              <? endif; ?>
+              <? if (!empty($ilsDetails['expire'])): ?>
+                <strong><?=$this->transEsc('Expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
+              <? endif; ?>
             </p>
           </div>
           <? if ($openAnchor): ?></a><? endif; ?>

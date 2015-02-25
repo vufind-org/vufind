@@ -77,7 +77,7 @@ class HoldingsILS extends AbstractBase
      */
     public function getUniqueCallNumbers($items)
     {
-        $callNos = array();
+        $callNos = [];
         foreach ($items as $item) {
             if (isset($item['callnumber']) && strlen($item['callnumber']) > 0) {
                 $callNos[] = $item['callnumber'];

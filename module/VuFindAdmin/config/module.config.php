@@ -1,94 +1,94 @@
 <?php
 namespace VuFindAdmin\Module\Configuration;
 
-$config = array(
-    'controllers' => array(
-        'invokables' => array(
+$config = [
+    'controllers' => [
+        'invokables' => [
             'admin' => 'VuFindAdmin\Controller\AdminController',
             'adminconfig' => 'VuFindAdmin\Controller\ConfigController',
             'adminsocial' => 'VuFindAdmin\Controller\SocialstatsController',
             'adminmaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
             'adminstatistics' => 'VuFindAdmin\Controller\StatisticsController',
             'admintags' => 'VuFindAdmin\Controller\TagsController',
-        ),
-    ),
-    'router' => array(
-        'routes' => array(
-            'admin' => array(
+        ],
+    ],
+    'router' => [
+        'routes' => [
+            'admin' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => array(
+                'options' => [
                     'route'    => '/Admin',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'Admin',
                         'action'     => 'Home',
-                    )
-                ),
+                    ]
+                ],
                 'may_terminate' => true,
-                'child_routes' => array(
-                    'disabled' => array(
+                'child_routes' => [
+                    'disabled' => [
                         'type' => 'Zend\Mvc\Router\Http\Literal',
-                        'options' => array(
+                        'options' => [
                             'route'    => '/Disabled',
-                            'defaults' => array(
+                            'defaults' => [
                                 'controller' => 'Admin',
                                 'action'     => 'Disabled',
-                            )
-                        )
-                    ),
-                    'config' => array(
+                            ]
+                        ]
+                    ],
+                    'config' => [
                         'type' => 'Zend\Mvc\Router\Http\Segment',
-                        'options' => array(
+                        'options' => [
                             'route'    => '/Config[/:action]',
-                            'defaults' => array(
+                            'defaults' => [
                                 'controller' => 'AdminConfig',
                                 'action'     => 'Home',
-                            )
-                        )
-                    ),
-                    'maintenance' => array(
+                            ]
+                        ]
+                    ],
+                    'maintenance' => [
                         'type' => 'Zend\Mvc\Router\Http\Segment',
-                        'options' => array(
+                        'options' => [
                             'route'    => '/Maintenance[/:action]',
-                            'defaults' => array(
+                            'defaults' => [
                                 'controller' => 'AdminMaintenance',
                                 'action'     => 'Home',
-                            )
-                        )
-                    ),
-                    'social' => array(
+                            ]
+                        ]
+                    ],
+                    'social' => [
                         'type' => 'Zend\Mvc\Router\Http\Segment',
-                        'options' => array(
+                        'options' => [
                             'route'    => '/Social[/:action]',
-                            'defaults' => array(
+                            'defaults' => [
                                 'controller' => 'AdminSocial',
                                 'action'     => 'Home',
-                            )
-                        )
-                    ),
-                    'statistics' => array(
+                            ]
+                        ]
+                    ],
+                    'statistics' => [
                         'type' => 'Zend\Mvc\Router\Http\Segment',
-                        'options' => array(
+                        'options' => [
                             'route'    => '/Statistics[/:action]',
-                            'defaults' => array(
+                            'defaults' => [
                                 'controller' => 'AdminStatistics',
                                 'action'     => 'Home',
-                            )
-                        )
-                    ),
-                    'tags' => array(
+                            ]
+                        ]
+                    ],
+                    'tags' => [
                         'type' => 'Zend\Mvc\Router\Http\Segment',
-                        'options' => array(
+                        'options' => [
                             'route'    => '/Tags[/:action]',
-                            'defaults' => array(
+                            'defaults' => [
                                 'controller' => 'AdminTags',
                                 'action'     => 'Home',
-                            )
-                        )
-                    ),
-                ),
-            ),
-        ),
-    ),
-);
+                            ]
+                        ]
+                    ],
+                ],
+            ],
+        ],
+    ],
+];
 
 return $config;

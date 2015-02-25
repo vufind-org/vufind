@@ -51,7 +51,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
     public function testBadConfiguration()
     {
         $ca = new ChoiceAuth();
-        $ca->setConfig(new Config(array()));
+        $ca->setConfig(new Config([]));
     }
 
     /**
@@ -133,7 +133,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetSelectableAuthOptions()
     {
-        $this->assertEquals(array('Database', 'Shibboleth'), $this->getChoiceAuth()->getSelectableAuthOptions());
+        $this->assertEquals(['Database', 'Shibboleth'], $this->getChoiceAuth()->getSelectableAuthOptions());
     }
 
     /**
@@ -209,7 +209,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
     {
         $ca = new ChoiceAuth();
         $ca->setConfig(
-            new Config(array('ChoiceAuth' => array('choice_order' => $strategies)))
+            new Config(['ChoiceAuth' => ['choice_order' => $strategies]])
         );
         $ca->setPluginManager($pm ?: $this->getMockPluginManager());
         return $ca;

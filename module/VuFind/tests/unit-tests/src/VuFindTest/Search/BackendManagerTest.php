@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-
 namespace VuFindTest\Search;
 
 use VuFind\Search\BackendManager;
@@ -86,7 +85,7 @@ class BackendManagerTest extends TestCase
      *
      * @return void
      */
-    public function testAttachDetachShared ()
+    public function testAttachDetachShared()
     {
         $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
         $events   = new SharedEventManager();

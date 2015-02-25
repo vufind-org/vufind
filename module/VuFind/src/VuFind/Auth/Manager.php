@@ -39,14 +39,14 @@ use VuFind\Db\Row\User as UserRow, VuFind\Db\Table\User as UserTable,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Manager
+class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
 {
     /**
      * Authentication modules
      *
      * @var \VuFind\Auth\AbstractBase[]
      */
-    protected $auth = array();
+    protected $auth = [];
 
     /**
      * Currently selected authentication module
@@ -128,7 +128,7 @@ class Manager
         // if no setting passed in):
         $method = isset($config->Authentication->method)
             ? $config->Authentication->method : 'Database';
-        $this->legalAuthOptions = array($method);   // mark it as legal
+        $this->legalAuthOptions = [$method];   // mark it as legal
         $this->setAuthMethod($method);              // load it
     }
 
@@ -174,7 +174,7 @@ class Manager
      *
      * @return bool
      */
-    public function supportsCreation($authMethod=null)
+    public function supportsCreation($authMethod = null)
     {
         return $this->getAuth($authMethod)->supportsCreation();
     }
@@ -187,7 +187,7 @@ class Manager
      *
      * @return bool
      */
-    public function supportsRecovery($authMethod=null)
+    public function supportsRecovery($authMethod = null)
     {
         if ($this->getAuth($authMethod)->supportsPasswordRecovery()) {
             return isset($this->config->Authentication->recover_password)
@@ -204,7 +204,7 @@ class Manager
      *
      * @return bool
      */
-    public function supportsPasswordChange($authMethod=null)
+    public function supportsPasswordChange($authMethod = null)
     {
         if ($this->getAuth($authMethod)->supportsPasswordChange()) {
             return isset($this->config->Authentication->change_password)
@@ -221,7 +221,7 @@ class Manager
      *
      * @return array
      */
-    public function getPasswordPolicy($authMethod=null)
+    public function getPasswordPolicy($authMethod = null)
     {
         return $this->getAuth($authMethod)->getPasswordPolicy();
     }
@@ -251,7 +251,7 @@ class Manager
     public function getAuthClassForTemplateRendering()
     {
         $auth = $this->getAuth();
-        if (is_callable(array($auth, 'getSelectedAuthOption'))) {
+        if (is_callable([$auth, 'getSelectedAuthOption'])) {
             $selected = $auth->getSelectedAuthOption();
             if ($selected) {
                 $auth = $this->getAuth($selected);
@@ -270,12 +270,12 @@ class Manager
     public function getSelectableAuthOptions()
     {
         $auth = $this->getAuth();
-        if (is_callable(array($auth, 'getSelectableAuthOptions'))) {
+        if (is_callable([$auth, 'getSelectableAuthOptions'])) {
             if ($methods = $auth->getSelectableAuthOptions()) {
                 return $methods;
             }
         }
-        return array($this->getAuthMethod());
+        return [$this->getAuthMethod()];
     }
 
     /**
@@ -288,8 +288,8 @@ class Manager
     public function getLoginTargets()
     {
         $auth = $this->getAuth();
-        return is_callable(array($auth, 'getLoginTargets'))
-            ? $auth->getLoginTargets() : array();
+        return is_callable([$auth, 'getLoginTargets'])
+            ? $auth->getLoginTargets() : [];
     }
 
     /**
@@ -302,7 +302,7 @@ class Manager
     public function getDefaultLoginTarget()
     {
         $auth = $this->getAuth();
-        return is_callable(array($auth, 'getDefaultLoginTarget'))
+        return is_callable([$auth, 'getDefaultLoginTarget'])
             ? $auth->getDefaultLoginTarget() : null;
     }
 
@@ -357,7 +357,7 @@ class Manager
             // If we don't want to destroy the session, we still need to empty it.
             // There should be a way to do this through Zend\Session, but there
             // apparently isn't (TODO -- do this better):
-            $_SESSION = array();
+            $_SESSION = [];
         }
 
         return $url;
@@ -384,11 +384,21 @@ class Manager
         // load the object from the database:
         if (!$this->currentUser && isset($this->session->userId)) {
             $results = $this->userTable
-                ->select(array('id' => $this->session->userId));
+                ->select(['id' => $this->session->userId]);
             $this->currentUser = count($results) < 1
                 ? false : $results->current();
         }
         return $this->currentUser;
+    }
+
+    /**
+     * Get the identity
+     *
+     * @return \ZfcRbac\Identity\IdentityInterface|null
+     */
+    public function getIdentity()
+    {
+        return ($user = $this->isLoggedIn()) ?: null;
     }
 
     /**

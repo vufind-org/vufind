@@ -28,7 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use DOMDocument, VuFind\Exception\ILS as ILSException, Zend\Log\LoggerInterface;
+use DOMDocument, VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -43,45 +43,14 @@ use DOMDocument, VuFind\Exception\ILS as ILSException, Zend\Log\LoggerInterface;
  */
 class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Base URL
      *
      * @var string
      */
     protected $baseURL;
-
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
-    }
 
     /**
      * Initialize the driver.
@@ -112,6 +81,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      * @param array  $details Item details from getHoldings return array
      *
      * @return string         URL to ILS's OPAC's place hold screen.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($id, $details)
@@ -150,7 +120,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         foreach ($ids as $id) {
             $items[] = $this->getShortStatus($id);
         }
@@ -203,7 +173,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -236,15 +206,15 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
         $daia = $this->queryDAIA($id);
         // get Availability information from DAIA
         $documentlist = $daia->getElementsByTagName('document');
-        $status = array();
+        $status = [];
         for ($b = 0; $documentlist->item($b) !== null; $b++) {
             $itemlist = $documentlist->item($b)->getElementsByTagName('item');
-            $ilslink='';
-            if ($documentlist->item($b)->attributes->getNamedItem('href')!==null) {
+            $ilslink = '';
+            if ($documentlist->item($b)->attributes->getNamedItem('href') !== null) {
                 $ilslink = $documentlist->item($b)->attributes
                     ->getNamedItem('href')->nodeValue;
             }
-            $emptyResult = array(
+            $emptyResult = [
                     'callnumber' => '-',
                     'availability' => '0',
                     'number' => 1,
@@ -258,9 +228,9 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                     'location' => '',
                     'ilslink' => $ilslink,
                     'label' => 'No samples'
-            );
+            ];
             for ($c = 0; $itemlist->item($c) !== null; $c++) {
-                $result = array(
+                $result = [
                     'callnumber' => '',
                     'availability' => '0',
                     'number' => ($c+1),
@@ -277,8 +247,8 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                     'location.id' => '',
                     'location.href' => '',
                     'label' => '',
-                    'notes' => array()
-                );
+                    'notes' => []
+                ];
                 $result['item_id'] = $itemlist->item($c)->attributes
                     ->getNamedItem('id')->nodeValue;
                 if ($itemlist->item($c)->attributes->getNamedItem('href') !== null) {
@@ -497,7 +467,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
         $label = "Unknown";
         $storage = "Unknown";
         $presenceOnly = '1';
-        $holding = array();
+        $holding = [];
         for ($c = 0; $itemlist->item($c) !== null; $c++) {
             $earliest_href = '';
             $storageElements = $itemlist->item($c)->getElementsByTagName('storage');
@@ -505,7 +475,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                 if ($storageElements->item(0)->nodeValue === 'Internet') {
                     $href = $storageElements->item(0)->attributes
                         ->getNamedItem('href')->nodeValue;
-                    $storage = '<a href="'.$href.'">'.$href.'</a>';
+                    $storage = '<a href="' . $href . '">' . $href . '</a>';
                 } else {
                     $storage = $storageElements->item(0)->nodeValue;
                 }
@@ -536,14 +506,14 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                 $unavailableElements = $itemlist->item($c)
                     ->getElementsByTagName('unavailable');
                 if ($unavailableElements->item(0) !== null) {
-                    $earliest = array();
-                    $queue = array();
-                    $hrefs = array();
+                    $earliest = [];
+                    $queue = [];
+                    $hrefs = [];
                     for ($n = 0; $unavailableElements->item($n) !== null; $n++) {
                         $unavailHref = $unavailableElements->item($n)->attributes
                             ->getNamedItem('href');
                         if ($unavailHref !== null) {
-                            $hrefs['item'.$n] = $unavailHref->nodeValue;
+                            $hrefs['item' . $n] = $unavailHref->nodeValue;
                         }
                         $expectedNode = $unavailableElements->item($n)->attributes
                             ->getNamedItem('expected');
@@ -558,14 +528,14 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                             //    'expected' => $expectedNode->nodeValue,
                             //    'recall' => $unavailHref->nodeValue);
                             //array_push($earliest, $expectedNode->nodeValue);
-                            $earliest['item'.$n] = $expectedNode->nodeValue;
+                            $earliest['item' . $n] = $expectedNode->nodeValue;
                         } else {
                             array_push($earliest, "0");
                         }
                         $queueNode = $unavailableElements->item($n)->attributes
                             ->getNamedItem('queue');
                         if ($queueNode !== null) {
-                            $queue['item'.$n] = $queueNode->nodeValue;
+                            $queue['item' . $n] = $queueNode->nodeValue;
                         } else {
                             array_push($queue, "0");
                         }
@@ -603,7 +573,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
             if ($earliest_queue > 0) {
                 $reserve = 'Y';
             }
-            $holding[] = array('availability' => $availability,
+            $holding[] = ['availability' => $availability,
                    'id' => $id,
                    'status' => "$status",
                    'location' => "$storage",
@@ -614,7 +584,7 @@ class DAIA extends AbstractBase implements \Zend\Log\LoggerAwareInterface
                    'leanable' => $leanable,
                    'recallhref' => $earliest_href,
                    'number' => ($c+1),
-                   'presenceOnly' => $presenceOnly);
+                   'presenceOnly' => $presenceOnly];
         }
         return $holding;
     }

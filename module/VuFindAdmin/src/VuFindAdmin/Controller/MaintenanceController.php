@@ -36,7 +36,6 @@ namespace VuFindAdmin\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class MaintenanceController extends AbstractAdmin
 {
     /**
@@ -61,7 +60,7 @@ class MaintenanceController extends AbstractAdmin
     public function clearcacheAction()
     {
         $cacheManager = $this->getServiceLocator()->get('VuFind\CacheManager');
-        foreach ($this->params()->fromQuery('cache', array()) as $cache) {
+        foreach ($this->params()->fromQuery('cache', []) as $cache) {
             $cacheManager->getCache($cache)->flush();
         }
         // If cache is unset, we didn't go through the loop above, so no message

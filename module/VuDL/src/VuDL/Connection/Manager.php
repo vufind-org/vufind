@@ -26,8 +26,6 @@
  * @link     http://vufind.org/wiki/
  */
 namespace VuDL\Connection;
-use VuFindHttp\HttpServiceInterface,
-    VuFindSearch\ParamBag;
 
 /**
  * VuDL connection manager
@@ -64,7 +62,7 @@ class Manager
     public function __construct($priority, $sm)
     {
         $this->priority = $priority;
-        $this->connections = array();
+        $this->connections = [];
         $this->serviceLocator = $sm;
     }
 
@@ -99,7 +97,7 @@ class Manager
         while ($index < count($this->priority)) {
             $object = $this->get($this->priority[$index]);
             if (method_exists($object, $methodName)) {
-                $ret = call_user_func_array(array($object, $methodName), $params);
+                $ret = call_user_func_array([$object, $methodName], $params);
                 if (!is_null($ret)) {
                     //var_dump($methodName.' - '.$this->priority[$index]);
                     return $ret;
@@ -108,7 +106,7 @@ class Manager
             $index ++;
         }
         throw new \Exception(
-            'VuDL Connection Failed to resolved method "'.$methodName.'"'
+            'VuDL Connection Failed to resolved method "' . $methodName . '"'
         );
     }
 }

@@ -27,8 +27,6 @@
  */
 namespace VuFind\RecordDriver;
 
-use Zend\Log\LoggerInterface;
-
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *
@@ -48,44 +46,11 @@ class EIT extends SolrDefault
     protected $sourceIdentifier = 'EIT';
 
     /**
-     * Logger, if any.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * Reference to controlInfo section of fields, for readability
      *
      * @var array
      */
     protected $controlInfo;
-
-    /**
-     * Set the Logger.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
 
     /**
      * Set raw data to initialize the object.
@@ -123,13 +88,13 @@ class EIT extends SolrDefault
     public function getAllSubjectHeadings()
     {
         $su = isset($this->controlInfo['artinfo']['su'])
-            ? $this->controlInfo['artinfo']['su'] : array();
+            ? $this->controlInfo['artinfo']['su'] : [];
 
         // The EIT index doesn't currently subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.
-        $retval = array();
+        $retval = [];
         foreach ($su as $s) {
-            $retval[] = array($s);
+            $retval[] = [$s];
         }
         return $retval;
     }
@@ -186,7 +151,7 @@ class EIT extends SolrDefault
      */
     public function getDateSpan()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -197,14 +162,14 @@ class EIT extends SolrDefault
      */
     public function getDeduplicatedAuthors()
     {
-        $authors = array(
+        $authors = [
             'main' => $this->getPrimaryAuthor(),
             'secondary' => $this->getSecondaryAuthors()
-        );
+        ];
 
         // The secondary author array may contain a corporate or primary author;
         // let's be sure we filter out duplicate values.
-        $duplicates = array();
+        $duplicates = [];
         if (!empty($authors['main'])) {
             $duplicates[] = $authors['main'];
         }
@@ -237,7 +202,7 @@ class EIT extends SolrDefault
             return $this->controlInfo['artinfo']['doctype'];
         }
         return isset($this->controlInfo['artinfo']['doctype'])
-            ? array($this->controlInfo['artinfo']['doctype']) : array();
+            ? [$this->controlInfo['artinfo']['doctype']] : [];
     }
 
     /**
@@ -266,13 +231,13 @@ class EIT extends SolrDefault
     public function getPublicationDates()
     {
         if (isset($this->controlInfo['pubinfo']['dt']['@attributes']['year'])) {
-            return array(
+            return [
                 $this->controlInfo['pubinfo']['dt']['@attributes']['year']
-            );
+            ];
         } else if (isset($this->controlInfo['pubinfo']['dt'])) {
-            return array($this->controlInfo['pubinfo']['dt']);
+            return [$this->controlInfo['pubinfo']['dt']];
         } else {
-            return array();
+            return [];
         }
     }
 
@@ -284,7 +249,7 @@ class EIT extends SolrDefault
     public function getPublishers()
     {
         return isset($this->controlInfo['pubinfo']['pub'])
-            ? array($this->controlInfo['pubinfo']['pub']) : array();
+            ? [$this->controlInfo['pubinfo']['pub']] : [];
     }
 
     /**
@@ -295,7 +260,7 @@ class EIT extends SolrDefault
     public function getSecondaryAuthors()
     {
         return is_array($this->controlInfo['artinfo']['aug']['au'])
-            ? $this->controlInfo['artinfo']['aug']['au'] : array();
+            ? $this->controlInfo['artinfo']['aug']['au'] : [];
     }
 
     /**
@@ -308,7 +273,6 @@ class EIT extends SolrDefault
         return isset($this->controlInfo['artinfo']['tig']['atl'])
             ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
-
 
         /**
      * Get an array of summary strings for the record.
@@ -326,11 +290,11 @@ class EIT extends SolrDefault
         ) {
             return is_array($this->controlInfo['artinfo']['ab'])
                 ? $this->controlInfo['artinfo']['ab']
-                : array($this->controlInfo['artinfo']['ab']);
+                : [$this->controlInfo['artinfo']['ab']];
         }
 
         // If we got this far, no description was found:
-        return array();
+        return [];
     }
 
         /**
@@ -363,14 +327,14 @@ class EIT extends SolrDefault
         // If non-empty, map internal URL array to expected return format;
         // otherwise, return empty array:
         if (isset($this->fields['fields']['plink'])) {
-            $links = array($this->fields['fields']['plink']);
+            $links = [$this->fields['fields']['plink']];
             $desc = $this->translate('View this record in EBSCOhost');
             $filter = function ($url) use ($desc) {
                 return compact('url', 'desc');
             };
             return array_map($filter, $links);
         } else {
-            return array();
+            return [];
         }
     }
 

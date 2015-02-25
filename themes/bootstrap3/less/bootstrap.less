@@ -50,8 +50,21 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Alphabrowse --- */
 .alphabrowse {
+  border-collapse:separate;
   .lcc {width:20%;}
   .titles {width:10%;text-align:center}
+  /* highlighting the row makes ff bugs; operate on its children */
+  tr.browse-match td {
+    border-top:.2em solid @brand-primary;
+    border-bottom:.2em solid @brand-primary;
+  }
+  tr.browse-match td:first-child {
+    border-left:.2em solid @brand-primary;
+  }
+  tr.browse-match td:last-child {
+    border-right:.2em solid @brand-primary;
+  }
+
 }
 
 /* --- Autocomplete --- */
@@ -166,6 +179,11 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   border-right:1px solid @gray-lighter;
   overflow-x:hidden;
 }
+#hierarchyTree .currentHierarchy > a,
+#hierarchyTree .currentRecord a {
+  color:#000;
+  font-weight:bold;
+}
 
 /* --- Search --- */
 .bulkActionButtons {
@@ -183,7 +201,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 .result {
   a.title {font-weight:bold}
-  .left img {max-width:100%}
+  .left {
+    text-align:center;
+    img {max-width:100%}
+  }
   @media (max-width:767px) {
     a {text-decoration:underline}
     .middle,.right {padding:0}
@@ -199,6 +220,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   .alert {
     margin-bottom:0;
   }
+}
+.title-in-heading {
+  font-size: inherit;
+  font-style: italic;
 }
 
 /* --- Sidebar --- */
@@ -307,6 +332,50 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 #viz-instructions {
   padding-top:600px;
+}
+
+/* ----- HOVER OVERLAY ------ */
+/* - similar items carousel - */
+#similar-items-carousel {
+  .carousel-indicators {
+    bottom:0px;
+    li {
+      background:rgba(255,255,255,.3);
+      border-color:@gray-darker;
+      margin:2px;
+      width:8px;
+      height:8px;
+    }
+  }
+  .hover-overlay {
+    display:block;
+    position:relative;
+    text-align:center;
+    margin:auto;
+    min-width:150px;
+    min-height:200px;
+    img {
+      margin:10px 0;
+      max-width:100%;
+    }
+    .content {
+      display:none;
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,.5);
+      color:#FFF;
+      padding:.5em .5em 0;
+    }
+    &:hover .content {
+      display:block;
+    }
+  }
+  .item {
+    padding:0 4em;
+  }
 }
 
 /* --- Hierarchical facets --- */

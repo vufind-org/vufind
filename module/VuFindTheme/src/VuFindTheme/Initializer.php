@@ -154,7 +154,7 @@ class Initializer
         $injectTemplateListener  = new InjectTemplateListener();
         $sharedEvents->attach(
             'Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH,
-            array($injectTemplateListener, 'injectTemplate'), $priority
+            [$injectTemplateListener, 'injectTemplate'], $priority
         );
     }
 
@@ -272,7 +272,7 @@ class Initializer
      */
     protected function getThemeOptions()
     {
-        $options = array();
+        $options = [];
         if (isset($this->config->selectable_themes)) {
             $parts = explode(',', $this->config->selectable_themes);
             foreach ($parts as $part) {
@@ -281,10 +281,10 @@ class Initializer
                 $desc = isset($subparts[1]) ? trim($subparts[1]) : '';
                 $desc = empty($desc) ? $name : $desc;
                 if (!empty($name)) {
-                    $options[] = array(
+                    $options[] = [
                         'name' => $name, 'desc' => $desc,
                         'selected' => ($_COOKIE['ui'] == $name)
-                    );
+                    ];
                 }
             }
         }
@@ -317,7 +317,7 @@ class Initializer
      */
     protected function setUpThemes($themes)
     {
-        $templatePathStack = array();
+        $templatePathStack = [];
 
         // Grab the resource manager for tracking CSS, JS, etc.:
         $resources = $this->serviceManager->get('VuFindTheme\ResourceContainer');
@@ -329,14 +329,14 @@ class Initializer
 
         $lessActive = false;
         // Find LESS activity
-        foreach ($themes as $key=>$currentThemeInfo) {
+        foreach ($themes as $key => $currentThemeInfo) {
             if (isset($currentThemeInfo['less']['active'])) {
                 $lessActive = $currentThemeInfo['less']['active'];
             }
         }
 
         // Apply the loaded theme settings in reverse for proper inheritance:
-        foreach ($themes as $key=>$currentThemeInfo) {
+        foreach ($themes as $key => $currentThemeInfo) {
             if (isset($currentThemeInfo['helpers'])) {
                 $this->setUpThemeViewHelpers($currentThemeInfo['helpers']);
             }

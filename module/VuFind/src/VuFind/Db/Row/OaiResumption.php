@@ -56,7 +56,7 @@ class OaiResumption extends RowGateway
     public function restoreParams()
     {
         $parts = explode('&', $this->params);
-        $params = array();
+        $params = [];
         foreach ($parts as $part) {
             list($key, $value) = explode('=', $part);
             $key = urldecode($key);
@@ -76,7 +76,7 @@ class OaiResumption extends RowGateway
     public function saveParams($params)
     {
         ksort($params);
-        $processedParams = array();
+        $processedParams = [];
         foreach ($params as $key => $value) {
             $processedParams[] = urlencode($key) . '=' . urlencode($value);
         }

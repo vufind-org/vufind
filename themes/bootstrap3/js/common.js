@@ -133,6 +133,10 @@ function registerLightboxEvents() {
     var get = deparam(parts[1]);
     return Lightbox.get('MyResearch', 'Account', get);
   });
+  $('.back-to-login').click(function() {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    return false;
+  });
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
     $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
@@ -396,11 +400,14 @@ $(document).ready(function() {
    ******************************/
   document.addEventListener('Lightbox.ready', registerLightboxEvents, false);
   Lightbox.addFormCallback('newList', Lightbox.changeContent);
-  Lightbox.addFormHandler('loginForm', function(evt) {
-    ajaxLogin(evt.target);
-    return false;
-  });
   Lightbox.addFormCallback('accountForm', newAccountHandler);
+  Lightbox.addFormCallback('bulkDelete', function(html) {
+    location.reload();
+  });
+  Lightbox.addFormCallback('bulkRecord', function(html) {
+    Lightbox.close();
+    checkSaveStatuses();
+  });
   Lightbox.addFormCallback('emailSearch', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
@@ -408,9 +415,25 @@ $(document).ready(function() {
     Lightbox.close();
     checkSaveStatuses();
   });
-  Lightbox.addFormCallback('bulkRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
+
+  Lightbox.addFormHandler('exportForm', function(evt) {
+    $.ajax({
+      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      type:'POST',
+      dataType:'json',
+      data:Lightbox.getFormData($(evt.target)),
+      success:function(data) {
+        if(data.data.needs_redirect) {
+          document.location.href = data.data.result_url;
+        } else {
+          Lightbox.changeContent(data.data.result_additional);
+        }
+      },
+      error:function(d,e) {
+        //console.log(d,e); // Error reporting
+      }
+    });
+    return false;
   });
   Lightbox.addFormHandler('feedback', function(evt) {
     var $form = $(evt.target);
@@ -429,6 +452,10 @@ $(document).ready(function() {
         Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
       });
     }
+    return false;
+  });
+  Lightbox.addFormHandler('loginForm', function(evt) {
+    ajaxLogin(evt.target);
     return false;
   });
 

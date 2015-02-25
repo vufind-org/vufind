@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * AuthorInfo Recommendations Module
@@ -42,15 +41,8 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  * @view     AuthorInfoFacets.phtml
  */
-class ResultGoogleMapAjax implements RecommendInterface, TranslatorAwareInterface
+class ResultGoogleMapAjax implements RecommendInterface
 {
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
-
     /**
      * Saved search results
      *
@@ -59,8 +51,6 @@ class ResultGoogleMapAjax implements RecommendInterface, TranslatorAwareInterfac
     protected $searchObject;
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -73,8 +63,6 @@ class ResultGoogleMapAjax implements RecommendInterface, TranslatorAwareInterfac
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -92,8 +80,6 @@ class ResultGoogleMapAjax implements RecommendInterface, TranslatorAwareInterfac
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -108,41 +94,7 @@ class ResultGoogleMapAjax implements RecommendInterface, TranslatorAwareInterfac
     }
 
     /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return ResultGoogleMapAjax
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Get translator object.
-     *
-     * @return \Zend\I18n\Translator\Translator
-     */
-    public function getTranslator()
-    {
-        return $this->translator;
-    }
-
-    /**
-     * getUserLang
-     *
-     * @return string of lang
-     */
-    public function userLang()
-    {
-        $translator = $this->getTranslator();
-        return is_object($translator) ? $translator->getLocale() : 'en';
-    }
-
-    /**
-     * getSearchParams
+     * Get search parameters
      *
      * @return string of params
      */

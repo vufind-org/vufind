@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\WorldCat;
 
 use VuFindSearch\Backend\WorldCat\Connector;
@@ -139,7 +138,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
         $client->expects($this->once())->method('send')
             ->will($this->returnValue($response));
         $final = $connector->getRecord('baz');
-        $this->assertEquals(array(), $final['docs']);
+        $this->assertEquals([], $final['docs']);
     }
 
     /**
@@ -164,7 +163,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(true));
         $client->expects($this->once())->method('send')
             ->will($this->returnValue($response));
-        $final = $connector->search(new ParamBag(array('x' => 'y')), 0, 20);
+        $final = $connector->search(new ParamBag(['x' => 'y']), 0, 20);
         $this->assertEquals('<recordData>bar</recordData>', $final['docs'][0]);
         $this->assertEquals(1, $final['total']);
     }

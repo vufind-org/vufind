@@ -50,7 +50,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var array
      */
-    protected $advancedOperators = array();
+    protected $advancedOperators = [];
 
     /**
      * Constructor

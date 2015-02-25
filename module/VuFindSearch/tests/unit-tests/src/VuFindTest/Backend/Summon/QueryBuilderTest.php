@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\Summon;
 
 use VuFindSearch\Backend\Summon\QueryBuilder;
@@ -53,10 +52,10 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
         // @codingStandardsIgnoreStart
-        $tests = array(
-            array('basic', 'Author:(john smith)'),
-            array('advanced', '(Title:(bananas)) AND (SubjectTerms:(oranges) OR apples) NOT ((PublicationSeriesTitle:(pears)))')
-        );
+        $tests = [
+            ['basic', 'Author:(john smith)'],
+            ['advanced', '(Title:(bananas)) AND (SubjectTerms:(oranges) OR apples) NOT ((PublicationSeriesTitle:(pears)))']
+        ];
         // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();

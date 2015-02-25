@@ -53,16 +53,16 @@ class SolrMarcTest extends \VuFindTest\Unit\TestCase
      */
     public function testBug1()
     {
-        $configArr = array('Record' => array('marc_links' => '760,765,770,772,774,773,775,777,780,785'));
+        $configArr = ['Record' => ['marc_links' => '760,765,770,772,774,773,775,777,780,785']];
         $config = new \Zend\Config\Config($configArr);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->loadRecordFixture('testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
-        $expected = array(
-            array('title' => 'note_785_1', 'value' => 'Bollettino della Unione matematica italiana', 'link' => array('type' => 'bib', 'value' => '000343528')),
-            array('title' => 'note_785_1', 'value' => 'Bollettino della Unione matematica', 'link' => array('type' => 'bib', 'value' => '000343529')),
-            array('title' => 'note_785_8', 'value' => 'Bollettino della Unione matematica italiana', 'link' => array('type' => 'bib', 'value' => '000394898')),
-        );
+        $expected = [
+            ['title' => 'note_785_1', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000343528']],
+            ['title' => 'note_785_1', 'value' => 'Bollettino della Unione matematica', 'link' => ['type' => 'bib', 'value' => '000343529']],
+            ['title' => 'note_785_8', 'value' => 'Bollettino della Unione matematica italiana', 'link' => ['type' => 'bib', 'value' => '000394898']],
+        ];
         $this->assertEquals($expected, $record->getAllRecordLinks());
     }
 

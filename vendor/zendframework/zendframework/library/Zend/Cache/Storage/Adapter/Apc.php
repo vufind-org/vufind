@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -717,20 +717,35 @@ class Apc extends AbstractAdapter implements
      */
     protected function normalizeMetadata(array & $metadata)
     {
-        $metadata['internal_key'] = $metadata['key'];
-        $metadata['ctime']        = $metadata['creation_time'];
-        $metadata['atime']        = $metadata['access_time'];
-        $metadata['rtime']        = $metadata['deletion_time'];
-        $metadata['size']         = $metadata['mem_size'];
-        $metadata['hits']         = $metadata['num_hits'];
-
-        unset(
-            $metadata['key'],
-            $metadata['creation_time'],
-            $metadata['access_time'],
-            $metadata['deletion_time'],
-            $metadata['mem_size'],
-            $metadata['num_hits']
+        $apcMetadata = $metadata;
+        $metadata = array(
+            'internal_key' => isset($metadata['key']) ? $metadata['key'] : $metadata['info'],
+            'atime'        => isset($metadata['access_time']) ? $metadata['access_time'] : $metadata['atime'],
+            'ctime'        => isset($metadata['creation_time']) ? $metadata['creation_time'] : $metadata['ctime'],
+            'mtime'        => isset($metadata['modified_time']) ? $metadata['modified_time'] : $metadata['mtime'],
+            'rtime'        => isset($metadata['deletion_time']) ? $metadata['deletion_time'] : $metadata['dtime'],
+            'size'         => $metadata['mem_size'],
+            'hits'         => isset($metadata['nhits']) ? $metadata['nhits'] : $metadata['num_hits'],
+            'ttl'          => $metadata['ttl'],
         );
+    }
+
+    /**
+     * Internal method to set an item only if token matches
+     *
+     * @param  mixed  $token
+     * @param  string $normalizedKey
+     * @param  mixed  $value
+     * @return bool
+     * @see    getItem()
+     * @see    setItem()
+     */
+    protected function internalCheckAndSetItem(& $token, & $normalizedKey, & $value)
+    {
+        if (is_int($token) && is_int($value)) {
+            return apc_cas($normalizedKey, $token, $value);
+        }
+
+        return parent::internalCheckAndSetItem($token, $normalizedKey, $value);
     }
 }
