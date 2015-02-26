@@ -210,10 +210,8 @@
 .fa-expand:before {
     content: "\e03a";
 }
-.fa-search-adv:before {
+.fa-search-adv:before, .fa-magnify:before {
     content: "\e600";
-    padding-right: 5px;
-    font-size: 1.8em;
 }
 .fa-pinterest:before {
     content: "\e038";
@@ -398,7 +396,7 @@
     font-size: 14px;
     padding: 5px 6px 6px 6px;
     color: #fff;
-    background: #00a2b5;
+    background: @link-color;
     border-radius: 50%;
     margin-left:6px;
 }
@@ -411,7 +409,7 @@
         font-size: 16px;
         padding: 8px 9px 9px 9px;
         color: #fff;
-        background: #00a2b5;
+        background: @link-color;
         border-radius: 50%;
         margin-left:2px;
     }
@@ -459,13 +457,22 @@
 /* Image gallery popup icons */
 .fa-magnify {
     position: absolute;
-    font-size: 20px;
-    opacity: 0.8;
+    font-size: 1em;
+    opacity: 0.4;
     transition: opacity 0.2s linear;
-    top:5px;
     color: @body-bg;
+    right: 16px;
+    top: 1px;
+    &:before {
+        padding: 1px 3px 3px;
+        background: rgba(1,1,1, 0.1);
+        font-size: 1.5em;
+    }
 }
-.large-thumb:hover .fa-magnify, .resultThumb:hover .fa-magnify {
+.grid .fa-magnify {
+    right: 11px;
+}
+.recordcover-holder:hover .fa-magnify {
     opacity: 1;
 }
 
@@ -489,13 +496,13 @@
     content:"" !important;
 }
 .sidebar .list-group-item i.fa.fa-square-o {
-display: none;
+    display: none;
 }
 .list-group-item.active i.fa.fa-check-square-o, .sidebar .list-group-item .main.applied i.fa.fa-check-square-o, .sidebar .list-group.facet a.list-group-item.active i.fa.fa-check {
        font-size: 15px;
        margin-top: 2px;
-       float:right;
-       text-decoration:none;
+       float: right;
+       text-decoration: none;
        transition: all 0.2s ease-in-out;
 }
 .jstree-container-ul>li.active .main.applied:hover {
@@ -509,6 +516,16 @@ display: none;
 .sidebar .list-group-item .main.applied i.fa.fa-check-square-o {
     margin-right:3px;
 }
+.searchbox .btn-link .fa-search-adv {
+    font-size: 1.55em;
+    margin-right: 5px;
+}
+.spelling-suggestions .fa-plus-small {
+    vertical-align: -2px;
+    font-size: 1.1em;
+    color: @gray;
+}
+
 .slick-vertical .slick-slide img { max-width:40%; height:auto;max-height:180px; width:auto; }
 .slick-vertical .slick-slide { display: block; height: auto; border: 1px solid transparent; }
 .slick-vertical.slick-initialized .slick-slide { max-height:300px !important; padding: 5px 10px; }
