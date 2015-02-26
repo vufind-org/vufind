@@ -9,6 +9,9 @@ return array(
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar'
+        ),
+        'invokables' => array(
+            'search' => 'Finna\View\Helper\Root\Search'
         )
     ),
     'css' => array(
