@@ -377,7 +377,6 @@ $config = array(
                     'amicus' => 'VuFind\ILS\Driver\Amicus',
                     'claviussql' => 'VuFind\ILS\Driver\ClaviusSQL',
                     'daia' => 'VuFind\ILS\Driver\DAIA',
-                    'daiajson' => 'VuFind\ILS\Driver\DAIAJSON',
                     'evergreen' => 'VuFind\ILS\Driver\Evergreen',
                     'innovative' => 'VuFind\ILS\Driver\Innovative',
                     'koha' => 'VuFind\ILS\Driver\Koha',
