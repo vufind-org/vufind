@@ -476,8 +476,8 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                     'location.id' => '',
                     'location.href' => '',
                     'label' => '',
-                    'notes' => [] 
-                );
+                    'notes' => [],
+                ];
                 if ($itemlist->item($c)->attributes->getNamedItem('id') !== null) {
                     $result['item_id'] = $itemlist->item($c)->attributes
                         ->getNamedItem('id')->nodeValue;
@@ -820,7 +820,8 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
             if (isset($earliest_queue) && $earliest_queue > 0) {
                 $reserve = 'Y';
             }
-            $holding[] = array['availability' => $availability,
+            $holding[] = [
+                'availability' => $availability,
                 'id'            => $id,
                 'status'        => isset($status) ? "$status" : '',
                 'location'      => isset($storage) ? "$storage" : '',
