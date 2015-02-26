@@ -119,7 +119,7 @@ class AbstractSearch extends AbstractBase
                 ->get('VuFind\SearchResultsPluginManager')
                 ->get($this->searchClassId);
             $view->saved->getParams()->initFromRequest(
-                new \Zend\StdLib\Parameters(array())
+                new \Zend\StdLib\Parameters([])
             );
         }
 
@@ -201,12 +201,12 @@ class AbstractSearch extends AbstractBase
     protected function getActiveRecommendationSettings()
     {
         // Enable recommendations unless explicitly told to disable them:
-        $all = array('top', 'side', 'noresults');
+        $all = ['top', 'side', 'noresults'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
         if ($noRecommend === 1 || $noRecommend === '1'
             || $noRecommend === 'true' || $noRecommend === true
         ) {
-            return array();
+            return [];
         } else if ($noRecommend === 0 || $noRecommend === '0'
             || $noRecommend === 'false' || $noRecommend === false
         ) {
@@ -364,7 +364,7 @@ class AbstractSearch extends AbstractBase
     {
         // Look up search in database and fail if it is not found:
         $searchTable = $this->getTable('Search');
-        $search = $searchTable->select(array('id' => $searchId))->current();
+        $search = $searchTable->select(['id' => $searchId])->current();
         if (empty($search)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('advSearchError_notFound');
@@ -419,7 +419,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function getRangeSettings($fields, $type, $savedSearch = false)
     {
-        $parts = array();
+        $parts = [];
 
         foreach ($fields as $field) {
             // Default to blank strings:
@@ -442,11 +442,11 @@ class AbstractSearch extends AbstractBase
             }
 
             // Send back the settings:
-            $parts[] = array(
+            $parts[] = [
                 'field' => $field,
                 'type' => $type,
-                'values' => array($from, $to)
-            );
+                'values' => [$from, $to]
+            ];
         }
 
         return $parts;
@@ -467,7 +467,7 @@ class AbstractSearch extends AbstractBase
     {
         $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
         $fields = isset($config->SpecialFacets->$section)
-            ? $config->SpecialFacets->$section->toArray() : array();
+            ? $config->SpecialFacets->$section->toArray() : [];
 
         if (!empty($filter)) {
             $fields = array_intersect($fields, $filter);
@@ -487,7 +487,7 @@ class AbstractSearch extends AbstractBase
      * @return array
      */
     protected function getDateRangeSettings($savedSearch = false, $config = 'facets',
-        $filter = array()
+        $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'dateRange', $filter);
         return $this->getRangeSettings($fields, 'date', $savedSearch);
@@ -504,7 +504,7 @@ class AbstractSearch extends AbstractBase
      * @return array
      */
     protected function getFullDateRangeSettings($savedSearch = false,
-        $config = 'facets', $filter = array()
+        $config = 'facets', $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'fullDateRange', $filter);
         return $this->getRangeSettings($fields, 'fulldate', $savedSearch);
@@ -521,7 +521,7 @@ class AbstractSearch extends AbstractBase
      * @return array
      */
     protected function getGenericRangeSettings($savedSearch = false,
-        $config = 'facets', $filter = array()
+        $config = 'facets', $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'genericRange', $filter);
         return $this->getRangeSettings($fields, 'generic', $savedSearch);
@@ -538,7 +538,7 @@ class AbstractSearch extends AbstractBase
      * @return array
      */
     protected function getNumericRangeSettings($savedSearch = false,
-        $config = 'facets', $filter = array()
+        $config = 'facets', $filter = []
     ) {
         $fields = $this->getRangeFieldList($config, 'numericRange', $filter);
         return $this->getRangeSettings($fields, 'numeric', $savedSearch);
@@ -556,7 +556,7 @@ class AbstractSearch extends AbstractBase
     protected function getAllRangeSettings($specialFacets, $savedSearch = false,
         $config = 'facets'
     ) {
-        $result = array();
+        $result = [];
         if (isset($specialFacets['daterange'])) {
             $dates = $this->getDateRangeSettings(
                 $savedSearch, $config, $specialFacets['daterange']
@@ -594,7 +594,7 @@ class AbstractSearch extends AbstractBase
     protected function parseSpecialFacetsSetting($specialFacets)
     {
         // Parse the special facets into a more useful format:
-        $parsed = array();
+        $parsed = [];
         foreach (explode(',', $specialFacets) as $current) {
             $parts = explode(':', $current);
             $key = array_shift($parts);
@@ -626,13 +626,13 @@ class AbstractSearch extends AbstractBase
             $flipCheckboxes = true;
         }
         $checkboxFacets = ($section && isset($config->$section))
-            ? $config->$section->toArray() : array();
+            ? $config->$section->toArray() : [];
         if (isset($flipCheckboxes) && $flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }
 
         // Reformat for convenience:
-        $formatted = array();
+        $formatted = [];
         foreach ($checkboxFacets as $filter => $desc) {
             $current = compact('desc', 'filter');
             $current['selected']

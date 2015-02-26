@@ -97,7 +97,7 @@ class Sfx implements DriverInterface
      */
     public function parseLinks($xmlstr)
     {
-        $records = array(); // array to return
+        $records = []; // array to return
         try {
             $xml = new \SimpleXmlElement($xmlstr);
         } catch (\Exception $e) {
@@ -107,7 +107,7 @@ class Sfx implements DriverInterface
         $root = $xml->xpath("//ctx_obj_targets");
         $xml = $root[0];
         foreach ($xml->children() as $target) {
-            $record = array();
+            $record = [];
             $record['title'] = (string)$target->target_public_name;
             $record['href'] = (string)$target->target_url;
             $record['service_type'] = (string)$target->service_type;

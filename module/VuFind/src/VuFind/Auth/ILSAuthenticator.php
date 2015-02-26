@@ -58,7 +58,7 @@ class ILSAuthenticator
      *
      * @var array
      */
-    protected $ilsAccount = array();
+    protected $ilsAccount = [];
 
     /**
      * Constructor

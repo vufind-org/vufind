@@ -51,12 +51,12 @@ class NewItemsTest extends TestCase
     public function testGetBibIDsFromCatalog()
     {
         $flash = $this->getMock('Zend\Mvc\Controller\Plugin\FlashMessenger');
-        $config = new Config(array('result_pages' => 10));
+        $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
             $this->getMockCatalog(), $this->getMockParams(), 10, 'a', $flash
         );
-        $this->assertEquals(array(1, 2), $bibs);
+        $this->assertEquals([1, 2], $bibs);
     }
 
     /**
@@ -71,12 +71,12 @@ class NewItemsTest extends TestCase
             ->with($this->equalTo('info'))->will($this->returnValue($flash));
         $flash->expects($this->once())->method('addMessage')
             ->with($this->equalTo('too_many_new_items'));
-        $config = new Config(array('result_pages' => 10));
+        $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
             $this->getMockCatalog(), $this->getMockParams(1), 10, 'a', $flash
         );
-        $this->assertEquals(array(1), $bibs);
+        $this->assertEquals([1], $bibs);
     }
 
     /**
@@ -87,19 +87,19 @@ class NewItemsTest extends TestCase
     public function testGetFundList()
     {
         $catalog = $this->getMock(
-            'VuFind\ILS\Connection', array('checkCapability', 'getFunds'),
-            array(), '', false
+            'VuFind\ILS\Connection', ['checkCapability', 'getFunds'],
+            [], '', false
         );
         $catalog->expects($this->once())->method('checkCapability')
             ->with($this->equalTo('getFunds'))->will($this->returnValue(true));
         $catalog->expects($this->once())->method('getFunds')
-            ->will($this->returnValue(array('a', 'b', 'c')));
+            ->will($this->returnValue(['a', 'b', 'c']));
         $controller = $this->getMock('VuFind\Controller\SearchController');
         $controller->expects($this->once())->method('getILS')
             ->will($this->returnValue($catalog));
-        $newItems = new NewItems(new Config(array()));
+        $newItems = new NewItems(new Config([]));
         $newItems->setController($controller);
-        $this->assertEquals(array('a', 'b', 'c'), $newItems->getFundList());
+        $this->assertEquals(['a', 'b', 'c'], $newItems->getFundList());
     }
 
     /**
@@ -109,8 +109,8 @@ class NewItemsTest extends TestCase
      */
     public function testGetFundListWithoutILS()
     {
-        $newItems = new NewItems(new Config(array('method' => 'solr')));
-        $this->assertEquals(array(), $newItems->getFundList());
+        $newItems = new NewItems(new Config(['method' => 'solr']));
+        $this->assertEquals([], $newItems->getFundList());
     }
 
     /**
@@ -120,9 +120,9 @@ class NewItemsTest extends TestCase
      */
     public function testGetSingleHiddenFilter()
     {
-        $config = new Config(array('filter' => 'a:b'));
+        $config = new Config(['filter' => 'a:b']);
         $newItems = new NewItems($config);
-        $this->assertEquals(array('a:b'), $newItems->getHiddenFilters());
+        $this->assertEquals(['a:b'], $newItems->getHiddenFilters());
     }
 
     /**
@@ -132,9 +132,9 @@ class NewItemsTest extends TestCase
      */
     public function testGetMultipleHiddenFilters()
     {
-        $config = new Config(array('filter' => array('a:b', 'b:c')));
+        $config = new Config(['filter' => ['a:b', 'b:c']]);
         $newItems = new NewItems($config);
-        $this->assertEquals(array('a:b', 'b:c'), $newItems->getHiddenFilters());
+        $this->assertEquals(['a:b', 'b:c'], $newItems->getHiddenFilters());
     }
 
     /**
@@ -144,12 +144,12 @@ class NewItemsTest extends TestCase
      */
     public function testDefaults()
     {
-        $config = new Config(array());
+        $config = new Config([]);
         $newItems = new NewItems($config);
-        $this->assertEquals(array(), $newItems->getHiddenFilters());
+        $this->assertEquals([], $newItems->getHiddenFilters());
         $this->assertEquals('ils', $newItems->getMethod());
         $this->assertEquals(30, $newItems->getMaxAge());
-        $this->assertEquals(array(1, 5, 30), $newItems->getRanges());
+        $this->assertEquals([1, 5, 30], $newItems->getRanges());
         $this->assertEquals(10, $newItems->getResultPages());
     }
 
@@ -160,9 +160,9 @@ class NewItemsTest extends TestCase
      */
     public function testCustomRanges()
     {
-        $config = new Config(array('ranges' => '10,150,300'));
+        $config = new Config(['ranges' => '10,150,300']);
         $newItems = new NewItems($config);
-        $this->assertEquals(array(10, 150, 300), $newItems->getRanges());
+        $this->assertEquals([10, 150, 300], $newItems->getRanges());
     }
 
     /**
@@ -172,7 +172,7 @@ class NewItemsTest extends TestCase
      */
     public function testCustomResultPages()
     {
-        $config = new Config(array('result_pages' => '2'));
+        $config = new Config(['result_pages' => '2']);
         $newItems = new NewItems($config);
         $this->assertEquals(2, $newItems->getResultPages());
     }
@@ -184,7 +184,7 @@ class NewItemsTest extends TestCase
      */
     public function testIllegalResultPages()
     {
-        $config = new Config(array('result_pages' => '-2'));
+        $config = new Config(['result_pages' => '-2']);
         $newItems = new NewItems($config);
         // expect a default of 10 if a bad value was passed in
         $this->assertEquals(10, $newItems->getResultPages());
@@ -199,7 +199,7 @@ class NewItemsTest extends TestCase
     {
         $range = 30;
         $expected = 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
-        $newItems = new NewItems(new Config(array()));
+        $newItems = new NewItems(new Config([]));
         $this->assertEquals($expected, $newItems->getSolrFilter($range));
     }
 
@@ -211,7 +211,7 @@ class NewItemsTest extends TestCase
     protected function getMockCatalog()
     {
         $catalog = $this->getMock(
-            'VuFind\ILS\Connection', array('getNewItems'), array(), '', false
+            'VuFind\ILS\Connection', ['getNewItems'], [], '', false
         );
         $catalog->expects($this->once())->method('getNewItems')
             ->with(
@@ -220,7 +220,7 @@ class NewItemsTest extends TestCase
             )
             ->will(
                 $this->returnValue(
-                    array('results' => array(array('id' => 1), array('id' => 2)))
+                    ['results' => [['id' => 1], ['id' => 2]]]
                 )
             );
         return $catalog;
@@ -236,7 +236,7 @@ class NewItemsTest extends TestCase
     protected function getMockParams($idLimit = 1024)
     {
         $params = $this
-            ->getMock('VuFind\Search\Solr\Params', array(), array(), '', false);
+            ->getMock('VuFind\Search\Solr\Params', [], [], '', false);
         $params->expects($this->once())->method('getLimit')
             ->will($this->returnValue(20));
         $params->expects($this->once())->method('getQueryIDLimit')

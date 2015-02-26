@@ -53,54 +53,54 @@ class MultiIndexListenerTest extends TestCase
      *
      * @var array
      */
-    protected static $specs = array(
-        'test' => array(
-            'QueryFields' => array(
-                'A' => array(
-                    array('onephrase', 500),
-                    array('and', 200)
-                ),
-                'B' => array(
-                    array('and', 100),
-                    array('or', 50),
-                ),
-                0 => array(
-                    0 => array('AND', 50),
-                    'C' => array(
-                        array('onephrase', 200),
-                    ),
-                    'D' => array(
-                        array('onephrase', 300),
-                    ),
-                    '-E' => array(
-                        array('or', '~')
-                    )
-                )
-            ),
+    protected static $specs = [
+        'test' => [
+            'QueryFields' => [
+                'A' => [
+                    ['onephrase', 500],
+                    ['and', 200]
+                ],
+                'B' => [
+                    ['and', 100],
+                    ['or', 50],
+                ],
+                0 => [
+                    0 => ['AND', 50],
+                    'C' => [
+                        ['onephrase', 200],
+                    ],
+                    'D' => [
+                        ['onephrase', 300],
+                    ],
+                    '-E' => [
+                        ['or', '~']
+                    ]
+                ]
+            ],
             'FilterQuery' => 'format:Book',
-        )
-    );
+        ]
+    ];
 
     /**
      * Available shards used for stripping tests.
      *
      * @var array
      */
-    protected static $shards = array(
+    protected static $shards = [
         'a' => 'example.org/a',
         'b' => 'example.org/b',
         'c' => 'example.org/c',
-    );
+    ];
 
     /**
      * Shard fields used for stripping tests.
      *
      * @var array
      */
-    protected static $fields = array(
-        'a' => array('field_1', 'field_3'),
-        'b' => array('field_3'),
-    );
+    protected static $fields = [
+        'a' => ['field_1', 'field_3'],
+        'b' => ['field_3'],
+    ];
 
     /**
      * Backend.
@@ -123,7 +123,7 @@ class MultiIndexListenerTest extends TestCase
      */
     protected function setup()
     {
-        $handlermap     = new HandlerMap(array('select' => array('fallback' => true)));
+        $handlermap     = new HandlerMap(['select' => ['fallback' => true]]);
         $connector      = new Connector('http://example.org/', $handlermap);
         $this->backend  = new Backend($connector);
         $this->listener = new MultiIndexListener($this->backend, self::$shards, self::$fields, self::$specs);
@@ -137,17 +137,17 @@ class MultiIndexListenerTest extends TestCase
     public function testStripFacetFields()
     {
         $params   = new ParamBag(
-            array(
-                'facet.field' => array('field_1', 'field_2', 'field_3'),
-                'shards' => array(self::$shards['b'], self::$shards['c']),
-            )
+            [
+                'facet.field' => ['field_1', 'field_2', 'field_3'],
+                'shards' => [self::$shards['b'], self::$shards['c']],
+            ]
         );
-        $event    = new Event('pre', $this->backend, array('params' => $params));
+        $event    = new Event('pre', $this->backend, ['params' => $params]);
         $this->listener->onSearchPre($event);
 
         $facets   = $params->get('facet.field');
         sort($facets);
-        $this->assertEquals(array('field_1', 'field_2'), $facets);
+        $this->assertEquals(['field_1', 'field_2'], $facets);
     }
 
     /**
@@ -158,19 +158,19 @@ class MultiIndexListenerTest extends TestCase
     public function testAllShardsUsedForRecordRetrieval()
     {
         $params   = new ParamBag(
-            array(
-                'shards' => array(self::$shards['b'], self::$shards['c']),
-            )
+            [
+                'shards' => [self::$shards['b'], self::$shards['c']],
+            ]
         );
         $event    = new Event(
             'pre', $this->backend,
-            array('params' => $params, 'context' => 'retrieve')
+            ['params' => $params, 'context' => 'retrieve']
         );
         $this->listener->onSearchPre($event);
 
         $shards = $params->get('shards');
         $this->assertEquals(
-            array(implode(',', array(self::$shards['a'], self::$shards['b'], self::$shards['c']))),
+            [implode(',', [self::$shards['a'], self::$shards['b'], self::$shards['c']])],
             $shards
         );
     }
@@ -186,7 +186,7 @@ class MultiIndexListenerTest extends TestCase
         $mock->expects($this->once())->method('attach')->with(
             $this->equalTo('VuFind\Search'),
             $this->equalTo('pre'),
-            $this->equalTo(array($this->listener, 'onSearchPre'))
+            $this->equalTo([$this->listener, 'onSearchPre'])
         );
         $this->listener->attach($mock);
     }
@@ -198,8 +198,8 @@ class MultiIndexListenerTest extends TestCase
      */
     public function testStripSpecsEmptySpecs()
     {
-        $this->setProperty($this->listener, 'specs', array());
-        $specs = $this->callMethod($this->listener, 'getSearchSpecs', array(array('A', 'B', 'E')));
+        $this->setProperty($this->listener, 'specs', []);
+        $specs = $this->callMethod($this->listener, 'getSearchSpecs', [['A', 'B', 'E']]);
         $this->assertEmpty($specs);
     }
 
@@ -210,7 +210,7 @@ class MultiIndexListenerTest extends TestCase
      */
     public function testStripSpecsNoFieldsToStrip()
     {
-        $specs = $this->callMethod($this->listener, 'getSearchSpecs', array(array('F', 'G', 'H')));
+        $specs = $this->callMethod($this->listener, 'getSearchSpecs', [['F', 'G', 'H']]);
         $this->assertEquals($specs, self::$specs);
     }
 
@@ -221,23 +221,23 @@ class MultiIndexListenerTest extends TestCase
      */
     public function testStripSpecsStrip()
     {
-        $specs = $this->callMethod($this->listener, 'getSearchSpecs', array(array('A', 'B', 'E')));
+        $specs = $this->callMethod($this->listener, 'getSearchSpecs', [['A', 'B', 'E']]);
         $this->assertEquals(
-            array('test' => array(
-                      'QueryFields' => array(
-                          0 => array(
-                              0 => array('AND', 50),
-                              'C' => array(
-                                  array('onephrase', 200)
-                              ),
-                              'D' => array(
-                                  array('onephrase', 300)
-                              )
-                          )
-                      ),
+            ['test' => [
+                      'QueryFields' => [
+                          0 => [
+                              0 => ['AND', 50],
+                              'C' => [
+                                  ['onephrase', 200]
+                              ],
+                              'D' => [
+                                  ['onephrase', 300]
+                              ]
+                          ]
+                      ],
                       'FilterQuery' => 'format:Book',
-                  )
-            ),
+                  ]
+            ],
             $specs
         );
     }
@@ -249,9 +249,9 @@ class MultiIndexListenerTest extends TestCase
      */
     public function testStripSpecsAllQueryFields()
     {
-        $specs = $this->callMethod($this->listener, 'getSearchSpecs', array(array('A', 'B', 'C', 'D', 'E')));
+        $specs = $this->callMethod($this->listener, 'getSearchSpecs', [['A', 'B', 'C', 'D', 'E']]);
         $this->assertEquals(
-            array('test' => array('QueryFields' => array(), 'FilterQuery' => 'format:Book')),
+            ['test' => ['QueryFields' => [], 'FilterQuery' => 'format:Book']],
             $specs
         );
     }

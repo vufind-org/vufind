@@ -50,7 +50,7 @@ abstract class AbstractFile
      *
      * @var array
      */
-    protected $urls = array();
+    protected $urls = [];
 
     /**
      * Add a URL to the map.

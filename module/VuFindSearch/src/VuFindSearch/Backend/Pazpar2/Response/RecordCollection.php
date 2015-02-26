@@ -80,6 +80,6 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return array();
+        return [];
     }
 }

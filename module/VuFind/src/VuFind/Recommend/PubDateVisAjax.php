@@ -66,7 +66,7 @@ class PubDateVisAjax implements RecommendInterface
      *
      * @var array
      */
-    protected $dateFacets = array();
+    protected $dateFacets = [];
 
     /**
      * Store the configuration of the recommendation module.
@@ -131,7 +131,7 @@ class PubDateVisAjax implements RecommendInterface
     {
         // Don't bother processing if the result set is empty:
         if ($this->searchObject->getResultTotal() == 0) {
-            return array();
+            return [];
         }
         return $this->processDateFacets(
             $this->searchObject->getParams()->getFilters()
@@ -173,7 +173,7 @@ class PubDateVisAjax implements RecommendInterface
 
         // Pass through hidden filters:
         $options = $this->searchObject->getOptions();
-        if (is_callable(array($options, 'getHiddenFilters'))) {
+        if (is_callable([$options, 'getHiddenFilters'])) {
             foreach ($options->getHiddenFilters() as $hf) {
                 $str .= '&' . urlencode('hf[]') . '=' . urlencode($hf);
             }
@@ -190,7 +190,7 @@ class PubDateVisAjax implements RecommendInterface
      */
     protected function processDateFacets($filters)
     {
-        $result = array();
+        $result = [];
         foreach ($this->dateFacets as $current) {
             $from = $to = '';
             if (isset($filters[$current])) {
@@ -203,7 +203,7 @@ class PubDateVisAjax implements RecommendInterface
                     }
                 }
             }
-            $result[$current] = array($from, $to);
+            $result[$current] = [$from, $to];
             $result[$current]['label']
                 = $this->searchObject->getParams()->getFacetLabel($current);
         }

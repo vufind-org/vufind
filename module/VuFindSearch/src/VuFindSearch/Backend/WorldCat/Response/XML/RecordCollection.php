@@ -79,6 +79,6 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return array(); // not supported by WorldCat
+        return []; // not supported by WorldCat
     }
 }

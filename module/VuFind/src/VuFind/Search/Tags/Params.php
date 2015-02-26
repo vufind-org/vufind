@@ -49,6 +49,6 @@ class Params extends \VuFind\Search\Base\Params
     protected function getRecommendationSettings()
     {
         // No recommendation modules in tag view currently:
-        return array();
+        return [];
     }
 }

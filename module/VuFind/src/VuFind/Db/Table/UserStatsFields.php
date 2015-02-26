@@ -63,11 +63,11 @@ class UserStatsFields extends Gateway
                 $value = ($value) ? "true" : "false";
             }
             $this->insert(
-                array(
+                [
                     'id'    => $userData['id'],
                     'field' => $field . "",
                     'value' => $value . "",
-                )
+                ]
             );
         }
         // User data
@@ -83,25 +83,25 @@ class UserStatsFields extends Gateway
      *
      * @return associative array
      */
-    public function getFields($fields, $values = array())
+    public function getFields($fields, $values = [])
     {
         if (empty($fields)) {
             return null;
         }
         if (!is_array($fields)) {
-            $fields = array($fields);
+            $fields = [$fields];
         }
         $callback = function ($select) use ($fields, $values) {
             $select->columns(
-                array($fields[0] => 'value')
+                [$fields[0] => 'value']
             );
             $select->where->equalTo('field', $fields[0]);
             for ($i = 1;$i<count($fields);$i++) {
                 $select->where->equalTo('field' . $i . '.field', $fields[$i]);
                 $select->join(
-                    array('field' . $i => 'user_stats_fields'),
+                    ['field' . $i => 'user_stats_fields'],
                     'user_stats_fields.id=field' . $i . '.id',
-                    array($fields[$i] => 'field' . $i . '.value')
+                    [$fields[$i] => 'field' . $i . '.value']
                 );
             }
             foreach ($values as $key => $value) {

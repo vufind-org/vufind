@@ -78,7 +78,7 @@ class NamedList implements Countable, Iterator
      */
     public function toArray()
     {
-        $arr = array();
+        $arr = [];
         foreach ($this as $k => $v) {
             $arr[$k] = $v;
         }

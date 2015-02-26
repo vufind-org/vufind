@@ -54,7 +54,7 @@ class ParamBagTest extends TestCase
         $bag->set('foo', 'bar');
         $bag->set('bar', 'baz');
         $bag->remove('foo');
-        $this->assertEquals(array('bar' => array('baz')), $bag->getArrayCopy());
+        $this->assertEquals(['bar' => ['baz']], $bag->getArrayCopy());
     }
 
     /**
@@ -64,10 +64,10 @@ class ParamBagTest extends TestCase
      */
     public function testMergeWithAll()
     {
-        $bag1 = new ParamBag(array('a' => 1));
-        $bag2 = new ParamBag(array('b' => 2));
-        $bag3 = new ParamBag(array('c' => 3));
-        $bag3->mergeWithAll(array($bag1, $bag2));
-        $this->assertEquals(array('a' => array(1), 'b' => array(2), 'c' => array(3)), $bag3->getArrayCopy());
+        $bag1 = new ParamBag(['a' => 1]);
+        $bag2 = new ParamBag(['b' => 2]);
+        $bag3 = new ParamBag(['c' => 3]);
+        $bag3->mergeWithAll([$bag1, $bag2]);
+        $this->assertEquals(['a' => [1], 'b' => [2], 'c' => [3]], $bag3->getArrayCopy());
     }
 }

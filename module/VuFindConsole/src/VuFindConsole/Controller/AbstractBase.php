@@ -60,7 +60,7 @@ class AbstractBase extends AbstractActionController
         }
 
         // Get access to information about the CLI request.
-        $this->consoleOpts = new Getopt(array());
+        $this->consoleOpts = new Getopt([]);
 
         // Switch the context back to the original working directory so that
         // relative paths work as expected.  (This constant is set in

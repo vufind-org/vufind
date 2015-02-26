@@ -175,14 +175,14 @@ class Backend extends AbstractBackend
         // Retrieve records a page at a time:
         $results = false;
         while (count($ids) > 0) {
-            $currentPage = array_splice($ids, 0, $pageSize, array());
+            $currentPage = array_splice($ids, 0, $pageSize, []);
             $currentPage = array_map($formatIds, $currentPage);
             $params = new ParamBag(
-                array(
+                [
                     'q' => 'id:(' . implode(' OR ', $currentPage) . ')',
                     'start' => 0,
                     'rows' => $pageSize
-                )
+                ]
             );
             $this->injectResponseWriter($params);
             $next = $this->createRecordCollection(
@@ -366,7 +366,7 @@ class Backend extends AbstractBackend
         }
         $qtime = isset($response['responseHeader']['QTime'])
             ? $response['responseHeader']['QTime'] : 'n/a';
-        $this->log('debug', 'Deserialized SOLR response', array('qtime' => $qtime));
+        $this->log('debug', 'Deserialized SOLR response', ['qtime' => $qtime]);
         return $response;
     }
 
@@ -406,7 +406,7 @@ class Backend extends AbstractBackend
      */
     protected function injectResponseWriter(ParamBag $params)
     {
-        if (array_diff($params->get('wt') ?: array(), array('json'))) {
+        if (array_diff($params->get('wt') ?: [], ['json'])) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Invalid response writer type: %s',
@@ -414,7 +414,7 @@ class Backend extends AbstractBackend
                 )
             );
         }
-        if (array_diff($params->get('json.nl') ?: array(), array('arrarr'))) {
+        if (array_diff($params->get('json.nl') ?: [], ['arrarr'])) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Invalid named list implementation type: %s',
@@ -422,7 +422,7 @@ class Backend extends AbstractBackend
                 )
             );
         }
-        $params->set('wt', array('json'));
-        $params->set('json.nl', array('arrarr'));
+        $params->set('wt', ['json']);
+        $params->set('json.nl', ['arrarr']);
     }
 }

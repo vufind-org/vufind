@@ -77,7 +77,7 @@ class NewItems extends AbstractPlugin
         $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
         // Build a list of unique IDs
-        $bibIDs = array();
+        $bibIDs = [];
         for ($i = 0; $i<count($newItems['results']); $i++) {
             $bibIDs[] = $newItems['results'][$i]['id'];
         }
@@ -102,9 +102,9 @@ class NewItems extends AbstractPlugin
         if ($this->getMethod() == 'ils') {
             $catalog = $this->getController()->getILS();
             return $catalog->checkCapability('getFunds')
-                ? $catalog->getFunds() : array();
+                ? $catalog->getFunds() : [];
         }
-        return array();
+        return [];
     }
 
     /**
@@ -115,12 +115,12 @@ class NewItems extends AbstractPlugin
     public function getHiddenFilters()
     {
         if (!isset($this->config->filter)) {
-            return array();
+            return [];
         }
         if (is_string($this->config->filter)) {
-            return array($this->config->filter);
+            return [$this->config->filter];
         }
-        $hiddenFilters = array();
+        $hiddenFilters = [];
         foreach ($this->config->filter as $current) {
             $hiddenFilters[] = $current;
         }
@@ -156,7 +156,7 @@ class NewItems extends AbstractPlugin
     {
         // Find out if there are user configured range options; if not,
         // default to the standard 1/5/30 days:
-        $ranges = array();
+        $ranges = [];
         if (isset($this->config->ranges)) {
             $tmp = explode(',', $this->config->ranges);
             foreach ($tmp as $range) {
@@ -167,7 +167,7 @@ class NewItems extends AbstractPlugin
             }
         }
         if (empty($ranges)) {
-            $ranges = array(1, 5, 30);
+            $ranges = [1, 5, 30];
         }
         return $ranges;
     }

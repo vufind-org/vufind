@@ -56,7 +56,7 @@ class AjaxController extends AbstractBase
      *
      * @var array
      */
-    protected static $php_errors = array();
+    protected static $php_errors = [];
 
     /**
      * Constructor
@@ -64,7 +64,7 @@ class AjaxController extends AbstractBase
     public function __construct()
     {
         // Add notices to a key in the output
-        set_error_handler(array('VuFind\Controller\AjaxController', "storeError"));
+        set_error_handler(['VuFind\Controller\AjaxController', "storeError"]);
     }
 
     /**
@@ -79,7 +79,7 @@ class AjaxController extends AbstractBase
 
         // Call the method specified by the 'method' parameter; append Ajax to
         // the end to avoid access to arbitrary inappropriate methods.
-        $callback = array($this, $this->params()->fromQuery('method') . 'Ajax');
+        $callback = [$this, $this->params()->fromQuery('method') . 'Ajax'];
         if (is_callable($callback)) {
             try {
                 return call_user_func($callback);
@@ -165,7 +165,7 @@ class AjaxController extends AbstractBase
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
-        $filtered = array();
+        $filtered = [];
         foreach ($record as $current) {
             if (!in_array($current['location'], $hideHoldings)) {
                 $filtered[] = $current;
@@ -194,7 +194,7 @@ class AjaxController extends AbstractBase
         if (!is_array($results)) {
             // If getStatuses returned garbage, let's turn it into an empty array
             // to avoid triggering a notice in the foreach loop below.
-            $results = array();
+            $results = [];
         }
 
         // In order to detect IDs missing from the status response, create an
@@ -207,11 +207,11 @@ class AjaxController extends AbstractBase
         $renderer = $this->getViewRenderer();
 
         // Load messages for response:
-        $messages = array(
+        $messages = [
             'available' => $renderer->render('ajax/status-available.phtml'),
             'unavailable' => $renderer->render('ajax/status-unavailable.phtml'),
             'unknown' => $renderer->render('ajax/status-unknown.phtml')
-        );
+        ];
 
         // Load callnumber and location settings:
         $config = $this->getConfig();
@@ -223,7 +223,7 @@ class AjaxController extends AbstractBase
             ? $config->Item_Status->show_full_status : false;
 
         // Loop through all the status information that came back
-        $statuses = array();
+        $statuses = [];
         foreach ($results as $recordNumber => $record) {
             // Filter out suppressed locations:
             $record = $this->filterSuppressedLocations($record);
@@ -242,7 +242,7 @@ class AjaxController extends AbstractBase
                 // If a full status display has been requested, append the HTML:
                 if ($showFullStatus) {
                     $current['full_status'] = $renderer->render(
-                        'ajax/status-full.phtml', array('statusItems' => $record)
+                        'ajax/status-full.phtml', ['statusItems' => $record]
                     );
                 }
                 $current['record_number'] = array_search($current['id'], $ids);
@@ -255,7 +255,7 @@ class AjaxController extends AbstractBase
 
         // If any IDs were missing, send back appropriate dummy data
         foreach ($missingIds as $missingId => $recordNumber) {
-            $statuses[] = array(
+            $statuses[] = [
                 'id'                   => $missingId,
                 'availability'         => 'false',
                 'availability_message' => $messages['unavailable'],
@@ -266,7 +266,7 @@ class AjaxController extends AbstractBase
                 'callnumber'           => '',
                 'missing_data'         => true,
                 'record_number'        => $recordNumber
-            );
+            ];
         }
 
         // Done
@@ -296,7 +296,7 @@ class AjaxController extends AbstractBase
             if (!$transPrefix) {
                 return $list[0];
             } else {
-                return $this->translate($transPrefix . $list[0], array(), $list[0]);
+                return $this->translate($transPrefix . $list[0], [], $list[0]);
             }
         } else if (count($list) == 0) {
             // Empty list?  Return a blank string:
@@ -304,10 +304,10 @@ class AjaxController extends AbstractBase
         } else if ($mode == 'all') {
             // Translate values if necessary:
             if ($transPrefix) {
-                $transList = array();
+                $transList = [];
                 foreach ($list as $current) {
                     $transList[] = $this->translate(
-                        $transPrefix . $current, array(), $current
+                        $transPrefix . $current, [], $current
                     );
                 }
                 $list = $transList;
@@ -340,7 +340,7 @@ class AjaxController extends AbstractBase
         $callnumberSetting
     ) {
         // Summarize call number, location and availability info across all items:
-        $callNumbers = $locations = array();
+        $callNumbers = $locations = [];
         $use_unknown_status = $available = false;
         foreach ($record as $info) {
             // Find an available copy
@@ -373,7 +373,7 @@ class AjaxController extends AbstractBase
             : $messages[$available ? 'available' : 'unavailable'];
 
         // Send back the collected details:
-        return array(
+        return [
             'id' => $record[0]['id'],
             'availability' => ($available ? 'true' : 'false'),
             'availability_message' => $availability_message,
@@ -385,7 +385,7 @@ class AjaxController extends AbstractBase
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
             'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8')
-        );
+        ];
     }
 
     /**
@@ -404,7 +404,7 @@ class AjaxController extends AbstractBase
     protected function getItemStatusGroup($record, $messages, $callnumberSetting)
     {
         // Summarize call number, location and availability info across all items:
-        $locations =  array();
+        $locations =  [];
         $use_unknown_status = $available = false;
         foreach ($record as $info) {
             // Find an available copy
@@ -429,16 +429,16 @@ class AjaxController extends AbstractBase
             $locationCallnumbers = $this->pickValue(
                 $locationCallnumbers, $callnumberSetting, 'Multiple Call Numbers'
             );
-            $locationInfo = array(
+            $locationInfo = [
                 'availability' =>
                     isset($details['available']) ? $details['available'] : false,
                 'location' => htmlentities(
-                    $this->translate('location_' . $location, array(), $location),
+                    $this->translate('location_' . $location, [], $location),
                     ENT_COMPAT, 'UTF-8'
                 ),
                 'callnumbers' =>
                     htmlentities($locationCallnumbers, ENT_COMPAT, 'UTF-8')
-            );
+            ];
             $locationList[] = $locationInfo;
         }
 
@@ -447,7 +447,7 @@ class AjaxController extends AbstractBase
             : $messages[$available ? 'available' : 'unavailable'];
 
         // Send back the collected details:
-        return array(
+        return [
             'id' => $record[0]['id'],
             'availability' => ($available ? 'true' : 'false'),
             'availability_message' => $availability_message,
@@ -459,7 +459,7 @@ class AjaxController extends AbstractBase
                 ? $this->translate('on_reserve')
                 : $this->translate('Not On Reserve'),
             'callnumber' => false
-        );
+        ];
     }
 
     /**
@@ -480,9 +480,9 @@ class AjaxController extends AbstractBase
         }
 
         // loop through each ID check if it is saved to any of the user's lists
-        $result = array();
-        $ids = $this->params()->fromQuery('id', array());
-        $sources = $this->params()->fromQuery('source', array());
+        $result = [];
+        $ids = $this->params()->fromQuery('id', []);
+        $sources = $this->params()->fromQuery('source', []);
         if (!is_array($ids) || !is_array($sources)) {
             return $this->output(
                 $this->translate('Argument must be array.'),
@@ -495,14 +495,14 @@ class AjaxController extends AbstractBase
             if ($data) {
                 // if this item was saved, add it to the list of saved items.
                 foreach ($data as $list) {
-                    $result[] = array(
+                    $result[] = [
                         'record_id' => $id,
                         'record_source' => $source,
                         'resource_id' => $list->id,
                         'list_id' => $list->list_id,
                         'list_title' => $list->list_title,
                         'record_number' => $i
-                    );
+                    ];
                 }
             }
         }
@@ -531,7 +531,7 @@ class AjaxController extends AbstractBase
             $headers->addHeaderLine(
                 'Expires', 'Mon, 26 Jul 1997 05:00:00 GMT'
             );
-            $output = array('data' => $data,'status' => $status);
+            $output = ['data' => $data,'status' => $status];
             if ('development' == APPLICATION_ENV && count(self::$php_errors) > 0) {
                 $output['php_errors'] = self::$php_errors;
             }
@@ -663,9 +663,9 @@ class AjaxController extends AbstractBase
         );
 
         // Build data structure for return:
-        $tagList = array();
+        $tagList = [];
         foreach ($tags as $tag) {
-            $tagList[] = array('tag' => $tag->tag, 'cnt' => $tag->cnt);
+            $tagList[] = ['tag' => $tag->tag, 'cnt' => $tag->cnt];
         }
 
         // If we don't have any tags, provide a user-appropriate message:
@@ -688,7 +688,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function getMapDataAjax($fields = array('long_lat'))
+    protected function getMapDataAjax($fields = ['long_lat'])
     {
         $this->writeSession();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
@@ -697,19 +697,19 @@ class AjaxController extends AbstractBase
 
         $facets = $results->getFullFieldFacets($fields, false);
 
-        $markers = array();
+        $markers = [];
         $i = 0;
         $list = isset($facets['long_lat']['data']['list'])
-            ? $facets['long_lat']['data']['list'] : array();
+            ? $facets['long_lat']['data']['list'] : [];
         foreach ($list as $location) {
             $longLat = explode(',', $location['value']);
-            $markers[$i] = array(
+            $markers[$i] = [
                 'title' => (string)$location['count'], //needs to be a string
                 'location_facet' =>
                     $location['value'], //needed to load in the location
                 'lon' => $longLat[0],
                 'lat' => $longLat[1]
-            );
+            ];
             $i++;
         }
         return $this->output($markers, self::STATUS_OK);
@@ -734,12 +734,12 @@ class AjaxController extends AbstractBase
         $params->initFromRequest($this->getRequest()->getQuery());
 
         return $this->createViewModel(
-            array(
+            [
                 'results' => $results,
                 'recordSet' => $results->getResults(),
                 'recordCount' => $results->getResultTotal(),
                 'completeListUrl' => $results->getUrlQuery()->getParams()
-            )
+            ]
         );
     }
 
@@ -753,20 +753,20 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function getVisDataAjax($fields = array('publishDate'))
+    protected function getVisDataAjax($fields = ['publishDate'])
     {
         $this->writeSession();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
         $params = $results->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
-        foreach ($this->params()->fromQuery('hf', array()) as $hf) {
+        foreach ($this->params()->fromQuery('hf', []) as $hf) {
             $params->getOptions()->addHiddenFilter($hf);
         }
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
         $filters = $params->getFilters();
         $dateFacets = $this->params()->fromQuery('facetFields');
-        $dateFacets = empty($dateFacets) ? array() : explode(':', $dateFacets);
+        $dateFacets = empty($dateFacets) ? [] : explode(':', $dateFacets);
         $fields = $this->processDateFacets($filters, $dateFacets, $results);
         $facets = $this->processFacetValues($fields, $results);
         foreach ($fields as $field => $val) {
@@ -794,7 +794,7 @@ class AjaxController extends AbstractBase
      */
     protected function processDateFacets($filters, $dateFacets, $results)
     {
-        $result = array();
+        $result = [];
         foreach ($dateFacets as $current) {
             $from = $to = '';
             if (isset($filters[$current])) {
@@ -807,7 +807,7 @@ class AjaxController extends AbstractBase
                     }
                 }
             }
-            $result[$current] = array($from, $to);
+            $result[$current] = [$from, $to];
             $result[$current]['label']
                 = $results->getParams()->getFacetLabel($current);
         }
@@ -826,14 +826,14 @@ class AjaxController extends AbstractBase
     protected function processFacetValues($fields, $results)
     {
         $facets = $results->getFullFieldFacets(array_keys($fields));
-        $retVal = array();
+        $retVal = [];
         foreach ($facets as $field => $values) {
-            $newValues = array('data' => array());
+            $newValues = ['data' => []];
             foreach ($values['data']['list'] as $current) {
                 // Only retain numeric values!
                 if (preg_match("/^[0-9]+$/", $current['value'])) {
                     $newValues['data'][]
-                        = array($current['value'], $current['count']);
+                        = [$current['value'], $current['count']];
                 }
             }
             $retVal[$field] = $newValues;
@@ -875,10 +875,10 @@ class AjaxController extends AbstractBase
     protected function bulkSaveAjax()
     {
         // Without IDs, we can't continue
-        $ids = $this->params()->fromPost('ids', array());
+        $ids = $this->params()->fromPost('ids', []);
         if (empty($ids)) {
             return $this->output(
-                array('result' => $this->translate('bulk_error_missing')),
+                ['result' => $this->translate('bulk_error_missing')],
                 self::STATUS_ERROR
             );
         }
@@ -896,14 +896,14 @@ class AjaxController extends AbstractBase
                 $this->getRequest()->getPost()->toArray(), $user
             );
             return $this->output(
-                array(
-                    'result' => array('list' => $this->params()->fromPost('list')),
+                [
+                    'result' => ['list' => $this->params()->fromPost('list')],
                     'info' => $this->translate("bulk_save_success")
-                ), self::STATUS_OK
+                ], self::STATUS_OK
             );
         } catch (\Exception $e) {
             return $this->output(
-                array('info' => $this->translate('bulk_save_error')),
+                ['info' => $this->translate('bulk_save_error')],
                 self::STATUS_ERROR
             );
         }
@@ -940,7 +940,7 @@ class AjaxController extends AbstractBase
             }
         }
 
-        return $this->output(array('id' => $id), self::STATUS_OK);
+        return $this->output(['id' => $id], self::STATUS_OK);
     }
 
     /**
@@ -982,7 +982,7 @@ class AjaxController extends AbstractBase
             );
             $to = $this->params()->fromPost('to');
             $body = $this->getViewRenderer()->partial(
-                'Email/record-sms.phtml', array('driver' => $record, 'to' => $to)
+                'Email/record-sms.phtml', ['driver' => $record, 'to' => $to]
             );
             $this->getServiceLocator()->get('VuFind\SMS')->text(
                 $this->params()->fromPost('provider'), $to, null, $body
@@ -1128,10 +1128,10 @@ class AjaxController extends AbstractBase
             $user = $this->getUser();
             if (!$user) {
                 return $this->output(
-                    array(
+                    [
                         'status' => false,
                         'msg' => $this->translate('You must be logged in first')
-                    ),
+                    ],
                     self::STATUS_NEED_AUTH
                 );
             }
@@ -1178,7 +1178,7 @@ class AjaxController extends AbstractBase
                         break;
                     }
                     return $this->output(
-                        array('status' => $results, 'msg' => $msg), self::STATUS_OK
+                        ['status' => $results, 'msg' => $msg], self::STATUS_OK
                     );
                 }
             } catch (\Exception $e) {
@@ -1261,7 +1261,7 @@ class AjaxController extends AbstractBase
             $this->params()->fromQuery('source', 'VuFind')
         );
         $html = $this->getViewRenderer()
-            ->render('record/comments-list.phtml', array('driver' => $driver));
+            ->render('record/comments-list.phtml', ['driver' => $driver]);
         return $this->output($html, self::STATUS_OK);
     }
 
@@ -1292,7 +1292,7 @@ class AjaxController extends AbstractBase
 
         $this->favorites()->delete($ids, $listID, $user);
         return $this->output(
-            array('result' => $this->translate('fav_delete_success')),
+            ['result' => $this->translate('fav_delete_success')],
             self::STATUS_OK
         );
     }
@@ -1308,12 +1308,12 @@ class AjaxController extends AbstractBase
         $ids = $this->params()->fromPost('ids');
         if (empty($ids)) {
             return $this->output(
-                array('result' => $this->translate('bulk_error_missing')),
+                ['result' => $this->translate('bulk_error_missing')],
                 self::STATUS_ERROR
             );
         }
         $this->getServiceLocator()->get('VuFind\Cart')->removeItems($ids);
-        return $this->output(array('delete' => true), self::STATUS_OK);
+        return $this->output(['delete' => true], self::STATUS_OK);
     }
 
     /**
@@ -1327,19 +1327,19 @@ class AjaxController extends AbstractBase
         $export = $this->getServiceLocator()->get('VuFind\Export');
         $url = $export->getBulkUrl(
             $this->getViewRenderer(), $format,
-            $this->params()->fromPost('ids', array())
+            $this->params()->fromPost('ids', [])
         );
         $html = $this->getViewRenderer()->render(
             'ajax/export-favorites.phtml',
-            array('url' => $url, 'format' => $format)
+            ['url' => $url, 'format' => $format]
         );
         return $this->output(
-            array(
+            [
                 'result' => $this->translate('Done'),
                 'result_additional' => $html,
                 'needs_redirect' => $export->needsRedirect($format),
                 'result_url' => $url
-            ), self::STATUS_OK
+            ], self::STATUS_OK
         );
     }
 
@@ -1375,7 +1375,7 @@ class AjaxController extends AbstractBase
         $result = $resolver->fetchLinks($openUrl);
 
         // Sort the returned links into categories based on service type:
-        $electronic = $print = $services = array();
+        $electronic = $print = $services = [];
         foreach ($result as $link) {
             switch (isset($link['service_type']) ? $link['service_type'] : '') {
             case 'getHolding':
@@ -1405,10 +1405,10 @@ class AjaxController extends AbstractBase
         }
 
         // Render the links using the view:
-        $view = array(
+        $view = [
             'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
             'electronic' => $electronic, 'services' => $services
-        );
+        ];
         $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 
         // output HTML encoded in JSON object
@@ -1443,10 +1443,10 @@ class AjaxController extends AbstractBase
             $user = $this->getUser();
             if (!$user) {
                 return $this->output(
-                    array(
+                    [
                         'status' => false,
                         'msg' => $this->translate('You must be logged in first')
-                    ),
+                    ],
                     self::STATUS_NEED_AUTH
                 );
             }
@@ -1462,13 +1462,13 @@ class AjaxController extends AbstractBase
                         if (isset($result['name'])) {
                             $result['name'] = $this->translate(
                                 'location_' . $result['name'],
-                                array(),
+                                [],
                                 $result['name']
                             );
                         }
                     }
                     return $this->output(
-                        array('locations' => $results), self::STATUS_OK
+                        ['locations' => $results], self::STATUS_OK
                     );
                 }
             } catch (\Exception $e) {
@@ -1496,10 +1496,10 @@ class AjaxController extends AbstractBase
             $user = $this->getUser();
             if (!$user) {
                 return $this->output(
-                    array(
+                    [
                         'status' => false,
                         'msg' => $this->translate('You must be logged in first')
-                    ),
+                    ],
                     self::STATUS_NEED_AUTH
                 );
             }
@@ -1508,10 +1508,10 @@ class AjaxController extends AbstractBase
                 $catalog = $this->getILS();
                 $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 if ($patron) {
-                    $details = array(
+                    $details = [
                         'id' => $id,
                         'requestGroupId' => $requestGroupId
-                    );
+                    ];
                     $results = $catalog->getPickupLocations(
                         $patron, $details
                     );
@@ -1519,13 +1519,13 @@ class AjaxController extends AbstractBase
                         if (isset($result['locationDisplay'])) {
                             $result['locationDisplay'] = $this->translate(
                                 'location_' . $result['locationDisplay'],
-                                array(),
+                                [],
                                 $result['locationDisplay']
                             );
                         }
                     }
                     return $this->output(
-                        array('locations' => $results), self::STATUS_OK
+                        ['locations' => $results], self::STATUS_OK
                     );
                 }
             } catch (\Exception $e) {
@@ -1563,9 +1563,9 @@ class AjaxController extends AbstractBase
         $params->addFacet($facet, null, $operator === 'OR');
         $params->initFromRequest($this->getRequest()->getQuery());
 
-        $facets = $results->getFullFieldFacets(array($facet), false, -1, 'count');
+        $facets = $results->getFullFieldFacets([$facet], false, -1, 'count');
         if (empty($facets[$facet]['data']['list'])) {
-            return $this->output(array(), self::STATUS_OK);
+            return $this->output([], self::STATUS_OK);
         }
 
         $facetList = $facets[$facet]['data']['list'];

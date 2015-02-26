@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "81dc30f74255130821d7ca7044d73d08",
+    "hash": "6a50f9dd747e7c641961b25a3e6ec1db",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -641,17 +641,17 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.3.4",
+            "version": "2.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "c878e047ab1c5dcfb201974bdff607be54ccb54b"
+                "reference": "886063aa5aee7476b77c380e25ecfacb2ee5ff4c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-c878e047ab1c5dcfb201974bdff607be54ccb54b-zip-991680.zip",
-                "reference": "2.3.4",
-                "shasum": "45535093807295917206dd98173a704c8eaa5da9"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-886063aa5aee7476b77c380e25ecfacb2ee5ff4c-zip-d4c183.zip",
+                "reference": "2.3.5",
+                "shasum": "07830613ab28cd5e08bb731393bab8cd32e3ec81"
             },
             "require": {
                 "php": ">=5.3.23",
@@ -755,10 +755,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.3.4",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.3.5",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2015-01-14 16:44:17"
+            "time": "2015-02-18 19:48:16"
         },
         {
             "name": "zendframework/zendrest",
@@ -1300,6 +1300,7 @@
         "mobileesp/mdetect": 20
     },
     "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": [],
     "platform-dev": []
 }

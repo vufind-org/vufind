@@ -88,7 +88,7 @@ class EdsController extends AbstractSearch
     {
         $this->setUp();
         return $this->createViewModel(
-            array('results' => $this->getHomePageFacets())
+            ['results' => $this->getHomePageFacets()]
         );
     }
 
@@ -242,7 +242,7 @@ class EdsController extends AbstractSearch
                 }
             }
         }
-        return array($from, $to);
+        return [$from, $to];
     }
 
     /**

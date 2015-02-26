@@ -141,7 +141,7 @@ class Connection
      */
     public function __call($methodName, $params)
     {
-        $method = array($this->driver, $methodName);
+        $method = [$this->driver, $methodName];
         if (is_callable($method)) {
             return call_user_func_array($method, $params);
         }

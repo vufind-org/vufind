@@ -310,7 +310,7 @@ class Factory
     public static function getHttp(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config')->get('config');
-        $options = array();
+        $options = [];
         if (isset($config->Proxy->host)) {
             $options['proxy_host'] = $config->Proxy->host;
             if (isset($config->Proxy->port)) {
@@ -318,7 +318,7 @@ class Factory
             }
         }
         $defaults = isset($config->Http)
-            ? $config->Http->toArray() : array();
+            ? $config->Http->toArray() : [];
         return new \VuFindHttp\HttpService($options, $defaults);
     }
 
@@ -444,7 +444,7 @@ class Factory
             $translator = $sm->get('VuFind\Translator');
             $recaptcha->setOption(
                 'custom_translations',
-                array(
+                [
                     'audio_challenge' =>
                         $translator->translate('recaptcha_audio_challenge'),
                     'cant_hear_this' =>
@@ -467,7 +467,7 @@ class Factory
                         $translator->translate('recaptcha_refresh_btn'),
                     'visual_challenge' =>
                         $translator->translate('recaptcha_visual_challenge')
-                )
+                ]
             );
         }
         return $recaptcha;
@@ -733,13 +733,13 @@ class Factory
 
         // Set up the ExtendedIni plugin:
         $config = $sm->get('VuFind\Config')->get('config');
-        $pathStack = array(
+        $pathStack = [
             APPLICATION_PATH  . '/languages',
             LOCAL_OVERRIDE_DIR . '/languages'
-        );
+        ];
         $fallbackLocales = $config->Site->language == 'en'
             ? 'en'
-            : array($config->Site->language, 'en');
+            : [$config->Site->language, 'en'];
         try {
             $pm = $translator->getPluginManager();
         } catch (\Zend\Mvc\Exception\BadMethodCallException $ex) {

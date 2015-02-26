@@ -64,14 +64,14 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
     public function getAuthConfig()
     {
         $ldapConfig = new Config(
-            array(
+            [
                 'host' => 'localhost',
                 'port' => 1234,
                 'basedn' => 'basedn',
                 'username' => 'username'
-            ), true
+            ], true
         );
-        return new Config(array('LDAP' => $ldapConfig), true);
+        return new Config(['LDAP' => $ldapConfig], true);
     }
 
     /**
@@ -140,12 +140,12 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
         // username should be lowercased:
         $this->assertEquals(
             'upper',
-            $this->callMethod($auth, 'getSetting', array('username'))
+            $this->callMethod($auth, 'getSetting', ['username'])
         );
         // basedn should not:
         $this->assertEquals(
             'MixedCase',
-            $this->callMethod($auth, 'getSetting', array('basedn'))
+            $this->callMethod($auth, 'getSetting', ['basedn'])
         );
     }
 
@@ -167,11 +167,11 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return \Zend\Http\Request
      */
-    protected function getLoginRequest($overrides = array())
+    protected function getLoginRequest($overrides = [])
     {
-        $post = $overrides + array(
+        $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
-        );
+        ];
         $request = new \Zend\Http\Request();
         $request->setPost(new \Zend\Stdlib\Parameters($post));
         return $request;
@@ -185,7 +185,7 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankUsername()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('username' => ''));
+        $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
 
@@ -197,7 +197,7 @@ class LDAPTest extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankPassword()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('password' => ''));
+        $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }
 }

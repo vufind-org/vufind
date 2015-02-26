@@ -58,7 +58,7 @@ class Factory
             ->get('HierarchyDefault');
         $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
           ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
-          : array();
+          : [];
         return new Solr(
             $sm->getServiceLocator()->get('VuFind\Search'),
             rtrim($cacheDir, '/') . '/hierarchy',

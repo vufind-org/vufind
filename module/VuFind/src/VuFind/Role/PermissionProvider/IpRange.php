@@ -91,7 +91,7 @@ class IpRange implements PermissionProviderInterface
      */
     protected function checkIP($remoteIP, $rangeIP)
     {
-        $mylist = array();
+        $mylist = [];
         $count = 0;
         $inList = false;
         foreach ((array)$rangeIP as $range) {

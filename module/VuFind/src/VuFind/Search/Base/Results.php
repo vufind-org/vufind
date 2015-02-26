@@ -117,7 +117,7 @@ abstract class Results implements ServiceLocatorAwareInterface
      *
      * @var array
      */
-    protected $helpers = array();
+    protected $helpers = [];
 
     /**
      * Spelling suggestions
@@ -226,8 +226,8 @@ abstract class Results implements ServiceLocatorAwareInterface
         // Initialize variables to defaults (to ensure they don't stay null
         // and cause unnecessary repeat processing):
         $this->resultTotal = 0;
-        $this->results = array();
-        $this->suggestions = array();
+        $this->results = [];
+        $this->suggestions = [];
 
         // Run the search:
         $this->startQueryTimer();
@@ -272,7 +272,7 @@ abstract class Results implements ServiceLocatorAwareInterface
     public function getSpellingSuggestions()
     {
         // Not supported by default:
-        return array();
+        return [];
     }
 
     /**

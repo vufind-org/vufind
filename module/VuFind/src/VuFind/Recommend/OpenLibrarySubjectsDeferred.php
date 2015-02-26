@@ -100,7 +100,7 @@ class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
             $settings[2] = 'publishDate';
         }
         $pubDateRange = strtolower($settings[2]) == 'false' ?
-            array() : $this->getPublishedDates($settings[2], $params, $request);
+            [] : $this->getPublishedDates($settings[2], $params, $request);
         if (!empty($pubDateRange)) {
             // Check if [Subject types] parameter has been supplied in searches.ini
             if (!isset($settings[3])) {

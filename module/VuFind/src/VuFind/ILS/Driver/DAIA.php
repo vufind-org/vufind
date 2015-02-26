@@ -182,7 +182,7 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
 
         if ($this->daiaResponseFormat == 'xml') {
             foreach ($ids as $id) {
@@ -232,7 +232,7 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -435,7 +435,7 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
             // analyse the message for the error handling and debugging
         }
 
-        $status = array();
+        $status = [];
         for ($b = 0; $documentlist->item($b) !== null; $b++) {
             $itemlist = $documentlist->item($b)->getElementsByTagName('item');
             $ilslink = '';
@@ -443,23 +443,23 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                 $ilslink = $documentlist->item($b)->attributes
                     ->getNamedItem('href')->nodeValue;
             }
-            $emptyResult = array(
-                'callnumber' => '-',
-                'availability' => '0',
-                'number' => 1,
-                'reserve' => 'No',
-                'duedate' => '',
-                'queue'   => '',
-                'delay'   => '',
-                'barcode' => 'No samples',
-                'status' => '',
-                'id' => $id,
-                'location' => '',
-                'ilslink' => $ilslink,
-                'label' => 'No samples'
-            );
+            $emptyResult = [
+                    'callnumber' => '-',
+                    'availability' => '0',
+                    'number' => 1,
+                    'reserve' => 'No',
+                    'duedate' => '',
+                    'queue'   => '',
+                    'delay'   => '',
+                    'barcode' => 'No samples',
+                    'status' => '',
+                    'id' => $id,
+                    'location' => '',
+                    'ilslink' => $ilslink,
+                    'label' => 'No samples'
+            ];
             for ($c = 0; $itemlist->item($c) !== null; $c++) {
-                $result = array(
+                $result = [
                     'callnumber' => '',
                     'availability' => '0',
                     'number' => ($c+1),
@@ -476,7 +476,7 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                     'location.id' => '',
                     'location.href' => '',
                     'label' => '',
-                    'notes' => array()
+                    'notes' => [] 
                 );
                 if ($itemlist->item($c)->attributes->getNamedItem('id') !== null) {
                     $result['item_id'] = $itemlist->item($c)->attributes
@@ -712,7 +712,7 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
         $label = "Unknown";
         $storage = "Unknown";
         $presenceOnly = '1';
-        $holding = array();
+        $holding = [];
         for ($c = 0; $itemlist->item($c) !== null; $c++) {
             $earliest_href = '';
             $storageElements = $itemlist->item($c)->getElementsByTagName('storage');
@@ -751,9 +751,9 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                 $unavailableElements = $itemlist->item($c)
                     ->getElementsByTagName('unavailable');
                 if ($unavailableElements->item(0) !== null) {
-                    $earliest = array();
-                    $queue = array();
-                    $hrefs = array();
+                    $earliest = [];
+                    $queue = [];
+                    $hrefs = [];
                     for ($n = 0; $unavailableElements->item($n) !== null; $n++) {
                         $unavailHref = $unavailableElements->item($n)->attributes
                             ->getNamedItem('href');
@@ -820,7 +820,7 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
             if (isset($earliest_queue) && $earliest_queue > 0) {
                 $reserve = 'Y';
             }
-            $holding[] = array('availability' => $availability,
+            $holding[] = array['availability' => $availability,
                 'id'            => $id,
                 'status'        => isset($status) ? "$status" : '',
                 'location'      => isset($storage) ? "$storage" : '',
@@ -832,7 +832,7 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                 'recallhref'    => isset($earliest_href) ? $earliest_href : '',
                 'number'        => ($c+1),
                 'presenceOnly'  => isset($presenceOnly) ? $presenceOnly : '',
-            );
+            ];
         }
         return $holding;
     }

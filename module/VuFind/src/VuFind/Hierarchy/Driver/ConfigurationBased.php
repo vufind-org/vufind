@@ -122,7 +122,7 @@ class ConfigurationBased extends AbstractBase
     public function getTreeSettings()
     {
         return isset($this->config->HierarchyTree)
-            ? $this->config->HierarchyTree->toArray() : array();
+            ? $this->config->HierarchyTree->toArray() : [];
     }
     /**
      * Get Collection Link Type from the config file

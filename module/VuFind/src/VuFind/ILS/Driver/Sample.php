@@ -67,8 +67,8 @@ class Sample extends AbstractBase
      */
     public function getStatus($id)
     {
-        return array(
-            array(
+        return [
+            [
                 'id' => $id,
                 'availability' => 1,
                 'status' => 'Available',
@@ -78,8 +78,8 @@ class Sample extends AbstractBase
                 'duedate' => '',
                 'number' => 1,
                 'barcode' => '1234567890',
-            )
-        );
+            ]
+        ];
     }
 
     /**
@@ -94,7 +94,7 @@ class Sample extends AbstractBase
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         foreach ($ids as $id) {
             $items[] = $this->getStatus($id);
         }
@@ -135,7 +135,7 @@ class Sample extends AbstractBase
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -159,7 +159,7 @@ class Sample extends AbstractBase
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        return array('count' => 0, 'results' => array());
+        return ['count' => 0, 'results' => []];
     }
 
     /**
@@ -177,7 +177,7 @@ class Sample extends AbstractBase
      */
     public function findReserves($course, $inst, $dept)
     {
-        return array();
+        return [];
     }
 
     /**

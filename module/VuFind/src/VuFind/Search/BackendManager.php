@@ -162,7 +162,7 @@ class BackendManager implements SharedListenerAggregateInterface
             $listener = $events->attach(
                 'VuFind\Search',
                 'resolve',
-                array($this, 'onResolve')
+                [$this, 'onResolve']
             );
             $this->listeners->attach($events, $listener);
         }

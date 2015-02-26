@@ -84,7 +84,7 @@ class Record extends AbstractHelper
     {
         // Set default context if none provided:
         if (is_null($context)) {
-            $context = array('driver' => $this->driver);
+            $context = ['driver' => $this->driver];
         }
 
         // Set up the needed context in the view:
@@ -192,7 +192,7 @@ class Record extends AbstractHelper
     public function getFormatClass($format)
     {
         return $this->renderTemplate(
-            'format-class.phtml', array('format' => $format)
+            'format-class.phtml', ['format' => $format]
         );
     }
 
@@ -224,12 +224,12 @@ class Record extends AbstractHelper
         }
         return $this->renderTemplate(
             'list-entry.phtml',
-            array(
+            [
                 'driver' => $this->driver,
                 'list' => $list,
                 'user' => $user,
                 'lists' => $lists
-            )
+            ]
         );
     }
 
@@ -252,7 +252,7 @@ class Record extends AbstractHelper
     {
         return $this->renderTemplate(
             'previewdata.phtml',
-            array('driver' => $this->driver, 'config' => $this->config)
+            ['driver' => $this->driver, 'config' => $this->config]
         );
     }
 
@@ -265,7 +265,7 @@ class Record extends AbstractHelper
     {
         return $this->renderTemplate(
             'previewlink.phtml',
-            array('driver' => $this->driver, 'config' => $this->config)
+            ['driver' => $this->driver, 'config' => $this->config]
         );
     }
 
@@ -277,15 +277,15 @@ class Record extends AbstractHelper
     public function getPreviewIds()
     {
         // Extract identifiers from record driver if it supports appropriate methods:
-        $isbn = is_callable(array($this->driver, 'getCleanISBN'))
+        $isbn = is_callable([$this->driver, 'getCleanISBN'])
             ? $this->driver->getCleanISBN() : '';
-        $lccn = is_callable(array($this->driver, 'getLCCN'))
+        $lccn = is_callable([$this->driver, 'getLCCN'])
             ? $this->driver->getLCCN() : '';
-        $oclc = is_callable(array($this->driver, 'getOCLC'))
-            ? $this->driver->getOCLC() : array();
+        $oclc = is_callable([$this->driver, 'getOCLC'])
+            ? $this->driver->getOCLC() : [];
 
         // Turn identifiers into class names to communicate with jQuery logic:
-        $idClasses = array();
+        $idClasses = [];
         if (!empty($isbn)) {
             $idClasses[] = 'ISBN' . $isbn;
         }
@@ -332,7 +332,7 @@ class Record extends AbstractHelper
     public function getLink($type, $lookfor)
     {
         return $this->renderTemplate(
-            'link-' . $type . '.phtml', array('lookfor' => $lookfor)
+            'link-' . $type . '.phtml', ['lookfor' => $lookfor]
         );
     }
 
@@ -345,7 +345,7 @@ class Record extends AbstractHelper
      */
     public function getTab(\VuFind\RecordTab\TabInterface $tab)
     {
-        $context = array('driver' => $this->driver, 'tab' => $tab);
+        $context = ['driver' => $this->driver, 'tab' => $tab];
         $classParts = explode('\\', get_class($tab));
         $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
         $oldContext = $this->contextHelper->apply($context);
@@ -389,7 +389,7 @@ class Record extends AbstractHelper
         $id = $this->driver->getResourceSource() . '|'
             . $this->driver->getUniqueId();
         $context
-            = array('id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix);
+            = ['id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix];
         return $this->contextHelper->renderInContext(
             'record/checkbox.phtml', $context
         );
@@ -406,7 +406,7 @@ class Record extends AbstractHelper
      *
      * @return string|bool
      */
-    public function getQrCode($context, $extra = array(), $level = "L", $size = 3,
+    public function getQrCode($context, $extra = [], $level = "L", $size = 3,
         $margin = 4
     ) {
         if (!isset($this->config->QRCode)) {
@@ -432,11 +432,11 @@ class Record extends AbstractHelper
 
         // Try to build text:
         $text = $this->renderTemplate(
-            $template, $extra + array('driver' => $this->driver)
+            $template, $extra + ['driver' => $this->driver]
         );
-        $qrcode = array(
+        $qrcode = [
             "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
-        );
+        ];
 
         $urlHelper = $this->getView()->plugin('url');
         return $urlHelper('qrcode-show') . '?' . http_build_query($qrcode);
@@ -453,7 +453,7 @@ class Record extends AbstractHelper
     public function getThumbnail($size = 'small')
     {
         // Try to build thumbnail:
-        $thumb = $this->driver->tryMethod('getThumbnail', array($size));
+        $thumb = $this->driver->tryMethod('getThumbnail', [$size]);
 
         // No thumbnail?  Return false:
         if (empty($thumb)) {
@@ -495,7 +495,7 @@ class Record extends AbstractHelper
         // See if there are any links available:
         $urls = $this->driver->tryMethod('getURLs');
         if (empty($urls)) {
-            return array();
+            return [];
         }
 
         // If we found links, we may need to convert from the "route" format
@@ -511,7 +511,7 @@ class Record extends AbstractHelper
             // Build URL from route/query details if missing:
             if (!isset($link['url'])) {
                 $routeParams = isset($link['routeParams'])
-                    ? $link['routeParams'] : array();
+                    ? $link['routeParams'] : [];
 
                 $link['url'] = $serverUrlHelper(
                     $urlHelper($link['route'], $routeParams)

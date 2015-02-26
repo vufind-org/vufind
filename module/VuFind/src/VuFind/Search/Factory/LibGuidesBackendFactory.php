@@ -127,7 +127,7 @@ class LibGuidesBackendFactory implements FactoryInterface
         $client = $this->serviceLocator->get('VuFind\Http')->createClient();
         $timeout = isset($this->libGuidesConfig->General->timeout)
             ? $this->libGuidesConfig->General->timeout : 30;
-        $client->setOptions(array('timeout' => $timeout));
+        $client->setOptions(['timeout' => $timeout]);
         $connector = new Connector($iid, $client, $ver);
         $connector->setLogger($this->logger);
         return $connector;

@@ -142,7 +142,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->getMock('Zend\View\Renderer\PhpRenderer', array('partial'));
+        $view = $this->getMock('Zend\View\Renderer\PhpRenderer', ['partial']);
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));
@@ -183,7 +183,7 @@ class MailerTest extends \VuFindTest\Unit\TestCase
                 && $in['from'] == 'from@example.com'
                 && $in['message'] == 'message';
         };
-        $view = $this->getMock('Zend\View\Renderer\PhpRenderer', array('partial'));
+        $view = $this->getMock('Zend\View\Renderer\PhpRenderer', ['partial']);
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
             ->will($this->returnValue('body'));

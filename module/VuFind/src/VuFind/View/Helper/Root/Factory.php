@@ -57,6 +57,18 @@ class Factory
     }
 
     /**
+     * Construct the AlphaBrowse helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AlphaBrowse
+     */
+    public static function getAlphaBrowse(ServiceManager $sm)
+    {
+        return new AlphaBrowse($sm->get('url'));
+    }
+
+    /**
      * Construct the Auth helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -248,7 +260,7 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $config = isset($config->SearchHistoryLabels)
-            ? $config->SearchHistoryLabels->toArray() : array();
+            ? $config->SearchHistoryLabels->toArray() : [];
         return new HistoryLabel($config, $sm->get('transesc'));
     }
 
@@ -445,7 +457,7 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $config = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : array();
+            ? $config->SearchTabs->toArray() : [];
         return new SearchTabs(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
             $config, $sm->get('url')
@@ -497,7 +509,7 @@ class Factory
         if (!$setting) {
             $setting = 'disabled';
         }
-        $whitelist = array('enabled', 'disabled', 'public_only', 'private_only');
+        $whitelist = ['enabled', 'disabled', 'public_only', 'private_only'];
         if (!in_array($setting, $whitelist)) {
             $setting = 'enabled';
         }

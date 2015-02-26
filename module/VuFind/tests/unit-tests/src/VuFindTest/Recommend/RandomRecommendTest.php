@@ -131,7 +131,7 @@ class RandomRecommendTest extends TestCase
             )
         );
         $this->assertEquals(
-            array(), \PHPUnit_Framework_Assert::readAttribute(
+            [], \PHPUnit_Framework_Assert::readAttribute(
                 $this->recommend, 'filters'
             )
         );
@@ -210,7 +210,7 @@ class RandomRecommendTest extends TestCase
         $service = $this->getMock('VuFindSearch\Service');
         $paramManager = $this->getMock('VuFind\Search\Params\PluginManager');
         $recommend = new Random($service, $paramManager);
-        $records = array("1", "2", "3", "4", "5");
+        $records = ["1", "2", "3", "4", "5"];
 
         // Use Solr since some Base components are abstract:
         $results = $this->getServiceManager()->get('VuFind\SearchResultsPluginManager')
@@ -248,7 +248,7 @@ class RandomRecommendTest extends TestCase
         $service = $this->getMock('VuFindSearch\Service');
         $paramManager = $this->getMock('VuFind\Search\Params\PluginManager');
         $recommend = new Random($service, $paramManager);
-        $records = array("1", "2", "3", "4", "5");
+        $records = ["1", "2", "3", "4", "5"];
 
         // Use Solr since some Base components are abstract:
         $results = $this->getServiceManager()->get('VuFind\SearchResultsPluginManager')

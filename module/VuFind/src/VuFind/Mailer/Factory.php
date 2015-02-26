@@ -55,15 +55,15 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
         $config = $sm->get('VuFind\Config')->get('config');
 
         // Create mail transport:
-        $settings = array(
+        $settings = [
             'host' => $config->Mail->host, 'port' => $config->Mail->port
-        );
+        ];
         if (isset($config->Mail->username) && isset($config->Mail->password)) {
             $settings['connection_class'] = 'login';
-            $settings['connection_config'] = array(
+            $settings['connection_config'] = [
                 'username' => $config->Mail->username,
                 'password' => $config->Mail->password
-            );
+            ];
         }
         $transport = new Smtp();
         $transport->setOptions(new SmtpOptions($settings));

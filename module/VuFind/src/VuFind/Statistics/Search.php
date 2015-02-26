@@ -48,13 +48,13 @@ class Search extends AbstractBase
      */
     public function log($data, $request)
     {
-        $stat = array(
+        $stat = [
             'phrase'       => $data->getParams()->getDisplayQuery(),
             'searchSource' => $data->getParams()->getSearchClassId(),
             'type'         => $data->getParams()->getSearchHandler(),
             'resultCount'  => $data->getResultTotal(),
             'noresults'    => $data->getResultTotal() == 0
-        );
+        ];
         $this->save($stat, $request);
     }
 
@@ -73,7 +73,7 @@ class Search extends AbstractBase
             $summary = $driver->getFullList('phrase');
             if (!empty($summary)) {
                 $sources = $driver->getFullList('searchSource');
-                $hashes = array();
+                $hashes = [];
                 // Generate hashes (faster than grouping by looping)
                 for ($i = 0;$i<count($summary);$i++) {
                     if (!isset($sources[$i]['searchSource'])) {
@@ -93,13 +93,13 @@ class Search extends AbstractBase
                         ? $hashes[$source][$summary[$i]['phrase']] + 1
                         : 1;
                 }
-                $top = array();
+                $top = [];
                 // For each source
                 foreach ($hashes as $source => $records) {
                     // Using a reference to consolidate code dramatically
                     $reference = & $top;
                     if ($bySource) {
-                        $top[$source] = array();
+                        $top[$source] = [];
                         $reference = & $top[$source];
                     }
                     // For each record
@@ -107,16 +107,16 @@ class Search extends AbstractBase
                         $value = ($phrase == '' || $phrase == '*:*')
                             ? '(empty)'
                             : $phrase;
-                        $newRecord = array(
+                        $newRecord = [
                             'value'  => $value,
                             'count'  => $count,
                             'source' => $source
-                        );
+                        ];
                         // Insert sort (limit to listLength)
                         for ($i = 0;$i<$listLength-1 && $i<count($reference);$i++) {
                             if ($count > $reference[$i]['count']) {
                                 // Insert in order
-                                array_splice($reference, $i, 0, array($newRecord));
+                                array_splice($reference, $i, 0, [$newRecord]);
                                 continue 2; // Skip the append after this loop
                             }
                         }
@@ -126,15 +126,15 @@ class Search extends AbstractBase
                     }
                     $reference = array_slice($reference, 0, $listLength);
                 }
-                return array(
+                return [
                     'top'   => $top,
                     'total' => count($summary),
                     'empty' => count(
-                        $driver->getFullList('noresults', array('value' => 'true'))
+                        $driver->getFullList('noresults', ['value' => 'true'])
                     )
-                );
+                ];
             }
         }
-        return array();
+        return [];
     }
 }
