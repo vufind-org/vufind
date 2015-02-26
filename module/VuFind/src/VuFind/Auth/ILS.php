@@ -135,7 +135,7 @@ class ILS extends AbstractBase
     {
         return false !== $this->getCatalog()->checkFunction(
             'changePassword',
-            array('patron' => $this->getLoggedInPatron())
+            ['patron' => $this->getLoggedInPatron()]
         );
     }
 
@@ -163,8 +163,8 @@ class ILS extends AbstractBase
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
-        $params = array();
-        foreach (array('oldpwd', 'password', 'password2') as $param) {
+        $params = [];
+        foreach (['oldpwd', 'password', 'password2'] as $param) {
             $params[$param] = $request->getPost()->get($param, '');
         }
 
@@ -177,11 +177,11 @@ class ILS extends AbstractBase
         $this->validatePasswordUpdate($params);
 
         $result = $this->getCatalog()->changePassword(
-            array(
+            [
                 'patron' => $patron,
                 'oldPassword' => $params['oldpwd'],
                 'newPassword' => $params['password']
-            )
+            ]
         );
         if (!$result['success']) {
             throw new AuthException($result['status']);
@@ -219,7 +219,7 @@ class ILS extends AbstractBase
         $user->password = '';
 
         // Update user information based on ILS data:
-        $fields = array('firstname', 'lastname', 'email', 'major', 'college');
+        $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
         foreach ($fields as $field) {
             $user->$field = isset($info[$field]) ? $info[$field] : ' ';
         }

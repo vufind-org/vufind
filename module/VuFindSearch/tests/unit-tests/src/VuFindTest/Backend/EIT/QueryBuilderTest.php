@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\EIT;
 
 use VuFindSearch\Backend\EIT\QueryBuilder;
@@ -53,9 +52,9 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
         // Set up an array of expected inputs (serialized objects) and outputs
         // (queries):
         // @codingStandardsIgnoreStart
-        $tests = array(
-            array('advanced', '((TX cheese) AND (AU cross)) NOT (((TI expansion)))')
-        );
+        $tests = [
+            ['advanced', '((TX cheese) AND (AU cross)) NOT (((TI expansion)))']
+        ];
         // @codingStandardsIgnoreEnd
 
         $qb = new QueryBuilder();

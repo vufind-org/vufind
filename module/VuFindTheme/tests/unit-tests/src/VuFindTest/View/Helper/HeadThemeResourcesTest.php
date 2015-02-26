@@ -93,7 +93,7 @@ class HeadThemeResourcesTest extends \VuFindTest\Unit\TestCase
     {
         $mock = $this->getMockBuilder('VuFindTheme\View\Helper\HeadMeta')
             ->disableOriginalConstructor()
-            ->setMethods(array('__invoke', 'prependHttpEquiv', 'appendName'))
+            ->setMethods(['__invoke', 'prependHttpEquiv', 'appendName'])
             ->getMock();
         $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
         $mock->expects($this->once())->method('prependHttpEquiv')

@@ -357,40 +357,45 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* ----- HOVER OVERLAY ------ */
 /* - similar items carousel - */
-.carousel-indicators {
-  bottom:0px;
-  li {
-    background:rgba(255,255,255,.3);
-    border-color:@gray-darker;
-    margin:2px;
-    width:8px;
-    height:8px;
+#similar-items-carousel {
+  .carousel-indicators {
+    bottom:0px;
+    li {
+      background:rgba(255,255,255,.3);
+      border-color:@gray-darker;
+      margin:2px;
+      width:8px;
+      height:8px;
+    }
   }
-}
-.hover-overlay {
-  display:block;
-  position:relative;
-  text-align:center;
-  margin:auto;
-  min-width:150px;
-  min-height:200px;
-  img {
-    margin:10px 0;
-    max-width:100%;
-  }
-  .content {
-    display:none;
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.5);
-    color:#FFF;
-    padding:.5em .5em 0;
-  }
-  &:hover .content {
+  .hover-overlay {
     display:block;
+    position:relative;
+    text-align:center;
+    margin:auto;
+    min-width:150px;
+    min-height:200px;
+    img {
+      margin:10px 0;
+      max-width:100%;
+    }
+    .content {
+      display:none;
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,.5);
+      color:#FFF;
+      padding:.5em .5em 0;
+    }
+    &:hover .content {
+      display:block;
+    }
+  }
+  .item {
+    padding:0 4em;
   }
 }
 

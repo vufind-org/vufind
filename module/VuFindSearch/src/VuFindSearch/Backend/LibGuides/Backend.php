@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\LibGuides;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -222,11 +221,11 @@ class Backend extends AbstractBackend
         $params = $params->getArrayCopy();
 
         // Convert the options:
-        $options = array();
+        $options = [];
 
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
-        $arraySettings = array(/* TODO: determine if values are needed here. */);
+        $arraySettings = [/* TODO: determine if values are needed here. */];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }

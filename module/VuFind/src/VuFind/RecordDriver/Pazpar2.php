@@ -43,7 +43,7 @@ class Pazpar2 extends SolrDefault
      *
      * @var array
      */
-    protected $pz2fields = array();
+    protected $pz2fields = [];
 
     /**
      * Set raw data to initialize the object.
@@ -70,22 +70,22 @@ class Pazpar2 extends SolrDefault
      */
     protected function xmlToArray($xml)
     {
-        $array = array();
-        foreach ($xml as $key=>$data) {
-            $children = array();
+        $array = [];
+        foreach ($xml as $key => $data) {
+            $children = [];
             // Attributes
             if (count($data->attributes()) > 0) {
-                $children['_attr_'] = array();
-                foreach ($data->attributes() as $name=>$attr) {
-                    $children['_attr_'][$name] =(string) $attr;
+                $children['_attr_'] = [];
+                foreach ($data->attributes() as $name => $attr) {
+                    $children['_attr_'][$name] = (string) $attr;
                 }
             }
             // If there's no children, we're at data
             if ($data->count() == 0) {
                 if (!isset($children['_attr_'])) {
-                    $children =(string) $data; // Flatten
+                    $children = (string) $data; // Flatten
                 } else {
-                    $children[$key] =(string) $data;
+                    $children[$key] = (string) $data;
                 }
             } else {
                 // If there's children, recurse on this XML
@@ -101,18 +101,18 @@ class Pazpar2 extends SolrDefault
                     $array[$key][] = $children;
                 } else {
                     // Convert for multiple children
-                    $array[$key] = array(
+                    $array[$key] = [
                         $array[$key],
                         $children
-                    );
+                    ];
                 }
             }
         }
         // Top-level Attributes
         if (count($xml->attributes()) > 0) {
-            $array['_attr_'] = array();
-            foreach ($xml->attributes() as $key=>$attr) {
-                $array['_attr_'][$key] =(string) $attr;
+            $array['_attr_'] = [];
+            foreach ($xml->attributes() as $key => $attr) {
+                $array['_attr_'][$key] = (string) $attr;
             }
         }
         return $array;
@@ -153,12 +153,12 @@ class Pazpar2 extends SolrDefault
     public function getProviders()
     {
         if (!$this->pz2fields['location']) {
-            return array();
+            return [];
         }
         if (isset($this->pz2fields['location']['_attr_'])) {
-            return array($this->pz2fields['location']['_attr_']['name']);
+            return [$this->pz2fields['location']['_attr_']['name']];
         }
-        $providers = array();
+        $providers = [];
         foreach ($this->pz2fields['location'] as $location) {
             if (isset($location['_attr_']['name'])
                 && !in_array($location['_attr_']['name'], $providers)
@@ -177,7 +177,7 @@ class Pazpar2 extends SolrDefault
     public function getPublicationDates()
     {
         return isset($this->pz2fields['md-date']) ?
-            array($this->pz2fields['md-date']) : array();
+            [$this->pz2fields['md-date']] : [];
     }
 
     /**
@@ -190,7 +190,7 @@ class Pazpar2 extends SolrDefault
         $authors = isset($this->pz2fields['md-author']) ?
             $this->pz2fields['md-author'] : '';
 
-        return is_array($authors) ? array_slice($authors, 1) : array();
+        return is_array($authors) ? array_slice($authors, 1) : [];
     }
 
     /**
@@ -233,12 +233,12 @@ class Pazpar2 extends SolrDefault
         if (isset($this->pz2fields['location']['md-electronic-url'])) {
             return array_map(
                 function ($url) {
-                    return array('url' => $url);
+                    return ['url' => $url];
                 },
                 (array) $this->pz2fields['location']['md-electronic-url']
             );
         }
-        return array();
+        return [];
     }
 
     /**

@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend;
 
 use VuFindSearch\Backend\AbstractHandlerMap;
@@ -57,7 +56,7 @@ class AbstractHandlerMapTest extends TestCase
             ->method('getDefaults')
             ->will(
                 $this->returnValue(
-                    new ParamBag(array('p1' => array('default'), 'p2' => array('default')))
+                    new ParamBag(['p1' => ['default'], 'p2' => ['default']])
                 )
             );
         $map->expects($this->once())
@@ -69,7 +68,7 @@ class AbstractHandlerMapTest extends TestCase
                 $this->returnValue(new ParamBag())
             );
 
-        $params = new ParamBag(array('p2' => array('non-default')));
+        $params = new ParamBag(['p2' => ['non-default']]);
         $map->prepare('f', $params);
         $this->assertTrue($params->contains('p1', 'default'));
         $this->assertFalse($params->contains('p2', 'default'));
@@ -89,12 +88,12 @@ class AbstractHandlerMapTest extends TestCase
             ->will($this->returnValue(new ParamBag()));
         $map->expects($this->once())
             ->method('getAppends')
-            ->will($this->returnValue(new ParamBag(array('p1' => 'append'))));
+            ->will($this->returnValue(new ParamBag(['p1' => 'append'])));
         $map->expects($this->once())
             ->method('getInvariants')
             ->will($this->returnValue(new ParamBag()));
 
-        $params = new ParamBag(array('p1' => array('something')));
+        $params = new ParamBag(['p1' => ['something']]);
         $map->prepare('f', $params);
         $this->assertTrue($params->contains('p1', 'something'));
         $this->assertTrue($params->contains('p1', 'append'));
@@ -113,12 +112,12 @@ class AbstractHandlerMapTest extends TestCase
             ->will($this->returnValue(new ParamBag()));
         $map->expects($this->once())
             ->method('getAppends')
-            ->will($this->returnValue(new ParamBag(array('p1' => array('append')))));
+            ->will($this->returnValue(new ParamBag(['p1' => ['append']])));
         $map->expects($this->once())
             ->method('getInvariants')
-            ->will($this->returnValue(new ParamBag(array('p1' => array('invariant')))));
+            ->will($this->returnValue(new ParamBag(['p1' => ['invariant']])));
 
-        $params = new ParamBag(array('p1' => array('something')));
+        $params = new ParamBag(['p1' => ['something']]);
         $map->prepare('f', $params);
         $this->assertFalse($params->contains('p1', 'something'));
         $this->assertFalse($params->contains('p1', 'append'));

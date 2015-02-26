@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Query;
 
 use VuFindSearch\Query\Query;
@@ -142,6 +141,6 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
         $q1 = new Query('test');
         $q2 = new Query('query');
         $q3 = new Query('multi word query');
-        return new QueryGroup('OR', array($q1, $q2, $q3));
+        return new QueryGroup('OR', [$q1, $q2, $q3]);
     }
 }

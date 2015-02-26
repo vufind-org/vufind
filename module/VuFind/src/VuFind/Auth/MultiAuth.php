@@ -68,14 +68,14 @@ class MultiAuth extends AbstractBase
      *
      * @var array
      */
-    protected $filters = array();
+    protected $filters = [];
 
     /**
      * Authentication methods to try
      *
      * @var array
      */
-    protected $methods = array();
+    protected $methods = [];
 
     /**
      * Username input

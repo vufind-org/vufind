@@ -42,8 +42,11 @@ use Zend\Db\Sql\Expression,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class User extends ServiceLocatorAwareGateway
+class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
+    \ZfcRbac\Identity\IdentityInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+
     /**
      * Is encryption enabled?
      *
@@ -59,6 +62,13 @@ class User extends ServiceLocatorAwareGateway
     protected $encryptionKey = null;
 
     /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config = null;
+
+    /**
      * Constructor
      *
      * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
@@ -66,6 +76,18 @@ class User extends ServiceLocatorAwareGateway
     public function __construct($adapter)
     {
         parent::__construct('id', 'user', $adapter);
+    }
+
+    /**
+     * Configuration setter
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     *
+     * @return void
+     */
+    public function setConfig(\Zend\Config\Config $config)
+    {
+        $this->config = $config;
     }
 
     /**
@@ -124,11 +146,9 @@ class User extends ServiceLocatorAwareGateway
     protected function passwordEncryptionEnabled()
     {
         if (null === $this->encryptionEnabled) {
-            $config = $this->getServiceLocator()->getServiceLocator()
-                ->get('VuFind\Config')->get('config');
             $this->encryptionEnabled
-                = isset($config->Authentication->encrypt_ils_password)
-                ? $config->Authentication->encrypt_ils_password : false;
+                = isset($this->config->Authentication->encrypt_ils_password)
+                ? $this->config->Authentication->encrypt_ils_password : false;
         }
         return $this->encryptionEnabled;
     }
@@ -153,20 +173,18 @@ class User extends ServiceLocatorAwareGateway
 
         // Load encryption key from configuration if not already present:
         if (null === $this->encryptionKey) {
-            $config = $this->getServiceLocator()->getServiceLocator()
-                ->get('VuFind\Config')->get('config');
-            if (!isset($config->Authentication->ils_encryption_key)
-                || empty($config->Authentication->ils_encryption_key)
+            if (!isset($this->config->Authentication->ils_encryption_key)
+                || empty($this->config->Authentication->ils_encryption_key)
             ) {
                 throw new \VuFind\Exception\PasswordSecurity(
                     'ILS password encryption on, but no key set.'
                 );
             }
-            $this->encryptionKey = $config->Authentication->ils_encryption_key;
+            $this->encryptionKey = $this->config->Authentication->ils_encryption_key;
         }
 
         // Perform encryption:
-        $cipher = new BlockCipher(new Mcrypt(array('algorithm' => 'blowfish')));
+        $cipher = new BlockCipher(new Mcrypt(['algorithm' => 'blowfish']));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
@@ -202,29 +220,29 @@ class User extends ServiceLocatorAwareGateway
         $userId = $this->id;
         $callback = function ($select) use ($userId, $resourceId, $listId, $source) {
             $select->columns(
-                array(
+                [
                     'id' => new Expression(
-                        'min(?)', array('tags.id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'min(?)', ['tags.id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ),
                     'tag',
                     'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', array('rt.resource_id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'COUNT(DISTINCT(?))', ['rt.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
                     )
-                )
+                ]
             );
             $select->join(
-                array('rt' => 'resource_tags'), 'tags.id = rt.tag_id', array()
+                ['rt' => 'resource_tags'], 'tags.id = rt.tag_id', []
             );
             $select->join(
-                array('r' => 'resource'), 'rt.resource_id = r.id', array()
+                ['r' => 'resource'], 'rt.resource_id = r.id', []
             );
             $select->join(
-                array('ur' => 'user_resource'), 'r.id = ur.resource_id', array()
+                ['ur' => 'user_resource'], 'r.id = ur.resource_id', []
             );
-            $select->group(array('tag'))
-                ->order(array('tag'));
+            $select->group(['tag'])
+                ->order(['tag']);
 
             $select->where->equalTo('ur.user_id', $userId)
                 ->equalTo('rt.user_id', $userId)
@@ -285,26 +303,26 @@ class User extends ServiceLocatorAwareGateway
         $userId = $this->id;
         $callback = function ($select) use ($userId) {
             $select->columns(
-                array(
+                [
                     '*',
                     'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', array('ur.resource_id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'COUNT(DISTINCT(?))', ['ur.resource_id'],
+                        [Expression::TYPE_IDENTIFIER]
                     )
-                )
+                ]
             );
             $select->join(
-                array('ur' => 'user_resource'), 'user_list.id = ur.list_id',
-                array(), $select::JOIN_LEFT
+                ['ur' => 'user_resource'], 'user_list.id = ur.list_id',
+                [], $select::JOIN_LEFT
             );
             $select->where->equalTo('user_list.user_id', $userId);
             $select->group(
-                array(
+                [
                     'user_list.id', 'user_list.user_id', 'title', 'description',
                     'created', 'public'
-                )
+                ]
             );
-            $select->order(array('title'));
+            $select->order(['title']);
         };
 
         $table = $this->getDbTable('UserList');
@@ -326,7 +344,6 @@ class User extends ServiceLocatorAwareGateway
         $table = $this->getDbTable('UserResource');
         return $table->getSavedData($resourceId, $source, $listId, $this->id);
     }
-
 
     /**
      * Add/update a resource in the user's account.
@@ -376,7 +393,7 @@ class User extends ServiceLocatorAwareGateway
         $resourceTable = $this->getDbTable('Resource');
         $resources = $resourceTable->findResources($ids, $source);
 
-        $resourceIDs = array();
+        $resourceIDs = [];
         foreach ($resources as $current) {
             $resourceIDs[] = $current->id;
         }
@@ -418,5 +435,15 @@ class User extends ServiceLocatorAwareGateway
             $this->username . $this->password . $this->pass_hash . rand()
         ) . (time() % pow(10, 10));
         return $this->save();
+    }
+
+    /**
+     * Get the list of roles of this identity
+     *
+     * @return string[]|\Rbac\Role\RoleInterface[]
+     */
+    public function getRoles()
+    {
+        return ['loggedin'];
     }
 }

@@ -83,7 +83,7 @@ class FollowupTest extends TestCase
     public function testRetrieveAndClear()
     {
         $f = new Followup();
-        $f->store(array('foo' => 'bar'), 'baz');
+        $f->store(['foo' => 'bar'], 'baz');
         $this->assertEquals('bar', $f->retrieveAndClear('foo'));
         $this->assertEquals('baz', $f->retrieveAndClear('url'));
         $this->assertNull($f->retrieveAndClear('foo'));

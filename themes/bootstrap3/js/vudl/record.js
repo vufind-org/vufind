@@ -1,27 +1,31 @@
 // ====== GET VIEWS ====== //
 var currentType = 'imaginary';
-var currTab = 'medium-tab';
+var currentTab = 'medium-tab';
 var updateFunction;
-var lastID = false;
+var currentID = false;
+var viewLoadAjax = false;
 function ajaxGetView(pageObject) {
   pageObject['counts'] = counts;
-  if (currTab == 'master-tab' && lastID == pageObject['id']) {
+  if (currentTab == 'master-tab' && currentID == pageObject['id']) {
     // Trigger file download
     //alert('download');
     $('#file-download').submit();
   } else if (currentType != pageObject['filetype']) {
-    $.ajax({
+    if(viewLoadAjax) {
+      viewLoadAjax.abort();
+    }
+    viewLoadAjax = $.ajax({
       type: 'POST',
       url : '../VuDL/ajax?method=viewLoad',
       data: pageObject,
       success: function(e) {
         $('#view').html(e.data);
         currentType = pageObject['filetype'];
-        var tab = $('#'+currTab, e.data);
+        var tab = $('#'+currentTab, e.data);
         if(tab.length > 0) {
           tab.click();
         } else {
-          currTab = $('.nav-tabs li a:eq(0)')[0].id;
+          currentTab = $('.nav-tabs li a:eq(0)')[0].id;
         }
       },
       error: function(d,e){
@@ -31,10 +35,10 @@ function ajaxGetView(pageObject) {
       dataType: 'json'
     });
   } else {
-    updateFunction(pageObject);
+    updateFunction(pageObject, currentTab);
   }
   updateTechInfo(pageObject);
-  lastID = pageObject['id'];
+  currentID = pageObject['id'];
 }
 function updateTechInfo(record) {
   $.ajax({dataType:'json',
@@ -43,8 +47,18 @@ function updateTechInfo(record) {
     data:record,
     success:function(d) {
       $('#techinfo').html(d.data.div);
-      $('#file-download').attr('action', path+'/files/'+record.id+'/MASTER?download=true');
-      $('#download-button .details').html(d.data.type+' ~ '+d.data.size);
+      var downloadSrc = 'MASTER';
+      if(typeof d.data.type !== "undefined") {
+        if(d.data.type.indexOf('image') > -1) {
+          downloadSrc = 'LARGE';
+          d.data.type = 'image/png';
+        } else if(d.data.type.indexOf('audio') > -1) {
+          downloadSrc = 'MP3';
+          d.data.type = 'audio/mp3';
+        }
+        $('#download-button .details').html(d.data.type+' ~ '+d.data.size);
+      }
+      $('#file-download').attr('action', path+'/files/'+record.id+'/'+downloadSrc+'?download=true');
     },
     error:function(d,e) {
       console.log(d.responseText);
@@ -117,9 +131,12 @@ function nextPage() {
   scrollToSelected();
 }
 function scrollToSelected() {
-  if($('#collapse1').length > 0 && $('#collapse1 .selected').length > 0) {
-    $('#collapse1').animate({
-      scrollTop: $('#collapse1 .selected').offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop()-12
+  var listID = '#collapse'+currentList;
+  if($(listID).length > 0 && $(listID+' .selected').length > 0) {
+    $(listID).finish();
+    scrollAnimation = $(listID).animate({
+
+      scrollTop: $(listID+' .selected').offset().top-$(listID).offset().top+$(listID).scrollTop()-12
     });
   }
 }
@@ -132,7 +149,7 @@ function toggleSideNav() {
 }
 
 function resizeElements() {
-  var $height = $(window).height() + window.scrollY - $('.panel:last-child').offset().top - 50;
+  var $height = $(window).height() + window.scrollY - $('.panel-collapse.in').offset().top - 50;
   $('.panel-collapse').css('max-height', Math.max(300, Math.min($height, $(window).height() - 200)));
 }
 
@@ -152,7 +169,7 @@ $(document).ready(function() {
   $('.unloaded').click(function() {
     scrollToSelected();
     findVisible();
-    });
+  });
   // Scroll Event
   $('.item-list').parent().scroll(function() {
     if(loadWait) return;

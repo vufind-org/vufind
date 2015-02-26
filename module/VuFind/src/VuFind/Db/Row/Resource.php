@@ -39,8 +39,10 @@ use VuFind\Date\Converter as DateConverter,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Resource extends ServiceLocatorAwareGateway
+class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+
     /**
      * Constructor
      *

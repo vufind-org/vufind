@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFindTest\Search\Solr\V4;
 
 use VuFind\Search\Solr\V4\ErrorListener;
@@ -62,7 +61,7 @@ class ErrorListenerTest extends TestCase
         $backend   = $this->getMockForAbstractClass('VuFindSearch\Backend\BackendInterface');
 
         $exception = HttpErrorException::createFromResponse($response);
-        $params    = array('backend_instance' => $backend);
+        $params    = ['backend_instance' => $backend];
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
@@ -80,7 +79,7 @@ class ErrorListenerTest extends TestCase
         $backend  = $this->getMockForAbstractClass('VuFindSearch\Backend\BackendInterface');
 
         $exception = HttpErrorException::createFromResponse($response);
-        $params    = array('backend_instance' => $backend);
+        $params    = ['backend_instance' => $backend];
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);

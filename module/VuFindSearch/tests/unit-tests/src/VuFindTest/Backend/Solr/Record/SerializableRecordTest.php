@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\Solr\Record;
 
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
@@ -49,7 +48,7 @@ class SerializableRecordTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetFields()
     {
-        $fields = array('a' => 'b');
+        $fields = ['a' => 'b'];
         $sr = new SerializableRecord($fields);
         $this->assertEquals($fields, $sr->getFields());
     }

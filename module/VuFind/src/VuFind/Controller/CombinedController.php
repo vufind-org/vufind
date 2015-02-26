@@ -105,7 +105,7 @@ class CombinedController extends AbstractSearch
             $cart = $this->getServiceLocator()->get('VuFind\Cart');
             $general = $this->getServiceLocator()->get('VuFind\Config')
                 ->get('config');
-            $viewParams = array(
+            $viewParams = [
                 'searchClassId' => $searchClassId,
                 'currentSearch' => $settings,
                 'showCartControls' => $currentOptions->supportsCart()
@@ -113,7 +113,7 @@ class CombinedController extends AbstractSearch
                 'showBulkOptions' => $currentOptions->supportsCart()
                     && isset($general->Site->showBulkOptions)
                     && $general->Site->showBulkOptions
-            );
+            ];
             $html = $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
                 $viewParams
@@ -147,13 +147,13 @@ class CombinedController extends AbstractSearch
         $this->getSearchMemory()->disable();
 
         // Gather combined results:
-        $combinedResults = array();
+        $combinedResults = [];
         $options = $this->getServiceLocator()
             ->get('VuFind\SearchOptionsPluginManager');
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
             ->toArray();
         $supportsCart = false;
-        $supportsCartOptions = array();
+        $supportsCartOptions = [];
         foreach ($config as $current => $settings) {
             // Special case -- ignore recommendation config:
             if ($current == 'Layout' || $current == 'RecommendationModules') {
@@ -171,7 +171,7 @@ class CombinedController extends AbstractSearch
             $combinedResults[$current]['view']
                 = (!isset($settings['ajax']) || !$settings['ajax'])
                 ? $this->forwardTo($controller, $action)
-                : $this->createViewModel(array('results' => $results));
+                : $this->createViewModel(['results' => $results]);
 
             // Special case: include appropriate "powered by" message:
             if (strtolower($current) == 'summon') {
@@ -190,7 +190,7 @@ class CombinedController extends AbstractSearch
         $placement = isset($config['Layout']['stack_placement'])
             ? $config['Layout']['stack_placement']
             : 'distributed';
-        if (!in_array($placement, array('distributed', 'left', 'right'))) {
+        if (!in_array($placement, ['distributed', 'left', 'right'])) {
             $placement = 'distributed';
         }
 
@@ -199,7 +199,7 @@ class CombinedController extends AbstractSearch
 
         // Build view model:
         return $this->createViewModel(
-            array(
+            [
                 'columns' => $columns,
                 'combinedResults' => $combinedResults,
                 'config' => $config,
@@ -210,7 +210,7 @@ class CombinedController extends AbstractSearch
                 'supportsCartOptions' => $supportsCartOptions,
                 'showBulkOptions' => isset($settings->Site->showBulkOptions)
                     && $settings->Site->showBulkOptions
-            )
+            ]
         );
     }
 

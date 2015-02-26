@@ -57,20 +57,20 @@ class AmazonEditorial extends \VuFind\Content\AbstractAmazon
         try {
             $amazon = new Amazon($key, 'US', $this->secret);
             $amazon->getRestClient()->setHttpClient($this->getHttpClient());
-            $params = array(
+            $params = [
                 'ResponseGroup' => 'EditorialReview',
                 'AssociateTag' => $this->associate
-            );
+            ];
             $isbn = $this->getIsbn10($isbnObj);
             $data = $amazon->itemLookup($isbn, $params);
         } catch (\Exception $e) {
             // Something went wrong?  Just return empty list.
-            return array();
+            return [];
         }
 
         if ($data) {
             $i = 0;
-            $result = array();
+            $result = [];
             $reviews = isset($data->EditorialReviews)
                 ? $data->EditorialReviews : null;
             if (!empty($reviews)) {

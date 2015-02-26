@@ -87,7 +87,7 @@ class Reserves extends AbstractPlugin
             $result = $this->getController()->getServiceLocator()
                 ->get('VuFind\Search')
                 ->retrieve('SolrReserves', $course . '|' . $inst . '|' . $dept);
-            $bibs = array();
+            $bibs = [];
             if ($result->getTotal() < 1) {
                 return $bibs;
             }
@@ -95,12 +95,12 @@ class Reserves extends AbstractPlugin
             $instructor = $record->getInstructor();
             $course = $record->getCourse();
             foreach ($record->getItemIds() as $bib_id) {
-                $bibs[] = array(
+                $bibs[] = [
                     'BIB_ID' => $bib_id,
                     'bib_id' => $bib_id,
                     'course' => $course,
                     'instructor' => $instructor
-                );
+                ];
             }
             return $bibs;
         }

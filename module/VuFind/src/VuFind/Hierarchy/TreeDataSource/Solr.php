@@ -62,7 +62,7 @@ class Solr extends AbstractBase
      *
      * @var array
      */
-    protected $filters = array();
+    protected $filters = [];
 
     /**
      * Constructor.
@@ -72,7 +72,7 @@ class Solr extends AbstractBase
      * @param array         $filters  Filters to apply to Solr tree queries
      */
     public function __construct(SearchService $search, $cacheDir = null,
-        $filters = array()
+        $filters = []
     ) {
         $this->searchService = $search;
         if (null !== $cacheDir) {
@@ -92,7 +92,7 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getXML($id, $options = array())
+    public function getXML($id, $options = [])
     {
         $top = $this->searchService->retrieve('Solr', $id)->getRecords();
         if (!isset($top[0])) {
@@ -141,7 +141,7 @@ class Solr extends AbstractBase
      *
      * @param string $parentID The starting point for the current recursion
      * (equivlent to Solr field hierarchy_parent_id)
-     * @param string &$count   The total count of items in the tree
+     * @param string $count    The total count of items in the tree
      * before this recursion
      *
      * @return string
@@ -153,12 +153,12 @@ class Solr extends AbstractBase
         );
         $results = $this->searchService->search(
             'Solr', $query, 0, 10000,
-            new ParamBag(array('fq' => $this->filters, 'hl' => 'false'))
+            new ParamBag(['fq' => $this->filters, 'hl' => 'false'])
         );
         if ($results->getTotal() < 1) {
             return '';
         }
-        $xml = array();
+        $xml = [];
         $sorting = $this->getHierarchyDriver()->treeSorting();
 
         foreach ($results->getRecords() as $current) {
@@ -182,7 +182,7 @@ class Solr extends AbstractBase
             if ($sorting) {
                 $positions = $current->getHierarchyPositionsInParents();
                 $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
-                $xml[] = array($sequence, $xmlNode);
+                $xml[] = [$sequence, $xmlNode];
             } else {
                 $xml[] = $xmlNode;
             }
@@ -203,7 +203,7 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getJSON($id, $options = array())
+    public function getJSON($id, $options = [])
     {
         $top = $this->searchService->retrieve('Solr', $id)->getRecords();
         if (!isset($top[0])) {
@@ -225,13 +225,13 @@ class Solr extends AbstractBase
             return $json;
         } else {
             $starttime = microtime(true);
-            $json = array(
+            $json = [
                 'id' => $id,
                 'type' => $top->isCollection()
                     ? 'collection'
                     : 'record',
                 'title' => $top->getTitle()
-            );
+            ];
             $children = $this->getChildrenJson($id, $count);
             if (!empty($children)) {
                 $json['children'] = $children;
@@ -257,7 +257,7 @@ class Solr extends AbstractBase
      *
      * @param string $parentID The starting point for the current recursion
      * (equivlent to Solr field hierarchy_parent_id)
-     * @param string &$count   The total count of items in the tree
+     * @param string $count    The total count of items in the tree
      * before this recursion
      *
      * @return string
@@ -269,12 +269,12 @@ class Solr extends AbstractBase
         );
         $results = $this->searchService->search(
             'Solr', $query, 0, 10000,
-            new ParamBag(array('fq' => $this->filters, 'hl' => 'false'))
+            new ParamBag(['fq' => $this->filters, 'hl' => 'false'])
         );
         if ($results->getTotal() < 1) {
             return '';
         }
-        $json = array();
+        $json = [];
         $sorting = $this->getHierarchyDriver()->treeSorting();
 
         foreach ($results->getRecords() as $current) {
@@ -285,13 +285,13 @@ class Solr extends AbstractBase
                 ? $titles[$parentID] : $current->getTitle();
 
             $this->debug("$parentID: " . $current->getUniqueID());
-            $childNode = array(
+            $childNode = [
                 'id' => $current->getUniqueID(),
                 'type' => $current->isCollection()
                     ? 'collection'
                     : 'record',
                 'title' => htmlspecialchars($title)
-            );
+            ];
             if ($current->isCollection()) {
                 $children = $this->getChildrenJson(
                     $current->getUniqueID(),
@@ -307,7 +307,7 @@ class Solr extends AbstractBase
             if ($sorting) {
                 $positions = $current->getHierarchyPositionsInParents();
                 $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
-                $json[] = array($sequence, $childNode);
+                $json[] = [$sequence, $childNode];
             } else {
                 $json[] = $childNode;
             }
@@ -349,7 +349,19 @@ class Solr extends AbstractBase
      */
     public function supports($id)
     {
-        // Assume all IDs are supported.
+        $settings = $this->hierarchyDriver->getTreeSettings();
+
+        if (!isset($settings['checkAvailability'])
+            || $settings['checkAvailability'] == 1
+        ) {
+            $results = $this->searchService->retrieve(
+                'Solr', $id, new ParamBag(['fq' => $this->filters])
+            );
+            if ($results->getTotal() < 1) {
+                return false;
+            }
+        }
+        // If we got this far the support-check was positive in any case.
         return true;
     }
 }

@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFindTest\Search\Solr;
 
 use VuFind\Search\Solr\SpellingProcessor;
@@ -63,7 +62,7 @@ class SpellingProcessorTest extends TestCase
      */
     public function testNonDefaultConfigs()
     {
-        $config = new Config(array('limit' => 5, 'skip_numeric' => false));
+        $config = new Config(['limit' => 5, 'skip_numeric' => false]);
         $sp = new SpellingProcessor($config);
         $this->assertEquals(false, $sp->shouldSkipNumericSpelling());
         $this->assertEquals(5, $sp->getSpellingLimit());
@@ -92,32 +91,32 @@ class SpellingProcessorTest extends TestCase
      */
     public function testSuggestionProcessingWithNonDefaultLimit()
     {
-        $config = new Config(array('limit' => 5));
+        $config = new Config(['limit' => 5]);
         $sp = new SpellingProcessor($config);
         $spelling = $this->getFixture('spell1');
         $query = $this->getFixture('query1');
         $this->assertEquals(
-            array(
-                'grumble' => array(
+            [
+                'grumble' => [
                     'freq' => 2,
-                    'suggestions' => array(
+                    'suggestions' => [
                         'grumbler' => 4,
                         'rumble' => 40,
                         'crumble' => 15,
                         'trumble' => 13,
                         'brumble' => 3,
-                    ),
-                ),
-                'grimble' => array(
+                    ],
+                ],
+                'grimble' => [
                     'freq' => 7,
-                    'suggestions' => array(
+                    'suggestions' => [
                         'trimble' => 110,
                         'gribble' => 21,
                         'grimsley' => 24,
                         'grimalde' => 8,
-                    ),
-                ),
-            ),
+                    ],
+                ],
+            ],
             $sp->getSuggestions($spelling, $query)
         );
     }
@@ -136,48 +135,48 @@ class SpellingProcessorTest extends TestCase
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $sp = new SpellingProcessor();
         $this->assertEquals(
-            array(
-                'grumble' => array(
+            [
+                'grumble' => [
                     'freq' => 2,
-                    'suggestions' => array(
-                        'grumbler' => array(
+                    'suggestions' => [
+                        'grumbler' => [
                             'freq' => 4,
                             'new_term' => 'grumbler',
                             'expand_term' => '(grumble OR grumbler)',
-                        ),
-                        'rumble' => array(
+                        ],
+                        'rumble' => [
                             'freq' => 40,
                             'new_term' => 'rumble',
                             'expand_term' => '(grumble OR rumble)',
-                        ),
-                        'crumble' => array(
+                        ],
+                        'crumble' => [
                             'freq' => 15,
                             'new_term' => 'crumble',
                             'expand_term' => '(grumble OR crumble)',
-                        ),
-                    ),
-                ),
-                'grimble' => array(
+                        ],
+                    ],
+                ],
+                'grimble' => [
                     'freq' => 7,
-                    'suggestions' => array(
-                        'trimble' => array(
+                    'suggestions' => [
+                        'trimble' => [
                             'freq' => 110,
                             'new_term' => 'trimble',
                             'expand_term' => '(grimble OR trimble)',
-                        ),
-                        'gribble' => array(
+                        ],
+                        'gribble' => [
                             'freq' => 21,
                             'new_term' => 'gribble',
                             'expand_term' => '(grimble OR gribble)',
-                        ),
-                        'grimsley' => array(
+                        ],
+                        'grimsley' => [
                             'freq' => 24,
                             'new_term' => 'grimsley',
                             'expand_term' => '(grimble OR grimsley)',
-                        ),
-                    ),
-                ),
-            ),
+                        ],
+                    ],
+                ],
+            ],
             $sp->processSuggestions(
                 $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
             )
@@ -196,45 +195,45 @@ class SpellingProcessorTest extends TestCase
         $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
             ->get('Solr');
         $params->setBasicSearch($query->getString(), $query->getHandler());
-        $config = new Config(array('expand' => false, 'phrase' => true));
+        $config = new Config(['expand' => false, 'phrase' => true]);
         $sp = new SpellingProcessor($config);
         $this->assertEquals(
-            array(
-                'grumble' => array(
+            [
+                'grumble' => [
                     'freq' => 2,
-                    'suggestions' => array(
-                        'grumbler grimble' => array(
+                    'suggestions' => [
+                        'grumbler grimble' => [
                             'freq' => 4,
                             'new_term' => 'grumbler',
-                        ),
-                        'rumble grimble' => array(
+                        ],
+                        'rumble grimble' => [
                             'freq' => 40,
                             'new_term' => 'rumble',
-                        ),
-                        'crumble grimble' => array(
+                        ],
+                        'crumble grimble' => [
                             'freq' => 15,
                             'new_term' => 'crumble',
-                        ),
-                    ),
-                ),
-                'grimble' => array(
+                        ],
+                    ],
+                ],
+                'grimble' => [
                     'freq' => 7,
-                    'suggestions' => array(
-                        'grumble trimble' => array(
+                    'suggestions' => [
+                        'grumble trimble' => [
                             'freq' => 110,
                             'new_term' => 'trimble',
-                        ),
-                        'grumble gribble' => array(
+                        ],
+                        'grumble gribble' => [
                             'freq' => 21,
                             'new_term' => 'gribble',
-                        ),
-                        'grumble grimsley' => array(
+                        ],
+                        'grumble grimsley' => [
                             'freq' => 24,
                             'new_term' => 'grimsley',
-                        ),
-                    ),
-                ),
-            ),
+                        ],
+                    ],
+                ],
+            ],
             $sp->processSuggestions(
                 $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
             )
@@ -250,18 +249,18 @@ class SpellingProcessorTest extends TestCase
     {
         $this->runSpellingTest(
             2,
-            array(
-                'preamble gribble' => array(
+            [
+                'preamble gribble' => [
                     'freq' => 0,
-                    'suggestions' => array(
-                        'preamble article' => array(
+                    'suggestions' => [
+                        'preamble article' => [
                             'freq' => 1,
                             'new_term' => 'preamble article',
                             'expand_term' => '((preamble gribble) OR (preamble article))',
-                        ),
-                    ),
-                ),
-            )
+                        ],
+                    ],
+                ],
+            ]
         );
     }
 
@@ -278,38 +277,38 @@ class SpellingProcessorTest extends TestCase
     {
         $this->runSpellingTest(
             4,
-            array(
-                'lake' => array(
+            [
+                'lake' => [
                     'freq' => 2719,
-                    'suggestions' => array(
-                        'late' => array(
+                    'suggestions' => [
+                        'late' => [
                             'freq' => 30753,
                             'new_term' => 'late',
                             'expand_term' => '(lake OR late)',
-                        ),
-                        'lane' => array(
+                        ],
+                        'lane' => [
                             'freq' => 8054,
                             'new_term' => 'lane',
                             'expand_term' => '(lake OR lane)',
-                        ),
-                        'make' => array(
+                        ],
+                        'make' => [
                             'freq' => 5735,
                             'new_term' => 'make',
                             'expand_term' => '(lake OR make)',
-                        )
-                    )
-                ),
-                'geneve' => array(
+                        ]
+                    ]
+                ],
+                'geneve' => [
                     'freq' => 662,
-                    'suggestions' => array(
-                        'geneva' => array(
+                    'suggestions' => [
+                        'geneva' => [
                             'freq' => 1170,
                             'new_term' => 'geneva',
                             'expand_term' => '(geneve OR geneva)',
-                        )
-                    )
-                )
-            )
+                        ]
+                    ]
+                ]
+            ]
         );
     }
 
@@ -321,26 +320,26 @@ class SpellingProcessorTest extends TestCase
     public function testSpellingTokenization()
     {
         $sp = new SpellingProcessor();
-        $this->assertEquals(array('single'), $sp->tokenize('single'));
-        $this->assertEquals(array('two', 'terms'), $sp->tokenize('two terms'));
-        $this->assertEquals(array('two', 'terms'), $sp->tokenize('two    terms'));
-        $this->assertEquals(array('apples', 'oranges'), $sp->tokenize('apples OR oranges'));
-        $this->assertEquals(array('"word"'), $sp->tokenize('"word"'));
-        $this->assertEquals(array('"word"', 'second'), $sp->tokenize('"word" second'));
-        $this->assertEquals(array(), $sp->tokenize(''));
-        $this->assertEquals(array('0', 'is', 'zero'), $sp->tokenize('0 is zero'));
-        $this->assertEquals(array("'twas", 'successful'), $sp->tokenize("'twas successful"));
-        $this->assertEquals(array('word'), $sp->tokenize('(word)'));
-        $this->assertEquals(array('word', 'second'), $sp->tokenize('(word) second'));
-        $this->assertEquals(array('apples', 'oranges', 'pears'), $sp->tokenize('(apples OR oranges) AND pears'));
-        $this->assertEquals(array('two', 'terms'), $sp->tokenize("two\tterms"));
+        $this->assertEquals(['single'], $sp->tokenize('single'));
+        $this->assertEquals(['two', 'terms'], $sp->tokenize('two terms'));
+        $this->assertEquals(['two', 'terms'], $sp->tokenize('two    terms'));
+        $this->assertEquals(['apples', 'oranges'], $sp->tokenize('apples OR oranges'));
+        $this->assertEquals(['"word"'], $sp->tokenize('"word"'));
+        $this->assertEquals(['"word"', 'second'], $sp->tokenize('"word" second'));
+        $this->assertEquals([], $sp->tokenize(''));
+        $this->assertEquals(['0', 'is', 'zero'], $sp->tokenize('0 is zero'));
+        $this->assertEquals(["'twas", 'successful'], $sp->tokenize("'twas successful"));
+        $this->assertEquals(['word'], $sp->tokenize('(word)'));
+        $this->assertEquals(['word', 'second'], $sp->tokenize('(word) second'));
+        $this->assertEquals(['apples', 'oranges', 'pears'], $sp->tokenize('(apples OR oranges) AND pears'));
+        $this->assertEquals(['two', 'terms'], $sp->tokenize("two\tterms"));
         $this->assertEquals(
-            array('"two words"', 'single', '"three word phrase"', 'single'),
+            ['"two words"', 'single', '"three word phrase"', 'single'],
             $sp->tokenize('((("two words" OR single) NOT "three word phrase") AND single)')
         );
-        $this->assertEquals(array('"unfinished phrase'), $sp->tokenize('"unfinished phrase'));
-        $this->assertEquals(array('"'), $sp->tokenize('"'));
-        $this->assertEquals(array('""'), $sp->tokenize('""'));
+        $this->assertEquals(['"unfinished phrase'], $sp->tokenize('"unfinished phrase'));
+        $this->assertEquals(['"'], $sp->tokenize('"'));
+        $this->assertEquals(['""'], $sp->tokenize('""'));
     }
 
     /**
@@ -352,27 +351,27 @@ class SpellingProcessorTest extends TestCase
     {
         $this->runSpellingTest(
             3,
-            array(
-                '1234567980' => array(
+            [
+                '1234567980' => [
                     'freq' => 0,
-                    'suggestions' => array(
-                        '12345678' => array(
+                    'suggestions' => [
+                        '12345678' => [
                             'freq' => 1,
                             'new_term' => '12345678'
-                        )
-                    )
-                ),
-                'sqid' => array(
+                        ]
+                    ]
+                ],
+                'sqid' => [
                     'freq' => 0,
-                    'suggestions' => array(
-                        'squid' => array(
+                    'suggestions' => [
+                        'squid' => [
                             'freq' => 34,
                             'new_term' => 'squid'
-                        )
-                    )
-                ),
-            ),
-            array('limit' => 1, 'skip_numeric' => false, 'expand' => false)
+                        ]
+                    ]
+                ],
+            ],
+            ['limit' => 1, 'skip_numeric' => false, 'expand' => false]
         );
     }
 
@@ -385,18 +384,18 @@ class SpellingProcessorTest extends TestCase
     {
         $this->runSpellingTest(
             3,
-            array(
-                'sqid' => array(
+            [
+                'sqid' => [
                     'freq' => 0,
-                    'suggestions' => array(
-                        'squid' => array(
+                    'suggestions' => [
+                        'squid' => [
                             'freq' => 34,
                             'new_term' => 'squid'
-                        )
-                    )
-                ),
-            ),
-            array('limit' => 1, 'skip_numeric' => true, 'expand' => false)
+                        ]
+                    ]
+                ],
+            ],
+            ['limit' => 1, 'skip_numeric' => true, 'expand' => false]
         );
     }
 
@@ -409,7 +408,7 @@ class SpellingProcessorTest extends TestCase
      */
     public function testDetectionOfMissingExtendedResultsSetting()
     {
-        $sp = new SpellingProcessor(new Config(array()));
+        $sp = new SpellingProcessor(new Config([]));
         $spelling = $this->getFixture('spell5');
         $query = $this->getFixture('query5');
         $sp->getSuggestions($spelling, $query);
@@ -424,7 +423,7 @@ class SpellingProcessorTest extends TestCase
      *
      * @return void
      */
-    protected function runSpellingTest($testNum, $expected, $config = array())
+    protected function runSpellingTest($testNum, $expected, $config = [])
     {
         $spelling = $this->getFixture('spell' . $testNum);
         $query = $this->getFixture('query' . $testNum);
@@ -448,24 +447,24 @@ class SpellingProcessorTest extends TestCase
      */
     protected function getExpectedQuery1Suggestions()
     {
-        return array(
-            'grumble' => array(
+        return [
+            'grumble' => [
                 'freq' => 2,
-                'suggestions' => array(
+                'suggestions' => [
                     'grumbler' => 4,
                     'rumble' => 40,
                     'crumble' => 15,
-                ),
-            ),
-            'grimble' => array(
+                ],
+            ],
+            'grimble' => [
                 'freq' => 7,
-                'suggestions' => array(
+                'suggestions' => [
                     'trimble' => 110,
                     'gribble' => 21,
                     'grimsley' => 24
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     /**

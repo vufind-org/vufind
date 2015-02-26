@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -93,7 +93,10 @@ class SessionManager extends AbstractManager
             $this->registerSaveHandler($saveHandler);
         }
 
-        $oldSessionData = $_SESSION;
+        $oldSessionData = array();
+        if (isset($_SESSION)) {
+            $oldSessionData = $_SESSION;
+        }
 
         session_start();
 
@@ -341,7 +344,7 @@ class SessionManager extends AbstractManager
     {
         $validator = $this->getValidatorChain();
         $responses = $validator->triggerUntil('session.validate', $this, array($this), function ($test) {
-            return !$test;
+            return false === $test;
         });
         if ($responses->stopped()) {
             // If execution was halted, validation failed
@@ -365,8 +368,8 @@ class SessionManager extends AbstractManager
             return;
         }
         setcookie(
-            $this->getName(),                 // session name
-            '',                               // value
+            $this->getName(), // session name
+            '', // value
             $_SERVER['REQUEST_TIME'] - 42000, // TTL for cookie
             $config->getCookiePath(),
             $config->getCookieDomain(),

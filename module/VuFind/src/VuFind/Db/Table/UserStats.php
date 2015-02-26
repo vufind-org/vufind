@@ -62,33 +62,33 @@ class UserStats extends Gateway
         $callback = function ($select) use ($withVersions, $limit) {
             if ($withVersions) {
                 $select->columns(
-                    array(
+                    [
                         'browserName' => new Expression(
                             'CONCAT_WS(" ",?,?)',
-                            array('browser', 'browserVersion'),
-                            array(
+                            ['browser', 'browserVersion'],
+                            [
                                 Expression::TYPE_IDENTIFIER,
                                 Expression::TYPE_IDENTIFIER
-                            )
+                            ]
                         ),
                         'count' => new Expression(
                             'COUNT(DISTINCT (?))',
-                            array('session'),
-                            array(Expression::TYPE_IDENTIFIER)
+                            ['session'],
+                            [Expression::TYPE_IDENTIFIER]
                         )
-                    )
+                    ]
                 );
                 $select->group('browserName');
             } else {
                 $select->columns(
-                    array(
+                    [
                         'browserName' => 'browser',
                         'count' => new Expression(
                             'COUNT(DISTINCT (?))',
-                            array('session'),
-                            array(Expression::TYPE_IDENTIFIER)
+                            ['session'],
+                            [Expression::TYPE_IDENTIFIER]
                         )
-                    )
+                    ]
                 );
                 $select->group('browser');
             }

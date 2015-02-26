@@ -80,28 +80,28 @@ class Upgrade
      *
      * @var array
      */
-    protected $oldConfigs = array();
+    protected $oldConfigs = [];
 
     /**
      * Processed new configurations
      *
      * @var array
      */
-    protected $newConfigs = array();
+    protected $newConfigs = [];
 
     /**
      * Comments parsed from configuration files
      *
      * @var array
      */
-    protected $comments = array();
+    protected $comments = [];
 
     /**
      * Warnings generated during upgrade process
      *
      * @var array
      */
-    protected $warnings = array();
+    protected $warnings = [];
 
     /**
      * Are we upgrading files in place rather than creating them?
@@ -109,6 +109,13 @@ class Upgrade
      * @var bool
      */
     protected $inPlaceUpgrade;
+
+    /**
+     * Have we modified permissions.ini?
+     *
+     * @var bool
+     */
+    protected $permissionsModified = false;
 
     /**
      * Constructor
@@ -153,6 +160,10 @@ class Upgrade
         $this->upgradeSms();
         $this->upgradeSummon();
         $this->upgradeWorldCat();
+
+        // The previous upgrade routines may have added values to permissions.ini,
+        // so we should save it last. It doesn't have its own upgrade routine.
+        $this->saveModifiedConfig('permissions.ini');
 
         // The following routines load special configurations that were not
         // explicitly loaded by loadConfigs:
@@ -278,10 +289,11 @@ class Upgrade
     {
         // Configuration files to load.  Note that config.ini must always be loaded
         // first so that getOldConfigPath can work properly!
-        $configs = array(
+        $configs = [
             'config.ini', 'authority.ini', 'facets.ini', 'reserves.ini',
-            'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini'
-        );
+            'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini',
+            'permissions.ini'
+        ];
         foreach ($configs as $config) {
             // Special case for config.ini, since we may need to overlay extra
             // settings:
@@ -290,7 +302,7 @@ class Upgrade
             } else {
                 $path = $this->getOldConfigPath($config);
                 $this->oldConfigs[$config] = file_exists($path)
-                    ? parse_ini_file($path, true) : array();
+                    ? parse_ini_file($path, true) : [];
             }
             $this->newConfigs[$config]
                 = parse_ini_file($this->rawDir . '/' . $config, true);
@@ -308,7 +320,7 @@ class Upgrade
      *
      * @return void
      */
-    protected function applyOldSettings($filename, $fullSections = array())
+    protected function applyOldSettings($filename, $fullSections = [])
     {
         // First override all individual settings:
         foreach ($this->oldConfigs[$filename] as $section => $subsection) {
@@ -321,7 +333,7 @@ class Upgrade
         foreach ($fullSections as $section) {
             $this->newConfigs[$filename][$section]
                 = isset($this->oldConfigs[$filename][$section])
-                ? $this->oldConfigs[$filename][$section] : array();
+                ? $this->oldConfigs[$filename][$section] : [];
         }
     }
 
@@ -343,7 +355,11 @@ class Upgrade
         // If we're doing an in-place upgrade, and the source file is empty,
         // there is no point in upgrading anything (the file doesn't exist).
         if (empty($this->oldConfigs[$filename]) && $this->inPlaceUpgrade) {
-            return;
+            // Special case: if we set up custom permissions, we need to
+            // write the file even if it didn't previously exist.
+            if (!$this->permissionsModified || $filename !== 'permissions.ini') {
+                return;
+            }
         }
 
         // If target file already exists, back it up:
@@ -552,7 +568,7 @@ class Upgrade
             && !is_array($newConfig['Content']['GoogleOptions'])
         ) {
             $newConfig['Content']['GoogleOptions']
-                = array('link' => $newConfig['Content']['GoogleOptions']);
+                = ['link' => $newConfig['Content']['GoogleOptions']];
         }
 
         // Disable unused, obsolete setting:
@@ -580,7 +596,7 @@ class Upgrade
 
         // Eliminate obsolete database settings:
         $newConfig['Database']
-            = array('database' => $newConfig['Database']['database']);
+            = ['database' => $newConfig['Database']['database']];
 
         // Eliminate obsolete config override settings:
         unset($newConfig['Extra_Config']);
@@ -589,7 +605,7 @@ class Upgrade
         if (isset($newConfig['Statistics']['enabled'])) {
             // If "enabled" is on, this equates to the new system being in Solr mode:
             if ($newConfig['Statistics']['enabled']) {
-                $newConfig['Statistics']['mode'] = array('Solr');
+                $newConfig['Statistics']['mode'] = ['Solr'];
             }
 
             // Whether or not "enabled" is on, remove the deprecated setting:
@@ -611,11 +627,47 @@ class Upgrade
             unset($newConfig['Syndetics']['url']);
         }
 
+        // Translate obsolete permission settings:
+        $this->upgradeAdminPermissions();
+
         // Deal with shard settings (which may have to be moved to another file):
         $this->upgradeShardSettings();
 
         // save the file
         $this->saveModifiedConfig('config.ini');
+    }
+
+    /**
+     * Translate obsolete permission settings.
+     *
+     * @return void
+     */
+    protected function upgradeAdminPermissions()
+    {
+        $config = & $this->newConfigs['config.ini'];
+        $permissions = & $this->newConfigs['permissions.ini'];
+
+        if (isset($config['AdminAuth'])) {
+            $permissions['access.AdminModule'] = [];
+            if (isset($config['AdminAuth']['ipRegEx'])) {
+                $permissions['access.AdminModule']['ipRegEx']
+                    = $config['AdminAuth']['ipRegEx'];
+            }
+            if (isset($config['AdminAuth']['userWhitelist'])) {
+                $permissions['access.AdminModule']['username']
+                    = $config['AdminAuth']['userWhitelist'];
+            }
+            // If no settings exist in config.ini, we grant access to everyone
+            // by allowing both logged-in and logged-out roles.
+            if (empty($permissions['access.AdminModule'])) {
+                $permissions['access.AdminModule']['role'] = ['guest', 'loggedin'];
+            }
+            $permissions['access.AdminModule']['permission'] = 'access.AdminModule';
+            $this->permissionsModified = true;
+
+            // Remove any old settings remaining in config.ini:
+            unset($config['AdminAuth']);
+        }
     }
 
     /**
@@ -628,10 +680,10 @@ class Upgrade
     {
         // we want to retain the old installation's various facet groups
         // exactly as-is
-        $facetGroups = array(
+        $facetGroups = [
             'Results', 'ResultsTop', 'Advanced', 'Author', 'CheckboxFacets',
             'HomePage'
-        );
+        ];
         $this->applyOldSettings('facets.ini', $facetGroups);
 
         // fill in home page facets with advanced facets if missing:
@@ -669,9 +721,9 @@ class Upgrade
     {
         // we want to retain the old installation's Basic/Advanced search settings
         // and sort settings exactly as-is
-        $groups = array(
+        $groups = [
             'Basic_Searches', 'Advanced_Searches', 'Sorting', 'DefaultSortingByType'
-        );
+        ];
         $this->applyOldSettings('searches.ini', $groups);
 
         // Fix autocomplete settings in case they use the old style:
@@ -690,7 +742,7 @@ class Upgrade
             }
         }
 
-        $this->upgradeSpellingSettings('searches.ini', array('CallNumber'));
+        $this->upgradeSpellingSettings('searches.ini', ['CallNumber']);
 
         // save the file
         $this->saveModifiedConfig('searches.ini');
@@ -705,17 +757,17 @@ class Upgrade
      *
      * @return void
      */
-    protected function upgradeSpellingSettings($ini, $skip = array())
+    protected function upgradeSpellingSettings($ini, $skip = [])
     {
         // Turn on the spelling recommendations if we're upgrading from a version
         // prior to 2.4.
         if ((float)$this->from < 2.4) {
             // Fix defaults in general section:
             $cfg = & $this->newConfigs[$ini]['General'];
-            $keys = array('default_top_recommend', 'default_noresults_recommend');
+            $keys = ['default_top_recommend', 'default_noresults_recommend'];
             foreach ($keys as $key) {
                 if (!isset($cfg[$key])) {
-                    $cfg[$key] = array();
+                    $cfg[$key] = [];
                 }
                 if (!in_array('SpellingSuggestions', $cfg[$key])) {
                     $cfg[$key][] = 'SpellingSuggestions';
@@ -738,7 +790,7 @@ class Upgrade
                 if (!isset($cfg[$key])) {
                     $cfg[$key] = array_diff(
                         $this->newConfigs[$ini]['General']['default_top_recommend'],
-                        array('SpellingSuggestions')
+                        ['SpellingSuggestions']
                     );
                 }
             }
@@ -775,7 +827,7 @@ class Upgrade
      */
     protected function upgradeSms()
     {
-        $this->applyOldSettings('sms.ini', array('Carriers'));
+        $this->applyOldSettings('sms.ini', ['Carriers']);
         $this->saveModifiedConfig('sms.ini');
     }
 
@@ -789,9 +841,9 @@ class Upgrade
     {
         // we want to retain the old installation's search and facet settings
         // exactly as-is
-        $groups = array(
+        $groups = [
             'Facets', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
-        );
+        ];
         $this->applyOldSettings('authority.ini', $groups);
 
         // save the file
@@ -815,9 +867,9 @@ class Upgrade
 
         // we want to retain the old installation's search and facet settings
         // exactly as-is
-        $groups = array(
+        $groups = [
             'Facets', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
-        );
+        ];
         $this->applyOldSettings('reserves.ini', $groups);
 
         // save the file
@@ -840,9 +892,9 @@ class Upgrade
 
         // we want to retain the old installation's search and facet settings
         // exactly as-is
-        $groups = array(
+        $groups = [
             'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
-        );
+        ];
         $this->applyOldSettings('Summon.ini', $groups);
 
         // Turn on advanced checkbox facets if we're upgrading from a version
@@ -856,10 +908,47 @@ class Upgrade
             }
         }
 
+        // update permission settings
+        $this->upgradeSummonPermissions();
+
         $this->upgradeSpellingSettings('Summon.ini');
 
         // save the file
         $this->saveModifiedConfig('Summon.ini');
+    }
+
+    /**
+     * Translate obsolete permission settings.
+     *
+     * @return void
+     */
+    protected function upgradeSummonPermissions()
+    {
+        $config = & $this->newConfigs['Summon.ini'];
+        $permissions = & $this->newConfigs['permissions.ini'];
+        if (isset($config['Auth'])) {
+            $permissions['access.SummonExtendedResults'] = [];
+            if (isset($config['Auth']['check_login'])
+                && $config['Auth']['check_login']
+            ) {
+                $permissions['access.SummonExtendedResults']['role'] = ['loggedin'];
+            }
+            if (isset($config['Auth']['ip_range'])) {
+                $permissions['access.SummonExtendedResults']['ipRegEx']
+                    = $config['Auth']['ip_range'];
+            }
+            if (!empty($permissions['access.SummonExtendedResults'])) {
+                $permissions['access.SummonExtendedResults']['boolean'] = 'OR';
+                $permissions['access.SummonExtendedResults']['permission']
+                    = 'access.SummonExtendedResults';
+                $this->permissionsModified = true;
+            } else {
+                unset($permissions['access.SummonExtendedResults']);
+            }
+
+            // Remove any old settings remaining in config.ini:
+            unset($config['Auth']);
+        }
     }
 
     /**
@@ -877,14 +966,14 @@ class Upgrade
         }
 
         // we want to retain the old installation's search settings exactly as-is
-        $groups = array(
+        $groups = [
             'Basic_Searches', 'Advanced_Searches', 'Sorting'
-        );
+        ];
         $this->applyOldSettings('WorldCat.ini', $groups);
 
         // we need to fix an obsolete search setting for authors
-        foreach (array('Basic_Searches', 'Advanced_Searches') as $section) {
-            $new = array();
+        foreach (['Basic_Searches', 'Advanced_Searches'] as $section) {
+            $new = [];
             foreach ($this->newConfigs['WorldCat.ini'][$section] as $k => $v) {
                 if ($k == 'srw.au:srw.pn:srw.cn') {
                     $k = 'srw.au';
@@ -963,7 +1052,7 @@ class Upgrade
         // VuFind 1.x uses *_local.yaml files as overrides; VuFind 2.x uses files
         // with the same filename in the local directory.  Copy any old override
         // files into the new expected location:
-        $files = array('searchspecs', 'authsearchspecs', 'reservessearchspecs');
+        $files = ['searchspecs', 'authsearchspecs', 'reservessearchspecs'];
         foreach ($files as $file) {
             $old = $this->oldDir . '/' . $file . '_local.yaml';
             $new = $this->newDir . '/' . $file . '.yaml';
@@ -1043,7 +1132,7 @@ class Upgrade
         // setting with StripFields setting):
         if (isset($this->oldConfigs['facets.ini']['StripFacets'])) {
             if (!isset($this->oldConfigs['searches.ini']['StripFields'])) {
-                $this->oldConfigs['searches.ini']['StripFields'] = array();
+                $this->oldConfigs['searches.ini']['StripFields'] = [];
             }
             foreach ($this->oldConfigs['facets.ini']['StripFacets'] as $k => $v) {
                 // If we already have values for the current key, merge and dedupe:
@@ -1065,7 +1154,7 @@ class Upgrade
      * Read the specified file and return an associative array of this format
      * containing all comments extracted from the file:
      *
-     * array =>
+     * [
      *   'sections' => array
      *     'section_name_1' => array
      *       'before' => string ("Comments found at the beginning of this section")
@@ -1079,6 +1168,7 @@ class Upgrade
      *        ...
      *      'section_name_n' => array (same keys as section_name_1)
      *   'after' => string ("Comments found at the very end of the file")
+     * ]
      *
      * @param string $filename Name of ini file to read.
      *
@@ -1089,7 +1179,7 @@ class Upgrade
         $lines = file($filename);
 
         // Initialize our return value:
-        $retVal = array('sections' => array(), 'after' => '');
+        $retVal = ['sections' => [], 'after' => ''];
 
         // Initialize variables for tracking status during parsing:
         $section = $comments = '';
@@ -1116,10 +1206,10 @@ class Upgrade
                     } else {
                         $inline = '';
                     }
-                    $retVal['sections'][$section] = array(
+                    $retVal['sections'][$section] = [
                         'before' => $comments,
                         'inline' => $inline,
-                        'settings' => array());
+                        'settings' => []];
                     $comments = '';
                 }
             } else if (($equals = strpos($trimmed, '=')) !== false) {
@@ -1141,7 +1231,7 @@ class Upgrade
                     // concern, but we should improve it if we ever need to.
                     if (!isset($retVal['sections'][$section]['settings'][$set])) {
                         $retVal['sections'][$section]['settings'][$set]
-                            = array('before' => $comments, 'inline' => $inline);
+                            = ['before' => $comments, 'inline' => $inline];
                     } else {
                         $retVal['sections'][$section]['settings'][$set]['before']
                             .= $comments;

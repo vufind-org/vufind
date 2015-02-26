@@ -48,7 +48,7 @@ class ImportController extends AbstractBase
     {
         // Parse switches:
         $this->consoleOpts->addRules(
-            array('test-only' => 'Use test mode', 'index-s' => 'Solr index to use')
+            ['test-only' => 'Use test mode', 'index-s' => 'Solr index to use']
         );
         $testMode = $this->consoleOpts->getOption('test-only') ? true : false;
         $index = $this->consoleOpts->getOption('index');
@@ -99,7 +99,7 @@ class ImportController extends AbstractBase
             $this->performImport($argv[0], $argv[1], $index, $testMode);
         } catch (\Exception $e) {
             Console::writeLine("Fatal error: " . $e->getMessage());
-            if (is_callable(array($e, 'getPrevious')) && $e = $e->getPrevious()) {
+            if (is_callable([$e, 'getPrevious']) && $e = $e->getPrevious()) {
                 while ($e) {
                     Console::writeLine("Previous exception: " . $e->getMessage());
                     $e = $e->getPrevious();
@@ -186,7 +186,7 @@ class ImportController extends AbstractBase
         $xml = simplexml_load_file($file);
         if ($xml) {
             // Are there any child sitemaps?  If so, pull them in:
-            $results = isset($xml->sitemap) ? $xml->sitemap : array();
+            $results = isset($xml->sitemap) ? $xml->sitemap : [];
             foreach ($results as $current) {
                 if (isset($current->loc)) {
                     if (!$this->harvestSitemap((string)$current->loc, $verbose)) {

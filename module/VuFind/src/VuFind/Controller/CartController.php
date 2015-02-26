@@ -38,7 +38,6 @@ use VuFind\Exception\Mail as MailException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class CartController extends AbstractBase
 {
     /**
@@ -150,7 +149,7 @@ class CartController extends AbstractBase
         $listID = $this->params()->fromPost('listID');
         $this->session->url = empty($listID)
             ? $this->url()->fromRoute('myresearch-favorites')
-            : $this->url()->fromRoute('userList', array('id' => $listID));
+            : $this->url()->fromRoute('userList', ['id' => $listID]);
 
         // Now forward to the requested controller/action:
         $controller = 'Cart';   // assume Cart unless overridden below.
@@ -197,17 +196,21 @@ class CartController extends AbstractBase
             && !$this->getUser()
         ) {
             return $this->forceLogin(
-                null, array('cartIds' => $ids, 'cartAction' => 'Email')
+                null, ['cartIds' => $ids, 'cartAction' => 'Email']
             );
         }
 
-        $view = $this->createEmailViewModel();
+        $view = $this->createEmailViewModel(
+            null, $this->translate('bulk_email_title')
+        );
         $view->records = $this->getRecordLoader()->loadBatch($ids);
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('email');
 
         // Process form submission:
-        if ($this->formWasSubmitted('submit')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Build the URL to share:
-            $params = array();
+            $params = [];
             foreach ($ids as $current) {
                 $params[] = urlencode('id[]') . '=' . urlencode($current);
             }
@@ -216,9 +219,13 @@ class CartController extends AbstractBase
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
+                $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
+                $mailer->setMaxRecipients($view->maxRecipients);
+                $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
+                    ? $view->from : null;
+                $mailer->sendLink(
                     $view->to, $view->from, $view->message,
-                    $url, $this->getViewRenderer(), 'bulk_email_title'
+                    $url, $this->getViewRenderer(), $view->subject, $cc
                 );
                 return $this->redirectToSource('info', 'email_success');
             } catch (MailException $e) {
@@ -286,12 +293,12 @@ class CartController extends AbstractBase
             if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
             }
-            $msg = array(
+            $msg = [
                 'translate' => false, 'html' => true,
                 'msg' => $this->getViewRenderer()->render(
-                    'cart/export-success.phtml', array('url' => $url)
+                    'cart/export-success.phtml', ['url' => $url]
                 )
-            );
+            ];
             return $this->redirectToSource('info', $msg);
         }
 
@@ -320,7 +327,7 @@ class CartController extends AbstractBase
     {
         // We use abbreviated parameters here to keep the URL short (there may
         // be a long list of IDs, and we don't want to run out of room):
-        $ids = $this->params()->fromQuery('i', array());
+        $ids = $this->params()->fromQuery('i', []);
         $format = $this->params()->fromQuery('f');
 
         // Make sure we have IDs to export:
@@ -332,11 +339,10 @@ class CartController extends AbstractBase
         $response = $this->getResponse();
         $response->getHeaders()->addHeaders($this->getExport()->getHeaders($format));
 
-
         // Actually export the records
         $records = $this->getRecordLoader()->loadBatch($ids);
         $recordHelper = $this->getViewRenderer()->plugin('record');
-        $parts = array();
+        $parts = [];
         foreach ($records as $record) {
             $parts[] = $recordHelper($record)->getExport($format);
         }
@@ -373,7 +379,7 @@ class CartController extends AbstractBase
         // Make sure user is logged in:
         if (!($user = $this->getUser())) {
             return $this->forceLogin(
-                null, array('cartIds' => $ids, 'cartAction' => 'Save')
+                null, ['cartIds' => $ids, 'cartAction' => 'Save']
             );
         }
 
@@ -385,7 +391,7 @@ class CartController extends AbstractBase
                 ->addMessage('bulk_save_success');
             $list = $this->params()->fromPost('list');
             if (!empty($list)) {
-                return $this->redirect()->toRoute('userList', array('id' => $list));
+                return $this->redirect()->toRoute('userList', ['id' => $list]);
             } else {
                 return $this->redirectToSource();
             }
@@ -393,10 +399,10 @@ class CartController extends AbstractBase
 
         // Pass record and list information to view:
         return $this->createViewModel(
-            array(
+            [
                 'records' => $this->getRecordLoader()->loadBatch($ids),
                 'lists' => $user->getLists()
-            )
+            ]
         );
     }
 

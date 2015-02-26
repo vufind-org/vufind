@@ -51,7 +51,7 @@ class OpenLibraryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             'http://covers.openlibrary.org/b/isbn/9780739313121-S.jpg?default=false',
             $ol->getUrl(
-                'mykey', 'small', array('isbn' => new ISBN('0739313126'))
+                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
             )
         );
     }
@@ -64,6 +64,6 @@ class OpenLibraryTest extends \PHPUnit_Framework_TestCase
     public function testMissingIsbn()
     {
         $ol = new OpenLibrary();
-        $this->assertEquals(false, $ol->getUrl('mykey', 'small', array()));
+        $this->assertEquals(false, $ol->getUrl('mykey', 'small', []));
     }
 }

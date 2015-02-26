@@ -88,7 +88,7 @@ class Loader
      */
     public function loadByIsbn($isbn)
     {
-        $results = array();
+        $results = [];
         if (!($isbnObj = $this->getIsbnObject($isbn))) {
             return $results;
         }

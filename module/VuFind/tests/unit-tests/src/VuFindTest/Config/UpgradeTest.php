@@ -121,7 +121,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
 
         // Make sure that spelling recommendations are set up appropriately:
         $this->assertEquals(
-            array('TopFacets:ResultsTop', 'SpellingSuggestions'),
+            ['TopFacets:ResultsTop', 'SpellingSuggestions'],
             $results['searches.ini']['General']['default_top_recommend']
         );
         $this->assertTrue(
@@ -131,14 +131,14 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             )
         );
         $this->assertEquals(
-            array(
-                'Author' => array('AuthorFacets', 'SpellingSuggestions'),
-                'CallNumber' => array('TopFacets:ResultsTop')
-            ),
+            [
+                'Author' => ['AuthorFacets', 'SpellingSuggestions'],
+                'CallNumber' => ['TopFacets:ResultsTop']
+            ],
             $results['searches.ini']['TopRecommendations']
         );
         $this->assertEquals(
-            array('SummonDatabases', 'SpellingSuggestions'),
+            ['SummonDatabases', 'SpellingSuggestions'],
             $results['Summon.ini']['General']['default_top_recommend']
         );
         $this->assertTrue(
@@ -148,11 +148,11 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             )
         );
         $this->assertEquals(
-            array(),
+            [],
             $results['Summon.ini']['TopRecommendations']
         );
 
-        return array('configs' => $results, 'warnings' => $warnings);
+        return ['configs' => $results, 'warnings' => $warnings];
     }
 
     /**
@@ -260,6 +260,42 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test permission upgrade
+     *
+     * @return void
+     */
+    public function testPermissionUpgrade()
+    {
+        $upgrader = $this->getUpgrader('permissions');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config.ini']['AdminAuth']));
+        $this->assertFalse(isset($results['Summon.ini']['Auth']));
+        $adminConfig = [
+            'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
+            'username' => ['username1', 'username2'],
+            'permission' => 'access.AdminModule'
+        ];
+        $this->assertEquals(
+            $adminConfig, $results['permissions.ini']['access.AdminModule']
+        );
+        $summonConfig = [
+            'role' => ['loggedin'],
+            'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
+            'boolean' => 'OR',
+            'permission' => 'access.SummonExtendedResults'
+        ];
+        $this->assertEquals(
+            $summonConfig,
+            $results['permissions.ini']['access.SummonExtendedResults']
+        );
+        $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
+        $this->assertEquals(
+            $eitConfig, $results['permissions.ini']['default.EITModule']
+        );
+    }
+
+    /**
      * Test Google-related warnings.
      *
      * @return void
@@ -337,7 +373,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertFalse(
             $this->callMethod(
-                $upgrader, 'fileContainsMeaningfulLines', array($meaningless)
+                $upgrader, 'fileContainsMeaningfulLines', [$meaningless]
             )
         );
         $meaningful = realpath(
@@ -345,7 +381,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertTrue(
             $this->callMethod(
-                $upgrader, 'fileContainsMeaningfulLines', array($meaningful)
+                $upgrader, 'fileContainsMeaningfulLines', [$meaningful]
             )
         );
     }

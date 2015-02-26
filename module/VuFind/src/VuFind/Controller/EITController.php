@@ -43,6 +43,7 @@ class EITController extends AbstractSearch
      */
     public function __construct()
     {
+        $this->accessPermission = 'access.EITModule';
         $this->searchClassId = 'EIT';
         parent::__construct();
     }
@@ -77,14 +78,6 @@ class EITController extends AbstractSearch
      */
     public function searchAction()
     {
-        // We currently restrict EIT to logged in users.
-        // TODO: make this configurable, similar to what is found in
-        // \VuFind\Search\Factory\SummonBackendFactory::isAuthed().
-        $account = $this->getAuthManager();
-        if ($account->isLoggedIn() == false) {
-            return $this->forceLogin();
-        }
         return $this->resultsAction();
     }
 }
-

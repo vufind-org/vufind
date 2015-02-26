@@ -54,28 +54,28 @@ class Summon extends SolrDefault
      */
     public function getAllSubjectHeadings()
     {
-        $retval = array();
-        $topic = isset($this->fields['SubjectTerms']) ? 
-            $this->fields['SubjectTerms'] : array();
-        $temporal = isset($this->fields['TemporalSubjectTerms']) ? 
-            $this->fields['TemporalSubjectTerms'] : array();
+        $retval = [];
+        $topic = isset($this->fields['SubjectTerms']) ?
+            $this->fields['SubjectTerms'] : [];
+        $temporal = isset($this->fields['TemporalSubjectTerms']) ?
+            $this->fields['TemporalSubjectTerms'] : [];
         $geo = isset($this->fields['GeographicLocations']) ?
-            $this->fields['GeographicLocations'] : array();
+            $this->fields['GeographicLocations'] : [];
         $key = isset($this->fields['Keywords']) ?
-            $this->fields['Keywords'] : array();
+            $this->fields['Keywords'] : [];
 
-        $retval = array();
+        $retval = [];
         foreach ($topic as $t) {
-            $retval[] = array(trim($t));
+            $retval[] = [trim($t)];
         }
         foreach ($temporal as $t) {
-            $retval[] = array(trim($t));
+            $retval[] = [trim($t)];
         }
         foreach ($geo as $g) {
-            $retval[] = array(trim($g));
+            $retval[] = [trim($g)];
         }
         foreach ($key as $k) {
-            $retval[] = array(trim($k));
+            $retval[] = [trim($k)];
         }
         return $retval;
     }
@@ -88,7 +88,7 @@ class Summon extends SolrDefault
     public function getBibliographyNotes()
     {
         return isset($this->fields['Notes']) ?
-            $this->fields['Notes'] : array();
+            $this->fields['Notes'] : [];
     }
 
     /**
@@ -134,7 +134,7 @@ class Summon extends SolrDefault
     public function getFormats()
     {
         return isset($this->fields['ContentType'])
-            ? $this->fields['ContentType'] : array();
+            ? $this->fields['ContentType'] : [];
     }
 
     /**
@@ -164,10 +164,10 @@ class Summon extends SolrDefault
     public function getHighlightedSnippet()
     {
         return isset($this->fields['Snippet'][0])
-            ? array(
+            ? [
                 'snippet' => trim($this->fields['Snippet'][0], '.'),
                 'caption' => ''
-            )
+            ]
             : false;
     }
 
@@ -197,7 +197,7 @@ class Summon extends SolrDefault
         if (isset($this->fields['ISBN']) && is_array($this->fields['ISBN'])) {
             return $this->fields['ISBN'];
         }
-        return array();
+        return [];
     }
 
     /**
@@ -207,7 +207,7 @@ class Summon extends SolrDefault
      */
     public function getISSNs()
     {
-        $issns = array();
+        $issns = [];
         if (isset($this->fields['ISSN'])) {
             $issns = $this->fields['ISSN'];
         }
@@ -225,7 +225,7 @@ class Summon extends SolrDefault
     public function getLanguages()
     {
         return isset($this->fields['Language']) ?
-            $this->fields['Language'] : array();
+            $this->fields['Language'] : [];
     }
 
     /**
@@ -236,7 +236,7 @@ class Summon extends SolrDefault
     public function getOCLC()
     {
         return isset($this->fields['OCLC']) ?
-            $this->fields['OCLC'] : array();
+            $this->fields['OCLC'] : [];
     }
 
     /**
@@ -259,7 +259,7 @@ class Summon extends SolrDefault
     public function getPlacesOfPublication()
     {
         return isset($this->fields['PublicationPlace']) ?
-            $this->fields['PublicationPlace'] : array();
+            $this->fields['PublicationPlace'] : [];
     }
 
     /**
@@ -309,7 +309,7 @@ class Summon extends SolrDefault
         if (isset($this->fields['PublicationDate_xml'])
             && is_array($this->fields['PublicationDate_xml'])
         ) {
-            $dates = array();
+            $dates = [];
             $converter = $this->getDateConverter();
             foreach ($this->fields['PublicationDate_xml'] as $current) {
                 if (isset($current['month']) && isset($current['year'])) {
@@ -329,7 +329,7 @@ class Summon extends SolrDefault
             }
         }
         return isset($this->fields['PublicationDate']) ?
-            $this->fields['PublicationDate'] : array();
+            $this->fields['PublicationDate'] : [];
     }
 
     /**
@@ -340,7 +340,7 @@ class Summon extends SolrDefault
     public function getPublishers()
     {
         return isset($this->fields['Publisher']) ?
-            $this->fields['Publisher'] : array();
+            $this->fields['Publisher'] : [];
     }
 
     /**
@@ -350,7 +350,7 @@ class Summon extends SolrDefault
      */
     public function getSecondaryAuthors()
     {
-        $authors = array();
+        $authors = [];
         if (isset($this->fields['Author_xml'])) {
             for ($i = 1; $i < count($this->fields['Author_xml']); $i++) {
                 if (isset($this->fields['Author_xml'][$i]['fullname'])) {
@@ -371,7 +371,7 @@ class Summon extends SolrDefault
     public function getSeries()
     {
         return isset($this->fields['PublicationSeriesTitle'])
-            ? $this->fields['PublicationSeriesTitle']:array();
+            ? $this->fields['PublicationSeriesTitle'] : [];
     }
 
     /**
@@ -404,7 +404,7 @@ class Summon extends SolrDefault
     public function getSummary()
     {
         return isset($this->fields['Abstract']) ?
-          $this->fields['Abstract'] : array();
+          $this->fields['Abstract'] : [];
     }
 
     /**
@@ -429,9 +429,9 @@ class Summon extends SolrDefault
             && !isset($params['isbn']) && !isset($params['upc'])
         ) {
             if ($size === 'small' && isset($this->fields['thumbnail_s'][0])) {
-                return array('proxy' => $this->fields['thumbnail_s'][0]);
+                return ['proxy' => $this->fields['thumbnail_s'][0]];
             } else if (isset($this->fields['thumbnail_m'][0])) {
-                return array('proxy' => $this->fields['thumbnail_m'][0]);
+                return ['proxy' => $this->fields['thumbnail_m'][0]];
             }
         }
 
@@ -453,7 +453,7 @@ class Summon extends SolrDefault
         $sub = $this->getSubtitle();
         $title = empty($sub) ? $title : "{$title}: {$sub}";
         return str_replace(
-            array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $title
+            ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $title
         );
     }
 
@@ -465,7 +465,7 @@ class Summon extends SolrDefault
     public function getTOC()
     {
         return isset($this->fields['TableOfContents'])
-            ? $this->fields['TableOfContents'] : array();
+            ? $this->fields['TableOfContents'] : [];
     }
 
     /**
@@ -485,17 +485,17 @@ class Summon extends SolrDefault
     public function getURLs()
     {
         if (isset($this->fields['link'])) {
-            return array(
-                array(
+            return [
+                [
                     'url' => $this->fields['link'],
                     'desc' => $this->translate('Get full text')
-                )
-            );
+                ]
+            ];
         }
-        $retVal = array();
+        $retVal = [];
         if (isset($this->fields['url']) && is_array($this->fields['url'])) {
             foreach ($this->fields['url'] as $desc => $url) {
-                $retVal[] = array('url' => $url, 'desc' => $desc);
+                $retVal[] = ['url' => $url, 'desc' => $desc];
             }
         }
         return $retVal;

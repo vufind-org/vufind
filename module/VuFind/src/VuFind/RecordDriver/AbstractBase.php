@@ -44,6 +44,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFindSearch\Response\RecordInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Used for identifying search backends
      *
@@ -56,7 +59,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @var array
      */
-    protected $extraDetails = array();
+    protected $extraDetails = [];
 
     /**
      * Main VuFind configuration
@@ -77,21 +80,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @var array
      */
-    protected $fields = array();
-
-    /**
-     * Database table plugin manager
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tableManager;
-
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
+    protected $fields = [];
 
     /**
      * Constructor
@@ -276,7 +265,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         // Add the information to the user's account:
         $user->saveResource(
             $resource, $list,
-            isset($params['mytags']) ? $params['mytags'] : array(),
+            isset($params['mytags']) ? $params['mytags'] : [],
             isset($params['notes']) ? $params['notes'] : ''
         );
     }
@@ -295,7 +284,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         $data = $db->getSavedData(
             $this->getUniqueId(), $this->getResourceSource(), $list_id, $user_id
         );
-        $notes = array();
+        $notes = [];
         foreach ($data as $current) {
             if (!empty($current->notes)) {
                 $notes[] = $current->notes;
@@ -372,9 +361,9 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         if (is_null($types)) {
             $types = isset($this->recordConfig->Record->related) ?
-                $this->recordConfig->Record->related : array();
+                $this->recordConfig->Record->related : [];
         }
-        $retVal = array();
+        $retVal = [];
         foreach ($types as $current) {
             $parts = explode(':', $current);
             $type = $parts[0];
@@ -469,7 +458,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         if ($this->mainConfig->Record->citation_formats === false
             || $this->mainConfig->Record->citation_formats === 'false'
         ) {
-            return array();
+            return [];
         }
 
         // Whitelist:
@@ -488,7 +477,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     protected function getSupportedCitationFormats()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -513,74 +502,10 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return mixed
      */
-    public function tryMethod($method, $params = array())
+    public function tryMethod($method, $params = [])
     {
-        return is_callable(array($this, $method))
-            ? call_user_func_array(array($this, $method), $params)
+        return is_callable([$this, $method])
+            ? call_user_func_array([$this, $method], $params)
             : null;
-    }
-
-    /**
-     * Get a database table object.
-     *
-     * @param string $table Table to load.
-     *
-     * @return \VuFind\Db\Table\User
-     */
-    public function getDbTable($table)
-    {
-        return $this->getDbTableManager()->get($table);
-    }
-
-    /**
-     * Get the table plugin manager.  Throw an exception if it is missing.
-     *
-     * @throws \Exception
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    public function getDbTableManager()
-    {
-        if (null === $this->tableManager) {
-            throw new \Exception('DB table manager missing.');
-        }
-        return $this->tableManager;
-    }
-
-    /**
-     * Set the table plugin manager.
-     *
-     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
-     *
-     * @return void
-     */
-    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
-    {
-        $this->tableManager = $manager;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return AbstractBase
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    public function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 }

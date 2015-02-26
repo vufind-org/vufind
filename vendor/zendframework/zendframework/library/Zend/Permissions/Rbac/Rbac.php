@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -108,9 +108,16 @@ class Rbac extends AbstractIterator
             );
         }
 
+        if (is_object($objectOrName)) {
+            $requiredRole = $objectOrName->getName();
+        } else {
+            $requiredRole = $objectOrName;
+        }
+
         $it = new RecursiveIteratorIterator($this, RecursiveIteratorIterator::CHILD_FIRST);
         foreach ($it as $leaf) {
-            if ((is_string($objectOrName) && $leaf->getName() == $objectOrName) || $leaf == $objectOrName) {
+            /** @var RoleInterface $leaf */
+            if ($leaf->getName() == $requiredRole) {
                 return $leaf;
             }
         }
@@ -127,6 +134,7 @@ class Rbac extends AbstractIterator
      * @param  RoleInterface|string             $role
      * @param  string                           $permission
      * @param  AssertionInterface|Callable|null $assert
+     * @throws Exception\InvalidArgumentException
      * @return bool
      */
     public function isGranted($role, $permission, $assert = null)

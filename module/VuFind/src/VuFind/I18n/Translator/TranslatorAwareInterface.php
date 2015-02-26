@@ -26,12 +26,12 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\I18n\Translator;
+use Zend\I18n\Translator\TranslatorInterface;
 
 /**
  * Lightweight translator aware marker interface (used as an alternative to
  * \Zend\I18n\Translator\TranslatorAwareInterface, which requires an excessive
- * number of methods to be implemented).  If we switch to PHP 5.4 traits in the
- * future, we can eliminate this interface in favor of the default Zend version.
+ * number of methods to be implemented).
  *
  * @category VuFind2
  * @package  Translator
@@ -44,9 +44,9 @@ interface TranslatorAwareInterface
     /**
      * Set a translator
      *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
+     * @param TranslatorInterface $translator Translator
      *
      * @return TranslatorAwareInterface
      */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator);
+    public function setTranslator(TranslatorInterface $translator);
 }

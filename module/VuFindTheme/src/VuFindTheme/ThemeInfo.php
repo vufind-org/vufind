@@ -146,7 +146,7 @@ class ThemeInfo
         // Fill in the theme info cache if it is not already populated:
         if (null === $this->allThemeInfo) {
             // Build an array of theme information by inheriting up the theme tree:
-            $this->allThemeInfo = array();
+            $this->allThemeInfo = [];
             $currentTheme = $this->getTheme();
             do {
                 $this->allThemeInfo[$currentTheme]
@@ -174,7 +174,7 @@ class ThemeInfo
     {
         $basePath = $this->getBaseDir();
         $allPaths = is_array($relativePath)
-            ? $relativePath : array($relativePath);
+            ? $relativePath : [$relativePath];
 
         $currentTheme = $this->getTheme();
         $allThemeInfo = $this->getThemeInfo();
@@ -186,7 +186,7 @@ class ThemeInfo
                     if (true === $returnType) {
                         return $file;
                     } else if (self::RETURN_ALL_DETAILS === $returnType) {
-                        return array('path' => $file, 'theme' => $currentTheme);
+                        return ['path' => $file, 'theme' => $currentTheme];
                     }
                     // Default return type:
                     return $currentTheme;
