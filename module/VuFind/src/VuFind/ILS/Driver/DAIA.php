@@ -44,7 +44,8 @@ use DOMDocument, VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwareInterface
+class DAIA extends AbstractBase implements 
+   HttpServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -101,7 +102,9 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
             throw new ILSException('DAIA/baseUrl configuration needs to be set.');
         }
         if (isset($this->config['DAIA']['daiaResponseFormat'])) {
-            $this->daiaResponseFormat = strtolower($this->config['DAIA']['daiaResponseFormat']);
+            $this->daiaResponseFormat = strtolower(
+                $this->config['DAIA']['daiaResponseFormat']
+            );
         } else {
             $this->debug("No daiaResponseFormat setting found, using default: xml");
             $this->daiaResponseFormat = "xml";
@@ -262,10 +265,17 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
 
         try {
             if ($this->legacySupport) {
-                // HttpRequest for DAIA legacy support as all the parameters are contained in the baseUrl
-                $result = $this->httpService->get($this->baseUrl . $id, array(), null, $http_headers);
+                // HttpRequest for DAIA legacy support as all 
+                // the parameters are contained in the baseUrl
+                $result = $this->httpService->get(
+                    $this->baseUrl . $id, 
+                    array(), null, $http_headers
+                );
             } else {
-                $result = $this->httpService->get($this->baseUrl, $params, null, $http_headers);
+                $result = $this->httpService->get(
+                    $this->baseUrl, 
+                    $params, null, $http_headers
+                );
             }
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -273,10 +283,13 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
 
         if (!$result->isSuccess()) {
             // throw ILSException disabled as this will be shown in VuFind-Frontend
-            //throw new ILSException('HTTP error ' . $result->getStatusCode() . ' retrieving status for record: ' . $id);
+            //throw new ILSException('HTTP error ' . $result->getStatusCode() . 
+            //                       ' retrieving status for record: ' . $id);
             // write to Debug instead
-            $this->debug('HTTP status ' . $result->getStatusCode() .
-                ' received, retrieving availability information for record: ' . $id);
+            $this->debug(
+                'HTTP status ' . $result->getStatusCode() .
+                ' received, retrieving availability information for record: ' . $id
+            );
 
             // return false as DAIA request failed
             return false;
@@ -430,8 +443,9 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
         $documentlist = $daia->getElementsByTagName('document');
 
         // handle empty DAIA response
-        if ($documentlist->length == 0 &&
-            $daia->getElementsByTagName("message") != null) {
+        if ($documentlist->length == 0 
+            && $daia->getElementsByTagName("message") != null
+        ) {
             // analyse the message for the error handling and debugging
         }
 
@@ -505,8 +519,8 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                         $result['location'] = $storageElements->item(0)->nodeValue;
                         //$result['location.id'] = $storageElements->item(0)
                         //  ->attributes->getNamedItem('id')->nodeValue;
-                        if ($storageElements->item(0)
-                                ->attributes->getNamedItem('href') !== null) {
+                        if ($storageElements->item(0)->attributes->getNamedItem('href') !== null
+                        ) {
                             //href attribute is recommended but not mandatory
                             $result['location.href'] = $storageElements->item(0)
                                 ->attributes->getNamedItem('href')->nodeValue;
@@ -580,7 +594,8 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                                 $result['loan.availability'] = '0';
                                 $result['loan_availability'] = '0';
                                 if ($expectedNode !== null) {
-                                    $result['loan.duedate'] = $expectedNode->nodeValue;
+                                    $result['loan.duedate'] 
+                                        = $expectedNode->nodeValue;
                                 }
                                 if ($queueNode !== null) {
                                     $result['loan.queue'] = $queueNode->nodeValue;
@@ -593,7 +608,8 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                                         = $expectedNode->nodeValue;
                                 }
                                 if ($queueNode !== null) {
-                                    $result['interloan.queue'] = $queueNode->nodeValue;
+                                    $result['interloan.queue'] 
+                                        = $queueNode->nodeValue;
                                 }
                                 $result['availability'] = '0';
                             } elseif ($service === 'openaccess') {
@@ -603,7 +619,8 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                                         = $expectedNode->nodeValue;
                                 }
                                 if ($queueNode !== null) {
-                                    $result['openaccess.queue'] = $queueNode->nodeValue;
+                                    $result['openaccess.queue'] 
+                                        = $queueNode->nodeValue;
                                 }
                                 $result['availability'] = '0';
                             }
@@ -646,13 +663,15 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                             } elseif ($service === 'interloan') {
                                 $result['interloan.availability'] = '1';
                                 if ($delayNode !== null) {
-                                    $result['interloan.delay'] = $delayNode->nodeValue;
+                                    $result['interloan.delay'] 
+                                        = $delayNode->nodeValue;
                                 }
                                 $result['availability'] = '1';
                             } elseif ($service === 'openaccess') {
                                 $result['openaccess.availability'] = '1';
                                 if ($delayNode !== null) {
-                                    $result['openaccess.delay'] = $delayNode->nodeValue;
+                                    $result['openaccess.delay'] 
+                                        = $delayNode->nodeValue;
                                 }
                                 $result['availability'] = '1';
                             }
@@ -792,10 +811,10 @@ class DAIA extends AbstractBase implements HttpServiceAwareInterface, LoggerAwar
                     foreach ($earliest as $earliest_key => $earliest_value) {
                         if ($earliest_counter === 0) {
                             $earliest_duedate = $earliest_value;
-                            $earliest_href =
-                                isset($hrefs[$earliest_key]) ? $hrefs[$earliest_key] : '';
-                            $earliest_queue =
-                                isset($queue[$earliest_key]) ? $queue[$earliest_key] : '';
+                            $earliest_href = isset($hrefs[$earliest_key]) 
+                                 ? $hrefs[$earliest_key] : '';
+                            $earliest_queue = isset($queue[$earliest_key]) 
+                                 ? $queue[$earliest_key] : '';
                         }
                         $earliest_counter = 1;
                     }
