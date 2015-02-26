@@ -40,7 +40,8 @@
           <? endif; ?>
 
           <div class="resultHierarchyLinks">
-            <? if ($this->transEsc('Archive Repository') != ''): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
+            <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
+            <? if ($this->transEsc('Archive Repository') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
             <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", array(), $str)); }, $this->driver->getInstitutions())); ?>
             <? if ($origination = $this->driver->getOrigination()): ?>
               <span class="small"><?=$this->transEsc('Archive Origination')?>:</span>
