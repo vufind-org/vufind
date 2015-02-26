@@ -1,10 +1,6 @@
 @import "a11y";
 @import "bootstrap/bootstrap";
 
-:focus, :visited {
-    outline: none !important;
-}
-
 body {
     background: @background-image-url;
     background-attachment: fixed;
@@ -776,8 +772,8 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         z-index: 10;
         box-shadow: 0px 20px 20px -16px #000;
         .opacity(0);
-                background: rgba(255, 255, 255, 0.9);
-                transition: all 0.2s ease-in-out;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.2s ease-in-out;
     }
     & a.title {
         font-size: 1.15em;
@@ -788,8 +784,8 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         bottom: 30px;
         left: auto;
         & .label  {
-        background-color: #00b270;
-        box-shadow: -2px 2px 10px -2px black;
+            background-color: #00b270;
+            box-shadow: -2px 2px 10px -2px black;
         }   
     }
 }
