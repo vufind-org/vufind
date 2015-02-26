@@ -1,0 +1,33 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
+?>
+<? $rawFieldData = $this->driver->getRawData(); ?>
+<? if (!empty($rawFieldData['fullrecord']) && strncmp($rawFieldData['fullrecord'], '<', 1) == 0): ?>
+<pre>
+<?
+  $dom = new DOMDocument('1.0');
+  $dom->preserveWhiteSpace = false;
+  $dom->formatOutput = true;
+  if ($dom->loadXML($rawFieldData['fullrecord'])) {
+    echo $this->escapeHtml($dom->saveXML());
+  } else {
+    echo $this->escapeHtml($rawFieldData['fullrecord']);
+  }
+?>
+</pre>
+<hr>
+<? endif; ?>
+<table class="citation table table-striped">
+  <? foreach ($rawFieldData as $field => $values): ?>
+    <tr>
+      <th><?=$this->escapeHtml($field)?></th>
+      <td>
+        <? if (!is_array($values)) { $values = array($values); } ?>
+        <? foreach ($values as $value): ?>
+          <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br />
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endforeach; ?>
+</table>
