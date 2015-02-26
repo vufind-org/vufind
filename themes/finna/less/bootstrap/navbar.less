@@ -196,7 +196,7 @@
   position: relative;
   float: left;
   margin-right: @navbar-padding-horizontal;
-  color: #fff;
+  color: @navbar-toggle-color;
   padding: @navbar-height/4 5px @navbar-height/4 0px;
   background-color: transparent;
   background-image: none; // Reset unusual Firefox-on-Android default style; see https://github.com/necolas/normalize.css/issues/214
@@ -235,6 +235,8 @@
   > li > a {
     line-height: @navbar-height;
     color: @navbar-default-link-color;
+    font-size: @navbar-font-size;
+    font-weight: @navbar-font-weight;
   }
 
   @media (max-width: @grid-float-breakpoint-max) {

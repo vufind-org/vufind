@@ -19,7 +19,7 @@
       position: relative;
       display: block;
       padding: @nav-link-padding;
-      transition: background 0.2s ease-in-out;
+      transition: background .2s ease-in-out;
       &:hover,
       &:focus {
         text-decoration: none;
@@ -85,15 +85,17 @@
       font-size: 1.1em;
       font-weight: 500;
       background-color: @nav-tabs-border-color;
-      color: @gray;
+      color: @nav-tabs-text-color;
       margin-right: 3px;
       line-height: @line-height-base;
       padding: .6em .5em;
       border: 2px solid transparent;
       margin-bottom: -1px;
       border-radius: @tabs-border-radius @tabs-border-radius 0 0;
+      transition: none;
       &:hover {
-        border-color: @nav-tabs-link-hover-border-color @nav-tabs-link-hover-border-color @nav-tabs-border-color;
+          color: @nav-tabs-link-hover-color;
+          border-color: @nav-tabs-border-color @nav-tabs-border-color @nav-tabs-border-color;
       }
     }
 
@@ -107,6 +109,7 @@
         border: 3px solid @nav-tabs-border-color;
         border-bottom-color: transparent;
         cursor: default;
+        transition: border 0.05s linear;
       }
     }
   }
@@ -133,10 +136,10 @@
         border: none;
         border-bottom: 5px solid transparent;
         margin:0;
-       & i {
-          display: block;
-          min-height: 14px;
-       }
+        & i {
+            display: block;
+            min-height: 14px;
+        }
     } 
       & > li.active > a {
       &,
