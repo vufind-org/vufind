@@ -96,6 +96,33 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return an associative array of image URLs associated with this record
+     * (key = URL, value = description), if available; false otherwise.
+     *
+     * @param string $size Size of requested images
+     *
+     * @return mixed
+     * @access protected
+     */
+    public function getAllThumbnails($size = 'large')
+    {
+        $urls = array();
+        $url = '';
+        $role = $size == 'large'
+            ? 'image_reference'
+            : 'image_thumbnail';
+
+        foreach ($this->getSimpleXML()
+            ->xpath("did/daogrp/daoloc[@role=\"$role\"]") as $node
+        ) {
+            $url = (string)$node->attributes()->href;
+            $urls[$url] = '';
+        }
+
+        return $urls;
+    }
+
+    /**
      * Get notes on bibliography content.
      *
      * @return string[] Notes
@@ -158,30 +185,25 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Return an associative array of image URLs associated with this record
-     * (key = URL, value = description), if available; false otherwise.
+     * Get the hierarchy_parent_id(s) associated with this item (empty if none).
      *
-     * @param string $size Size of requested images
-     *
-     * @return mixed
-     * @access protected
+     * @return array
      */
-    public function getAllThumbnails($size = 'large')
+    public function getHierarchyParentID()
     {
-        $urls = array();
-        $url = '';
-        $role = $size == 'large'
-            ? 'image_reference'
-            : 'image_thumbnail';
+        return isset($this->fields['hierarchy_parent_id'])
+            ? $this->fields['hierarchy_parent_id'] : [];
+    }
 
-        foreach ($this->getSimpleXML()
-            ->xpath("did/daogrp/daoloc[@role=\"$role\"]") as $node
-        ) {
-            $url = (string)$node->attributes()->href;
-            $urls[$url] = '';
-        }
-
-        return $urls;
+    /**
+     * Get the parent title(s) associated with this item (empty if none).
+     *
+     * @return array
+     */
+    public function getHierarchyParentTitle()
+    {
+        return isset($this->fields['hierarchy_parent_title'])
+            ? $this->fields['hierarchy_parent_title'] : [];
     }
 
     /**
