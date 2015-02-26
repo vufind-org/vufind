@@ -86,13 +86,13 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
      * @param string $activeSearchClass The search class ID of the active search
      * @param string $query             The current search query
      * @param string $handler           The current search handler
-     * @param array  $savedSearches     Saved search ids from all search tabs
      * @param string $type              The current search type (basic/advanced)
+     * @param array  $savedSearches     Saved search ids from all search tabs
      *
      * @return array
      */
     public function __invoke(
-        $activeSearchClass, $query, $handler, $savedSearches, $type = 'basic'
+        $activeSearchClass, $query, $handler, $type = 'basic', $savedSearches = []
     ) {
         $this->activeSearchClass = $activeSearchClass;
         $helper = $this->getView()->results->getUrlQuery();
