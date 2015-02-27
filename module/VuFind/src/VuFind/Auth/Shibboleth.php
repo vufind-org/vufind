@@ -58,7 +58,16 @@ class Shibboleth extends  AbstractBase
                 'Shibboleth login configuration parameter is not set.'
             );
         }
-
+        if (isset($shib->userattribute_1) || isset($shib->cat_username) 
+            || isset($shib->college) || isset($shib->major) 
+            || isset($shib->home_library)
+        ) {
+            throw new AuthException(
+                'You must change your configuration. 
+                 Attributes in login process is not longer supported. 
+                 Please look at permissions.ini'
+            );
+        }
     }
 
     /**
