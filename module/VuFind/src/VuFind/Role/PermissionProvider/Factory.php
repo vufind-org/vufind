@@ -66,6 +66,19 @@ class Factory
     }
 
     /**
+     * Factory for Shibboleth
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Shibboleth
+     */
+    public static function getShibboleth(ServiceManager $sm)
+    {
+        return new Shibboleth($sm->getServiceLocator()->get('Request'));
+    }
+
+
+    /**
      * Factory for Username
      *
      * @param ServiceManager $sm Service manager.

@@ -673,6 +673,7 @@ $config = [
             'factories' => [
                 'ipRange' => 'VuFind\Role\PermissionProvider\Factory::getIpRange',
                 'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
+                'shibboleth' => 'VuFind\Role\PermissionProvider\Factory::getShibboleth',
                 'username' => 'VuFind\Role\PermissionProvider\Factory::getUsername',
             ],
             'invokables' => [
