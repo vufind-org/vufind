@@ -1,12 +1,12 @@
-<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
-  <div class="row">
-    <div class="col-sm-2 col-xs-3 left">
+<!-- Start of Ead result-list.phtml -->
+<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?> list-view">
+    <div class="col-xs-2 resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
       <? $img = $this->recordImage($this->record($this->driver))?>
       <?= $img->render('list', array('medium' => array('w' => 300, 'h' => 300, 'maxh' => 400))) ?>
     </div>
-    <div class="col-sm-7 col-xs-6 middle">
+    <div class="col-xs-9">
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
         <?
@@ -23,14 +23,12 @@
         </a>
       </div>
 
-      <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
-
-      <div>
+      <div class="dateyeartype">
+         <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList()).'<br/>'?>
         <? if($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
         <? else: ?>
           <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-          <?=$this->transEsc('by')?>
           <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
             $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
             echo !empty($summHighlightedAuthor)
@@ -44,7 +42,7 @@
             <? if ($this->transEsc('Archive Repository') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
             <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", array(), $str)); }, $this->driver->getInstitutions())); ?>
             <? if ($origination = $this->driver->getOrigination()): ?>
-              <span class="small"><?=$this->transEsc('Archive Origination')?>:</span>
+              <br/><span class="small"><?=$this->transEsc('Archive Origination')?>:</span>
               <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>
             <? endif; ?>
             <? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
@@ -53,13 +51,13 @@
               <? else: ?>
                 <? $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
               <? endif; ?>
-              <span class="small"><?=$this->transEsc('Archive')?>:</span>
+              <br/><span class="small"><?=$this->transEsc('Archive')?>:</span>
               <? foreach($topIds as $index => $parentId): ?>
                 <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
               <? endforeach; ?>
             <? endif; ?>
             <? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
-              <span class="small"><?=$this->transEsc('Archive Series')?>:</span>
+              <br/><span class="small"><?=$this->transEsc('Archive Series')?>:</span>
               <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
               <? foreach ($parentIds as $index => $parentId): ?>
                 <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
@@ -122,7 +120,6 @@
           <? endif; ?>
         <? endif; ?>
       </div>
-
       <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
             but even if we don't plan to display the link, we still want to get the $openUrl
             value for use in generating a COinS (Z3988) tag -- see bottom of file.
@@ -131,26 +128,28 @@
         $openUrlActive = $this->driver->openURLActive('results');
         $urls = $this->record($this->driver)->getLinkDetails();
         if ($openUrlActive || !empty($urls)): ?>
+        
         <? if ($openUrlActive): ?>
-          <br/>
           <?=$this->openUrl($openUrl)?>
           <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
         <? endif; ?>
         <? if (!is_array($urls)) $urls = array();
-          if(!$this->driver->isCollection()):
-            foreach ($urls as $current): ?>
+          if(!$this->driver->isCollection()): ?>
+          <div class="available-online-links truncate-field">
+          <? foreach ($urls as $current): ?>
               <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
           <? endforeach; ?>
+          </div>
         <? endif; ?>
       <? endif; ?>
-
       <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
         <span class="status ajax-availability hidden">
           <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
         </span>
+      
       <? endif; ?>
+      
       <?=$this->record($this->driver)->getPreviews()?>
-
       <? /* Hierarchy tree link */ ?>
       <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
         <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
@@ -164,7 +163,7 @@
         <? endforeach; ?>
       <? endif; ?>
     </div>
-    <div class="col-xs-3 right hidden-print">
+    <div class="col-xs-1 hidden-print">
       <? /* Display qrcode if appropriate: */ ?>
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
@@ -181,7 +180,7 @@
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <i class="fa fa-heart"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a><br/>
 
         <? /* Saved lists */ ?>
         <div class="savedLists alert alert-info hidden">
@@ -191,5 +190,5 @@
 
       <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
     </div>
-  </div>
 </div>
+<!-- End of Ead result-list.phtml -->
