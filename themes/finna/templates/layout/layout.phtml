@@ -153,7 +153,9 @@
       <? if (!empty($this->layout()->finnaMainHeader)): ?>
       <div class="container-fluid finna-main-header">
         <div class="container">
-          <?=$this->layout()->finnaMainHeader?>
+          <div class="row">
+            <?=$this->layout()->finnaMainHeader?>
+          </div>
         </div>
       </div>
       <? endif; ?>
