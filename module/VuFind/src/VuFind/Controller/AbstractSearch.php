@@ -142,7 +142,7 @@ class AbstractSearch extends AbstractBase
         $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
         $user = $this->getUser();
         $userId = $user ? $user->id : false;
-        if ($search->session_id == $sessId || $search->user_id == $userId) {
+        if ($search->session_id == $sessId || $search->user_id === $userId) {
             // They do, deminify it to a new object.
             $minSO = $search->getSearchObject();
             $savedSearch = $minSO->deminify($this->getResultsManager());
