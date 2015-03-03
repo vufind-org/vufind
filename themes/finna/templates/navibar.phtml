@@ -1,7 +1,7 @@
 <? $account = $this->auth()->getManager(); ?>
 <div class="navbar-header">
   <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#header-collapse">
-    <span class="sr-only">Toggle navigation</span>
+    <span class="sr-only"><?=$this->transEsc('Toggle navigation');?></span>
     <i class="fa fa-bars"></i>
   </button>
   <? if ($this->resolver('navibar-logo.phtml')): ?><a role="logo" class="navbar-brand" href="<?=$this->url('home')?>"><?=$this->render('navibar-logo.phtml')?><span class="sr-only"><?=$this->transEsc("Home")?></span></a><? endif ?>
