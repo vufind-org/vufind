@@ -57,7 +57,9 @@
 <? endif; ?>
 <?
   $script = <<<JS
+var normalizeHeightCount = $('#similar-items-carousel img').length;
 function normalizeHeights() {
+  if(--normalizeHeightCount > 0) return;
   var tallest = 0;
   var items = $('#similar-items-carousel .hover-overlay');
   items.each(function() { //add heights to array
@@ -65,7 +67,7 @@ function normalizeHeights() {
       tallest = $(this).height();
     }
   });
-  items.css('min-height',tallest + 'px');
+  items.css('min-height', (tallest+25) + 'px');
 }
 $('#similar-items-carousel img').load(normalizeHeights);
 JS;
