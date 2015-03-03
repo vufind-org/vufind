@@ -46,7 +46,7 @@ use DOMDocument, VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class DAIA extends AbstractBase implements 
+class DAIA extends AbstractBase implements
    HttpServiceAwareInterface, LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -250,32 +250,32 @@ class DAIA extends AbstractBase implements
      */
     protected function doHTTPRequest($id)
     {
-        $contentTypes = array (
+        $contentTypes = [
             "xml"  => "application/xml",
             "json" => "application/json",
-        );
+        ];
 
-        $http_headers = array(
+        $http_headers = [
             "Content-type: " . $contentTypes[$this->daiaResponseFormat],
             "Accept: " .  $contentTypes[$this->daiaResponseFormat]
-        );
+        ];
 
-        $params = array(
+        $params = [
             "id" => $this->daiaIdPrefix . $id,
             "format" => $this->daiaResponseFormat,
-        );
+        ];
 
         try {
             if ($this->legacySupport) {
-                // HttpRequest for DAIA legacy support as all 
+                // HttpRequest for DAIA legacy support as all
                 // the parameters are contained in the baseUrl
                 $result = $this->httpService->get(
-                    $this->baseUrl . $id, 
-                    array(), null, $http_headers
+                    $this->baseUrl . $id,
+                    [], null, $http_headers
                 );
             } else {
                 $result = $this->httpService->get(
-                    $this->baseUrl, 
+                    $this->baseUrl,
                     $params, null, $http_headers
                 );
             }
@@ -285,7 +285,7 @@ class DAIA extends AbstractBase implements
 
         if (!$result->isSuccess()) {
             // throw ILSException disabled as this will be shown in VuFind-Frontend
-            //throw new ILSException('HTTP error ' . $result->getStatusCode() . 
+            //throw new ILSException('HTTP error ' . $result->getStatusCode() .
             //                       ' retrieving status for record: ' . $id);
             // write to Debug instead
             $this->debug(
@@ -313,8 +313,8 @@ class DAIA extends AbstractBase implements
     protected function getJSONStatus($id)
     {
         // get daia json request for id and decode it
-        $daia=json_decode($this->doHTTPRequest($id), true);
-        $result = array();
+        $daia = json_decode($this->doHTTPRequest($id), true);
+        $result = [];
         if (array_key_exists("message", $daia)) {
             // analyse the message for the error handling and debugging
         }
@@ -325,60 +325,60 @@ class DAIA extends AbstractBase implements
         }
         if (array_key_exists("document", $daia)) {
             // analyse the items
-            $dummy_item = array("id"=>"0815",
-                "availability"=>true,
-                "status"=>"Available",
-                "location"=>"physical location no HTML",
-                "reserve"=>"N",
-                "callnumber"=>"007",
-                "number"=>"1",
-                "item_id"=>"0815",
-                "barcode"=>"1");
+            $dummy_item = ["id" => "0815",
+                "availability" => true,
+                "status" => "Available",
+                "location" => "physical location no HTML",
+                "reserve" => "N",
+                "callnumber" => "007",
+                "number" => "1",
+                "item_id" => "0815",
+                "barcode" => "1"];
             // each document may contain: id, href, message, item
             foreach ($daia["document"] as $document) {
-                $doc_id=null;
-                $doc_href=null;
-                $doc_message=null;
+                $doc_id = null;
+                $doc_href = null;
+                $doc_message = null;
                 if (array_key_exists("id", $document)) {
-                    $doc_id=$document["id"];
+                    $doc_id = $document["id"];
                 }
                 if (array_key_exists("href", $document)) {
                     // url of the document
-                    $doc_href=$document["href"];
+                    $doc_href = $document["href"];
                 }
                 if (array_key_exists("message", $document)) {
                     // array of messages with language code and content
-                    $doc_message=$document["message"];
+                    $doc_message = $document["message"];
                 }
                 // if one or more items exist, iterate and build result-item
                 if (array_key_exists("item", $document)) {
-                    $number=0;
+                    $number = 0;
                     foreach ($document["item"] as $item) {
-                        $result_item=array();
-                        $result_item["id"]=$id;
-                        $result_item["item_id"]=$id;
+                        $result_item = [];
+                        $result_item["id"] = $id;
+                        $result_item["item_id"] = $id;
                         $number++; // count items
-                        $result_item["number"]=$number;
+                        $result_item["number"] = $number;
                         // set default value for barcode
-                        $result_item["barcode"]="1";
+                        $result_item["barcode"] = "1";
                         // set default value for reserve
-                        $result_item["reserve"]="N";
+                        $result_item["reserve"] = "N";
                         // get callnumber
                         if (isset($item["label"])) {
-                            $result_item["callnumber"]=$item["label"];
+                            $result_item["callnumber"] = $item["label"];
                         } else {
-                            $result_item["callnumber"]="Unknown";
+                            $result_item["callnumber"] = "Unknown";
                         }
                         // get location
                         if (isset($item["storage"])) {
-                            $result_item["location"]=$item["storage"]["content"];
+                            $result_item["location"] = $item["storage"]["content"];
                         } else {
-                            $result_item["location"]="Unknown";
+                            $result_item["location"] = "Unknown";
                         }
                         // status and availability will be calculated in own function
-                        $result_item=$this->calculateStatus($item)+$result_item;
+                        $result_item = $this->calculateStatus($item)+$result_item;
                         // add result_item to the result array
-                        $result[]=$result_item;
+                        $result[] = $result_item;
                     } // end iteration on item
                 }
             } // end iteration on document
@@ -422,9 +422,9 @@ class DAIA extends AbstractBase implements
                 }
             }
         }
-        return (array("status" => $status,
+        return (["status" => $status,
             "availability" => $availability,
-            "duedate" => $duedate));
+            "duedate" => $duedate]);
     }
 
     /**
@@ -445,7 +445,7 @@ class DAIA extends AbstractBase implements
         $documentlist = $daia->getElementsByTagName('document');
 
         // handle empty DAIA response
-        if ($documentlist->length == 0 
+        if ($documentlist->length == 0
             && $daia->getElementsByTagName("message") != null
         ) {
             // analyse the message for the error handling and debugging
@@ -597,7 +597,7 @@ class DAIA extends AbstractBase implements
                                 $result['loan.availability'] = '0';
                                 $result['loan_availability'] = '0';
                                 if ($expectedNode !== null) {
-                                    $result['loan.duedate'] 
+                                    $result['loan.duedate']
                                         = $expectedNode->nodeValue;
                                 }
                                 if ($queueNode !== null) {
@@ -611,7 +611,7 @@ class DAIA extends AbstractBase implements
                                         = $expectedNode->nodeValue;
                                 }
                                 if ($queueNode !== null) {
-                                    $result['interloan.queue'] 
+                                    $result['interloan.queue']
                                         = $queueNode->nodeValue;
                                 }
                                 $result['availability'] = '0';
@@ -622,7 +622,7 @@ class DAIA extends AbstractBase implements
                                         = $expectedNode->nodeValue;
                                 }
                                 if ($queueNode !== null) {
-                                    $result['openaccess.queue'] 
+                                    $result['openaccess.queue']
                                         = $queueNode->nodeValue;
                                 }
                                 $result['availability'] = '0';
@@ -666,14 +666,14 @@ class DAIA extends AbstractBase implements
                             } elseif ($service === 'interloan') {
                                 $result['interloan.availability'] = '1';
                                 if ($delayNode !== null) {
-                                    $result['interloan.delay'] 
+                                    $result['interloan.delay']
                                         = $delayNode->nodeValue;
                                 }
                                 $result['availability'] = '1';
                             } elseif ($service === 'openaccess') {
                                 $result['openaccess.availability'] = '1';
                                 if ($delayNode !== null) {
-                                    $result['openaccess.delay'] 
+                                    $result['openaccess.delay']
                                         = $delayNode->nodeValue;
                                 }
                                 $result['availability'] = '1';
@@ -814,9 +814,9 @@ class DAIA extends AbstractBase implements
                     foreach ($earliest as $earliest_key => $earliest_value) {
                         if ($earliest_counter === 0) {
                             $earliest_duedate = $earliest_value;
-                            $earliest_href = isset($hrefs[$earliest_key]) 
+                            $earliest_href = isset($hrefs[$earliest_key])
                                  ? $hrefs[$earliest_key] : '';
-                            $earliest_queue = isset($queue[$earliest_key]) 
+                            $earliest_queue = isset($queue[$earliest_key])
                                  ? $queue[$earliest_key] : '';
                         }
                         $earliest_counter = 1;
