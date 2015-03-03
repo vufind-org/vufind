@@ -246,26 +246,6 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get all authors apart from presenters
-     *
-     * @return array
-     */
-    public function getNonPresenterAuthors()
-    {
-        $authors = array();
-        if ($author = $this->getPrimaryAuthor()) {
-            $authors[] = array('name' => $author);
-        }
-        if ($author = $this->getCorporateAuthor()) {
-            $authors[] = array('name' => $author);
-        }
-        foreach ($this->getSecondaryAuthors() as $author) {
-            $authors[] = array('name' => $author);
-        }
-        return $authors;
-    }
-
-    /**
      * Get origination
      *
      * @return string

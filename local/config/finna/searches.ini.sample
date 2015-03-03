@@ -318,7 +318,7 @@ author = sort_author
 ;Author[]            = AuthorFacets
 ;Author[]           = WorldCatIdentities
 ;Subject[]          = WorldCatTerms
-Author[]            = WikipediaDeferred:Author
+;Author[]            = WikipediaDeferred:Author
 
 [NoResultsRecommendations]
 
@@ -425,7 +425,7 @@ Author = "Solr:Author:author,author2"
 Subject = "Solr:Subject:topic,genre,geographic,era"
 CallNumber = "SolrCN"
 ISN = "Solr:ISN:isbn,issn"
-tag = "Tag"
+;tag = "Tag"
 
 ; When snippets are enabled, this section can be used to display captions based on
 ; the Solr fields from which the snippets were obtained.  Keys are the names of Solr

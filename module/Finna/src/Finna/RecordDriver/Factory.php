@@ -53,8 +53,7 @@ class Factory
         $driver = new SolrDefault(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
-            $sm->getServiceLocator()->get('VuFind\Translator')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
         return $driver;
     }
@@ -106,7 +105,9 @@ class Factory
         $driver = new SolrMarc(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
-            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+            $sm->getServiceLocator()->get('VuFind\Config')->get('searches'),
+            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('datasources')
         );
         $driver->attachILS(
             $sm->getServiceLocator()->get('VuFind\ILSConnection'),
