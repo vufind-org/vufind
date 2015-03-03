@@ -220,8 +220,8 @@ class Initializer
         }
 
         // Save the current setting to a cookie so it persists:
-        $_COOKIE['ui'] = $selectedUI;
-        setcookie('ui', $selectedUI, null, '/');
+        $cookieManager = $this->serviceManager->get('VuFind\CookieManager');
+        $cookieManager->set('ui', $selectedUI);
 
         // Do we have a valid mobile selection?
         if ($mobileTheme && $selectedUI == 'mobile') {
