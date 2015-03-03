@@ -127,10 +127,13 @@ class CookieManager
      */
     public function set($key, $value, $expire = 0)
     {
-        $this->cookies[$key] = $value;
-        return setcookie(
+        $success = setcookie(
             $key, $value, $expire, $this->path, $this->domain, $this->secure
         );
+        if ($success) {
+            $this->cookies[$key] = $value;
+        }
+        return $success;
     }
 
     /**
