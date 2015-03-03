@@ -186,16 +186,16 @@ class Factory
     {
         $config = $sm->get('VuFind\Config')->get('config');
         $path = '/';
-        if (isset($config->Session->limit_session_path)
-            && $config->Session->limit_session_path
+        if (isset($config->Cookies->limit_by_path)
+            && $config->Cookies->limit_by_path
         ) {
             $path = $sm->get('Request')->getBasePath();
         }
-        $secure = isset($config->Session->only_secure)
-            ? $config->Session->only_secure
+        $secure = isset($config->Cookies->only_secure)
+            ? $config->Cookies->only_secure
             : false;
-        $domain = isset($config->Session->cookie_domain)
-            ? $config->Session->cookie_domain
+        $domain = isset($config->Cookies->domain)
+            ? $config->Cookies->domain
             : null;
         return new \VuFind\Cookie\CookieManager($_COOKIE, $path, $domain, $secure);
     }
