@@ -170,3 +170,8 @@ code[] = "MYINSTITUTION"
 ;code[] = "MEMBER2"
 ;regex[] = "/.*/"           ; default if no previous rule was matched
 ;code[] = "DEFAULT"
+
+[Record]
+; Set this to true in order to enable "next" and "previous" links to navigate
+; through the current result set from within the record view.
+next_prev_navigation = true
