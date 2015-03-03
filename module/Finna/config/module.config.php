@@ -148,6 +148,13 @@ $config = array(
                 ),
                 'defaultTab' => null,
             ),
+            'Finna\RecordDriver\Primo' => array(
+                'tabs' => array(
+                    'UserComments' => 'UserComments',
+                    'Details' => 'StaffViewArray'
+                ),
+                'defaultTab' => null,
+            ),
         ),
     )
 );
