@@ -137,7 +137,19 @@ class CookieManager
     }
 
     /**
-     * Retrieve a cookie value.
+     * Clear a cookie.
+     *
+     * @param string $key Name of cookie to unset
+     *
+     * @return bool
+     */
+    public function clear($key)
+    {
+        return $this->set($key, '', time() - 3600);
+    }
+
+    /**
+     * Retrieve a cookie value (or null if unset).
      *
      * @param string $key Name of cookie to retrieve
      *
@@ -145,6 +157,6 @@ class CookieManager
      */
     public function get($key)
     {
-        return $this->cookies[$key];
+        return isset($this->cookies[$key]) ? $this->cookies[$key] : null;
     }
 }
