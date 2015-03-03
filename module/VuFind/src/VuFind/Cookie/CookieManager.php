@@ -127,9 +127,22 @@ class CookieManager
      */
     public function set($key, $value, $expire = 0)
     {
-        $success = setcookie(
-            $key, $value, $expire, $this->path, $this->domain, $this->secure
-        );
+        if (is_array($value)) {
+            $success = true;
+            foreach ($value as $i => $curr) {
+                $lastSuccess = setcookie(
+                    $key . '[' . $i . ']', $curr, $expire,
+                    $this->path, $this->domain, $this->secure
+                );
+                if (!$lastSuccess) {
+                    $success = false;
+                }
+            }
+        } else {
+            $success = setcookie(
+                $key, $value, $expire, $this->path, $this->domain, $this->secure
+            );
+        }
         if ($success) {
             $this->cookies[$key] = $value;
         }
@@ -145,7 +158,17 @@ class CookieManager
      */
     public function clear($key)
     {
-        return $this->set($key, '', time() - 3600);
+        $value = $this->get($key);
+        if (is_array($value)) {
+            $success = true;
+            foreach (array_keys($value) as $i) {
+                if (!$this->clear($key . '[' . $i . ']')) {
+                    $success = false;
+                }
+            }
+            return $success;
+        }
+        return $this->set($key, null, time() - 3600);
     }
 
     /**
