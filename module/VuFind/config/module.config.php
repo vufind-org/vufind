@@ -66,6 +66,7 @@ $config = [
             'collection' => 'VuFind\Controller\Factory::getCollectionController',
             'collections' => 'VuFind\Controller\Factory::getCollectionsController',
             'record' => 'VuFind\Controller\Factory::getRecordController',
+            'upgrade' => 'VuFind\Controller\Factory::getUpgradeController',
         ],
         'invokables' => [
             'ajax' => 'VuFind\Controller\AjaxController',
@@ -99,7 +100,6 @@ $config = [
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
-            'upgrade' => 'VuFind\Controller\UpgradeController',
             'web' => 'VuFind\Controller\WebController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
