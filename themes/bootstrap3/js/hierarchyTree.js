@@ -140,8 +140,11 @@ $(document).ready(function()
   htmlID = htmlEncodeId(recordID);
   hierarchyContext = $("#hierarchyTree").find(".hiddenContext")[0].value;
 
+  $("#hierarchyLoading").removeClass('hide');  
+
   $("#hierarchyTree")
     .bind("ready.jstree", function (event, data) {
+      $("#hierarchyLoading").addClass('hide');  
       var tree = $("#hierarchyTree").jstree(true);
       tree.select_node(htmlID);
       tree._open_to(htmlID);
@@ -195,9 +198,6 @@ $(document).ready(function()
               }
             }
           });
-        },
-        'themes' : {
-          'url': path + '/themes/bootstrap3/js/vendor/jsTree/themes/default/style.css'
         }
       },
       'types' : {

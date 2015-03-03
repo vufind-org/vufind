@@ -447,3 +447,50 @@ li.jstree-facet, li.jstree-node {
 li.jstree-facet .badge {
   cursor: text;
 }
+
+/* --- Hierarchy tree --- */
+/* jsTree arrows */
+.hierarchy-tree {
+  .jstree-ocl:before {
+    font-family:'FontAwesome';
+    float:left;
+    speak:none;
+    font-weight:normal;
+    font-style:normal;
+    text-decoration:inherit;
+    cursor:pointer;
+    padding:0;
+    width:10px;
+    margin-left:-10px;
+  }
+  .jstree-open > .jstree-ocl:before {
+    content:"\f0d7";
+  }
+  .jstree-closed > .jstree-ocl:before {
+    content:"\f0da";
+  }
+  .jstree-leaf > .jstree-ocl:before {
+    content:" ";
+  }
+  .jstree-icon {
+    color:#000;
+    width:16px;
+  }
+  .jstree-anchor {
+    white-space:nowrap;
+    padding:2px 5px;
+  }
+  .jstree-container-ul, .jstree-children {
+    padding-left:16px;
+  }
+  .jstree-initial-node {
+    display:none;
+  }
+  .jstree-clicked {
+    color:@list-group-active-color;
+    background-color:@list-group-active-bg;
+    .jstree-icon {
+      color:#FFF;
+    }
+  }
+}
