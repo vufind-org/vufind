@@ -1,0 +1,7 @@
+<?php
+return array(
+    'extends' => 'finna',
+    'css' => array(
+        'custom.css'
+    ),
+);
