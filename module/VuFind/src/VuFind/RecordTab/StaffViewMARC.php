@@ -54,7 +54,7 @@ class StaffViewMARC extends AbstractBase
     public function getDescription()
     {
         if ($this->accessPermission
-       //     && !$this->getAuthorizationService()->isGranted($this->accessPermission)
+            && $this->getAuthorizationService()->isGranted($this->accessPermission)
         ) { 
           return 'Staff View'; 
         } else {

@@ -39,12 +39,26 @@ namespace VuFind\RecordTab;
 class StaffViewArray extends AbstractBase
 {
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->accessPermission = 'access.StaffView';
+    }
+
+    /**
      * Get the on-screen description for this tab.
      *
      * @return string
      */
     public function getDescription()
     {
-        return 'Staff View';
+        if ($this->accessPermission
+            && $this->getAuthorizationService()->isGranted($this->accessPermission)
+        ) {
+          return 'Staff View';
+        } else {
+          return null;
+        }
     }
 }
