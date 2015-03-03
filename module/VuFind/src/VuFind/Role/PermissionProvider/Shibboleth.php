@@ -68,7 +68,16 @@ class Shibboleth implements PermissionProviderInterface
      */
     public function getPermissions($options)
     {
+        $entitlement = $this->request->getServer()->get('entitlement');
+        $affiliation = $this->request->getServer()->get('affiliation');
+        $persistentId = $this->request->getServer()->get('persistent-id');
+
+
         //  No match? No permissions.
+        if ($persistentId) {
+           return ['guest'];
+        }
+
         return [];
     }
 }
