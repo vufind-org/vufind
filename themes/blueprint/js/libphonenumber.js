@@ -484,19 +484,3 @@ var db=new I;z(db,11,"NA");/*
 */
 function eb(a,b){try{var c=P.ba();if(!(null!=b&&isNaN(b)&&b.toUpperCase()in O)&&0<a.length&&"+"!=a.charAt(0))throw"Invalid country calling code";var d=cb(c,a,b,!0),f;if(null==d)f=null;else{var e=d.h(),g=N[e],h;if(null==g)h=null;else{var k;if(1==g.length)k=g[0];else b:{for(var m=T(d),r,C=g.length,e=0;e<C;e++){r=g[e];var $=V(c,r);if(null!=$.b[23]){if(0==m.search(y($,23))){k=r;break b}}else if(-1!=Za(m,$)){k=r;break b}}k=null}h=k}f=h}var aa;var Ea=d.h(),Fa=U(c,Ea,f),ba;if(!(ba=null==Fa)){var ca;if(ca=
 "001"!=f){var Ga,Ha=V(c,f);if(null==Ha)throw"Invalid region code: "+f;Ga=Ha.h();ca=Ea!=Ga}ba=ca}if(ba)aa=!1;else{var gb=T(d);aa=-1!=Za(gb,Fa)}return aa}catch(hb){return hb}}var X=["isPhoneNumberValid"],Y=n;X[0]in Y||!Y.execScript||Y.execScript("var "+X[0]);for(var Z;X.length&&(Z=X.shift());){var fb;if(fb=!X.length)fb=void 0!==eb;fb?Y[Z]=eb:Y=Y[Z]?Y[Z]:Y[Z]={}};})();
-
-function phoneNumberFormHandler(numID, regionCode) {
-  var phoneInput = document.getElementById(numID);
-  var number = phoneInput.value;
-  var valid = isPhoneNumberValid(number, regionCode);
-  if(valid != true) {
-    if(typeof valid == 'string') {
-      $(phoneInput).siblings('.phone-error').html(valid);
-    } else {
-      $(phoneInput).siblings('.phone-error').html('Phone number invalid');
-    }
-  } else {
-    $(phoneInput).siblings('.phone-error').html('');
-  }
-  return valid == true;
-}

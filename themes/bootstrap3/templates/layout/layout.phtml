@@ -26,7 +26,6 @@
 
       // Deal with cart stuff:
       if (!isset($this->renderingError)) {
-        $cart = $this->cart();
         $this->jsTranslations()->addStrings(
           array(
             'bulk_email_success' => 'bulk_email_success',
@@ -43,6 +42,7 @@
             'sms_success' => 'sms_success'
           )
         );
+        $cart = $this->cart();
         if ($cart->isActive()) {
           $this->headScript()->appendFile("vendor/cookies.js");
           $this->headScript()->appendFile("cart.js");

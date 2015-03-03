@@ -103,14 +103,13 @@ function phoneNumberFormHandler(numID, regionCode) {
   if(valid != true) {
     var error = "";
     if(typeof valid !== 'string') {
-      error = vufindString['libphonenumber_invalid'];
+      $(phoneInput).siblings('.help-block.with-errors').html(vufindString['libphonenumber_invalid']);
     } else {
-      error = valid;
       for(var i=libphoneErrorStrings.length;i--;) {
-        error.replace(libphoneErrorStrings[i], vufindString[libphoneTranslateCodes[i]]);
+        valid.replace(libphoneErrorStrings[i], vufindString[libphoneTranslateCodes[i]]);
       }
+      $(phoneInput).siblings('.help-block.with-errors').html(valid);
     }
-    $(phoneInput).siblings('.help-block.with-errors').html(error);
     $(phoneInput).closest('.form-group').addClass('has-error');
     $('.fa.fa-spinner').remove();
   } else {
