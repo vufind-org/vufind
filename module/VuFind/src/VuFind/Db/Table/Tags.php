@@ -100,18 +100,6 @@ class Tags extends Gateway
     public function getForResource($id, $source = 'VuFind', $limit = 0,
         $list = null, $user = null, $sort = 'count', $is_me_id = null
     ) {
-        /*
-        SELECT resource_tags.tag_id, count( * ) , is_me
-            FROM `resource_tags`
-            LEFT JOIN (
-                SELECT tag_id, 1 AS is_me
-                FROM `resource_tags`
-                WHERE resource_id =142
-                AND user_id =27
-            )subq ON resource_tags.tag_id = subq.tag_id
-            WHERE resource_id =142
-            GROUP BY tag_id
-        */
         return $this->select(
             function ($select) use (
                 $id, $source, $limit, $list, $user, $sort, $is_me_id
@@ -150,7 +138,7 @@ class Tags extends Gateway
                 $select->columns($columns);
                 // Convert record_id to resource_id
                 $select->join(
-                    ['rt' => 'resource_tags'], 'rt.tag_ID = tags.id', []
+                    ['rt' => 'resource_tags'], 'rt.tag_id = tags.id', []
                 );
                 // Convert record_id to resource_id
                 $select->join(
@@ -179,8 +167,6 @@ class Tags extends Gateway
                 if (!is_null($user)) {
                     $select->where->equalTo('rt.user_id', $user);
                 }
-
-                // var_dump( $select->getSqlString( $this->adapter->getPlatform() ) );
             }
         );
 

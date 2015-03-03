@@ -660,7 +660,7 @@ class AjaxController extends AbstractBase
     protected function getRecordTagsAjax()
     {
         $user = $this->getUser();
-        $is_me_id = is_null($user) ? null : $user->id;
+        $is_me_id = null === $user ? null : $user->id;
         // Retrieve from database:
         $tagTable = $this->getTable('Tags');
         $tags = $tagTable->getForResource(
@@ -1113,14 +1113,6 @@ class AjaxController extends AbstractBase
                 $view->to, $view->from, $view->message, $url,
                 $this->getViewRenderer(), $view->subject, $cc
             );
-            if ($this->params()->fromPost('ccself')
-                && $view->from != $view->to
-            ) {
-                $mailer->sendLink(
-                    $view->from, $view->from, $view->message, $url,
-                    $this->getViewRenderer(), $this->params()->fromPost('subject')
-                );
-            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );
