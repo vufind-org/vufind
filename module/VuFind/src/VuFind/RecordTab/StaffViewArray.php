@@ -53,12 +53,23 @@ class StaffViewArray extends AbstractBase
      */
     public function getDescription()
     {
+        return 'Staff View';
+    }
+
+    /**
+     * Is this tab initially visible?
+     *
+     * @return bool
+     */
+    public function isVisible()
+    {
         if ($this->accessPermission
             && $this->getAuthorizationService()->isGranted($this->accessPermission)
         ) {
-          return 'Staff View';
+          return true;
         } else {
-          return null;
+          return false;
         }
     }
+
 }
