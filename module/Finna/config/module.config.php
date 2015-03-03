@@ -95,6 +95,7 @@ $config = array(
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
                     'solrlido' => 'Finna\RecordDriver\Factory::getSolrLido',
                     'solrqdc' => 'Finna\RecordDriver\Factory::getSolrQdc',
+                    'primo' => 'Finna\RecordDriver\Factory::getPrimo'
                 ),
             ),
             'recordtab' => array(
