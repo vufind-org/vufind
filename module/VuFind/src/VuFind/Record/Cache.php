@@ -189,16 +189,16 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         $cachePolicy = ucfirst($cachePolicy);
         $policy = $this->cacheConfig->$cachePolicy;
         if (isset($policy)) {
-            $this->cachableSources 
+            $this->cachableSources
                 = preg_split("/[\s,]+/", $policy->cachableSources);
             $this->operatingMode = $policy->operatingMode;
-            $this->cacheIdComponents 
+            $this->cacheIdComponents
                 = preg_split("/[\s,]+/", $policy->cacheIdComponents);
         }
         
         // due to legacy resasons add 'VuFind' to cachable sources if
         // record from source 'Solr' are cacheable.
-        if ( in_array('Solr', $this->cachableSources) ) {
+        if (in_array('Solr', $this->cachableSources)) {
             $this->cachableSources[] = 'VuFind';
         }
     }
