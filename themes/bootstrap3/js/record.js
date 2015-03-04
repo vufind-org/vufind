@@ -259,20 +259,13 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'SMS', {id:id});
   });
-  // Tag lightbox
-  Lightbox.addFormCallback('tagRecord', function(html) {
-    refreshTagList(true);
-    Lightbox.confirm(vufindString.bulk_save_success);
-  });
   $('#tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
   // Form handlers
-  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
-  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
-  Lightbox.addFormCallback('emailRecord', function(){
+  Lightbox.addFormCallback('emailRecord', function() {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
   Lightbox.addFormCallback('placeHold', function(html) {
@@ -283,10 +276,22 @@ $(document).ready(function(){
       Lightbox.confirm(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
     });
   });
+  Lightbox.addFormCallback('placeILLRequest', function() {
+    document.location.href = path+'/MyResearch/ILLRequests';
+  });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = path+'/MyResearch/StorageRetrievalRequests';
   });
-  Lightbox.addFormCallback('placeILLRequest', function() {
-    document.location.href = path+'/MyResearch/ILLRequests';
+  Lightbox.addFormCallback('saveRecord', function() {
+    refreshTagList();
+    Lightbox.confirm(vufindString['bulk_save_success']);
+  });
+  Lightbox.addFormCallback('smsRecord', function() {
+    Lightbox.confirm(vufindString['sms_success']);
+  });
+  // Tag lightbox
+  Lightbox.addFormCallback('tagRecord', function(html) {
+    refreshTagList(true);
+    Lightbox.confirm(vufindString.bulk_save_success);
   });
 });
