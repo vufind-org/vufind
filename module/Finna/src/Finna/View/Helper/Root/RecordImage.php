@@ -62,7 +62,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke(\Finna\View\Helper\Root\Record $record)
     {
-        $this->params['small'] = $this->params['medium'] = $this->params['large'] 
+        $this->params['small'] = $this->params['medium'] = $this->params['large']
             = array('bg' => 'ffffff');
         $this->record = $record;
 
@@ -74,23 +74,21 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      *
      * @param int $index Record image index.
      *
-     * @return mixed string URL or false if no 
+     * @return mixed string URL or false if no
      * image with the given index was found.
-     */  
+     */
     public function getLargeImage($index = 0)
     {
         $cnt = $this->record->getNumOfRecordImages('large');
-        if ($cnt > $index) {
-            $urlHelper = $this->getView()->plugin('url');
-            $params = $this->record->getRecordImage('large');   
-            unset($params['url']);
-            
-            $params['index'] = $index;
+        $urlHelper = $this->getView()->plugin('url');
+        $params = $this->record->getRecordImage('large');
+        unset($params['url']);
 
-            return
-                $urlHelper('cover-show') . '?' . 
-                http_build_query(array_merge($params, $this->params['large']));
-        }
+        $params['index'] = $cnt > 0 ? $index : 0;
+
+        return $urlHelper('cover-show') . '?' .
+            http_build_query(array_merge($params, $this->params['large']));
+
         return false;
     }
 
@@ -98,20 +96,20 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      * Return rendered record image HTML.
      *
      * @param string $type   Page type (list, record).
-     * @param array  $params Optional array of image parameters as 
+     * @param array  $params Optional array of image parameters as
      *                       an associative array of parameter => value pairs:
      *                         'w'    Width
      *                         'h'    Height
      *                         'maxh' Maximum height
      *                         'bg'   Background color, hex value
      *
-     * @return string 
-     */  
+     * @return string
+     */
     public function render($type = 'list', $params = null)
     {
         if ($params) {
             foreach ($params as $size => $sizeParams) {
-                $this->params[$size] 
+                $this->params[$size]
                     = array_merge($this->params[$size], $sizeParams);
             }
         }
@@ -127,35 +125,35 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         unset($params['url']);
         unset($params['size']);
 
-        $view->smallImage = $urlHelper('cover-show') . '?' . 
+        $view->smallImage = $urlHelper('cover-show') . '?' .
             http_build_query(array_merge($params, $this->params['small']));
 
         $params = $this->record->getRecordImage('large');
         unset($params['url']);
         unset($params['size']);
 
-        $view->mediumImage = $urlHelper('cover-show') . '?' . 
+        $view->mediumImage = $urlHelper('cover-show') . '?' .
             http_build_query(array_merge($params, $this->params['medium']));
-        
-        $view->largeImage = $urlHelper('cover-show') . '?' . 
+
+        $view->largeImage = $urlHelper('cover-show') . '?' .
             http_build_query(array_merge($params, $this->params['large']));
-        
+
         $images = array();
         if ($numOfImages > 1) {
             for ($i=0; $i<$numOfImages; $i++) {
                 $params['index'] = $i;
                 $images[] = array(
-                    'small' => $urlHelper('cover-show') . '?' . 
+                    'small' => $urlHelper('cover-show') . '?' .
                         http_build_query(
                             array_merge($params, $this->params['small'])
                         ),
 
-                    'medium' => $urlHelper('cover-show') . '?' . 
+                    'medium' => $urlHelper('cover-show') . '?' .
                         http_build_query(
                             array_merge($params, $this->params['medium'])
                         ),
-                    
-                    'large' => $urlHelper('cover-show') . '?' . 
+
+                    'large' => $urlHelper('cover-show') . '?' .
                         http_build_query(
                             array_merge($params, $this->params['large'])
                         )
@@ -164,6 +162,6 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         }
         $view->allImages = $images;
 
-        return $view->render('RecordDriver/SolrDefault/record-image.phtml');    
+        return $view->render('RecordDriver/SolrDefault/record-image.phtml');
     }
 }

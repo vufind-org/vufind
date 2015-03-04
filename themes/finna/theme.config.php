@@ -11,7 +11,8 @@ return array(
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar'
         ),
         'invokables' => array(
-            'search' => 'Finna\View\Helper\Root\Search'
+            'search' => 'Finna\View\Helper\Root\Search',
+            'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl'
         )
     ),
     'css' => array(
