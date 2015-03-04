@@ -74,28 +74,35 @@ class Header implements PermissionProviderInterface
     public function getPermissions($options)
     {
         // user only gets the permission if all rules match (AND)
-        foreach((array)$options as $rule) {
-            if(!$this->checkHeaderRule($rule)) {
+        foreach ((array)$options as $rule) {
+            if (!$this->checkHeaderRule($rule)) {
                 return [];
             }
         }
         return ['loggedin'];
     }
 
-
-    protected function checkHeaderRule($rule) {
+    /**
+     * ToDo 
+     *
+     * @param mixed $rule ToDo 
+     *
+     * @return array ToDo
+     */
+    protected function checkHeaderRule($rule) 
+    {
         // split rule on spaces unless escaped with backslash
         $ruleParts = preg_split('/(?<!\\\)\ +/', $rule);
         
         // first part is the header name
         $headerName = str_replace('\\ ', ' ', array_pop($ruleParts));
-        if(isset($this->aliases[$headerName])) {
+        if (isset($this->aliases[$headerName])) {
             $headerName = $this->aliases[$headerName];
         }
 
         // header values to check
         $headerString = $this->request->getServer()->get($headerName);
-        if($headerString === false) {
+        if ($headerString === false) {
             // header is missing, check failed
             return false;
         }
@@ -104,7 +111,7 @@ class Header implements PermissionProviderInterface
         // optional modifier follows header name
         $modifierMatch = in_array($ruleParts[0], ['~', '!~']);
         $modifierNot = in_array($ruleParts[0], ['!', '!~']);
-        if($modifierNot || $modifierMatch) {
+        if ($modifierNot || $modifierMatch) {
             array_pop($ruleParts);
         }
 
@@ -113,10 +120,10 @@ class Header implements PermissionProviderInterface
 
         $result = false;
         // check for each header ...
-        foreach($headers as $header) {
+        foreach ($headers as $header) {
             // ... if it matches one of the rules (OR)
-            foreach($rules as $rule) {
-                if($modifierMatch) {
+            foreach ($rules as $rule) {
+                if ($modifierMatch) {
                     $pattern = '/' . preg_quote($rule, '/') . '/';
                     $result |= preg_match($pattern, $header);
                 } else {
@@ -124,23 +131,31 @@ class Header implements PermissionProviderInterface
                 }
             }
         }
-        if($modifierNot) {
+        if ($modifierNot) {
             $result = !$result;
         }
 
         return $result;
     }
 
-    protected function splitHeader($headerString) {
-        if($this->headerDelimiter === null) {
+    /**
+     * ToDo 
+     *
+     * @param mixed $headerString todo
+     *
+     * @return array todo
+     */
+    protected function splitHeader($headerString) 
+    {
+        if ($this->headerDelimiter === null) {
             return [ $headerString ];
         }
 
-        if($this->headerEscape === null) {
+        if ($this->headerEscape === null) {
             throw new InvalidConfigurationException(); // TODO
         }
 
-        if($this->headerDelimiter === ' ') {
+        if ($this->headerDelimiter === ' ') {
             $delimiter = ' +';
         } else {
             $delimiter = preg_quote($this->headerDelimiter, '/');
@@ -148,7 +163,9 @@ class Header implements PermissionProviderInterface
         $escape = preg_quote($this->headerEscape, '/');
         $pattern = "/(?<!{$escape}){$delimiter}/";
 
-        return str_replace("{$this->headerEscape}{$this->headerDelimiter}",
-                           preg_split($pattern, $headerString));
+        return str_replace(
+            "{$this->headerEscape}{$this->headerDelimiter}",
+            preg_split($pattern, $headerString)
+        );
     }
 }

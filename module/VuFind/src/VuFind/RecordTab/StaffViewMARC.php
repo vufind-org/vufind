@@ -66,9 +66,9 @@ class StaffViewMARC extends AbstractBase
         if ($this->accessPermission
             && $this->getAuthorizationService()->isGranted($this->accessPermission)
         ) {
-          return true;
+            return true;
         } else {
-          return false;
+            return false;
         }
     }
 
