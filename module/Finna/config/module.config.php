@@ -70,6 +70,7 @@ $config = array(
         'plugin_managers' => array(
             'search_backend' => array(
                 'factories' => array(
+                    'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'Finna\Search\Factory\SolrDefaultBackendFactory',
                 ),
                 'aliases' => array(
