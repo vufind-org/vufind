@@ -47,13 +47,46 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     const POLICY_FAVORITE = 'Favorite';
     const POLICY_DEFAULT = 'Default';
 
+    /**
+     * RecordCache.ini contents
+     *
+     * @var Config
+     */
     protected $cacheConfig = null;
 
+    /**
+     * Database table used by cache
+     *
+     * @var \VuFind\Db\Table\Record
+     */
     protected $recordTable = null;
+
+    /**
+     * Record driver plugin manager
+     *
+     * @var RecordFactory
+     */
     protected $recordFactoryManager = null;
 
+    /**
+     * Current operating mode ('disabled' / 'primary' / 'fallback')
+     *
+     * @var string
+     */
     protected $operatingMode = 'disabled';
+
+    /**
+     * Record sources which may be cached.
+     *
+     * @var array
+     */
     protected $cachableSources = [];
+
+    /**
+     * Elements which may be used to form the unique cache ID.
+     *
+     * @var array
+     */
     protected $cacheIdComponents = ['userId'];
 
     /**
@@ -224,7 +257,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * Helper method to calcualte and ensure consistend cacheIds
+     * Helper method to calculate and ensure consistent cacheIds
      *
      * @param string $recordId RecordId
      * @param string $source   Source name
@@ -249,12 +282,12 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         return $md5;
     }
     /**
-     * Helper function to get vufind records form cached index specific record data
+     * Helper function to get records from cached index specific record data
      *
      * @param string $cachedRecord json encoded representation of index specific
-     *                             record data
+     * record data
      *
-     * @return \VuFind\RecordDriver
+     * @return \VuFind\RecordDriver\AbstractBase
      */
     protected function getVuFindRecord($cachedRecord)
     {
