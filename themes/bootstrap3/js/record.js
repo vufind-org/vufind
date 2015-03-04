@@ -202,40 +202,14 @@ function refreshTagList(loggedin) {
     $.ajax({
       dataType: 'json',
       url: url,
-      success: function(response) {
-        if (response.status == 'OK') {
-          var html = "";
-          for(var i=0;i<response.data.length;i++) {
-            var tag = response.data[i];
-            var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-            html += '<div class="tag';
-            if(loggedin) {
-              if(tag.is_me) {
-                html += ' selected">';
-              } else {
-                html += '">';
-              }
-              html += '<a href="'+href+'">' + htmlEncode(tag.tag) + '</a>\
-                       <a class="badge" onClick="ajaxTagUpdate(\'' + tag.tag.replace(/ /g, '+') + '\', '+(tag.is_me)+');return false;">';
-              if(tag.is_me) {
-                if(tag.cnt > 1) html += htmlEncode(tag.cnt);
-                html += ' <i class="fa fa-close"></i></a>';
-              } else {
-                html += htmlEncode(tag.cnt)+' <i class="fa fa-plus"></i></a>';
-              }
-            } else {
-              html += '"><a href="'+href+'">' + htmlEncode(tag.tag) + '</a> <span class="badge">'+htmlEncode(tag.cnt)+'</span>';
-            }
-            html += '</div>';
-          }
-          tagList.html(html);
+      complete: function(response) {
+        if(response.status == 200) {
+          tagList.html(response.responseText);
           if(loggedin) {
             $('#tagList').addClass('loggedin');
           } else {
             $('#tagList').removeClass('loggedin');
           }
-        } else if (response.data && response.data.length > 0) {
-          tagList.append(response.data);
         }
       }
     });

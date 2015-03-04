@@ -679,14 +679,16 @@ class AjaxController extends AbstractBase
             ];
         }
 
-        // If we don't have any tags, provide a user-appropriate message:
-        if (empty($tagList)) {
-            $msg = $this->translate('No Tags') . ', ' .
-                $this->translate('Be the first to tag this record') . '!';
-            return $this->output($msg, self::STATUS_ERROR);
-        }
-
-        return $this->output($tagList, self::STATUS_OK);
+        // Set layout to render the page inside a lightbox:
+        $this->layout()->setTemplate('layout/lightbox');
+        $view = $this->createViewModel(
+            [
+                'tagList' => $tagList,
+                'loggedin' => null !== $user
+            ]
+        );
+        $view->setTemplate('record/taglist');
+        return $view;
     }
 
     /**

@@ -225,8 +225,7 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($tag = $this->params()->fromQuery('tag')) {
-            $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
-            $driver->deleteTags($user, $tagParser->parse('"'.$tag.'"'));
+            $driver->deleteTags($user, [$tag]);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage(
                     array(
