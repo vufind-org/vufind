@@ -336,40 +336,45 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* ----- HOVER OVERLAY ------ */
 /* - similar items carousel - */
-.carousel-indicators {
-  bottom:0px;
-  li {
-    background:rgba(255,255,255,.3);
-    border-color:@gray-darker;
-    margin:2px;
-    width:8px;
-    height:8px;
+#similar-items-carousel {
+  .carousel-indicators {
+    bottom:0px;
+    li {
+      background:rgba(255,255,255,.3);
+      border-color:@gray-darker;
+      margin:2px;
+      width:8px;
+      height:8px;
+    }
   }
-}
-.hover-overlay {
-  display:block;
-  position:relative;
-  text-align:center;
-  margin:auto;
-  min-width:150px;
-  min-height:200px;
-  img {
-    margin:10px 0;
-    max-width:100%;
-  }
-  .content {
-    display:none;
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:rgba(0,0,0,.5);
-    color:#FFF;
-    padding:.5em .5em 0;
-  }
-  &:hover .content {
+  .hover-overlay {
     display:block;
+    position:relative;
+    text-align:center;
+    margin:auto;
+    min-width:150px;
+    min-height:200px;
+    img {
+      margin:10px 0;
+      max-width:100%;
+    }
+    .content {
+      display:none;
+      position:absolute;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,.5);
+      color:#FFF;
+      padding:.5em .5em 0;
+    }
+    &:hover .content {
+      display:block;
+    }
+  }
+  .item {
+    padding:0 4em;
   }
 }
 
@@ -420,4 +425,51 @@ li.jstree-facet, li.jstree-node {
 }
 li.jstree-facet .badge {
   cursor: text;
+}
+
+/* --- Hierarchy tree --- */
+/* jsTree arrows */
+.hierarchy-tree {
+  .jstree-ocl:before {
+    font-family:'FontAwesome';
+    float:left;
+    speak:none;
+    font-weight:normal;
+    font-style:normal;
+    text-decoration:inherit;
+    cursor:pointer;
+    padding:0;
+    width:10px;
+    margin-left:-10px;
+  }
+  .jstree-open > .jstree-ocl:before {
+    content:"\f0d7";
+  }
+  .jstree-closed > .jstree-ocl:before {
+    content:"\f0da";
+  }
+  .jstree-leaf > .jstree-ocl:before {
+    content:" ";
+  }
+  .jstree-icon {
+    color:#000;
+    width:16px;
+  }
+  .jstree-anchor {
+    white-space:nowrap;
+    padding:2px 5px;
+  }
+  .jstree-container-ul, .jstree-children {
+    padding-left:16px;
+  }
+  .jstree-initial-node {
+    display:none;
+  }
+  .jstree-clicked {
+    color:@list-group-active-color;
+    background-color:@list-group-active-bg;
+    .jstree-icon {
+      color:#FFF;
+    }
+  }
 }
