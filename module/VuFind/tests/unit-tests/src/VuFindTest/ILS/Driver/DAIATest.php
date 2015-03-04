@@ -22,11 +22,18 @@
  * @category VuFind2
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\ILS\Driver;
-use VuFind\ILS\Driver\DAIA;
+use VuFind\ILS\Driver\DAIAJSON;
+
+use Zend\Http\Client\Adapter\Test as TestAdapter;
+use Zend\Http\Client as HttpClient;
+
+use PHPUnit_Framework_TestCase;
+use InvalidArgumentException;
 
 /**
  * ILS driver test
@@ -37,13 +44,66 @@ use VuFind\ILS\Driver\DAIA;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
+class DAIAJSONTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->driver = new DAIA();
+        $this->driver = new DAIAJSON();
+    }
+
+    /**
+     * Test that dummy history.
+     *
+     * @return void
+     */
+    public function testgetPurchaseHistory()
+    {
+
+    }
+
+
+    /**
+     * Test that an empty query causes an error.
+     *
+     * @return void
+     */
+    public function testgetStatus()
+    {
+        $conn = $this->createConnector('daiajson');
+        $result = $conn->getStatus('123456');
+        var_dump($conn);
+        $this->assertEquals("test", $result['id']);
+    }
+
+
+    /**
+     * Create connector with fixture file.
+     *
+     * @param string $fixture Fixture file
+     *
+     * @return Connector
+     *
+     * @throws InvalidArgumentException Fixture file does not exist
+     */
+    protected function createConnector($fixture = null)
+    {
+        $adapter = new TestAdapter();
+        if ($fixture) {
+            $file = realpath(sprintf('%s/daiajson/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
+            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
+                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
+            }
+            $response = file_get_contents($file);
+            $adapter->setResponse($response);
+        }
+        $client = new HttpClient();
+        $client->setAdapter($adapter);
+//        var_dump($client);
+        $conn = new DAIAJSON($client);
+        var_dump($conn);
+        return $conn;
     }
 }
