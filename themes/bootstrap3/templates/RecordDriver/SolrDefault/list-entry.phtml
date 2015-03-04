@@ -6,7 +6,7 @@
     $list_id = $this->list->id;
     $user_id = $this->list->user_id;
   } else {
-    $list_id = null;
+    $list_id = true;
     $user_id = $this->user ? $this->user->id : null;
   }
 ?>
@@ -93,7 +93,9 @@
     ?>
     <? if (count($listTags) > 0): ?>
       <strong><?=$this->transEsc('Your Tags')?>:</strong>
-      <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a><? endforeach; ?>
+      <? foreach ($listTags as $tag): ?>
+        <a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a>
+      <? endforeach; ?>
       <br/>
     <? endif; ?>
     <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
