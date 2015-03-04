@@ -16,7 +16,7 @@
           <? foreach ($this->driver->getPublicationDates() as $date): ?>
           <?= $date ?>
           <? endforeach ?>
-        </p>      
+        </p>
       </div>
       <? if ($building = $this->driver->getBuilding()): ?>
       <div class="building"><?= $this->translate('0/' . $building[0] . '/') ?></div>
@@ -25,12 +25,12 @@
         <? if ($format == 'marc'): ?>
         <div>
         </div>
-        <? else: ?>        
+        <? else: ?>
            <? if ($summary = $this->driver->getSummary()): ?>
              <? foreach ($this->driver->getSummary() as $item): ?>
              <p><?= $item ?></p>
              <? endforeach ?>
-          <? endif ?>           
+          <? endif ?>
         <? endif ?>
       </div>
       <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-left"></i><?= $this->translate('To the record') ?></a></div>
@@ -54,7 +54,7 @@
 
         </div>
         <div class="less-link copyright-link"><a data-mode="0" href="">vähemmän<i class="fa fa-arrow-up"></i></a></div>
-       
+
       </div>
       <div style="clear: both;"></div>
     </div>

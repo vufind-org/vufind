@@ -7,7 +7,7 @@
     $offlineMode = $this->ils()->getOfflineMode();
     // Account for replace_other_urls setting
     $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
-    $holdsAllowed = $this->driver->getHoldsAllowed();
+    $holdsAllowed = $this->driver->tryMethod('getHoldsAllowed');
 
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
@@ -54,7 +54,7 @@
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
-    <td width="50%">
+    <td>
       <? foreach ($callNos as $callNo): ?>
         <?=$this->escapeHtml($callNo)?><br />
       <? endforeach; ?>
