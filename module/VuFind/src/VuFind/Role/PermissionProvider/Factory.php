@@ -66,6 +66,19 @@ class Factory
     }
 
     /**
+     * Factory for Header
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Header
+     */
+    public static function getHeader(ServiceManager $sm)
+    {
+        return new Header($sm->getServiceLocator()->get('Request'));
+    }
+
+
+    /**
      * Factory for Shibboleth
      *
      * @param ServiceManager $sm Service manager.

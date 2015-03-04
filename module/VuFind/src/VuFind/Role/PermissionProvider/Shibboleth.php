@@ -28,6 +28,7 @@
  */
 namespace VuFind\Role\PermissionProvider;
 use Zend\Http\PhpEnvironment\Request;
+use VuFind\Role\PermissionProvider\Header as Header;
 
 /**
  * Shibboleth permission provider for VuFind.
@@ -39,7 +40,7 @@ use Zend\Http\PhpEnvironment\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Shibboleth implements PermissionProviderInterface
+class Shibboleth extends Header
 {
     /**
      * Request object
@@ -55,29 +56,9 @@ class Shibboleth implements PermissionProviderInterface
      */
     public function __construct(Request $request)
     {
-        $this->request = $request;
-    }
-
-    /**
-     * Return an array of roles which may be granted the permission based on
-     * the options.
-     *
-     * @param mixed $options Options provided from configuration.
-     *
-     * @return array
-     */
-    public function getPermissions($options)
-    {
-        $entitlement = $this->request->getServer()->get('entitlement');
-        $affiliation = $this->request->getServer()->get('affiliation');
-        $persistentId = $this->request->getServer()->get('persistent-id');
-
-
-        //  No match? No permissions.
-        if ($persistentId) {
-           return ['guest'];
-        }
-
-        return [];
+        parent::__construct($request);
+        $this->aliases = [ 'idpentityid' => 'Shib-Identity-Provider' ];
+        $this->headerDelimiter = ';';
+        $this->headerEscape = '\\';
     }
 }
