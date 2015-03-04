@@ -52,7 +52,7 @@ class Record extends Gateway
     /**
      * Find records by ids
      *
-     * @param array(integer) $ids an array of ids
+     * @param array $ids an array of ids
      *
      * @throws \Exception
      * @return array of record table rows
@@ -82,13 +82,13 @@ class Record extends Gateway
     /**
      * Update an existing entry in record table or create a new one
      *
-     * @param integer $id         id
-     * @param string  $source     data source
-     * @param string  $rawData    json encoded raw data from source
-     * @param string  $recordId   record id
-     * @param integer $userId     user id
-     * @param string  $sessionId  session id
-     * @param integer $resourceId resource id
+     * @param int    $id         id
+     * @param string $source     data source
+     * @param string $rawData    json encoded raw data from source
+     * @param string $recordId   record id
+     * @param int    $userId     user id
+     * @param string $sessionId  session id
+     * @param int    $resourceId resource id
      *
      * @return updated or newly record table entry
      */
@@ -118,9 +118,9 @@ class Record extends Gateway
     }
     
     /**
-     * Clenaup orphaned entries
+     * Cleanup orphaned entries
      *
-     * @param integer $userId user id
+     * @param int $userId user id
      *
      * @return null
      */
@@ -148,7 +148,7 @@ class Record extends Gateway
     /**
      * Delete entry by id
      *
-     * @param integer $id primary key
+     * @param int $id primary key
      *
      * @return null
      */
