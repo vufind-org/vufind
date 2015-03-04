@@ -43,7 +43,7 @@ use VuFind\RecordDriver\PluginManager as RecordFactory,
 class Cache implements \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
-    
+
     const POLICY_FAVORITE = 'Favorite';
     const POLICY_DEFAULT = 'Default';
 
@@ -55,7 +55,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     protected $operatingMode = 'disabled';
     protected $cachableSources = [];
     protected $cacheIdComponents = ['userId'];
-    
+
     /**
      * Constructor
      *
@@ -71,7 +71,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         $this->cacheConfig = $config;
         $this->recordTable = $dbTableManager->get('record');
         $this->recordFactoryManager = $recordFactoryManager;
-        
+
         $this->setPolicy(Cache::POLICY_DEFAULT);
     }
 
@@ -150,7 +150,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             if (in_array($details['source'], $this->cachableSources)) {
                 $userId = isset($_SESSION['Account'])
                     ? $_SESSION['Account']->userId : null;
-    
+
                 $cacheId = $this->getCacheId(
                     $details['id'], $details['source'], $userId
                 );
@@ -164,11 +164,11 @@ class Cache implements \Zend\Log\LoggerAwareInterface
                 );
             }
         }
-        
+
         $cachedRecords = $this->recordTable->findRecord($cacheIds);
 
         $this->debug('records found: ' . count($cachedRecords));
-        
+
         $vufindRecords = [];
         foreach ($cachedRecords as $cachedRecord) {
             $vufindRecords[] = $this->getVuFindRecord($cachedRecord);
@@ -195,7 +195,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
             $this->cacheIdComponents
                 = preg_split("/[\s,]+/", $policy->cacheIdComponents);
         }
-        
+
         // due to legacy resasons add 'VuFind' to cachable sources if
         // record from source 'Solr' are cacheable.
         if (in_array('Solr', $this->cachableSources)) {
@@ -243,7 +243,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         if (in_array('userId', $this->cacheIdComponents)) {
             $cIdHelper['userId']   = $userId;
         }
-        
+
         $md5 = md5(json_encode($cIdHelper));
 
         return $md5;
@@ -260,24 +260,17 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     {
         $source = $cachedRecord['source'];
         $doc = json_decode($cachedRecord['data'], true);
-    
+
+        // Solr records are loaded in special-case fashion:
         if ($source === 'VuFind' || $source === 'Solr') {
-            if (isset($doc['recordtype'])) {
-                $key = 'Solr' . ucwords($doc['recordtype']);
-                $recordType = $this->recordFactoryManager->has($key)
-                ? $key
-                : 'SolrDefault';
-            } else {
-                $recordType = 'SolrDefault';
-            }
+            $driver = $this->recordFactoryManager->getSolrRecord($doc);
         } else {
-            $recordType = $source;
+            $driver = $this->recordFactoryManager->get($source);
+            $driver->setRawData($doc);
         }
-    
-        $driver = $this->recordFactoryManager->get($recordType);
-        $driver->setRawData($doc);
+
         $driver->setSourceIdentifier($source);
-         
+
         return $driver;
     }
 }
