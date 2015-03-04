@@ -127,7 +127,6 @@ function registerAjaxCommentRecord() {
 }
 
 function registerTabEvents() {
-
   // register the record comment form to be submitted via AJAX
   registerAjaxCommentRecord();
 
@@ -174,6 +173,49 @@ function ajaxLoadTab(tabid) {
   return false;
 }
 
+function ajaxTagUpdate(tag, remove) {
+  if(typeof remove === "undefined") {
+    remove = false;
+  }
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+  $.ajax({
+    url:path+'/AJAX/JSON?method=tagRecord',
+    method:'POST',
+    data:{
+      tag:'"'+tag.replace(/\+/g, ' ')+'"',
+      id:recordId,
+      source:recordSource,
+      remove:remove
+    },
+    complete:refreshTagList
+  });
+}
+function refreshTagList(loggedin) {
+  loggedin = !!loggedin || userIsLoggedIn;
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+  var tagList = $('#tagList');
+  if (tagList.length > 0) {
+    tagList.empty();
+    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    $.ajax({
+      dataType: 'json',
+      url: url,
+      complete: function(response) {
+        if(response.status == 200) {
+          tagList.html(response.responseText);
+          if(loggedin) {
+            $('#tagList').addClass('loggedin');
+          } else {
+            $('#tagList').removeClass('loggedin');
+          }
+        }
+      }
+    });
+  }
+}
+
 $(document).ready(function(){
   var id = $('.hiddenId')[0].value;
   registerTabEvents();
@@ -218,42 +260,23 @@ $(document).ready(function(){
     return Lightbox.get(params['controller'], 'SMS', {id:id});
   });
   // Tag lightbox
+  Lightbox.addFormCallback('tagRecord', function(html) {
+    refreshTagList(true);
+    Lightbox.confirm(vufindString.bulk_save_success);
+  });
   $('#tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
-    Lightbox.addCloseAction(function() {
-      var recordId = $('#record_id').val();
-      var recordSource = $('.hiddenSource').val();
-
-      // Update tag list (add tag)
-      var tagList = $('#tagList');
-      if (tagList.length > 0) {
-        tagList.empty();
-        var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
-        $.ajax({
-          dataType: 'json',
-          url: url,
-          success: function(response) {
-            if (response.status == 'OK') {
-              $.each(response.data, function(i, tag) {
-                var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-                var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
-                tagList.append(html);
-              });
-            } else if (response.data && response.data.length > 0) {
-              tagList.append(response.data);
-            }
-          }
-        });
-      }
-    });
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
   // Form handlers
-  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
   Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(vufindString['bulk_email_success']);
+  });
+  Lightbox.addFormCallback('saveRecord', function(){
+    checkSaveStatuses();
+    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormCallback('placeHold', function(html) {
     Lightbox.checkForError(html, function(html) {
