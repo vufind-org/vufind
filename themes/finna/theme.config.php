@@ -28,6 +28,7 @@ return array(
         'finna-layout.js',
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js',
+        'vendor/jquery.inview.min.js',
         'vendor/jquery.magnific-popup.min.js',
         'vendor/slick.min.js'
     ),

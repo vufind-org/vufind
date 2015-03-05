@@ -26,6 +26,15 @@ finna.layout = (function() {
         }
     };
 
+    var initOpenUrlLinks = function() {
+        var links = $('a.openUrlEmbed');
+        links.each(function(ind, e) {
+            $(e).one('inview', function() {
+                $(this).click();
+            });
+        });
+    };
+
     var my = {
         isTouchDevice: isTouchDevice,
         init: function() {
@@ -33,6 +42,7 @@ finna.layout = (function() {
 
             initAnchorNavigationLinks();
             initFixFooter();
+            initOpenUrlLinks();
         },
     };
 
