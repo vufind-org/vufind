@@ -103,6 +103,7 @@ class Shibboleth extends  AbstractBase
 
         // If we made it this far, we should log in the user!
         $user = $this->getUserTable()->getByUsername($username);
+        $user->save();
 
         return $user;
     }
