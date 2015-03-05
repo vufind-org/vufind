@@ -88,13 +88,15 @@ trait SolrFinna
     }
 
     /**
-     * Return data source from index.
+     * Get data source id
      *
      * @return string
      */
     public function getDataSource()
     {
-        return $this->fields['datasource_str_mv'];
+        return isset($this->fields['datasource_str_mv'])
+            ? $this->fields['datasource_str_mv'][0]
+            : '';
     }
 
     /**
@@ -188,7 +190,7 @@ trait SolrFinna
             return [];
         }
         return $raw ? $this->fields['online_urls_str_mv'] : $this->mergeURLArray(
-            $this->fields['online_urls_str_mv'], isset($this->fields['dedup_data'])
+            $this->fields['online_urls_str_mv'], true
         );
     }
 

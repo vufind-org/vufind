@@ -143,18 +143,6 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get data source id
-     *
-     * @return string
-     */
-    public function getDataSource()
-    {
-        return isset($this->fields['datasource_str_mv'])
-            ? $this->fields['datasource_str_mv'][0]
-            : '';
-    }
-
-    /**
      * Get notes on finding aids related to the record.
      *
      * @return array
