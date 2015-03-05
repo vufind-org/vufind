@@ -478,7 +478,7 @@ summarycachetime = 1440
 ; You can select from Wikipedia
 ; Note for Windows users: If using Wikipedia, you may need to increase your Apache
 ; heap size settings.  For details, see: http://vufind.org/jira/browse/VUFIND-630
-authors         = Wikipedia
+;authors         = Wikipedia
 
 ; You can look up your secret key by logging into http://aws.amazon.com and clicking
 ; "Access Identifiers" under "Your Account".
@@ -869,7 +869,7 @@ next_prev_navigation = true
 ; You can enable this setting to show links to related MARC records using certain
 ; 7XX fields. Just enter a comma-separated list of the MARC fields that you wish
 ; to make use of.
-marc_links = "760,762,765,767,770,772,775,776,780,785,787"
+marc_links = "760,762,765,767,770,772,775,776,780,785"
 ; In the marc_links_link_types enter the fields you want the module to use to
 ; construct the links. The module will run through the link types in order
 ; until it finds one that matches. If you don't have id numbers in the fields,
@@ -1033,6 +1033,9 @@ sender_name       = "Finna-palaute"
 
 ; This section allows configuration of VuFind's social features
 [Social]
+; Tags may be "enabled" or "disabled" (default = "enabled")
+; When disabling tags, don't forget to also turn off tag search in searches.ini.
+tags = disabled
 ; This controls the maximum length of a single tag; it should correspond with the
 ; field size in the tags database table.
 max_tag_length = 64

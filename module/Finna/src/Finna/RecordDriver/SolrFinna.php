@@ -40,55 +40,6 @@ namespace Finna\RecordDriver;
  */
 trait SolrFinna
 {
-
-    /**
-     * Returns an array of parameter to send to Finna's cover generator.
-     * Fallbacks to VuFind's getThumbnail if no record image with the
-     * given index was found.
-     *
-     * @param string $size  Size of thumbnail
-     * @param int    $index Image index
-     *
-     * @return string|array|bool
-     */
-    public function getRecordImage($size = 'small', $index = 0)
-    {
-        if ($urls = $this->getAllThumbnails($size)) {
-            $urls = array_keys($urls);
-            if ($index == 0) {
-                $url = $urls[0];
-            } else {
-                if (isset($urls[$index])) {
-                    $url = $urls[$index];
-                }
-            }
-            if (!is_array($url)) {
-                return array('id' => $this->getUniqueId(), 'url' => $url);
-            }
-        }
-        return parent::getThumbnail($size);
-    }
-
-    /**
-     * Return building from index.
-     *
-     * @return string
-     */
-    public function getBuilding()
-    {
-        return $this->fields['building'];
-    }
-
-    /**
-     * Return record format.
-     *
-     * @return string.
-     */
-    public function getRecordType()
-    {
-        return $this->fields['recordtype'];
-    }
-
     /**
      * Return an associative array of image URLs associated with this record
      * (key = URL, value = description), if available; false otherwise.
@@ -127,6 +78,27 @@ trait SolrFinna
     }
 
     /**
+     * Return building from index.
+     *
+     * @return string
+     */
+    public function getBuilding()
+    {
+        return $this->fields['building'];
+    }
+
+    /**
+     * Return genres
+     *
+     * @return array
+     */
+    public function getGenres()
+    {
+        return isset($this->fields['genre'])
+            ? $this->fields['genre'] : [];
+    }
+
+    /**
      * Return image rights.
      *
      * @return mixed array with keys:
@@ -138,6 +110,113 @@ trait SolrFinna
     public function getImageRights()
     {
         return false;
+    }
+
+    /**
+     * Return local record IDs (only works with dedup records)
+     *
+     * @return array
+     */
+    public function getLocalIds()
+    {
+        return isset($this->fields['local_ids_str_mv'])
+            ? $this->fields['local_ids_str_mv'] : [];
+    }
+
+    /**
+     * Get all authors apart from presenters
+     *
+     * @return array
+     */
+    public function getNonPresenterAuthors()
+    {
+        $authors = [];
+        if ($author = $this->getPrimaryAuthor()) {
+            $authors[] = ['name' => $author];
+        }
+        if ($author = $this->getCorporateAuthor()) {
+            $authors[] = ['name' => $author];
+        }
+        foreach ($this->getSecondaryAuthors() as $author) {
+            $authors[] = ['name' => $author];
+        }
+        return $authors;
+    }
+
+    /**
+     * Get online URLs
+     *
+     * @param bool $raw Whether to return raw data
+     *
+     * @return array
+     */
+    public function getOnlineURLs($raw = false)
+    {
+        if (!isset($this->fields['online_urls_str_mv'])) {
+            return [];
+        }
+        return $raw ? $this->fields['online_urls_str_mv'] : $this->mergeURLArray(
+            $this->fields['online_urls_str_mv'], isset($this->fields['dedup_data'])
+        );
+    }
+
+    /**
+     * Get all the original languages associated with the record
+     *
+     * @return array
+     */
+    public function getOriginalLanguages()
+    {
+        return isset($this->fields['original_lng_str_mv'])
+            ? $this->fields['original_lng_str_mv'] : array();
+    }
+
+    /**
+     * Get presenters
+     *
+     * @return array
+     */
+    public function getPresenters()
+    {
+        return [];
+    }
+
+    /**
+     * Returns an array of parameter to send to Finna's cover generator.
+     * Fallbacks to VuFind's getThumbnail if no record image with the
+     * given index was found.
+     *
+     * @param string $size  Size of thumbnail
+     * @param int    $index Image index
+     *
+     * @return string|array|bool
+     */
+    public function getRecordImage($size = 'small', $index = 0)
+    {
+        if ($urls = $this->getAllThumbnails($size)) {
+            $urls = array_keys($urls);
+            if ($index == 0) {
+                $url = $urls[0];
+            } else {
+                if (isset($urls[$index])) {
+                    $url = $urls[$index];
+                }
+            }
+            if (!is_array($url)) {
+                return array('id' => $this->getUniqueId(), 'url' => $url);
+            }
+        }
+        return parent::getThumbnail($size);
+    }
+
+    /**
+     * Return record format.
+     *
+     * @return string.
+     */
+    public function getRecordType()
+    {
+        return $this->fields['recordtype'];
     }
 
     /**
@@ -154,6 +233,62 @@ trait SolrFinna
             return $this->mainConfig['ImageRights'][$language][$copyright];
         }
         return false;
+    }
+
+    /**
+     * Like getFormat() but takes into account __unprocessed_format field.
+     *
+     * @return array Formats
+     */
+    public function getUnprocessedFormat()
+    {
+        if (isset($this->fields['__unprocessed_format'])) {
+            return $this->fields['__unprocessed_format'];
+        }
+        return $this->getFormat();
+    }
+
+    /**
+     * A helper function that merges an array of JSON-encoded URLs
+     *
+     * @param array $urlArray Array of JSON-encoded URL attributes
+     * @param bool  $sources  Whether to store data source of each URL
+     *
+     * @return array Array of URL information
+     */
+    protected function mergeURLArray($urlArray, $sources = true)
+    {
+        $urls = [];
+        foreach ($urlArray as $url) {
+            $newURL = json_decode($url, true);
+            // If there's no dedup data, don't display sources either
+            if (!$sources) {
+                $newURL['source'] = '';
+            }
+            // Check for duplicates
+            $found = false;
+            foreach ($urls as &$existingUrl) {
+                if ($newURL['url'] == $existingUrl['url']) {
+                    $found = true;
+                    if (is_array($existingUrl['source'])) {
+                        $existingUrl['source'][] = $newURL['source'];
+                    } else {
+                        $existingUrl['source'] = [
+                            $existingUrl['source'],
+                            $newURL['source']
+                        ];
+                    }
+                    if (!$existingUrl['text']) {
+                        $existingUrl['text'] = $newURL['text'];
+                    }
+                    break;
+                }
+            }
+            if (!$found) {
+                $urls[] = $newURL;
+            }
+        }
+        return $urls;
     }
 
     /**

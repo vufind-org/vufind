@@ -4,6 +4,9 @@ var finna = (function() {
         init: function() {    
             finna.imagePopup.init();
             finna.layout.init();
+            if (typeof finna.record !== "undefined") {
+                finna.record.init();
+            }
         },
     };
     
