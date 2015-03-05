@@ -1,12 +1,17 @@
 var finna = (function() {
 
     var my = {
-        init: function() {    
-            finna.imagePopup.init();
-            finna.layout.init();
-            if (typeof finna.record !== "undefined") {
-                finna.record.init();
-            }
+        init: function() {
+            // List of modules to be inited
+            var modules = [
+                'imagePopup', 'layout', 'record'
+            ];
+
+            $.each(modules, function(ind, module) {
+                if (typeof finna[module] !== 'undefined') {
+                    finna[module].init();
+                }
+            });
         },
     };
     
