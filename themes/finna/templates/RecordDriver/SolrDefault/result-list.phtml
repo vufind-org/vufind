@@ -21,30 +21,88 @@
           }
         ?>
         </a>
-        
       </div>
+
       <div class="dateyeartype">
-        <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList()). '<br />'?>
+        <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
+
+        <? if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
+        <div class="resultOtherLinks">
+          <? $prevOtherLinkHeading = ''; ?>
+          <? foreach ($results as $result): ?>
+            <?=$prevOtherLinkHeading != $result['heading'] ? $this->transEsc('link_' . $result['heading'], null, $result['heading']) : '&nbsp;' ?>
+            <? if (!empty($result['isn'])): ?>
+              <? $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
+              <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
+                <?=$this->escapeHtml($otherLinkTitle); ?>
+              </a>
+            <? elseif (!empty($result['title'])): ?>
+              <a title="<?=$this->escapeHtmlAttr($result['title']) ?>" href="<?=$this->record($this->driver)->getLink('title', $result['title']) ?>">
+                <?=$this->escapeHtml($result['title']); ?>
+              </a>
+            <? endif; ?>
+            <? if (!empty($result['author'])): ?>
+              (<?=$this->escapeHtml($result['author']); ?>)
+            <? endif; ?>
+          <? endforeach; ?>
+        </div>
+        <? endif; ?>
+
         <? if($this->driver->isCollection()): ?>
           <?=implode('<br>', $this->driver->getSummary()); ?>
         <? else: ?>
           <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-          <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
-            $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-            echo !empty($summHighlightedAuthor)
-                ? $this->highlight($summHighlightedAuthor)
-                : $this->escapeHtml($summAuthor);
-          ?></a>
+            <? $authorForSearch = $this->driver->tryMethod('getPrimaryAuthorForSearch'); ?>
+            <a href="<?=$this->record($this->driver)->getLink('author', $authorForSearch ? $authorForSearch : $summAuthor)?>"><?=$this->escapeHtml($summAuthor) ?></a>
+          <? else: ?>
+            <? $authors = $this->driver->tryMethod('getNonPresenterAuthors'); if (!empty($authors)): ?>
+              <? foreach ($authors as $i => $author): ?>
+                <?=$i > 0 ? ' ; ' : '' ?>
+                <a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>">
+                  <?=$this->escapeHtml($author['name']) ?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role']) ?><? endif; ?>
+                </a>
+              <? endforeach; ?>
+            <? endif; ?>
           <? endif; ?>
           <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
           <? if (!empty($journalTitle)): ?>
             <?=!empty($summAuthor) ? '' : ' '?>
-            <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
-            <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+            <? $parentId = $this->driver->getHierarchyParentId(); $parentLink = $parentId ? $this->recordLink()->getUrl("VuFind|{$parentId[0]}") : $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)); ?>
+            <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $parentLink . '">' . $this->highlight($journalTitle) . '</a>';?>
+            <? $ref = $this->driver->getContainerReference(); if (!empty($ref)): ?>
+              <?=$this->escapeHtml($ref); ?>
+            <? else: ?>
+              <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+            <? endif; ?>
           <? elseif (!empty($summDate)): ?>
             <?=!empty($summAuthor) ? '' : ' '?>
-            <?=$this->escapeHtml($summDate[0])?>
+            <?=$this->transEsc('Published') ?>: <?=$this->escapeHtml($summDate[0])?>
           <? endif; ?>
+          <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
+            <div class="resultClassification">
+              <?=$this->transEsc('Classification') ?>:
+              <?
+                $result = '';
+                $i = 0;
+                $more = false;
+                foreach ($classifications as $class => $field) {
+                  $result .= $i++ > 0 ? ', ' : '';
+                  foreach ($field as $j => $subfield) {
+                    if ($j > 0) {
+                      $more = true;
+                      break;
+                    }
+                    $result .= $this->escapeHtml($class) . ' ' . $this->escapeHtml($subfield);
+                  }
+                }
+                if ($more) {
+                  $result .= '&hellip;';
+                }
+              ?>
+              <?=$result ?>
+            </div>
+          <? endif; ?>
+
           <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
             <? foreach ($summInCollection as $collId => $collText): ?>
               <div>
@@ -72,26 +130,31 @@
       <?
       /* Display information on duplicate records if available */
       $dedupData = $this->driver->getDedupData();
-      if ($dedupData): ?>
-      <div class="dedupInformation">
-      <?
-        $i = 0;
-        foreach ($dedupData as $source => $current) {
-          if (++$i == 1) {
-            ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", array(), $source)?></a></span><?
+      if (count($dedupData) > 1): ?>
+        <div class="dedupInformation">
+          <select class="dedup-select" role="listbox" aria-haspopup="true">
+          <? foreach ($dedupData as $source => $current): ?>
+            <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
+          <? endforeach; ?>
+          </select>
+        </div>
+      <? else: ?>
+        <?
+          if (!empty($dedupData)) {
+            reset($dedupData);
+            $source = key($dedupData);
           } else {
-            if ($i == 2) {
-              ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?
-            } else {
-              ?>, <?
+            $source = $this->driver->tryMethod('getDataSource');
+            if ($source) {
+              $source = reset($source);
             }
-            ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", array(), $source)?></a><?
           }
-        }
-        if ($i > 1) {
-          ?>)</span><?
-        }?>
-      </div>
+        ?>
+        <? if ($source): ?>
+          <div class="dedupInformation">
+            <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
+          </div>
+        <? endif; ?>
       <? endif; ?>
 
       <div class="callnumAndLocation ajax-availability hidden">
@@ -111,6 +174,10 @@
           <? endif; ?>
         <? endif; ?>
       </div>
+      <div class="no-holdings hidden">
+        <?=$this->transEsc('No holdings available')?>
+      </div>
+
       <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
             but even if we don't plan to display the link, we still want to get the $openUrl
             value for use in generating a COinS (Z3988) tag -- see bottom of file.
@@ -158,7 +225,7 @@
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a>      
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a>
       <? endif; ?>
 
       <? /* Hierarchy tree link */ ?>

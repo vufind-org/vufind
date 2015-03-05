@@ -88,6 +88,16 @@ trait SolrFinna
     }
 
     /**
+     * Return data source from index.
+     *
+     * @return string
+     */
+    public function getDataSource()
+    {
+        return $this->fields['datasource_str_mv'];
+    }
+
+    /**
      * Return genres
      *
      * @return array
@@ -96,6 +106,28 @@ trait SolrFinna
     {
         return isset($this->fields['genre'])
             ? $this->fields['genre'] : [];
+    }
+
+    /**
+     * Get the hierarchy_parent_id(s) associated with this item (empty if none).
+     *
+     * @return array
+     */
+    public function getHierarchyParentID()
+    {
+        return isset($this->fields['hierarchy_parent_id'])
+            ? $this->fields['hierarchy_parent_id'] : [];
+    }
+
+    /**
+     * Get the parent title(s) associated with this item (empty if none).
+     *
+     * @return array
+     */
+    public function getHierarchyParentTitle()
+    {
+        return isset($this->fields['hierarchy_parent_title'])
+            ? $this->fields['hierarchy_parent_title'] : [];
     }
 
     /**
