@@ -39,6 +39,63 @@ namespace Finna\RecordDriver;
  */
 class Primo extends \VuFind\RecordDriver\Primo
 {
-    use SolrFinna;
+    /**
+     * Record metadata
+     *
+     * @var \SimpleXMLElement
+     */
+    protected $simpleXML;
 
+    /**
+     * Get the publication dates of the record.  See also getDateSpan().
+     *
+     * @return array
+     */
+    public function getPublicationDates()
+    {
+        $rec = $this->getSimpleXML();
+        if (isset($rec->search->creationdate)) {
+            return array($rec->search->creationdate);
+        }
+    }
+
+    /**
+     * Get default OpenURL parameters.
+     *
+     * @return array|false
+     */
+    protected function getDefaultOpenURLParams()
+    {
+        if (!isset($this->mainConfig->OpenURL->rfr_id)
+            || empty($this->mainConfig->OpenURL->rfr_id)
+        ) {
+            return false;
+        }
+
+        $link = $this->fields['url'];
+
+        if ($link && strpos($link, 'url_ver=Z39.88-2004') !== false) {
+            parse_str(substr($link, strpos($link, '?') + 1), $params);
+            $params['rfr_id'] = $this->mainConfig->OpenURL->rfr_id;
+            $params['rft.date'] = implode('', $this->getPublicationDates());
+            return $params;
+        }
+
+        return false;
+    }
+
+    /**
+     * Get the original record as a SimpleXML object
+     *
+     * @return SimpleXMLElement The record as SimpleXML
+     */
+    protected function getSimpleXML()
+    {
+        if ($this->simpleXML !== null) {
+            return $this->simpleXML;
+        }
+        $this->simpleXML = new \SimpleXmlElement($this->fields['fullrecord']);
+
+        return $this->simpleXML;
+    }
 }
