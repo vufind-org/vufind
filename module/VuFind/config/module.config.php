@@ -674,6 +674,7 @@ $config = [
         ],
         'vufind_permission_provider_manager' => [
             'factories' => [
+                'header' => 'VuFind\Role\PermissionProvider\Factory::getHeader',
                 'ipRange' => 'VuFind\Role\PermissionProvider\Factory::getIpRange',
                 'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
                 'shibboleth' => 'VuFind\Role\PermissionProvider\Factory::getShibboleth',
