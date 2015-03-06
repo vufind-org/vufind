@@ -71,6 +71,49 @@ p {
 }
 
 
+// Typography for content pages
+// -------------------------------
+
+h1.content-header { padding: 5px 0; }
+
+.main.template-dir-content.template-name-content {
+    & h1 {
+        font-size: @content-headings-font-size-h1;
+    }
+    & h2, h3, h4 {   
+        line-height: (@content-headings-line-height * 1.1); 
+    }
+    & h5, h6 {
+        line-height: @content-line-height-base;    
+    }
+    & h2 { 
+        font-size: @content-headings-font-size-h2;
+        padding-top: 1em; padding-bottom: 0;
+    }
+    & h3 {
+        font-size: @content-headings-font-size-h3;
+        margin: 0; padding-top: 0.4em; padding-bottom: 1em;
+    }
+    & h4 {
+        font-size: @content-headings-font-size-h4;
+        margin: 0; padding-top: 0.4em; padding-bottom: 1.2em;
+    }
+    & h5 {
+        font-size: @content-headings-font-size-h5;
+        margin: 0; padding-top: 0; padding-bottom: 0;
+    }
+    & h6 {
+        font-size: @content-headings-font-size-h6;
+        text-transform: uppercase;
+        margin: 0; padding-top: 0.4em; padding-bottom: 0em;
+    }
+    & p {
+        font-size: @content-font-size-base;
+        line-height: @content-line-height-base;
+        padding-bottom: 0.9em;
+    }
+}
+
 // Emphasis & misc
 // -------------------------
 
@@ -212,6 +255,33 @@ dd {
       margin-left: @component-offset-horizontal;
       &:extend(.clearfix all); // Clear the floated `dt` if an empty `dd` is present
     }
+  }
+}
+
+// Content pages list options
+// --------------------------------------------------
+
+//Unstyled list
+.list-plain {
+  font-size: @content-font-size-base;
+  line-height: @content-line-height-base;
+  padding-left: 0;
+  padding-bottom: 0.9em;
+  
+  > li {
+    list-style-type: none;
+  }
+}
+
+// Bulleted list
+.list-bullets {
+  font-size: @content-font-size-base;
+  line-height: @content-line-height-base;
+  padding-left: 1.2em;
+  padding-bottom: 0.9em;
+  
+  > li {
+    list-style-type: disc;
   }
 }
 

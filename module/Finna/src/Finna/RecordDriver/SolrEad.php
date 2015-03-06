@@ -143,18 +143,6 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get data source id
-     *
-     * @return string
-     */
-    public function getDataSource()
-    {
-        return isset($this->fields['datasource_str_mv'])
-            ? $this->fields['datasource_str_mv'][0]
-            : '';
-    }
-
-    /**
      * Get notes on finding aids related to the record.
      *
      * @return array
@@ -182,28 +170,6 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
         return isset($record->did->unitid->attributes()->{'identifier'})
             ? (string)$record->did->unitid->attributes()->{'identifier'}
             : (string)$record->did->unitid;
-    }
-
-    /**
-     * Get the hierarchy_parent_id(s) associated with this item (empty if none).
-     *
-     * @return array
-     */
-    public function getHierarchyParentID()
-    {
-        return isset($this->fields['hierarchy_parent_id'])
-            ? $this->fields['hierarchy_parent_id'] : [];
-    }
-
-    /**
-     * Get the parent title(s) associated with this item (empty if none).
-     *
-     * @return array
-     */
-    public function getHierarchyParentTitle()
-    {
-        return isset($this->fields['hierarchy_parent_title'])
-            ? $this->fields['hierarchy_parent_title'] : [];
     }
 
     /**

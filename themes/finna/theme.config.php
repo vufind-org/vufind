@@ -29,6 +29,7 @@ return array(
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js',
         'vendor/jquery.magnific-popup.min.js',
+        'vendor/jquery.cookie-1.4.1.min.js',
         'vendor/slick.min.js'
     ),
     'less' => array(

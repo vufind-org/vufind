@@ -120,35 +120,14 @@
           <? endif; ?>
         <? endif; ?>
       </div>
-      <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
-            but even if we don't plan to display the link, we still want to get the $openUrl
-            value for use in generating a COinS (Z3988) tag -- see bottom of file.
-          */
-        $openUrl = $this->driver->getOpenURL();
-        $openUrlActive = $this->driver->openURLActive('results');
-        $urls = $this->record($this->driver)->getLinkDetails();
-        if ($openUrlActive || !empty($urls)): ?>
-        
-        <? if ($openUrlActive): ?>
-          <?=$this->openUrl($openUrl)?>
-          <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
-        <? endif; ?>
-        <? if (!is_array($urls)) $urls = array();
-          if(!$this->driver->isCollection()): ?>
-          <div class="available-online-links truncate-field">
-          <? foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
-          <? endforeach; ?>
-          </div>
-        <? endif; ?>
-      <? endif; ?>
-      <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
-        <span class="status ajax-availability hidden">
-          <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
-        </span>
-      
-      <? endif; ?>
-      
+
+      <?=$this->context($this)->renderInContext(
+        'RecordDriver/SolrDefault/result-online-urls.phtml',
+        array(
+          'driver' => $this->driver
+        )
+      );?>
+
       <?=$this->record($this->driver)->getPreviews()?>
       <? /* Hierarchy tree link */ ?>
       <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
@@ -188,6 +167,7 @@
         </div>
       <? endif; ?>
 
+      <? $openUrl = $this->driver->getOpenURL(); ?>
       <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
     </div>
 </div>
