@@ -153,7 +153,9 @@
       ?>
       <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
       <div class="qrcodeHolder">
-        <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+        <script type="text/template" class="qrCodeImgTag">
+          <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
+        </script>
       </div>
     <? endif; ?>
 
