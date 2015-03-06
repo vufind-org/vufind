@@ -129,7 +129,7 @@ class Tags extends Gateway
                 $select->columns([
                     "id", "tag",
                     'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', array("tags.tag"),
+                        'COUNT(DISTINCT(?))', array("rt.user_id"),
                         array(Expression::TYPE_IDENTIFIER)
                     )
                 ]);
