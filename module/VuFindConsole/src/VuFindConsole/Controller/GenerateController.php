@@ -113,6 +113,61 @@ class GenerateController extends AbstractBase
     }
 
     /**
+     * Add a new non-tab record action to all existing record routes
+     *
+     * @return \Zend\Console\Response
+     */
+    public function nontabrecordactionAction()
+    {
+        $argv = $this->consoleOpts->getRemainingArgs();
+        if (!isset($argv[1])) {
+            Console::writeLine(
+                "Usage: {$_SERVER['argv'][0]} [action] [target_module]"
+            );
+            Console::writeLine(
+                "\taction - new action to add"
+            );
+            Console::writeLine(
+                "\ttarget_module - the module where the new routes will be generated"
+            );
+            return $this->getFailureResponse();
+        }
+
+        $action = $argv[0];
+        $module = $argv[1];
+
+        // Create backup of configuration
+        $configPath = $this->getModuleConfigPath($module);
+        $this->backUpFile($configPath);
+
+        // Load the route config
+        $config = include $configPath;
+
+        // Append the route
+        $mainConfig = $this->getServiceLocator()->get('Config');
+        foreach ($mainConfig['router']['routes'] as $key => $val) {
+            if (isset($val['options']['route'])
+                && substr($val['options']['route'], -12) == '[:id[/:tab]]'
+            ) {
+                $newRoute = $key . '-' . strtolower($action);
+                if (isset($mainConfig['router']['routes'][$newRoute])) {
+                    Console::writeLine($newRoute . ' already exists; skipping.');
+                } else {
+                    $val['options']['route'] = str_replace(
+                        '[:id[/:tab]]', "[:id]/$action", $val['options']['route']
+                    );
+                    $val['options']['defaults']['action'] = $action;
+                    $config['router']['routes'][$newRoute] = $val;
+                }
+            }
+        }
+
+        // Write updated configuration
+        $this->writeModuleConfig($configPath, $config);
+        return $this->getSuccessResponse();
+   }
+
+    /**
      * Add a new record route definition
      *
      * @return \Zend\Console\Response
