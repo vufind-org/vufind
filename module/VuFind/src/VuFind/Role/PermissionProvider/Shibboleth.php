@@ -23,12 +23,13 @@
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
+ * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Role\PermissionProvider;
 use Zend\Http\PhpEnvironment\Request;
-use VuFind\Role\PermissionProvider\Header as Header;
+use VuFind\Role\PermissionProvider\Header;
 
 /**
  * Shibboleth permission provider for VuFind.
@@ -37,11 +38,14 @@ use VuFind\Role\PermissionProvider\Header as Header;
  * @package  Authorization
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
+ * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
 class Shibboleth extends Header
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Request object
      *
@@ -57,8 +61,28 @@ class Shibboleth extends Header
     public function __construct(Request $request)
     {
         parent::__construct($request);
-        $this->aliases = [ 'idpentityid' => 'Shib-Identity-Provider' ];
+
+        $this->aliases = ['idpentityid' => 'Shib-Identity-Provider'];
         $this->headerDelimiter = ';';
         $this->headerEscape = '\\';
+    }
+
+    /**
+     * Return an array of roles which may be granted the permission based on
+     * the options.
+     *
+     * @param mixed $options Options provided from configuration.
+     *
+     * @return array
+     */
+    public function getPermissions($options)
+    {
+        if ($this->request->getServer()->get('Shib-Identity-Provider') === false) {
+            $this->logWarning('getPermissions: Shibboleth headers missing');
+
+            return [];
+        }
+
+        return parent::getPermissions($options);
     }
 }
