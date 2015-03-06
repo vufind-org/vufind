@@ -78,6 +78,8 @@ class Module implements \Zend\ModuleManager\Feature\ConsoleUsageProviderInterfac
     {
         return [
             'generate extendservice' => 'Override a service with a new child class',
+            'generate recordroute' => 'Add a record route',
+            'generate staticroute' => 'Add a static route',
             'harvest harvest_oai' => 'OAI-PMH harvester',
             'harvest merge-marc' => 'MARC merge tool',
             'import import-xsl' => 'XSLT importer',
