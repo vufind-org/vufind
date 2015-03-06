@@ -269,6 +269,11 @@ trait SolrFinna
         return false;
     }
 
+    public function getSource()
+    {
+        return isset($this->fields['source']) ? $this->fields['source'] : false;
+    }
+
     /**
      * Like getFormat() but takes into account __unprocessed_format field.
      *
