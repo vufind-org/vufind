@@ -83,6 +83,22 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
+     * Get the language associated with the record.
+     *
+     * @return String
+     */
+    public function getLanguages()
+    {
+        $languages = parent::getLanguages();
+        foreach ($languages as $ind => $lan) {
+            if ($lan == '') {
+                unset($languages[$ind]);
+            }
+        }
+        return $languages;
+    }
+
+    /**
      * Get the publication dates of the record.  See also getDateSpan().
      *
      * @return array
