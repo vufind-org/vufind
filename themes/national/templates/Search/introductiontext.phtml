@@ -1,0 +1,7 @@
+<div>
+    <h2>Suomen arkistojen, kirjastojen ja museoiden aarteet <em>samalla haulla</em></h2>
+    <? $cnt = $this->indexedTotal()->getTotalIndexedCount(); ?>
+    <? if ($cnt > 0): ?>
+        <h3>Jo <em><?=$this->localizedNumber($cnt); ?></em> aineistotietoa!</h3>
+    <? endif; ?>
+</div>

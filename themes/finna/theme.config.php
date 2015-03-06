@@ -12,7 +12,8 @@ return array(
         ),
         'invokables' => array(
             'search' => 'Finna\View\Helper\Root\Search',
-            'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl'
+            'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
+            'indexedTotal' => 'Finna\View\Helper\Root\TotalIndexed',
         )
     ),
     'css' => array(
