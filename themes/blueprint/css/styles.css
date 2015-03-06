@@ -454,6 +454,7 @@ ul.recordSet .addToFavLink {
 .authorbox .applied {color:#000;}
 .authorbox .applied img {vertical-align:sub;}
 .authorbox .span-5 {white-space:nowrap;}
+.authorbox .span-5 a {white-space:normal;}
 .authorbio .providerLink {
     margin-top: 1em;
     margin-bottom: .4em;
