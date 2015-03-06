@@ -501,9 +501,9 @@ class Koha extends AbstractBase
             // Newer Koha version that uses bcrypt
             $db_pwd = crypt($password, $stored_hash);
         } else {
-            // Koha used to use MD5_BASE64 encoding to save borrowers' passwords, function
-            // 'rtrim' is used to discard trailing '=' signs, suitable for pushing
-            // into MySQL database
+            // Koha used to use MD5_BASE64 encoding to save borrowers' passwords,
+            // function 'rtrim' is used to discard trailing '=' signs, suitable for
+            // pushing into MySQL database
             $db_pwd = rtrim(base64_encode(pack('H*', md5($password))), '=');
         }
 
