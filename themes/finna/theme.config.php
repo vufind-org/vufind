@@ -5,6 +5,7 @@ return array(
         'factories' => array(
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
+            'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',

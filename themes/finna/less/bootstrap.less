@@ -925,13 +925,18 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
 }
 
 .primo-available-online {
-    padding: 5px;
-    border: 3px solid @gray-lighter;
     & p {
         margin: 0px;   
     }
     & a {
-        display: block;   
+        display: inline-block;
+    }
+    & .host {
+        font-size: 0.9em;
+        color: @gray;
+    }
+    & .fulltext-available .more-options {
+        display: none;
     }
 }
 .primo-available-online-record, .local-available-online-record {

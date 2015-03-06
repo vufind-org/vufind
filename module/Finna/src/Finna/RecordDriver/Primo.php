@@ -47,6 +47,42 @@ class Primo extends \VuFind\RecordDriver\Primo
     protected $simpleXML;
 
     /**
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     * </li>
+     *
+     * @return array
+     */
+    public function getURLs()
+    {
+        $urls = [];
+
+        $rec = $this->getSimpleXML();
+
+        $links = ['linktorsrc' => false, 'backlink' => true];
+        foreach ($links as $link => $citation) {
+            if (isset($rec->links->{$link})) {
+                $url = (string)$rec->links->{$link};
+                $parts = explode('$$', $url);
+                $url = substr($parts[1], 1);
+
+                $urlParts = parse_url($url);
+                $urls[] = array(
+                   'url' => $url,
+                   'urlShort' => $urlParts['host'],
+                   'citation' => $citation
+                );
+                break;
+            }
+        }
+        return $urls;
+    }
+
+    /**
      * Get the publication dates of the record.  See also getDateSpan().
      *
      * @return array

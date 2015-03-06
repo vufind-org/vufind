@@ -44,19 +44,20 @@
     <?
         $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
         // Account for replace_other_urls setting
-        $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
+        $urls = $this->record($this->driver)->getLinkDetails();
       ?>
     <? if (!empty($urls) || $openUrl): ?>
     <div class="primo-available-online-record">
       <? foreach ($urls as $current): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-www-link"></i> <?=$this->escapeHtml($current['desc'])?></a><br/>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc(end($this->driver->getFormats())) ?></a><?=$current['urlShort'] ? ' <span class="host">(' . $current['urlShort'] . ')</span>' : '' ?>
       <? endforeach; ?>
       <? if ($openUrl): ?>
-        <?=$this->openUrl($openUrl)?><br/>
+        <?=$this->openUrl($openUrl)?>
       <? endif; ?>
     </div>
     <? endif; ?>
-    
+    <? $openUrlMoreOptions = $openUrl ? $this->openUrl($openUrl, true) : false ?>
+    <?= $openUrlMoreOptions ? $openUrlMoreOptions : '' ?>
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
     <? if ($summary): ?>
       <p class="summary"><?=$summary;?></p>

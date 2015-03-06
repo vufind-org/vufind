@@ -114,4 +114,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $config, $sm->get('url')
         );
     }
+
+    /**
+     * Construct the OpenUrl helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return OpenUrl
+     */
+    public static function getOpenUrl(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        return new OpenUrl(
+            $sm->get('context'), isset($config->OpenURL) ? $config->OpenURL : null
+        );
+    }
 }
