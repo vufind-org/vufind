@@ -77,6 +77,13 @@ class Initializer
     protected $mobile;
 
     /**
+     * Cookie manager
+     *
+     * @var \VuFind\Cookie\CookieManager
+     */
+    protected $cookieManager;
+
+    /**
      * Constructor
      *
      * @param Config   $config Configuration object containing these keys:
@@ -104,6 +111,9 @@ class Initializer
 
         // Grab the service manager for convenience:
         $this->serviceManager = $this->event->getApplication()->getServiceManager();
+
+        // Get the cookie manager from the service manager:
+        $this->cookieManager = $this->serviceManager->get('VuFind\CookieManager');
 
         // Get base directory from tools object:
         $this->tools = $this->serviceManager->get('VuFindTheme\ThemeInfo');
@@ -220,8 +230,7 @@ class Initializer
         }
 
         // Save the current setting to a cookie so it persists:
-        $_COOKIE['ui'] = $selectedUI;
-        setcookie('ui', $selectedUI, null, '/');
+        $this->cookieManager->set('ui', $selectedUI);
 
         // Do we have a valid mobile selection?
         if ($mobileTheme && $selectedUI == 'mobile') {
@@ -283,7 +292,7 @@ class Initializer
                 if (!empty($name)) {
                     $options[] = [
                         'name' => $name, 'desc' => $desc,
-                        'selected' => ($_COOKIE['ui'] == $name)
+                        'selected' => ($this->cookieManager->get('ui') == $name)
                     ];
                 }
             }
