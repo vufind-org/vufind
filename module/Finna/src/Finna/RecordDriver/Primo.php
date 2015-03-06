@@ -55,8 +55,58 @@ class Primo extends \VuFind\RecordDriver\Primo
     {
         $rec = $this->getSimpleXML();
         if (isset($rec->search->creationdate)) {
-            return array($rec->search->creationdate);
+            return (array)($rec->search->creationdate);
         }
+    }
+
+    /**
+     * Get OpenURL parameters for an article.
+     *
+     * @return array
+     */
+    protected function getArticleOpenURLParams()
+    {
+        return $this->processOpenURLParams(
+            parent::getArticleOpenURLParams()
+        );
+    }
+
+    /**
+     * Get OpenURL parameters for a book.
+     *
+     * @return array
+     */
+    protected function getBookOpenURLParams()
+    {
+        return $this->processOpenURLParams(
+            parent::getBookOpenURLParams()
+        );
+    }
+
+    /**
+     * Get OpenURL parameters for a journal.
+     *
+     * @return array
+     */
+    protected function getJournalOpenURLParams()
+    {
+        return $this->processOpenURLParams(
+            parent::getJournalOpenURLParams()
+        );
+    }
+
+    /**
+     * Get OpenURL parameters for an unknown format.
+     *
+     * @param string $format Name of format
+     *
+     * @return array
+     */
+    protected function getUnknownFormatOpenURLParams($format)
+    {
+        return $this->processOpenURLParams(
+            parent::getUnknownFormatOpenURLParams($format)
+        );
     }
 
     /**
@@ -77,7 +127,9 @@ class Primo extends \VuFind\RecordDriver\Primo
         if ($link && strpos($link, 'url_ver=Z39.88-2004') !== false) {
             parse_str(substr($link, strpos($link, '?') + 1), $params);
             $params['rfr_id'] = $this->mainConfig->OpenURL->rfr_id;
-            $params['rft.date'] = implode('', $this->getPublicationDates());
+            if ($dates = $this->getPublicationDates()) {
+                $params['rft.date'] = implode('', $this->getPublicationDates());
+            }
             return $params;
         }
 
@@ -97,5 +149,23 @@ class Primo extends \VuFind\RecordDriver\Primo
         $this->simpleXML = new \SimpleXmlElement($this->fields['fullrecord']);
 
         return $this->simpleXML;
+    }
+
+    /**
+     * Utility function for processing OpenURL parameters.
+     * This duplicates 'rft_<param>' prefixed parameters as 'rft.<param>'
+     *
+     * @param array $params OpenURL parameters as key-value pairs
+     *
+     * @return array
+     */
+    protected function processOpenURLParams($params)
+    {
+        foreach ($params as $key => $val) {
+            if (strpos($key, 'rft_') === 0) {
+                $params['rft.' . substr($key, 4)] = $val;
+            }
+        }
+        return $params;
     }
 }
