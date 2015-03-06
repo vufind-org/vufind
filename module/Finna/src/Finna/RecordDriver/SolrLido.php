@@ -175,18 +175,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
-     * Get data source id
-     *
-     * @return string
-     */
-    public function getDataSource()
-    {
-        return isset($this->fields['datasource_str_mv'])
-            ? $this->fields['datasource_str_mv'][0]
-            : '';
-    }
-
-    /**
      * Get an array of events for the record.
      *
      * @return array
@@ -745,8 +733,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     protected function getDataSourceConfigurationValue($confParam)
     {
         $datasource = $this->getDataSource();
-        return isset($this->recordConfig->$confParam[$datasource])
-            ? $this->recordConfig->$confParam[$datasource] : null;
+        return isset($this->recordConfig->$confParam)
+            && isset($this->recordConfig->$confParam[$datasource]
+        ) ? $this->recordConfig->$confParam[$datasource] : null;
     }
 
     /**

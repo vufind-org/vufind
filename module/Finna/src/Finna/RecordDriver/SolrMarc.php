@@ -473,7 +473,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             if (is_array($fields)) {
                 foreach ($fields as $field) {
                     $role = $this->getSubfieldArray($field, ['e']);
-                    $role = empty($role) ? '' : mb_strtolower($role[0]);
+                    $role = empty($role) ? '' : mb_strtolower($role[0], 'UTF-8');
                     if ($role
                         && isset($this->mainConfig->Record->presenter_roles)
                         && in_array(
@@ -557,7 +557,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             if (is_array($fields)) {
                 foreach ($fields as $field) {
                     $role = $this->getSubfieldArray($field, ['e']);
-                    $role = empty($role) ? '' : mb_strtolower($role[0]);
+                    $role = empty($role) ? '' : mb_strtolower($role[0], 'UTF-8');
                     if (!$role
                         || !isset($this->mainConfig->Record->presenter_roles)
                         || !in_array(

@@ -128,6 +128,20 @@
 @headings-color: inherit;
 
 
+//## Font size, line-height for content pages
+@content-font-size-base: 14px;
+@content-line-height-base: 1.6;
+@content-headings-font-size-h1: floor((@content-font-size-base * 1.777));
+@content-headings-font-size-h2: floor((@content-font-size-base * 1.777));
+@content-headings-font-size-h3: floor((@content-font-size-base * 1.333));
+@content-headings-font-size-h4: floor((@content-font-size-base * 1.15));
+@content-headings-font-size-h5: @content-font-size-base;
+@content-headings-font-size-h6: floor((@content-font-size-base * 0.875));
+@headings-font-weight: 700;
+@content-headings-line-height: @headings-line-height;
+@content-headings-color: @gray-dark;
+
+
 //-- Iconography
 //
 //## Specify custom locations of the include Glyphicons icon font. Useful for those including Bootstrap via Bower.
