@@ -104,14 +104,6 @@ class Tags extends Gateway
             function ($select) use (
                 $id, $source, $limit, $list, $user, $sort, $is_me_id
             ) {
-                // Array of select columns
-                $columns = [
-                    "id", "tag",
-                    'cnt' => new Expression(
-                        'COUNT(?)', ["tags.tag"],
-                        [Expression::TYPE_IDENTIFIER]
-                    )
-                ];
                 // If we're looking for ownership
                 if (!empty($is_me_id)) {
                     // Create sub query
@@ -125,7 +117,6 @@ class Tags extends Gateway
                         )
                         ->where(['r.record_id' => $id]) // WHERE resource_id = 142
                         ->where(['user_id' => $is_me_id]); // AND user_id = 27
-
                     // LEFT JOIN ... ON resource_tags.tag_id = subq.tag_id
                     $select->join(
                         ['subq' => $sub],
@@ -135,7 +126,13 @@ class Tags extends Gateway
                     );
                 }
                 // SELECT (do not add table prefixes)
-                $select->columns($columns);
+                $select->columns([
+                    "id", "tag",
+                    'cnt' => new Expression(
+                        'COUNT(DISTINCT(?))', array("tags.tag"),
+                        array(Expression::TYPE_IDENTIFIER)
+                    )
+                ]);
                 // Convert record_id to resource_id
                 $select->join(
                     ['rt' => 'resource_tags'], 'rt.tag_id = tags.id', []
