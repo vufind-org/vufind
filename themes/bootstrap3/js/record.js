@@ -265,7 +265,7 @@ $(document).ready(function(){
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
   // Form handlers
-  Lightbox.addFormCallback('emailRecord', function() {
+  Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
   Lightbox.addFormCallback('placeHold', function(html) {
@@ -283,6 +283,7 @@ $(document).ready(function(){
     document.location.href = path+'/MyResearch/StorageRetrievalRequests';
   });
   Lightbox.addFormCallback('saveRecord', function() {
+    checkSaveStatuses();
     refreshTagList();
     Lightbox.confirm(vufindString['bulk_save_success']);
   });
