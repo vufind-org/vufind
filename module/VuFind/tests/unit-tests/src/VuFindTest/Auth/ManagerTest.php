@@ -461,7 +461,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         if (null === $pm) {
             $pm = $this->getMockPluginManager();
         }
-        return new Manager($config, $userTable, $sessionManager, $pm);
+        $cookies = new \VuFind\Cookie\CookieManager([]);
+        return new Manager($config, $userTable, $sessionManager, $pm, $cookies);
     }
 
     /**
