@@ -105,32 +105,32 @@ class Tags extends Gateway
                 $id, $source, $limit, $list, $user, $sort, $is_me_id
             ) {
                 // Array of select columns
-                $columns = array(
+                $columns = [
                     "id", "tag",
                     'cnt' => new Expression(
-                        'COUNT(?)', array("tags.tag"),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'COUNT(?)', ["tags.tag"],
+                        [Expression::TYPE_IDENTIFIER]
                     )
-                );
+                ];
                 // If we're looking for ownership
                 if (!empty($is_me_id)) {
                     // Create sub query
                     $sub = new Select('resource_tags'); // FROM resource_tags
                     // SELECT tag_id, 1 AS is_me
-                    $sub->columns(array('tag_id', 'is_me'=>new Expression("1")))
-                        ->join( // Convert record_id to resource_id
-                            array('r' => 'resource'),
+                    $sub->columns(['tag_id', 'is_me' => new Expression("1")])
+                        ->join(// Convert record_id to resource_id
+                            ['r' => 'resource'],
                             'resource_id = r.id',
-                            array()
+                            []
                         )
-                        ->where(array('r.record_id' => $id)) // WHERE resource_id = 142
-                        ->where(array('user_id' => $is_me_id)); // AND user_id = 27
+                        ->where(['r.record_id' => $id]) // WHERE resource_id = 142
+                        ->where(['user_id' => $is_me_id]); // AND user_id = 27
 
                     // LEFT JOIN ... ON resource_tags.tag_id = subq.tag_id
                     $select->join(
-                        array('subq' => $sub),
+                        ['subq' => $sub],
                         'tags.id = subq.tag_id',
-                        array('is_me'=>new Expression("`subq`.`is_me`")),
+                        ['is_me' => new Expression("`subq`.`is_me`")],
                         Select::JOIN_LEFT
                     );
                 }

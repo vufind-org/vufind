@@ -228,13 +228,12 @@ class AbstractRecord extends AbstractBase
             $driver->deleteTags($user, [$tag]);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage(
-                    array(
+                    [
                         'msg' => 'tags_deleted',
-                        'tokens' => array('%count%' => 1)
-                    )
+                        'tokens' => ['%count%' => 1]
+                    ]
                 );
         }
-
 
         return $this->redirectToRecord();
     }
