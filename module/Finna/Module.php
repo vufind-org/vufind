@@ -86,5 +86,14 @@ class Module
      */
     public function onBootstrap(MvcEvent $e)
     {
+        $request = $e->getApplication()->getRequest();
+        $baseUrl = $request->getServer('FINNA_BASE_URL');
+
+        if (!empty($baseUrl)) {
+            $baseUrl = '/' . trim($baseUrl, '/');
+            $router = $e->getApplication()->getServiceManager()->get('Router');
+            $router->setBaseUrl($baseUrl);
+            $request->setBaseUrl($baseUrl);
+        }
     }
 }

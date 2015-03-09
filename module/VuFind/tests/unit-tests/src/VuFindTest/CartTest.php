@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFindTest;
+use VuFind\Cookie\CookieManager;
 
 /**
  * Cart Test Class
@@ -62,21 +63,40 @@ class CartTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Build a mock cookie manager.
+     *
+     * @param array  $cookies Current cookie values
+     * @param string $path    Cookie base path (default = /)
+     * @param string $domain  Cookie domain
+     * @param bool   $secure  Are cookies secure only? (default = false)
+     *
+     * @return CookieManager
+     */
+    protected function getMockCookieManager($cookies = [], $path = '/',
+        $domain = null, $secure = false
+    ) {
+        return $this->getMock(
+            'VuFind\Cookie\CookieManager', ['set'],
+            [$cookies, $path, $domain, $secure]
+        );
+    }
+
+    /**
      * Build a mock cart object.
      *
-     * @param int   $maxSize Maximum size of cart contents
-     * @param bool  $active  Is cart enabled?
-     * @param array $cookies Current cookie values
+     * @param int                 $maxSize Maximum size of cart contents
+     * @param bool                $active  Is cart enabled?
+     * @param array|CookieManager $cookies Current cookie values (or ready-to-use
+     * cookie manager)
      *
      * @return \VuFind\Cart
      */
-    protected function getCart($maxSize = 100, $active = true, $cookies = [],
-        $domain = null
-    ) {
-        return $this->getMock(
-            'VuFind\Cart', ['setCookie'],
-            [$this->loader, $maxSize, $active, $cookies, $domain]
-        );
+    protected function getCart($maxSize = 100, $active = true, $cookies = [])
+    {
+        if (!($cookies instanceof CookieManager)) {
+            $cookies = $this->getMockCookieManager($cookies);
+        }
+        return new \VuFind\Cart($this->loader, $cookies, $maxSize, $active);
     }
 
     /**
@@ -86,7 +106,8 @@ class CartTest extends \PHPUnit_Framework_TestCase
      */
     public function testCookieDomain()
     {
-        $cart = $this->getCart(100, true, [], '.example.com');
+        $manager = $this->getMockCookieManager([], '/', '.example.com');
+        $cart = $this->getCart(100, true, $manager);
         $this->assertEquals('.example.com', $cart->getCookieDomain());
     }
 
@@ -160,13 +181,14 @@ class CartTest extends \PHPUnit_Framework_TestCase
      */
     public function testCookieWrite()
     {
-        $cart = $this->getCart();
-        $cart->expects($this->at(0))
-            ->method('setCookie')
+        $manager = $this->getMockCookieManager();
+        $manager->expects($this->at(0))
+            ->method('set')
             ->with($this->equalTo('vufind_cart'), $this->equalTo('Aa'));
-        $cart->expects($this->at(1))
-            ->method('setCookie')
+        $manager->expects($this->at(1))
+            ->method('set')
             ->with($this->equalTo('vufind_cart_src'), $this->equalTo('VuFind'));
+        $cart = $this->getCart(100, true, $manager);
         $cart->addItem('VuFind|a');
     }
 

@@ -96,4 +96,18 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
         );
     }
+
+    /**
+     * Construct the UpgradeController.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return UpgradeController
+     */
+    public static function getUpgradeController(ServiceManager $sm)
+    {
+        return new UpgradeController(
+            $sm->getServiceLocator()->get('VuFind\CookieManager')
+        );
+    }
 }

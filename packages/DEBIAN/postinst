@@ -3,21 +3,11 @@
 # Script for installing VuFind 2.x on Ubuntu
 # This does not include the OCI8 libraries
 
-# Update the profile file to set required environment variables (unless they are
-# already defined there):
-grep -q JAVA_HOME= /etc/profile
-if [ $? -ne 0 ]; then
-    sh -c 'echo export JAVA_HOME=\"/usr/lib/jvm/default-java\" >> /etc/profile'
-fi
-grep -q VUFIND_HOME= /etc/profile
-if [ $? -ne 0 ]; then
-    sh -c 'echo export VUFIND_HOME=\"/usr/local/vufind2\"  >> /etc/profile'
-fi
-grep -q VUFIND_LOCAL_DIR= /etc/profile
-if [ $? -ne 0 ]; then
-    sh -c 'echo export VUFIND_LOCAL_DIR=\"\$VUFIND_HOME/local\"  >> /etc/profile'
-fi
-source /etc/profile
+# Update the profile file to set required environment variables:
+sh -c 'echo export JAVA_HOME=\"/usr/lib/jvm/default-java\" > /etc/profile.d/vufind.sh'
+sh -c 'echo export VUFIND_HOME=\"/usr/local/vufind2\"  >> /etc/profile.d/vufind.sh'
+sh -c 'echo export VUFIND_LOCAL_DIR=\"\$VUFIND_HOME/local\"  >> /etc/profile.d/vufind.sh'
+source /etc/profile.d/vufind.sh
 
 # Turn on mod_rewrite in Apache.
 a2enmod rewrite
