@@ -91,6 +91,7 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test unexpected response
      *
      * @return void
+     *
      * @expectedException VuFind\Exception\Mail
      * @expectedExceptionMessage badbadbad
      */
@@ -112,6 +113,7 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful query
      *
      * @return void
+     *
      * @expectedException VuFind\Exception\Mail
      * @expectedExceptionMessage Problem sending text.
      */
@@ -132,6 +134,7 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test an exception in the mail client
      *
      * @return void
+     *
      * @expectedException VuFind\Exception\Mail
      * @expectedExceptionMessage Foo
      */

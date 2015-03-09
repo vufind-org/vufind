@@ -120,6 +120,7 @@ class BackendTest extends TestCase
      * Test retrieve exception handling.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testRetrieveWrapsSummonException()
@@ -171,6 +172,7 @@ class BackendTest extends TestCase
      * Test search exception handling.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsSummonException()

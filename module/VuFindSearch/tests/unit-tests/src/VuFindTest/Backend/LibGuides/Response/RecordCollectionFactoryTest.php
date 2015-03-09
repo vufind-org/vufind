@@ -59,6 +59,7 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
      * Test invalid input.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Unexpected type of value: Expected array, got string
      */

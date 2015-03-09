@@ -45,6 +45,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test config validation
      *
      * @return void
+     *
      * @expectedException \VuFind\Exception\Auth
      * @expectedExceptionMessage One or more ChoiceAuth parameters are missing.
      */
@@ -58,6 +59,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test default getPluginManager behavior
      *
      * @return void
+     *
      * @expectedException \Exception
      * @expectedExceptionMessage Plugin manager missing.
      */
@@ -174,6 +176,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test an illegal auth method
      *
      * @return void
+     *
      * @expectedException \Exception
      * @expectedExceptionMessage Illegal setting: foo
      */

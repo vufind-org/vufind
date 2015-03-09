@@ -84,6 +84,7 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing retrieve action.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
@@ -108,6 +109,7 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing search action.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
@@ -189,6 +191,7 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing batch retrieve action (with RetrieveBatchInterface).
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
@@ -221,6 +224,7 @@ class SearchServiceTest extends TestCase
      * RetrieveBatchInterface).
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
@@ -279,6 +283,7 @@ class SearchServiceTest extends TestCase
      * Test random (with RandomInterface) exception.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
@@ -449,6 +454,7 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
@@ -475,6 +481,7 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception at item retrieval search.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
@@ -517,6 +524,7 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception with less results than limit.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
@@ -589,6 +597,7 @@ class SearchServiceTest extends TestCase
      * Test similar action on bad backend.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage foo does not support similar()
      */
@@ -603,6 +612,7 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing similar action.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
@@ -633,6 +643,7 @@ class SearchServiceTest extends TestCase
      * Test a failure to resolve.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Exception\RuntimeException
      * @expectedExceptionMessage Unable to resolve backend: retrieve, junk
      */

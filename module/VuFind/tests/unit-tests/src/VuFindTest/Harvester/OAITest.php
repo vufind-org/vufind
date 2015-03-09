@@ -227,6 +227,7 @@ class OAITest extends \VuFindTest\Unit\TestCase
      * Test HTTP error detection.
      *
      * @return void
+     *
      * @expectedException Exception
      * @expectedExceptionMessage HTTP Error
      */
@@ -250,6 +251,7 @@ class OAITest extends \VuFindTest\Unit\TestCase
      * Test that a missing URL throws an exception.
      *
      * @return void
+     *
      * @expectedException Exception
      * @expectedExceptionMessage Missing base URL for test.
      */

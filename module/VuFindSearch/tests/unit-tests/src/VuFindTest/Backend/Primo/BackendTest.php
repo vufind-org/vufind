@@ -132,6 +132,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test search exception handling.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsPrimoException()
@@ -148,6 +149,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test retrieve exception handling.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testRetrieveWrapsPrimoException()

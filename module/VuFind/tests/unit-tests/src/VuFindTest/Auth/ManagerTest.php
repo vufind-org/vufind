@@ -195,6 +195,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test security features of switching between auth options (part 2).
      *
      * @return void
+     *
      * @expectedException \Exception
      * @expectedExceptionMessage Illegal authentication method: MultiILS
      */
@@ -332,6 +333,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful login (\VuFind\Exception\PasswordSecurity)
      *
      * @return void
+     *
      * @expectedException \VuFind\Exception\PasswordSecurity
      * @expectedExceptionMessage Boom
      */
@@ -350,6 +352,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful login (\VuFind\Exception\Auth)
      *
      * @return void
+     *
      * @expectedException \VuFind\Exception\Auth
      * @expectedExceptionMessage Blam
      */
@@ -368,6 +371,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test that unexpected exceptions get mapped to technical errors.
      *
      * @return void
+     *
      * @expectedException \VuFind\Exception\Auth
      * @expectedExceptionMessage authentication_error_technical
      */

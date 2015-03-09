@@ -50,6 +50,7 @@ class LoaderTest extends TestCase
      * Test exception for missing record.
      *
      * @return void
+     *
      * @expectedException VuFind\Exception\RecordMissing
      * @expectedExceptionMessage Record VuFind:test does not exist.
      */

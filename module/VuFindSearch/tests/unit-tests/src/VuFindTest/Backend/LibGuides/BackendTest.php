@@ -53,6 +53,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test retrieving a record (not supported).
      *
      * @return void
+     *
      * @expectedException        \Exception
      * @expectedExceptionMessage retrieve() not supported by LibGuides.
      */
@@ -142,6 +143,7 @@ class BackendTest extends \VuFindTest\Unit\TestCase
      * Test search exception handling.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsLibGuidesException()

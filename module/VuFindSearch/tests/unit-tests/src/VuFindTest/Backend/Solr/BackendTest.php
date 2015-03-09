@@ -220,6 +220,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      * Test refining an alphabrowse exception (string 1).
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
      * @expectedExceptionMessage Alphabetic Browse index missing.
      */
@@ -232,6 +233,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      * Test refining an alphabrowse exception (string 2).
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
      * @expectedExceptionMessage Alphabetic Browse index missing.
      */
@@ -244,6 +246,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      * Test that we don't refine a non-alphabrowse-related exception.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
      * @expectedExceptionMessage not a browse error
      */

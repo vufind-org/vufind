@@ -43,6 +43,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      * Test attempting to display a template that does not exist.
      *
      * @return void
+     *
      * @expectedException Zend\View\Exception\RuntimeException
      * @expectedExceptionMessage Cannot find core.phtml template for record driver: VuFind\RecordDriver\SolrMarc
      */
@@ -449,6 +450,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
      * Test getLinkDetails with invalid details
      *
      * @return void
+     *
      * @expectedException Exception
      * @expectedExceptionMessage Invalid URL array.
      */

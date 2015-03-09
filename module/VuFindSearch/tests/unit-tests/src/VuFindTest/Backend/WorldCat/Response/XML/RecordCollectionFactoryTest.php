@@ -45,6 +45,7 @@ class RecordCollectionFactoryTest extends \PHPUnit_Framework_TestCase
      * Test bad callback.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Record factory must be callable.
      */
@@ -57,6 +58,7 @@ class RecordCollectionFactoryTest extends \PHPUnit_Framework_TestCase
      * Test bad factory input.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Unexpected type of value: Expected array, got string
      */

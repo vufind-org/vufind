@@ -403,6 +403,7 @@ class SpellingProcessorTest extends TestCase
      * Test detection of bad Solr response format.
      *
      * @return void
+     *
      * @expectedException \Exception
      * @expectedExceptionMessage Unexpected suggestion format; spellcheck.extendedResults must be set to true.
      */

@@ -45,9 +45,10 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
     /**
      * Test constructor exception.
      *
+     * @return void
+     *
      * @expectedException VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Record factory must be callable.
-     * @return void
      */
     public function testConstructorRequiresValidFactoryFunction()
     {
@@ -58,6 +59,7 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
      * Test invalid input.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Unexpected type of value: Expected array, got string
      */

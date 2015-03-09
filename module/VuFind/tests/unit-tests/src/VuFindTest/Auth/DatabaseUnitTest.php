@@ -43,6 +43,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of empty create request.
      *
      * @return void
+     *
      * @expectedException VuFind\Exception\Auth
      * @expectedExceptionMessage Username cannot be blank
      */
@@ -56,6 +57,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of create request w/blank password.
      *
      * @return void
+     *
      * @expectedException VuFind\Exception\Auth
      * @expectedExceptionMessage Password cannot be blank
      */
@@ -71,6 +73,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of create request w/mismatched passwords.
      *
      * @return void
+     *
      * @expectedException VuFind\Exception\Auth
      * @expectedExceptionMessage Passwords do not match
      */
@@ -86,6 +89,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test missing table manager.
      *
      * @return void
+     *
      * @expectedException Exception
      * @expectedExceptionMessage DB table manager missing.
      */
@@ -99,6 +103,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test creation w/duplicate email.
      *
      * @return void
+     *
      * @expectedException VuFind\Exception\Auth
      * @expectedExceptionMessage That email address is already used
      */
@@ -124,6 +129,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test creation w/duplicate username.
      *
      * @return void
+     *
      * @expectedException VuFind\Exception\Auth
      * @expectedExceptionMessage That username is already taken
      */
