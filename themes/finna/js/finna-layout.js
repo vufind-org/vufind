@@ -41,14 +41,17 @@ finna.layout = (function() {
       var rowHeight = [];
       holder.find(".truncate-field").not('.truncate-done').each(function( index ) {
         $(this).addClass('truncate-done');
-        if ( $( this ).children().length > 0 ) { // check that truncate-field has children, where we can count line-height
+        // check that truncate-field has children, where we can count line-height
+        if ($(this).children().length > 0) {
           var rowCount = 3;
-          if ($( this ).data("rows")) {
-            rowCount = $( this ).data("rows");
+          if ($(this).data("rows")) {
+            rowCount = $(this).data("rows");
           }
           rowHeight[index] = parseFloat($( this ).children().first().css('line-height').replace('px', ''));
-          truncation[index] = rowHeight[index] * rowCount ;                                                     // get the line-height of first element to determine each text line height
-          if ($(this).height() > (truncation[index] + rowHeight[index] - 1)) {                                    // don't truncate, if one line for truncation
+          // get the line-height of first element to determine each text line height
+          truncation[index] = rowHeight[index] * rowCount ;
+          // don't truncate, if one line for truncation
+          if ($(this).height() > (truncation[index] + rowHeight[index] - 1)) {
             $(this).css('height', truncation[index]-1+'px');
             if ($( this ).hasClass("wide")) { // generate different truncate styles according to class
               $(this).after("<div class='more-link wide'><i class='fa fa-handle-open'></i></div><div class='less-link wide'> <i class='fa fa-handle-close'></i></div>"); 
@@ -68,8 +71,7 @@ finna.layout = (function() {
               $(this).hide();
               $(this).prev('.more-link').show();
               $(this).prevAll('.truncate-field').first().css('height', truncation[index]-1+'px');
-            });
-            
+            }); 
           }
         }
       });        
