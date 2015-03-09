@@ -76,13 +76,13 @@ dateRange[] = creationdate
 ; The name of the index field is on the left
 ; The display name of the field is on the right
 [Facets]
-tlevel  = "Limit To"
+;tlevel  = "Limit To"
 rtype   = "Format"
 creator = "Author"
-jtitle  = "Journal Title"
-topic   = Subjects
 creationdate = "Year of Publication"
 domain  = Source
+jtitle  = "Journal Title"
+topic   = Subjects
 ;lang    = Language
 
 ; Top facets (not used by default)
@@ -94,7 +94,7 @@ domain  = Source
 top_rows = 2
 top_cols = 3
 ; Do we want any facets to be collapsed by default?
-;collapsedFacets = *
+collapsedFacets = "jtitle,domain,topic"
 
 ; These settings affect the way the facets are displayed
 [Facet_Settings]
