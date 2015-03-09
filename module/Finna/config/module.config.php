@@ -25,7 +25,6 @@
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://github.com/KDK-Alli/NDL-VuFind2   NDL-VuFind2
- *
  */
 
 namespace Finna\Module\Configuration;
@@ -54,7 +53,8 @@ $config = array(
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
             'primo' => 'Finna\Controller\PrimoController',
-            'search' => 'Finna\Controller\SearchController'
+            'search' => 'Finna\Controller\SearchController',
+            'index' => 'Finna\Controller\IndexController',
         ),
     ),
     'service_manager' => array(

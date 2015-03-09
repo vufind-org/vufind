@@ -46,22 +46,11 @@ class TotalIndexed extends \Zend\View\Helper\AbstractHelper
      */
     public function getTotalIndexedCount()
     {
-        if (isset($this->view->results)) {
-            $query = $this->view->results->getParams()->getQuery();
-            if (empty($query->getString())) {
-                return $this->view->results->getResultTotal();
-            } else {
-                return 0;
-            }
-        }
         $layout = $this->view->layout();
         if ($layout !== null) {
             foreach ($layout->getChildren() as $child) {
                 if ($child->getTemplate() == 'search/home') {
-                    $results = $child->getVariables()['results'];
-                    if (empty($results->getParams()->getQuery()->getString())) {
-                        return $results->getResultTotal();
-                    }
+                    return $child->getVariables()['indexResultTotal'];
                 }
             }
         }
