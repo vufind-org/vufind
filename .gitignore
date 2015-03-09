@@ -14,12 +14,13 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
-# Eclipse Files
+# IDE Files
 .metadata/*
 .settings/*
 .project
 .buildpath
 .ExternalToolBuilders
+.idea
 
 # Local VuFind files
 local/cache/covers/large/*

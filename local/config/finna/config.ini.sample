@@ -99,11 +99,25 @@ indexBasedNewItems = true
 [Session]
 type                        = Database
 lifetime                    = 600 ; Session lasts for 10 minutes (without keepalive)
-limit_session_path          = true ; Limit session cookie to [Site] path
 ;file_save_path              = /tmp/vufind_sessions
 ;memcache_host               = localhost
 ;memcache_port               = 11211
 ;memcache_connection_timeout = 1
+
+; This section controls how VuFind creates cookies (to store session IDs, bookbag
+; contents, theme/language settings, etc.)
+[Cookies]
+; In case there are multiple VuFind instances on the same server and they should not
+; share cookies/sessions, this option can be enabled to limit the session to the
+; current path. Default is false, which will place cookies at the root directory.
+limit_by_path = true
+; If VuFind is only accessed via HTTPS, this setting can be enabled to disallow
+; the browser from ever sending cookies over an unencrypted connection (i.e.
+; before being redirected to HTTPS). Default is false. 
+;only_secure = true  
+; Set the domain used for cookies (sometimes useful for sharing the cookies across
+; subdomains); by default, cookies will be restricted to the current hostname.
+;domain = ".example.edu"
 
 ; Please set the ILS that VuFind will interact with.
 ;
