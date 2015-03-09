@@ -185,7 +185,7 @@ class ResultScrollerTest extends TestCase
      * Get mock result scroller
      *
      * @param \VuFind\Search\Base\Results restoreLastSearch results (null to ignore)
-     * @param array                       $methods Methods to mock
+     * @param array                                                                  $methods Methods to mock
      *
      * @return ResultScroller
      */

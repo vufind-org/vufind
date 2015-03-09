@@ -54,7 +54,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException Exception
+     * @expectedException        Exception
      * @expectedExceptionMessage Could not load default fail image.
      */
     public function testUtterFailure()

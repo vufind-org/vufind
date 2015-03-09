@@ -55,7 +55,7 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException Zend\ServiceManager\Exception\RuntimeException
+     * @expectedException        Zend\ServiceManager\Exception\RuntimeException
      * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Autocomplete\AutocompleteInterface
      */
     public function testExpectedInterface()

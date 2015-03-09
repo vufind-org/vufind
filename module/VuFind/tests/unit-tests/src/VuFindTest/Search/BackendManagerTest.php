@@ -49,7 +49,7 @@ class BackendManagerTest extends TestCase
      *
      * @return void
      *
-     * @expectedException UnexpectedValueException
+     * @expectedException        UnexpectedValueException
      * @expectedExceptionMessage Expected backend registry to return object
      */
     public function testGetThrowsOnNonObject()
@@ -67,7 +67,7 @@ class BackendManagerTest extends TestCase
      *
      * @return void
      *
-     * @expectedException UnexpectedValueException
+     * @expectedException        UnexpectedValueException
      * @expectedExceptionMessage does not implement the expected interface
      */
     public function testGetThrowsOnNonBackend()

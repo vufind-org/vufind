@@ -150,8 +150,8 @@ class BackendTest extends \VuFindTest\Unit\TestCase
     {
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
-             ->method('query')
-             ->will($this->throwException(new \Exception()));
+            ->method('query')
+            ->will($this->throwException(new \Exception()));
         $back = new Backend($conn);
         $back->search(new Query(), 1, 1);
     }
@@ -167,9 +167,9 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $expectedParams = ['foo' => 'bar', 'search' => 'baz'];
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
-             ->method('query')
-             ->with($this->equalTo($expectedParams), $this->equalTo(0), $this->equalTo(10))
-             ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->method('query')
+            ->with($this->equalTo($expectedParams), $this->equalTo(0), $this->equalTo(10))
+            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
         $back = new Backend($conn);
         $back->search(new Query('baz'), 0, 10, $myParams);
     }
@@ -184,14 +184,14 @@ class BackendTest extends \VuFindTest\Unit\TestCase
         $conn = $this->getConnectorMock(['query']);
         $expectedParams0 = ['search' => 'baz'];
         $conn->expects($this->at(0))
-             ->method('query')
-             ->with($this->equalTo($expectedParams0), $this->equalTo(0), $this->equalTo(10))
-             ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->method('query')
+            ->with($this->equalTo($expectedParams0), $this->equalTo(0), $this->equalTo(10))
+            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
         $expectedParams1 = ['search' => 'fallback'];
         $conn->expects($this->at(1))
-             ->method('query')
-             ->with($this->equalTo($expectedParams1), $this->equalTo(0), $this->equalTo(10))
-             ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->method('query')
+            ->with($this->equalTo($expectedParams1), $this->equalTo(0), $this->equalTo(10))
+            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
         $back = new Backend($conn, null, 'fallback');
         $back->search(new Query('baz'), 0, 10);
     }

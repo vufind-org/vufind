@@ -76,7 +76,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException Exception
+     * @expectedException        Exception
      * @expectedExceptionMessage VuFind\Recommend\SideFacets: hierarchical facet helper unavailable
      */
     public function testMissingHierarchicalFacetHelper()
@@ -266,7 +266,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
             'Results' => [
                 'format' => 'Format',
             ],
-           'Results_Settings' => ['collapsedFacets' => '*'],
+            'Results_Settings' => ['collapsedFacets' => '*'],
         ];
         $filters = [
             'format' => [

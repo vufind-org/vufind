@@ -53,7 +53,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException Exception
+     * @expectedException        Exception
      * @expectedExceptionMessage Could not load default fail image.
      */
     public function testUtterFailure()
@@ -80,9 +80,9 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a loader object to test.
      *
-     * @param array      $config  Configuration
-     * @param ThemeInfo  $theme   Theme info object (null to create default)
-     * @param array|bool $mock    Array of functions to mock, or false for real object
+     * @param array      $config Configuration
+     * @param ThemeInfo  $theme  Theme info object (null to create default)
+     * @param array|bool $mock   Array of functions to mock, or false for real object
      *
      * @return void
      */

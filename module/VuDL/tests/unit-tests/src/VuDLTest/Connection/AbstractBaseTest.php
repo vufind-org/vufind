@@ -47,9 +47,24 @@ class AbstractBaseTest extends \VuFindTest\Unit\TestCase
 
 class FakeInterface implements \VuFindHttp\HttpServiceInterface
 {
-    public function proxify(\Zend\Http\Client $client, array $options = []) {}
-    public function get($url, array $params = [], $timeout = null) {}
-    public function post($url, $body = null, $type = 'application/octet-stream', $timeout = null) {}
-    public function postForm($url, array $params = [], $timeout = null) {}
-    public function createClient($url, $method = \Zend\Http\Request::METHOD_GET, $timeout = null) {}
+    public function proxify(\Zend\Http\Client $client, array $options = []) 
+    {
+
+    }
+    public function get($url, array $params = [], $timeout = null) 
+    {
+
+    }
+    public function post($url, $body = null, $type = 'application/octet-stream', $timeout = null) 
+    {
+
+    }
+    public function postForm($url, array $params = [], $timeout = null) 
+    {
+
+    }
+    public function createClient($url, $method = \Zend\Http\Request::METHOD_GET, $timeout = null) 
+    {
+
+    }
 }

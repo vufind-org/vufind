@@ -44,7 +44,7 @@ class TagTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return void
      *
-     * @expectedException Exception
+     * @expectedException        Exception
      * @expectedExceptionMessage DB table manager missing.
      */
     public function testMissingDependency()

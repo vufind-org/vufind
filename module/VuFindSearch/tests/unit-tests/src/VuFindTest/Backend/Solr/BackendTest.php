@@ -148,7 +148,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage JSON decoding error: 4 -- bad {
      */
     public function testBadJson()
@@ -166,7 +166,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Invalid response writer type: xml
      */
     public function testInjectResponseWriterThrownOnIncompabileResponseWriter()
@@ -181,7 +181,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Invalid named list implementation type: bad
      */
     public function testInjectResponseWriterThrownOnIncompabileNamedListSetting()
@@ -221,7 +221,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
+     * @expectedException        VuFindSearch\Backend\Exception\RemoteErrorException
      * @expectedExceptionMessage Alphabetic Browse index missing.
      */
     public function testRefineAlphaBrowseException()
@@ -234,7 +234,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
+     * @expectedException        VuFindSearch\Backend\Exception\RemoteErrorException
      * @expectedExceptionMessage Alphabetic Browse index missing.
      */
     public function testRefineAlphaBrowseExceptionWithAltString()
@@ -247,7 +247,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
+     * @expectedException        VuFindSearch\Backend\Exception\RemoteErrorException
      * @expectedExceptionMessage not a browse error
      */
     public function testRefineAlphaBrowseExceptionWithNonBrowseString()

@@ -228,7 +228,7 @@ class OAITest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException Exception
+     * @expectedException        Exception
      * @expectedExceptionMessage HTTP Error
      */
     public function testHTTPErrorDetection()
@@ -246,13 +246,12 @@ class OAITest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     *
     /**
      * Test that a missing URL throws an exception.
      *
      * @return void
      *
-     * @expectedException Exception
+     * @expectedException        Exception
      * @expectedExceptionMessage Missing base URL for test.
      */
     public function testMissingURLThrowsException()

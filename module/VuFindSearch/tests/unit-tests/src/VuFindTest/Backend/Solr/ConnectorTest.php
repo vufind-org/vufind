@@ -114,7 +114,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @expectedException InvalidArgumentException
+     * @expectedException        InvalidArgumentException
      * @expectedExceptionMessage AdapterInterface
      */
     public function testSetAdapterThrowsInvalidObject()

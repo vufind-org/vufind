@@ -136,7 +136,7 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException \Exception
+     * @expectedException        \Exception
      * @expectedExceptionMessage Could not find valid data. Details:
      */
     public function testEmptyFile()

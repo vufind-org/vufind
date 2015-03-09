@@ -92,7 +92,7 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Mail
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage badbadbad
      */
     public function testUnexpectedResponse()
@@ -114,7 +114,7 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Mail
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage Problem sending text.
      */
     public function testFailureResponse()
@@ -135,7 +135,7 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException VuFind\Exception\Mail
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage Foo
      */
     public function testClientException()

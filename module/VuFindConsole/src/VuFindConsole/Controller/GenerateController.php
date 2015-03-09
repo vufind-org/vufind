@@ -165,7 +165,7 @@ class GenerateController extends AbstractBase
         // Write updated configuration
         $this->writeModuleConfig($configPath, $config);
         return $this->getSuccessResponse();
-   }
+    }
 
     /**
      * Add a new record route definition

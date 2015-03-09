@@ -116,7 +116,7 @@ class RouteGenerator
     /**
      * Add record route to the configuration.
      *
-     * @param array $config      Configuration array to update
+     * @param array  $config     Configuration array to update
      * @param string $routeBase  Base name to use for routes
      * @param string $controller Controller to point routes toward
      *

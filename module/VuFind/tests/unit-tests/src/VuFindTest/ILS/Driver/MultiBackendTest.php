@@ -100,7 +100,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->callMethod($driver, 'getLocalId', ['bad']);
         $this->assertEquals(
             'VuFind\ILS\Driver\MultiBackend: '
-                . "Could not find local id in 'bad' using '.'",
+            . "Could not find local id in 'bad' using '.'",
             $writer->events[1]['message']
         );
     }

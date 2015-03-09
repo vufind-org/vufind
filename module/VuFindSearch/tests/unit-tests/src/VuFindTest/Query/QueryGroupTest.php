@@ -123,7 +123,7 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      *
-     * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Unknown or invalid boolean operator: fizz
      */
     public function testIllegalOperator()

@@ -196,7 +196,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException \Exception
+     * @expectedException        \Exception
      * @expectedExceptionMessage Illegal authentication method: MultiILS
      */
     public function testSwitchingFailure()
@@ -334,7 +334,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException \VuFind\Exception\PasswordSecurity
+     * @expectedException        \VuFind\Exception\PasswordSecurity
      * @expectedExceptionMessage Boom
      */
     public function testPasswordSecurityException()
@@ -353,7 +353,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException \VuFind\Exception\Auth
+     * @expectedException        \VuFind\Exception\Auth
      * @expectedExceptionMessage Blam
      */
     public function testAuthException()
@@ -372,7 +372,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      *
-     * @expectedException \VuFind\Exception\Auth
+     * @expectedException        \VuFind\Exception\Auth
      * @expectedExceptionMessage authentication_error_technical
      */
     public function testUnanticipatedException()
@@ -477,8 +477,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     protected function getMockUserTable()
     {
         return $this->getMockBuilder('VuFind\Db\Table\User')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
