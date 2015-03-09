@@ -512,8 +512,8 @@ class DAIA extends AbstractBase implements
                             ->item(0)->attributes->getNamedItem('id')->nodeValue;
                         if ($departmentElements->item(0)->attributes->getNamedItem('href')!== null
                         ) {
-                            $result['location.href'] = $departmentElements
-                                ->item(0)->attributes->getNamedItem('href')->nodeValue;
+                            $result['location.href'] = $departmentElements->item(0)
+                                ->attributes->getNamedItem('href')->nodeValue;
                         }
                     }
                 }
