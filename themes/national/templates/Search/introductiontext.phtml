@@ -1,7 +1,7 @@
 <div>
-    <h2>Suomen arkistojen, kirjastojen ja museoiden aarteet <em>samalla haulla</em></h2>
+    <h2><?=$this->transEsc('finnish_archive_treasures')?> <em><?=$this->transEsc('with_single_search')?></em></h2>
     <? $cnt = $this->indexedTotal()->getTotalIndexedCount(); ?>
     <? if ($cnt > 0): ?>
-        <h3>Jo <em><?=$this->localizedNumber($cnt); ?></em> aineistotietoa!</h3>
+        <h3><?=$this->transEsc('currently_indexed')?> <em><?=$this->localizedNumber($cnt); ?></em> <?=$this->transEsc('entries_included')?></h3>
     <? endif; ?>
 </div>
