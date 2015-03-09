@@ -1,17 +1,63 @@
-$(document).ready(function() {
-  <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
-    <? foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
-      <? $i = 0; foreach ($searchGroup->getQueries() as $search): ?>
-        <? if (++$i == 1): ?>
-          var new_group = addGroup('<?=addslashes($search->getString())?>', '<?=addslashes($search->getHandler())?>', '<?=$searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator()?>');
-        <? else: ?>
-          addSearch(new_group, '<?=addslashes($search->getString())?>', '<?=addslashes($search->getHandler())?>');
-        <? endif; ?>
+<script>
+  $(document).ready(function() {
+    <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
+      <? foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
+        <? $i = 0; foreach ($searchGroup->getQueries() as $search): ?>
+          <? if (++$i == 1): ?>
+            var new_group = addGroup('<?=addslashes($search->getString())?>', '<?=addslashes($search->getHandler())?>', '<?=$searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator()?>');
+          <? else: ?>
+            addSearch(new_group, '<?=addslashes($search->getString())?>', '<?=addslashes($search->getHandler())?>');
+          <? endif; ?>
+        <? endforeach; ?>
       <? endforeach; ?>
-    <? endforeach; ?>
-  <? else: ?>
-    var group = addGroup();
-    addSearch(group);
-    addSearch(group);
-  <? endif; ?>
-});
+    <? else: ?>
+      var group = addGroup();
+      addSearch(group);
+      addSearch(group);
+    <? endif; ?>
+  });
+</script>
+
+<script type="text/template" id="new_search_template">
+  <div class="search">
+    <div class="row">
+      <div class="col-md-7">
+        <input class="form-control" type="text"/>
+      </div>
+      <div class="col-md-4">
+        <select class="form-control">
+        <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+          <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
+        <? endforeach; ?>
+        </select>
+      </div>
+      <div class="col-md-1">
+        <a class="help-block delete hidden" href="#" class="delete">&times;</a>
+      </div>
+    </div>
+  </div>
+</script>
+
+<script type="text/template" id="new_group_template">
+  <div class="group row">
+    <div class="col-md-9">
+      <div class="row">
+        <div class="col-md-3">
+          <label class="help-block"><?=$this->transEsc("adv_search_label")?>:</label>
+        </div>
+        <div class="col-md-9">
+          <i class="fa fa-plus-circle"></i> <a href="#" class="add_search_link"><?=$this->transEsc("add_search")?></a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <label class="search_bool"><?=$this->transEsc("search_match")?>:&nbsp;</label>
+      <a href="#" class="close hidden" title="<?=$this->transEsc("del_search")?>">&times;</a>
+      <select class="form-control">
+        <option value="AND"><?=$this->transEsc("search_AND")?></option>
+        <option value="OR"><?=$this->transEsc("search_OR")?></option>
+        <option value="NOT"><?=$this->transEsc("search_NOT")?></option>
+      </select>
+    </div>
+  </div>
+</script>
