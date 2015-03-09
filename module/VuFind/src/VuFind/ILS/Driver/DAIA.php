@@ -510,8 +510,11 @@ class DAIA extends AbstractBase implements
                             = $departmentElements->item(0)->nodeValue;
                         $result['location.id'] = $departmentElements
                             ->item(0)->attributes->getNamedItem('id')->nodeValue;
-                        $result['location.href'] = $departmentElements
-                            ->item(0)->attributes->getNamedItem('href')->nodeValue;
+                        if ($departmentElements->item(0)->attributes->getNamedItem('href')!== null
+                        ) {
+                            $result['location.href'] = $departmentElements
+                                ->item(0)->attributes->getNamedItem('href')->nodeValue;
+                        }
                     }
                 }
                 $storageElements
@@ -550,8 +553,12 @@ class DAIA extends AbstractBase implements
                     = $itemlist->item($c)->getElementsByTagName('message');
                 if ($messageElements->length > 0) {
                     for ($m = 0; $messageElements->item($m) !== null; $m++) {
-                        $errno = $messageElements->item($m)->attributes
-                            ->getNamedItem('errno')->nodeValue;
+                        $errno = "";
+                        if ($messageElements->item($m)->attributes->getNamedItem('errno')!==null
+                        ) {
+                            $errno = $messageElements->item($m)->attributes
+                                ->getNamedItem('errno')->nodeValue;
+                        }
                         if ($errno === '404') {
                             $result['status'] = 'missing';
                         } else if ($this->logger) {
