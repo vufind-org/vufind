@@ -14,38 +14,30 @@ function addSearch(group, term, field, op)
   // Build the new search
   var inputIndex = $('#group'+group+' input').length;
   var inputID = group+'_'+inputIndex;
-  var newSearch ='<div class="search row" id="search'+inputID+'"><div class="col-sm-3">';
-  if (typeof groupSearches[group] == "undefined") {
+  var $newSearch = $($('#new_search_template').html());
+  $newSearch.attr('id', 'search'+inputID);
+  if (typeof groupSearches[group] === "undefined") {
     groupSearches[group] = 0;
-    newSearch += '<input type="hidden" name="op' + group + '[]" value="AND" class="form-control"/><label for="search_lookfor' + group + '_' + groupSearches[group] + '" class="help-block">' + searchLabel + ':</label>';
+    $newSearch.find('.first-join').attr('name', 'op' + group + '[]');
+    $newSearch.find('select.join').delete();
   } else {
-    newSearch += '<select id="search_op' + group + '_' + groupSearches[group] + '" name="op' + group + '[]" class="col-sm-9 form-control">';
-    for(var i=0, len= booleanSearchOperators.length; i < len; i++) {
-      var searchOp = booleanSearchOperators[i];
-      var sel = '';
-      if(op == searchOp) {
-        sel = ' selected=selected ';
-      }
-      newSearch += '<option value="' + searchOp + '" ' + sel + ">" + searchOp +"</option>";
-    }
-    newSearch += '</select>';
+    $newSearch.find('select.join')
+      .attr('id', 'search_op' + group + '_' + groupSearches[group])
+      .attr('name', 'op' + group + '[]');
+    $newSearch.find('.first-join').delete();
   }
-  newSearch += '</div><div class="col-sm-9"><div class="col-sm-6"><input class="form-control"" id="search_lookfor'+inputID+'" type="text" name="lookfor'+group+'[]" value="'+term+'"></div>'
-    + '<span class="col-sm-1 help-block">'+searchFieldLabel+'</span> '
-    + '<div class="col-sm-4"><select class="form-control" id="search_type'+inputID+'" name="type'+group+'[]">';
-  for (var key in searchFields) {
-    newSearch += '<option value="' + key + '"';
-    if (key == field) {
-      newSearch += ' selected="selected"';
-    }
-    newSearch += ">" + searchFields[key] + "</option>";
+  $newSearch.find('input.form-control')
+    .attr('id', 'search_lookfor'+inputID)
+    .attr('nam', 'lookfor'+group+'[]')
+    .attr('value', term);
+  $newSearch.find('select.type')
+    .attr('id', 'search_type'+inputID)
+    .attr('name', 'type'+group+'[]');
+  $newSearch.find('a.delete')
+    .attr('onClick', 'deleteSearch('+group+','+inputIndex+')');
+  if(field.length > 0) {
+    $newSearch.find('option[value="'+field+'"]').attr('selected', 1);
   }
-  newSearch += '</select></div> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="col-sm-1 help-block delete';
-  if(inputIndex == 0) {
-    newSearch += ' hidden';
-  }
-  newSearch += '">&times;</a></div>';
-
   // Insert it
   $("#group" + group + "Holder").before(newSearch);
   // Show x
