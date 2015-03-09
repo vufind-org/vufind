@@ -6,10 +6,9 @@ var booleanSearchOperators = ["AND", "OR", "NOT"];
 
 function addSearch(group, term, field, op)
 {
-  // Does anyone use this???
-  if (typeof term  == "undefined") {term  = '';}
-  if (typeof field == "undefined") {field = '';}
-  if (typeof op    == "undefined") {op = 'AND';}
+  if (typeof term  === "undefined") {term  = '';}
+  if (typeof field === "undefined") {field = '';}
+  if (typeof op    === "undefined") {op = 'AND';}
 
   // Build the new search
   var inputIndex = $('#group'+group+' input').length;
@@ -19,12 +18,13 @@ function addSearch(group, term, field, op)
   if (typeof groupSearches[group] === "undefined") {
     groupSearches[group] = 0;
     $newSearch.find('.first-join').attr('name', 'op' + group + '[]');
-    $newSearch.find('select.join').delete();
+    $newSearch.find('select.join').remove();
   } else {
     $newSearch.find('select.join')
       .attr('id', 'search_op' + group + '_' + groupSearches[group])
       .attr('name', 'op' + group + '[]');
-    $newSearch.find('.first-join').delete();
+    $newSearch.find('.first-join').remove();
+    $newSearch.find('label').remove();
   }
   $newSearch.find('input.form-control')
     .attr('id', 'search_lookfor'+inputID)
@@ -39,7 +39,7 @@ function addSearch(group, term, field, op)
     $newSearch.find('option[value="'+field+'"]').attr('selected', 1);
   }
   // Insert it
-  $("#group" + group + "Holder").before(newSearch);
+  $("#group" + group + "Holder").before($newSearch);
   // Show x
   if(inputIndex > 0) {
     $('#group'+group+' .search .delete').removeClass('hidden');

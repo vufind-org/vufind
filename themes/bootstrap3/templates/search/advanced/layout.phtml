@@ -25,7 +25,7 @@
   }
 
   // Set up Javascript:
-  $this->headScript()->appendFile('search/advanced/globals.phtml');
+  $this->headScript()->appendScript($this->render('search/advanced/globals.phtml'));
   // Step 1: Load the javascript
   $this->headScript()->appendFile(
     isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js'
