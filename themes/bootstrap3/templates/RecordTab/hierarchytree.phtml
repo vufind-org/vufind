@@ -45,7 +45,8 @@
       <div id="treeSearchNoResults" class="alert alert-danger hidden"><?=$this->translate('nohit_heading')?></div>
       <div id="treeSearchLimitReached" class="alert alert-danger hidden"><?=$this->translate('tree_search_limit_reached_html', array('%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()))?></div>
     <? endif; ?>
-    <div id="hierarchyTree">
+    <div id="hierarchyLoading" class="hide"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc("Loading")?>...</div>
+    <div id="hierarchyTree" class="hierarchy-tree">
       <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenRecordId" />
       <input type="hidden" value="<?=$this->escapeHtml($activeTree)?>" class="hiddenHierarchyId" />
       <input type="hidden" value="<?=isset($this->treeContext) ? $this->treeContext : 'Record'?>" class="hiddenContext" />
