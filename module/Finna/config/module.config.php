@@ -78,6 +78,9 @@ $config = array(
                     'biblio' => 'Solr',
                 )
             ),
+            'search_params' => [
+                'abstract_factories' => ['Finna\Search\Params\PluginFactory'],
+            ],
             'search_results' => array(
                 'factories' => array(
                     'solr' => 'Finna\Search\Results\Factory::getSolr',
