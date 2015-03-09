@@ -13,7 +13,7 @@
 
     <?=$this->flashmessages()?>
 
-    <?=$this->context($this)->renderInContext('myresearch/selectlibrarycard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
 
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>

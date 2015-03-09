@@ -438,7 +438,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @param int $id Library card ID
      *
-     * @return UserCard
+     * @return UserCard|false Card data if found, false otherwise
      * @throws \VuFind\Exception\LibraryCard
      */
     public function getLibraryCard($id = null)
@@ -457,6 +457,9 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         } else {
             $row = $userCard->select(['user_id' => $this->id, 'id' => $id])
                 ->current();
+            if ($row === false) {
+                throw new \VuFind\Exception\LibraryCard('Library Card Not Found');
+            }
             if ($this->passwordEncryptionEnabled()) {
                 $row->cat_password = $this->encryptOrDecrypt(
                     $row->cat_pass_enc, false

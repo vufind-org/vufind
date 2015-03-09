@@ -87,6 +87,7 @@ $config = [
             'index' => 'VuFind\Controller\IndexController',
             'install' => 'VuFind\Controller\InstallController',
             'libguides' => 'VuFind\Controller\LibGuidesController',
+            'librarycards' => 'VuFind\Controller\LibraryCardsController',
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
@@ -705,7 +706,11 @@ $nonTabRecordActions = [
 // Define list-related routes -- route name => MyResearch action
 $listRoutes = [
     'userList' => 'MyList', 'editList' => 'EditList',
-    'editLibraryCard' => 'EditLibraryCard'
+];
+
+// Define library card -related routes -- route name => LibraryCard action
+$libraryCardRoutes = [
+    'editLibraryCard' => 'editCard'
 ];
 
 // Define static routes -- Controller/Action strings
@@ -726,13 +731,14 @@ $staticRoutes = [
     'Install/FixSecurity', 'Install/FixSolr', 'Install/Home',
     'Install/PerformSecurityFix', 'Install/ShowSQL',
     'LibGuides/Home', 'LibGuides/Results',
+    'LibraryCards/Home', 'LibraryCards/SelectCard',
+    'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangePassword', 'MyResearch/CheckedOut',
     'MyResearch/Delete', 'MyResearch/DeleteList', 'MyResearch/Edit',
     'MyResearch/Email', 'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home',
     'MyResearch/ILLRequests', 'MyResearch/Logout',
-    'MyResearch/NewPassword', 'MyResearch/Profile', 'MyResearch/LibraryCards',
-    'MyResearch/SelectLibraryCard', 'MyResearch/DeleteLibraryCard',
+    'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
     'MyResearch/StorageRetrievalRequests', 'MyResearch/UserLogin',
     'MyResearch/Verify',
@@ -801,6 +807,24 @@ foreach ($listRoutes as $routeName => $action) {
             ],
             'defaults' => [
                 'controller' => 'MyResearch',
+                'action'     => $action,
+            ]
+        ]
+    ];
+}
+
+// Build library card routes
+foreach ($libraryCardRoutes as $routeName => $action) {
+    $config['router']['routes'][$routeName] = [
+        'type'    => 'Zend\Mvc\Router\Http\Segment',
+        'options' => [
+            'route'    => '/LibraryCards/' . $action . '/[:id]',
+            'constraints' => [
+                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+            ],
+            'defaults' => [
+                'controller' => 'LibraryCards',
                 'action'     => $action,
             ]
         ]

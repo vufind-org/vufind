@@ -12,7 +12,7 @@
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
 
-<?=$this->context($this)->renderInContext('myresearch/selectlibrarycard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
 
 <? if ($offlineMode == "ils-offline"): ?>
   <div class="alert alert-warning">
