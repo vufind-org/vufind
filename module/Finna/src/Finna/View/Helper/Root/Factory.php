@@ -114,4 +114,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $config, $sm->get('url')
         );
     }
+
+    /**
+     * Construct the Total indexed countr view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\View\Helper\Root\Navibar
+     */
+    public static function getTotalIndexed(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        return new TotalIndexed($locator);
+    }
+
 }

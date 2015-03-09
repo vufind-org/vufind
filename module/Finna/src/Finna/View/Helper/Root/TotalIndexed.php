@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Count of all indexed items view helper
  *
@@ -39,6 +40,17 @@ namespace Finna\View\Helper\Root;
  */
 class TotalIndexed extends \Zend\View\Helper\AbstractHelper
 {
+    protected $serviceLocator;
+
+    /**
+     * Constructor
+     *
+     * @param type $serviceLocator Service locator
+     */
+    public function __construct($serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+    }
 
     /**
      * Total item count in index.
@@ -46,15 +58,28 @@ class TotalIndexed extends \Zend\View\Helper\AbstractHelper
      */
     public function getTotalIndexedCount()
     {
-        $layout = $this->view->layout();
-        if ($layout !== null) {
-            foreach ($layout->getChildren() as $child) {
-                if ($child->getTemplate() == 'search/home') {
-                    return $child->getVariables()['indexResultTotal'];
-                }
+        $cacheDir = $this->serviceLocator->get('VuFind\CacheManager')
+            ->getCacheDir();
+        // Cache file for number of records in index
+        $filename = $cacheDir . 'recordcount.txt';
+        $hourOld = time() - (60 * 60);
+        $fileTime = filemtime($filename);
+
+        if ($fileTime && $fileTime > $hourOld) {
+            $totalIndexed = file_get_contents($filename);
+        } else {
+            $resultsManager = $this->serviceLocator
+                ->get('VuFind\SearchResultsPluginManager');
+            $results = $resultsManager->get('Solr');
+            try {
+                $results->performAndProcessSearch();
+                $totalIndexed = $results->getResultTotal();
+            } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
+                $totalIndexed = 0;
             }
+            file_put_contents($filename, $totalIndexed);
         }
-        return 0;
+        return $totalIndexed;
     }
 
 }

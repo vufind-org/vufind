@@ -54,7 +54,6 @@ $config = array(
             'cover' => 'Finna\Controller\CoverController',
             'primo' => 'Finna\Controller\PrimoController',
             'search' => 'Finna\Controller\SearchController',
-            'index' => 'Finna\Controller\IndexController',
         ),
     ),
     'service_manager' => array(
