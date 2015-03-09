@@ -1,6 +1,6 @@
 <?php
 /**
- * PermissionProvider Header Test Class
+ * PermissionProvider ServerParam Test Class
  *
  * PHP version 5
  *
@@ -27,10 +27,10 @@
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFindTest\Role\PermissionProvider;
-use VuFind\Role\PermissionProvider\Header;
+use VuFind\Role\PermissionProvider\ServerParam;
 
 /**
- * PermissionProvider Header Test Class
+ * PermissionProvider ServerParam Test Class
  *
  * @category VuFind2
  * @package  Tests
@@ -39,7 +39,7 @@ use VuFind\Role\PermissionProvider\Header;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-class HeaderTest extends \VuFindTest\Unit\TestCase
+class ServerParamTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Test single option with matching string
@@ -48,7 +48,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testStringTrue()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue'],
             'testheader testvalue',
             ['loggedin']
@@ -62,7 +62,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testArrayTrue()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader testvalue'],
             ['loggedin']
@@ -76,7 +76,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionsAndTrue()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader1' => 'testvalue1', 'testheader2' => 'testvalue2'],
             ['testheader1 testvalue1', 'testheader2 testvalue2'],
             ['loggedin']
@@ -90,7 +90,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionsAndFalse()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader1' => 'testvalue1'],
             ['testheader1 testvalue1', 'testheader2 testvalue2'],
             []
@@ -104,7 +104,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionValuesOrTrue()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue1'],
             ['testheader testvalue1 testvalue2'],
             ['loggedin']
@@ -118,7 +118,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionValuesOrFalse()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader testvalue1 testvalue2'],
             []
@@ -132,7 +132,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionRegexTrue()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader ~ ^testvalue$'],
             ['loggedin']
@@ -146,7 +146,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionRegexFalse()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader ~ ^estvalue'],
             []
@@ -160,7 +160,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionNotTrue()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader ! testval'],
             ['loggedin']
@@ -174,7 +174,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionNotFalse()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader ! testvalue'],
             []
@@ -188,7 +188,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionNotRegexTrue()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader !~ testval$'],
             ['loggedin']
@@ -202,7 +202,7 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testOptionNotRegexFalse()
     {
-        $this->checkHeaders(
+        $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader !~ ^testvalue'],
             []
@@ -218,11 +218,11 @@ class HeaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    protected function checkHeaders($headers, $options, $expectedResult)
+    protected function checkServerParams($headers, $options, $expectedResult)
     {
         $request = new \Zend\Http\PhpEnvironment\Request();
         $request->setServer(new \Zend\Stdlib\Parameters($headers));
-        $header = new Header($request);
+        $header = new ServerParam($request);
         $result = $header->getPermissions($options);
         $this->assertEquals($result, $expectedResult);
     }

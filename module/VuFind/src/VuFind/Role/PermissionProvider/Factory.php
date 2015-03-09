@@ -66,15 +66,15 @@ class Factory
     }
 
     /**
-     * Factory for Header
+     * Factory for ServerParam
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return Header
+     * @return ServerParam
      */
-    public static function getHeader(ServiceManager $sm)
+    public static function getServerParam(ServiceManager $sm)
     {
-        return new Header($sm->getServiceLocator()->get('Request'));
+        return new ServerParam($sm->getServiceLocator()->get('Request'));
     }
 
 

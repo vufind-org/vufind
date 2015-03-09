@@ -29,7 +29,7 @@
  */
 namespace VuFind\Role\PermissionProvider;
 use Zend\Http\PhpEnvironment\Request;
-use VuFind\Role\PermissionProvider\Header;
+use VuFind\Role\PermissionProvider\ServerParam;
 
 /**
  * Shibboleth permission provider for VuFind.
@@ -42,7 +42,7 @@ use VuFind\Role\PermissionProvider\Header;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Shibboleth extends Header
+class Shibboleth extends ServerParam
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -63,8 +63,8 @@ class Shibboleth extends Header
         parent::__construct($request);
 
         $this->aliases = ['idpentityid' => 'Shib-Identity-Provider'];
-        $this->headerDelimiter = ';';
-        $this->headerEscape = '\\';
+        $this->serverParamDelimiter = ';';
+        $this->serverParamEscape = '\\';
     }
 
     /**
@@ -78,7 +78,7 @@ class Shibboleth extends Header
     public function getPermissions($options)
     {
         if ($this->request->getServer()->get('Shib-Identity-Provider') === false) {
-            $this->logWarning('getPermissions: Shibboleth headers missing');
+            $this->logWarning('getPermissions: Shibboleth server params missing');
 
             return [];
         }

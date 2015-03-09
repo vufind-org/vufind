@@ -1,6 +1,6 @@
 <?php
 /**
- * Header permission provider for VuFind.
+ * ServerParam permission provider for VuFind.
  *
  * PHP version 5
  *
@@ -31,7 +31,7 @@ namespace VuFind\Role\PermissionProvider;
 use Zend\Http\PhpEnvironment\Request;
 
 /**
- * Header permission provider for VuFind.
+ * ServerParam permission provider for VuFind.
  *
  * @category VuFind2
  * @package  Authorization
@@ -41,7 +41,8 @@ use Zend\Http\PhpEnvironment\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Header implements PermissionProviderInterface, \Zend\Log\LoggerAwareInterface
+class ServerParam implements PermissionProviderInterface,
+    \Zend\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -53,25 +54,25 @@ class Header implements PermissionProviderInterface, \Zend\Log\LoggerAwareInterf
     protected $request;
 
     /**
-     * Aliases for header names (default: none)
+     * Aliases for server param names (default: none)
      *
      * @var array
      */
     protected $aliases = [];
 
     /**
-     * Delimiter for multi-valued headers (default: none)
+     * Delimiter for multi-valued server params (default: none)
      *
      * @var string
      */
-    protected $headerDelimiter = '';
+    protected $serverParamDelimiter = '';
 
     /**
-     * Escape character for delimiter in header strings (default: none)
+     * Escape character for delimiter in server param strings (default: none)
      *
      * @var string
      */
-    protected $headerEscape = '';
+    protected $serverParamEscape = '';
 
     /**
      * Constructor
@@ -96,7 +97,7 @@ class Header implements PermissionProviderInterface, \Zend\Log\LoggerAwareInterf
         // user only gets the permission if all options match (AND)
         foreach ((array)$options as $option) {
             $this->debug("getPermissions: option '{$option}'");
-            if (!$this->checkHeader($option)) {
+            if (!$this->checkServerParam($option)) {
                 $this->debug("getPermissions: result = false");
                 return [];
             }
@@ -106,13 +107,13 @@ class Header implements PermissionProviderInterface, \Zend\Log\LoggerAwareInterf
     }
 
     /**
-     * Check if a header matches the option.
+     * Check if a server param matches the option.
      *
      * @param string $option Option
      *
-     * @return boolean true if a header matches, false if not
+     * @return boolean true if a server param matches, false if not
      */
-    protected function checkHeader($option)
+    protected function checkServerParam($option)
     {
         // split option on spaces unless escaped with backslash
         $optionParts = $this->splitString($option, ' ', '\\');
@@ -121,45 +122,45 @@ class Header implements PermissionProviderInterface, \Zend\Log\LoggerAwareInterf
             return false;
         }
 
-        // first part is the header name
-        $headerName = array_shift($optionParts);
-        if (isset($this->aliases[$headerName])) {
-            $headerName = $this->aliases[$headerName];
+        // first part is the server param name
+        $serverParamName = array_shift($optionParts);
+        if (isset($this->aliases[$serverParamName])) {
+            $serverParamName = $this->aliases[$serverParamName];
         }
 
-        // optional modifier follow header name
+        // optional modifier follow server param name
         $modifierMatch = in_array($optionParts[0], ['~', '!~']);
         $modifierNot = in_array($optionParts[0], ['!', '!~']);
         if ($modifierNot || $modifierMatch) {
             array_shift($optionParts);
         }
 
-        // remaining parts are the templates for checking the headers
+        // remaining parts are the templates for checking the server params
         $templates = $optionParts;
         if (empty($templates)) {
             $this->logError("configuration option '{$option}' invalid");
             return false;
         }
 
-        // header values to check
-        $headerString = $this->request->getServer()->get($headerName);
-        if ($headerString === false) {
-            // check fails if header is missing
+        // server param values to check
+        $serverParamString = $this->request->getServer()->get($serverParamName);
+        if ($serverParamString === false) {
+            // check fails if server param is missing
             return false;
         }
-        $headers = $this->splitString(
-            $headerString, $this->headerDelimiter, $this->headerEscape
+        $serverParams = $this->splitString(
+            $serverParamString, $this->serverParamDelimiter, $this->serverParamEscape
         );
 
         $result = false;
-        // check for each header ...
-        foreach ($headers as $header) {
+        // check for each server param ...
+        foreach ($serverParams as $serverParam) {
             // ... if it matches one of the templates (OR)
             foreach ($templates as $template) {
                 if ($modifierMatch) {
-                    $result |= preg_match('/' . $template . '/', $header);
+                    $result |= preg_match('/' . $template . '/', $serverParam);
                 } else {
-                    $result |= ($template === $header);
+                    $result |= ($template === $serverParam);
                 }
             }
         }
