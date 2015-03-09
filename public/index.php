@@ -56,13 +56,7 @@ if (!class_exists('Zend\Loader\AutoloaderFactory')) {
 }
 
 // Run the application!
-$application = Zend\Mvc\Application::init(require 'config/application.config.php');
-
-if ($baseUrl = getenv('FINNA_VIEW_PATH')) {
-    $application->getRequest()->setBaseUrl('/' . trim($baseUrl, '/'));
-}
-
-$application->run();
+Zend\Mvc\Application::init(require 'config/application.config.php')->run();
 
 // Handle final profiling details, if necessary:
 if ($xhprof) {
