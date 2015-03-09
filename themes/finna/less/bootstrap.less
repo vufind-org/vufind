@@ -939,7 +939,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     }
     & .host {
         font-size: 0.9em;
-        color: @gray;
+        color: @gray-light;
     }
     & .fulltext-available .more-options {
         display: none;
@@ -948,6 +948,16 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
 .primo-available-online-record, .local-available-online-record {
     margin: 10px 0px;
     font-size: 1.1em;
+
+    & .host {
+        font-size: 0.9em;
+        color: @gray-light;
+    }
+}
+.primo-available-online-record {
+    & .more-options {
+        display: none;
+    }
 }
 //== PCI FACETS
 #creationdateFilter, #publishDateFilter {

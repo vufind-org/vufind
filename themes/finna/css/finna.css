@@ -8461,7 +8461,7 @@ ul.jstree-container-ul > li.jstree-node,
 }
 .primo-available-online .host {
   font-size: 0.9em;
-  color: #464646;
+  color: #868686;
 }
 .primo-available-online .fulltext-available .more-options {
   display: none;
@@ -8470,6 +8470,14 @@ ul.jstree-container-ul > li.jstree-node,
 .local-available-online-record {
   margin: 10px 0px;
   font-size: 1.1em;
+}
+.primo-available-online-record .host,
+.local-available-online-record .host {
+  font-size: 0.9em;
+  color: #868686;
+}
+.primo-available-online-record .more-options {
+  display: none;
 }
 #creationdateFilter input[type="text"],
 #publishDateFilter input[type="text"] {
