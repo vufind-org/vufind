@@ -151,10 +151,10 @@
    <field name="isbn" type="isn" indexed="true" stored="true" multiValued="true"/>
    <field name="issn" type="isn" indexed="true" stored="true" multiValued="true"/>
    <field name="oclc_num" type="string" indexed="true" stored="true" multiValued="true" />
-   <field name="callnumber" type="string" indexed="true" stored="true"/>
    <field name="callnumber-first" type="string" indexed="true" stored="true"/>
    <field name="callnumber-subject" type="string" indexed="true" stored="true"/>
    <field name="callnumber-label" type="string" indexed="true" stored="true"/>
+   <field name="callnumber-sort" type="string" indexed="true" stored="true"/>
    <field name="callnumber-raw" type="string" indexed="true" stored="true" multiValued="true" />
    <field name="callnumber-search" type="callnumber" indexed="true" stored="true" multiValued="true" />
    <field name="dewey-hundreds" type="string" indexed="true" stored="true" multiValued="true"/>
