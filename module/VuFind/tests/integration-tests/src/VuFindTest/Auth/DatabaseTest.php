@@ -62,7 +62,7 @@ class DatabaseTest extends \VuFindTest\Unit\DbTestCase
         // on a real system -- it's only meant for the continuous integration server)
         $userTable = $test->getTable('User');
         if (count($userTable->select()) > 0) {
-            return $this->markTestSkipped(
+            return self::markTestSkipped(
                 'Test cannot run with pre-existing user data!'
             );
         }

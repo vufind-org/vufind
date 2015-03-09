@@ -44,7 +44,7 @@ use Zend\Console\Console;
 class GenerateController extends AbstractBase
 {
     /**
-     * Copy one language string to another
+     * Extend an existing service
      *
      * @return \Zend\Console\Response
      */
