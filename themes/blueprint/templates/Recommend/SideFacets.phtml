@@ -77,17 +77,17 @@
             <? $indent = $hierarchical
                 ? str_pad('', 4 * $thisFacet['level'] * 6, '&nbsp;', STR_PAD_LEFT)
                 : ''; ?>
-            <? if ($thisFacet['isApplied']): ?>
-              <dd class="facet<?=$thisFacet['operator'] ?> applied"<? if($thisFacet['operator'] == 'OR'): ?> href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>"<? endif ?>><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></dd>
-            <? else: ?>
               <dd>
+            <? if ($thisFacet['isApplied']): ?>
+                <a class="facet<?=$thisFacet['operator'] ?> applied" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>"><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></a>
+            <? else: ?>
                 <a class="facet<?=$thisFacet['operator'] ?>" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->localizedNumber($thisFacet['count'])?>)
                 <? if ($allowExclude): ?>
                   <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><img src="<?=$this->imageLink('fugue/cross-small.png')?>" alt="Delete"/></a>
                 <? endif; ?>
-              </dd>
             <? endif; ?>
-          <? endforeach; ?>
+              </dd>
+            <? endforeach; ?>
           <? if ($i > 5): ?><dd><a href="#" onclick="lessFacets('<?=$this->escapeHtmlAttr($title)?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>
         </dl>
       <? endif; ?>

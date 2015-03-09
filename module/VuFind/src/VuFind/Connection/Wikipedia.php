@@ -61,7 +61,7 @@ class Wikipedia implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $pagesRetrieved = array();
+    protected $pagesRetrieved = [];
 
     /**
      * Constructor
@@ -86,8 +86,6 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * get
-     *
      * This method is responsible for connecting to Wikipedia via the REST API
      * and pulling the content for the relevant author.
      *
@@ -100,7 +98,7 @@ class Wikipedia implements TranslatorAwareInterface
         // Don't retrieve the same page multiple times; this indicates a loop
         // that needs to be broken!
         if ($this->alreadyRetrieved($author)) {
-            return array();
+            return [];
         }
 
         // Get information from Wikipedia API
@@ -178,7 +176,7 @@ class Wikipedia implements TranslatorAwareInterface
             }
         }
 
-        return array($imageName, $imageCaption);
+        return [$imageName, $imageCaption];
     }
 
     /**
@@ -196,13 +194,13 @@ class Wikipedia implements TranslatorAwareInterface
 
         foreach ($matches[1] as $m) {
             // Check if this is the Infobox; name may vary by language
-            $infoboxTags = array(
+            $infoboxTags = [
                 'Bio', 'Ficha de escritor', 'Infobox', 'Info/Biografia'
-            );
+            ];
             foreach ($infoboxTags as $tag) {
                 if (substr($m, 0, strlen($tag) + 1) == '{' . $tag) {
                     // We found an infobox!!
-                    return "{".$m."}";
+                    return "{" . $m . "}";
                 }
             }
         }
@@ -221,9 +219,9 @@ class Wikipedia implements TranslatorAwareInterface
     {
         $imageName = $imageCaption = null;
         // The tag marking image files will vary depending on API language:
-        $tags = array(
+        $tags = [
             'Archivo', 'Bestand', 'Datei', 'Ficheiro', 'Fichier', 'File', 'Image'
-        );
+        ];
         $pattern = '/(\x5b\x5b)('
             . implode('|', $tags)
             . '):([^\x5d]*\.jpg[^\x5d]*)(\x5d\x5d)/U';
@@ -237,7 +235,7 @@ class Wikipedia implements TranslatorAwareInterface
                 );
             }
         }
-        return array($imageName, $imageCaption);
+        return [$imageName, $imageCaption];
     }
 
     /**
@@ -262,7 +260,7 @@ class Wikipedia implements TranslatorAwareInterface
         // We can either find content or recursive brackets:
         $recursive_match = "($content|(?R))*";
         $body .= "[[file:bad]]";
-        preg_match_all("/".$open.$recursive_match.$close."/Us", $body, $new_matches);
+        preg_match_all("/{$open}{$recursive_match}{$close}/Us", $body, $new_matches);
         // Loop through every match (link) we found
         if (is_array($new_matches)) {
             foreach ($new_matches as $nm) {
@@ -295,8 +293,8 @@ class Wikipedia implements TranslatorAwareInterface
         $body = $this->stripImageAndFileLinks($body);
 
         // Initialize arrays of processing instructions
-        $pattern = array();
-        $replacement = array();
+        $pattern = [];
+        $replacement = [];
 
         // Convert wikipedia links
         $pattern[] = '/(\x5b\x5b)([^\x5d|]*)(\x5d\x5d)/Us';
@@ -373,7 +371,7 @@ class Wikipedia implements TranslatorAwareInterface
             }
         }
 
-        return array($name, $redirectTo, $page);
+        return [$name, $redirectTo, $page];
     }
 
     /**
@@ -429,11 +427,11 @@ class Wikipedia implements TranslatorAwareInterface
 
         /* Body */
         $bodyStr = $this->extractBodyText($bodyArr, $infoboxStr);
-        $info = array(
+        $info = [
             'name' => $name,
             'description' => $this->sanitizeWikipediaBody($bodyStr),
             'wiki_lang' => $this->lang,
-        );
+        ];
 
         /* Image */
 

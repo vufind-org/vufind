@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\WorldCat\Response\XML;
 
 use VuFindSearch\Response\RecordInterface;
@@ -92,7 +91,7 @@ class Record implements RecordInterface
     }
 
     /**
-     * getMarc()
+     * Get MARC record
      *
      * @return File_MARC_Record
      */

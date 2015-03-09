@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
  * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory implements \Zend\ServiceManager\FactoryInterface
@@ -61,9 +62,9 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
         switch (strtolower($type)) {
         case 'clickatell':
             $client = $sm->get('VuFind\Http')->createClient();
-            return new Clickatell($smsConfig, array('client' => $client));
+            return new Clickatell($smsConfig, ['client' => $client]);
         case 'mailer':
-            $options = array('mailer' => $sm->get('VuFind\Mailer'));
+            $options = ['mailer' => $sm->get('VuFind\Mailer')];
             if (isset($mainConfig->Site->email)) {
                 $options['defaultFrom'] = $mainConfig->Site->email;
             }

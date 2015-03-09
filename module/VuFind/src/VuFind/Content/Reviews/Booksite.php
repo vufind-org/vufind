@@ -75,31 +75,28 @@ class BookSite extends \VuFind\Content\AbstractBase
      * @throws \Exception
      * @return array     Returns array with review data.
      * @author Joe Atzberger
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
-        $reviews = array(); // Initialize return value
+        $reviews = []; // Initialize return value
 
         $isn = $this->getIsbn10($isbnObj);
         $url = $this->url . '/poca/book/tradereviews?apikey=' . $this->apiKey
             . '&ean=' . $isn;
         $response = $this->getHttpClient($url)->send();
         if (!$response->isSuccess()) {
-            if ($this->logger) {
-                $this->logger->warn(
-                    "Reviews: " . $response->getStatusCode() . " "
-                    . $response->getReasonPhrase() . " $url"
-                );
-            }
-            return $reviews;    // still empty
-        }
-        if ($this->logger) {
-            $this->logger->debug(
+            $this->logWarning(
                 "Reviews: " . $response->getStatusCode() . " "
                 . $response->getReasonPhrase() . " $url"
             );
+            return $reviews;    // still empty
         }
+        $this->debug(
+            "Reviews: " . $response->getStatusCode() . " "
+            . $response->getReasonPhrase() . " $url"
+        );
 
         $i = 0;
         $json = json_decode($response->getBody());

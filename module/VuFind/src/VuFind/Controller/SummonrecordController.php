@@ -37,7 +37,6 @@ use Zend\Mvc\MvcEvent;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class SummonrecordController extends AbstractRecord
 {
     /**
@@ -66,7 +65,7 @@ class SummonrecordController extends AbstractRecord
     }
 
     /**
-     * preDispatch -- add Summon message.
+     * Use preDispatch event to add Summon message.
      *
      * @return void
      */
@@ -85,6 +84,6 @@ class SummonrecordController extends AbstractRecord
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
+        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
     }
 }

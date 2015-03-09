@@ -59,9 +59,9 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      */
     public function testCarriers()
     {
-        $expected = array(
-            'Clickatell' => array('name' => 'Clickatell', 'domain' => null)
-        );
+        $expected = [
+            'Clickatell' => ['name' => 'Clickatell', 'domain' => null]
+        ];
         $obj = $this->getClickatell();
         $this->assertEquals($expected, $obj->getCarriers());
     }
@@ -91,7 +91,8 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test unexpected response
      *
      * @return void
-     * @expectedException VuFind\Exception\Mail
+     *
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage badbadbad
      */
     public function testUnexpectedResponse()
@@ -112,7 +113,8 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful query
      *
      * @return void
-     * @expectedException VuFind\Exception\Mail
+     *
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage Problem sending text.
      */
     public function testFailureResponse()
@@ -132,7 +134,8 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      * Test an exception in the mail client
      *
      * @return void
-     * @expectedException VuFind\Exception\Mail
+     *
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage Foo
      */
     public function testClientException()
@@ -164,7 +167,7 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
         }
         return new Clickatell(
             new \Zend\Config\Config($config),
-            array('client' => $client)
+            ['client' => $client]
         );
     }
 
@@ -175,13 +178,13 @@ class ClickatellTest extends \VuFindTest\Unit\TestCase
      */
     protected function getDefaultConfig()
     {
-        return array(
-            'Clickatell' => array(
+        return [
+            'Clickatell' => [
                 'user' => 'user',
                 'password' => 'password',
                 'api_id' => 'api_id',
-            ),
-        );
+            ],
+        ];
     }
 
     /**

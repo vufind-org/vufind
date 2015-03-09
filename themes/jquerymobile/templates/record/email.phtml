@@ -7,26 +7,9 @@
   <div data-role="content">
     <?=$this->flashmessages()?>
     <form method="post" name="emailRecord" data-ajax="false">
-        <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
-        <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
-        <div data-role="fieldcontain">
-          <label for="email_to"><?=$this->transEsc('To')?>:</label>
-          <input id="email_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
-          <? if (!$this->disableFrom): ?>
-            <label for="email_from"><?=$this->transEsc('From')?>:</label>
-            <input id="email_from" type="text" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
-            <input type="checkbox" id="ccself" name="ccself"/><label for="ccself"><?=$this->translate('send_an_email_copy'); ?></label>
-          <? endif; ?>
-          <label for="email_message"><?=$this->transEsc('Message')?>:</label>
-          <textarea id="email_message" name="message"><?=isset($this->message) ? $this->message : ''?></textarea>
-        </div>
-        <?=$this->recaptcha()->html($this->useRecaptcha) ?>
-        <div data-role="fieldcontain">
-          <input class="button" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
-        </div>
-        <? if ($this->disableFrom && $this->userEmailInFrom): ?>
-          <input type="checkbox" id="ccme" name="ccself"/><label for="ccme"><?=$this->translate('send_email_copy_to_me'); ?></label>
-        <? endif; ?>
+      <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
+      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
+      <?=$this->render('Helpers/email-form-fields.phtml')?>
     </form>
   </div>
   <?=$this->mobileMenu()->footer()?>

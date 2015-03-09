@@ -51,7 +51,7 @@ class Translate extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function __invoke($str, $tokens = array(), $default = null)
+    public function __invoke($str, $tokens = [], $default = null)
     {
         return $this->translate($str, $tokens, $default);
     }

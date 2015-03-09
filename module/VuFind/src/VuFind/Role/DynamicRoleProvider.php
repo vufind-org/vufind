@@ -84,7 +84,7 @@ class DynamicRoleProvider implements RoleProviderInterface
      */
     public function getRoles(array $roleNames)
     {
-        return array_map(array($this, 'getRole'), $roleNames);
+        return array_map([$this, 'getRole'], $roleNames);
     }
 
     /**
@@ -117,7 +117,7 @@ class DynamicRoleProvider implements RoleProviderInterface
     protected function populateRoles()
     {
         // Reset internal role array:
-        $this->roles = array();
+        $this->roles = [];
 
         // Map permission configuration to the expected output format.
         foreach ($this->getPermissionsArray() as $roleName => $permissionArr) {

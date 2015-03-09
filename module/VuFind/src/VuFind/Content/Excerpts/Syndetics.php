@@ -43,13 +43,13 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      *
      * @var array
      */
-    protected $sourceList = array(
-        'DBCHAPTER' => array(
+    protected $sourceList = [
+        'DBCHAPTER' => [
             'title' => 'First Chapter or Excerpt',
             'file' => 'DBCHAPTER.XML',
             'div' => '<div id="syn_dbchapter"></div>'
-        )
-    );
+        ]
+    ];
 
     /**
      * This method is responsible for connecting to Syndetics and abstracting
@@ -73,7 +73,7 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
     {
         // Initialize return value:
-        $excerpt = array();
+        $excerpt = [];
 
         // Find out if there are any excerpts
         $isbn = $this->getIsbn10($isbnObj);

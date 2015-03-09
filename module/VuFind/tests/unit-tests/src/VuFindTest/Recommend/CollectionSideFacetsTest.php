@@ -76,7 +76,7 @@ class CollectionSideFacetsTest extends \VuFindTest\Unit\TestCase
             $facetHelper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters(array());
+            $request = new \Zend\StdLib\Parameters([]);
         }
         $sf = new CollectionSideFacets($configLoader, $facetHelper);
         $sf->setConfig($settings);
@@ -93,7 +93,7 @@ class CollectionSideFacetsTest extends \VuFindTest\Unit\TestCase
      *
      * @return \VuFind\Config\PluginManager
      */
-    protected function getMockConfigLoader($config = array(), $key = 'facets')
+    protected function getMockConfigLoader($config = [], $key = 'facets')
     {
         $loader = $this->getMockBuilder('VuFind\Config\PluginManager')
             ->disableOriginalConstructor()->getMock();

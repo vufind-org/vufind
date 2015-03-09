@@ -53,14 +53,15 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * Test that failure to load even the baseline image causes an exception.
      *
      * @return void
-     * @expectedException Exception
+     *
+     * @expectedException        Exception
      * @expectedExceptionMessage Could not load default fail image.
      */
     public function testUtterFailure()
     {
-        $theme = $this->getMock('VuFindTheme\ThemeInfo', array(), array('foo', 'bar'));
-        $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(array('images/noCover2.gif')))->will($this->returnValue(false));
-        $loader = $this->getLoader(array(), null, $theme);
+        $theme = $this->getMock('VuFindTheme\ThemeInfo', [], ['foo', 'bar']);
+        $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noCover2.gif']))->will($this->returnValue(false));
+        $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
     }
 
@@ -98,8 +99,8 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     public function testMissingUserSpecifiedFailImage()
     {
         $badfile = 'not/a/real/file/at.all';
-        $cfg = array('Content' => array('noCoverAvailableImage' => $badfile));
-        $loader = $this->getLoader($cfg, null, null, null, array('debug'));
+        $cfg = ['Content' => ['noCoverAvailableImage' => $badfile]];
+        $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
         // We expect the loader to complain about the bad filename and load the default image:
         $loader->expects($this->once())->method('debug')->with($this->equalTo("Cannot access '$badfile'"));
@@ -115,8 +116,8 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     public function testFailImageIllegalExtension()
     {
         $badfile = 'templates/layout/layout.phtml';
-        $cfg = array('Content' => array('noCoverAvailableImage' => $badfile));
-        $loader = $this->getLoader($cfg, null, null, null, array('debug'));
+        $cfg = ['Content' => ['noCoverAvailableImage' => $badfile]];
+        $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
         // We expect the loader to complain about the bad filename and load the default image:
         $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/' . $this->testTheme . '/' . $badfile . "'";
@@ -136,7 +137,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      *
      * @return void
      */
-    protected function getLoader($config = array(), $manager = null, $theme = null, $client = null, $mock = false)
+    protected function getLoader($config = [], $manager = null, $theme = null, $client = null, $mock = false)
     {
         $config = new Config($config);
         if (null === $manager) {
@@ -151,7 +152,7 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
             $client->setAdapter($adapter);
         }
         if ($mock) {
-            return $this->getMock('VuFind\Cover\Loader', $mock, array($config, $manager, $theme, $client));
+            return $this->getMock('VuFind\Cover\Loader', $mock, [$config, $manager, $theme, $client]);
         }
         return new Loader($config, $manager, $theme, $client);
     }

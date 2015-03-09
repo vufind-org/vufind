@@ -50,7 +50,7 @@ class Results extends BaseResults
     public function getFacetList($filter = null)
     {
         // Facets not supported here:
-        return array();
+        return [];
     }
 
     /**

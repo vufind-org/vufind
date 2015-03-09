@@ -59,41 +59,42 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
     public function testHierarchicalGetters()
     {
         $configLoader = $this->getMockConfigLoader(
-            array(
-                'SpecialFacets' => array(
-                    'hierarchical' => array('format'),
-                    'hierarchicalFacetSortOptions' => array('a', 'b', 'c')
-                )
-            )
+            [
+                'SpecialFacets' => [
+                    'hierarchical' => ['format'],
+                    'hierarchicalFacetSortOptions' => ['a', 'b', 'c']
+                ]
+            ]
         );
         $sf = $this->getSideFacets($configLoader, null, '', null, null);
-        $this->assertEquals(array('format'), $sf->getHierarchicalFacets());
-        $this->assertEquals(array('a', 'b', 'c'), $sf->getHierarchicalFacetSortOptions());
+        $this->assertEquals(['format'], $sf->getHierarchicalFacets());
+        $this->assertEquals(['a', 'b', 'c'], $sf->getHierarchicalFacetSortOptions());
     }
 
     /**
      * Test missing hierarchical facet helper
      *
      * @return void
-     * @expectedException Exception
+     *
+     * @expectedException        Exception
      * @expectedExceptionMessage VuFind\Recommend\SideFacets: hierarchical facet helper unavailable
      */
     public function testMissingHierarchicalFacetHelper()
     {
         $configLoader = $this->getMockConfigLoader(
-            array(
-                'Results' => array(
+            [
+                'Results' => [
                     'format' => 'Format',
-                ),
-                'SpecialFacets' => array(
-                    'hierarchical' => array('format')
-                )
-            )
+                ],
+                'SpecialFacets' => [
+                    'hierarchical' => ['format']
+                ]
+            ]
         );
         $results = $this->getMockResults();
-        $response = array('format' => array('dummy'));
+        $response = ['format' => ['dummy']];
         $results->expects($this->once())->method('getFacetList')
-            ->with($this->equalTo(array('format' => 'Format')))
+            ->with($this->equalTo(['format' => 'Format']))
             ->will($this->returnValue($response));
         $sf = $this->getSideFacets($configLoader, $results, '', null, null);
         $sf->getFacetSet();
@@ -107,17 +108,17 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
     public function testFacetInit()
     {
         $configLoader = $this->getMockConfigLoader(
-            array(
-                'Results' => array(
+            [
+                'Results' => [
                     'format' => 'Format',
-                ),
-                'Results_Settings' => array(
+                ],
+                'Results_Settings' => [
                     'orFacets' => '*',  // test or facet support
-                ),
-                'Checkboxes' => array(
+                ],
+                'Checkboxes' => [
                     'description' => 'filter',
-                )
-            )
+                ]
+            ]
         );
         $results = $this->getMockResults();
         $params = $results->getParams();
@@ -135,14 +136,14 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertEquals('AND', $this->getSideFacets()->getFacetOperator('format')); // default
         $configLoader = $this->getMockConfigLoader(
-            array(
-                'Results' => array(
+            [
+                'Results' => [
                     'format' => 'Format',
-                ),
-                'Results_Settings' => array(
+                ],
+                'Results_Settings' => [
                     'orFacets' => '*',  // test or facet support
-                ),
-            )
+                ],
+            ]
         );
         $sf = $this->getSideFacets($configLoader);
         $this->assertEquals('OR', $sf->getFacetOperator('format'));
@@ -157,14 +158,14 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
     {
         $this->assertFalse($this->getSideFacets()->excludeAllowed('format')); // default
         $configLoader = $this->getMockConfigLoader(
-            array(
-                'Results' => array(
+            [
+                'Results' => [
                     'format' => 'Format',
-                ),
-                'Results_Settings' => array(
+                ],
+                'Results_Settings' => [
                     'exclude' => '*',  // test or facet support
-                ),
-            )
+                ],
+            ]
         );
         $sf = $this->getSideFacets($configLoader);
         $this->assertTrue($sf->excludeAllowed('format'));
@@ -177,22 +178,22 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetVisibleFilters()
     {
-        $filters = array(
-            'format' => array(
-                array('value' => 'foo'),
-                array('value' => 'bar', 'suppressDisplay' => true),
-            ),
-        );
+        $filters = [
+            'format' => [
+                ['value' => 'foo'],
+                ['value' => 'bar', 'suppressDisplay' => true],
+            ],
+        ];
         $results = $this->getMockResults();
         $results->getParams()->expects($this->once())->method('getFilterList')
             ->with($this->equalTo(true))->will($this->returnValue($filters));
         $sf = $this->getSideFacets(null, $results);
         $this->assertEquals(
-            array(
-                'format' => array(array('value' => 'foo')),
-                'extra' => array(array('value' => 'baz')),
-            ),
-            $sf->getVisibleFilters(array('extra' => array(array('value' => 'baz'))))
+            [
+                'format' => [['value' => 'foo']],
+                'extra' => [['value' => 'baz']],
+            ],
+            $sf->getVisibleFilters(['extra' => [['value' => 'baz']]])
         );
     }
 
@@ -203,30 +204,30 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetAllRangeFacets()
     {
-        $config = array(
-            'SpecialFacets' => array(
-                'dateRange' => array('date'),
-                'fullDateRange' => array('fullDate'),
-                'genericRange' => array('generic'),
-                'numericRange' => array('numeric'),
-            )
-        );
-        $filters = array(
-            'date' => array('[1900 TO 1905]'),
-            'fullDate' => array('[1900-01-01 TO 1905-12-31]'),
-            'generic' => array('[A TO Z]'),
-            'numeric' => array('[1 TO 9]'),
-        );
+        $config = [
+            'SpecialFacets' => [
+                'dateRange' => ['date'],
+                'fullDateRange' => ['fullDate'],
+                'genericRange' => ['generic'],
+                'numericRange' => ['numeric'],
+            ]
+        ];
+        $filters = [
+            'date' => ['[1900 TO 1905]'],
+            'fullDate' => ['[1900-01-01 TO 1905-12-31]'],
+            'generic' => ['[A TO Z]'],
+            'numeric' => ['[1 TO 9]'],
+        ];
         $results = $this->getMockResults();
         $results->getParams()->expects($this->any())->method('getFilters')
             ->will($this->returnValue($filters));
         $sf = $this->getSideFacets($this->getMockConfigLoader($config), $results);
-        $expected = array(
-            'date' => array('type' => 'date', 'values' => array('1900', '1905')),
-            'fullDate' => array('type' => 'fulldate', 'values' => array('1900-01-01', '1905-12-31')),
-            'generic' => array('type' => 'generic', 'values' => array('A', 'Z')),
-            'numeric' => array('type' => 'numeric', 'values' => array('1', '9')),
-        );
+        $expected = [
+            'date' => ['type' => 'date', 'values' => ['1900', '1905']],
+            'fullDate' => ['type' => 'fulldate', 'values' => ['1900-01-01', '1905-12-31']],
+            'generic' => ['type' => 'generic', 'values' => ['A', 'Z']],
+            'numeric' => ['type' => 'numeric', 'values' => ['1', '9']],
+        ];
         $this->assertEquals($expected, $sf->getAllRangeFacets());
     }
 
@@ -237,7 +238,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetCollapsedFacetsDefault()
     {
-        $this->assertEquals(array(), $this->getSideFacets()->getCollapsedFacets());
+        $this->assertEquals([], $this->getSideFacets()->getCollapsedFacets());
     }
 
     /**
@@ -247,11 +248,11 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetCollapsedFacetsDelimitedList()
     {
-        $config = array(
-            'Results_Settings' => array('collapsedFacets' => '   foo, bar,baz   '),
-        );
+        $config = [
+            'Results_Settings' => ['collapsedFacets' => '   foo, bar,baz   '],
+        ];
         $sf = $this->getSideFacets($this->getMockConfigLoader($config));
-        $this->assertEquals(array('foo', 'bar', 'baz'), $sf->getCollapsedFacets());
+        $this->assertEquals(['foo', 'bar', 'baz'], $sf->getCollapsedFacets());
     }
 
     /**
@@ -261,25 +262,25 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetCollapsedFacetsWildcard()
     {
-        $config = array(
-            'Results' => array(
+        $config = [
+            'Results' => [
                 'format' => 'Format',
-            ),
-           'Results_Settings' => array('collapsedFacets' => '*'),
-        );
-        $filters = array(
-            'format' => array(
-                array('value' => 'foo'),
-                array('value' => 'bar', 'suppressDisplay' => true),
-            ),
-        );
+            ],
+            'Results_Settings' => ['collapsedFacets' => '*'],
+        ];
+        $filters = [
+            'format' => [
+                ['value' => 'foo'],
+                ['value' => 'bar', 'suppressDisplay' => true],
+            ],
+        ];
         $results = $this->getMockResults();
-        $response = array('format' => array('dummy'));
+        $response = ['format' => ['dummy']];
         $results->expects($this->once())->method('getFacetList')
-            ->with($this->equalTo(array('format' => 'Format')))
+            ->with($this->equalTo(['format' => 'Format']))
             ->will($this->returnValue($response));
         $sf = $this->getSideFacets($this->getMockConfigLoader($config), $results);
-        $this->assertEquals(array('format'), $sf->getCollapsedFacets());
+        $this->assertEquals(['format'], $sf->getCollapsedFacets());
     }
 
     /**
@@ -305,7 +306,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
             $facetHelper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters(array());
+            $request = new \Zend\StdLib\Parameters([]);
         }
         $sf = new SideFacets($configLoader, $facetHelper);
         $sf->setConfig($settings);
@@ -322,7 +323,7 @@ class SideFacetsTest extends \VuFindTest\Unit\TestCase
      *
      * @return \VuFind\Config\PluginManager
      */
-    protected function getMockConfigLoader($config = array(), $key = 'facets')
+    protected function getMockConfigLoader($config = [], $key = 'facets')
     {
         $loader = $this->getMockBuilder('VuFind\Config\PluginManager')
             ->disableOriginalConstructor()->getMock();

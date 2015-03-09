@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
@@ -74,10 +73,10 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return void
      */
-    public function __construct(array $map = array())
+    public function __construct(array $map = [])
     {
-        $this->handlers = array();
-        $this->parameters = array();
+        $this->handlers = [];
+        $this->parameters = [];
         $this->setHandlerMap($map);
     }
 
@@ -251,7 +250,7 @@ class HandlerMap extends AbstractHandlerMap
         // Create ParamBag if not already present; this also handles validation
         // of the $type parameter.
         if (!isset($this->parameters[$handler][$type])) {
-            $this->setParameters($handler, $type, array());
+            $this->setParameters($handler, $type, []);
         }
         return $this->parameters[$handler][$type];
     }

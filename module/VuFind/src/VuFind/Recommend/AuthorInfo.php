@@ -111,8 +111,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -145,8 +143,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -164,8 +160,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -217,7 +211,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         $last = $nameParts[0];
         // - move all names up an index, move last name to last
         // - Last, First M. -> First M. Last
-        for ($i=1;$i<count($nameParts);$i++) {
+        for ($i = 1;$i<count($nameParts);$i++) {
             $nameParts[$i-1] = $nameParts[$i];
         }
         $nameParts[count($nameParts)-1] = $last;

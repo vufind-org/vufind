@@ -51,16 +51,8 @@
         <? endif; ?>
 
         <div class="alphaBrowseHeading alphaBrowseHeading_<?=$this->escapeHtmlAttr($this->source)?>">
-          <? if ($item['count'] > 0): ?>
-            <?/* linking using bib ids is generally more reliable than
-              doing searches for headings, but headings give shorter
-              queries and don't look as strange. */?>
-            <? if ($item['count'] < 5): ?>
-              <? $query = array('type' => 'ids', 'lookfor' => implode(' ', $item['ids'])); ?>
-            <? else: ?>
-              <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => '"' . addcslashes($item['heading'], '"') . '"'); ?>
-            <? endif; ?>
-            <a href="<?=$this->escapeHtmlAttr($this->url('search-results', array(), array('query' => $query)))?>"><?=$this->escapeHtml($item['heading'])?></a>
+          <? if ($url = $this->alphabrowse()->getUrl($this->source, $item)): ?>
+            <a href="<?=$this->escapeHtmlAttr($url)?>"><?=$this->escapeHtml($item['heading'])?></a>
           <? else: ?>
             <?=$this->escapeHtml($item['heading'])?>
           <? endif; ?>

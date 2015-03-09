@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use Zend\Feed\Reader\Reader as FeedReader, Zend\Log\LoggerInterface;
+use Zend\Feed\Reader\Reader as FeedReader;
 
 /**
  * EuropeanaResults Recommendations Module
@@ -44,6 +44,7 @@ use Zend\Feed\Reader\Reader as FeedReader, Zend\Log\LoggerInterface;
 class EuropeanaResults implements RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
@@ -117,13 +118,6 @@ class EuropeanaResults implements RecommendInterface,
     protected $results;
 
     /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
      * Constructor
      *
      * @param string $key API key
@@ -134,34 +128,6 @@ class EuropeanaResults implements RecommendInterface,
     }
 
     /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
-
-    /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -179,7 +145,7 @@ class EuropeanaResults implements RecommendInterface,
         $this->limit = isset($params[2]) && is_numeric($params[2])
                         && $params[2] > 0 ? intval($params[2]) : 5;
         $this->excludeProviders = (isset($params[3]) && !empty($params[3]))
-            ? $params[3] : array();
+            ? $params[3] : [];
         //make array
         if (!empty($this->excludeProviders)) {
             $this->excludeProviders = explode(',', $this->excludeProviders);
@@ -188,9 +154,7 @@ class EuropeanaResults implements RecommendInterface,
     }
 
     /**
-     * getURL
-     *
-     * This method builds the url which will be send to retrieve the RSS results
+     * Build the url which will be send to retrieve the RSS results
      *
      * @param string $targetUrl        Base URL
      * @param string $requestParam     Parameter name to add
@@ -217,8 +181,6 @@ class EuropeanaResults implements RecommendInterface,
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -246,8 +208,6 @@ class EuropeanaResults implements RecommendInterface,
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -265,15 +225,15 @@ class EuropeanaResults implements RecommendInterface,
             );
         }
         $parsedFeed = FeedReader::import($this->targetUrl);
-        $resultsProcessed = array();
+        $resultsProcessed = [];
         foreach ($parsedFeed as $value) {
             $link = (string)$value->link;
             if (!empty($link)) {
-                $resultsProcessed[] = array(
+                $resultsProcessed[] = [
                     'title' => (string)$value->title,
                     'link' => substr($link, 0, strpos($link, '.srw')) . '.html',
                     'enclosure' => (string)$value->enclosure['url']
-                );
+                ];
             }
             if (count($resultsProcessed) == $this->limit) {
                 break;
@@ -281,11 +241,11 @@ class EuropeanaResults implements RecommendInterface,
         }
 
         if (!empty($resultsProcessed)) {
-            $this->results = array(
+            $this->results = [
                 'worksArray' => $resultsProcessed,
                 'feedTitle' => $this->searchSite,
                 'sourceLink' => $this->sitePath
-            );
+            ];
         } else {
             $this->results = false;
         }

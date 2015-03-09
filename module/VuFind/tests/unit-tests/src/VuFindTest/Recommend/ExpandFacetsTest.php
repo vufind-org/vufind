@@ -59,18 +59,18 @@ class ExpandFacetsTest extends \VuFindTest\Unit\TestCase
     public function testFacetInit()
     {
         $configLoader = $this->getMockConfigLoader(
-            array(
-                'Results' => array(
+            [
+                'Results' => [
                     'format' => 'Format',
-                ),
-            )
+                ],
+            ]
         );
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('addFacet')->with($this->equalTo('format'), $this->equalTo('Format'));
-        $results->expects($this->once())->method('getFacetList')->with($this->equalTo(array('format' => 'Format')))->will($this->returnValue(array('foo')));
+        $results->expects($this->once())->method('getFacetList')->with($this->equalTo(['format' => 'Format']))->will($this->returnValue(['foo']));
         $ef = $this->getExpandFacets($configLoader, $results);
-        $this->assertEquals(array('foo'), $ef->getExpandedSet());
+        $this->assertEquals(['foo'], $ef->getExpandedSet());
     }
 
     /**
@@ -96,7 +96,7 @@ class ExpandFacetsTest extends \VuFindTest\Unit\TestCase
             $emptyResults = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters(array());
+            $request = new \Zend\StdLib\Parameters([]);
         }
         $sf = new ExpandFacets($configLoader, $emptyResults);
         $sf->setConfig($settings);
@@ -113,7 +113,7 @@ class ExpandFacetsTest extends \VuFindTest\Unit\TestCase
      *
      * @return \VuFind\Config\PluginManager
      */
-    protected function getMockConfigLoader($config = array(), $key = 'facets')
+    protected function getMockConfigLoader($config = [], $key = 'facets')
     {
         $loader = $this->getMockBuilder('VuFind\Config\PluginManager')
             ->disableOriginalConstructor()->getMock();

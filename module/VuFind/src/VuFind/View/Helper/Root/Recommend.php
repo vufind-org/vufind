@@ -52,7 +52,7 @@ class Recommend extends AbstractHelper
         // Set up the rendering context:
         $contextHelper = $this->getView()->plugin('context');
         $oldContext = $contextHelper($this->getView())->apply(
-            array('recommend' => $recommend)
+            ['recommend' => $recommend]
         );
 
         // Get the current recommendation module's class name, then start a loop

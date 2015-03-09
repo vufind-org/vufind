@@ -55,7 +55,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
         // on a real system -- it's only meant for the continuous integration server)
         $userTable = $test->getTable('User');
         if (count($userTable->select()) > 0) {
-            return $this->markTestSkipped(
+            return self::markTestSkipped(
                 'Test cannot run with pre-existing user data!'
             );
         }
@@ -99,15 +99,15 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
     public function getAuthConfig()
     {
         $ldapConfig = new Config(
-            array(
+            [
                 'login' => 'http://myserver',
                 'username' => 'username',
                 'email' => 'email',
                 'userattribute_1' => 'password',
                 'userattribute_value_1' => 'testpass'
-            ), true
+            ], true
         );
-        return new Config(array('Shibboleth' => $ldapConfig), true);
+        return new Config(['Shibboleth' => $ldapConfig], true);
     }
 
     /**
@@ -128,12 +128,12 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return \Zend\Http\Request
      */
-    protected function getLoginRequest($overrides = array())
+    protected function getLoginRequest($overrides = [])
     {
-        $server = $overrides + array(
+        $server = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
             'password' => 'testpass'
-        );
+        ];
         $request = new \Zend\Http\PhpEnvironment\Request();
         $request->setServer(new \Zend\Stdlib\Parameters($server));
         return $request;
@@ -147,7 +147,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankUsername()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('username' => ''));
+        $request = $this->getLoginRequest(['username' => '']);
         $this->getAuthObject()->authenticate($request);
     }
 
@@ -159,7 +159,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankPassword()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('password' => ''));
+        $request = $this->getLoginRequest(['password' => '']);
         $this->getAuthObject()->authenticate($request);
     }
 

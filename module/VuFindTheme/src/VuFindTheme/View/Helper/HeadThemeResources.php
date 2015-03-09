@@ -124,10 +124,10 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         $favicon = $this->container->getFavicon();
         if (!empty($favicon)) {
             $imageLink = $this->getView()->plugin('imagelink');
-            $headLink(array(
+            $headLink([
                 'href' => $imageLink($favicon),
                 'type' => 'image/x-icon', 'rel' => 'shortcut icon'
-            ));
+            ]);
         }
     }
 
@@ -146,7 +146,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
                 trim($parts[0]),
                 'text/javascript',
                 isset($parts[1])
-                ? array('conditional' => trim($parts[1])) : array()
+                ? ['conditional' => trim($parts[1])] : []
             );
         }
     }

@@ -102,7 +102,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         // Define Filter Query
         $filterQuery = $this->getOptions()->getHiddenFilters();
-        $orFilters = array();
+        $orFilters = [];
         foreach ($this->filterList as $field => $filter) {
             if ($orFacet = (substr($field, 0, 1) == '~')) {
                 $field = substr($field, 1);
@@ -112,13 +112,13 @@ class Params extends \VuFind\Search\Base\Params
                 if (substr($value, -1) == '*'
                     || preg_match('/\[[^\]]+\s+TO\s+[^\]]+\]/', $value)
                 ) {
-                    $q = $field.':'.$value;
+                    $q = $field . ':' . $value;
                 } else {
-                    $q = $field.':"'.addcslashes($value, '"\\').'"';
+                    $q = $field . ':"' . addcslashes($value, '"\\') . '"';
                 }
                 if ($orFacet) {
                     $orFilters[$field] = isset($orFilters[$field])
-                        ? $orFilters[$field] : array();
+                        ? $orFilters[$field] : [];
                     $orFilters[$field][] = $q;
                 } else {
                     $filterQuery[] = $q;
@@ -140,7 +140,7 @@ class Params extends \VuFind\Search\Base\Params
     public function getFacetSettings()
     {
         // Build a list of facets we want from the index
-        $facetSet = array();
+        $facetSet = [];
         if (!empty($this->facetConfig)) {
             $facetSet['limit'] = $this->facetLimit;
             foreach (array_keys($this->facetConfig) as $facetField) {
@@ -395,16 +395,16 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function normalizeSort($sort)
     {
-        static $table = array(
-            'year' => array('field' => 'publishDateSort', 'order' => 'desc'),
+        static $table = [
+            'year' => ['field' => 'publishDateSort', 'order' => 'desc'],
             'publishDateSort' =>
-                array('field' => 'publishDateSort', 'order' => 'desc'),
-            'author' => array('field' => 'authorStr', 'order' => 'asc'),
-            'title' => array('field' => 'title_sort', 'order' => 'asc'),
-            'relevance' => array('field' => 'score', 'order' => 'desc'),
-            'callnumber' => array('field' => 'callnumber', 'order' => 'asc'),
-        );
-        $normalized = array();
+                ['field' => 'publishDateSort', 'order' => 'desc'],
+            'author' => ['field' => 'authorStr', 'order' => 'asc'],
+            'title' => ['field' => 'title_sort', 'order' => 'asc'],
+            'relevance' => ['field' => 'score', 'order' => 'desc'],
+            'callnumber' => ['field' => 'callnumber', 'order' => 'asc'],
+        ];
+        $normalized = [];
         foreach (explode(',', $sort) as $component) {
             $parts = explode(' ', trim($component));
             $field = reset($parts);
@@ -465,7 +465,7 @@ class Params extends \VuFind\Search\Base\Params
 
         // If we have selected shards, we need to format them:
         if (!empty($shards)) {
-            $selectedShards = array();
+            $selectedShards = [];
             foreach ($shards as $current) {
                 $selectedShards[$current] = $allShards[$current];
             }

@@ -27,7 +27,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\LibGuides;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -97,6 +96,7 @@ class QueryBuilder
      * @param QueryGroup $query QueryGroup to convert
      *
      * @return array
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function queryGroupToArray(QueryGroup $query)
@@ -116,6 +116,6 @@ class QueryBuilder
         // Clean and validate input:
         $index = $query->getHandler();
         $lookfor = $query->getString();
-        return array(compact('index', 'lookfor'));
+        return [compact('index', 'lookfor')];
     }
 }

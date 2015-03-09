@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
  */
-
 namespace VuFindTest\OAI;
 
 use VuFind\OAI\Server;
@@ -57,7 +56,6 @@ use VuFind\OAI\Server;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
  */
-
 class ServerTest extends \VuFindTest\Unit\TestCase
 {
     /**
@@ -80,8 +78,8 @@ class ServerTest extends \VuFindTest\Unit\TestCase
      *
      * @return Server
      */
-    protected function getServer($config = array(), $baseURL = 'http://foo',
-        $params = array()
+    protected function getServer($config = [], $baseURL = 'http://foo',
+        $params = []
     ) {
         // Force an email into the configuration if missing; this is required by the
         // server.

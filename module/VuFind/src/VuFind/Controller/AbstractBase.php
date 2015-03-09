@@ -44,6 +44,7 @@ use VuFind\Exception\Forbidden as ForbiddenException,
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
+ *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class AbstractBase extends AbstractActionController
@@ -60,7 +61,7 @@ class AbstractBase extends AbstractActionController
     protected $accessPermission = false;
 
     /**
-     * preDispatch -- block access when appropriate.
+     * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
      *
@@ -73,7 +74,7 @@ class AbstractBase extends AbstractActionController
             && !$this->getAuthorizationService()->isGranted($this->accessPermission)
         ) {
             if (!$this->getUser()) {
-                $e->setResponse($this->forceLogin(null, array(), false));
+                $e->setResponse($this->forceLogin(null, [], false));
                 return;
             }
             throw new ForbiddenException('Access denied.');
@@ -92,7 +93,7 @@ class AbstractBase extends AbstractActionController
         if ($this->accessPermission) {
             $events = $this->getEventManager();
             $events->attach(
-                MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000
+                MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000
             );
         }
     }
@@ -121,11 +122,12 @@ class AbstractBase extends AbstractActionController
     /**
      * Create a new ViewModel to use as an email form.
      *
-     * @param array $params Parameters to pass to ViewModel constructor.
+     * @param array  $params         Parameters to pass to ViewModel constructor.
+     * @param string $defaultSubject Default subject line to use.
      *
      * @return ViewModel
      */
-    protected function createEmailViewModel($params = null)
+    protected function createEmailViewModel($params = null, $defaultSubject = null)
     {
         // Build view:
         $view = $this->createViewModel($params);
@@ -134,6 +136,10 @@ class AbstractBase extends AbstractActionController
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $view->disableFrom
             = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
+        $view->editableSubject = isset($config->Mail->user_editable_subjects)
+            && $config->Mail->user_editable_subjects;
+        $view->maxRecipients = isset($config->Mail->maximum_recipients)
+            ? intval($config->Mail->maximum_recipients) : 1;
         $user = $this->getUser();
 
         // Send parameters back to view so form can be re-populated:
@@ -141,6 +147,9 @@ class AbstractBase extends AbstractActionController
             $view->to = $this->params()->fromPost('to');
             if (!$view->disableFrom) {
                 $view->from = $this->params()->fromPost('from');
+            }
+            if ($view->editableSubject) {
+                $view->subject = $this->params()->fromPost('subject');
             }
             $view->message = $this->params()->fromPost('message');
         }
@@ -163,6 +172,9 @@ class AbstractBase extends AbstractActionController
             ) {
                 $view->from = $config->Mail->default_from;
             }
+        }
+        if (!isset($view->subject) || empty($view->subject)) {
+            $view->subject = $defaultSubject;
         }
 
         // Fail if we're missing a from and the form element is disabled:
@@ -239,14 +251,14 @@ class AbstractBase extends AbstractActionController
      *
      * @return string
      */
-    public function getLightboxAwareUrl($route, $params = array(),
-        $options = array(), $reuseMatchedParams = false
+    public function getLightboxAwareUrl($route, $params = [],
+        $options = [], $reuseMatchedParams = false
     ) {
         // Rearrange the parameters if we're in a lightbox:
         if ($this->inLightbox()) {
             // Make sure we have a query:
             $options['query'] = isset($options['query'])
-                ? $options['query'] : array();
+                ? $options['query'] : [];
 
             // Map ID route parameter into a GET parameter if necessary:
             if (isset($params['id'])) {
@@ -282,8 +294,8 @@ class AbstractBase extends AbstractActionController
      *
      * @return \Zend\Http\Response
      */
-    public function lightboxAwareRedirect($route, $params = array(),
-        $options = array(), $reuseMatchedParams = false
+    public function lightboxAwareRedirect($route, $params = [],
+        $options = [], $reuseMatchedParams = false
     ) {
         return $this->redirect()->toUrl(
             $this->getLightboxAwareUrl(
@@ -326,7 +338,7 @@ class AbstractBase extends AbstractActionController
         $request->setUri($url);
         $router = $this->getEvent()->getRouter();
         $matched = $router->match($request)->getParams();
-        $getParams = $routeParams = array();
+        $getParams = $routeParams = [];
         foreach ($query as $current => $val) {
             if (isset($matched[$current])) {
                 $routeParams[$current] = $val;
@@ -337,7 +349,7 @@ class AbstractBase extends AbstractActionController
 
         // Now build the final URL:
         return $this->url()
-            ->fromRoute($routeName, $routeParams, array('query' => $getParams));
+            ->fromRoute($routeName, $routeParams, ['query' => $getParams]);
     }
 
     /**
@@ -349,7 +361,7 @@ class AbstractBase extends AbstractActionController
      *
      * @return mixed
      */
-    protected function forceLogin($msg = null, $extras = array(), $forward = true)
+    protected function forceLogin($msg = null, $extras = [], $forward = true)
     {
         // Set default message if necessary.
         if (is_null($msg)) {
@@ -507,7 +519,7 @@ class AbstractBase extends AbstractActionController
      *
      * @return string
      */
-    public function translate($msg, $tokens = array(), $default = null)
+    public function translate($msg, $tokens = [], $default = null)
     {
         return $this->getViewRenderer()->plugin('translate')
             ->__invoke($msg, $tokens, $default);
@@ -523,7 +535,7 @@ class AbstractBase extends AbstractActionController
      *
      * @return mixed
      */
-    public function forwardTo($controller, $action, $params = array())
+    public function forwardTo($controller, $action, $params = [])
     {
         // Inject action into the RouteMatch parameters
         $params['action'] = $action;
@@ -561,20 +573,20 @@ class AbstractBase extends AbstractActionController
      *
      * @return mixed
      */
-    public function confirm($title, $yesTarget, $noTarget, $messages = array(),
-        $extras = array()
+    public function confirm($title, $yesTarget, $noTarget, $messages = [],
+        $extras = []
     ) {
         return $this->forwardTo(
             'Confirm', 'Confirm',
-            array(
-                'data' => array(
+            [
+                'data' => [
                     'title' => $title,
                     'confirm' => $yesTarget,
                     'cancel' => $noTarget,
                     'messages' => (array)$messages,
                     'extras' => $extras
-                )
-            )
+                ]
+            ]
         );
     }
 
@@ -661,7 +673,7 @@ class AbstractBase extends AbstractActionController
         }
 
         // If we got this far, we want to store the referer:
-        $this->followup()->store(array(), $referer);
+        $this->followup()->store([], $referer);
     }
 
     /**

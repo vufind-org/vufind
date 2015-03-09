@@ -208,25 +208,6 @@ $(document).ready(function() {
     });
     Lightbox.confirm(vufindString['bulk_save_success']);
   });
-  Lightbox.addFormHandler('exportForm', function(evt) {
-    $.ajax({
-      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
-      type:'POST',
-      dataType:'json',
-      data:Lightbox.getFormData($(evt.target)),
-      success:function(data) {
-        if(data.data.needs_redirect) {
-          document.location.href = data.data.result_url;
-        } else {
-          Lightbox.changeContent(data.data.result_additional);
-        }
-      },
-      error:function(d,e) {
-        //console.log(d,e); // Error reporting
-      }
-    });
-    return false;
-  });
   $('#modal').on('hidden.bs.modal', function() {
     // Update cart items (add to cart, remove from cart, cart lightbox interface)
     var cartCount = $('#cartItems strong');
