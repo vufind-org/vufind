@@ -94,10 +94,9 @@ class Factory
             ? (bool)$config->Site->showBookBag : false;
         $size = isset($config->Site->bookBagMaxSize)
             ? $config->Site->bookBagMaxSize : 100;
-        $domain = isset($config->Site->bookBagCookieDomain)
-            ? $config->Site->bookBagCookieDomain : null;
         return new \VuFind\Cart(
-            $sm->get('VuFind\RecordLoader'), $size, $active, $_COOKIE, $domain
+            $sm->get('VuFind\RecordLoader'), $sm->get('VuFind\CookieManager'),
+            $size, $active
         );
     }
 
@@ -174,6 +173,31 @@ class Factory
     public static function getContentReviewsPluginManager(ServiceManager $sm)
     {
         return static::getGenericPluginManager($sm, 'Content\Reviews');
+    }
+
+    /**
+     * Construct the cookie manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Cookie\CookieManager
+     */
+    public static function getCookieManager(ServiceManager $sm)
+    {
+        $config = $sm->get('VuFind\Config')->get('config');
+        $path = '/';
+        if (isset($config->Cookies->limit_by_path)
+            && $config->Cookies->limit_by_path
+        ) {
+            $path = $sm->get('Request')->getBasePath();
+        }
+        $secure = isset($config->Cookies->only_secure)
+            ? $config->Cookies->only_secure
+            : false;
+        $domain = isset($config->Cookies->domain)
+            ? $config->Cookies->domain
+            : null;
+        return new \VuFind\Cookie\CookieManager($_COOKIE, $path, $domain, $secure);
     }
 
     /**
@@ -663,6 +687,31 @@ class Factory
             $sm->get('VuFind\StatisticsDriverPluginManager'),
             $sm->get('VuFind\SessionManager')->getId()
         );
+    }
+
+    /**
+     * Construct the Session Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Zend\Session\SessionManager
+     */
+    public static function getSessionManager(ServiceManager $sm)
+    {
+        $cookieManager = $sm->get('VuFind\CookieManager');
+        $sessionConfig = new \Zend\Session\Config\SessionConfig();
+        $options = [
+            'cookie_path' => $cookieManager->getPath(),
+            'cookie_secure' => $cookieManager->isSecure()
+        ];
+        $domain = $cookieManager->getDomain();
+        if (!empty($domain)) {
+            $options['cookie_domain'] = $domain;
+        }
+
+        $sessionConfig->setOptions($options);
+
+        return new \Zend\Session\SessionManager($sessionConfig);
     }
 
     /**

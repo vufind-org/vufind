@@ -265,6 +265,15 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .sidebar .facet a {
   text-decoration: none;
 }
+.top-row .applied {
+  font-weight:bold;
+  &:hover {
+    color:@state-danger-text;
+    .fa.fa-check:before {
+      content:"\f00d";
+    }
+  }
+}
 
 /* --- Slider accessibility --- */
 .slider-container {

@@ -308,10 +308,12 @@ class Bootstrapper
 
             // Setup Translator
             $request = $event->getRequest();
+            $sm = $event->getApplication()->getServiceManager();
             if (($language = $request->getPost()->get('mylang', false))
                 || ($language = $request->getQuery()->get('lng', false))
             ) {
-                setcookie('language', $language, null, '/');
+                $cookieManager = $sm->get('VuFind\CookieManager');
+                $cookieManager->set('language', $language);
             } elseif (!empty($request->getCookie()->language)) {
                 $language = $request->getCookie()->language;
             } else {
@@ -324,7 +326,6 @@ class Bootstrapper
                 $language = $config->Site->language;
             }
 
-            $sm = $event->getApplication()->getServiceManager();
             try {
                 $sm->get('VuFind\Translator')
                     ->addTranslationFile('ExtendedIni', null, 'default', $language)
