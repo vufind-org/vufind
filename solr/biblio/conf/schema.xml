@@ -93,7 +93,8 @@
         <filter class="solr.LengthFilterFactory" min="1" max="100" />
       </analyzer>
     </fieldType>
-    <fieldType name="callnumber" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+    <!-- case-insensitive/whitespace-agnostic field type for callnumber searching -->
+    <fieldType name="callnumberSearch" class="solr.TextField" sortMissingLast="true" omitNorms="true">
       <analyzer>
         <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="(\s)" replacement=""/>
         <tokenizer class="solr.KeywordTokenizerFactory"/>
@@ -156,14 +157,14 @@
    <field name="callnumber-label" type="string" indexed="true" stored="true"/>
    <field name="callnumber-sort" type="string" indexed="true" stored="true"/>
    <field name="callnumber-raw" type="string" indexed="true" stored="true" multiValued="true" />
-   <field name="callnumber-search" type="callnumber" indexed="true" stored="true" multiValued="true" />
+   <field name="callnumber-search" type="callnumberSearch" indexed="true" stored="true" multiValued="true" />
    <field name="dewey-hundreds" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-tens" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-ones" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-full" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-sort" type="string" indexed="true" stored="true" />
    <field name="dewey-raw" type="string" indexed="true" stored="true" multiValued="true" />
-   <field name="dewey-search" type="callnumber" indexed="true" stored="true" multiValued="true" />
+   <field name="dewey-search" type="callnumberSearch" indexed="true" stored="true" multiValued="true" />
    <field name="author2" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author2Str" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author2-role" type="string" indexed="true" stored="true" multiValued="true"/>
