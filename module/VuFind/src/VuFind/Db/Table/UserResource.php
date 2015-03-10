@@ -148,13 +148,13 @@ class UserResource extends Gateway
         // Now build the where clause to figure out which rows to remove:
         $callback = function ($select) use ($resource_id, $user_id, $list_id) {
             $select->where->equalTo('user_id', $user_id);
-            if (!is_null($resource_id)) {
+            if (null !== $resource_id) {
                 if (!is_array($resource_id)) {
                     $resource_id = [$resource_id];
                 }
                 $select->where->in('resource_id', $resource_id);
             }
-            if (!is_null($list_id)) {
+            if (null !== $list_id && true !== $list_id) {
                 $select->where->equalTo('list_id', $list_id);
             }
         };
