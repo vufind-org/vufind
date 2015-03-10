@@ -47,12 +47,12 @@ finna.layout = (function() {
           if ($(this).data("rows")) {
             rowCount = $(this).data("rows");
           }
-          rowHeight[index] = parseFloat($( this ).children().first().css('line-height').replace('px', ''));
+          rowHeight[index] = parseFloat($(this).children().first().css('line-height').replace('px', ''));
           // get the line-height of first element to determine each text line height
           truncation[index] = rowHeight[index] * rowCount ;
           // don't truncate, if one line for truncation
-          if ($(this).height() > (truncation[index] + rowHeight[index] - 1)) {
-            $(this).css('height', truncation[index]-1+'px');
+          if ($(this).height() > (truncation[index] + rowHeight[index] + 1)) {
+            $(this).css('height', truncation[index] - 1 + 'px');
             if ($( this ).hasClass("wide")) { // generate different truncate styles according to class
               $(this).after("<div class='more-link wide'><i class='fa fa-handle-open'></i></div><div class='less-link wide'> <i class='fa fa-handle-close'></i></div>"); 
             }
