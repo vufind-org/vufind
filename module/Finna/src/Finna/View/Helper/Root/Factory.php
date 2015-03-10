@@ -120,7 +120,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return \Finna\View\Helper\Root\Navibar
+     * @return \Finna\View\Helper\Root\TotalIndexed
      */
     public static function getTotalIndexed(ServiceManager $sm)
     {
