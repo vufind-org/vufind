@@ -19,8 +19,15 @@
       <? endif; ?>
       <? /* Columns */ ?>
       <span class="col-sm-<?=floor(12/$topFacetSettings['cols'])?><? if ($iter == $corner+1) echo $moreClass ?>">
-        <? if ($thisFacet['isApplied']): ?>
-          <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check"></i>
+        <? if ($thisFacet['isApplied']):
+          if (isset($thisFacet['specialType']) && $thisFacet['specialType'] == 'keyword') {
+            $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($thisFacet['value'], '');
+          } else {
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']);
+          } ?>
+          <a href="<?=$removeLink ?>" class="applied">
+            <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check"></i>
+          </a>
         <? else: ?>
           <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?>
           <? if ($allowExclude): ?>

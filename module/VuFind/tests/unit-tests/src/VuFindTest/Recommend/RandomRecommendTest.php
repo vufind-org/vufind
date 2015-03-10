@@ -179,9 +179,10 @@ class RandomRecommendTest extends TestCase
 
         $paramManager->expects($this->once())->method('get')
             ->with($this->equalTo("Solr"))
-            ->will($this->returnValue(
-                $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
-                    ->get('Solr')
+            ->will(
+                $this->returnValue(
+                    $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+                        ->get('Solr')
                 )
             );
 
@@ -225,11 +226,11 @@ class RandomRecommendTest extends TestCase
             ->will($this->returnValue($records));
 
         $service->expects($this->once())->method('random')
-        ->with(
-            $this->equalTo("Solr"),
-            $this->equalTo($params->getQuery()),
-            $this->equalTo(10)
-        )->will($this->returnValue($results));
+            ->with(
+                $this->equalTo("Solr"),
+                $this->equalTo($params->getQuery()),
+                $this->equalTo(10)
+            )->will($this->returnValue($results));
 
         $recommend->setConfig("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
         $recommend->init($params, $request);
@@ -263,11 +264,11 @@ class RandomRecommendTest extends TestCase
             ->will($this->returnValue($records));
 
         $service->expects($this->once())->method('random')
-        ->with(
-            $this->equalTo("Solr"),
-            $this->equalTo($params->getQuery()),
-            $this->equalTo(10)
-        )->will($this->returnValue($results));
+            ->with(
+                $this->equalTo("Solr"),
+                $this->equalTo($params->getQuery()),
+                $this->equalTo(10)
+            )->will($this->returnValue($results));
 
         $recommend->setConfig("Solr:10:mixed:retain:0:facet1:value1:facet2:value2");
         $recommend->init($params, $request);

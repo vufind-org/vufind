@@ -66,6 +66,7 @@ $config = [
             'collection' => 'VuFind\Controller\Factory::getCollectionController',
             'collections' => 'VuFind\Controller\Factory::getCollectionsController',
             'record' => 'VuFind\Controller\Factory::getRecordController',
+            'upgrade' => 'VuFind\Controller\Factory::getUpgradeController',
         ],
         'invokables' => [
             'ajax' => 'VuFind\Controller\AjaxController',
@@ -100,7 +101,6 @@ $config = [
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
-            'upgrade' => 'VuFind\Controller\UpgradeController',
             'web' => 'VuFind\Controller\WebController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
@@ -140,6 +140,7 @@ $config = [
             'VuFind\ContentCoversPluginManager' => 'VuFind\Service\Factory::getContentCoversPluginManager',
             'VuFind\ContentExcerptsPluginManager' => 'VuFind\Service\Factory::getContentExcerptsPluginManager',
             'VuFind\ContentReviewsPluginManager' => 'VuFind\Service\Factory::getContentReviewsPluginManager',
+            'VuFind\CookieManager' => 'VuFind\Service\Factory::getCookieManager',
             'VuFind\DateConverter' => 'VuFind\Service\Factory::getDateConverter',
             'VuFind\DbAdapter' => 'VuFind\Service\Factory::getDbAdapter',
             'VuFind\DbAdapterFactory' => 'VuFind\Service\Factory::getDbAdapterFactory',
@@ -173,6 +174,7 @@ $config = [
             'VuFind\SearchResultsPluginManager' => 'VuFind\Service\Factory::getSearchResultsPluginManager',
             'VuFind\SearchSpecsReader' => 'VuFind\Service\Factory::getSearchSpecsReader',
             'VuFind\SearchStats' => 'VuFind\Service\Factory::getSearchStats',
+            'VuFind\SessionManager' => 'VuFind\Service\Factory::getSessionManager',
             'VuFind\SessionPluginManager' => 'VuFind\Service\Factory::getSessionPluginManager',
             'VuFind\SMS' => 'VuFind\SMS\Factory',
             'VuFind\Solr\Writer' => 'VuFind\Service\Factory::getSolrWriter',
@@ -182,7 +184,6 @@ $config = [
             'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
         ],
         'invokables' => [
-            'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\Search'         => 'VuFindSearch\Service',
             'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
             'VuFind\HierarchicalFacetHelper' => 'VuFind\Search\Solr\HierarchicalFacetHelper'
@@ -695,13 +696,6 @@ $recordRoutes = [
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
 ];
-// Record sub-routes are generally used to access tab plug-ins, but a few
-// URLs are hard-coded to specific actions; this array lists those actions.
-$nonTabRecordActions = [
-    'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
-    'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest', 'AjaxTab',
-    'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest', 'PDF',
-];
 
 // Define list-related routes -- route name => MyResearch action
 $listRoutes = [
@@ -759,93 +753,11 @@ $staticRoutes = [
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 ];
 
-// Build record routes
-foreach ($recordRoutes as $routeBase => $controller) {
-    // catch-all "tab" route:
-    $config['router']['routes'][$routeBase] = [
-        'type'    => 'Zend\Mvc\Router\Http\Segment',
-        'options' => [
-            'route'    => '/' . $controller . '/[:id[/:tab]]',
-            'constraints' => [
-                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-            ],
-            'defaults' => [
-                'controller' => $controller,
-                'action'     => 'Home',
-            ]
-        ]
-    ];
-    // special non-tab actions that each need their own route:
-    foreach ($nonTabRecordActions as $action) {
-        $config['router']['routes'][$routeBase . '-' . strtolower($action)] = [
-            'type'    => 'Zend\Mvc\Router\Http\Segment',
-            'options' => [
-                'route'    => '/' . $controller . '/[:id]/' . $action,
-                'constraints' => [
-                    'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                ],
-                'defaults' => [
-                    'controller' => $controller,
-                    'action'     => $action,
-                ]
-            ]
-        ];
-    }
-}
-
-// Build list routes
-foreach ($listRoutes as $routeName => $action) {
-    $config['router']['routes'][$routeName] = [
-        'type'    => 'Zend\Mvc\Router\Http\Segment',
-        'options' => [
-            'route'    => '/MyResearch/' . $action . '/[:id]',
-            'constraints' => [
-                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-            ],
-            'defaults' => [
-                'controller' => 'MyResearch',
-                'action'     => $action,
-            ]
-        ]
-    ];
-}
-
-// Build library card routes
-foreach ($libraryCardRoutes as $routeName => $action) {
-    $config['router']['routes'][$routeName] = [
-        'type'    => 'Zend\Mvc\Router\Http\Segment',
-        'options' => [
-            'route'    => '/LibraryCards/' . $action . '/[:id]',
-            'constraints' => [
-                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-            ],
-            'defaults' => [
-                'controller' => 'LibraryCards',
-                'action'     => $action,
-            ]
-        ]
-    ];
-}
-
-// Build static routes
-foreach ($staticRoutes as $route) {
-    list($controller, $action) = explode('/', $route);
-    $routeName = str_replace('/', '-', strtolower($route));
-    $config['router']['routes'][$routeName] = [
-        'type' => 'Zend\Mvc\Router\Http\Literal',
-        'options' => [
-            'route'    => '/' . $route,
-            'defaults' => [
-                'controller' => $controller,
-                'action'     => $action,
-            ]
-        ]
-    ];
-}
+$routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addRecordRoutes($config, $recordRoutes);
+$routeGenerator->addListRoutes($config, $listRoutes);
+$routeGenerator->addLibraryCardRoutes($config, $libraryCardRoutes);
+$routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 // Add the home route last
 $config['router']['routes']['home'] = [

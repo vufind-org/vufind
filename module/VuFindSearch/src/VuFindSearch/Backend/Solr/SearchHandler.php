@@ -452,9 +452,11 @@ class SearchHandler
      */
     protected function tokenize($string)
     {
-        // Tokenize on spaces and quotes
+        // Tokenize on spaces and quotes (but ignore escaped quotes)
         $phrases = [];
-        preg_match_all('/"[^"]*"[~[0-9]+]*|"[^"]*"|[^ ]+/', $string, $phrases);
+        preg_match_all(
+            '/"(?:\\\\"|.)*?"[~[0-9]+]*|"(?:\\\\"|.)*?"|[^ ]+/', $string, $phrases
+        );
         $phrases = $phrases[0];
 
         $tokens  = [];
