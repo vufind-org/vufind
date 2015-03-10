@@ -18,16 +18,33 @@
   <div class="form-group">
     <label class="col-sm-3 control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
     <div class="col-sm-9">
-      <input id="card_name" class="form-control" type="text" name="card_name" value="<?=isset($this->card['card_name']) ? $this->escapeHtml($this->card['card_name']) : ''?>"/>
+      <input id="card_name" class="form-control" type="text" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName)?>"/>
     </div>
   </div>
-  <? $request = new \Zend\StdLib\Parameters();
-    $request->fromArray($this->request);
-    $methods = $this->auth()->getManager()->getSelectableAuthOptions();
-    $authMethod = in_array('MultiILS', $methods) ? 'MultiILS' : 'ILS';
-    $this->auth()->getManager()->setAuthMethod($authMethod);
-  ?>
-  <?=$this->auth()->getLoginFields(array('request' => $request))?>
+  <? if ($this->targets !== null): ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+    <div class="col-sm-9">
+      <select id="login_target" name="target" class="form-control">
+      <?foreach ($this->targets as $target):?>
+        <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+      <? endforeach ?>
+      </select>
+    </div>
+  </div>
+  <? endif; ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
+    <div class="col-sm-9">
+      <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
+    <div class="col-sm-9">
+      <input id="login_password" type="password" name="password" class="form-control"/>
+    </div>
+  </div>
   <div class="form-group">
     <div class="col-sm-9 col-sm-offset-3">
       <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>

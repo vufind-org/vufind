@@ -73,54 +73,15 @@ class LibraryCardsController extends AbstractBase
             }
         }
 
-        return $this->createViewModel(['libraryCards' => $user->getLibraryCards()]);
-    }
+        // Connect to the ILS for login drivers:
+        $catalog = $this->getILS();
 
-    /**
-     * Process the "edit library card" submission.
-     *
-     * @param \VuFind\Db\Row\User $user Logged in user
-     *
-     * @return object|bool        Response object if redirect is
-     * needed, false if form needs to be redisplayed.
-     */
-    protected function processEditLibraryCard($user)
-    {
-        $cardName = $this->params()->fromPost('card_name', '');
-        $target = $this->params()->fromPost('target', '');
-        $username = $this->params()->fromPost('username', '');
-        $password = $this->params()->fromPost('password', '');
-
-        if (!$username || !$password) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('authentication_error_blank');
-            return false;
-        }
-
-        // Check that the credentials are correct
-        $request = $this->getRequest();
-        if (!$this->getAuthManager()->validateCredentials($request)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('authentication_error_invalid');
-            return false;
-        }
-
-        if ($target) {
-            $username = "$target.$username";
-        }
-
-        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        try {
-            $user->saveLibraryCard(
-                $id == 'NEW' ? null : $id, $cardName, $username, $password
-            );
-        } catch(\VuFind\Exception\LibraryCard $e) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage($e->getMessage());
-            return false;
-        }
-
-        return $this->redirect()->toRoute('librarycards-home');
+        return $this->createViewModel(
+            [
+                'libraryCards' => $user->getLibraryCards(),
+                'multipleTargets' => $catalog->checkCapability('getLoginDrivers')
+            ]
+        );
     }
 
     /**
@@ -148,19 +109,32 @@ class LibraryCardsController extends AbstractBase
 
         $target = null;
         $username = $card->cat_username;
-        if (in_array('MultiILS', $this->getAuthManager()->getSelectableAuthOptions())
-            && strstr($username, '.')
-        ) {
-            list($target, $username) = explode('.', $username, 2);
+        $targets = null;
+        $defaultTarget = null;
+        // Connect to the ILS and check if multiple target support is available:
+        $catalog = $this->getILS();
+        if ($catalog->checkCapability('getLoginDrivers')) {
+            $targets = $catalog->getLoginDrivers();
+            $defaultTarget = $catalog->getDefaultLoginDriver();
+            if (strstr($username, '.')) {
+                list($target, $username) = explode('.', $username, 2);
+            }
         }
-        $request = [
-            'target' => $target,
-            'username' => $username,
-            'password' => $card->cat_password
-        ];
+        $cardName = $this->params()->fromPost('card_name', $card->card_name);
+        $username = $this->params()->fromPost('username', $username);
+        $target = $this->params()->fromPost('target', $target);
 
         // Send the card to the view:
-        return $this->createViewModel(['request' => $request, 'card' => $card]);
+        return $this->createViewModel(
+            [
+                'card' => $card,
+                'cardName' => $cardName,
+                'target' => $target ? $target : $defaultTarget,
+                'username' => $username,
+                'targets' => $targets,
+                'defaultTarget' => $defaultTarget
+            ]
+        );
     }
 
     /**
@@ -224,5 +198,53 @@ class LibraryCardsController extends AbstractBase
             return $this->redirect()->toUrl($url);
         }
         return $this->redirect()->toRoute('myresearch-home');
+    }
+
+    /**
+     * Process the "edit library card" submission.
+     *
+     * @param \VuFind\Db\Row\User $user Logged in user
+     *
+     * @return object|bool        Response object if redirect is
+     * needed, false if form needs to be redisplayed.
+     */
+    protected function processEditLibraryCard($user)
+    {
+        $cardName = $this->params()->fromPost('card_name', '');
+        $target = $this->params()->fromPost('target', '');
+        $username = $this->params()->fromPost('username', '');
+        $password = $this->params()->fromPost('password', '');
+
+        if (!$username || !$password) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('authentication_error_blank');
+            return false;
+        }
+
+        if ($target) {
+            $username = "$target.$username";
+        }
+
+        // Connect to the ILS and check that the credentials are correct:
+        $catalog = $this->getILS();
+        $patron = $catalog->patronLogin($username, $password);
+        if (!$patron) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('authentication_error_invalid');
+            return false;
+        }
+
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        try {
+            $user->saveLibraryCard(
+                $id == 'NEW' ? null : $id, $cardName, $username, $password
+            );
+        } catch(\VuFind\Exception\LibraryCard $e) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage($e->getMessage());
+            return false;
+        }
+
+        return $this->redirect()->toRoute('librarycards-home');
     }
 }
