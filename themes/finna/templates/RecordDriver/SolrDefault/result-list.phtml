@@ -164,9 +164,7 @@
           <span class="location ajax-availability hidden">
             
           </span>
-          <div class="truncate-field" datarows="1">
-          <div class="locationDetails clearfix"></div>
-          </div>
+            <div class="locationDetails clearfix"></div>
         <? else: ?>
           <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
             <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
