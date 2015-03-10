@@ -66,6 +66,18 @@ class Factory
     }
 
     /**
+     * Factory for ServerParam
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ServerParam
+     */
+    public static function getServerParam(ServiceManager $sm)
+    {
+        return new ServerParam($sm->getServiceLocator()->get('Request'));
+    }
+
+    /**
      * Factory for Username
      *
      * @param ServiceManager $sm Service manager.
