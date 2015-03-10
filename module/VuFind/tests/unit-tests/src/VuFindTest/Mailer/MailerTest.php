@@ -62,7 +62,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test bad to address.
      *
      * @return void
-     * @expectedException VuFind\Exception\Mail
+     *
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage Invalid Recipient Email Address
      */
     public function testBadTo()
@@ -76,7 +77,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test empty to address.
      *
      * @return void
-     * @expectedException VuFind\Exception\Mail
+     *
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage Invalid Recipient Email Address
      */
     public function testEmptyTo()
@@ -90,7 +92,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test that we only accept one recipient by default
      *
      * @return void
-     * @expectedException VuFind\Exception\Mail
+     *
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage Too Many Email Recipients
      */
     public function testTooManyRecipients()
@@ -104,7 +107,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test bad from address.
      *
      * @return void
-     * @expectedException VuFind\Exception\Mail
+     *
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage Invalid Sender Email Address
      */
     public function testBadFrom()
@@ -118,7 +122,8 @@ class MailerTest extends \VuFindTest\Unit\TestCase
      * Test transport exception.
      *
      * @return void
-     * @expectedException VuFind\Exception\Mail
+     *
+     * @expectedException        VuFind\Exception\Mail
      * @expectedExceptionMessage Boom
      */
     public function testTransportException()

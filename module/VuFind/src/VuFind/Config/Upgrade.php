@@ -575,7 +575,7 @@ class Upgrade
         unset($newConfig['Index']['local']);
 
         // Warn the user if they are using an unsupported theme:
-        $this->checkTheme('theme', 'blueprint');
+        $this->checkTheme('theme', 'bootprint3');
         $this->checkTheme('mobile_theme', 'jquerymobile');
 
         // Translate legacy auth settings:

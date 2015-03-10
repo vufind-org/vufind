@@ -101,7 +101,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $this->assertEquals(
                 "WARNING: This version of VuFind does not support "
                 . "the default theme.  Your config.ini [Site] theme setting "
-                . "has been reset to the default: blueprint.  You may need to "
+                . "has been reset to the default: bootprint3.  You may need to "
                 . "reimplement your custom theme.",
                 $warnings[0]
             );
