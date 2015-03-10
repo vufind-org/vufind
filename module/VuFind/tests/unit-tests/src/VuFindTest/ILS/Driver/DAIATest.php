@@ -27,7 +27,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\ILS\Driver;
-use VuFind\ILS\Driver\DAIAJSON;
+use VuFind\ILS\Driver\DAIA;
 
 use Zend\Http\Client\Adapter\Test as TestAdapter;
 use Zend\Http\Client as HttpClient;
@@ -44,14 +44,14 @@ use InvalidArgumentException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class DAIAJSONTest extends \VuFindTest\Unit\ILSDriverTestCase
+class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->driver = new DAIAJSON();
+        $this->driver = new DAIA();
     }
 
     /**
@@ -102,7 +102,7 @@ class DAIAJSONTest extends \VuFindTest\Unit\ILSDriverTestCase
         $client = new HttpClient();
         $client->setAdapter($adapter);
 //        var_dump($client);
-        $conn = new DAIAJSON($client);
+        $conn = new DAIA($client);
         var_dump($conn);
         return $conn;
     }
