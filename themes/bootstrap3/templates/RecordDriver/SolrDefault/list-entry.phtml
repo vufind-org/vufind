@@ -6,7 +6,7 @@
     $list_id = $this->list->id;
     $user_id = $this->list->user_id;
   } else {
-    $list_id = true;
+    $list_id = null;
     $user_id = $this->user ? $this->user->id : null;
   }
 ?>
@@ -87,7 +87,7 @@
       } ?>
 
     <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
-        $list_id, // get tags for all lists if no single list is selected
+        null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
         $user_id, 'tag'
        ) : array();
     ?>
@@ -173,7 +173,7 @@
   <div class="col-xs-2 right">
     <i class="fa fa-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
     <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
-      $deleteUrl = is_null($list_id)
+      $deleteUrl = null === $list_id
           ? $this->url('myresearch-favorites')
           : $this->url('userList', array('id' => $list_id));
       $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
