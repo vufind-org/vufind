@@ -1,21 +1,21 @@
 <!-- start of Default result-online-urls.phtml -->
   <? $urls = $this->driver->getURLs(); $openURL = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false; $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
   <? if (!empty($urls) || $openURL || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
-    <div class="online-urls">
+    <div class="available-online-links">
       <strong><?=$this->transEsc('Available Online') ?>:</strong>
       <div class="truncate-field">
       <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
         <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $i => $url): ?>
           <?=$i > 0 ? '<br/>' : '' ?>
-          <i class="fa fa-ok text-success"></i> <a class="fulltext availableLocWWW" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
+          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
           <? if ($url['source']): ?>
-            (<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('source_' . $url['source'], null, $url['source']) ?>)
+            <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('source_' . $url['source'], null, $url['source']) ?>)</span>
           <? endif; ?>
         <? endforeach; ?>
       <? elseif (!empty($urls)): ?>
         <? foreach ($urls as $i => $url): ?>
           <?=$i > 0 ? '<br/>' : '' ?>
-          <i class="fa fa-ok text-success"></i> <a class="fulltext availableLocWWW" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><?=!empty($url['desc']) ? $this->transEsc('link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
+          <a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['desc']) ? $this->transEsc('link_' . $url['desc'], null, $url['desc']) : $this->truncateUrl($url['url']) ?></a>
         <? endforeach; ?>
       <? endif; ?>
       </div>
