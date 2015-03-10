@@ -8,11 +8,12 @@ return array(
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
-            'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar'
+            'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
+            'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
         ),
         'invokables' => array(
             'search' => 'Finna\View\Helper\Root\Search',
-            'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl'
+            'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
         )
     ),
     'css' => array(
