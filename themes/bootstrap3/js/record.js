@@ -293,6 +293,6 @@ $(document).ready(function(){
   // Tag lightbox
   Lightbox.addFormCallback('tagRecord', function(html) {
     refreshTagList(true);
-    Lightbox.confirm(vufindString.bulk_save_success);
+    Lightbox.confirm(vufindString.add_tag_success);
   });
 });
