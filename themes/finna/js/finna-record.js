@@ -8,7 +8,8 @@ finna.record = (function() {
             $.getJSON(url, function(response) {
                 if (response.status === 'OK' && response.data.length > 0) {
                     description.html(response.data);
-                    description.wrapInner('<div class="truncate-field"></div>');
+                    description.wrapInner('<div class="truncate-field wide"><p class="summary"></p></div>');
+                    finna.layout.initTruncate(description);
                 } else {
                     description.hide();
                 }
