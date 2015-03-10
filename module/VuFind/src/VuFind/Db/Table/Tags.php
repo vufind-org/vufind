@@ -110,7 +110,8 @@ class Tags extends Gateway
                     $sub = new Select('resource_tags'); // FROM resource_tags
                     // SELECT tag_id, 1 AS is_me
                     $sub->columns(['tag_id', 'is_me' => new Expression("1")])
-                        ->join(// Convert record_id to resource_id
+                        ->join(
+                            // Convert record_id to resource_id
                             ['r' => 'resource'],
                             'resource_id = r.id',
                             []
@@ -126,13 +127,15 @@ class Tags extends Gateway
                     );
                 }
                 // SELECT (do not add table prefixes)
-                $select->columns([
+                $select->columns(
+                    [
                     "id", "tag",
                     'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', array("rt.user_id"),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'COUNT(DISTINCT(?))', ["rt.user_id"],
+                        [Expression::TYPE_IDENTIFIER]
                     )
-                ]);
+                    ]
+                );
                 // Convert record_id to resource_id
                 $select->join(
                     ['rt' => 'resource_tags'], 'rt.tag_id = tags.id', []

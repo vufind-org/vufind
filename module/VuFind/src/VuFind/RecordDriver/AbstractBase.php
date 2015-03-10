@@ -176,8 +176,8 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @return array
      */
     public function getTags($list_id = null, $user_id = null, $sort = 'count',
-        $ownerId = null)
-    {
+        $ownerId = null
+    ) {
         $tags = $this->getDbTable('Tags');
         return $tags->getForResource(
             $this->getUniqueId(),
