@@ -426,10 +426,11 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         if (isset($this->fields['local_ids_str_mv'])) {
             return [
                 'local_ids_str_mv' => $this->fields['local_ids_str_mv'],
-                'urls' => $this->mergeURLArray(
-                    $this->fields['online_urls_str_mv'],
-                    true
-                )
+                'urls' => isset($this->fields['online_urls_str_mv'])
+                    ? $this->mergeURLArray(
+                        $this->fields['online_urls_str_mv'],
+                        true
+                    ) : []
             ];
         }
 

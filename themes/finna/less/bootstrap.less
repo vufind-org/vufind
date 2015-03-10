@@ -224,9 +224,12 @@ mark, .highlight {
 }
 .available-online-links {
     margin: 10px 0px 0px;
-    font-size: 1.17em;
     letter-spacing: 0.2px;
     font-weight: 400;
+    .online-source {
+        color: @gray-light;
+        font-size: .9em;
+    }
     & a {
         color: darken(@link-color, 5%);   
     }
@@ -235,8 +238,9 @@ mark, .highlight {
     }
 }
 /* Holdings styling */
-.callnumAndLocation {
-    margin-top:15px;
+.holding-details {
+    margin-top: 10px;
+    font-size: 1.08em;
     @media(max-width: 400px) {
         .mobileMargin();   
     }
@@ -370,9 +374,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .tab-content {padding:4px}
 
 /* --- Finna local records ... */
-.template-name-view #record h3 {
+.template-name-view #record .record-title {
        margin:0;
        margin-bottom: 3px;
+       font-size: @record-title-font-size;
 }
 .record-authors {
     .date-and-year();
@@ -393,6 +398,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .physical-details {
     color: @gray-light;
 }
+.access-rights {
+    color: @gray-light;
+    margin-top: 5px;
+}
 .back-to-search a {
     margin: @line-height-computed 0;
     display: block;
@@ -407,9 +416,12 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 
 @media(max-width:@screen-xs-max) {
-    .cover-wrapper, .record-title, .record-authors {
+    .cover-wrapper {
         text-align: center;
-    }   
+    }
+    .template-name-view #record .record-title {
+        margin-top: 10px;   
+    }
 }
 /* --- Auto Complete Dropdown --- */ 
 .tt-dropdown-menu {
@@ -424,7 +436,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   background: transparent;
   top: 3px;
   vertical-align: top;
-  .tt-hint {display:none}
+  .tt-hint {color: @gray-light !important;}
 }
 .tt-dropdown-menu {.list-group;margin-top:10px;}
 
@@ -917,7 +929,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     background: @brand-primary;
     color: @body-bg;
 }
-.list-group-item .badge:hover {
+.list-group-item .badge a:hover {
   cursor: pointer;
   text-decoration: line-through;
 }
@@ -958,6 +970,13 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
 .primo-available-online-record {
     & .more-options {
         display: none;
+        margin: 5px 0px;
+        font-size: 1.08em;
+    }
+
+    & .online-source {
+        color: @gray-light;
+        font-size: .9em;
     }
 }
 //== PCI FACETS
@@ -1000,7 +1019,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     overflow: hidden;
 }
 .more-link, .less-link {
-    padding: 5px 0px;
+    padding: 0px 0px 5px;
     display: inline-block;
     color: @link-color;
     &:hover {
@@ -1020,6 +1039,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
             color:  #fff;
             border-radius: @border-radius-base;
             padding: 0px 4px;
+            transition: background 0.08s linear;
             
         }
         &:after {
