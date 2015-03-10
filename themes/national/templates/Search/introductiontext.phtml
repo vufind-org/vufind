@@ -1,7 +1,7 @@
 <div>
-    <h2><?=$this->transEsc('finnish_archive_treasures')?> <em><?=$this->transEsc('with_single_search')?></em></h2>
+    <h2><?=$this->translate('finnish_archive_treasures')?></h2>
     <? $cnt = $this->indexedTotal()->getTotalIndexedCount(); ?>
     <? if ($cnt > 0): ?>
-        <h3><?=$this->transEsc('currently_indexed')?> <em><?=$this->localizedNumber($cnt); ?></em> <?=$this->transEsc('entries_included')?></h3>
+        <h3><?=$this->translate('currently_indexed', ['%%total%%' => $this->localizedNumber($cnt)]); ?></h3>
     <? endif; ?>
 </div>
