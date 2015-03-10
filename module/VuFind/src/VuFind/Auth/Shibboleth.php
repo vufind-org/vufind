@@ -58,15 +58,14 @@ class Shibboleth extends  AbstractBase
                 'Shibboleth login configuration parameter is not set.'
             );
         }
-        if (isset($shib->userattribute_1) || isset($shib->cat_username) 
-            || isset($shib->college) || isset($shib->major) 
-            || isset($shib->home_library)
-        ) {
-            throw new AuthException(
-                'You must change your configuration. 
+        foreach ($shib->toArray() as $key => $value) {
+            if (preg_match("/^userattribute/", $key)) {
+                throw new AuthException(
+                    'You must change your configuration. 
                  Attributes in login process is not longer supported. 
                  Please look at permissions.ini'
-            );
+                );
+            }
         }
     }
 
@@ -83,22 +82,21 @@ class Shibboleth extends  AbstractBase
     {
         // Check if username is set.
         $shib = $this->getConfig()->Shibboleth;
+
+        $entityId = $request->getServer()->get('Shib-Identity-Provider');
+        if (!$entityId) {
+            throw new AuthException('authentication_error_admin');
+        }
+
         $username = $request->getServer()->get('REMOTE_USER');
         if (empty($username)) {
             throw new AuthException('authentication_error_admin');
         }
 
-        $entityId = $request->getServer()->get('Shib-Identity-Provider');
-        if (is_array($shib->idpentityid)) {
-            if (!in_array($entityId, $shib->idpentityid)) {
-                  throw new AuthException('authentication_error_denied');
-            }
-        } elseif (is_string($shib->idpentityid)) {
-            if ($shib->idpentityid!=$entityId) {
+        if (isset($shib->idpentityid) 
+            && !in_array($entityId, $shib->idpentityid->toArray())
+        ) {
                  throw new AuthException('authentication_error_denied');
-            }
-        } else { 
-            throw new AuthException('authentication_error_admin'); 
         }
 
         // If we made it this far, we should log in the user!
@@ -169,7 +167,6 @@ class Shibboleth extends  AbstractBase
     }
 
 
-    // ToDo: check if still need
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
@@ -196,10 +193,12 @@ class Shibboleth extends  AbstractBase
                                                     // an auth method that
                                                     // proxies others
 
-        if (isset($config->Shibboleth->provider_id)) {
-            $sessionInitiator = $sessionInitiator . '&providerId=' .
-                urlencode($config->Shibboleth->provider_id);
-        }
+        if (isset($config->Shibboleth->idpentityid) 
+            && is_string($config->Shibboleth->idpentityid)
+        ) {
+            $sessionInitiator = $sessionInitiator . '&entityID=' .
+                urlencode($config->Shibboleth->idpentityid);
+        } 
 
         return $sessionInitiator;
     }
