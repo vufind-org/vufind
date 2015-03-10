@@ -64,6 +64,13 @@ class PrimoBackendFactory
 
         $connector = new Connector($id, $this->getInstCode(), $client, $port);
         $connector->setLogger($this->logger);
+
+        if (isset($this->primoConfig->General->highlighting)
+            && $this->primoConfig->General->highlighting
+        ) {
+            $connector->setHighlighting(true);
+        }
+
         return $connector;
     }
 }

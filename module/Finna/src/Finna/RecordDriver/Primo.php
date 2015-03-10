@@ -112,6 +112,52 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
+     * Get a highlighted title string, if available.
+     *
+     * @return string
+     */
+    public function getHighlightedTitle()
+    {
+        // Don't check for highlighted values if highlighting is disabled:
+        if (!$this->highlight) {
+            return '';
+        }
+
+        return (isset($this->fields['highlightDetails']['title'][0]))
+            ? $this->fields['highlightDetails']['title'][0] : '';
+    }
+
+    /**
+     * Get a highlighted author string, if available.
+     *
+     * @return string
+     */
+    public function getHighlightedAuthor()
+    {
+        // Don't check for highlighted values if highlighting is disabled:
+        if (!$this->highlight) {
+            return '';
+        }
+        return (isset($this->fields['highlightDetails']['author'][0]))
+            ? $this->fields['highlightDetails']['author'][0] : '';
+    }
+
+    /**
+     * Pick highlighted description string, if available.
+     *
+     * @return string
+     */
+    public function getHighlightedSnippet()
+    {
+        // Don't check for highlighted values if highlighting is disabled:
+        if (!$this->highlight) {
+            return '';
+        }
+        return (isset($this->fields['highlightDetails']['description'][0]))
+            ? $this->fields['highlightDetails']['description'][0] : '';
+    }
+
+    /**
      * Get OpenURL parameters for an article.
      *
      * @return array

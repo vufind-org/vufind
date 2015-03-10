@@ -40,6 +40,41 @@ use Zend\Http\Client as HttpClient;
  */
 class Connector extends \VuFindSearch\Backend\Primo\Connector
 {
+    protected $highlighting;
+
+    /**
+     * Set highlighting on|off.
+     *
+     * @param boolean $enabled enabled
+     *
+     * @return void
+     */
+    public function setHighlighting($enabled)
+    {
+        $this->highlighting = $enabled;
+    }
+
+    /**
+     * Small wrapper for sendRequest, process to simplify error handling.
+     *
+     * @param string $qs     Query string
+     * @param string $method HTTP method
+     *
+     * @return object    The parsed primo data
+     * @throws \Exception
+     */
+    protected function call($qs, $method = 'GET')
+    {
+        if ($this->highlighting) {
+            $fields = ['title','creator'];
+            $qs .= '&highlight=true';
+            foreach ($fields as $field) {
+                $qs .= "&displayField=$field";
+            }
+        }
+        return parent::call($qs, $method);
+    }
+
     /**
      * Translate Primo's XML into array of arrays.
      *
@@ -82,8 +117,56 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
                 unset($res['documents'][$i]['url']);
             }
 
+            // Prefix records id's
             $res['documents'][$i]['recordid']
                 = 'pci.' . $res['documents'][$i]['recordid'];
+
+            // Process highlighting
+            if ($this->highlighting) {
+                $fieldList = [
+                    'title' => 'title',
+                    'creator' => 'author'
+                ];
+
+                $start = '<span class="searchword">';
+                $end = '</span>';
+
+                $hilited = [];
+                foreach ($fieldList as $field => $hiliteField) {
+                    if (!isset($res['documents'][$i][$field])) {
+                        continue;
+                    }
+                    $val = $res['documents'][$i][$field];
+                    $values = is_array($val) ? $val : [$val];
+                    $valuesHilited = [];
+                    foreach ($values as $val) {
+                        if (stripos($val, $start) !== false
+                            && stripos($val, $end) !== false
+                        ) {
+                            // Replace Primo hilite-tags
+                            $hilitedVal = $val;
+                            $hilitedVal = str_replace(
+                                $start, '{{{{START_HILITE}}}}', $hilitedVal
+                            );
+                            $hilitedVal = str_replace(
+                                $end, '{{{{END_HILITE}}}}', $hilitedVal
+                            );
+                            $valuesHilited[] = $hilitedVal;
+
+                            // Strip Primo hilite-tags from record fields
+                            $val = str_replace($start, '', $val);
+                            $val = str_replace($end, '', $val);
+                            $res['documents'][$i][$field]
+                                = is_array($res['documents'][$i][$field])
+                                ? [$val] : $val;
+                        }
+                    }
+                    if (!empty($valuesHilited)) {
+                        $hilited[$hiliteField] = $valuesHilited;
+                    }
+                }
+                $res['documents'][$i]['highlightDetails'] = $hilited;
+            }
         }
 
         return $res;
