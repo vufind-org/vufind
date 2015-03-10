@@ -63,7 +63,10 @@ class TotalIndexed extends \Zend\View\Helper\AbstractHelper
         // Cache file for number of records in index
         $filename = $cacheDir . 'recordcount.txt';
         $hourOld = time() - (60 * 60);
-        $fileTime = filemtime($filename);
+        $fileTime = false;
+        if (file_exists($filename)) {
+            $fileTime = filemtime($filename);
+        }
 
         if ($fileTime && $fileTime > $hourOld) {
             $totalIndexed = file_get_contents($filename);
