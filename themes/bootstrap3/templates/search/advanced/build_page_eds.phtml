@@ -10,11 +10,11 @@
               '<?=$searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator()?>'
             );
           <? else: ?>
-            addSearch(new_group,
-              '<?=addslashes($search->getString())?>',
-              '<?=addslashes($search->getHandler())?>',
-              '<?=addslashes($search->getOperator())?>'
-            );
+            addSearch(new_group, {
+              term :'<?=addslashes($search->getString())?>',
+              field:'<?=addslashes($search->getHandler())?>',
+              op   :'<?=addslashes($search->getOperator())?>'
+            });
           <? endif; ?>
         <? endforeach; ?>
       <? endforeach; ?>
@@ -23,15 +23,17 @@
       addSearch(new_group);
       addSearch(new_group);
     <? endif; ?>
+
+    $('#groupPlaceHolder').hide();
   });
 </script>
 
 <script type="text/template" id="new_search_template">
   <div class="search row">
     <div class="col-sm-3">
-      <input type="hidden" value="AND" class="first-join"/>
+      <input type="hidden" value="AND" class="first-op"/>
       <label class="help-block"><?=$this->transEsc("adv_search_label")?>:</label>
-      <select class="join col-sm-9 form-control">
+      <select class="op col-sm-9 form-control">
         <option value="AND"><?=$this->transEsc("AND")?></option>
         <option value="OR"><?=$this->transEsc("OR")?></option>
         <option value="NOT"><?=$this->transEsc("NOT")?></option>
@@ -51,5 +53,12 @@
       </div>
       <a href="#" class="col-sm-1 help-block delete hidden">&times;</a>
     </div>
+  </div>
+</script>
+
+<script type="text/template" id="new_group_template">
+  <div class="group well clearfix">
+    <input type="hidden" value="AND"/>
+    <i class="col-sm-offset-3 fa fa-plus-circle"></i> <a href="#" class="add_search_link"><?=$this->transEsc("add_search")?></a>
   </div>
 </script>

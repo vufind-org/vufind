@@ -1,34 +1,47 @@
-/*global addSearchString, deleteSearchGroupString, searchFields, searchJoins, searchLabel, searchMatch */
-
 var nextGroup = 0;
 
-function addSearch(group, term, field)
+function addSearch(group, fieldValues)
 {
-  if (typeof term === 'undefined') {term  = '';}
-  if (typeof field === 'undefined') {field = '';}
-
+  if(typeof fieldValues === "undefined") {
+    fieldValues = {};
+  }
   // Build the new search
-  var inputIndex = $('#group'+group+' input').length;
+  var inputIndex = $('#group'+group+' input[type=text]').length;
   var inputID = group+'_'+inputIndex;
   var $newSearch = $($('#new_search_template').html());
-  $newSearch.find('.search')
-    .attr('id', 'search'+inputID);
+
+  $newSearch.attr('id', 'search'+inputID);
   $newSearch.find('input.form-control')
     .attr('id', 'search_lookfor'+inputID)
-    .attr('name', 'lookfor'+group+'[]')
-    .attr('value', term);
-  $newSearch.find('select.form-control')
+    .attr('name', 'lookfor'+group+'[]');
+  $newSearch.find('select.type')
     .attr('id', 'search_type'+inputID)
     .attr('name', 'type'+group+'[]');
-  $newSearch.find('.delete')
+  $newSearch.find('a.delete')
     .attr('onClick', 'deleteSearch('+group+','+inputIndex+')');
-  if(field.length > 0) {
-    $newSearch.find('option[value="'+field+'"]').attr('selected', 1);
+  // Preset Values
+  if(typeof fieldValues.term !== "undefined") {
+    $newSearch.find('input.form-control').attr('value', fieldValues.term);
+  }
+  if(typeof fieldValues.field !== "undefined") {
+    $newSearch.find('select.type option[value="'+fieldValues.field+'"]').attr('selected', 1);
+  }
+  if (typeof fieldValues.op !== "undefined") {
+    $newSearch.find('select.op option[value="'+fieldValues.op+'"]').attr('selected', 1);
   }
   // Insert it
   $("#group" + group + "Holder").before($newSearch);
-  // Show x if we have more than one search inputs
-  if(inputIndex > 0) {
+  // Individual search ops
+  if (inputIndex == 0) {
+    $newSearch.find('.first-op').attr('name', 'op' + group + '[]');
+    $newSearch.find('select.op').remove();
+  } else {
+    $newSearch.find('select.op')
+      .attr('id', 'search_op' + group + '_' + inputIndex)
+      .attr('name', 'op' + group + '[]');
+    $newSearch.find('.first-op').remove();
+    $newSearch.find('label').remove();
+    // Show x if we have more than one search inputs
     $('#group'+group+' .search .delete').removeClass('hidden');
   }
 }
