@@ -56,12 +56,14 @@
             <a href="<?=$this->record($this->driver)->getLink('author', $authorForSearch ? $authorForSearch : $summAuthor)?>"><?=$this->escapeHtml($summAuthor) ?></a>
           <? else: ?>
             <? $authors = $this->driver->tryMethod('getNonPresenterAuthors'); if (!empty($authors)): ?>
+            <div class="truncate-field" data-rows="2">
               <? foreach ($authors as $i => $author): ?>
                 <?=$i > 0 ? ' ; ' : '' ?>
                 <a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>">
                   <?=$this->escapeHtml($author['name']) ?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role']) ?><? endif; ?>
                 </a>
               <? endforeach; ?>
+            </div>
             <? endif; ?>
           <? endif; ?>
           <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
@@ -76,7 +78,7 @@
             <? endif; ?>
           <? elseif (!empty($summDate)): ?>
             <?=!empty($summAuthor) ? '' : ' '?>
-            <?=$this->transEsc('Published') ?>: <?=$this->escapeHtml($summDate[0])?>
+            <span class="publish-year"><?=$this->escapeHtml($summDate[0])?></span>
           <? endif; ?>
           <? $classifications = $this->driver->tryMethod('getClassifications'); if (!empty($classifications)): ?>
             <div class="resultClassification">
@@ -115,7 +117,6 @@
           <? endif; ?>
         <? endif; ?>
       </div>
-
       <? if(!$this->driver->isCollection()): ?>
         <? if ($snippet = $this->driver->getHighlightedSnippet()): ?>
           <? if (!empty($snippet['caption'])): ?>
@@ -126,17 +127,17 @@
           <? endif; ?>
         <? endif; ?>
       <? endif; ?>
-
+      <div class="holding-details">
       <?
       /* Display information on duplicate records if available */
       $dedupData = $this->driver->getDedupData();
       if (count($dedupData) > 1): ?>
         <div class="dedupInformation">
-          <select class="dedup-select" role="listbox" aria-haspopup="true">
-          <? foreach ($dedupData as $source => $current): ?>
-            <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
-          <? endforeach; ?>
-          </select>
+            <select class="dedup-select form-control" role="listbox" aria-haspopup="true">
+            <? foreach ($dedupData as $source => $current): ?>
+              <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
+            <? endforeach; ?>
+            </select>
         </div>
       <? else: ?>
         <?
@@ -156,32 +157,33 @@
 
       <div class="callnumAndLocation ajax-availability hidden">
         <? if ($this->driver->supportsAjaxStatus()): ?>
-          <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
+          <strong class="hideIfDetailed"></strong>
           <span class="callnumber ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...<br/>
+            <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/>
           </span>
-          <strong><?=$this->transEsc('Located')?>:</strong>
           <span class="location ajax-availability hidden">
-            <?=$this->transEsc('Loading')?>...
+            
           </span>
+          <div class="truncate-field" datarows="1">
           <div class="locationDetails clearfix"></div>
+          </div>
         <? else: ?>
           <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
             <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
           <? endif; ?>
         <? endif; ?>
-      </div>
+      
       <div class="no-holdings hidden">
         <?=$this->transEsc('No Holdings Available')?>
       </div>
-
-      <?=$this->context($this)->renderInContext(
+     </div>
+    </div>
+    <?=$this->context($this)->renderInContext(
         'RecordDriver/SolrDefault/result-online-urls.phtml',
         array(
           'driver' => $this->driver
         )
-      );?>
-
+    );?>
       <?=$this->record($this->driver)->getPreviews()?>
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Saved lists */ ?>

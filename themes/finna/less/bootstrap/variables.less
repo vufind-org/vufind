@@ -10,8 +10,8 @@
 
 @gray-darker:            darken(@gray, 40%);
 @gray-dark:              darken(@gray, 10%);
-@gray-light:             lighten(@gray, 25%);
-@gray-lighter:           lighten(@gray, 66%);
+@gray-light:             lighten(@gray, 18%);
+@gray-lighter:           lighten(@gray, 60%);
 
 // Brand Colors
 @brand-primary: #00a3b5;
@@ -25,7 +25,7 @@
 @logo-color: #fff;
 
 //== Custom Finna styling
-@background-image-url: none;
+@background-image-url: url('../images/background_2.jpg');
 @background-start-color: rgba(1,1,1,0.3); // gradient color for background image
 @background-end-color:  rgba(1,1,1,0.7); // gradient color for background image
 @background-start-percent: 10%;
@@ -46,7 +46,8 @@
 @finna-text-shadow: 1px 1px 1px black;
 @finna-search-input-width: 59.5%; //== THIS HAS TO BE % Change this if no prefilter-select to 80.5%
 @finna-button-radius: 10px; // Defines all button radiuses
-@finna-header-font-size: 1.5em;
+@finna-header-font-size: 1.6em;
+@record-title-font-size: 1.7em;
 
 //== Finna custom tooltip
 @finna-tooltip-opacity: 0.7;
@@ -192,7 +193,8 @@
 @table-cell-padding:            8px;
 //** Padding for cells in `.table-condensed`.
 @table-condensed-cell-padding:  5px;
-
+//** Finna tables
+@table-finna-record-cell-padding:  3px 0px;
 //** Default background color used for all tables.
 @table-bg:                      transparent;
 //** Background color used for `.table-striped`.
