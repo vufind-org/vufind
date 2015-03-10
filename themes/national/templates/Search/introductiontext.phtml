@@ -1,7 +1,7 @@
 <div>
-    <h2><?=$this->translate('finnish_archive_treasures')?></h2>
+    <h2><?=$this->translate('introduction_title_html')?></h2>
     <? $cnt = $this->indexedTotal()->getTotalIndexedCount(); ?>
     <? if ($cnt > 0): ?>
-        <h3><?=$this->translate('currently_indexed', ['%%total%%' => $this->localizedNumber($cnt)]); ?></h3>
+        <h3><?=$this->translate('currently_indexed_html', ['%%total%%' => $this->localizedNumber($cnt)]); ?></h3>
     <? endif; ?>
 </div>
