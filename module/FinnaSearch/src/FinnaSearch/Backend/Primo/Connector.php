@@ -210,7 +210,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
      */
     public function getRecord($recordId, $inst_code = null)
     {
-        $recordId = substr(strstr($recordId, '.'), 1);
+        list(,$recordId) = explode('.', $recordId, 2);
         return parent::getRecord($recordId, $inst_code);
     }
 

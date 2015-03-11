@@ -1,6 +1,6 @@
 <?php
 /**
- * Module for storing local overrides for FinnaSearch.
+ * Module for storing local overrides for VuFindSearch.
  *
  * PHP version 5
  *
@@ -30,7 +30,7 @@ use Zend\ModuleManager\ModuleManager,
     Zend\Mvc\MvcEvent;
 
 /**
- * Module for storing local overrides for FinnaSearch.
+ * Module for storing local overrides for VuFindSearch.
  *
  * @category VuFind2
  * @package  Module
