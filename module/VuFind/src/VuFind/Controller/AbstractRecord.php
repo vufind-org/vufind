@@ -185,13 +185,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Save tags, if any:
-        if ($this->formWasSubmitted('submit')
-            || $this->params()->fromQuery('tag')
-        ) {
-            $tags = $this->params()->fromPost(
-                'tag',
-                $this->params()->fromQuery('tag')
-            );
+        if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
             return $this->redirectToRecord();
@@ -224,7 +218,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Save tags, if any:
-        if ($tag = $this->params()->fromQuery('tag')) {
+        if ($tag = $this->params()->fromPost('tag')) {
             $driver->deleteTags($user, [$tag]);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage(

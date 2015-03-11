@@ -5,15 +5,16 @@
       <div class="tag<?=$is_me ? ' selected' : ''?>">
         <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
         <? if($loggedin): ?>
-          <? $updateHref = $is_me
-            ? $this->recordLink()->getActionUrl($this->driver, 'DeleteTag') . '?tag='.urlencode($tag['tag'])
-            : $this->recordLink()->getActionUrl($this->driver, 'AddTag') . '?tag='.urlencode('"'.$tag['tag'].'"'); ?>
-          <a class="badge" onClick="ajaxTagUpdate('<?=urlencode($tag['tag'])?>', <?=$is_me ? 'true' : 'false' ?>);return false;" href="<?=$updateHref ?>"><?=$this->escapeHtml($tag['cnt']) ?>
-          <? if($is_me): ?>
-            <i class="fa fa-close"></i></a>
-          <? else: ?>
-            <i class="fa fa-plus"></i></a>
-          <? endif; ?>
+          <form method="POST" action="<?=$this->recordLink()->getActionUrl($this->driver, $is_me ? 'DeleteTag' : 'AddTag') ?>" class="tag-form">
+            <input type="hidden" name="tag" value="<?=urlencode($tag['tag'])?>"/>
+            <button type="submit" class="badge" onClick="ajaxTagUpdate('<?=urlencode($tag['tag'])?>', <?=$is_me ? 'true' : 'false' ?>);return false;" href="<?=$updateHref ?>"><?=$this->escapeHtml($tag['cnt']) ?>
+            <? if($is_me): ?>
+              <i class="fa fa-close"></i>
+            <? else: ?>
+              <i class="fa fa-plus"></i>
+            <? endif; ?>
+            </button>
+          </form>
         <? else: ?>
           <span class="badge"><?=$this->escapeHtml($tag['cnt'])?></span>
         <? endif; ?>
