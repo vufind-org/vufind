@@ -93,10 +93,15 @@ class Shibboleth extends  AbstractBase
             throw new AuthException('authentication_error_admin');
         }
 
-        if (isset($shib->idpentityid) 
-            && !in_array($entityId, $shib->idpentityid->toArray())
-        ) {
+        if (isset($shib->idpentityid)) { 
+            if (is_string($shib->idpentityid)) {
+                 $confiidps=(array)$shib->idpentityid;
+            } else {
+                 $confiidps=$shib->idpentityid->toArray();
+            }
+            if (!in_array($entityId, $confiidps)) {
                  throw new AuthException('authentication_error_denied');
+            }
         }
 
         // If we made it this far, we should log in the user!
