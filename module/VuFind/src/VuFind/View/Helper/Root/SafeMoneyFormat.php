@@ -69,9 +69,9 @@ class SafeMoneyFormat extends AbstractHelper
         if (null === $defaultCurrency) {
             $localeInfo = localeconv();
             $defaultCurrency = isset($localeInfo['int_curr_symbol'])
-                ? $localeInfo['int_curr_symbol'] : 'USD';
+                ? trim($localeInfo['int_curr_symbol']) : '';
         }
-        $this->defaultCurrency = trim($defaultCurrency);
+        $this->defaultCurrency = empty($defaultCurrency) ? 'USD' : $defaultCurrency;
     }
 
     /**
