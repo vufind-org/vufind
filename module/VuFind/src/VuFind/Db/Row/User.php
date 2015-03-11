@@ -450,7 +450,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $userCard = $this->getDbTable('UserCard');
         if ($id === null) {
             $row = $userCard->createRow();
-            $row->name = '';
+            $row->card_name = '';
             $row->user_id = $this->id;
             $row->cat_username = '';
             $row->cat_password = '';
