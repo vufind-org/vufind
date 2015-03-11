@@ -116,10 +116,21 @@
         <? endif; ?>
       </div>
       <?=$this->record($this->driver)->getPreviews()?>
-      <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+      <?
+        $summary = false;
+        $highlightedSummary = $this->driver->getHighlightedSummary();
+        if (isset($highlightedSummary[0])) {
+           $summary = $this->highlight($highlightedSummary[0]);
+        } else {
+           $summary = $this->driver->getSummary();
+           if (isset($summary[0])) {
+              $summary = $this->escapeHtml($summary[0]);
+           }
+        }
+      ?>
       <? if ($summary): ?>
         <div class="truncate-field">
-        <!-- TODO HIGHLIGHT SUMMARY TEXT WHEN SEARCH WORDS MATCH --><p class="summary"><?=$summary;?></p>
+          <p class="summary"><?=$summary;?></p>
         </div>
       <? endif; ?>
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>

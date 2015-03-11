@@ -147,14 +147,14 @@ class Primo extends \VuFind\RecordDriver\Primo
      *
      * @return string
      */
-    public function getHighlightedSnippet()
+    public function getHighlightedSummary()
     {
         // Don't check for highlighted values if highlighting is disabled:
         if (!$this->highlight) {
             return '';
         }
         return (isset($this->fields['highlightDetails']['description'][0]))
-            ? $this->fields['highlightDetails']['description'][0] : '';
+            ? [$this->fields['highlightDetails']['description'][0]] : [];
     }
 
     /**

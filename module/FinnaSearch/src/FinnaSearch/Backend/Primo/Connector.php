@@ -66,7 +66,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
     protected function call($qs, $method = 'GET')
     {
         if ($this->highlighting) {
-            $fields = ['title','creator'];
+            $fields = ['title','creator','description'];
             $qs .= '&highlight=true';
             foreach ($fields as $field) {
                 $qs .= "&displayField=$field";
@@ -110,6 +110,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
         for ($i=0; $i<count($docset); $i++) {
             $doc = $docset[$i];
 
+            // Set OpenURL
             $sear = $doc->children($namespaces['sear']);
             if ($openURL = $this->getOpenURL($sear)) {
                 $res['documents'][$i]['url'] = $openURL;
@@ -123,9 +124,35 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
 
             // Process highlighting
             if ($this->highlighting) {
+                // VuFind strips Primo highlighting tags from the description,
+                // so we need to re-read the field (preserving highlighting tags).
+                $description = isset($doc->PrimoNMBib->record->display->description)
+                    ? (string)$doc->PrimoNMBib->record->display->description
+                    : (string)$doc->PrimoNMBib->record->search->description;
+
+                $description = trim(mb_substr($description, 0, 2500, 'UTF-8'));
+
+                // these may contain all kinds of metadata, and just stripping
+                //   tags mushes it all together confusingly.
+                $description = str_replace("P>", "p>", $description);
+
+                $d_arr = explode("<p>", $description);
+                foreach ($d_arr as &$value) {
+                    $value = trim(($value));
+                    if (trim(strip_tags($value)) === '') {
+                        // get rid of entries that would just have spaces
+                        unset($d_arr[$value]);
+                    }
+                }
+
+                // now all paragraphs are converted to linebreaks
+                $description = implode("<br>", $d_arr);
+                $res['documents'][$i]['description'] = $description;
+
                 $fieldList = [
                     'title' => 'title',
-                    'creator' => 'author'
+                    'creator' => 'author',
+                    'description' => 'description'
                 ];
 
                 $start = '<span class="searchword">';
