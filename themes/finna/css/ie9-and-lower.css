@@ -12,3 +12,7 @@
 .fa-spinner:before {
 	content:'';
 }
+/* line-height bug fix */
+body, th, td {
+	line-height: 1.5em !important; 
+}
