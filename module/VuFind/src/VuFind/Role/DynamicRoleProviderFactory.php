@@ -137,10 +137,8 @@ class DynamicRoleProviderFactory implements FactoryInterface
 
         // Add staff view setting it they are absent:
         if (!$this->permissionDefined($permissions, 'access.StaffView')) {
-            $permissions['legacy.StaffView'] = [
-                'role' => 'loggedin',
-                'permission' => 'access.StaffView',
-            ];
+            $permissions['legacy.StaffView']['role'] = ['guest', 'loggedin'];
+            $permissions['legacy.StaffView']['permission'] = 'access.StaffView';
         }
 
         // Add EIT settings if they are absent:
