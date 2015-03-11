@@ -116,8 +116,9 @@ class Tags extends Gateway
                             'resource_id = r.id',
                             []
                         )
-                        ->where(['r.record_id' => $id]) // WHERE resource_id = 142
-                        ->where(['user_id' => $is_me_id]); // AND user_id = 27
+                        ->where(['r.record_id' => $id])    // WHERE resource_id = ?
+                        ->where(['r.source' => $source])   //   AND source = ?
+                        ->where(['user_id' => $is_me_id]); //   AND user_id = ?
                     // LEFT JOIN ... ON resource_tags.tag_id = subq.tag_id
                     $select->join(
                         ['subq' => $sub],

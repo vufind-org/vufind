@@ -224,7 +224,7 @@ class ResourceTags extends Gateway
                 if (true === $list) {
                     // special case -- if $list is set to the string "not null", we
                     // want to only delete tags that are associated with lists.
-                    $select->where('list_id IS NOT NULL');
+                    $select->where->isNotNull('list_id');
                 } elseif ('none' === $list) {
                     // special case -- if $list is set to the string "none", we
                     // want to delete tags that are not associated with lists.
