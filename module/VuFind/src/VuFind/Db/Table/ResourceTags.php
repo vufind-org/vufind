@@ -203,7 +203,8 @@ class ResourceTags extends Gateway
      *                                  unlink (null for ALL matching resources)
      * @param string       $user     ID of user removing links
      * @param string       $list     ID of list to unlink (null for ALL matching
-     *                                  lists, 'none' for tags not in a list)
+     *                                  lists, 'none' for tags not in a list,
+     *                                  true for tags only found in a list)
      * @param string       $tag      ID of tag to unlink (null for ALL matching
      *                                  tags)
      *
@@ -224,12 +225,12 @@ class ResourceTags extends Gateway
                     // special case -- if $list is set to the string "not null", we
                     // want to only delete tags that are associated with lists.
                     $select->where('list_id IS NOT NULL');
-                } elseif (true !== $list) {
-                    $select->where->equalTo('list_id', $list);
-                } else {
+                } elseif ('none' === $list) {
                     // special case -- if $list is set to the string "none", we
                     // want to delete tags that are not associated with lists.
                     $select->where->isNull('list_id');
+                } else {
+                    $select->where->equalTo('list_id', $list);
                 }
             }
             if (!is_null($tag)) {
