@@ -54,7 +54,7 @@ function deparam(url) {
   var pairs = url.substring(url.indexOf('?') + 1).split('&');
   for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
-    var name = decodeURIComponent(pair[0]);
+    var name = decodeURIComponent(pair[0].replace(/\+/g, ' '));
     if(name.length == 0) {
       continue;
     }
@@ -63,9 +63,9 @@ function deparam(url) {
       if(!request[name]) {
         request[name] = [];
       }
-      request[name].push(decodeURIComponent(pair[1]));
+      request[name].push(decodeURIComponent(pair[1].replace(/\+/g, ' ')));
     } else {
-      request[name] = decodeURIComponent(pair[1]);
+      request[name] = decodeURIComponent(pair[1].replace(/\+/g, ' '));
     }
   }
   return request;
@@ -360,7 +360,17 @@ $(document).ready(function() {
     } else {
       $(this).html(vufindString.qrcode_hide).addClass("active");
     }
-    $(this).next('.qrcode').toggleClass('hidden');
+
+    var holder = $(this).next('.qrcode');
+
+    if (holder.find('img').length == 0) {
+      // We need to insert the QRCode image
+      var template = holder.find('.qrCodeImgTag').html();
+      holder.html(template);
+    }
+
+    holder.toggleClass('hidden');
+
     return false;
   });
 

@@ -153,6 +153,31 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
         $service->get('http://example.tld', array('foo=bar'), 'test', array("Content-type: application/json", "Accept: application/json"));
     }
 
+   /**
+     * Test POST request appends headers.
+     *
+     * @return void
+     */
+    public function testPostAppendsHeaders()
+    {
+        $service = new Service();
+        $adapter = $this->getMock('Zend\Http\Client\Adapter\Test', array('write'));
+        $adapter->expects($this->once())
+            ->method('write')
+            ->with(
+                $this->equalTo('POST'),
+                $this->equalTo(
+                    new \Zend\Uri\Http('http://example.tld')
+                ),
+                $this->equalTo('1.1'),
+                $this->equalTo(
+                    array('Host' => 'example.tld', 'Connection' => 'close', 'Accept-Encoding' => 'gzip, deflate','User-Agent' => 'Zend\Http\Client', 'Content-Type' => 'application/json', 'Accept' => 'application/json', 'Content-Length' => '5')
+                )
+            );
+        $service->setDefaultAdapter($adapter);
+        $service->post('http://example.tld', 'dummy', 'application/json', null, array('Accept: application/json'));
+    }
+
     /**
      * Test POST request of form data.
      *

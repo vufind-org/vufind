@@ -81,7 +81,8 @@ class ThemeInfoTest extends Unit\TestCase
      * Test setting invalid theme
      *
      * @return void
-     * @expectedException Exception
+     *
+     * @expectedException        Exception
      * @expectedExceptionMessage Cannot load theme: invalid
      */
     public function testInvalidTheme()

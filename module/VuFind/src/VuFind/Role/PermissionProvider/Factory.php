@@ -77,7 +77,6 @@ class Factory
         return new ServerParam($sm->getServiceLocator()->get('Request'));
     }
 
-
     /**
      * Factory for Shibboleth
      *

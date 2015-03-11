@@ -84,7 +84,8 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing retrieve action.
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
     public function testRetrieveException()
@@ -108,7 +109,8 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing search action.
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
     public function testSearchException()
@@ -189,7 +191,8 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing batch retrieve action (with RetrieveBatchInterface).
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
     public function testRetrieveBatchInterfaceException()
@@ -221,7 +224,8 @@ class SearchServiceTest extends TestCase
      * RetrieveBatchInterface).
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
     public function testRetrieveBatchNoInterfaceException()
@@ -259,11 +263,12 @@ class SearchServiceTest extends TestCase
 
         $backend->expects($this->once())->method('random')
             ->with(
-                 $this->equalTo($query),
-                 $this->equalTo("10"),
-                 $this->equalTo($params)
-             )->will($this->returnValue($response)
-        );
+                $this->equalTo($query),
+                $this->equalTo("10"),
+                $this->equalTo($params)
+            )->will(
+                $this->returnValue($response)
+            );
         $em = $service->getEventManager();
         $em->expects($this->at(0))->method('trigger')
             ->with($this->equalTo('pre'), $this->equalTo($backend));
@@ -279,7 +284,8 @@ class SearchServiceTest extends TestCase
      * Test random (with RandomInterface) exception.
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
     public function testRandomInterfaceWithException()
@@ -294,11 +300,11 @@ class SearchServiceTest extends TestCase
         $query = new Query('test');
 
         $backend->expects($this->once())->method('random')
-        ->with(
-            $this->equalTo($query),
-            $this->equalTo("10"),
-            $this->equalTo($params)
-        )->will($this->throwException($exception));
+            ->with(
+                $this->equalTo($query),
+                $this->equalTo("10"),
+                $this->equalTo($params)
+            )->will($this->throwException($exception));
 
         $em = $service->getEventManager();
         $em->expects($this->at(0))->method('trigger')
@@ -329,12 +335,12 @@ class SearchServiceTest extends TestCase
 
         // First Search Grabs 0 records but uses get total method
         $backend->expects($this->at(0))->method('search')
-        ->with(
-            $this->equalTo($query),
-            $this->equalTo("0"),
-            $this->equalTo("0"),
-            $this->equalTo($params)
-        )->will($this->returnValue($responseForZero));
+            ->with(
+                $this->equalTo($query),
+                $this->equalTo("0"),
+                $this->equalTo("0"),
+                $this->equalTo($params)
+            )->will($this->returnValue($responseForZero));
 
         $responseForZero->expects($this->once())->method('getTotal')
             ->will($this->returnValue($total));
@@ -349,8 +355,9 @@ class SearchServiceTest extends TestCase
                     $this->anything(),
                     $this->equalTo("1"),
                     $this->equalTo($params)
-                )->will($this->returnValue($response)
-            );
+                )->will(
+                    $this->returnValue($response)
+                );
         }
 
         $em = $service->getEventManager();
@@ -430,10 +437,10 @@ class SearchServiceTest extends TestCase
         // Second search grabs all the records and calls shuffle
         $backend->expects($this->at(1))->method('search')
             ->with(
-                    $this->equalTo($query),
-                    $this->equalTo("0"),
-                    $this->equalTo($limit),
-                    $this->equalTo($params)
+                $this->equalTo($query),
+                $this->equalTo("0"),
+                $this->equalTo($limit),
+                $this->equalTo($params)
             )->will($this->returnValue($response));
         $response->expects($this->once())->method('shuffle');
 
@@ -449,7 +456,8 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception.
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceWithExceptionAtFirstSearch()
@@ -475,7 +483,8 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception at item retrieval search.
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceWithExceptionAtItemSearch()
@@ -492,12 +501,12 @@ class SearchServiceTest extends TestCase
 
         // First Search Grabs 0 records but uses get total method
         $backend->expects($this->at(0))->method('search')
-        ->with(
-            $this->equalTo($query),
-            $this->equalTo("0"),
-            $this->equalTo("0"),
-            $this->equalTo($params)
-        )->will($this->returnValue($responseForZero));
+            ->with(
+                $this->equalTo($query),
+                $this->equalTo("0"),
+                $this->equalTo("0"),
+                $this->equalTo($params)
+            )->will($this->returnValue($responseForZero));
 
         $responseForZero->expects($this->once())->method('getTotal')
             ->will($this->returnValue($total));
@@ -517,7 +526,8 @@ class SearchServiceTest extends TestCase
      * Test random (without RandomInterface) exception with less results than limit.
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
     public function testRandomNoInterfaceExceptionWithLessResultsThanLimit()
@@ -535,12 +545,12 @@ class SearchServiceTest extends TestCase
 
         // First Search Grabs 0 records but uses get total method
         $backend->expects($this->at(0))->method('search')
-        ->with(
-            $this->equalTo($query),
-            $this->equalTo("0"),
-            $this->equalTo("0"),
-            $this->equalTo($params)
-        )->will($this->returnValue($responseForZero));
+            ->with(
+                $this->equalTo($query),
+                $this->equalTo("0"),
+                $this->equalTo("0"),
+                $this->equalTo($params)
+            )->will($this->returnValue($responseForZero));
 
         $responseForZero->expects($this->once())->method('getTotal')
             ->will($this->returnValue($total));
@@ -589,7 +599,8 @@ class SearchServiceTest extends TestCase
      * Test similar action on bad backend.
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage foo does not support similar()
      */
     public function testSimilarOnNonSupportingBackend()
@@ -603,7 +614,8 @@ class SearchServiceTest extends TestCase
      * Test exception-throwing similar action.
      *
      * @return void
-     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     *
+     * @expectedException        VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
     public function testSimilarException()
@@ -633,7 +645,8 @@ class SearchServiceTest extends TestCase
      * Test a failure to resolve.
      *
      * @return void
-     * @expectedException VuFindSearch\Exception\RuntimeException
+     *
+     * @expectedException        VuFindSearch\Exception\RuntimeException
      * @expectedExceptionMessage Unable to resolve backend: retrieve, junk
      */
     public function testFailedResolve()

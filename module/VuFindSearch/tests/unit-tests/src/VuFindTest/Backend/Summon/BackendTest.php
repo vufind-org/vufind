@@ -120,6 +120,7 @@ class BackendTest extends TestCase
      * Test retrieve exception handling.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testRetrieveWrapsSummonException()
@@ -127,8 +128,8 @@ class BackendTest extends TestCase
         $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
-             ->method('getRecord')
-             ->will($this->throwException(new SummonException()));
+            ->method('getRecord')
+            ->will($this->throwException(new SummonException()));
         $back = new Backend($conn, $fact);
         $back->retrieve('id');
     }
@@ -171,6 +172,7 @@ class BackendTest extends TestCase
      * Test search exception handling.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsSummonException()
@@ -178,8 +180,8 @@ class BackendTest extends TestCase
         $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
-             ->method('query')
-             ->will($this->throwException(new SummonException()));
+            ->method('query')
+            ->will($this->throwException(new SummonException()));
         $back = new Backend($conn, $fact);
         $back->search(new Query(), 1, 1);
     }
@@ -195,9 +197,9 @@ class BackendTest extends TestCase
         $expectedParams = new SummonQuery('boo:(baz)', ['pageSize' => 10, 'pageNumber' => 1.0, 'maxTopics' => 32]);
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
-             ->method('query')
-             ->with($this->equalTo($expectedParams))
-             ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->method('query')
+            ->with($this->equalTo($expectedParams))
+            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
         $back = new Backend($conn);
         $back->search(new Query('baz', 'boo'), 0, 10, $myParams);
     }

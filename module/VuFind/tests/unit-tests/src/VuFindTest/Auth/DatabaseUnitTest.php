@@ -43,7 +43,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of empty create request.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage Username cannot be blank
      */
     public function testEmptyCreateRequest()
@@ -56,7 +57,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of create request w/blank password.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage Password cannot be blank
      */
     public function testEmptyPasswordCreateRequest()
@@ -71,7 +73,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of create request w/mismatched passwords.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage Passwords do not match
      */
     public function testMismatchedPasswordCreateRequest()
@@ -86,7 +89,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test missing table manager.
      *
      * @return void
-     * @expectedException Exception
+     *
+     * @expectedException        Exception
      * @expectedExceptionMessage DB table manager missing.
      */
     public function testCreateWithMissingTableManager()
@@ -99,7 +103,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test creation w/duplicate email.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage That email address is already used
      */
     public function testCreateDuplicateEmail()
@@ -124,7 +129,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test creation w/duplicate username.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage That username is already taken
      */
     public function testCreateDuplicateUsername()

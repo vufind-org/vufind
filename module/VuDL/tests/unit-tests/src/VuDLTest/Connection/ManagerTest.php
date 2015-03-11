@@ -88,7 +88,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
 
 class FakeServiceLocator
 {
-    public function get($class) {
+    public function get($class)
+    {
         if($class == "VuDL\\Connection\\First") {
             return new First();
         } else {
