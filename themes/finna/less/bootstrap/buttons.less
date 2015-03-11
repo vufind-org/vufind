@@ -183,9 +183,10 @@
         color: @body-bg;
         display: block;
         font-size: 100%;
+        font-weight: 600;
         line-height: 1em;
         margin: 0;
-        padding: .5em;
+        padding: 0px 20px 0px 8px;
         width: 100%;
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
@@ -237,25 +238,27 @@
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
         color: @body-bg;
+        line-height: 2.5em;
     }
     &.prefilter-select {
         color: @gray;
         font-weight: bold;
         display: inline-block;
         padding-right: 17px;
-        margin-top: 2px;
         position: relative;
         background: transparent;
-        line-height: 35px;
+        height: 39px;
         width: 25%;
-        
+        height: auto;
         & select {
-          color: @gray;   
+          color: @gray;
+          height: 39px;
         }
     }   
     &.prefilter-select:before {
         right: 12px;
         background: @body-bg;
+        line-height: 39px;
     }
 }
 .jump-menu-style select::-ms-expand {
@@ -405,3 +408,4 @@ input[type="button"] {
     width: 100%;
   }
 }
+
