@@ -48,12 +48,16 @@ $config = array(
         )
     ),
     'controllers' => array(
+        'factories' => [
+            'record' => 'Finna\Controller\Factory::getRecordController',
+        ],
         'invokables' => array(
             'ajax' => 'Finna\Controller\AjaxController',
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
             'primo' => 'Finna\Controller\PrimoController',
-            'search' => 'Finna\Controller\SearchController',
+            'primorecord' => 'Finna\Controller\PrimorecordController',
+            'search' => 'Finna\Controller\SearchController'
         ),
     ),
     'service_manager' => array(
