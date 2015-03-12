@@ -43,7 +43,7 @@
         <? else: ?>
         <li class="disabled" title="<?=$this->transEsc('First Record')?>"><a href="#searchform"><i class="fa fa-arrow-left"></i></a></li>
       <? endif; ?>
-        <span class="pager-text"><?=$this->localizedNumber($this->scrollData['currentPosition']) . ' / ' . $this->localizedNumber($this->scrollData['resultTotal']) ?></span>
+        <li class="pager-text"><?=$this->localizedNumber($this->scrollData['currentPosition']) . ' / ' . $this->localizedNumber($this->scrollData['resultTotal']) ?></li>
       <? if ($this->scrollData['nextRecord']): ?>
         <li>
           <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>#searchForm" title="<?=$this->transEsc('Next Record')?>"><i class="fa fa-arrow-right"></i></a>
