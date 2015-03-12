@@ -63,7 +63,7 @@ function deparam(url) {
       if(!request[name]) {
         request[name] = [];
       }
-      request[name].push(decodeURIComponent(pair[1].replace(/+/g, ' ')));
+      request[name].push(decodeURIComponent(pair[1].replace(/\+/g, ' ')));
     } else {
       request[name] = decodeURIComponent(pair[1].replace(/\+/g, ' '));
     }
