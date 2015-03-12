@@ -7,9 +7,9 @@
       <? /* Display qrcode if appropriate: */ ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>
-        <span class="hidden-xs">
+        <div class="hidden-xs">
            <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
-        </span>
+        </div>
       <? endif; ?>
     </div>
 
