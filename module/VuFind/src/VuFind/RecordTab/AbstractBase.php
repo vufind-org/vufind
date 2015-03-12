@@ -54,7 +54,7 @@ abstract class AbstractBase implements TabInterface,
      *
      * @var string|bool
      */
-    protected $accessPermission = true;
+    protected $accessPermission = false;
 
     /**
      * Record driver associated with the tab
@@ -77,7 +77,15 @@ abstract class AbstractBase implements TabInterface,
      */
     public function isActive()
     {
-        // Assume active by default; subclasses may add rules.
+        // if accessPermission is set, check for authorization to enable tab
+        if (!empty($this->accessPermission)) {
+            $auth = $this->getAuthorizationService();
+            if (!$auth) {
+                throw new \Exception('Authorization service missing');
+            }
+            return $auth->isGranted($this->accessPermission);
+        }
+
         return true;
     }
 
@@ -88,12 +96,6 @@ abstract class AbstractBase implements TabInterface,
      */
     public function isVisible()
     {
-        // Assume visible by default; 
-        // if accessPersmission is set to string in subclasse, use the rule
-        $lcheck=$this->getAuthorizationService()->isGranted($this->accessPermission);
-        if ((is_string($this->accessPermission)) && ($lcheck==false)) {
-            return false;
-        }
         return true;
     }
 

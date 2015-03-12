@@ -31,7 +31,7 @@ trait AuthorizationServiceAwareTrait
      *
      * @var AuthorizationService
      */
-    protected $authorizationService;
+    protected $authorizationService = null;
 
     /**
      * Set the AuthorizationService
