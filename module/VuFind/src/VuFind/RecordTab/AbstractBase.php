@@ -44,12 +44,12 @@ abstract class AbstractBase implements TabInterface,
     use AuthorizationServiceAwareTrait;
 
     /**
-     * Permission that must be granted to access this module (false for no
+     * Permission that must be granted to access this module (null for no
      * restriction)
      *
-     * @var string|bool
+     * @var string
      */
-    protected $accessPermission = false;
+    protected $accessPermission = null;
 
     /**
      * Record driver associated with the tab
@@ -72,7 +72,7 @@ abstract class AbstractBase implements TabInterface,
      */
     public function isActive()
     {
-        // if accessPermission is set, check for authorization to enable tab
+        // If accessPermission is set, check for authorization to enable tab
         if (!empty($this->accessPermission)) {
             $auth = $this->getAuthorizationService();
             if (!$auth) {
@@ -91,6 +91,7 @@ abstract class AbstractBase implements TabInterface,
      */
     public function isVisible()
     {
+        // Assume visible by default; subclasses may add rules.
         return true;
     }
 

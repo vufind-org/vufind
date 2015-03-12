@@ -165,7 +165,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
                     = $config->Auth->ip_range;
             }
             if (!empty($permissions['legacy.SummonExtendedResults'])) {
-                $permissions['legacy.SummonExtendedResults']['boolean'] = 'OR';
+                $permissions['legacy.SummonExtendedResults']['require'] = 'ANY';
                 $permissions['legacy.SummonExtendedResults']['permission']
                     = 'access.SummonExtendedResults';
             } else {
