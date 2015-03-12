@@ -76,4 +76,27 @@ class Content extends \Zend\View\Helper\AbstractHelper
     {
         return $this->heading;
     }
+
+    /**
+     * Try to find the best template for the current language
+     *
+     * @param string $templateName Template name without .phtml suffix
+     *
+     * @return string|boolean Template name or false if not available
+     */
+    public function findTemplateForLng($templateName)
+    {
+        $lng = $this->view->layout()->userLang;
+        $resolver = $this->view->resolver();
+
+        $template = "{$templateName}_$lng.phtml";
+        if ($resolver->resolve($template)) {
+            return $template;
+        }
+        $template = "$templateName.phtml";
+        if ($resolver->resolve($template)) {
+            return $template;
+        }
+        return false;
+    }
 }
