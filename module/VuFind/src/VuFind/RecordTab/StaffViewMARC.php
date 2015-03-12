@@ -43,7 +43,7 @@ class StaffViewMARC extends AbstractBase
      */
     public function __construct()
     {
-        $this->accessPermission = 'access.StaffView';
+        $this->accessPermission = 'access.StaffViewTab';
     }
 
     /**
