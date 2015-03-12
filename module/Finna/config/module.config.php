@@ -110,7 +110,7 @@ $config = array(
         'recorddriver_tabs' => array(
             'Finna\RecordDriver\SolrMarc' => array(
                 'tabs' => array(
-                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
+                    'Holdings' => 'HoldingsILS',
                     'ComponentParts' => 'ComponentParts',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
@@ -122,7 +122,6 @@ $config = array(
             ),
             'Finna\RecordDriver\SolrEad' => array(
                 'tabs' => array(
-                    'Description' => 'Description',
                     'HierarchyTree' => 'HierarchyTree',
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
@@ -133,7 +132,6 @@ $config = array(
             ),
             'Finna\RecordDriver\SolrLido' => array(
                 'tabs' => array(
-                    'Description' => 'Description',
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
                     'Map' => 'Map',
@@ -143,7 +141,6 @@ $config = array(
             ),
             'Finna\RecordDriver\SolrQdc' => array(
                 'tabs' => array(
-                    'Description' => 'Description',
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
                     'Map' => 'Map',
