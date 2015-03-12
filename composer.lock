@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6a50f9dd747e7c641961b25a3e6ec1db",
+    "hash": "a789b6d59c5f4174e268ab7f4307ee5d",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -200,16 +200,16 @@
         },
         {
             "name": "oyejorge/less.php",
-            "version": "v1.7.0.2",
+            "version": "v1.7.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/oyejorge/less.php.git",
-                "reference": "82372b389386ae1edab55495eae4b400cca3c86c"
+                "reference": "6e08ecb07e6f6d9170c23e8744c58fdd822ad0de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oyejorge/less.php/zipball/82372b389386ae1edab55495eae4b400cca3c86c",
-                "reference": "82372b389386ae1edab55495eae4b400cca3c86c",
+                "url": "https://api.github.com/repos/oyejorge/less.php/zipball/6e08ecb07e6f6d9170c23e8744c58fdd822ad0de",
+                "reference": "6e08ecb07e6f6d9170c23e8744c58fdd822ad0de",
                 "shasum": ""
             },
             "require": {
@@ -255,7 +255,7 @@
                 "php",
                 "stylesheet"
             ],
-            "time": "2014-06-05 16:09:50"
+            "time": "2015-03-10 18:12:59"
         },
         {
             "name": "pear-pear.php.net/Archive_Tar",
@@ -653,17 +653,17 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.3.5",
+            "version": "2.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "886063aa5aee7476b77c380e25ecfacb2ee5ff4c"
+                "reference": "cf1f2212b5ff772ba695f9efbb315505ec0211eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-886063aa5aee7476b77c380e25ecfacb2ee5ff4c-zip-d4c183.zip",
-                "reference": "2.3.5",
-                "shasum": "07830613ab28cd5e08bb731393bab8cd32e3ec81"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-cf1f2212b5ff772ba695f9efbb315505ec0211eb-zip-e766c5.zip",
+                "reference": "2.3.6",
+                "shasum": "a4b747410c7ec9fabf1738692be8450155cfcc24"
             },
             "require": {
                 "php": ">=5.3.23",
@@ -767,10 +767,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.3.5",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.3.6",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2015-02-18 19:48:16"
+            "time": "2015-03-12 14:02:09"
         },
         {
             "name": "zendframework/zendrest",
