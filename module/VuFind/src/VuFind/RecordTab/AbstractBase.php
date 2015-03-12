@@ -26,11 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
-
-//use VuFind\Exception\Forbidden as ForbiddenException,
- //   Zend\Mvc\Controller\AbstractActionController,
- //   Zend\Mvc\MvcEvent,
- //   Zend\View\Model\ViewModel,
 use ZfcRbac\Service\AuthorizationServiceAwareInterface,
     ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
@@ -44,7 +39,7 @@ use ZfcRbac\Service\AuthorizationServiceAwareInterface,
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 abstract class AbstractBase implements TabInterface, 
-                                       AuthorizationServiceAwareInterface
+    AuthorizationServiceAwareInterface
 {
     use AuthorizationServiceAwareTrait;
 
