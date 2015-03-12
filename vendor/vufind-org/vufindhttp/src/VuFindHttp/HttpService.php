@@ -145,17 +145,21 @@ class HttpService implements HttpServiceInterface
      * @param mixed  $body    Request body document
      * @param string $type    Request body content type
      * @param float  $timeout Request timeout in seconds
+     * @param array  $headers Request http-headers
      *
      * @return \Zend\Http\Response
      */
     public function post($url, $body = null, $type = 'application/octet-stream',
-        $timeout = null
+        $timeout = null, array $headers = array()
     ) {
         $client
             = $this->createClient($url, \Zend\Http\Request::METHOD_POST, $timeout);
         $client->setRawBody($body);
         $client->setHeaders(
-            array('Content-Type' => $type, 'Content-Length' => strlen($body))
+            array_merge(
+                array('Content-Type' => $type, 'Content-Length' => strlen($body)),
+                $headers
+            )
         );
         return $this->send($client);
     }

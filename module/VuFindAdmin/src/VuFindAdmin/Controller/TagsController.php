@@ -231,6 +231,7 @@ class TagsController extends AbstractAdmin
                 ]
             ];
         }
+        $messages[] = ['msg' => 'confirm_delete'];
         return $messages;
     }
 

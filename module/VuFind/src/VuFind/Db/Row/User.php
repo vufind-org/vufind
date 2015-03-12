@@ -643,9 +643,10 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      */
     public function updateHash()
     {
-        $this->verify_hash = md5(
-            $this->username . $this->password . $this->pass_hash . rand()
-        ) . (time() % pow(10, 10));
+        $hash = md5($this->username . $this->password . $this->pass_hash . rand());
+        // Make totally sure the timestamp is exactly 10 characters:
+        $time = str_pad(substr((string) time(), 0, 10), 10, '0', STR_PAD_LEFT);
+        $this->verify_hash = $hash . $time;
         return $this->save();
     }
 
