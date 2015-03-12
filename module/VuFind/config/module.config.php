@@ -472,6 +472,9 @@ $config = [
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
                 ],
+                'initializers' => [
+                    'ZfcRbac\Initializer\AuthorizationServiceInitializer'
+                ],
             ],
             'related' => [
                 'abstract_factories' => ['VuFind\Related\PluginFactory'],

@@ -135,6 +135,13 @@ class DynamicRoleProviderFactory implements FactoryInterface
             $permissions['legacy.AdminModule']['permission'] = 'access.AdminModule';
         }
 
+        // Add staff view setting it they are absent:
+        if (!$this->permissionDefined($permissions, 'access.StaffViewTab')) {
+            $permissions['legacy.StaffViewTab']['role'] = ['guest', 'loggedin'];
+            $permissions['legacy.StaffViewTab']['permission']
+                = 'access.StaffViewTab';
+        }
+
         // Add EIT settings if they are absent:
         if (!$this->permissionDefined($permissions, 'access.EITModule')) {
             $permissions['legacy.EITModule'] = [
