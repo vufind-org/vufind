@@ -23,7 +23,7 @@
 <div class="container-fluid record-view-header">
  <div class="container">
   <div class="row">
-    <div class="col-xs-5">    
+    <div class="col-xs-5">
     <?
       $html = '<span class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></span>';
       $html .= '<span class="back-to-search-text hidden-xs">'.$this->transEsc('Back to search results').'</span>';
@@ -50,9 +50,9 @@
         </li>
       <? else: ?>
         <li class="disabled" title="<?=$this->transEsc('Last Record')?>"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
+      <? endif; ?>
       </ul>
       <? endif; ?>
-    <? endif; ?>
     </div>
   </div>
  </div>
