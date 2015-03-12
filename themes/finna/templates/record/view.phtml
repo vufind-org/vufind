@@ -23,14 +23,15 @@
 <div class="container-fluid record-view-header">
  <div class="container">
   <div class="row">
-    <div class="col-xs-5">
-     <!-- TODO Back to search results buttons here if available.
-    <? $previousSearch = $this->getLastSearchLink('')?>
-    <? if (isset($previousSearch)): ?>
-    <? $previousSearch = explode('"',$previousSearch);?>
-      <a href=" class="back-to-search"><button class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></button> <?=$this->transEsc('Back to search results')?></a>
+    <div class="col-xs-5">    
+    <?
+      $html = '<button class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></button>';
+      $html .= $this->transEsc('Back to search results');
+      $previousSearch = $this->getLastSearchLink($html);
+      if ($previousSearch !== ''):
+    ?>
+      <div class="back-to-search"><?=$previousSearch?></div>
     <? endif; ?>
-    -->
     </div>
     <div class="col-xs-7">
     <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>

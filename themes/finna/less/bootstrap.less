@@ -177,7 +177,7 @@ footer li {
 }
 mark, .highlight {
     background: none;
-    font-weight: 600;
+    font-weight: bold;
     color: inherit;
     font-size: 1.03em;
 }
@@ -402,13 +402,16 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     color: @gray-light;
     margin-top: 5px;
 }
-.back-to-search {
+.back-to-search a {
     margin: @line-height-computed 0;
     display: block;
     font-size: 1.1em;
     & i {
         vertical-align: text-top;
         font-size: 1.2em;
+    }
+    & .btn {
+        margin-right: 10px;
     }
 }
 
@@ -941,18 +944,36 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
 }
 
 .primo-available-online {
-    padding: 5px;
-    border: 3px solid @gray-lighter;
     & p {
         margin: 0px;   
     }
     & a {
-        display: block;   
+        display: inline-block;
+    }
+    & .host {
+        font-size: 0.9em;
+        color: @gray-light;
+    }
+    & .fulltext-available .more-options {
+        display: none;
     }
 }
 .primo-available-online-record, .local-available-online-record {
-    margin: 5px 0px;
-    font-size: 1.08em;
+    margin: 10px 0px;
+    font-size: 1.1em;
+
+    & .host {
+        font-size: 0.9em;
+        color: @gray-light;
+    }
+}
+.primo-available-online-record {
+    & .more-options {
+        display: none;
+        margin: 5px 0px;
+        font-size: 1.08em;
+    }
+
     & .online-source {
         color: @gray-light;
         font-size: .9em;

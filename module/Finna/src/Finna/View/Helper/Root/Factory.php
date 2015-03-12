@@ -116,6 +116,21 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the OpenUrl helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return OpenUrl
+     */
+    public static function getOpenUrl(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        return new OpenUrl(
+            $sm->get('context'), isset($config->OpenURL) ? $config->OpenURL : null
+        );
+    }
+
+    /**
      * Construct the Total indexed countr view helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -127,5 +142,4 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $locator = $sm->getServiceLocator();
         return new TotalIndexed($locator);
     }
-
 }

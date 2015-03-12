@@ -56,6 +56,10 @@ retain_filters_by_default = false
 ; past the limit.  This setting tells VuFind where to cut off its paging mechanism.
 result_limit = 2000
 
+; Set this to true in order to highlight keywords from the search query when they
+; appear in fields displayed in search results.
+highlighting = true
+
 ; The following two sections can be used to associate specific recommendations
 ; modules with specific search types defined in the [Basic_Searches] section
 ; below.  For all the details on how these sections work, see the comments above
@@ -76,13 +80,13 @@ dateRange[] = creationdate
 ; The name of the index field is on the left
 ; The display name of the field is on the right
 [Facets]
-tlevel  = "Limit To"
+;tlevel  = "Limit To"
 rtype   = "Format"
 creator = "Author"
-jtitle  = "Journal Title"
-topic   = Subjects
 creationdate = "Year of Publication"
 domain  = Source
+jtitle  = "Journal Title"
+topic   = Subjects
 ;lang    = Language
 
 ; Top facets (not used by default)
@@ -94,7 +98,7 @@ domain  = Source
 top_rows = 2
 top_cols = 3
 ; Do we want any facets to be collapsed by default?
-;collapsedFacets = *
+collapsedFacets = "jtitle,domain,topic"
 
 ; These settings affect the way the facets are displayed
 [Facet_Settings]
@@ -114,6 +118,18 @@ special_facets      = daterange
 ; language files found in the web/lang directory.  By default, no facets are
 ; translated -- uncomment or add lines below to turn on this feature.
 translated_facets[] = tlevel
+
+; This section is reserved for special boolean facets.  These are displayed
+; as checkboxes.  If the box is checked, the filter on the left side of the
+; equal sign is applied.  If the box is not checked, the filter is not applied.
+; The value on the right side of the equal sign is the text to display to the
+; user.  It will be run through the translation code, so be sure to update the
+; language files appropriately.
+;
+; Leave the section empty if you do not need checkbox facets.
+[CheckboxFacets]
+tlevel:online_resources = "online_resources"
+tlevel:peer_reviewed = "peer_reviewed"
 
 ; This section shows which search types will display in the basic search box at
 ; the top of Primo pages.  The name of each setting below corresponds with an
@@ -170,3 +186,8 @@ code[] = "MYINSTITUTION"
 ;code[] = "MEMBER2"
 ;regex[] = "/.*/"           ; default if no previous rule was matched
 ;code[] = "DEFAULT"
+
+[Record]
+; Set this to true in order to enable "next" and "previous" links to navigate
+; through the current result set from within the record view.
+next_prev_navigation = true

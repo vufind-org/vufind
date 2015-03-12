@@ -69,6 +69,7 @@ $config = array(
         'plugin_managers' => array(
             'search_backend' => array(
                 'factories' => array(
+                    'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'Finna\Search\Factory\SolrDefaultBackendFactory',
                 ),
                 'aliases' => array(
@@ -76,6 +77,9 @@ $config = array(
                     'biblio' => 'Solr',
                 )
             ),
+            'search_params' => [
+                'abstract_factories' => ['Finna\Search\Params\PluginFactory'],
+            ],
             'search_results' => array(
                 'factories' => array(
                     'solr' => 'Finna\Search\Results\Factory::getSolr',
@@ -94,6 +98,7 @@ $config = array(
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
                     'solrlido' => 'Finna\RecordDriver\Factory::getSolrLido',
                     'solrqdc' => 'Finna\RecordDriver\Factory::getSolrQdc',
+                    'primo' => 'Finna\RecordDriver\Factory::getPrimo'
                 ),
             ),
             'recordtab' => array(
@@ -143,6 +148,13 @@ $config = array(
                     'Reviews' => 'Reviews',
                     'Map' => 'Map',
                     'Details' => 'StaffViewArray',
+                ),
+                'defaultTab' => null,
+            ),
+            'Finna\RecordDriver\Primo' => array(
+                'tabs' => array(
+                    'UserComments' => 'UserComments',
+                    'Details' => 'StaffViewArray'
                 ),
                 'defaultTab' => null,
             ),
