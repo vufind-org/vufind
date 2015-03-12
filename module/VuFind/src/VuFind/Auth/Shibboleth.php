@@ -145,7 +145,9 @@ class Shibboleth extends  AbstractBase
      */
     public function isExpired()
     {
-        $config = $this->getConfig();
+        if (!isset($_SERVER['Shib-Identity-Provider'])) {
+            return true;
+        }
         return false;
     }
 
@@ -170,7 +172,6 @@ class Shibboleth extends  AbstractBase
         // Send back the redirect URL (possibly modified):
         return $url;
     }
-
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
