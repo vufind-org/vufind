@@ -697,8 +697,10 @@ $recordRoutes = [
     'worldcatrecord' => 'WorldcatRecord'
 ];
 
-// Define list-related routes -- route name => MyResearch action
-$listRoutes = ['userList' => 'MyList', 'editList' => 'EditList'];
+// Define dynamic routes -- controller => [route name => action]
+$dynamicRoutes = [
+    'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
+];
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
@@ -746,7 +748,7 @@ $staticRoutes = [
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();
 $routeGenerator->addRecordRoutes($config, $recordRoutes);
-$routeGenerator->addListRoutes($config, $listRoutes);
+$routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 $routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 // Add the home route last
