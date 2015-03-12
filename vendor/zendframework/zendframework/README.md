@@ -11,20 +11,21 @@ Develop:
 
 ## RELEASE INFORMATION
 
-*Zend Framework 2.3.5*
+*Zend Framework 2.3.6*
 
-This is the fifth maintenance release for the version 2.3 series.
+This is the sixth maintenance release for the version 2.3 series.
 
-18 Feb 2015
+DD MMM YYYY
 
-### UPDATES IN 2.3.5
+### UPDATES IN 2.3.6
 
 This release contains security updates:
 
-- **ZF2015-02:** `Zend\Db\Adapter\Platform\Postgresql` was incorrectly using
-  `\\` to escape double quotes in identifiers and values, which could lead to
-  SQL injection vectors. We have provided patches that use proper escaping. If
-  you use Postgresql with Zend Framework 2, we recommend upgrading immediately.
+- **ZF2015-03** `Zend\Validator\Csrf` was incorrectly testing null or
+  improperly formatted token identifiers, allowing them to pass validation. This
+  release provides patches to correct the behavior. If you use the validator, or
+  the corresponding `Zend\Form\Element\Csrf`, we recommend upgrading
+  immediately.
 
 Please see [CHANGELOG.md](CHANGELOG.md).
 
