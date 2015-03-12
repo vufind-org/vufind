@@ -41,6 +41,24 @@ class PrimoController extends \VuFind\Controller\PrimoController
     use SearchControllerTrait;
 
     /**
+     * Search class family to use.
+     *
+     * @var string
+     */
+    protected $searchClassId = 'Primo';
+
+    /**
+     * Home action
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        $this->layout()->searchClassId = $this->searchClassId;
+        return parent::homeAction();
+    }
+
+    /**
      * Search action -- call standard results action
      *
      * @return mixed
