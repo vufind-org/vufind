@@ -34,7 +34,7 @@
         <? $removeLink = $this->currentPath().$results->getUrlQuery()->setHandler('AllFields'); ?>
         <a class="list-group-item active" href="<?=$removeLink?>">
           <span class="pull-right"><i class="fa fa-times"></i></span>
-          <?=$this->transEsc('type_display_text'); ?>
+          <?=$this->transEsc('search_in_field'); ?>
           <?=$this->transEsc($queryHandler); ?>
         </a>
     <? endif; ?>
