@@ -493,10 +493,15 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         $row->delete();
 
         if ($row->cat_username == $this->cat_username) {
-            // Activate another card (if any)
+            // Activate another card (if any) or remove cat_username and cat_password
             $cards = $this->getLibraryCards();
-            if ($cards) {
+            if ($cards->count() > 0) {
                 $this->activateLibraryCard($cards->current()->id);
+            } else {
+                $this->cat_username = null;
+                $this->cat_password = null;
+                $this->cat_pass_enc = null;
+                $this->save();
             }
         }
     }
@@ -599,7 +604,7 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             $row = $userCard->createRow();
             $row->user_id = $this->id;
             $row->cat_username = $this->cat_username;
-            $row->card_name = '';
+            $row->card_name = $this->cat_username;
             $row->created = date('Y-m-d H:i:s');
         }
         // Always update home library and password
