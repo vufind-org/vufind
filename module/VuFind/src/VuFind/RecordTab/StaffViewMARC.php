@@ -55,21 +55,4 @@ class StaffViewMARC extends AbstractBase
     {
         return 'Staff View'; 
     }
-
-    /**
-     * Is this tab initially visible?
-     *
-     * @return bool
-     */
-    public function isVisible()
-    {
-        if ($this->accessPermission
-            && $this->getAuthorizationService()->isGranted($this->accessPermission)
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 }

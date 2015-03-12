@@ -88,7 +88,12 @@ abstract class AbstractBase implements TabInterface,
      */
     public function isVisible()
     {
-        // Assume visible by default; subclasses may add rules.
+        // Assume visible by default; 
+        // if accessPersmission is set to string in subclasse, use the rule
+        $lcheck=$this->getAuthorizationService()->isGranted($this->accessPermission);
+        if ((is_string($this->accessPermission)) && ($lcheck==false)) {
+            return false;
+        }
         return true;
     }
 
