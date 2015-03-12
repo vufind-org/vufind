@@ -24,8 +24,6 @@
     $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
   }
 
-  // Set up Javascript:
-  $this->headScript()->appendScript($this->render('search/advanced/globals.phtml'));
   // Step 1: Load the javascript
   $this->headScript()->appendFile(
     isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js'
@@ -52,9 +50,61 @@
           </select>
         </div>
       </div>
-      <span id="groupPlaceHolder">
+      <? /* An empty div. This is the target for the javascript that builds this screen */ ?>
+      <span id="groupPlaceHolder" class="hidden">
         <i class="fa fa-plus-circle"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
       </span>
+      <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
+      <div class="no-js">
+        <? for($group=0;$group<3;$group++): ?>
+          <div id="group<?=$group ?>" class="group row">
+            <div class="col-md-9">
+              <div class="row">
+                <div class="col-md-3">
+                  <label class="help-block">Search for:</label>
+                </div>
+                <div class="col-md-9">
+                  <? for($search=0;$search<3;$search++): ?>
+                    <div id="search<?=$group.'_'.$search ?>" class="search">
+                      <div class="row">
+                        <div class="col-md-7">
+                          <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control" type="text">
+                        </div>
+                        <div class="col-md-4">
+                          <select class="form-control">
+                            <option value="AllFields">All Fields</option>
+                            <option value="Title">Title</option>
+                            <option value="Author">Author</option>
+                            <option value="Subject">Subject</option>
+                            <option value="CallNumber">Call Number</option>
+                            <option value="ISN">ISBN/ISSN</option>
+                            <option value="publisher">Publisher</option>
+                            <option value="Series">Series</option>
+                            <option value="year">Year of Publication</option>
+                            <option value="toc">Table of Contents</option>
+                          </select>
+                        </div>
+                        <div class="col-md-1">
+                          <a onclick="deleteSearch(<?=$group.','.$search ?>)" class="help-block delete" href="#">×</a>
+                        </div>
+                      </div>
+                    </div>
+                  <? endfor; ?>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <label for="search_bool<?=$group ?>" class="search_bool">Match:&nbsp;</label>
+              <a name="bool0[]" onclick="deleteGroup(<?=$group ?>)" href="#" class="close hidden" title="Remove Search Group">×</a>
+              <select id="search_bool<?=$group ?>" class="form-control">
+                <option value="AND">ALL Terms</option>
+                <option value="OR">ANY Terms</option>
+                <option value="NOT">NO Terms</option>
+              </select>
+            </div>
+          </div>
+        <? endfor; ?>
+      </div>
       <input class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>">
       <? if (isset($this->extraAdvancedControls)): ?>
         <?=$this->extraAdvancedControls ?>

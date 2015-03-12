@@ -1,5 +1,7 @@
 <script>
   $(document).ready(function() {
+    $('#advSearchForm .no-js').remove();
+    $('#groupPlaceHolder').removeClass('hidden');
     <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
       <? foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
         <? $i = 0; foreach ($searchGroup->getQueries() as $search): ?>
