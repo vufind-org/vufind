@@ -1,4 +1,4 @@
-<? if (count($searchTabs) > 0): ?>
+<? if (!empty($searchTabs)): ?>
   <ul class="nav nav-tabs">
     <? foreach ($searchTabs as $tab): ?>
       <li<?=$tab['selected'] ? ' class="active"' : ''?>>

@@ -33,14 +33,14 @@
                 <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
             </div>
             <? endif; ?>
-            <? if ($this->resolver('search/homelefttop.phtml')): ?>
+            <? if ($template = $this->content()->findTemplateForLng('search/homelefttop')): ?>
             <div class="col-sm-7 left-top">
-                <?=$this->render('search/homelefttop.phtml')?>
+                <?=$this->render($template)?>
             </div>
             <? endif; ?>
-            <? if ($this->resolver('search/homerighttop.phtml')): ?>
+            <? if ($template = $this->content()->findTemplateForLng('homerighttop')): ?>
             <div class="col-sm-5 right-top">
-                <?=$this->render('search/homerighttop.phtml')?>
+                <?=$this->render($template)?>
              </div>
             <? endif; ?>
         </div>
@@ -50,8 +50,8 @@
 <div class="container-fluid home-middle-content">
     <div class="container">
         <div class="row">
-          <? if ($this->resolver('search/homemiddle.phtml')): ?>
-            <?=$this->render('search/homemiddle.phtml')?>
+          <? if ($template = $this->content()->findTemplateForLng('search/homemiddle')): ?>
+            <?=$this->render($template)?>
           <? endif; ?>
         </div>
     </div>
@@ -69,8 +69,8 @@
 <div class="container-fluid home-bottom-content">
   <div class="container">
   	<div class="row">
-    <? if ($this->resolver('search/homebottom.phtml')): ?>
-      <?=$this->render('search/homebottom.phtml')?>
+    <? if ($template = $this->content()->findTemplateForLng('search/homebottom')): ?>
+      <?=$this->render($template)?>
     <? endif; ?>
     </div>
   </div>

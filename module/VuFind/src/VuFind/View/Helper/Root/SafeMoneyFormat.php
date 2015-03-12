@@ -91,12 +91,12 @@ class SafeMoneyFormat extends AbstractHelper
         // Workaround for a problem in ICU library < 4.9 causing formatCurrency to
         // fail if locale has comma as a decimal separator.
         // (see https://bugs.php.net/bug.php?id=54538)
-        $locale = setlocale(LC_ALL, 0);
-        setlocale(LC_ALL, ['en_us.UTF-8', 'en_us.UTF8', 'en_us']);
+        $locale = setlocale(LC_NUMERIC, 0);
+        setlocale(LC_NUMERIC, ['en_us.UTF-8', 'en_us.UTF8', 'en_us']);
         $result = $escaper(
             $this->formatter->formatCurrency((float)$number, $currency)
         );
-        setlocale(LC_ALL, $locale);
+        setlocale(LC_NUMERIC, $locale);
         return $result;
     }
 }
