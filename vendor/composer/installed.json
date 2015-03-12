@@ -1232,18 +1232,18 @@
     },
     {
         "name": "zendframework/zendframework",
-        "version": "2.3.6",
-        "version_normalized": "2.3.6.0",
+        "version": "2.3.7",
+        "version_normalized": "2.3.7.0",
         "source": {
             "type": "git",
             "url": "https://github.com/zendframework/zf2.git",
-            "reference": "cf1f2212b5ff772ba695f9efbb315505ec0211eb"
+            "reference": "a1aae5fdd27a422beb32c56ddf5a197654a0f94a"
         },
         "dist": {
             "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-cf1f2212b5ff772ba695f9efbb315505ec0211eb-zip-e766c5.zip",
-            "reference": "2.3.6",
-            "shasum": "a4b747410c7ec9fabf1738692be8450155cfcc24"
+            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-a1aae5fdd27a422beb32c56ddf5a197654a0f94a-zip-06d4c7.zip",
+            "reference": "2.3.7",
+            "shasum": "7033dd58d94b0c75fae8a00001f8a7275c218209"
         },
         "require": {
             "php": ">=5.3.23",
@@ -1320,7 +1320,7 @@
             "zendframework/zendpdf": "ZendPdf for creating PDF representations of barcodes",
             "zendframework/zendservice-recaptcha": "ZendService\\ReCaptcha for rendering ReCaptchas in Zend\\Captcha and/or Zend\\Form"
         },
-        "time": "2015-03-12 14:02:09",
+        "time": "2015-03-12 16:55:53",
         "bin": [
             "bin/classmap_generator.php",
             "bin/pluginmap_generator.php",
@@ -1349,7 +1349,7 @@
             "zf2"
         ],
         "support": {
-            "source": "https://github.com/zendframework/zf2/tree/release-2.3.6",
+            "source": "https://github.com/zendframework/zf2/tree/release-2.3.7",
             "issues": "https://github.com/zendframework/zf2/issues"
         }
     }
