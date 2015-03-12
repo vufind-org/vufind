@@ -269,6 +269,11 @@ trait SolrFinna
         return false;
     }
 
+    /**
+     * Return record source.
+     *
+     * @return string.
+     */
     public function getSource()
     {
         return isset($this->fields['source']) ? $this->fields['source'] : false;

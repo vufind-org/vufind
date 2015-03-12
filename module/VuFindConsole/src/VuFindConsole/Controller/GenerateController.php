@@ -113,6 +113,141 @@ class GenerateController extends AbstractBase
     }
 
     /**
+     * Add a new non-tab record action to all existing record routes
+     *
+     * @return \Zend\Console\Response
+     */
+    public function nontabrecordactionAction()
+    {
+        $argv = $this->consoleOpts->getRemainingArgs();
+        if (!isset($argv[1])) {
+            Console::writeLine(
+                "Usage: {$_SERVER['argv'][0]} [action] [target_module]"
+            );
+            Console::writeLine(
+                "\taction - new action to add"
+            );
+            Console::writeLine(
+                "\ttarget_module - the module where the new routes will be generated"
+            );
+            return $this->getFailureResponse();
+        }
+
+        $action = $argv[0];
+        $module = $argv[1];
+
+        // Create backup of configuration
+        $configPath = $this->getModuleConfigPath($module);
+        $this->backUpFile($configPath);
+
+        // Load the route config
+        $config = include $configPath;
+
+        // Append the route
+        $mainConfig = $this->getServiceLocator()->get('Config');
+        foreach ($mainConfig['router']['routes'] as $key => $val) {
+            if (isset($val['options']['route'])
+                && substr($val['options']['route'], -12) == '[:id[/:tab]]'
+            ) {
+                $newRoute = $key . '-' . strtolower($action);
+                if (isset($mainConfig['router']['routes'][$newRoute])) {
+                    Console::writeLine($newRoute . ' already exists; skipping.');
+                } else {
+                    $val['options']['route'] = str_replace(
+                        '[:id[/:tab]]', "[:id]/$action", $val['options']['route']
+                    );
+                    $val['options']['defaults']['action'] = $action;
+                    $config['router']['routes'][$newRoute] = $val;
+                }
+            }
+        }
+
+        // Write updated configuration
+        $this->writeModuleConfig($configPath, $config);
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Add a new record route definition
+     *
+     * @return \Zend\Console\Response
+     */
+    public function recordrouteAction()
+    {
+        $argv = $this->consoleOpts->getRemainingArgs();
+        if (!isset($argv[2])) {
+            Console::writeLine(
+                "Usage: {$_SERVER['argv'][0]} [base] [controller] [target_module]"
+            );
+            Console::writeLine(
+                "\tbase - the base route name (used by router), e.g. record"
+            );
+            Console::writeLine(
+                "\tcontroller - the controller name (used in URL), e.g. Record"
+            );
+            Console::writeLine(
+                "\ttarget_module - the module where the new route will be generated"
+            );
+            return $this->getFailureResponse();
+        }
+
+        $base = $argv[0];
+        $controller = $argv[1];
+        $module = $argv[2];
+
+        // Create backup of configuration
+        $configPath = $this->getModuleConfigPath($module);
+        $this->backUpFile($configPath);
+
+        // Append the route
+        $config = include $configPath;
+        $routeGenerator = new \VuFind\Route\RouteGenerator();
+        $routeGenerator->addRecordRoute($config, $base, $controller);
+
+        // Write updated configuration
+        $this->writeModuleConfig($configPath, $config);
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Add a new static route definition
+     *
+     * @return \Zend\Console\Response
+     */
+    public function staticrouteAction()
+    {
+        $argv = $this->consoleOpts->getRemainingArgs();
+        if (!isset($argv[1])) {
+            Console::writeLine(
+                "Usage: {$_SERVER['argv'][0]} [route_definition] [target_module]"
+            );
+            Console::writeLine(
+                "\troute_definition - a Controller/Action string, e.g. Search/Home"
+            );
+            Console::writeLine(
+                "\ttarget_module - the module where the new route will be generated"
+            );
+            return $this->getFailureResponse();
+        }
+
+        $route = $argv[0];
+        $module = $argv[1];
+
+        // Create backup of configuration
+        $configPath = $this->getModuleConfigPath($module);
+        $this->backUpFile($configPath);
+
+        // Append the route
+        $config = include $configPath;
+        $routeGenerator = new \VuFind\Route\RouteGenerator();
+        $routeGenerator->addStaticRoute($config, $route);
+
+        // Write updated configuration
+        $this->writeModuleConfig($configPath, $config);
+        return $this->getSuccessResponse();
+    }
+
+    /**
      * Create a new subclass and factory to override a factory-generated
      * service.
      *
@@ -337,6 +472,45 @@ class GenerateController extends AbstractBase
     }
 
     /**
+     * Get the path to the module configuration; throw an exception if it is
+     * missing.
+     *
+     * @param string $module Module name
+     *
+     * @return string
+     * @throws \Exception
+     */
+    protected function getModuleConfigPath($module)
+    {
+        $configPath = APPLICATION_PATH . "/module/$module/config/module.config.php";
+        if (!file_exists($configPath)) {
+            throw new \Exception("Cannot find $configPath");
+        }
+        return $configPath;
+    }
+
+    /**
+     * Write a module configuration.
+     *
+     * @param string $configPath Path to write to
+     * @param string $config     Configuration array to write
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function writeModuleConfig($configPath, $config)
+    {
+        $generator = FileGenerator::fromArray(
+            [
+                'body' => 'return ' . var_export($config, true) . ';'
+            ]
+        );
+        if (!file_put_contents($configPath, $generator->generate())) {
+            throw new \Exception("Cannot write to $configPath");
+        }
+        Console::writeLine("Successfully updated $configPath");
+    }
+    /**
      * Update the configuration of a target module.
      *
      * @param array  $path    Representation of path in config array
@@ -348,13 +522,8 @@ class GenerateController extends AbstractBase
      */
     protected function writeNewConfig($path, $setting, $module)
     {
-        // Locate module configuration
-        $configPath = APPLICATION_PATH . "/module/$module/config/module.config.php";
-        if (!file_exists($configPath)) {
-            throw new \Exception("Cannot find $configPath");
-        }
-
         // Create backup of configuration
+        $configPath = $this->getModuleConfigPath($module);
         $this->backUpFile($configPath);
 
         $config = include $configPath;
@@ -374,15 +543,8 @@ class GenerateController extends AbstractBase
         }
         $current[$finalStep] = $setting;
 
-        $generator = FileGenerator::fromArray(
-            [
-                'body' => 'return ' . var_export($config, true) . ';'
-            ]
-        );
-        if (!file_put_contents($configPath, $generator->generate())) {
-            throw new \Exception("Cannot write to $configPath");
-        }
-        Console::writeLine("Successfully updated $configPath");
+        // Write updated configuration
+        $this->writeModuleConfig($configPath, $config);
     }
 
     /**

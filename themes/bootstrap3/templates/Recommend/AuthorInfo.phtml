@@ -1,6 +1,6 @@
 <? $this->info = $this->recommend->getAuthorInfo() ?>
 <? if (!(empty($this->info['description']) || empty($this->info))): ?>
-<div class="well">
+<div class="well clearfix">
   <p class="lead"><?=$this->info['name'] ?></p>
 
   <? if (isset($this->info['image'])): ?>

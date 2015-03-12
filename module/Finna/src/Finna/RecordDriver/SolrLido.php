@@ -734,8 +734,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
     {
         $datasource = $this->getDataSource();
         return isset($this->recordConfig->$confParam)
-            && isset($this->recordConfig->$confParam[$datasource]
-        ) ? $this->recordConfig->$confParam[$datasource] : null;
+            && isset($this->recordConfig->$confParam[$datasource])
+            ? $this->recordConfig->$confParam[$datasource] : null;
     }
 
     /**
