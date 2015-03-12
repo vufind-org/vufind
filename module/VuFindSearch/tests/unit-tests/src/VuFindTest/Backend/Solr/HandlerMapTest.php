@@ -51,7 +51,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException InvalidArgumentException
+     * @expectedException        InvalidArgumentException
      * @expectedExceptionMessage Duplicate fallback
      */
     public function testSetHandlerMapThrowsOnDuplicateFallback()
@@ -68,7 +68,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException InvalidArgumentException
+     * @expectedException        InvalidArgumentException
      * @expectedExceptionMessage Handler for function already defined
      */
     public function testSetHandlerMapThrowsOnDuplicateFunctionHandler()
@@ -85,7 +85,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException RuntimeException
+     * @expectedException        RuntimeException
      * @expectedExceptionMessage Undefined function handler
      */
     public function testGetHandlerThrowsOnUndefinedFunctionHandler()
@@ -99,7 +99,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException InvalidArgumentException
+     * @expectedException        InvalidArgumentException
      * @expectedExceptionMessage Invalid parameter key: bad
      */
     public function testGetParametersThrowsOnUndefinedType()
@@ -113,7 +113,7 @@ class HandlerMapTest extends TestCase
      *
      * @return void
      *
-     * @expectedException InvalidArgumentException
+     * @expectedException        InvalidArgumentException
      * @expectedExceptionMessage Invalid parameter key: bad
      */
     public function testSetParametersThrowsOnUndefinedType()

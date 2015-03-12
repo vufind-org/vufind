@@ -23,11 +23,18 @@
       <? if (isset($authors['main']) && !empty($authors['main'])): ?>
         <span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></span>
       <? endif; ?>
-      <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
+      <?
+        $journalTitle = $this->driver->getContainerTitle();
+        $summDate = $this->driver->getPublicationDates();
+      ?>
+      <? if (!empty($journalTitle)): ?>
         <?=$this->transEsc('Published in')?>:
           <? $containerID = $this->driver->getContainerRecordID(); ?>
           <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
           <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
+      <? elseif (!empty($summDate)): ?>
+        <?=!empty($summAuthor) ? '' : ' '?>
+        <?=$this->escapeHtml($summDate[0])?>
       <? endif; ?>
       <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
       <br>
@@ -44,22 +51,23 @@
     <?
         $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
         // Account for replace_other_urls setting
-        $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
+        $urls = $this->record($this->driver)->getLinkDetails();
       ?>
     <? if (!empty($urls) || $openUrl): ?>
     <div class="primo-available-online-record">
       <? foreach ($urls as $current): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-www-link"></i> <?=$this->escapeHtml($current['desc'])?></a><br/>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc(end($this->driver->getFormats())) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
       <? endforeach; ?>
       <? if ($openUrl): ?>
-        <?=$this->openUrl($openUrl)?><br/>
+        <?=$this->openUrl($openUrl)?>
       <? endif; ?>
     </div>
     <? endif; ?>
-    
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
     <? if ($summary): ?>
-      <p class="summary"><?=$summary;?></p>
+      <div class="truncate-field wide">
+        <p class="summary"><?=$summary;?></p>
+      </div>
     <? endif; ?>
 
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
@@ -71,7 +79,7 @@
 
     <?/* Display Main Details */?>
     <div class="record-details">
-    <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
+    <table class="table table-condensed" summary="<?=$this->transEsc('Bibliographic Details')?>">
       
 
       <? $nextTitles = $this->driver->getNewerTitles(); $prevTitles = $this->driver->getPreviousTitles(); ?>
@@ -112,27 +120,36 @@
           <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
         </tr>
       <? endif; ?>
-
-      <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
-      <tr>
-        <th><?=$this->transEsc('Published')?>: </th>
-        <td>
-          <? foreach ($publications as $field): ?>
-            <span property="publisher" typeof="Organization">
-            <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
-              <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
-            <? endif; ?>
-            <? $pubName = $field->getName(); if (!empty($pubName)): ?>
-              <span property="name"><?=$this->escapeHtml($pubName)?></span>
-            <? endif; ?>
-            </span>
-            <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
-              <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
-            <? endif; ?>
-            <br/>
-          <? endforeach; ?>
-        </td>
-      </tr>
+        <?
+          $publications = $this->driver->getPublicationDetails();
+          if (!empty($publications)):
+        ?>
+        <?
+          $published = false;
+          $html = '';
+          foreach ($publications as $field) {
+            $html .= '<span property="publisher" typeof="Organization">';
+            $pubPlace = $field->getPlace();
+            if (!empty($pubPlace)) {
+              $published = true;
+              $html .= '<span property="location">' . $this->escapeHtml($pubPlace) . '</span>';
+            }
+            $pubName = $field->getName();
+            if (!empty($pubName)) {
+              $published = true;
+              $html .= '<span property="name">' . $this->escapeHtml($pubName) . '</span>';
+            }
+            $html .= '</span><br/>';
+          }
+        ?>
+        <? if ($published): ?>
+        <tr>
+          <th><?=$this->transEsc('Published')?>: </th>
+          <td>
+            <?=$html?>
+          </td>
+        </tr>
+        <? endif; ?>
       <? endif; ?>
 
       <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
@@ -196,6 +213,12 @@
       </tr>
       <? endif; ?>
 
+      <? if ($source = $this->driver->getSource()): ?>
+      <tr>
+        <th><?=$this->transEsc('Source Collection')?>: </th>
+        <td><?=$source ?></td>
+      </tr>
+      <? endif; ?>
 
       <? $recordLinks = $this->driver->getAllRecordLinks(); ?>
       <? if(!empty($recordLinks)): ?>
@@ -434,6 +457,10 @@
     </tr>
   <? endif; ?>
     </table>
+
+    <? $openUrlMoreOptions = $openUrl ? $this->openUrl($openUrl, true) : false ?>
+    <?= $openUrlMoreOptions ? $openUrlMoreOptions : '' ?>
+
     </div>
     <?/* End Main Details */?>
   </div>

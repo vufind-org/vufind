@@ -33,7 +33,7 @@ use VuFindSearch\Response\RecordInterface;
 /**
  * Simple, schema-less SOLR record.
  *
- * This record primarily servers as an example or blueprint for a schema-less
+ * This record primarily serves as an example or blueprint for a schema-less
  * record. All SOLR fields are exposed via object properties.
  *
  * @category VuFind2
