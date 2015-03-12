@@ -21,6 +21,7 @@
  *
  * @category VuFind2
  * @package  Authentication
+ * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -34,12 +35,13 @@ use VuFind\Exception\Auth as AuthException;
  *
  * @category VuFind2
  * @package  Authentication
+ * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Shibboleth extends  AbstractBase
+class Shibboleth extends AbstractBase
 {
     /**
      * Validate configuration parameters.  This is a support method for getConfig(),
@@ -139,41 +141,6 @@ class Shibboleth extends  AbstractBase
     }
 
     /**
-     * Has the user's login expired?
-     *
-     * @return bool
-     */
-    public function isExpired()
-    {
-        if (!isset($_SERVER['Shib-Identity-Provider'])) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Perform cleanup at logout time.
-     *
-     * @param string $url URL to redirect user to after logging out.
-     *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
-     */
-    public function logout($url)
-    {
-        // If single log-out is enabled, use a special URL:
-        $config = $this->getConfig();
-        if (isset($config->Shibboleth->logout)
-            && !empty($config->Shibboleth->logout)
-        ) {
-            $url = $config->Shibboleth->logout . '?return=' . urlencode($url);
-        }
-
-        // Send back the redirect URL (possibly modified):
-        return $url;
-    }
-
-    /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
      *
@@ -209,6 +176,38 @@ class Shibboleth extends  AbstractBase
         return $sessionInitiator;
     }
 
+    /**
+     * Has the user's login expired?
+     *
+     * @return bool
+     */
+    public function isExpired()
+    {
+        if (!isset($_SERVER['Shib-Identity-Provider'])) {
+            return true;
+        }
+        return false;
+    }
 
+    /**
+     * Perform cleanup at logout time.
+     *
+     * @param string $url URL to redirect user to after logging out.
+     *
+     * @return string     Redirect URL (usually same as $url, but modified in
+     * some authentication modules).
+     */
+    public function logout($url)
+    {
+        // If single log-out is enabled, use a special URL:
+        $config = $this->getConfig();
+        if (isset($config->Shibboleth->logout)
+            && !empty($config->Shibboleth->logout)
+        ) {
+            $url = $config->Shibboleth->logout . '?return=' . urlencode($url);
+        }
+
+        // Send back the redirect URL (possibly modified):
+        return $url;
+    }
 }
-
