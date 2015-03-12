@@ -1,6 +1,6 @@
 <?php
 /**
- * MyResearch Controller
+ * LibraryCards Controller
  *
  * PHP version 5
  *
