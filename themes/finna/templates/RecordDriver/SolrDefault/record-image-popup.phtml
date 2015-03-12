@@ -38,13 +38,13 @@
       <div class="image-rights">
         <div class="rights">
           <? $hasLink = isset($rights['link']); ?>
-          <span><?= $this->translate("Image Rights") ?>:</span> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->escapeHtml($this->translate($rights['copyright'])) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
+          <span><?= $this->translate("Image Rights") ?>:</span> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
         </div>
         <div class="more-link copyright-link"><a data-mode="1" href="">Lisää<i class="fa fa-arrow-down"></i></a></div>
         <div class="copyright">
           <? if (isset($rights['description'])): ?>
             <? foreach ($rights['description'] as $item): ?>
-            <p><?= $this->escapeHtml($this->translate($item)) ?></p>
+            <p><?= $this->transEsc($item) ?></p>
             <? endforeach ?>
           <? endif ?>
           <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
