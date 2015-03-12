@@ -62,6 +62,7 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
      * Test advanced query parsing (not currently supported)
      *
      * @return void
+     *
      * @expectedException        \Exception
      * @expectedExceptionMessage Advanced search not supported.
      */

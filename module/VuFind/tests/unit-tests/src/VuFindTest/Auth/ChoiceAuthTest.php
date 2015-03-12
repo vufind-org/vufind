@@ -45,7 +45,8 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test config validation
      *
      * @return void
-     * @expectedException \VuFind\Exception\Auth
+     *
+     * @expectedException        \VuFind\Exception\Auth
      * @expectedExceptionMessage One or more ChoiceAuth parameters are missing.
      */
     public function testBadConfiguration()
@@ -58,7 +59,8 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test default getPluginManager behavior
      *
      * @return void
-     * @expectedException \Exception
+     *
+     * @expectedException        \Exception
      * @expectedExceptionMessage Plugin manager missing.
      */
     public function testMissingPluginManager()
@@ -174,7 +176,8 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test an illegal auth method
      *
      * @return void
-     * @expectedException \Exception
+     *
+     * @expectedException        \Exception
      * @expectedExceptionMessage Illegal setting: foo
      */
     public function testIllegalMethod()
