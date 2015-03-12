@@ -53,6 +53,6 @@ class StaffViewMARC extends AbstractBase
      */
     public function getDescription()
     {
-        return 'Staff View'; 
+        return 'Staff View';
     }
 }
