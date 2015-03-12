@@ -25,8 +25,8 @@
   <div class="row">
     <div class="col-xs-5">    
     <?
-      $html = '<button class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></button>';
-      $html .= $this->transEsc('Back to search results');
+      $html = '<span class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></span>';
+      $html .= '<span class="back-to-search-text hidden-xs">'.$this->transEsc('Back to search results').'</span>';
       $previousSearch = $this->getLastSearchLink($html);
       if ($previousSearch !== ''):
     ?>
@@ -104,5 +104,7 @@
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
   </div>
+ </div>
 </div>
 <div>
+

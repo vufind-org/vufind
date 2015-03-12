@@ -20,15 +20,15 @@
   </div>
 
   <div class="col-sm-10 record-information">
-    <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle())?></h3>
-    <div class="record-authors">
+    <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle())?></h1>
+    <div class="record-authors" property="author">
      <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
-      <span class="recordAuthors">
-        <span property="author">
-          <div class="truncate-field">
+        <div class="truncate-field">
+          <span class="recordAuthors">
           <? foreach($results as $index => $author): ?>
             <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
           <? endforeach; ?>
+          </span>
           <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
           <? $containerID = $this->driver->getContainerRecordID(); ?>
             <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
@@ -38,9 +38,7 @@
           <? if ((!empty($summDate)) AND (empty($ref))) : ?>
             <?=$this->escapeHtml($summDate[0])?>
           <? endif; ?>
-          </div>
-        </span>
-      </span>
+        </div>
     <? endif; ?>
     </div>
     
@@ -310,7 +308,7 @@
       <? if ($results = $this->driver->getTitleStatement()): ?>
          <tr class="recordFormat">
            <th><?=$this->transEsc('Additional Information') ?>:</th>
-           <td><div class="additional-information"><?=$this->escapeHtml($results) ?></td>
+           <td><div class="additional-information"><?=$this->escapeHtml($results) ?></div></td>
          </tr>
       <? endif; ?>
 
