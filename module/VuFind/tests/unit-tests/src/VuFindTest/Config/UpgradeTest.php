@@ -101,7 +101,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $this->assertEquals(
                 "WARNING: This version of VuFind does not support "
                 . "the default theme.  Your config.ini [Site] theme setting "
-                . "has been reset to the default: blueprint.  You may need to "
+                . "has been reset to the default: bootprint3.  You may need to "
                 . "reimplement your custom theme.",
                 $warnings[0]
             );
@@ -119,7 +119,40 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         // Make sure the obsolete Index/local setting is removed:
         $this->assertFalse(isset($results['config.ini']['Index']['local']));
 
-        return array('configs' => $results, 'warnings' => $warnings);
+        // Make sure that spelling recommendations are set up appropriately:
+        $this->assertEquals(
+            ['TopFacets:ResultsTop', 'SpellingSuggestions'],
+            $results['searches.ini']['General']['default_top_recommend']
+        );
+        $this->assertTrue(
+            in_array(
+                'SpellingSuggestions',
+                $results['searches.ini']['General']['default_noresults_recommend']
+            )
+        );
+        $this->assertEquals(
+            [
+                'Author' => ['AuthorFacets', 'SpellingSuggestions'],
+                'CallNumber' => ['TopFacets:ResultsTop']
+            ],
+            $results['searches.ini']['TopRecommendations']
+        );
+        $this->assertEquals(
+            ['SummonDatabases', 'SpellingSuggestions'],
+            $results['Summon.ini']['General']['default_top_recommend']
+        );
+        $this->assertTrue(
+            in_array(
+                'SpellingSuggestions',
+                $results['Summon.ini']['General']['default_noresults_recommend']
+            )
+        );
+        $this->assertEquals(
+            [],
+            $results['Summon.ini']['TopRecommendations']
+        );
+
+        return ['configs' => $results, 'warnings' => $warnings];
     }
 
     /**
@@ -227,6 +260,42 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test permission upgrade
+     *
+     * @return void
+     */
+    public function testPermissionUpgrade()
+    {
+        $upgrader = $this->getUpgrader('permissions');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config.ini']['AdminAuth']));
+        $this->assertFalse(isset($results['Summon.ini']['Auth']));
+        $adminConfig = [
+            'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
+            'username' => ['username1', 'username2'],
+            'permission' => 'access.AdminModule'
+        ];
+        $this->assertEquals(
+            $adminConfig, $results['permissions.ini']['access.AdminModule']
+        );
+        $summonConfig = [
+            'role' => ['loggedin'],
+            'ipRegEx' => '/1\.2\.3\.4|1\.2\.3\.5/',
+            'boolean' => 'OR',
+            'permission' => 'access.SummonExtendedResults'
+        ];
+        $this->assertEquals(
+            $summonConfig,
+            $results['permissions.ini']['access.SummonExtendedResults']
+        );
+        $eitConfig = ['role' => 'loggedin', 'permission' => 'access.EITModule'];
+        $this->assertEquals(
+            $eitConfig, $results['permissions.ini']['default.EITModule']
+        );
+    }
+
+    /**
      * Test Google-related warnings.
      *
      * @return void
@@ -272,6 +341,26 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test WorldCat-specific upgrades.
+     *
+     * @return void
+     */
+    public function testWorldCatUpgrades()
+    {
+        $upgrader = $this->getUpgrader('worldcatupgrades');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'Author',
+            $results['WorldCat.ini']['Basic_Searches']['srw.au']
+        );
+        $this->assertEquals(
+            'adv_search_author',
+            $results['WorldCat.ini']['Advanced_Searches']['srw.au']
+        );
+    }
+
+    /**
      * Test "meaningful line" detection in SolrMarc properties files.
      *
      * @return void
@@ -284,7 +373,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertFalse(
             $this->callMethod(
-                $upgrader, 'fileContainsMeaningfulLines', array($meaningless)
+                $upgrader, 'fileContainsMeaningfulLines', [$meaningless]
             )
         );
         $meaningful = realpath(
@@ -292,7 +381,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         );
         $this->assertTrue(
             $this->callMethod(
-                $upgrader, 'fileContainsMeaningfulLines', array($meaningful)
+                $upgrader, 'fileContainsMeaningfulLines', [$meaningful]
             )
         );
     }

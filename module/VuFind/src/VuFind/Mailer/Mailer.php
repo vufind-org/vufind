@@ -27,6 +27,7 @@
  */
 namespace VuFind\Mailer;
 use VuFind\Exception\Mail as MailException,
+    Zend\Mail\AddressList,
     Zend\Mail\Message,
     Zend\Mail\Header\ContentType;
 
@@ -41,6 +42,8 @@ use VuFind\Exception\Mail as MailException,
  */
 class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Mail transport
      *
@@ -49,11 +52,11 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     protected $transport;
 
     /**
-     * Translator (or null if unavailable)
+     * The maximum number of email recipients allowed (0 = no limit)
      *
-     * @var \Zend\I18n\Translator\Translator
+     * @var int
      */
-    protected $translator = null;
+    protected $maxRecipients = 1;
 
     /**
      * Constructor
@@ -63,32 +66,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     public function __construct(\Zend\Mail\Transport\TransportInterface $transport)
     {
         $this->setTransport($transport);
-    }
-
-    /**
-     * Translate a string if a translator is provided.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    public function translate($msg)
-    {
-        return (null !== $this->translator)
-            ? $this->translator->translate($msg) : $msg;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return Mailer
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
     }
 
     /**
@@ -132,22 +109,55 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     }
 
     /**
+     * Convert a delimited string to an address list.
+     *
+     * @param string $input String to convert
+     *
+     * @return AddressList
+     */
+    public function stringToAddressList($input)
+    {
+        // Create recipient list
+        $list = new AddressList();
+        foreach (preg_split('/[\s,;]/', $input) as $current) {
+            $current = trim($current);
+            if (!empty($current)) {
+                $list->add($current);
+            }
+        }
+        return $list;
+    }
+
+    /**
      * Send an email message.
      *
-     * @param string $to      Recipient email address
+     * @param string $to      Recipient email address (or delimited list)
      * @param string $from    Sender email address
      * @param string $subject Subject line for message
      * @param string $body    Message body
+     * @param string $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void
      */
-    public function send($to, $from, $subject, $body)
+    public function send($to, $from, $subject, $body, $cc = null)
     {
-        // Validate sender and recipient
+        $recipients = $this->stringToAddressList($to);
+
+        // Validate email addresses:
+        if ($this->maxRecipients > 0
+            && $this->maxRecipients < count($recipients)
+        ) {
+            throw new MailException('Too Many Email Recipients');
+        }
         $validator = new \Zend\Validator\EmailAddress();
-        if (!$validator->isValid($to)) {
+        if (count($recipients) == 0) {
             throw new MailException('Invalid Recipient Email Address');
+        }
+        foreach ($recipients as $current) {
+            if (!$validator->isValid($current->getEmail())) {
+                throw new MailException('Invalid Recipient Email Address');
+            }
         }
         if (!$validator->isValid($from)) {
             throw new MailException('Invalid Sender Email Address');
@@ -158,9 +168,12 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
             // Send message
             $message = $this->getNewMessage()
                 ->addFrom($from)
-                ->addTo($to)
+                ->addTo($recipients)
                 ->setBody($body)
                 ->setSubject($subject);
+            if ($cc !== null) {
+                $message->addCc($cc);
+            }
             $this->getTransport()->send($message);
         } catch (\Exception $e) {
             throw new MailException($e->getMessage());
@@ -170,58 +183,97 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
     /**
      * Send an email message representing a link.
      *
-     * @param string                                $to      Recipient email address
-     * @param string                                $from    Sender email address
-     * @param string                                $msg     User notes to include in
+     * @param string                          $to      Recipient email address
+     * @param string                          $from    Sender email address
+     * @param string                          $msg     User notes to include in
      * message
-     * @param string                                $url     URL to share
-     * @param \Zend\View\Renderer\RendererInterface $view    View object (used to
-     * render email templates)
-     * @param string                                $subject Subject for email
-     * (optional)
+     * @param string                          $url     URL to share
+     * @param \Zend\View\Renderer\PhpRenderer $view    View object (used to render
+     * email templates)
+     * @param string                          $subject Subject for email (optional)
+     * @param string                          $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void
      */
-    public function sendLink($to, $from, $msg, $url, $view, $subject = null)
-    {
-        if (is_null($subject)) {
-            $subject = 'Library Catalog Search Result';
+    public function sendLink($to, $from, $msg, $url, $view, $subject = null,
+        $cc = null
+    ) {
+        if (null === $subject) {
+            $subject = $this->getDefaultLinkSubject();
         }
-        $subject = $this->translate($subject);
         $body = $view->partial(
             'Email/share-link.phtml',
-            array(
+            [
                 'msgUrl' => $url, 'to' => $to, 'from' => $from, 'message' => $msg
-            )
+            ]
         );
-        return $this->send($to, $from, $subject, $body);
+        return $this->send($to, $from, $subject, $body, $cc);
+    }
+
+    /**
+     * Get the default subject line for sendLink().
+     *
+     * @return string
+     */
+    public function getDefaultLinkSubject()
+    {
+        return $this->translate('Library Catalog Search Result');
     }
 
     /**
      * Send an email message representing a record.
      *
-     * @param string                                $to     Recipient email address
-     * @param string                                $from   Sender email address
-     * @param string                                $msg    User notes to include in
+     * @param string                            $to      Recipient email address
+     * @param string                            $from    Sender email address
+     * @param string                            $msg     User notes to include in
      * message
-     * @param \VuFind\RecordDriver\AbstractBase     $record Record being emailed
-     * @param \Zend\View\Renderer\RendererInterface $view   View object (used to
-     * render email templates)
+     * @param \VuFind\RecordDriver\AbstractBase $record  Record being emailed
+     * @param \Zend\View\Renderer\PhpRenderer   $view    View object (used to render
+     * email templates)
+     * @param string                            $subject Subject for email (optional)
+     * @param string                            $cc      CC recipient (null for none)
      *
      * @throws MailException
      * @return void
      */
-    public function sendRecord($to, $from, $msg, $record, $view)
-    {
-        $subject = $this->translate('Library Catalog Record') . ': '
-            . $record->getBreadcrumb();
+    public function sendRecord($to, $from, $msg, $record, $view, $subject = null,
+        $cc = null
+    ) {
+        if (null === $subject) {
+            $subject = $this->getDefaultRecordSubject($record);
+        }
         $body = $view->partial(
             'Email/record.phtml',
-            array(
+            [
                 'driver' => $record, 'to' => $to, 'from' => $from, 'message' => $msg
-            )
+            ]
         );
-        return $this->send($to, $from, $subject, $body);
+        return $this->send($to, $from, $subject, $body, $cc);
+    }
+
+    /**
+     * Set the maximum number of email recipients
+     *
+     * @param type $max Maximum
+     *
+     * @return void
+     */
+    public function setMaxRecipients($max)
+    {
+        $this->maxRecipients = $max;
+    }
+
+    /**
+     * Get the default subject line for sendRecord()
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
+     *
+     * @return string
+     */
+    public function getDefaultRecordSubject($record)
+    {
+        return $this->translate('Library Catalog Record') . ': '
+            . $record->getBreadcrumb();
     }
 }

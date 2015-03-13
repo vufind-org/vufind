@@ -32,6 +32,8 @@
 
   // Enable cart if appropriate:
   $this->showCartControls = $this->params->getOptions()->supportsCart() && $this->cart()->isActive();
+  // Enable bulk options if appropriate:
+  $this->showBulkOptions = $this->params->getOptions()->supportsCart() && $this->showBulkOptions;
 
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
@@ -40,7 +42,6 @@
 
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
-    <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
       <? foreach ($this->results->getRecommendations('top') as $current): ?>
         <?=$this->recommend($current)?>
@@ -89,12 +90,13 @@
       <? if (isset($this->parseError)): ?>
         <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
       <? endif; ?>
-      <?=$this->search()->renderSpellingSuggestions($this->transEsc('nohit_spelling') . ':', $this->results, $this); ?>
-      <? foreach ($this->results->getRecommendations('top') as $current): ?>
+      <? foreach (($top = $this->results->getRecommendations('top')) as $current): ?>
         <?=$this->recommend($current)?>
       <? endforeach; ?>
       <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
-        <?=$this->recommend($current)?>
+        <? if (!in_array($current, $top)): ?>
+          <?=$this->recommend($current)?>
+        <? endif; ?>
       <? endforeach; ?>
     <? else: ?>
       <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">

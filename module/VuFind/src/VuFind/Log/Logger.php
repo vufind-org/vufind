@@ -41,19 +41,14 @@ use Zend\Log\Logger as BaseLogger,
  */
 class Logger extends BaseLogger implements ServiceLocatorAwareInterface
 {
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
+
     /**
      * Is debug logging enabled?
      *
      * @var bool
      */
     protected $debugNeeded = false;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Set configuration
@@ -84,12 +79,12 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             $table_name = $parts[0];
             $error_types = isset($parts[1]) ? $parts[1] : '';
 
-            $columnMapping = array(
+            $columnMapping = [
                 'priority' => 'priority',
                 'message' => 'message',
                 'logtime' => 'timestamp',
                 'ident' => 'ident'
-            );
+            ];
 
             // Make Writers
             $filters = explode(',', $error_types);
@@ -229,29 +224,6 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Logger
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
      * Add a message as a log entry
      *
      * @param int               $priority Priority
@@ -260,7 +232,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
      *
      * @return Logger
      */
-    public function log($priority, $message, $extra = array())
+    public function log($priority, $message, $extra = [])
     {
         // Special case to handle arrays of messages (for multi-verbosity-level
         // logging, not supported by base class):
@@ -268,13 +240,13 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             $timestamp = new \DateTime();
             foreach ($this->writers->toArray() as $writer) {
                 $writer->write(
-                    array(
+                    [
                         'timestamp'    => $timestamp,
                         'priority'     => (int) $priority,
                         'priorityName' => $this->priorities[$priority],
                         'message'      => $message,
                         'extra'        => $extra
-                    )
+                    ]
                 );
             }
             return $this;
@@ -316,11 +288,11 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
                 }
                 $basicBacktraceLine = $detailedBacktraceLine = $line['file'] .
                     ' line ' . $line['line'] . ' - ' .
-                    (isset($line['class'])? 'class = '.$line['class'].', ' : '')
+                    (isset($line['class']) ? 'class = ' . $line['class'] . ', ' : '')
                     . 'function = ' . $line['function'];
                 $basicBacktrace .= "{$basicBacktraceLine}\n";
                 if (!empty($line['args'])) {
-                    $args = array();
+                    $args = [];
                     foreach ($line['args'] as $i => $arg) {
                         $args[] = $i . ' = ' . $this->argumentToString($arg);
                     }
@@ -332,22 +304,22 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             }
         }
 
-        $errorDetails = array(
+        $errorDetails = [
             1 => $baseError,
             2 => $baseError . $basicServer,
             3 => $baseError . $basicServer . $basicBacktrace,
             4 => $baseError . $detailedServer . $basicBacktrace,
             5 => $baseError . $detailedServer . $detailedBacktrace
-        );
+        ];
 
         $this->log(BaseLogger::CRIT, $errorDetails);
     }
     
     /**
      * Convert function argument to a loggable string
-     * 
+     *
      * @param mixed $arg Argument
-     * 
+     *
      * @return string
      */
     protected function argumentToString($arg)
@@ -357,7 +329,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             return get_class($arg) . ' Object';
         }
         if (is_array($arg)) {
-            $args = array();
+            $args = [];
             foreach ($arg as $key => $item) {
                 $args[] = "$key => " . $this->argumentToString($item);
             }
@@ -372,6 +344,6 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
         if (is_null($arg)) {
             return 'null';
         }
-        return "'$arg'";        
+        return "'$arg'";
     }
 }

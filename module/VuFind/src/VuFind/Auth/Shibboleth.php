@@ -86,7 +86,7 @@ class Shibboleth extends AbstractBase
 
         // Check if required attributes match up:
         foreach ($this->getRequiredAttributes() as $key => $value) {
-            if (!preg_match('/'. $value .'/', $request->getServer()->get($key))) {
+            if (!preg_match('/' . $value . '/', $request->getServer()->get($key))) {
                 throw new AuthException('authentication_error_denied');
             }
         }
@@ -99,10 +99,10 @@ class Shibboleth extends AbstractBase
         $catPassword = null;
 
         // Has the user configured attributes to use for populating the user table?
-        $attribsToCheck = array(
+        $attribsToCheck = [
             'cat_username', 'cat_password', 'email', 'lastname', 'firstname',
             'college', 'major', 'home_library'
-        );
+        ];
         foreach ($attribsToCheck as $attribute) {
             if (isset($shib->$attribute)) {
                 $value = $request->getServer()->get($shib->$attribute);
@@ -209,7 +209,7 @@ class Shibboleth extends AbstractBase
     protected function getRequiredAttributes()
     {
         // Special case -- store username as-is to establish return array:
-        $sortedUserAttributes = array();
+        $sortedUserAttributes = [];
 
         // Now extract user attribute values:
         $shib = $this->getConfig()->Shibboleth;
@@ -222,7 +222,7 @@ class Shibboleth extends AbstractBase
                 // Throw an exception if attributes are missing/empty.
                 if (empty($sortedUserAttributes[$value])) {
                     throw new AuthException(
-                        "User attribute value of " . $value. " is missing!"
+                        "User attribute value of " . $value . " is missing!"
                     );
                 }
             }

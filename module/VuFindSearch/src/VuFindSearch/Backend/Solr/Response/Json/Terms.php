@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use ArrayObject;
@@ -60,7 +59,7 @@ class Terms implements IteratorAggregate
     public function __construct(array $terms)
     {
         $terms = array_replace(
-            array('responseHeader' => array(), 'terms' => array()), $terms
+            ['responseHeader' => [], 'terms' => []], $terms
         );
         $this->terms = new ArrayObject();
         foreach ($terms['terms'] as $field => $info) {

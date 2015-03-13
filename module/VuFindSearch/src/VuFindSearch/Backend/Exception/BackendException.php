@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Exception;
 
 use VuFindSearch\Exception\RuntimeException;
@@ -47,7 +46,7 @@ class BackendException extends RuntimeException
      *
      * @var array
      */
-    protected $tags = array();
+    protected $tags = [];
 
     /**
      * Add a tag.

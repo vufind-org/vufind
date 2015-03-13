@@ -101,7 +101,6 @@ class SpellingProcessor
         return $this->spellSkipNumeric;
     }
 
-
     /**
      * Get the spelling limit.
      *
@@ -127,20 +126,20 @@ class SpellingProcessor
     public function tokenize($input)
     {
         // Blacklist of useless tokens:
-        $joins = array("AND", "OR", "NOT");
+        $joins = ["AND", "OR", "NOT"];
 
         // Strip out parentheses -- irrelevant for tokenization:
-        $paren = array("(" => " ", ")" => " ");
+        $paren = ["(" => " ", ")" => " "];
         $input = trim(strtr($input, $paren));
 
         // Base of this algorithm comes straight from PHP doc example by
         // benighted at gmail dot com: http://php.net/manual/en/function.strtok.php
-        $tokens = array();
+        $tokens = [];
         $token = strtok($input, " \t");
         while ($token !== false) {
             // find double quoted tokens
             if (substr($token, 0, 1) == '"' && substr($token, -1) != '"') {
-                $token .= ' '.strtok('"').'"';
+                $token .= ' ' . strtok('"') . '"';
             }
             // skip boolean operators
             if (!in_array($token, $joins)) {
@@ -166,38 +165,19 @@ class SpellingProcessor
      * @param AbstractQuery $query      Query for which info should be retrieved
      *
      * @return array
+     * @throws \Exception
      */
     public function getSuggestions(Spellcheck $spellcheck, AbstractQuery $query)
     {
-        $allSuggestions = array();
+        $allSuggestions = [];
         foreach ($spellcheck as $term => $info) {
-            if ($this->shouldSkipNumericSpelling() && is_numeric($term)) {
-                continue;
-            }
-            // Term is not part of the query
-            if (!$query->containsTerm($term)) {
-                continue;
-            }
-            // Filter out suggestions that are already part of the query
-            $suggestionLimit = $this->getSpellingLimit();
-            $suggestions     = array();
-            foreach ($info['suggestion'] as $suggestion) {
-                if (count($suggestions) >= $suggestionLimit) {
-                    break;
-                }
-                $word = $suggestion['word'];
-                if (!$query->containsTerm($word)) {
-                    // Note: !a || !b eq !(a && b)
-                    if (!is_numeric($word) || !$this->shouldSkipNumericSpelling()) {
-                        $suggestions[$word] = $suggestion['freq'];
-                    }
-                }
-            }
-            if ($suggestions) {
-                $allSuggestions[$term] = array(
+            if (!$this->shouldSkipTerm($query, $term, false)
+                && ($suggestions = $this->formatAndFilterSuggestions($query, $info))
+            ) {
+                $allSuggestions[$term] = [
                     'freq' => $info['origFreq'],
                     'suggestions' => $suggestions
-                );
+                ];
             }
         }
         // Fail over to secondary suggestions if primary failed:
@@ -205,6 +185,59 @@ class SpellingProcessor
             return $this->getSuggestions($secondary, $query);
         }
         return $allSuggestions;
+    }
+
+    /**
+     * Support method for getSuggestions()
+     *
+     * @param AbstractQuery $query Query for which info should be retrieved
+     * @param array         $info  Spelling suggestion information
+     *
+     * @return array
+     * @throws \Exception
+     */
+    protected function formatAndFilterSuggestions($query, $info)
+    {
+        // Validate response format
+        if (isset($info['suggestion'][0]) && !is_array($info['suggestion'][0])) {
+            throw new \Exception(
+                'Unexpected suggestion format; spellcheck.extendedResults'
+                . ' must be set to true.'
+            );
+        }
+        $limit = $this->getSpellingLimit();
+        $suggestions = [];
+        foreach ($info['suggestion'] as $suggestion) {
+            if (count($suggestions) >= $limit) {
+                break;
+            }
+            $word = $suggestion['word'];
+            if (!$this->shouldSkipTerm($query, $word, true)) {
+                $suggestions[$word] = $suggestion['freq'];
+            }
+        }
+        return $suggestions;
+    }
+
+    /**
+     * Should we skip the specified term?
+     *
+     * @param AbstractQuery $query         Query for which info should be retrieved
+     * @param string        $term          Term to check
+     * @param bool          $queryContains Should we skip the term if it is found
+     * in the query (true), or should we skip the term if it is NOT found in the
+     * query (false)?
+     *
+     * @return bool
+     */
+    protected function shouldSkipTerm($query, $term, $queryContains)
+    {
+        // If term is numeric and we're in "skip numeric" mode, we should skip it:
+        if ($this->shouldSkipNumericSpelling() && is_numeric($term)) {
+            return true;
+        }
+        // We should also skip terms already contained within the query:
+        return $queryContains == $query->containsTerm($term);
     }
 
     /**
@@ -218,7 +251,7 @@ class SpellingProcessor
      */
     public function processSuggestions($suggestions, $query, Params $params)
     {
-        $returnArray = array();
+        $returnArray = [];
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
             $inToken = false;
@@ -281,10 +314,10 @@ class SpellingProcessor
                 $label = $replacement;
             }
             // Basic spelling suggestion data
-            $returnArray[$targetTerm]['suggestions'][$label] = array(
+            $returnArray[$targetTerm]['suggestions'][$label] = [
                 'freq' => $freq,
                 'new_term' => $replacement
-            );
+            ];
 
             // Only generate expansions if enabled in config
             if ($this->expand) {

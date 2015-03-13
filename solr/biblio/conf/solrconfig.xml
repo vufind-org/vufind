@@ -427,9 +427,6 @@
   </requestHandler>
 
   <requestHandler name="/browse" class="org.vufind.solr.handler.BrowseRequestHandler">
-    <str name="authIndexPath">${solr.solr.home:./solr}/authority/index</str>
-    <str name="bibIndexPath">${solr.solr.home:./solr}/biblio/index</str>
-
     <!-- These definitions should match the field names used in the authority index. -->
     <str name="preferredHeadingField">heading</str>
     <str name="useInsteadHeadingField">use_for</str>
@@ -456,13 +453,15 @@
 
     <lst name="lcc">
       <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/lcc_browse.db</str>
-      <str name="field">callnumber-a</str>
+      <str name="field">callnumber-raw</str>
+      <str name="normalizer">org.vufind.util.LCCallNormalizer</str>
     </lst>
 
     <lst name="dewey">
       <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/dewey_browse.db</str>
       <str name="field">dewey-raw</str>
       <str name="ignoreDiacritics">yes</str>
+      <str name="normalizer">org.vufind.util.DeweyCallNormalizer</str>
     </lst>
 
     <lst name="hierarchy">

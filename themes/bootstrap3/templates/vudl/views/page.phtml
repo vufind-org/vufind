@@ -31,24 +31,37 @@
     }
   }
 
+  function resizeZoom() {
+    var $height = $(window).height() + window.scrollY - $('#zoomy').offset().top - 10;
+    if($('#side-nav').height() > 200) {
+      $height = Math.min($height, $('#side-nav').height() - 80);
+    } else {
+      $height = Math.min($height, $(window).height() - 270);
+    }
+    $('#zoomy').css({
+      'width' : '100%',
+      'height': Math.max(400, $height)
+    });
+  }
+
   $(document).ready(function() {
     $('#view .nav-tabs li.opener a').addClass('hidden');
     $('#view .nav-tabs li:not(.static) a').click(function (e) {
       e.preventDefault();
       $(this).tab('show');
-      currTab = $(this).attr('id');
+      currentTab = $(this).attr('id');
     });
     // Initialize the size of Zoomy
-    $('#zoom-tab').on('shown.bs.tab', function(e) {
-      $('.loading-bar').removeClass('hidden');
-      var sidenav = document.getElementById('side-nav');
-      $('#zoomy').css('width', '100%');
-      $('#zoomy').css('height', vudlAccordionHeight);
+    $('#zoom-tab').on('shown.bs.tab', function() {
+      resizeZoom();
       Zoomy.init(document.getElementById('zoomy'));
       Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hidden'); });
     });
+    $(window).scroll(resizeZoom);
+    $(window).resize(resizeZoom);
+    resizeZoom();
 
-    var pageData = {
+    updateFunction({
       'id'       :'<?=$this->id ?>',
       'medium'   :'<?=$this->medium ?>',
       'large'    :'<?=$this->large ?>',
@@ -56,8 +69,7 @@
       'master'   :'<?=$this->master ?>',
       'thumbnail':'<?=$this->thumbnail ?>',
       'mimetype' :'<?=$this->mimetype ?>'
-    };
-    updateFunction(pageData, 'medium-tab');
+    }, 'medium-tab');
   });
 </script>
 <ul class="nav nav-tabs">
@@ -88,6 +100,9 @@
     <a class="btn btn-default" onClick="Zoomy.turnLeft()"><i class="fa fa-rotate-left"></i></a>
     <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:1})"><i class="fa fa-search-minus"></i></a>
     <a class="btn btn-default" onClick="Zoomy.zoom(0,1)">[1:1]</a>
+    <a class="btn btn-default" onClick="Zoomy.toggleMap();$(this).children('.fa').toggleClass('fa fa-toggle-down').toggleClass('fa fa-toggle-up');" title="<?=$this->transEsc('more_info_toggle') ?>">
+      <i class="fa fa-toggle-down"></i>
+    </a>
     <a class="btn btn-default" onClick="Zoomy.zoom({deltaY:-1})"><i class="fa fa-search-plus"></i></a>
     <a class="btn btn-default" onClick="Zoomy.turnRight()"><i class="fa fa-rotate-right"></i></a>
     <canvas id="zoomy"></canvas>

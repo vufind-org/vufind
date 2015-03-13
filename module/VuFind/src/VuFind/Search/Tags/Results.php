@@ -52,7 +52,7 @@ class Results extends BaseResults
         if (!empty($tag)) {
             $rawResults = $tag->getResources(null, $this->getParams()->getSort());
         } else {
-            $rawResults = array();
+            $rawResults = [];
         }
 
         // How many results were there?
@@ -68,10 +68,10 @@ class Results extends BaseResults
         }
 
         // Retrieve record drivers for the selected items.
-        $recordsToRequest = array();
+        $recordsToRequest = [];
         foreach ($rawResults as $row) {
             $recordsToRequest[]
-                = array('id' => $row->record_id, 'source' => $row->source);
+                = ['id' => $row->record_id, 'source' => $row->source];
         }
         $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
             ->loadBatch($recordsToRequest);
@@ -88,6 +88,6 @@ class Results extends BaseResults
     public function getFacetList($filter = null)
     {
         // Facets not supported:
-        return array();
+        return [];
     }
 }

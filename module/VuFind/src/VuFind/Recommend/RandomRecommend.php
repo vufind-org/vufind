@@ -21,8 +21,7 @@
  *
  * @category VuFind2
  * @package  Recommendations
- * @author   Luke O'Sullivan (Swansea University)
- * <vufind-tech@lists.sourceforge.net>
+ * @author   Luke O'Sullivan <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -36,10 +35,11 @@ use VuFindSearch\Query\Query,
  *
  * This class provides random recommendations based on the Solr random field
  *
+ * Originally developed by Luke O'Sullivan at Swansea University.
+ *
  * @category VuFind2
  * @package  Recommendations
- * @author   Luke O'Sullivan (Swansea University)
- * <vufind-tech@lists.sourceforge.net>
+ * @author   Luke O'Sullivan <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -53,39 +53,46 @@ class RandomRecommend implements RecommendInterface
     protected $results;
 
     /**
+     * Backend to use
+     *
+     * @var string
+     */
+    protected $backend = 'Solr';
+
+    /**
      * Results Limit
      *
      * @var number
      */
-    protected $limit;
+    protected $limit = 10;
 
     /**
      * Display Mode
      *
      * @var string
      */
-    protected $displayMode;
+    protected $displayMode = 'standard';
 
     /**
      * Mode
      *
      * @var string
      */
-    protected $mode;
+    protected $mode = 'retain';
 
     /**
      * Result Set Minimum
      *
      * @var number
      */
-    protected $minimum;
+    protected $minimum = 0;
 
     /**
      * Filters
      *
      * @var array
      */
-    protected $filters = array();
+    protected $filters = [];
 
     /**
      * Settings from configuration
@@ -122,8 +129,6 @@ class RandomRecommend implements RecommendInterface
     }
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -135,17 +140,16 @@ class RandomRecommend implements RecommendInterface
         // Save the basic parameters:
         $this->settings = $settings;
 
-        // Parse the additional settings:
+        // Apply any settings that override the defaults by being non-empty:
+        $properties = ['backend', 'limit', 'displayMode', 'mode', 'minimum'];
         $settings = explode(':', $settings);
-        $this->backend = !empty($settings[0]) ? $settings[0] : 'Solr';
-        $this->limit = isset($settings[1]) && !empty($settings[1])
-            ? $settings[1] : 10;
-        $this->displayMode = isset($settings[2]) && !empty($settings[2])
-            ? $settings[2] : "standard";
-        $this->mode = !empty($settings[3]) ? $settings[3] : 'retain';
-        $this->minimum = !empty($settings[4]) ? $settings[4] : 0;
+        foreach ($properties as $i => $property) {
+            if (!empty($settings[$i])) {
+                $this->$property = $settings[$i];
+            }
+        }
 
-        // all other params are filters and there values respectively
+        // all other params are filters and their values respectively
         for ($i = 5; $i < count($settings); $i += 2) {
             if (isset($settings[$i+1])) {
                 $this->filters[] = $settings[$i] . ':' . $settings[$i + 1];
@@ -154,8 +158,6 @@ class RandomRecommend implements RecommendInterface
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -185,8 +187,6 @@ class RandomRecommend implements RecommendInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -207,7 +207,7 @@ class RandomRecommend implements RecommendInterface
     public function getResults()
     {
         if (count($this->results) < $this->minimum) {
-            return array();
+            return [];
         }
         return $this->results;
     }

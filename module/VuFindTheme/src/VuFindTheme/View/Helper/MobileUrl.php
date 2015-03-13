@@ -72,7 +72,7 @@ class MobileUrl extends \Zend\View\Helper\AbstractHelper
         $urlHelper = $this->getView()->plugin('serverurl');
         $currentUrl = $urlHelper(true);
         $currentUrl = preg_replace(
-            array('/\&ui=[^&]*/', '/\?ui=[^&]*\&?/'), array('', '?'), $currentUrl
+            ['/\&ui=[^&]*/', '/\?ui=[^&]*\&?/'], ['', '?'], $currentUrl
         );
         $currentUrl = rtrim($currentUrl, '?');
         $currentUrl .= strstr($currentUrl, '?') ? '&' : '?';

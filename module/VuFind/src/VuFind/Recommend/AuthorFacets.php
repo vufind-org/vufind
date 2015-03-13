@@ -77,8 +77,6 @@ class AuthorFacets implements RecommendInterface
     }
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -92,8 +90,6 @@ class AuthorFacets implements RecommendInterface
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -111,8 +107,6 @@ class AuthorFacets implements RecommendInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -150,34 +144,34 @@ class AuthorFacets implements RecommendInterface
     /**
      * Process similar authors from an author search
      *
-     * @return  array     Facets data arrays
+     * @return array Facets data arrays
      */
     public function getSimilarAuthors()
     {
         // Do not provide recommendations for blank searches:
         $lookfor = $this->getSearchTerm();
         if (empty($lookfor)) {
-            return array('count' => 0, 'list' => array());
+            return ['count' => 0, 'list' => []];
         }
 
         // Start configuring the results object:
         $results = $this->resultsManager->get('SolrAuthorFacets');
 
         // Set up a special limit for the AuthorFacets search object:
-        $results->getOptions()->setLimitOptions(array(10));
+        $results->getOptions()->setLimitOptions([10]);
 
         // Initialize object using parameters from the current Solr search object.
         $results->getParams()
-            ->initFromRequest(new Parameters(array('lookfor' => $lookfor)));
+            ->initFromRequest(new Parameters(['lookfor' => $lookfor]));
 
         // Send back the results:
-        return array(
+        return [
             // Total authors (currently there is no way to calculate this without
             // risking out-of-memory errors or slow results, so we set this to
             // false; if we are able to find this information out in the future,
             // we can fill it in here and the templates will display it).
             'count' => false,
             'list' => $results->getResults()
-        );
+        ];
     }
 }

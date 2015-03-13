@@ -50,6 +50,11 @@ class WorldCat extends SolrMarc
      */
     public function setRawData($data)
     {
+        // Ensure that $driver->setRawData($driver->getRawData()) doesn't blow up:
+        if (isset($data['fullrecord'])) {
+            $data = $data['fullrecord'];
+        }
+
         // Make sure the XML has an appropriate header:
         if (strlen($data) > 2 && substr($data, 0, 2) != '<?') {
             $data = '<?xml version="1.0"?>' . $data;
@@ -57,7 +62,7 @@ class WorldCat extends SolrMarc
 
         // Map the WorldCat response into a format that the parent Solr-based
         // record driver can understand.
-        parent::setRawData(array('fullrecord' => $data));
+        parent::setRawData(['fullrecord' => $data]);
     }
 
     /**
@@ -69,7 +74,7 @@ class WorldCat extends SolrMarc
     public function getRealTimeHoldings()
     {
         // Not supported here:
-        return array();
+        return [];
     }
 
     /**
@@ -81,7 +86,7 @@ class WorldCat extends SolrMarc
     public function getRealTimeHistory()
     {
         // Not supported here:
-        return array();
+        return [];
     }
 
     /**
@@ -121,7 +126,7 @@ class WorldCat extends SolrMarc
      */
     public function getFormats()
     {
-        return $this->getFieldArray('245', array('h'));
+        return $this->getFieldArray('245', ['h']);
     }
 
     /**
@@ -131,7 +136,7 @@ class WorldCat extends SolrMarc
      */
     public function getOCLC()
     {
-        return array($this->getUniqueID());
+        return [$this->getUniqueID()];
     }
 
     /**
@@ -147,18 +152,24 @@ class WorldCat extends SolrMarc
     }
 
     /**
-     * Get the call number associated with the record (empty string if none).
-     * If both LC and Dewey call numbers exist, LC will be favored.
+     * Get the call numbers associated with the record (empty string if none).
      *
-     * @return string
+     * @return array
      */
-    public function getCallNumber()
+    public function getCallNumbers()
     {
-        $callNo = $this->getFirstFieldValue('090', array('a', 'b'));
-        if (empty($callNo)) {
-            $callNo = $this->getFirstFieldValue('050', array('a', 'b'));
+        $retVal = [];
+        foreach (['090', '050'] as $field) {
+            $callNo = $this->getFirstFieldValue($field, ['a', 'b']);
+            if (!empty($callNo)) {
+                $retVal[] = $callNo;
+            }
         }
-        return empty($callNo) ? $this->getDeweyCallNumber() : $callNo;
+        $dewey = $this->getDeweyCallNumber();
+        if (!empty($dewey)) {
+            $retVal[] = $dewey;
+        }
+        return $retVal;
     }
 
     /**
@@ -168,7 +179,7 @@ class WorldCat extends SolrMarc
      */
     public function getDeweyCallNumber()
     {
-        return $this->getFirstFieldValue('082', array('a'));
+        return $this->getFirstFieldValue('082', ['a']);
     }
 
     /**
@@ -178,7 +189,7 @@ class WorldCat extends SolrMarc
      */
     public function getPrimaryAuthor()
     {
-        return $this->getFirstFieldValue('100', array('a'));
+        return $this->getFirstFieldValue('100', ['a']);
     }
 
     /**
@@ -188,7 +199,7 @@ class WorldCat extends SolrMarc
      */
     public function getLanguages()
     {
-        $retVal = array();
+        $retVal = [];
         $field = $this->marcRecord->getField('008');
         if ($field) {
             $content = $field->getData();
@@ -206,7 +217,7 @@ class WorldCat extends SolrMarc
      */
     public function getTitle()
     {
-        return $this->getFirstFieldValue('245', array('a', 'b'));
+        return $this->getFirstFieldValue('245', ['a', 'b']);
     }
 
     /**
@@ -234,7 +245,7 @@ class WorldCat extends SolrMarc
      */
     public function getShortTitle()
     {
-        return $this->getFirstFieldValue('245', array('a'));
+        return $this->getFirstFieldValue('245', ['a']);
     }
 
     /**
@@ -244,7 +255,7 @@ class WorldCat extends SolrMarc
      */
     public function getSubtitle()
     {
-        return $this->getFirstFieldValue('245', array('b'));
+        return $this->getFirstFieldValue('245', ['b']);
     }
 
     /**
@@ -274,7 +285,7 @@ class WorldCat extends SolrMarc
      */
     public function getSecondaryAuthors()
     {
-        return $this->getFieldArray('700', array('a', 'b', 'c', 'd'));
+        return $this->getFieldArray('700', ['a', 'b', 'c', 'd']);
     }
 
     /**
@@ -284,7 +295,7 @@ class WorldCat extends SolrMarc
      */
     public function getNewerTitles()
     {
-        return $this->getFieldArray('785', array('a', 's', 't'));
+        return $this->getFieldArray('785', ['a', 's', 't']);
     }
 
     /**
@@ -294,6 +305,6 @@ class WorldCat extends SolrMarc
      */
     public function getPreviousTitles()
     {
-        return $this->getFieldArray('780', array('a', 's', 't'));
+        return $this->getFieldArray('780', ['a', 's', 't']);
     }
 }

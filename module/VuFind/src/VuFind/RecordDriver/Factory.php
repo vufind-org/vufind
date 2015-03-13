@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -141,11 +142,13 @@ class Factory
      */
     public static function getSolrDefault(ServiceManager $sm)
     {
-        return new SolrDefault(
+        $driver = new SolrDefault(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
+        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
+        return $driver;
     }
 
     /**
@@ -167,6 +170,7 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\ILSHoldLogic'),
             $sm->getServiceLocator()->get('VuFind\ILSTitleHoldLogic')
         );
+        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
         return $driver;
     }
 

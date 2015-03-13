@@ -55,7 +55,7 @@ class RecordsController extends AbstractSearch
     public function homeAction()
     {
         // If there is exactly one record, send the user directly there:
-        $ids = $this->params()->fromQuery('id', array());
+        $ids = $this->params()->fromQuery('id', []);
         if (count($ids) == 1) {
             $details = $this->getRecordRouter()->getTabRouteDetails($ids[0]);
             $target = $this->url()->fromRoute($details['route'], $details['params']);

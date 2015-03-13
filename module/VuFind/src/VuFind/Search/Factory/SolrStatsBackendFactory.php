@@ -28,13 +28,7 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFind\RecordDriver\PluginManager;
-
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
-use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Backend;
-
-use VuFind\Search\Listener\NormalizeSolrSort;
 
 /**
  * Factory for the default SOLR backend.
@@ -56,6 +50,7 @@ class SolrStatsBackendFactory extends AbstractSolrBackendFactory
         $this->solrCore = 'stats';
         $this->searchConfig = 'searches';
         $this->searchYaml = 'searchspecs.yaml';
+        $this->facetConfig = 'facets';
     }
 
     /**

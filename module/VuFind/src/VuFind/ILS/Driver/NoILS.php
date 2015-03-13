@@ -42,12 +42,7 @@ use VuFind\Exception\ILS as ILSException,
  */
 class NoILS extends AbstractBase implements TranslatorAwareInterface
 {
-    /**
-     * Translator (or null if unavailable)
-     *
-     * @var \Zend\I18n\Translator\Translator
-     */
-    protected $translator = null;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
      * Record loader
@@ -85,10 +80,13 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
         return isset($this->config[$function]) ? $this->config[$function] : false;
     }
@@ -123,14 +121,14 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             ? $this->config['settings']['useStatus'] : 'none';
         if ($useStatus == "custom") {
             $status = $this->translate($this->config['Status']['status']);
-            return array(
-                array(
+            return [
+                [
                     'id' => $id,
                     'availability' => $this->config['Status']['availability'],
                     'status' => $status,
                     'use_unknown_message' =>
                         $this->config['Status']['use_unknown_message'],
-                    'status_array' => array($status),
+                    'status_array' => [$status],
                     'location' => $this->translate(
                         $this->config['Status']['location']
                     ),
@@ -138,14 +136,14 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     'callnumber' => $this->translate(
                         $this->config['Status']['callnumber']
                     )
-                )
-            );
+                ]
+            ];
         } else if ($useStatus == "marc") {
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcStatus');
         }
-        return array();
+        return [];
     }
 
     /**
@@ -164,13 +162,13 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
         $useStatus = isset($this->config['settings']['useStatus'])
             ? $this->config['settings']['useStatus'] : 'none';
         if ($useStatus == "custom" || $useStatus == "marc") {
-            $status = array();
+            $status = [];
             foreach ($idList as $id) {
                 $status[] = $this->getStatus($id);
             }
             return $status;
         }
-        return array();
+        return [];
     }
 
     /**
@@ -193,8 +191,8 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             ? $this->config['settings']['useHoldings'] : 'none';
 
         if ($useHoldings == "custom") {
-            return array(
-                array(
+            return [
+                [
                     'id' => $id,
                     'number' => $this->translate(
                         $this->config['Holdings']['number']
@@ -214,18 +212,18 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
                     ),
                     'barcode' => $this->config['Holdings']['barcode'],
                     'notes' => isset($this->config['Holdings']['notes'])
-                        ? $this->config['Holdings']['notes'] : array(),
+                        ? $this->config['Holdings']['notes'] : [],
                     'summary' => isset($this->config['Holdings']['summary'])
-                        ? $this->config['Holdings']['summary'] : array()
-                )
-            );
+                        ? $this->config['Holdings']['summary'] : []
+                ]
+            ];
         } elseif ($useHoldings == "marc") {
             // Retrieve record from index:
             $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcHoldings');
         }
 
-        return array();
+        return [];
     }
 
     /**
@@ -246,11 +244,11 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
             $field = $marcStatus['marcField'];
             unset($marcStatus['marcField']);
             $result = $recordDriver->tryMethod(
-                'getFormattedMarcDetails', array($field, $marcStatus)
+                'getFormattedMarcDetails', [$field, $marcStatus]
             );
-            return empty($result) ? array() : $result;
+            return empty($result) ? [] : $result;
         }
-        return array();
+        return [];
     }
 
     /**
@@ -262,6 +260,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @param string $id The record id to retrieve the holdings for
      *
      * @return bool True if holdings exist, False if they do not
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function hasHoldings($id)
@@ -273,7 +272,6 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
         // on whether it's in or out of quotes; handle both cases.
         return $useHoldings != 'none' && !empty($useHoldings);
     }
-
 
     /**
      * Get Purchase History
@@ -287,7 +285,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
         /**
@@ -306,11 +304,12 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * whatever that may mean.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -351,37 +350,12 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return mixed          Associative array of patron info on successful login,
      * null on unsuccessful login.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)
     {
         // Block authentication:
         return null;
-    }
-
-    /**
-     * Set a translator
-     *
-     * @param \Zend\I18n\Translator\Translator $translator Translator
-     *
-     * @return NoILS
-     */
-    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * Translate a string if a translator is available.
-     *
-     * @param string $msg Message to translate
-     *
-     * @return string
-     */
-    protected function translate($msg)
-    {
-        return null !== $this->translator
-            ? $this->translator->translate($msg) : $msg;
     }
 }

@@ -40,11 +40,10 @@ use VuFind\Config\Locator as ConfigLocator,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class InstallController extends AbstractBase
 {
     /**
-     * preDispatch -- block access when appropriate.
+     * Use preDispatch event to block access when appropriate.
      *
      * @param MvcEvent $e Event object
      *
@@ -72,7 +71,7 @@ class InstallController extends AbstractBase
     {
         parent::attachDefaultListeners();
         $events = $this->getEventManager();
-        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
+        $events->attach(MvcEvent::EVENT_DISPATCH, [$this, 'preDispatch'], 1000);
     }
 
     /**
@@ -119,10 +118,10 @@ class InstallController extends AbstractBase
             }
         }
 
-        return array(
+        return [
             'title' => 'Basic Configuration', 'status' => $status,
             'fix' => 'fixbasicconfig'
-        );
+        ];
     }
 
     /**
@@ -165,11 +164,11 @@ class InstallController extends AbstractBase
     protected function checkCache()
     {
         $cache = $this->getServiceLocator()->get('VuFind\CacheManager');
-        return array(
+        return [
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
             'fix' => 'fixcache'
-        );
+        ];
     }
 
     /**
@@ -204,9 +203,9 @@ class InstallController extends AbstractBase
         } catch (\Exception $e) {
             $status = false;
         }
-        return array(
+        return [
             'title' => 'Database', 'status' => $status, 'fix' => 'fixdatabase'
-        );
+        ];
     }
 
     /**
@@ -239,11 +238,11 @@ class InstallController extends AbstractBase
               && function_exists('mcrypt_module_open')
               && class_exists('XSLTProcessor');
 
-        return array(
+        return [
             'title' => 'Dependencies',
             'status' => $requiredFunctionsExist && $this->phpVersionIsNewEnough(),
             'fix' => 'fixdependencies'
-        );
+        ];
     }
 
     /**
@@ -267,10 +266,10 @@ class InstallController extends AbstractBase
         if (!function_exists('mb_substr')) {
             $msg
                 = "Your PHP installation appears to be missing the mbstring plug-in."
-                ." For better language support, it is recommended that you add this."
-                ." For details on how to do this, see "
-                ."http://vufind.org/wiki/vufind2:installation_notes "
-                ."and look at the PHP installation instructions for your platform.";
+                . " For better language support, it is recommended that you add"
+                . " this. For details on how to do this, see "
+                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             $problems++;
         }
@@ -291,10 +290,10 @@ class InstallController extends AbstractBase
         if (!function_exists('mcrypt_module_open')) {
             $msg
                 = "Your PHP installation appears to be missing the mcrypt plug-in."
-                ." For better security support, it is recommended that you add this."
-                ." For details on how to do this, see "
-                ."http://vufind.org/wiki/vufind2:installation_notes "
-                ."and look at the PHP installation instructions for your platform.";
+                . " For better security support, it is recommended that you add"
+                . " this. For details on how to do this, see "
+                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             $problems++;
         }
@@ -303,14 +302,14 @@ class InstallController extends AbstractBase
         if (!class_exists('XSLTProcessor')) {
             $msg
                 = "Your PHP installation appears to be missing the XSL plug-in."
-                ." For details on how to do this, see "
-                ."http://vufind.org/wiki/vufind2:installation_notes "
-                ."and look at the PHP installation instructions for your platform.";
+                . " For details on how to do this, see "
+                . "http://vufind.org/wiki/vufind2:installation_notes "
+                . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             $problems++;
         }
 
-        return $this->createViewModel(array('problems' => $problems));
+        return $this->createViewModel(['problems' => $problems]);
     }
 
     /**
@@ -324,6 +323,7 @@ class InstallController extends AbstractBase
         $view->dbname = $this->params()->fromPost('dbname', 'vufind');
         $view->dbuser = $this->params()->fromPost('dbuser', 'vufind');
         $view->dbhost = $this->params()->fromPost('dbhost', 'localhost');
+        $view->vufindhost = $this->params()->fromPost('vufindhost', 'localhost');
         $view->dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
         $view->driver = $this->params()->fromPost('driver', 'mysql');
 
@@ -448,14 +448,14 @@ class InstallController extends AbstractBase
                 . " WITH PASSWORD {$escapedPass}";
             $grant = "GRANT ALL PRIVILEGES ON DATABASE "
                 . "{$view->dbname} TO {$view->dbuser} ";
-            return array($create, $escape, $cuser, $grant);
+            return [$create, $escape, $cuser, $grant];
         }
         // Default: MySQL:
         $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
             . $view->dbname
-            . ".* TO '{$view->dbuser}'@'{$view->dbhost}' "
+            . ".* TO '{$view->dbuser}'@'{$view->vufindhost}' "
             . "IDENTIFIED BY {$escapedPass} WITH GRANT OPTION";
-        return array($create, $grant, 'FLUSH PRIVILEGES');
+        return [$create, $grant, 'FLUSH PRIVILEGES'];
     }
 
     /**
@@ -473,11 +473,11 @@ class InstallController extends AbstractBase
             $grantTables =  "GRANT ALL PRIVILEGES ON ALL TABLES IN "
                 . "SCHEMA public TO {$view->dbuser} ";
             $grantSequences =  "GRANT ALL PRIVILEGES ON ALL SEQUENCES"
-                ." IN SCHEMA public TO {$view->dbuser} ";
-            return array($grantTables, $grantSequences);
+                . " IN SCHEMA public TO {$view->dbuser} ";
+            return [$grantTables, $grantSequences];
         }
         // Default: MySQL:
-        return array();
+        return [];
     }
 
     /**
@@ -493,7 +493,7 @@ class InstallController extends AbstractBase
         }
 
         return $this->createViewModel(
-            array('sql' => $this->params()->fromQuery('sql'))
+            ['sql' => $this->params()->fromQuery('sql')]
         );
     }
 
@@ -505,7 +505,7 @@ class InstallController extends AbstractBase
     protected function checkILS()
     {
         $config = $this->getConfig();
-        if (in_array($config->Catalog->driver, array('Sample', 'Demo'))) {
+        if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $status = false;
         } else {
             try {
@@ -516,7 +516,7 @@ class InstallController extends AbstractBase
                 $status = false;
             }
         }
-        return array('title' => 'ILS', 'status' => $status, 'fix' => 'fixils');
+        return ['title' => 'ILS', 'status' => $status, 'fix' => 'fixils'];
     }
 
     /**
@@ -552,16 +552,16 @@ class InstallController extends AbstractBase
         // or if we need to warn the user that they have selected a fake driver:
         $config = $this->getConfig();
         $view = $this->createViewModel();
-        if (in_array($config->Catalog->driver, array('Sample', 'Demo'))) {
+        if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
             $view->demo = true;
             // Get a list of available drivers:
             $dir
                 = opendir(APPLICATION_PATH . '/module/VuFind/src/VuFind/ILS/Driver');
-            $drivers = array();
-            $blacklist = array(
+            $drivers = [];
+            $blacklist = [
                 'Sample.php', 'Demo.php', 'DriverInterface.php', 'AbstractBase.php',
                 'PluginManager.php', 'PluginFactory.php'
-            );
+            ];
             while ($line = readdir($dir)) {
                 if (stristr($line, '.php') && !in_array($line, $blacklist)) {
                     $drivers[] = str_replace('.php', '', $line);
@@ -604,7 +604,7 @@ class InstallController extends AbstractBase
         } catch (\Exception $e) {
             $status = false;
         }
-        return array('title' => 'Solr', 'status' => $status, 'fix' => 'fixsolr');
+        return ['title' => 'Solr', 'status' => $status, 'fix' => 'fixsolr'];
     }
 
     /**
@@ -639,7 +639,7 @@ class InstallController extends AbstractBase
         $view = $this->createViewModel();
         $view->rawUrl = $config->Index->url;
         $view->userUrl = str_replace(
-            array('localhost', '127.0.0.1'),
+            ['localhost', '127.0.0.1'],
             $this->getRequest()->getServer()->get('HTTP_HOST'),
             $config->Index->url
         );
@@ -679,9 +679,9 @@ class InstallController extends AbstractBase
             }
         }
 
-        return array(
+        return [
             'title' => 'Security', 'status' => $status, 'fix' => 'fixsecurity'
-        );
+        ];
     }
 
     /**
@@ -710,7 +710,7 @@ class InstallController extends AbstractBase
         if (!isset($config->Authentication->ils_encryption_key)
             || empty($config->Authentication->ils_encryption_key)
         ) {
-            $enc_key = sha1(microtime(true).mt_rand(10000, 90000));
+            $enc_key = sha1(microtime(true) . mt_rand(10000, 90000));
             $writer->set('Authentication', 'ils_encryption_key', $enc_key);
             $changed = true;
         }
@@ -806,7 +806,7 @@ class InstallController extends AbstractBase
         if (!$writer->save()) {
             return $this->forwardTo('Install', 'fixbasicconfig');
         }
-        return $this->createViewModel(array('configDir' => dirname($config)));
+        return $this->createViewModel(['configDir' => dirname($config)]);
     }
 
     /**
@@ -818,13 +818,13 @@ class InstallController extends AbstractBase
     {
         // Perform all checks (based on naming convention):
         $methods = get_class_methods($this);
-        $checks = array();
+        $checks = [];
         foreach ($methods as $method) {
             if (substr($method, 0, 5) == 'check') {
                 $checks[] = $this->$method();
             }
         }
-        return $this->createViewModel(array('checks' => $checks));
+        return $this->createViewModel(['checks' => $checks]);
     }
 }
 

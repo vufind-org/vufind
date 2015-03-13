@@ -40,31 +40,8 @@ use VuFindCode\ISBN;
 abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
     \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Logger
-     *
-     * @var \Zend\Log\LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Set logger
-     *
-     * @param \Zend\Log\LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(\Zend\Log\LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
+    use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Attempt to get an ISBN-10; revert to ISBN-13 only when ISBN-10 representation
@@ -94,18 +71,6 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
             throw new \Exception('HTTP service missing.');
         }
         return $this->httpService->createClient($url);
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**

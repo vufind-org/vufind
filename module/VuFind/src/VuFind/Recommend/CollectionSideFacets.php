@@ -48,8 +48,6 @@ class CollectionSideFacets extends SideFacets
     protected $keywordFilter = false;
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.

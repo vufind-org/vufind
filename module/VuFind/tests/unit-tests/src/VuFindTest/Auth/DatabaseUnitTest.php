@@ -43,7 +43,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of empty create request.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage Username cannot be blank
      */
     public function testEmptyCreateRequest()
@@ -56,7 +57,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of create request w/blank password.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage Password cannot be blank
      */
     public function testEmptyPasswordCreateRequest()
@@ -71,7 +73,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test validation of create request w/mismatched passwords.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage Passwords do not match
      */
     public function testMismatchedPasswordCreateRequest()
@@ -86,7 +89,8 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test missing table manager.
      *
      * @return void
-     * @expectedException Exception
+     *
+     * @expectedException        Exception
      * @expectedExceptionMessage DB table manager missing.
      */
     public function testCreateWithMissingTableManager()
@@ -99,14 +103,15 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test creation w/duplicate email.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage That email address is already used
      */
     public function testCreateDuplicateEmail()
     {
         // Fake services:
         $table = $this->getMock(
-            'VuFind\Db\Table\Tags', array('getByEmail', 'getByUsername')
+            'VuFind\Db\Table\Tags', ['getByEmail', 'getByUsername']
         );
         $table->expects($this->once())->method('getByEmail')
             ->with($this->equalTo('me@mysite.com'))
@@ -124,14 +129,15 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      * Test creation w/duplicate username.
      *
      * @return void
-     * @expectedException VuFind\Exception\Auth
+     *
+     * @expectedException        VuFind\Exception\Auth
      * @expectedExceptionMessage That username is already taken
      */
     public function testCreateDuplicateUsername()
     {
         // Fake services:
         $table = $this->getMock(
-            'VuFind\Db\Table\Tags', array('getByUsername')
+            'VuFind\Db\Table\Tags', ['getByUsername']
         );
         $table->expects($this->any())->method('getByUsername')
             ->with($this->equalTo('good'))
@@ -151,7 +157,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     {
         // Fake services:
         $table = $this->getMock(
-            'VuFind\Db\Table\Tags', array('insert', 'getByEmail', 'getByUsername')
+            'VuFind\Db\Table\Tags', ['insert', 'getByEmail', 'getByUsername']
         );
         $table->expects($this->once())->method('insert');
         $table->expects($this->once())->method('getByEmail')
@@ -175,14 +181,14 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      */
     protected function getCreateParams()
     {
-        return array(
+        return [
             'firstname' => 'Foo',
             'lastname' => 'Bar',
             'username' => 'good',
             'password' => 'pass',
             'password2' => 'pass',
             'email' => 'me@mysite.com',
-        );
+        ];
     }
 
     /**
@@ -192,11 +198,11 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return \Zend\Http\PhpEnvironment\Request
      */
-    protected function getRequest($post = array())
+    protected function getRequest($post = [])
     {
         $post = new Parameters($post);
         $request
-            = $this->getMock('Zend\Http\PhpEnvironment\Request', array('getPost'));
+            = $this->getMock('Zend\Http\PhpEnvironment\Request', ['getPost']);
         $request->expects($this->any())->method('getPost')
             ->will($this->returnValue($post));
         return $request;
@@ -212,7 +218,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     protected function getDatabase($table)
     {
         $tableManager
-            = $this->getMock('VuFind\Db\Table\PluginManager', array('get'));
+            = $this->getMock('VuFind\Db\Table\PluginManager', ['get']);
         $tableManager->expects($this->once())->method('get')
             ->with($this->equalTo('User'))
             ->will($this->returnValue($table));

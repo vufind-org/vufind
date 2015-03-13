@@ -54,7 +54,7 @@ function deparam(url) {
   var pairs = url.substring(url.indexOf('?') + 1).split('&');
   for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
-    var name = decodeURIComponent(pair[0]);
+    var name = decodeURIComponent(pair[0].replace(/\+/g, ' '));
     if(name.length == 0) {
       continue;
     }
@@ -63,9 +63,9 @@ function deparam(url) {
       if(!request[name]) {
         request[name] = [];
       }
-      request[name].push(decodeURIComponent(pair[1]));
+      request[name].push(decodeURIComponent(pair[1].replace(/\+/g, ' ')));
     } else {
-      request[name] = decodeURIComponent(pair[1]);
+      request[name] = decodeURIComponent(pair[1].replace(/\+/g, ' '));
     }
   }
   return request;
@@ -79,18 +79,6 @@ function moreFacets(id) {
 function lessFacets(id) {
   $('.'+id).addClass('hidden');
   $('#more-'+id).removeClass('hidden');
-}
-
-// Advanced facets
-function updateOrFacets(url, op) {
-  window.location.assign(url);
-  var list = $(op).parents('ul');
-  var header = $(list).find('li.nav-header');
-  list.html(header[0].outerHTML+'<div class="alert alert-info">'+vufindString.loading+'...</div>');
-}
-function setupOrFacets() {
-  $('.facetOR').find('.icon-check').replaceWith('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
-  $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
 }
 
 // Lightbox
@@ -132,6 +120,10 @@ function registerLightboxEvents() {
     var parts = this.href.split('?');
     var get = deparam(parts[1]);
     return Lightbox.get('MyResearch', 'Account', get);
+  });
+  $('.back-to-login').click(function() {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    return false;
   });
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
@@ -356,7 +348,17 @@ $(document).ready(function() {
     } else {
       $(this).html(vufindString.qrcode_hide).addClass("active");
     }
-    $(this).next('.qrcode').toggleClass('hidden');
+
+    var holder = $(this).next('.qrcode');
+
+    if (holder.find('img').length == 0) {
+      // We need to insert the QRCode image
+      var template = holder.find('.qrCodeImgTag').html();
+      holder.html(template);
+    }
+
+    holder.toggleClass('hidden');
+
     return false;
   });
 
@@ -372,7 +374,10 @@ $(document).ready(function() {
   }
 
   // Advanced facets
-  setupOrFacets();
+  $('.facetOR').click(function() {
+    $(this).closest('.collapse').html('<div class="list-group-item">'+vufindString.loading+'...</div>');
+    window.location.assign($(this).attr('href'));
+  });
 
   $('[name=bulkActionForm]').submit(function() {
     return bulkActionSubmit($(this));
@@ -390,12 +395,16 @@ $(document).ready(function() {
    * LIGHTBOX DEFAULT BEHAVIOUR *
    ******************************/
   Lightbox.addOpenAction(registerLightboxEvents);
+
   Lightbox.addFormCallback('newList', Lightbox.changeContent);
-  Lightbox.addFormHandler('loginForm', function(evt) {
-    ajaxLogin(evt.target);
-    return false;
-  });
   Lightbox.addFormCallback('accountForm', newAccountHandler);
+  Lightbox.addFormCallback('bulkDelete', function(html) {
+    location.reload();
+  });
+  Lightbox.addFormCallback('bulkRecord', function(html) {
+    Lightbox.close();
+    checkSaveStatuses();
+  });
   Lightbox.addFormCallback('emailSearch', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
@@ -403,9 +412,25 @@ $(document).ready(function() {
     Lightbox.close();
     checkSaveStatuses();
   });
-  Lightbox.addFormCallback('bulkRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
+
+  Lightbox.addFormHandler('exportForm', function(evt) {
+    $.ajax({
+      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      type:'POST',
+      dataType:'json',
+      data:Lightbox.getFormData($(evt.target)),
+      success:function(data) {
+        if(data.data.needs_redirect) {
+          document.location.href = data.data.result_url;
+        } else {
+          Lightbox.changeContent(data.data.result_additional);
+        }
+      },
+      error:function(d,e) {
+        //console.log(d,e); // Error reporting
+      }
+    });
+    return false;
   });
   Lightbox.addFormHandler('feedback', function(evt) {
     var $form = $(evt.target);
@@ -424,6 +449,10 @@ $(document).ready(function() {
         Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
       });
     }
+    return false;
+  });
+  Lightbox.addFormHandler('loginForm', function(evt) {
+    ajaxLogin(evt.target);
     return false;
   });
 

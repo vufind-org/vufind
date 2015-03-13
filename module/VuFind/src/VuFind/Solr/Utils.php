@@ -57,7 +57,7 @@ class Utils
         if (!preg_match($regEx, $query, $matches)) {
             return false;
         }
-        return array('from' => trim($matches[1]), 'to' => trim($matches[2]));
+        return ['from' => trim($matches[1]), 'to' => trim($matches[2])];
     }
 
     /**
@@ -71,30 +71,44 @@ class Utils
     public static function sanitizeDate($date)
     {
         // Strip brackets; we'll assume guesses are correct.
-        $date = str_replace(array('[', ']'), '', $date);
+        $date = str_replace(['[', ']'], '', $date);
 
         // Special case -- first four characters are not a year:
         if (!preg_match('/^[0-9]{4}/', $date)) {
             // 'n.d.' means no date known -- give up!
-            if (preg_match('/n\.?\s*d\.?/', $date)) {
+            if (preg_match('/^n\.?\s*d\.?$/', $date)) {
                 return null;
             }
 
-            // strtotime can only handle a limited range of dates; let's extract
-            // a year from the string and temporarily replace it with a known
-            // good year; we'll swap it back after the conversion.
-            $year = preg_match('/[0-9]{4}/', $date, $matches) ? $matches[0] : false;
-            if ($year) {
-                $date = str_replace($year, '1999', $date);
-            }
-            $time = @strtotime($date);
-            if ($time) {
-                $date = @date("Y-m-d", $time);
-                if ($year) {
-                    $date = str_replace('1999', $year, $date);
-                }
+            // Check for month/year or month-year formats:
+            if (preg_match('/([0-9])(-|\/)([0-9]{4})/', $date, $matches)
+                || preg_match('/([0-9]{2})(-|\/)([0-9]{4})/', $date, $matches)
+            ) {
+                $month = $matches[1];
+                $year = $matches[3];
+                $date = "$year-$month";
             } else {
-                return null;
+                // strtotime can only handle a limited range of dates; let's extract
+                // a year from the string and temporarily replace it with a known
+                // good year; we'll swap it back after the conversion.
+                $year = preg_match('/[0-9]{4}/', $date, $matches)
+                    ? $matches[0] : false;
+                if ($year) {
+                    $date = str_replace($year, '1999', $date);
+                }
+                $time = @strtotime($date);
+                if ($time) {
+                    $date = @date("Y-m-d", $time);
+                    if ($year) {
+                        $date = str_replace('1999', $year, $date);
+                    }
+                } else if ($year) {
+                    // If the best we can do is extract a 4-digit year, that's better
+                    // than nothing....
+                    $date = $year;
+                } else {
+                    return null;
+                }
             }
         }
 
@@ -102,8 +116,8 @@ class Utils
         $year = substr($date, 0, 4);
 
         // Let's get rid of punctuation and normalize separators:
-        $date = str_replace(array('.', ' ', '?'), '', $date);
-        $date = str_replace(array('/', '--', '-0'), '-', $date);
+        $date = str_replace(['.', ' ', '?'], '', $date);
+        $date = str_replace(['/', '--', '-0'], '-', $date);
 
         // If multiple dates are &'ed together, take just the first:
         list($date) = explode('&', $date);

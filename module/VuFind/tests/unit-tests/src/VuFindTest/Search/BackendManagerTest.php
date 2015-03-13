@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-
 namespace VuFindTest\Search;
 
 use VuFind\Search\BackendManager;
@@ -48,10 +47,10 @@ class BackendManagerTest extends TestCase
     /**
      * Test that get() throws on a non-object.
      *
-     * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage Expected backend registry to return object
-     *
      * @return void
+     *
+     * @expectedException        UnexpectedValueException
+     * @expectedExceptionMessage Expected backend registry to return object
      */
     public function testGetThrowsOnNonObject()
     {
@@ -66,10 +65,10 @@ class BackendManagerTest extends TestCase
     /**
      * Test that get() throws on a non-backend.
      *
-     * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage does not implement the expected interface
-     *
      * @return void
+     *
+     * @expectedException        UnexpectedValueException
+     * @expectedExceptionMessage does not implement the expected interface
      */
     public function testGetThrowsOnNonBackend()
     {
@@ -86,7 +85,7 @@ class BackendManagerTest extends TestCase
      *
      * @return void
      */
-    public function testAttachDetachShared ()
+    public function testAttachDetachShared()
     {
         $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
         $events   = new SharedEventManager();

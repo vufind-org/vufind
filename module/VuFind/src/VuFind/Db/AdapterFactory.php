@@ -102,15 +102,15 @@ class AdapterFactory
      * @return Adapter
      */
     public function getAdapterFromOptions($options)
-    {       
+    {
         // Set up custom options by database type:
         $driver = strtolower($options['driver']);
         switch ($driver) {
         case 'mysqli':
             $options['charset'] = isset($this->config->Database->charset)
                 ? $this->config->Database->charset : 'utf8';
-            $options['options'] = array('buffer_results' => true);
-            break; 
+            $options['options'] = ['buffer_results' => true];
+            break;
         }
 
         // Set up database connection:
@@ -158,13 +158,13 @@ class AdapterFactory
         $password = !is_null($overridePass) ? $overridePass : $password;
 
         // Set up default options:
-        $options = array(
+        $options = [
             'driver' => $this->getDriverName($type),
             'hostname' => $host,
             'username' => $username,
             'password' => $password,
             'database' => $dbName
-        );
+        ];
 
         return $this->getAdapterFromOptions($options);
     }

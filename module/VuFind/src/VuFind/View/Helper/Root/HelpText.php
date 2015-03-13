@@ -66,7 +66,7 @@ class HelpText extends \Zend\View\Helper\AbstractHelper
      *
      * @var array
      */
-    protected $warnings = array();
+    protected $warnings = [];
 
     /**
      * Constructor
@@ -107,14 +107,14 @@ class HelpText extends \Zend\View\Helper\AbstractHelper
         // Set up the needed context in the view:
         $this->contextHelper->__invoke($this->getView());
         $oldContext = $this->contextHelper
-            ->apply(null === $context ? array() : $context);
+            ->apply(null === $context ? [] : $context);
 
         // Sanitize the template name to include only alphanumeric characters
         // or underscores.
         $safe_topic = preg_replace('/[^\w]/', '', $name);
 
         // Clear warnings
-        $this->warnings = array();
+        $this->warnings = [];
 
         try {
             $tpl = "HelpTranslations/{$this->language}/{$safe_topic}.phtml";

@@ -40,6 +40,8 @@ use VuFindHttp\HttpServiceInterface,
  */
 class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * VuDL config
      *
@@ -52,14 +54,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @var array
      */
-    protected $parentLists = array();
-
-    /**
-     * HTTP service
-     *
-     * @var HttpServiceInterface
-     */
-    protected $httpService = false;
+    protected $parentLists = [];
 
     /**
      * Constructor
@@ -69,18 +64,6 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function __construct($config)
     {
         $this->config = $config;
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**
@@ -104,7 +87,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         return isset($this->config->Details)
             ? $this->config->Details->toArray()
-            : array();
+            : [];
     }
 
     /**
@@ -134,11 +117,11 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if (empty($detailsList)) {
             throw new \Exception('Missing [Details] in VuDL.ini');
         }
-        $details = array();
-        foreach ($detailsList as $key=>$title) {
+        $details = [];
+        foreach ($detailsList as $key => $title) {
             $keys = explode(',', $key);
             $field = false;
-            for ($i=0;$i<count($keys);$i++) {
+            for ($i = 0;$i<count($keys);$i++) {
                 if (isset($record[$keys[$i]])) {
                     $field = $keys[$i];
                     break;
@@ -149,13 +132,13 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
             if (count($keys) == 1) {
                 if (isset($record[$keys[0]])) {
-                    $details[$field] = array(
+                    $details[$field] = [
                         'title' => $title,
                         'value' => $record[$keys[0]]
-                    );
+                    ];
                 }
             } else {
-                $value = array();
+                $value = [];
                 foreach ($keys as $k) {
                     if (isset($record[$k])) {
                         if (is_array($record[$k])) {
@@ -165,10 +148,10 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         }
                     }
                 }
-                $details[$field] = array(
+                $details[$field] = [
                     'title' => $title,
                     'value' => $value
-                );
+                ];
             }
         }
         return $details;
@@ -186,13 +169,13 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     protected function traceParents($tree, $id)
     {
         // BFS from top (root id) to target $id
-        $queue = array(
-            array(
+        $queue = [
+            [
                 'id' => $this->getRootId(),
-                'path' => array()
-            )
-        );
-        $ret = array();
+                'path' => []
+            ]
+        ];
+        $ret = [];
         while (!empty($queue)) {
             $current = array_shift($queue);
             $record = $tree[$current['id']];
@@ -207,10 +190,10 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 } else { // Add to queue for more
                     array_push(
                         $queue,
-                        array(
+                        [
                             'id' => $cid,
                             'path' => $path
-                        )
+                        ]
                     );
                 }
             }

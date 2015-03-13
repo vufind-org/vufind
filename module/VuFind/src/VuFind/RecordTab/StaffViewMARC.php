@@ -39,6 +39,14 @@ namespace VuFind\RecordTab;
 class StaffViewMARC extends AbstractBase
 {
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->accessPermission = 'access.StaffViewTab';
+    }
+
+    /**
      * Get the on-screen description for this tab.
      *
      * @return string

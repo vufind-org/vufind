@@ -103,11 +103,11 @@ class Results extends \VuFind\Search\Base\Results
         $dateFacets = $this->getParams()->getDateFacetSettings();
         if (!empty($dateFacets)) {
             foreach ($dateFacets as $dateFacet) {
-                $this->responseFacets[] = array(
+                $this->responseFacets[] = [
                     'fieldName' => $dateFacet,
                     'displayName' => $dateFacet,
-                    'counts' => array()
-                );
+                    'counts' => []
+                ];
             }
         }
 
@@ -135,7 +135,7 @@ class Results extends \VuFind\Search\Base\Results
         $order = array_flip(array_keys($filter));
 
         // Loop through the facets returned by Summon.
-        $facetResult = array();
+        $facetResult = [];
         if (is_array($this->responseFacets)) {
             foreach ($this->responseFacets as $current) {
                 // The "displayName" value is actually the name of the field on
@@ -161,7 +161,7 @@ class Results extends \VuFind\Search\Base\Results
         ksort($facetResult);
 
         // Rewrite the sorted array with appropriate keys:
-        $finalResult = array();
+        $finalResult = [];
         foreach ($facetResult as $current) {
             $finalResult[$current['displayName']] = $current;
         }
@@ -178,7 +178,7 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function stripFilterParameters($rawFilter)
     {
-        $filter = array();
+        $filter = [];
         foreach ($rawFilter as $key => $value) {
             $key = explode(',', $key);
             $key = trim($key[0]);
@@ -221,7 +221,7 @@ class Results extends \VuFind\Search\Base\Results
             // an active filter for the current field?
             $orField = '~' . $field;
             $itemsToCheck = isset($filterList[$field])
-                ? $filterList[$field] : array();
+                ? $filterList[$field] : [];
             if (isset($filterList[$orField])) {
                 $itemsToCheck += $filterList[$orField];
             }
@@ -257,12 +257,12 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function processSpelling($spelling)
     {
-        $this->suggestions = array();
+        $this->suggestions = [];
         foreach ($spelling as $current) {
             if (!isset($this->suggestions[$current['originalQuery']])) {
-                $this->suggestions[$current['originalQuery']] = array(
-                    'suggestions' => array()
-                );
+                $this->suggestions[$current['originalQuery']] = [
+                    'suggestions' => []
+                ];
             }
             $this->suggestions[$current['originalQuery']]['suggestions'][]
                 = $current['suggestedQuery'];
@@ -277,13 +277,13 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getSpellingSuggestions()
     {
-        $retVal = array();
+        $retVal = [];
         foreach ($this->getRawSuggestions() as $term => $details) {
             foreach ($details['suggestions'] as $word) {
                 // Strip escaped characters in the search term (for example, "\:")
                 $term = stripcslashes($term);
                 $word = stripcslashes($word);
-                $retVal[$term]['suggestions'][$word] = array('new_term' => $word);
+                $retVal[$term]['suggestions'][$word] = ['new_term' => $word];
             }
         }
         return $retVal;

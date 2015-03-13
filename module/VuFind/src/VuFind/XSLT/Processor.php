@@ -48,7 +48,7 @@ class Processor
      *
      * @return string      Transformed XML
      */
-    public static function process($xslt, $xml, $params = array())
+    public static function process($xslt, $xml, $params = [])
     {
         $style = new DOMDocument();
         // TODO: support local overrides

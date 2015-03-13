@@ -95,7 +95,7 @@ abstract class EdsApi_REST_Base
      *      <li>profile - EBSCO profile to use for calls to the API. </li>
      *    </ul>
      */
-    public function __construct($settings = array())
+    public function __construct($settings = [])
     {
         if (is_array($settings)) {
             foreach ($settings as $key => $value) {
@@ -136,7 +136,7 @@ abstract class EdsApi_REST_Base
     public function info($authenticationToken = null, $sessionToken = null)
     {
         $this->debugPrint("Info");
-        $url = $this->edsApiHost.'/info';
+        $url = $this->edsApiHost . '/info';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers);
     }
@@ -157,12 +157,11 @@ abstract class EdsApi_REST_Base
             'Create Session for profile: '
             . "$profile, guest: $isGuest, authToken: $authToken "
         );
-        $qs = array('profile' => $profile, 'guest' => $isGuest);
-        $url = $this->edsApiHost.'/createsession';
+        $qs = ['profile' => $profile, 'guest' => $isGuest];
+        $url = $this->edsApiHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
         return $this->call($url, $headers, $qs);
     }
-
 
     /**
      * Retrieves a record specified by its identifiers
@@ -184,11 +183,11 @@ abstract class EdsApi_REST_Base
         $this->debugPrint(
             "Get Record. an: $an, dbid: $dbId, $highlightTerms: $highlightTerms"
         );
-        $qs = array('an' => $an, 'dbid' => $dbId);
+        $qs = ['an' => $an, 'dbid' => $dbId];
         if (null != $highlightTerms) {
             $qs['highlightterms'] = $highlightTerms;
         }
-        $url = $this->edsApiHost.'/retrieve';
+        $url = $this->edsApiHost . '/retrieve';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
 
@@ -208,7 +207,7 @@ abstract class EdsApi_REST_Base
         // Query String Parameters
         $qs = $query->convertToQueryStringParameterArray();
         $this->debugPrint('Query: ' . print_r($qs, true));
-        $url = $this->edsApiHost.'/search';
+        $url = $this->edsApiHost . '/search';
         $headers = $this->setTokens($authenticationToken, $sessionToken);
         return $this->call($url, $headers, $qs);
     }
@@ -227,9 +226,9 @@ abstract class EdsApi_REST_Base
         $this->debugPrint(
             "Authenticating: username: $username, password: $password, orgid: $orgid"
         );
-        $url = $this->authHost.'/uidauth';
+        $url = $this->authHost . '/uidauth';
         $org = isset($orgid) ? $orgid : $this->orgId;
-        $authInfo = array();
+        $authInfo = [];
         if (isset($username)) {
             $authInfo['UserId'] = $username;
         }
@@ -252,7 +251,7 @@ abstract class EdsApi_REST_Base
      */
     protected function createQSFromArray($params)
     {
-        $queryParameters = array();
+        $queryParameters = [];
         if (null != $params && is_array($params)) {
             foreach ($params as $key => $value) {
                 if (is_array($value)) {
@@ -264,16 +263,16 @@ abstract class EdsApi_REST_Base
                     }
                     $cnt = 0;
                     foreach ($value as $subValue) {
-                        $cnt = $cnt + 1 ;
+                        $cnt = $cnt + 1;
                         $finalParameterName = $parameterName;
                         if (SearchRequestModel::isParameterIndexed($key)) {
-                            $finalParameterName = $parameterName.'-'.$cnt;
+                            $finalParameterName = $parameterName . '-' . $cnt;
                         }
                         $queryParameters[]
-                            = $finalParameterName.'='.urlencode($subValue);
+                            = $finalParameterName . '=' . urlencode($subValue);
                     }
                 } else {
-                    $queryParameters[] = $key.'='.urlencode($value);
+                    $queryParameters[] = $key . '=' . urlencode($value);
                 }
             }
         }
@@ -293,7 +292,7 @@ abstract class EdsApi_REST_Base
      * @throws \EbscoEdsApiException
      * @return object         EDS API response (or an Error object).
      */
-    protected function call($baseUrl, $headerParams, $params = array(),
+    protected function call($baseUrl, $headerParams, $params = [],
         $method = 'GET', $message = null, $messageFormat = ""
     ) {
         // Build Query String Parameters
@@ -304,10 +303,10 @@ abstract class EdsApi_REST_Base
         }
         $this->debugPrint("Querystring to use: $queryString ");
         // Build headers
-        $headers = array(
+        $headers = [
             'Accept' => $this->accept,
             'Content-Type' => $this->contentType
-        );
+        ];
         if (null != $headerParams && !empty($headerParams)) {
             foreach ($headerParams as $key => $value) {
                 $headers[$key] = $value;
@@ -339,7 +338,7 @@ abstract class EdsApi_REST_Base
             );
         }
         if (!isset($result)) {
-            throw new EbscoEdsApiException('Unknown error processing reponse');
+            throw new EbscoEdsApiException('Unknown error processing response');
         }
         return $result;
     }
@@ -355,7 +354,7 @@ abstract class EdsApi_REST_Base
      */
     protected function setTokens($authenticationToken = null, $sessionToken = null)
     {
-        $headers = array();
+        $headers = [];
         if (!empty($authenticationToken)) {
             $headers['x-authenticationToken'] = $authenticationToken;
         }

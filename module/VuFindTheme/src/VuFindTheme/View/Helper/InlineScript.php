@@ -59,7 +59,7 @@ class InlineScript extends HeadScript
      * @return InlineScript
      */
     public function __invoke($mode = HeadScript::FILE, $spec = null,
-        $placement = 'APPEND', array $attrs = array(), $type = 'text/javascript'
+        $placement = 'APPEND', array $attrs = [], $type = 'text/javascript'
     ) {
         return parent::__invoke($mode, $spec, $placement, $attrs, $type);
     }

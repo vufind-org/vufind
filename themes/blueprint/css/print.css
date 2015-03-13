@@ -4,8 +4,11 @@
     display: none;
 }
 
-.main .span-18 {
-    width: 930px;
+body {
+    margin-top:0;
+}
+.container, .main .span-18 {
+    width:100%;
 }
 
 .result .span-9 {

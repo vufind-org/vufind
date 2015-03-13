@@ -64,7 +64,7 @@ class Writer
      *
      * @throws \Exception
      */
-    public function __construct($filename, $content = null, $comments = array())
+    public function __construct($filename, $content = null, $comments = [])
     {
         $this->filename = $filename;
         if (null === $content) {
@@ -94,7 +94,7 @@ class Writer
         $lines = explode("\n", $this->content);
 
         // Reset some flags and prepare to rewrite the content:
-        $settingSet= false;
+        $settingSet = false;
         $currentSection = "";
         $this->content = "";
 
@@ -158,7 +158,7 @@ class Writer
     public function save()
     {
         // Create parent directory structure if necessary:
-        $stack = array();
+        $stack = [];
         $dirname = dirname($this->filename);
         while (!empty($dirname) && !is_dir($dirname)) {
             $stack[] = $dirname;
@@ -175,7 +175,7 @@ class Writer
     }
 
     /**
-     * support method for buildContent -- format a value
+     * Support method for buildContent -- format a value
      *
      * @param mixed $e Value to format
      *
@@ -195,7 +195,7 @@ class Writer
     }
 
     /**
-     * support method for buildContent -- format a line
+     * Support method for buildContent -- format a line
      *
      * @param string $key   Configuration key
      * @param mixed  $value Configuration value
@@ -211,11 +211,11 @@ class Writer
             $tabStr .= ' ';
         }
 
-        return $key . $tabStr . "= ". $this->buildContentValue($value);
+        return $key . $tabStr . "= " . $this->buildContentValue($value);
     }
 
     /**
-     * support method for buildContent -- format an array into lines
+     * Support method for buildContent -- format an array into lines
      *
      * @param string $key   Configuration key
      * @param array  $value Configuration value
@@ -241,7 +241,7 @@ class Writer
     }
 
     /**
-     * write an ini file, adapted from
+     * Write an ini file, adapted from
      * http://php.net/manual/function.parse-ini-file.php
      *
      * @param array $assoc_arr Array to output
@@ -252,22 +252,22 @@ class Writer
     protected function buildContent($assoc_arr, $comments)
     {
         $content = "";
-        foreach ($assoc_arr as $key=>$elem) {
+        foreach ($assoc_arr as $key => $elem) {
             if (isset($comments['sections'][$key]['before'])) {
                 $content .= $comments['sections'][$key]['before'];
             }
-            $content .= "[".$key."]";
+            $content .= "[" . $key . "]";
             if (!empty($comments['sections'][$key]['inline'])) {
                 $content .= "\t" . $comments['sections'][$key]['inline'];
             }
             $content .= "\n";
-            foreach ($elem as $key2=>$elem2) {
+            foreach ($elem as $key2 => $elem2) {
                 if (isset($comments['sections'][$key]['settings'][$key2])) {
                     $settingComments
                         = $comments['sections'][$key]['settings'][$key2];
                     $content .= $settingComments['before'];
                 } else {
-                    $settingComments = array();
+                    $settingComments = [];
                 }
                 if (is_array($elem2)) {
                     $content .= $this->buildContentArrayLines($key2, $elem2);

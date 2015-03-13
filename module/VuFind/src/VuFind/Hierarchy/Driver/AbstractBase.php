@@ -89,7 +89,7 @@ abstract class AbstractBase
      */
     public function __construct(\Zend\Config\Config $config,
         DataManager $dataManager, RendererManager $rendererManager,
-        $options = array()
+        $options = []
     ) {
         $this->config = $config;
         $this->dataManager = $dataManager;

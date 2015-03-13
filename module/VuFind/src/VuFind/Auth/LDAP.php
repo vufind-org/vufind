@@ -52,13 +52,13 @@ class LDAP extends AbstractBase
     protected function validateConfig()
     {
         // Check for missing parameters:
-        $requiredParams = array('host', 'port', 'basedn', 'username');
+        $requiredParams = ['host', 'port', 'basedn', 'username'];
         foreach ($requiredParams as $param) {
             if (!isset($this->config->LDAP->$param)
                 || empty($this->config->LDAP->$param)
             ) {
                 throw new AuthException(
-                    "One or more LDAP parameter are missing. Check your config.ini!"
+                    "One or more LDAP parameters are missing. Check your config.ini!"
                 );
             }
         }
@@ -78,7 +78,7 @@ class LDAP extends AbstractBase
 
         // Normalize all values to lowercase except for potentially case-sensitive
         // bind and basedn credentials.
-        $doNotLower = array('bind_username', 'bind_password', 'basedn');
+        $doNotLower = ['bind_username', 'bind_password', 'basedn'];
         return (in_array($name, $doNotLower)) ? $value : strtolower($value);
     }
 
@@ -126,7 +126,7 @@ class LDAP extends AbstractBase
                 return $this->processLDAPUser($username, $data);
             }
         } else {
-            $this->debug('LDAP: user not found');
+            $this->debug('user not found');
         }
 
         throw new AuthException('authentication_error_invalid');
@@ -145,25 +145,25 @@ class LDAP extends AbstractBase
         // time!
         $host = $this->getSetting('host');
         $port = $this->getSetting('port');
-        $this->debug("LDAP: connecting to host=$host, port=$port");
+        $this->debug("connecting to host=$host, port=$port");
         $connection = @ldap_connect($host, $port);
         if (!$connection) {
-            $this->debug('LDAP: connection failed');
+            $this->debug('connection failed');
             throw new AuthException('authentication_error_technical');
         }
 
         // Set LDAP options -- use protocol version 3
         if (!@ldap_set_option($connection, LDAP_OPT_PROTOCOL_VERSION, 3)) {
-            $this->debug('LDAP: Failed to set protocol version 3');
+            $this->debug('Failed to set protocol version 3');
         }
 
         // if the host parameter is not specified as ldaps://
         // then we need to initiate TLS so we
         // can have a secure connection over the standard LDAP port.
         if (stripos($host, 'ldaps://') === false) {
-            $this->debug('LDAP: Starting TLS');
+            $this->debug('Starting TLS');
             if (!@ldap_start_tls($connection)) {
-                $this->debug('LDAP: TLS failed');
+                $this->debug('TLS failed');
                 throw new AuthException('authentication_error_technical');
             }
         }
@@ -186,10 +186,10 @@ class LDAP extends AbstractBase
         $user = $this->getSetting('bind_username');
         $pass = $this->getSetting('bind_password');
         if ($user != '' && $pass != '') {
-            $this->debug("LDAP: binding as $user");
+            $this->debug("binding as $user");
             $ldapBind = @ldap_bind($connection, $user, $pass);
             if (!$ldapBind) {
-                $this->debug('LDAP: bind failed -- ' . ldap_error($connection));
+                $this->debug('bind failed -- ' . ldap_error($connection));
                 throw new AuthException('authentication_error_technical');
             }
         }
@@ -207,10 +207,10 @@ class LDAP extends AbstractBase
     {
         $ldapFilter = $this->getSetting('username') . '=' . $username;
         $basedn = $this->getSetting('basedn');
-        $this->debug("LDAP: search for $ldapFilter using basedn=$basedn");
+        $this->debug("search for $ldapFilter using basedn=$basedn");
         $ldapSearch = @ldap_search($connection, $basedn, $ldapFilter);
         if (!$ldapSearch) {
-            $this->debug('LDAP: search failed -- ' . ldap_error($connection));
+            $this->debug('search failed -- ' . ldap_error($connection));
             throw new AuthException('authentication_error_technical');
         }
 
@@ -230,18 +230,18 @@ class LDAP extends AbstractBase
     {
         // Validate the user credentials by attempting to bind to LDAP:
         $dn = $info[0]['dn'];
-        $this->debug("LDAP: binding as $dn");
+        $this->debug("binding as $dn");
         $ldapBind = @ldap_bind($connection, $dn, $password);
         if (!$ldapBind) {
-            $this->debug('LDAP: bind failed -- ' . ldap_error($connection));
+            $this->debug('bind failed -- ' . ldap_error($connection));
             return false;
         }
         // If the bind was successful, we can look up the full user info:
-        $this->debug('LDAP: bind successful; reading details');
+        $this->debug('bind successful; reading details');
         $ldapSearch = ldap_read($connection, $dn, 'objectclass=*');
         $data = ldap_get_entries($connection, $ldapSearch);
         if ($data === false) {
-            $this->debug('LDAP: Read failed -- ' . ldap_error($connection));
+            $this->debug('Read failed -- ' . ldap_error($connection));
             throw new AuthException('authentication_error_technical');
         }
         return $data;
@@ -258,10 +258,10 @@ class LDAP extends AbstractBase
     protected function processLDAPUser($username, $data)
     {
         // Database fields that we may be able to load from LDAP:
-        $fields = array(
+        $fields = [
             'firstname', 'lastname', 'email', 'cat_username', 'cat_password',
             'college', 'major'
-        );
+        ];
 
         // User object to populate from LDAP:
         $user = $this->getUserTable()->getByUsername($username);
@@ -278,8 +278,8 @@ class LDAP extends AbstractBase
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
                         $value = $data[$i][$configValue][0];
-                        $this->debug("LDAP: found $field = $value");
-                        if ($field != "cat_password" ) {
+                        $this->debug("found $field = $value");
+                        if ($field != "cat_password") {
                             $user->$field = $value;
                         } else {
                             $catPassword = $value;
@@ -291,7 +291,7 @@ class LDAP extends AbstractBase
 
         // Save credentials if applicable:
         if (!empty($catPassword) && !empty($user->cat_username)) {
-            $user->saveCredentials($user->cat_username, $catPassword); 
+            $user->saveCredentials($user->cat_username, $catPassword);
         }
 
         // Update the user in the database, then return it to the caller:

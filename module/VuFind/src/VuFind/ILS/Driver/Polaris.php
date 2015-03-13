@@ -41,6 +41,8 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+
     /**
      * Web services host
      *
@@ -75,25 +77,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var string
      */
     protected $ws_requestingorgid;
-
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
 
     /**
      * Initialize the driver.
@@ -134,7 +117,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return obj
      */
-    protected function makeRequest($api_query, $http_method="GET",
+    protected function makeRequest($api_query, $http_method = "GET",
         $patronpassword = "", $json = false
     ) {
         // TODO, just make this for this one call
@@ -143,18 +126,18 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $url = $this->ws_host . $this->ws_app . $api_query;
 
-        $signature_text = $http_method.$url.$date.$patronpassword;
+        $signature_text = $http_method . $url . $date . $patronpassword;
         $signature = base64_encode(
             hash_hmac('sha1', $signature_text, $this->ws_api_key, true)
         );
 
         $auth_token = "PWS {$this->ws_api_id}:$signature";
-        $http_headers = array(
+        $http_headers = [
             "Content-type: application/json",
             "Accept: application/json",
             "PolarisDate: $date",
             "Authorization: $auth_token"
-        );
+        ];
 
         try {
             $client = $this->httpService->createClient($url);
@@ -181,7 +164,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * return human-readable date from text like Date(1360051200000-0800)
+     * Return human-readable date from text like Date(1360051200000-0800)
      *
      * @param string $jsontime Input
      *
@@ -206,7 +189,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getMyHolds($patron)
     {
-        $holds = array();
+        $holds = [];
         $response = $this->makeRequest(
             "patron/{$patron['cat_username']}/holdrequests/active", 'GET',
             $patron['cat_password']
@@ -216,7 +199,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
             $create = $this->formatJSONTime($holds_response->ActivationDate);
             $expire = $this->formatJSONTime($holds_response->ExpirationDate);
-            $holds[] = array(
+            $holds[] = [
                 'id'             => $holds_response->BibID,
                 'location' => $holds_response->PickupBranchName,
                 'reqnum'     => $holds_response->HoldRequestID,
@@ -224,7 +207,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'create'     => $create,
                 'position' => $holds_response->QueuePosition,
                 'title'      => $holds_response->Title,
-            );
+            ];
 
         }
         return $holds;
@@ -243,7 +226,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getStatus($id)
     {
-        $holding = array();
+        $holding = [];
         $response = $this->makeRequest("bib/$id/holdings");
         $holdings_response_array = $response->BibHoldingsGetRows;
 
@@ -265,7 +248,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $duedate = date("n-j-Y", strtotime($holdings_response->DueDate));
             }
 
-            $holding[] = array(
+            $holding[] = [
                 'availability' => $availability,
                 'id'                 => $id,
                 'status'         => $holdings_response->CircStatus,
@@ -276,7 +259,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 //'number'   => $holdings_response->ItemsIn,
                 'number'         => $copy_count,
                 'barcode'    => $holdings_response->Barcode,
-            );
+            ];
 
         }
         return $holding;
@@ -294,7 +277,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         $count = 0;
         foreach ($ids as $id) {
             $items[$count] = $this->getStatus($id);
@@ -308,12 +291,15 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * driver ini file.
      *
      * @param string $function The name of the feature to be checked
+     * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getConfig($function)
+    public function getConfig($function, $params = null)
     {
-        if (isset($this->config[$function]) ) {
+        if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
         } else {
             $functionConfig = false;
@@ -358,9 +344,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         // all activations are for now(), for now.
         // microtime is msec or sec?? seems to have changed
-        $activationdate = '/Date(' . intval(microtime(true) * 1000) .')/';
+        $activationdate = '/Date(' . intval(microtime(true) * 1000) . ')/';
 
-        $jsonrequest = array(
+        $jsonrequest = [
             'PatronID' => $holdDetails['patron']['id'],
             'BibID'      => $holdDetails['id'],
             'ItemBarcode'  => '',
@@ -374,14 +360,14 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'UserID'                    => $userid,
             'RequestingOrgID' => $this->ws_requestingorgid,
             'TargetGUID'            => '',
-        );
+        ];
 
         $response = $this->makeRequest('holdrequest', 'POST', '', $jsonrequest);
 
         if ($response->StatusValue == 1) {
-            return array('success' => true,  'sysMessage' => $response->Message);
+            return ['success' => true,  'sysMessage' => $response->Message];
         } else {
-            return array('success' => false, 'sysMessage' => $response->Message);
+            return ['success' => false, 'sysMessage' => $response->Message];
         }
 
     }
@@ -403,6 +389,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return array             An array of associative arrays with locationID
      * and locationDisplay keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
@@ -410,20 +397,20 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (isset($this->ws_pickUpLocations)) {
             // hardcoded pickup locations in the .ini file? or...
             foreach ($this->ws_pickUpLocations as $code => $library) {
-                $locations[] = array(
+                $locations[] = [
                     'locationID'            => $code,
                     'locationDisplay' => $library
-                );
+                ];
             }
         } else {
             // we get them from the API
             $response = $this->makeRequest("organizations/branch");
             $locations_response_array = $response->OrganizationsGetRows;
             foreach ($locations_response_array as $location_response) {
-                $locations[] = array(
+                $locations[] = [
                     'locationID'            => $location_response->OrganizationID,
                     'locationDisplay' => $location_response->Name,
-                );
+                ];
             }
         }
         return $locations;
@@ -442,6 +429,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * or may be ignored.
      *
      * @return string           The default pickup location for the patron.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
@@ -461,7 +449,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -480,11 +468,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * whatever that may mean.
      *
      * @return array             Associative array with 'count' and 'results' keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        return array('count' => 0, 'results' => array());
+        return ['count' => 0, 'results' => []];
     }
 
     /**
@@ -497,11 +486,12 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
      * @return mixed An array of associative arrays representing reserve items.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -524,7 +514,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             return null;
         }
 
-        $user = array();
+        $user = [];
 
         $user['id']                     = $response->PatronID;
         $user['firstname']      = null;

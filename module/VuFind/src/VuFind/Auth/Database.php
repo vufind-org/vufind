@@ -110,10 +110,10 @@ class Database extends AbstractBase
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
-        $params = array(
+        $params = [
             'firstname' => '', 'lastname' => '', 'username' => '',
             'password' => '', 'password2' => '', 'email' => ''
-        );
+        ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
         }
@@ -141,13 +141,13 @@ class Database extends AbstractBase
         }
 
         // If we got this far, we're ready to create the account:
-        $data = array(
+        $data = [
             'username'  => $params['username'],
             'firstname' => $params['firstname'],
             'lastname'  => $params['lastname'],
             'email'     => $params['email'],
             'created'   => date('Y-m-d H:i:s')
-        );
+        ];
 
         if ($this->passwordHashingEnabled()) {
             $bcrypt = new Bcrypt();
@@ -173,9 +173,9 @@ class Database extends AbstractBase
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
-        $params = array(
+        $params = [
             'username' => '', 'password' => '', 'password2' => ''
-        );
+        ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
         }
@@ -303,7 +303,17 @@ class Database extends AbstractBase
         return true;
     }
 
-   /**
+    /**
+     * Does this authentication method support password recovery
+     *
+     * @return bool
+     */
+    public function supportsPasswordRecovery()
+    {
+        return true;
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @return array

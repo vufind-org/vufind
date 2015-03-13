@@ -39,7 +39,7 @@ namespace VuFind\Db\Table;
 class ChangeTracker extends Gateway
 {
     /**
-     * date/time format for database
+     * Date/time format for database
      *
      * @var string
      */
@@ -64,7 +64,7 @@ class ChangeTracker extends Gateway
      */
     public function retrieve($core, $id)
     {
-        return $this->select(array('core' => $core, 'id' => $id))->current();
+        return $this->select(['core' => $core, 'id' => $id])->current();
     }
 
     /**
