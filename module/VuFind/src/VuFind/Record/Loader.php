@@ -148,7 +148,13 @@ class Loader
             $records = $this->loadBatchForSource(array_keys($details), $source);
             foreach ($records as $current) {
                 $id = $current->getUniqueId();
-                $retVal[$details[$id]] = $current;
+                // In theory, we should be able to assume that $details[$id] is
+                // set... but in practice, we can't make that assumption. In some
+                // cases, Summon IDs will change, and requests for an old ID value
+                // will return a record with a different ID.
+                if (isset($details[$id])) {
+                    $retVal[$details[$id]] = $current;
+                }
             }
         }
 

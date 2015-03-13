@@ -81,18 +81,6 @@ function lessFacets(id) {
   $('#more-'+id).removeClass('hidden');
 }
 
-// Advanced facets
-function updateOrFacets(url, op) {
-  window.location.assign(url);
-  var list = $(op).parents('ul');
-  var header = $(list).find('li.nav-header');
-  list.html(header[0].outerHTML+'<div class="alert alert-info">'+vufindString.loading+'...</div>');
-}
-function setupOrFacets() {
-  $('.facetOR').find('.icon-check').replaceWith('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
-  $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
-}
-
 // Lightbox
 /*
  * This function adds jQuery events to elements in the lightbox
@@ -391,7 +379,10 @@ $(document).ready(function() {
   }
 
   // Advanced facets
-  setupOrFacets();
+  $('.facetOR').click(function() {
+    $(this).closest('.collapse').html('<div class="list-group-item">'+vufindString.loading+'...</div>');
+    window.location.assign($(this).attr('href'));
+  });
 
   $('[name=bulkActionForm]').submit(function() {
     return bulkActionSubmit($(this));

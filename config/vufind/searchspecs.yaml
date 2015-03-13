@@ -477,7 +477,7 @@ DeweyBrowse:
 
 LccBrowse:
   QueryFields:
-    callnumber-a:
+    callnumber-raw:
       - [onephrase, ~]
 
 CallNumber:
@@ -486,7 +486,6 @@ CallNumber:
   # which will return a larger number of hits at a lower boost.
   CustomMunge:
     callnumber_exact:
-      - [uppercase]
       # Strip whitespace and quotes:
       - [preg_replace, '/[ "]/', ""]
       # Escape colons (unescape first to avoid double-escapes):
@@ -495,7 +494,6 @@ CallNumber:
       # Strip pre-existing trailing asterisks:
       - [preg_replace, "/\*+$/", ""]
     callnumber_fuzzy:
-      - [uppercase]
       # Strip whitespace and quotes:
       - [preg_replace, '/[ "]/', ""]
       # Escape colons (unescape first to avoid double-escapes):
@@ -505,10 +503,10 @@ CallNumber:
       - [preg_replace, "/\*+$/", ""]
       - [append, "*"]
   QueryFields:
-    callnumber:
+    callnumber-search:
       - [callnumber_exact, 1000]
       - [callnumber_fuzzy, ~]
-    dewey-full:
+    dewey-search:
       - [callnumber_exact, 1000]
       - [callnumber_fuzzy, ~]
 

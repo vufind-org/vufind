@@ -70,46 +70,50 @@ class RouteGenerator
     }
 
     /**
-     * Add a list route to the configuration.
+     * Add a dynamic route to the configuration.
      *
-     * @param array  $config    Configuration array to update
-     * @param string $routeName Name of route to generate
-     * @param string $action    MyResearch action
+     * @param array  $config     Configuration array to update
+     * @param string $routeName  Name of route to generate
+     * @param string $controller Controller name
+     * @param string $action     Action and any dynamic parts
      *
      * @return void
      */
-    public function addListRoute(& $config, $routeName, $action)
+    public function addDynamicRoute(& $config, $routeName, $controller, $action)
     {
+        list($actionName) = explode('/', $action, 2);
         $config['router']['routes'][$routeName] = [
             'type'    => 'Zend\Mvc\Router\Http\Segment',
             'options' => [
-                'route'    => '/MyResearch/' . $action . '/[:id]',
+                'route'    => "/$controller/$action",
                 'constraints' => [
                     'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                 ],
                 'defaults' => [
-                    'controller' => 'MyResearch',
-                    'action'     => $action,
+                    'controller' => $controller,
+                    'action'     => $actionName,
                 ]
             ]
         ];
     }
 
     /**
-     * Add list routes to the configuration.
+     * Add dynamic routes to the configuration.
      *
      * @param array $config Configuration array to update
-     * @param array $routes Associative array (route name => action) of routes
-     * to add.
+     * @param array $routes Associative array of arrays
+     * (controller => [route name => action]) of routes to add.
      *
      * @return void
      */
-    public function addListRoutes(& $config, $routes)
+    public function addDynamicRoutes(& $config, $routes)
     {
-        // Build list routes
-        foreach ($routes as $routeName => $action) {
-            $this->addListRoute($config, $routeName, $action);
+        // Build library card routes
+        foreach ($routes as $controller => $controllerRoutes) {
+            foreach ($controllerRoutes as $routeName => $action) {
+                $this->addDynamicRoute($config, $routeName, $controller, $action);
+            }
         }
     }
 
