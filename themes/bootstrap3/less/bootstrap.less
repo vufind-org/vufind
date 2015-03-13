@@ -26,7 +26,10 @@
     margin:0;
   }
 }
-.highlight{&:extend(mark);}
+.highlight,mark {
+  background: lighten(#FF0, 20%);
+  padding: .1em .2em;
+}
 .icon-bar {background-color:#888}
 img {max-width:100%}
 label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-left:35px}
