@@ -63,7 +63,7 @@ call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse hierarchy hierarchy_
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse author author_browse
-call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse lcc callnumber-a 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
+call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse lcc callnumber-raw 1 "-Dbrowse.normalizer=org.vufind.util.LCCallNormalizer"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse dewey dewey-raw 1 "-Dbrowse.normalizer=org.vufind.util.DeweyCallNormalizer"
 goto end
 
