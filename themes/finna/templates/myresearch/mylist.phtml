@@ -1,0 +1,122 @@
+<?
+  // Grab list object from search results (if applicable):
+  $list = $this->results->getListObject();
+
+  // Set up page title:
+  $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
+
+  // Set up breadcrumbs:
+  $currPage = isset($list) ? 'List' : 'Favorites';
+  $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
+
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("check_item_statuses.js");
+
+  $recordTotal = $this->results->getResultTotal();
+
+  // Convenience variable:
+  $account = $this->auth()->getManager();
+  $user = $this->auth()->isLoggedIn();
+  
+  // Set up Finna Main Header:
+
+?>
+
+
+
+<?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
+  <? foreach ($this->results->getRecommendations('side') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+<div class="container">
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">  
+    <div class="clearfix hidden-print">
+    <div class="row">
+      <div class="col-xs-7">
+      <h2 class="list-title"><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?>  <i class="fa fa-pen"></i></h2><br>
+      <? if ($list && !empty($list->description)): ?>
+        <h5 class="list-description"><?=$this->escapeHtml($list->description)?>  <i class="fa fa-pen"></i></h5>
+      <? elseif ($list && empty($list->description)): ?>
+        <h5 class="list-description"><?=$this->transEsc('Add description')?> <i class="fa fa-pen"></i></h5>
+      <? endif; ?>
+      <?=$this->flashmessages()?>
+      </div>
+      <div class="col-xs-5">
+        <? if (isset($list)): ?>
+          <? if ($list->editAllowed($account->isLoggedIn())): ?>
+           <!-- <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="btn btn-link" title="<?=$this->transEsc("edit_list")?>"><i class="fa fa-pen"></i> <?=$this->transEsc("edit_list")?></a>
+            <div class="btn-group">
+              <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>">
+                <i class="fa fa-remove"></i> <?=$this->transEsc("delete_list")?>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('Delete') ?></a></li>
+                <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>  -->
+          <? endif; ?>
+        <? endif; ?>
+
+      </div>
+     </div>
+    </div>
+    <div class="row">
+    <div class="col-xs-12">
+    <? if ($recordTotal > 0): ?>
+      <div class="pull-left">
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $this->results))?>
+      </div>
+      <div class="pull-right">
+          <?=$this->render('search/controls/sort.phtml')?>
+      </div>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col-xs-12">
+      <form class="form" method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>">
+        <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
+        <? foreach ($this->results->getResults() as $i=>$current): ?>
+          <?=$this->record($current)->getListEntry($list, $user)?>
+        <? endforeach; ?>
+      </form>
+    <? else: ?>
+      <p><?=$this->transEsc('You do not have any saved resources')?></p>
+    <? endif; ?>
+  </div>
+  </div>
+  </div>
+  <div class="<?=$this->layoutClass('sidebar')?> mylist-bar">
+  <? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>
+  <h4><?=$this->transEsc('Your Lists')?></h4>
+  <ul class="list-group mylist-nav">
+    <li>
+    <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' ? ' active' : ''?>">
+      <?=$this->transEsc('All')?>
+      <? $lists = $user->getLists() ?>
+      <? $count = 0 ;?>
+      <? foreach ($lists as $list): ?>
+        <? $count += $list->cnt;?>
+      <? endforeach; ?>
+      <span> (<?=$count; ?>)</span>
+    </a>
+    <? $lists = $user->getLists() ?>
+    <? foreach ($lists as $list): ?>
+    <li>
+        <a href="<?=$this->url('userList', array('id' => $list['id']))?>" class="list-group-item<?=$this->active == 'list' . $list['id'] ? ' active' : ''?>">
+          <?=$this->escapeHtml($list['title'])?>
+          <span> (<?=$list->cnt?>)</span>
+        </a>
+    </li>
+    <? endforeach; ?>
+    <li>
+    <a href="<?=$this->url('editList', array('id'=>'NEW'))?>" title="<?=$this->transEsc('Create a List') ?>" class="list-group-item add-new-list">
+      <?=$this->transEsc('Create a List') ?>
+      <span class="pull-right"><i class="fa fa-plus-small"></i></span>
+    </a>
+    </li>
+  </ul>
+  <? endif ?>
+</div>
+</div>
+

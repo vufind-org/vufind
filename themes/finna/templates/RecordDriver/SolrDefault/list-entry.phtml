@@ -1,0 +1,199 @@
+<?
+  // Set up some convenience variables:
+  $id = $this->driver->getUniqueId();
+  $source = $this->driver->getResourceSource();
+  if (isset($this->list) && is_object($this->list)) {
+    $list_id = $this->list->id;
+    $user_id = $this->list->user_id;
+  } else {
+    $list_id = null;
+    $user_id = $this->user ? $this->user->id : null;
+  }
+?>
+<!-- start list-entry -->
+<div class="row <? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?> myresearch-row">
+  <div class="col-xs-2 col-sm-1">
+    <div class="checkboxFilter">
+      <label class="checkbox">
+      <?=$this->record($this->driver)->getCheckbox() ?>
+      </label>
+    </div>
+    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+  </div>
+  <div class="col-xs-2 col-sm-2 text-center">
+    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+      <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
+        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
+      <? else: ?>
+        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      <? endif; ?>
+    </a>
+  </div>
+  <div class="col-xs-8 col-sm-9">
+    <div class="resultItemLine1">
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+      <?
+        $summHighlightedTitle = $this->driver->getHighlightedTitle();
+        $summTitle = $this->driver->getTitle();
+        if (!empty($summHighlightedTitle)) {
+            echo '<h3 class="record-title">' . $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle)) . '</h3>';
+        } else if (!empty($summTitle)) {
+            echo '<h3 class="record-title">' .$this->escapeHtml($this->truncate($summTitle, 180)) . '</h3>';
+        } else {
+            echo '<h3 class="record-title">' . $this->transEsc('Title not available') . '</h3>';
+        }
+      ?></a>
+    </div>
+
+    <div class="record-authors">
+      <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList());?><br/>
+      <? if($this->driver->isCollection()): ?>
+        <?=implode('<br/>', $this->driver->getSummary()); ?>
+      <? else: ?>
+        <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+        <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
+          $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
+          echo !empty($summHighlightedAuthor)
+              ? $this->highlight($summHighlightedAuthor)
+              : $this->escapeHtml($summAuthor);
+        ?></a>
+        <? endif; ?>
+
+        <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+        <? if (!empty($journalTitle)): ?>
+          <?=!empty($summAuthor) ? '' : ''?>
+          <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
+          <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?>
+        <? elseif (!empty($summDate)): ?>
+          <?=!empty($summAuthor) ? '' : ''?>
+            <?=$this->escapeHtml($summDate[0])?>
+        <? endif; ?>
+        <? $summInCollection = $this->driver->getContainingCollections(); if (false && !empty($summInCollection)): ?>
+          <? foreach ($summInCollection as $collId => $collText): ?>
+            <div>
+              <b><?=$this->transEsc("in_collection_label")?></b>
+              <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                <?=$this->escapeHtml($collText)?>
+              </a>
+            </div>
+          <? endforeach; ?>
+        <? endif; ?>
+      <? endif; ?>
+    </div>
+
+    <div class="last">
+    <? if(!$this->driver->isCollection()) {
+        if ($snippet = $this->driver->getHighlightedSnippet()) {
+          if (!empty($snippet['caption'])) {
+            echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
+          }
+          if (!empty($snippet['snippet'])) {
+            echo '<span class="quotestart">&#8220;</span>...' . $this->highlight($snippet['snippet']) . '...<span class="quoteend">&#8221;</span><br/>';
+          }
+        }
+      } ?>
+
+    <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
+        $list_id, // get tags for all lists if no single list is selected
+        $user_id, 'tag'
+       ) : array();
+    ?>
+    <? if (count($listTags) > 0): ?>
+      <strong><?=$this->transEsc('Your Tags')?>:</strong>
+      <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->currentPath() . $results->getUrlQuery()->addFacet('tags', $tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a><? endforeach; ?>
+      <br/>
+    <? endif; ?>
+
+    <div class="holding-details">
+      <?
+      /* Display information on duplicate records if available */
+      $dedupData = $this->driver->getDedupData();
+      if (count($dedupData) > 1): ?>
+        <div class="dedupInformation">
+            <select class="dedup-select form-control" role="listbox" aria-haspopup="true">
+            <? foreach ($dedupData as $source => $current): ?>
+              <option value="<?=$this->escapeHtmlAttr($current['id']) ?>" class="dedup-data-id" data-source="<?=$this->escapeHtmlAttr($source) ?>" role="option"><?=$this->transEsc("source_$source", null, $source) ?></option>
+            <? endforeach; ?>
+            </select>
+        </div>
+      <? else: ?>
+        <?
+          if (!empty($dedupData)) {
+            reset($dedupData);
+            $source = key($dedupData);
+          } else {
+            $source = $this->driver->tryMethod('getDataSource');
+          }
+        ?>
+        <? if ($source): ?>
+          <div class="dedupInformation">
+            <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
+          </div>
+        <? endif; ?>
+      <? endif; ?>
+      
+      <div class="callnumAndLocation">
+        <? if ($this->driver->supportsAjaxStatus()): ?>
+          <strong class="hideIfDetailed"></strong>
+          <span class="callnumber ajax-availability hidden">
+            <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...
+          </span><br class="hideIfDetailed"/>
+          <strong></strong>
+          <span class="location ajax-availability hidden">
+          </span>
+          <div class="locationDetails hidden"></div>
+        <? else: ?>
+          <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+            <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+          <? endif; ?>
+        <? endif; ?>
+      </div>
+    </div>
+    <?=$this->context($this)->renderInContext(
+        'RecordDriver/SolrDefault/result-online-urls.phtml',
+        array(
+          'driver' => $this->driver
+        )
+    );?>
+
+      <?=$this->record($this->driver)->getPreviews()?>
+      
+    </div>
+    <div class="myresearch-notes">
+    <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
+    <? if (count($listNotes) > 0): ?>
+      <strong>TODO edit note <?=$this->transEsc('Notes')?>:</strong>
+      <? if (count($listNotes) > 1): ?><br/><? endif; ?>
+      <? foreach ($listNotes as $note): ?>
+        <?=$this->escapeHtml($note)?><br/>
+      <? endforeach; ?>
+    <? else: ?>
+      TODO <span class="text-right"><a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Add new note')?> <i class="fa fa-pen"></i></a></span>
+    <? endif; ?>
+    </div>
+  </div>
+  
+  <div class="col-xs-3 col-sm-2 hidden">
+    <i class="fa fa-pen"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
+    <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
+      $deleteUrl = is_null($list_id)
+          ? $this->url('myresearch-favorites')
+          : $this->url('userList', array('id' => $list_id));
+      $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
+
+      $dLabel = 'delete-label-' . preg_replace('[\W]','-',$id);
+    ?>
+    <div class="dropdown">
+      <i class="fa fa-remove"></i> <a class="dropdown-toggle" id="<?=$dLabel ?>" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
+        <?=$this->transEsc('Delete') ?>
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="<?=$dLabel ?>">
+        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeHtmlAttr($id) ?>','source':'<?=$this->escapeHtmlAttr($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
+      </ul>
+    </div>
+
+    <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+  </div>
+</div>
+<!-- End list entry -->
