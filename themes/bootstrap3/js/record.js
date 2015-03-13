@@ -231,7 +231,7 @@ $(document).ready(function(){
       $('#'+tabid).tab('show');
       return false;
     } else {
-      $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindStrin['loading']+'...</div>');
+      $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString['loading']+'...</div>');
       $('#record-tabs .tab-pane.active').removeClass('active');
       $('#'+tabid+'-tab').addClass('active');
       return ajaxLoadTab(tabid);
