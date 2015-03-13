@@ -93,7 +93,7 @@ class Resource extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterf
     }
 
     /**
-     * Add a tag to the current resource.
+     * Remove a tag from the current resource.
      *
      * @param string              $tagText The tag to save.
      * @param \VuFind\Db\Row\User $user    The user posting the tag.
