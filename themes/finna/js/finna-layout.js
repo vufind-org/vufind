@@ -76,6 +76,15 @@ finna.layout = (function() {
         }
       });        
     };
+    
+    var initMobileNavigations = function() {
+      if ($('.myresearch-nav-mobile .list-group-item.active')[0]) {
+        $('.myresearch-nav-mobile > a').prepend($('.myresearch-nav-mobile .list-group-item.active').text());
+      }
+      else if ($('.myresearch-nav-mobile')[0]) {
+        $('.myresearch-nav-mobile > a').prepend($('.list-title').text());
+      }
+    };
 
     var initOpenUrlLinks = function() {
         var links = $('a.openUrlEmbed');
@@ -97,6 +106,7 @@ finna.layout = (function() {
             initOpenUrlLinks();
             initHideDetails();
             initTruncate();
+            initMobileNavigations();
         },
     };
 
