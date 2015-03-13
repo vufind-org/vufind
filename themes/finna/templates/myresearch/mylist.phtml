@@ -4,6 +4,9 @@
 
   // Set up page title:
   $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
+  
+  // Set up myresearch menu
+  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'));
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'Favorites';
@@ -21,14 +24,9 @@
   // Set up Finna Main Header:
 
 ?>
-
-
-
-<?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
-  <? foreach ($this->results->getRecommendations('side') as $current): ?>
-    <?=$this->recommend($current)?>
-  <? endforeach; ?>
-<div class="container">
+<? foreach ($this->results->getRecommendations('side') as $current): ?>
+  <?=$this->recommend($current)?>
+<? endforeach; ?>
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">  
     <div class="clearfix hidden-print">
@@ -117,6 +115,5 @@
     </li>
   </ul>
   <? endif ?>
-</div>
 </div>
 

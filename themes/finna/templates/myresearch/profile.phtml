@@ -1,7 +1,8 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('My Profile'));
-
+    // Set up myresearch menu
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'profile'));
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
 
@@ -11,8 +12,6 @@
     // Template for use by the renderArray helper:
     $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
 ?>
- <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'profile'))?>
-<div class="container">
 <div class="row">
   <div class="col-md-9">
     <?=$this->flashmessages();?>
@@ -60,5 +59,4 @@
       ?>
     </table>
   </div>
-</div>
 </div>

@@ -2,12 +2,13 @@
     // Set up page title:
     $this->headTitle($this->translate('Checked Out Items'));
 
+    // Set up myresearch menu
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'checkedout'));
+
+
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Checked Out Items') . '</li>';
 ?>
-
-<?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'checkedout'))?>
-<div class="container">
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <?=$this->flashmessages()?>
@@ -21,10 +22,10 @@
           <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
           <input type="submit" class="btn btn-primary" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
         </div>
-      <? else: ?>
-      <div class="toolbar">
-        <p><?=$this->transEsc('Cannot renew any loans')?></p>
-      </div>
+        <? else: ?>
+        <div class="toolbar">
+          <p><?=$this->transEsc('Cannot renew any loans')?></p>
+        </div>
       <? endif; ?> 
       <? $i = 0; foreach ($this->transactions as $resource): ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
@@ -142,5 +143,4 @@
       <h4><?=$this->transEsc('You do not have any items checked out')?>.</h4>
     <? endif; ?>
   </div>
-</div>
 </div>

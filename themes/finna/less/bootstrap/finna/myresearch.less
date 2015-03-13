@@ -1,6 +1,33 @@
 // Custom styles for Myresearch
 
 .main.template-dir-myresearch, .main.template-dir-search.template-name-history {
+    & .myresearch-table {
+        margin-bottom: 40px;
+        & .headers th {
+            background: none;
+        }
+        & .total-balance {
+            background: none;
+            border-top: 1px solid @gray-light;
+            text-align: right;
+        }
+        & .balance {
+            text-align: right;   
+        }
+        & th {
+            font-size: 1.1em;   
+        }
+        & .history-time {
+            width: 20%;
+        }
+        & .history-save {
+            text-align: center;
+            width: 15%;
+        }
+        & .history-results {
+            width: 15%;   
+        }
+    } 
     .myresearch-grid-list {
         margin-bottom: 20px;   
     }
@@ -34,6 +61,9 @@
             font-size: @finna-header-font-size;
             margin: 0;
         }
+    }
+    .finna-main-tabs {
+         background: @myresearch-header-background;
     }
     & .list-title {
          margin-bottom: 0px;   

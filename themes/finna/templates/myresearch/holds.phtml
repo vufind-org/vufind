@@ -1,12 +1,13 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('My Holds'));
-
+    
+    // Set up myresearch menu
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'holds'));
+   
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('My Holds') . '</li>';
 ?>
-<?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'holds'))?>
-<div class="container">
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <?=$this->flashmessages()?>
@@ -14,8 +15,8 @@
     <h2 class="myresearch-title"><?=$this->transEsc('Your Holds and Recalls') ?> (<?=count($count)?>)</h2>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
-      <div class="toolbar">
-        <form name="cancelForm" class="inline" action="" method="post" id="cancelHold">
+      <form name="cancelForm" class="inline" action="&#32;" method="post" id="cancelHold">
+        <div class="toolbar">
           <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
           <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
           <div class="btn-group">
@@ -34,12 +35,12 @@
               <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
-      </div>
-      <? else: ?>
-      <div class="toolbar">
-        <p><?=$this->transEsc('Cannot cancel any reservations')?></p>
-      </div>
-      <? endif; ?>
+        </div>
+        <? else: ?>
+        <div class="toolbar">
+          <p><?=$this->transEsc('Cannot cancel any reservations')?></p>
+        </div>
+        <? endif; ?>
 
       <? $iteration = 0; ?>
       <? foreach ($this->recordList as $resource): ?>
@@ -103,8 +104,8 @@
               <br />
             <? endif; ?>
             </div>
-            </div>
-            <div class="col-xs-5 col-sm-4  text-right">
+          </div>
+          <div class="col-xs-5 col-sm-4  text-right">
             <? if (!empty($ilsDetails['requestGroup'])): ?>
               <strong><?=$this->transEsc('hold_requested_group') ?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['requestGroup'], array(), $ilsDetails['requestGroup'])?>
               <br />
@@ -162,11 +163,9 @@
           </div>
         </div>
       <? endforeach; ?>
-      <? if ($this->cancelForm): ?></form><? endif; ?>
-    <? else: ?>
-      <h4><?=$this->transEsc('You do not have any holds or recalls placed') ?>.</h4>
-    <? endif; ?>
+      <? if ($this->cancelForm): ?></form> <? endif; ?>
+      <? else: ?>
+        <h4><?=$this->transEsc('You do not have any holds or recalls placed') ?>.</h4>
+      <? endif; ?>
   </div>
-</div>
-</div>
 </div>

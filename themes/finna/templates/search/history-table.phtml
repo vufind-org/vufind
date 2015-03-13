@@ -1,10 +1,10 @@
-<table class="table table-striped">
-  <tr>
-    <th width="20%"><?=$this->transEsc("history_time")?></th>
-    <th><?=$this->transEsc("history_search")?></th>
-    <th><?=$this->transEsc("history_limits")?></th>
-    <th width="19%"><?=$this->transEsc("history_results")?></th>
-    <th width="15%" style="text-align:center;"><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th>
+<table class="table table-striped myresearch-table">
+  <tr class="headers">
+    <th class="history-time"><?=$this->transEsc("history_time")?></th>
+    <th class="history-search"><?=$this->transEsc("history_search")?></th>
+    <th class="history-limits"><?=$this->transEsc("history_limits")?></th>
+    <th class="history-results"><?=$this->transEsc("history_results")?></th>
+    <th class="history-save"><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th>
   </tr>
   <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
     <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
@@ -25,7 +25,7 @@
         <? endforeach; ?>
       </td>
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
-      <td  style="text-align:center;">
+      <td class="history-save">
         <? if ($this->showSaved): ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove fa-button"></i></a>
         <? else: ?>

@@ -1,13 +1,14 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('Interlibrary Loan Requests'));
+    
+    // Set up myresearch menu
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'ILLRequests'));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
         . '<li class="active">' . $this->transEsc('Interlibrary Loan Requests') . '</li>';
 ?>
-<?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'ILLRequests'))?>
-<div class="container">
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <?=$this->flashmessages()?>
@@ -15,8 +16,8 @@
     <h2><?=$this->transEsc('Interlibrary Loan Requests') ?> (<?=count($count);?>)</h2>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
-      <div class="toolbar">
-        <form name="cancelForm" class="inline" action="" method="post" id="cancelILLRequest">
+      <form name="cancelForm" class="inline" action="" method="post" id="cancelILLRequest">
+        <div class="toolbar">
           <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
           <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
           <div class="btn-group">
@@ -35,16 +36,15 @@
               <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
-      </div>
-      <? else: ?>
-      <div class="toolbar">
-        <p><?=$this->transEsc('Cannot cancel any Interlibrary Loan Requests')?></p>
-      </div>
-      <? endif; ?>
+        </div>
+        <? else: ?>
+        <div class="toolbar">
+          <p><?=$this->transEsc('Cannot cancel any Interlibrary Loan Requests')?></p>
+        </div>
+        <? endif; ?>
 
       <? $iteration = 0; ?>
       <? foreach ($this->recordList as $resource): ?>
-        <hr/>
         <? $iteration++; ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row myresearch-row">
@@ -168,4 +168,4 @@
     <? endif; ?>
   </div>
 </div>
-</div>
+
