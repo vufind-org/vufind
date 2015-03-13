@@ -89,7 +89,6 @@ class Factory
         return new Shibboleth($sm->getServiceLocator()->get('Request'));
     }
 
-
     /**
      * Factory for Username
      *

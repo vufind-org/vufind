@@ -38,7 +38,7 @@ use ZfcRbac\Service\AuthorizationServiceAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
-abstract class AbstractBase implements TabInterface, 
+abstract class AbstractBase implements TabInterface,
     AuthorizationServiceAwareInterface
 {
     use AuthorizationServiceAwareTrait;
