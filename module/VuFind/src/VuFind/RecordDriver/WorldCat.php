@@ -165,7 +165,8 @@ class WorldCat extends SolrMarc
                 $retVal[] = $callNo;
             }
         }
-        if (!empty($dewey = $this->getDeweyCallNumber())) {
+        $dewey = $this->getDeweyCallNumber();
+        if (!empty($dewey)) {
             $retVal[] = $dewey;
         }
         return $retVal;
