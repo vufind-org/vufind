@@ -213,11 +213,7 @@ function setscreenreader() {
   this.attr("class", "sr-only")
   .text(function(d) {
     if (d.field == "topic_facet") {
-<<<<<<< HEAD
-      return "<?=$this->transEsc('From')?> " + d.parentlevel;
-=======
       return "<?=$this->transEsc('visual_facet_parent')?> " + d.parentlevel;
->>>>>>> upstream/master
     } else {
       return "";
     }
