@@ -26,7 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Db\Table;
-use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for user_card
