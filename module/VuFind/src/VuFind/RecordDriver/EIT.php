@@ -112,13 +112,13 @@ class EIT extends SolrDefault
     }
 
     /**
-     * Get the call number associated with the record (empty string if none).
+     * Get the call numbers associated with the record (empty string if none).
      *
-     * @return string
+     * @return array
      */
-    public function getCallNumber()
+    public function getCallNumbers()
     {
-        return "";
+        return [];
     }
 
     /**
