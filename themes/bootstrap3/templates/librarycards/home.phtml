@@ -17,7 +17,7 @@
       <table class="table table-striped" summary="<?=$this->transEsc('Library Cards')?>">
       <tr>
         <th><?=$this->transEsc('Library Card Name')?></th>
-        <? $multiILS = in_array('MultiILS', $this->auth()->getManager()->getSelectableAuthOptions()); if ($multiILS): ?>
+        <? if ($this->multipleTargets): ?>
         <th><?=$this->transEsc('login_target')?></th>
         <? endif; ?>
         <th><?=$this->transEsc('Username')?></th>
@@ -26,12 +26,12 @@
       <? foreach ($this->libraryCards as $record): ?>
         <tr>
           <td><?=$this->escapeHtml($record['card_name'])?></td>
-          <? $username = $record['cat_username']; if ($multiILS): ?>
-          <? $target = ''; ?>
-          <? if (strstr($username, '.')): ?>
-            <? list($target, $username) = explode('.', $username, 2); ?>
-          <? endif; ?>
-          <td><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></td>
+          <? $username = $record['cat_username']; if ($this->multipleTargets): ?>
+            <? $target = ''; ?>
+            <? if (strstr($username, '.')): ?>
+              <? list($target, $username) = explode('.', $username, 2); ?>
+            <? endif; ?>
+            <td><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></td>
           <? endif; ?>
           <td><?=$this->escapeHtml($username)?></td>
           <td>
