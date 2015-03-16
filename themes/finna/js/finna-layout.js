@@ -37,9 +37,18 @@ finna.layout = (function() {
       if (typeof holder === 'undefined') {
           holder = $(document);
       }
+
+      var notifyTruncateChange = function(field) {
+          field.find('.truncate-change img').each(function(ind,e) {
+              var visible = $(e).position().top <= field.height();
+              $(e).trigger('truncate-change', [visible]);
+          });
+      };
+
       var truncation = [];
       var rowHeight = [];
       holder.find(".truncate-field").not('.truncate-done').each(function( index ) {
+        var self = $(this);
         $(this).addClass('truncate-done');
         // check that truncate-field has children, where we can count line-height
         if ($(this).children().length > 0) {
@@ -47,7 +56,13 @@ finna.layout = (function() {
           if ($(this).data("rows")) {
             rowCount = $(this).data("rows");
           }
-          rowHeight[index] = parseFloat($(this).children().first().css('line-height').replace('px', ''));
+
+          if (typeof($(this).data('row-height')) !== 'undefined') {
+              rowHeight[index] = $(this).data('row-height');
+          } else {
+              rowHeight[index] = parseFloat($(this).children().first().css('line-height').replace('px', ''));
+          }
+
           // get the line-height of first element to determine each text line height
           truncation[index] = rowHeight[index] * rowCount ;
           // don't truncate, if one line for truncation
@@ -65,16 +80,47 @@ finna.layout = (function() {
               $(this).hide();
               $(this).next('.less-link').show();
               $(this).prev('.truncate-field').css('height','auto');
+              notifyTruncateChange(self);
             });
             
             $(this).nextAll('.less-link').first().click(function( event ) {
               $(this).hide();
               $(this).prev('.more-link').show();
               $(this).prevAll('.truncate-field').first().css('height', truncation[index]-1+'px');
+              notifyTruncateChange(self);
             }); 
           }
+          notifyTruncateChange(self);
         }
       });        
+    };
+
+    var initTruncatedRecordImageNavi = function() {
+        var displayTruncatedImage = function(img) {
+            img.attr('src', img.data('src'));
+            img.parent().removeClass('truncate-change');
+        };
+
+        // Load truncated record images lazily when parent container is opened
+        $('.recordcovers .truncate-change img').each(function(ind,img) {
+            $(this).bind('truncate-change', function(e, visible) {
+                if (visible) {
+                    $(this).unbind('truncate-change');
+                    if (typeof($(this).attr('src')) === 'undefined'
+                        && typeof($(this).data('src')) !== 'undefined'
+                    ) {
+                        if ($(this).parent().hasClass('inview')) {
+                            // Postpone loading until image in scrolled into viewport
+                            $(this).unbind('inview').one('inview', function() {
+                                displayTruncatedImage($(this));
+                            });
+                        } else {
+                            displayTruncatedImage($(this));
+                        }
+                    }
+                }
+            });
+        });
     };
 
     var initOpenUrlLinks = function() {
@@ -96,6 +142,8 @@ finna.layout = (function() {
             initFixFooter();
             initOpenUrlLinks();
             initHideDetails();
+
+            initTruncatedRecordImageNavi();
             initTruncate();
         },
     };

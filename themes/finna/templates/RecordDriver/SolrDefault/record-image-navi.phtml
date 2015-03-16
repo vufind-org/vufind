@@ -1,4 +1,4 @@
-<div class="recordcovers <?=$type ?><?=count($images) == 1 ? ' hidden' : ''?>">
+<div class="<?= $type === 'record' ? 'truncate-field ' : ''?> recordcovers <?=$type ?><?=count($images) == 1 ? ' hidden' : ''?>"<?= $type === 'record' ? ' data-rows="2" data-row-height="35"' : ''?>>
 <? $ind = 0; ?>
 <? foreach ($images as $img): ?>
 <?
@@ -6,10 +6,11 @@
   if ($type === 'list') {
      $content = $ind === 4 ? '&hellip;' : $ind+1;
   } else {
-     $content = '<img src="' . str_replace('&', '&amp;', $img['small']) . '" alt="" />';
+     $content = '<img data-src="' . str_replace('&', '&amp;', $img['small']) . '" alt="" />';
   }
 ?>
-<a href="<?=str_replace('&', '&amp;', $img['medium']) ?>" class="image-popup image-popup-navi<?= ($type === 'list' && $ind++ > 4) ? ' hide' : '' ?>"><?= $content ?></a>
+<a href="<?=str_replace('&', '&amp;', $img['medium']) ?>" class="image-popup image-popup-navi<?= ($type === 'list' && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?><?= ($type === 'record' && $ind > 6) ? ' inview' : ''?>"><?= $content ?></a>
 <a href="<?=str_replace('&', '&amp;', $img['large']) ?>" class="hide"><?= $content ?></a>
+<? $ind++; ?>
 <? endforeach; ?>
 </div>
