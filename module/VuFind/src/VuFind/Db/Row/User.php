@@ -122,9 +122,13 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
             $this->cat_pass_enc = null;
         }
 
+        $result = $this->save();
+
+        // Update library card entry after saving the user so that we always have a
+        // user id:
         $this->updateLibraryCardEntry();
 
-        return $this->save();
+        return $result;
     }
 
     /**
