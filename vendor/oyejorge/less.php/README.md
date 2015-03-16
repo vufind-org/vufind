@@ -315,7 +315,7 @@ Transitioning from Leafo/lessphp
 ---
 Projects looking for an easy transition from leafo/lessphp can use the lessc.inc.php adapter. To use, [Download the less.php source code](https://github.com/oyejorge/less.php/archive/master.zip) and unzip the files into your project so that the new 'lessc.inc.php' replaces the existing 'lessc.inc.php'.
 
-Note, the 'setPreserveComments', 'registerFunction' and 'unregisterFunction' will no longer have any effect on the compiled less.
+Note, the 'setPreserveComments' will no longer have any effect on the compiled less.
 
 Credits
 ---

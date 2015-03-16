@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2.3.7 (2015-03-12)
+
+- [7255: Revert BC break against AbstractRestfulController](https://github.com/zendframework/zf2/pull/7255)
+
+## 2.3.6 (2015-03-12)
+
+### SECURITY UPDATES
+
+- **ZF2015-03** `Zend\Validator\Csrf` was incorrectly testing null or
+  improperly formatted token identifiers, allowing them to pass validation. This
+  release provides patches to correct the behavior. If you use the validator, or
+  the corresponding `Zend\Form\Element\Csrf`, we recommend upgrading
+  immediately.
+
 ## 2.3.5 (2015-02-18)
 
 - [6666: bugfix : options can't be passed to SeparatorToSeparator via PluginManager](https://github.com/zendframework/zf2/pull/6666)
