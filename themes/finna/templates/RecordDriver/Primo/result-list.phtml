@@ -1,3 +1,9 @@
+<?
+  $openUrl = $this->driver->getOpenURL();
+  $openUrlActive = $this->driver->openURLActive('results');
+  $openUrlMoreOptions = $this->openUrl($openUrl, true);
+  $urls = $this->record($this->driver)->getLinkDetails();
+?>
 <!-- start of result-list.phtml -->
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
     <div>
@@ -37,8 +43,8 @@
           <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
           <? if (!empty($journalTitle)): ?>
             <?=!empty($summAuthor) ? '' : ' '?>
-            <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
-            <?=!empty($summDate) ? ' (' . $this->escapeHtml($summDate[0]) . ')' : ''?><? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
+            <?=$this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', $journalTitle) . '">' . $journalTitle . '</a>';?>
+            <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } else if (!empty($summDate)) { echo($this->escapeHtml($summDate[0])); } ?>
           <? elseif (!empty($summDate)): ?>
             <?=!empty($summAuthor) ? '' : ' '?>
             <?=$this->escapeHtml($summDate[0])?>
@@ -110,9 +116,22 @@
         <? endif; ?>
       </div>
       <?=$this->record($this->driver)->getPreviews()?>
-      <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+      <?
+        $summary = false;
+        $highlightedSummary = $this->driver->getHighlightedSummary();
+        if (isset($highlightedSummary[0])) {
+           $summary = $this->highlight($highlightedSummary[0]);
+        } else {
+           $summary = $this->driver->getSummary();
+           if (isset($summary[0])) {
+              $summary = $this->escapeHtml($summary[0]);
+           }
+        }
+      ?>
       <? if ($summary): ?>
-        <!-- TODO HIGHLIGHT SUMMARY TEXT WHEN SEARCH WORDS MATCH --><p class="summary"><?=$summary;?></p>
+        <div class="truncate-field">
+          <p class="summary"><?=$summary;?></p>
+        </div>
       <? endif; ?>
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Saved lists */ ?>
@@ -153,33 +172,31 @@
           </div>
         <? endforeach; ?>
       <? endif; ?>
-      <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
     </div>
     <div class="clearfix visible-xs"></div>
     <div class="col-sm-3 col-sm-pull-1">
-    <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
-            but even if we don't plan to display the link, we still want to get the $openUrl
-            value for use in generating a COinS (Z3988) tag -- see bottom of file.
-          */
-      
-        $openUrl = $this->driver->getOpenURL();
-        $openUrlActive = $this->driver->openURLActive('results');
-        $urls = $this->record($this->driver)->getLinkDetails();
-        if ($openUrlActive || !empty($urls)): ?>
-        <div class="primo-available-online">
+      <?
+      $fulltextAvailable = false;
+      foreach ($urls as $url) {
+        if (!$url['citation']) {
+          $fulltextAvailable = true;
+          break;
+        }
+      }
+      ?>
+      <div class="primo-available-online<?= $fulltextAvailable ? ' fulltext-available' : ''?>">
+        <? if ($openUrlActive || !empty($urls)): ?>
+          <div class="heading"><strong><?=$this->transEsc('Electronic')?></strong></div>
+          <? if(!$this->driver->isCollection()):
+            foreach ($urls as $current): ?>
+              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc(end($this->driver->getFormats())) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
+          <? endforeach; ?>
+         <? endif; ?>
+        <? endif; ?>
+
         <? if ($openUrlActive): ?>
           <?=$this->openUrl($openUrl)?>
-          <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
         <? endif; ?>
-        <? if (!is_array($urls)) $urls = array();
-          if(!$this->driver->isCollection()):
-            foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Open full text') : $this->escapeHtml($current['desc'])?></a><br/>
-          <? endforeach; ?>
-        <? endif; ?>
-      <? endif; ?>
-
-     
 
       <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
         <span class="status ajax-availability hidden">
@@ -187,6 +204,9 @@
         </span>
       <? endif; ?>
       </div>
+    </div>
+    <div class="col-xs-12">
+      <?= $openUrlMoreOptions ? $openUrlMoreOptions : '' ?>
     </div>
 </div>
 <!-- end of result-list.phtml -->

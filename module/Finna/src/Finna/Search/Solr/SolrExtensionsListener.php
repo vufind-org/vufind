@@ -126,7 +126,8 @@ class SolrExtensionsListener
             $context = $event->getParam('context');
             $query = $event->getParam('query');
             if ($params && ($context == 'search' || $context == 'similar')
-                && ($query === null || $query->getHandler() !== 'ParentID')
+                && ($query === null || !is_callable(array($query, 'getHandler'))
+                || $query->getHandler() !== 'ParentID')
             ) {
                 $params->add('fq', '-hidden_component_boolean:TRUE');
             }

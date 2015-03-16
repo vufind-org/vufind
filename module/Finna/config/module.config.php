@@ -48,12 +48,16 @@ $config = array(
         )
     ),
     'controllers' => array(
+        'factories' => [
+            'record' => 'Finna\Controller\Factory::getRecordController',
+        ],
         'invokables' => array(
             'ajax' => 'Finna\Controller\AjaxController',
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
             'primo' => 'Finna\Controller\PrimoController',
-            'search' => 'Finna\Controller\SearchController',
+            'primorecord' => 'Finna\Controller\PrimorecordController',
+            'search' => 'Finna\Controller\SearchController'
         ),
     ),
     'service_manager' => array(
@@ -69,6 +73,7 @@ $config = array(
         'plugin_managers' => array(
             'search_backend' => array(
                 'factories' => array(
+                    'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'Finna\Search\Factory\SolrDefaultBackendFactory',
                 ),
                 'aliases' => array(
@@ -76,6 +81,9 @@ $config = array(
                     'biblio' => 'Solr',
                 )
             ),
+            'search_params' => [
+                'abstract_factories' => ['Finna\Search\Params\PluginFactory'],
+            ],
             'search_results' => array(
                 'factories' => array(
                     'solr' => 'Finna\Search\Results\Factory::getSolr',
@@ -94,6 +102,7 @@ $config = array(
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
                     'solrlido' => 'Finna\RecordDriver\Factory::getSolrLido',
                     'solrqdc' => 'Finna\RecordDriver\Factory::getSolrQdc',
+                    'primo' => 'Finna\RecordDriver\Factory::getPrimo'
                 ),
             ),
             'recordtab' => array(
@@ -105,7 +114,7 @@ $config = array(
         'recorddriver_tabs' => array(
             'Finna\RecordDriver\SolrMarc' => array(
                 'tabs' => array(
-                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
+                    'Holdings' => 'HoldingsILS',
                     'ComponentParts' => 'ComponentParts',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
@@ -117,7 +126,6 @@ $config = array(
             ),
             'Finna\RecordDriver\SolrEad' => array(
                 'tabs' => array(
-                    'Description' => 'Description',
                     'HierarchyTree' => 'HierarchyTree',
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
@@ -128,7 +136,6 @@ $config = array(
             ),
             'Finna\RecordDriver\SolrLido' => array(
                 'tabs' => array(
-                    'Description' => 'Description',
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
                     'Map' => 'Map',
@@ -138,11 +145,17 @@ $config = array(
             ),
             'Finna\RecordDriver\SolrQdc' => array(
                 'tabs' => array(
-                    'Description' => 'Description',
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
                     'Map' => 'Map',
                     'Details' => 'StaffViewArray',
+                ),
+                'defaultTab' => null,
+            ),
+            'Finna\RecordDriver\Primo' => array(
+                'tabs' => array(
+                    'UserComments' => 'UserComments',
+                    'Details' => 'StaffViewArray'
                 ),
                 'defaultTab' => null,
             ),

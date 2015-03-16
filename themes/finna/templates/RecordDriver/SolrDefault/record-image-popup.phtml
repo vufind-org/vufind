@@ -7,14 +7,14 @@
       <img src="<?= $recordImage ?>" />
     </div>
     <div class="content">
-      <h3 class="title"><?= $this->driver->getTitle() ?></h3>
+      <h3 class="title"><?= $this->escapeHtml($this->driver->getTitle()) ?></h3>
       <div class="author-and-dates">
         <p>
           <? if ($author = $this->driver->getPrimaryAuthor()): ?>
-          <?= $author ?>
+          <?= $this->escapeHtml($author) ?>
           <? endif; ?>
           <? foreach ($this->driver->getPublicationDates() as $date): ?>
-          <?= $date ?>
+          <?= $this->escapeHtml($date) ?>
           <? endforeach ?>
         </p>
       </div>
@@ -28,7 +28,7 @@
         <? else: ?>
            <? if ($summary = $this->driver->getSummary()): ?>
              <? foreach ($this->driver->getSummary() as $item): ?>
-             <p><?= $item ?></p>
+             <p><?= $this->escapeHtml($item) ?></p>
              <? endforeach ?>
           <? endif ?>
         <? endif ?>
@@ -38,13 +38,13 @@
       <div class="image-rights">
         <div class="rights">
           <? $hasLink = isset($rights['link']); ?>
-          <span><?= $this->translate("Image Rights") ?>:</span> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->translate($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
+          <span><?= $this->translate("Image Rights") ?>:</span> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
         </div>
         <div class="more-link copyright-link"><a data-mode="1" href="">Lisää<i class="fa fa-arrow-down"></i></a></div>
         <div class="copyright">
           <? if (isset($rights['description'])): ?>
             <? foreach ($rights['description'] as $item): ?>
-            <p><?= $this->translate($item) ?></p>
+            <p><?= $this->transEsc($item) ?></p>
             <? endforeach ?>
           <? endif ?>
           <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>

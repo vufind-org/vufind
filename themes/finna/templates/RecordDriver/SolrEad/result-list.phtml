@@ -141,6 +141,10 @@
           </div>
         <? endforeach; ?>
       <? endif; ?>
+      <? /* Saved lists */ ?>
+      <div class="savedLists alert alert-info hidden">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
     </div>
     <div class="col-xs-1 hidden-print">
       <? /* Display qrcode if appropriate: */ ?>
@@ -159,12 +163,7 @@
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a><br/>
-
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
-        </div>
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a>
       <? endif; ?>
 
       <? $openUrl = $this->driver->getOpenURL(); ?>

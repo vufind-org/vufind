@@ -5,6 +5,7 @@ return array(
         'factories' => array(
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
+            'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
@@ -29,6 +30,7 @@ return array(
         'finna-layout.js',
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js',
+        'vendor/jquery.inview.min.js',
         'vendor/jquery.magnific-popup.min.js',
         'vendor/jquery.cookie-1.4.1.min.js',
         'vendor/slick.min.js'
