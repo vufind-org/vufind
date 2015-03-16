@@ -25,7 +25,12 @@
 <? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <? $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
 <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
-<? $queryHandler = $results->getParams()->getQuery()->getHandler(); ?>
+<?
+    $queryHandler = 'AllFields';
+    if ($results->getParams()->getSearchType() == 'basic') {
+        $queryHandler = $results->getParams()->getQuery()->getHandler();
+    }
+    ?>
 <? if (!empty($filterList) || $queryHandler != 'AllFields'): ?>
   <ul class="list-group filters">
     <li class="list-group-item title"><?=$this->transEsc('Remove Filters')?></li>
