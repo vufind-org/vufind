@@ -42,54 +42,6 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the translator.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return \Zend\I18n\Translator\Translator
-     */
-    public static function getTranslator(ServiceManager $sm)
-    {
-        $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
-        $translator = $factory->createService($sm);
-
-        // Set up the ExtendedIni plugin:
-        $config = $sm->get('VuFind\Config')->get('config');
-        $pathStack = array(
-            APPLICATION_PATH  . '/languages',
-            LOCAL_OVERRIDE_DIR . '/languages',
-            // A second override directory for institutional overrides
-            LOCAL_OVERRIDE_DIR . '/language_overrides',
-        );
-        $fallbackLocales = $config->Site->language == 'en'
-            ? 'en'
-            : array($config->Site->language, 'en');
-        $translator->getPluginManager()->setService(
-            'extendedini',
-            new \VuFind\I18n\Translator\Loader\ExtendedIni(
-                $pathStack, $fallbackLocales
-            )
-        );
-
-        // Set up language caching for better performance:
-        try {
-            $translator->setCache(
-                $sm->get('VuFind\CacheManager')->getCache('language')
-            );
-        } catch (\Exception $e) {
-            // Don't let a cache failure kill the whole application, but make
-            // note of it:
-            $logger = $sm->get('VuFind\Logger');
-            $logger->debug(
-                'Problem loading cache: ' . get_class($e) . ' exception: '
-                . $e->getMessage()
-            );
-        }
-
-        return $translator;
-    }
-
-    /**
      * Construct the cache manager.
      *
      * @param ServiceManager $sm Service manager.
