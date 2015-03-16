@@ -95,8 +95,8 @@
             </div>
             <div class="col-md-3">
               <label for="search_bool<?=$group ?>" class="search_bool">Match:&nbsp;</label>
-              <a name="bool0[]" onclick="deleteGroup(<?=$group ?>)" href="#" class="close hidden" title="Remove Search Group">×</a>
-              <select id="search_bool<?=$group ?>" class="form-control">
+              <a onclick="deleteGroup(<?=$group ?>)" href="#" class="close hidden" title="Remove Search Group">×</a>
+              <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control">
                 <option value="AND">ALL Terms</option>
                 <option value="OR">ANY Terms</option>
                 <option value="NOT">NO Terms</option>

@@ -78,10 +78,10 @@ function addGroup(firstTerm, firstField, join)
     .attr('id', 'add_search_link_'+nextGroup)
     .attr('onClick', 'addSearch('+nextGroup+')');
   $newGroup.find('.close')
-    .attr('onClick', 'deleteGroup('+nextGroup+')')
-    .attr('name', 'bool'+nextGroup+'[]');
+    .attr('onClick', 'deleteGroup('+nextGroup+')');
   $newGroup.find('select.form-control')
-    .attr('id', 'search_bool'+nextGroup);
+    .attr('id', 'search_bool'+nextGroup)
+    .attr('name', 'bool'+nextGroup+'[]');
   $newGroup.find('.search_bool')
     .attr('for', 'search_bool'+nextGroup);
   if(join.length > 0) {
