@@ -586,6 +586,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         margin: 0 5px 5px 0;
         overflow: hidden;
         width: 32px;
+        &.truncate-change {
+            opacity: 0;
+        }
     }
 }
 
@@ -1053,6 +1056,14 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
             margin-top: -25px;   
         }
     }
+    & .cnt {
+        float: right;
+        margin-right: 2px;
+        color: @gray-light;
+    }
+}
+.record .recordcover-holder .more-link {
+    width: 100%;
 }
 .resetMarginsPaddings {
     margin: 0px;
