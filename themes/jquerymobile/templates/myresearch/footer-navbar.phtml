@@ -8,6 +8,9 @@
       <? if ($this->auth()->getManager()->supportsPasswordChange()): ?>
         <li><a rel="external" href="<?=$this->url('myresearch-changepassword')?>"><?=$this->transEsc("Change Password")?></a></li>
       <? endif; ?>
+      <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
+        <li><a rel="external" href="<?=$this->url('librarycards-home')?>"><?=$this->transEsc('Library Cards')?></a></li>
+      <? endif; ?>
       <li><a rel="external" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a></li>
     </ul>
   </div>

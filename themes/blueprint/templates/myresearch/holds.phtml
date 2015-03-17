@@ -12,6 +12,9 @@
 
   <?=$this->flashmessages()?>
 
+
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
   <? if (!empty($this->recordList)): ?>
     <? if ($this->cancelForm): ?>
       <form name="cancelForm" action="" method="post" id="cancelHold">

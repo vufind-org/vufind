@@ -172,9 +172,9 @@ class LibraryCardsController extends AbstractBase
         // If we got this far, we must display a confirmation message:
         return $this->confirm(
             'confirm_delete_library_card_brief',
-            $this->url()->fromRoute('librarycards-delete'),
-            $this->url()->fromRoute('userLibraryCard', ['id' => $cardID]),
-            'confirm_delete_library_card_text', ['listID' => $cardID]
+            $this->url()->fromRoute('librarycards-deletecard'),
+            $this->url()->fromRoute('librarycards-home'),
+            'confirm_delete_library_card_text', ['cardID' => $cardID]
         );
     }
 
