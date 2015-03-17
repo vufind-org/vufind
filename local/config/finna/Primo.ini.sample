@@ -80,7 +80,7 @@ dateRange[] = creationdate
 ; The name of the index field is on the left
 ; The display name of the field is on the right
 [Facets]
-;tlevel  = "Limit To"
+tlevel  = "Limit To"
 rtype   = "Format"
 creator = "Author"
 creationdate = "Year of Publication"

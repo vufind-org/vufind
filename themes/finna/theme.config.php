@@ -15,6 +15,8 @@ return array(
         'invokables' => array(
             'search' => 'Finna\View\Helper\Root\Search',
             'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
+            'checkboxFacetAvailables' =>
+                'Finna\View\Helper\Root\CheckboxFacetAvailables',
         )
     ),
     'css' => array(
