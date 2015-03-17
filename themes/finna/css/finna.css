@@ -8631,6 +8631,15 @@ ul.jstree-container-ul > li.jstree-node,
   display: block;
   margin-top: -25px;
 }
+.more-link .cnt,
+.less-link .cnt {
+  float: right;
+  margin-right: 2px;
+  color: #747474;
+}
+.record .recordcover-holder .more-link {
+  width: 100%;
+}
 .resetMarginsPaddings {
   margin: 0px;
   padding: 0px;

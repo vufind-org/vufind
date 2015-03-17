@@ -92,7 +92,8 @@ finna.layout = (function() {
           }
           notifyTruncateChange(self);
         }
-      });        
+        $(this).trigger('truncate-done', [$(this)]);
+      });
     };
 
     var initTruncatedRecordImageNavi = function() {
@@ -120,6 +121,16 @@ finna.layout = (function() {
                     }
                 }
             });
+        });
+
+        // Add image count to 'more-link' label when truncate-field has been inited.
+        $('.recordcovers.truncate-field').bind('truncate-done', function(e, field) {
+            moreLink = field.nextAll('.more-link');
+            if (moreLink.length) {
+                var childrenCnt = field.find('a').not('.hide').length;
+                var cnt = $('<span class="cnt">(' + childrenCnt + ')</span>');
+                cnt.insertAfter(moreLink.first().children().first());
+            }
         });
     };
 
