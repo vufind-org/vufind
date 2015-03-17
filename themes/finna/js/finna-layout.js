@@ -111,7 +111,7 @@ finna.layout = (function() {
                     if (typeof($(this).attr('src')) === 'undefined'
                         && typeof($(this).data('src')) !== 'undefined'
                     ) {
-                        // Postpone loading until image in scrolled into viewport
+                        // Postpone loading until image is scrolled into viewport
                         $(this).unbind('inview').one('inview', function() {
                             displayTruncatedImage($(this));
                         });
