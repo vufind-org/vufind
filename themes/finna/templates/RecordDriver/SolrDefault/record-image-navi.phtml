@@ -9,7 +9,7 @@
      $content = '<img data-src="' . str_replace('&', '&amp;', $img['small']) . '" alt="" />';
   }
 ?>
-<a href="<?=str_replace('&', '&amp;', $img['medium']) ?>" class="image-popup image-popup-navi<?= ($type === 'list' && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?><?= ($type === 'record' && $ind > 6) ? ' inview' : ''?>"><?= $content ?></a>
+<a href="<?=str_replace('&', '&amp;', $img['medium']) ?>" class="image-popup image-popup-navi<?= ($type === 'list' && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?>"><?= $content ?></a>
 <a href="<?=str_replace('&', '&amp;', $img['large']) ?>" class="hide"><?= $content ?></a>
 <? $ind++; ?>
 <? endforeach; ?>

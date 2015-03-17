@@ -48,7 +48,6 @@ finna.layout = (function() {
       var truncation = [];
       var rowHeight = [];
       holder.find(".truncate-field").not('.truncate-done').each(function( index ) {
-        var self = $(this);
         $(this).addClass('truncate-done');
         // check that truncate-field has children, where we can count line-height
         if ($(this).children().length > 0) {
@@ -75,7 +74,9 @@ finna.layout = (function() {
               $(this).after("<div class='more-link'>"+vufindString.show_more+" <i class='fa fa-arrow-down'></i></div><div class='less-link'>"+vufindString.show_less+" <i class='fa fa-arrow-up'></i></div>");
             }
             $('.less-link').hide();
-            
+
+            var self = $(this);
+
             $(this).nextAll('.more-link').first().click(function( event ) {
               $(this).hide();
               $(this).next('.less-link').show();
@@ -90,7 +91,7 @@ finna.layout = (function() {
               notifyTruncateChange(self);
             }); 
           }
-          notifyTruncateChange(self);
+          notifyTruncateChange($(this));
         }
         $(this).trigger('truncate-done', [$(this)]);
       });
@@ -110,14 +111,10 @@ finna.layout = (function() {
                     if (typeof($(this).attr('src')) === 'undefined'
                         && typeof($(this).data('src')) !== 'undefined'
                     ) {
-                        if ($(this).parent().hasClass('inview')) {
-                            // Postpone loading until image in scrolled into viewport
-                            $(this).unbind('inview').one('inview', function() {
-                                displayTruncatedImage($(this));
-                            });
-                        } else {
+                        // Postpone loading until image in scrolled into viewport
+                        $(this).unbind('inview').one('inview', function() {
                             displayTruncatedImage($(this));
-                        }
+                        });
                     }
                 }
             });
