@@ -1,5 +1,10 @@
 <script>
   $(document).ready(function() {
+    // Switch and prepare for JS mode
+    $('#advSearchForm .no-js').remove();
+    $('#new_group_template_overwrite').attr('id', 'new_group_template');
+    $('#new_search_template_overwrite').attr('id', 'new_search_template');
+    // Build page
     <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
       <? foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
         <? $i = 0; foreach ($searchGroup->getQueries() as $search): ?>
@@ -28,7 +33,7 @@
   });
 </script>
 
-<script type="text/template" id="new_search_template">
+<script type="text/template" id="new_search_template_overwrite">
   <div class="search row">
     <div class="col-sm-3">
       <input type="hidden" value="AND" class="first-op"/>
@@ -56,7 +61,7 @@
   </div>
 </script>
 
-<script type="text/template" id="new_group_template">
+<script type="text/template" id="new_group_template_overwrite">
   <div class="group well clearfix">
     <input type="hidden" value="AND"/>
     <i class="col-sm-offset-3 fa fa-plus-circle"></i> <a href="#" class="add_search_link"><?=$this->transEsc("add_search")?></a>

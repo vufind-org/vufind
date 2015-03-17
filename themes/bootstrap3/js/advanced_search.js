@@ -9,6 +9,7 @@ function addSearch(group, fieldValues)
   var inputIndex = $('#group'+group+' input[type=text]').length;
   var inputID = group+'_'+inputIndex;
   var $newSearch = $($('#new_search_template').html());
+  console.log($newSearch.html());
 
   $newSearch.attr('id', 'search'+inputID);
   $newSearch.find('input.form-control')
@@ -73,10 +74,12 @@ function addGroup(firstTerm, firstField, join)
   var $newGroup = $($('#new_group_template').html());
   $newGroup.attr('id', 'group'+nextGroup);
   $newGroup.find('.fa.fa-plus-circle')
-    .attr('id', 'group'+nextGroup+'Holder');
+    .attr('id', 'group'+nextGroup+'Holder')
+    .removeClass('hidden');
   $newGroup.find('.add_search_link')
     .attr('id', 'add_search_link_'+nextGroup)
-    .attr('onClick', 'addSearch('+nextGroup+')');
+    .attr('onClick', 'addSearch('+nextGroup+')')
+    .removeClass('hidden');
   $newGroup.find('.close')
     .attr('onClick', 'deleteGroup('+nextGroup+')');
   $newGroup.find('select.form-control')
