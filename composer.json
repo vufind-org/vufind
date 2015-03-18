@@ -69,7 +69,7 @@
         "vufind-org/vufindcode": "*",
         "vufind-org/vufindhttp": "*",
         "worldcat/discovery" : ">=0.15.0",
-        "zendframework/zendframework": "2.3.5",
+        "zendframework/zendframework": "2.3.7",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",
         "zendframework/zendservice-recaptcha": "2.*",

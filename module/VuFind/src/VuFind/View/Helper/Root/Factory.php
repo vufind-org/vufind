@@ -57,6 +57,18 @@ class Factory
     }
 
     /**
+     * Construct the AlphaBrowse helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AlphaBrowse
+     */
+    public static function getAlphaBrowse(ServiceManager $sm)
+    {
+        return new AlphaBrowse($sm->get('url'));
+    }
+
+    /**
      * Construct the Auth helper.
      *
      * @param ServiceManager $sm Service manager.

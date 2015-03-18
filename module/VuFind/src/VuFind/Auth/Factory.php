@@ -108,16 +108,16 @@ class Factory
             // here may interfere with UI rendering. If we ignore it now, it will
             // still get handled appropriately later in processing.
             error_log($e->getMessage());
-            $catalog = null; // avoid unset variable notice
         }
 
         // Load remaining dependencies:
         $userTable = $sm->get('VuFind\DbTablePluginManager')->get('user');
         $sessionManager = $sm->get('VuFind\SessionManager');
         $pm = $sm->get('VuFind\AuthPluginManager');
+        $cookies = $sm->get('VuFind\CookieManager');
 
         // Build the object:
-        return new Manager($config, $userTable, $sessionManager, $pm, $catalog);
+        return new Manager($config, $userTable, $sessionManager, $pm, $cookies);
     }
 
     /**

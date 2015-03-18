@@ -397,12 +397,11 @@ class Params extends \VuFind\Search\Base\Params
     {
         static $table = [
             'year' => ['field' => 'publishDateSort', 'order' => 'desc'],
-            'publishDateSort' =>
-                ['field' => 'publishDateSort', 'order' => 'desc'],
+            'publishDateSort' => ['field' => 'publishDateSort', 'order' => 'desc'],
             'author' => ['field' => 'authorStr', 'order' => 'asc'],
             'title' => ['field' => 'title_sort', 'order' => 'asc'],
             'relevance' => ['field' => 'score', 'order' => 'desc'],
-            'callnumber' => ['field' => 'callnumber', 'order' => 'asc'],
+            'callnumber' => ['field' => 'callnumber-sort', 'order' => 'asc'],
         ];
         $normalized = [];
         foreach (explode(',', $sort) as $component) {

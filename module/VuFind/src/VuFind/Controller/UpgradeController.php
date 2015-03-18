@@ -66,14 +66,16 @@ class UpgradeController extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param \VuFind\Cookie\CookieManager $cookieManager Cookie manager
      */
-    public function __construct()
+    public function __construct(\VuFind\Cookie\CookieManager $cookieManager)
     {
         // We want to use cookies for tracking the state of the upgrade, since the
         // session is unreliable -- if the user upgrades a configuration that uses
         // a different session handler than the default one, we'll lose track of our
         // upgrade state in the middle of the process!
-        $this->cookie = new CookieContainer('vfup');
+        $this->cookie = new CookieContainer('vfup', $cookieManager);
 
         // ...however, once the configuration piece of the upgrade is done, we can
         // safely use the session for storing some values.  We'll use this for the

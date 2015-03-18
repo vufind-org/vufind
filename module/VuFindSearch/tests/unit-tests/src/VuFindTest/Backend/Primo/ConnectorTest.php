@@ -124,6 +124,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      * status.
      *
      * @return void
+     *
      * @expectedException        \Exception
      * @expectedExceptionMessage Unauthorized access
      */

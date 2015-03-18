@@ -26,6 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
+use ZfcRbac\Service\AuthorizationServiceAwareInterface,
+    ZfcRbac\Service\AuthorizationServiceAwareTrait;
 
 /**
  * Record tab abstract base class
@@ -36,8 +38,19 @@ namespace VuFind\RecordTab;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
-abstract class AbstractBase implements TabInterface
+abstract class AbstractBase implements TabInterface,
+    AuthorizationServiceAwareInterface
 {
+    use AuthorizationServiceAwareTrait;
+
+    /**
+     * Permission that must be granted to access this module (null for no
+     * restriction)
+     *
+     * @var string
+     */
+    protected $accessPermission = null;
+
     /**
      * Record driver associated with the tab
      *
@@ -59,7 +72,15 @@ abstract class AbstractBase implements TabInterface
      */
     public function isActive()
     {
-        // Assume active by default; subclasses may add rules.
+        // If accessPermission is set, check for authorization to enable tab
+        if (!empty($this->accessPermission)) {
+            $auth = $this->getAuthorizationService();
+            if (!$auth) {
+                throw new \Exception('Authorization service missing');
+            }
+            return $auth->isGranted($this->accessPermission);
+        }
+
         return true;
     }
 
