@@ -12,6 +12,7 @@ namespace LosReCaptcha\Captcha;
 use Traversable;
 use LosReCaptcha\Service\ReCaptcha as ReCaptchaService;
 use Zend\Captcha\ReCaptcha as ZendReCaptcha;
+use Zend\Stdlib\ArrayUtils;
 
 /**
  * ReCaptcha adapter
@@ -31,6 +32,44 @@ class ReCaptcha extends ZendReCaptcha
         self::ERR_CAPTCHA   => 'Failed to validate captcha',
         self::BAD_CAPTCHA   => 'Captcha value is wrong: %value%',
     );
+
+    /**
+     * Constructor
+     *
+     * @param  null|array|Traversable $options
+     */
+    public function __construct($options = null)
+    {
+        $this->service = new ReCaptchaService();
+        $this->serviceParams  = $this->getService()->getParams();
+        $this->serviceOptions = $this->getService()->getOptions();
+
+        if ($options instanceof Traversable) {
+            $options = ArrayUtils::iteratorToArray($options);
+        }
+
+        if (isset($this->messageTemplates)) {
+            $this->abstractOptions['messageTemplates'] = $this->messageTemplates;
+        }
+
+        if (isset($this->messageVariables)) {
+            $this->abstractOptions['messageVariables'] = $this->messageVariables;
+        }
+
+        if (is_array($options)) {
+            $this->setOptions($options);
+        }
+
+        if (!empty($options)) {
+            if (array_key_exists('private_key', $options)) {
+                $this->getService()->setPrivateKey($options['private_key']);
+            }
+            if (array_key_exists('public_key', $options)) {
+                $this->getService()->setPublicKey($options['public_key']);
+            }
+            $this->setOptions($options);
+        }
+    }
 
     /**
      * Validate captcha
