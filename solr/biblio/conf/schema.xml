@@ -126,8 +126,6 @@
    <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="format" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author" type="textProper" indexed="true" stored="true" termVectors="true"/>   
-   <field name="author_vernacular" type="textProper" indexed="true" stored="true" termVectors="true"/>
-   <field name="auth_author" type="textProper" indexed="true" stored="true" termVectors="true"/>   
    <field name="author-letter" type="string" indexed="true" stored="true"/>
    <field name="authorStr" type="textFacet" indexed="true" stored="false"/>
    <field name="title" type="text" indexed="true" stored="true"/>
@@ -173,10 +171,7 @@
    <field name="author_fuller" type="textProper" indexed="true" stored="true" />
    <field name="author_additional" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author_additionalStr" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="auth_author2" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="title_alt" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="title_uniform" type="text" indexed="true" stored="true" multiValued="true"/>
-   <field name="title_vernacular" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="title_old" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="title_new" type="text" indexed="true" stored="true" multiValued="true"/>
    <field name="dateSpan" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -256,11 +251,8 @@
  <copyField source="fulltext" dest="fulltext_unstemmed"/>
  <!-- CopyFields for Alphabetic Browse -->
  <copyField source="topic"    dest="topic_browse"/>
- <copyField source="author_vernacular"    dest="author_browse"/>
  <copyField source="author"    dest="author_browse"/>
  <copyField source="author2"    dest="author_browse"/>
- <copyField source="auth_author"    dest="author_browse"/>
- <copyField source="auth_author2"    dest="author_browse"/>
 <!-- CopyFields for All Fields -->
  <copyField source="format"    dest="allfields"/>
  <copyField source="format"    dest="allfields_unstemmed"/>
