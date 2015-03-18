@@ -21,9 +21,9 @@
   <? if ($this->targets !== null): ?>
   <label class="displayBlock" for="login_target"><?=$this->transEsc('login_target')?>:</label>
   <select id="login_target" name="target">
-  <?foreach ($this->targets as $target):?>
+  <? foreach ($this->targets as $target): ?>
     <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
-  <? endforeach ?>
+  <? endforeach; ?>
   </select>
   <br class="clear"/>
   <? endif; ?>
