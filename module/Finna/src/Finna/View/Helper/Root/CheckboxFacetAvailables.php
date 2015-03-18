@@ -41,28 +41,34 @@ class CheckboxFacetAvailables extends \Zend\View\Helper\AbstractHelper
 {
     /**
      * Return the count of records when checkbox filter is activated.
-     * @param type   $checkboxFilter current checkbox filter
-     * @param Params $searchClassId  search class id
-     * @param type   $facetSet       facet get from query
+     * @param type $checkboxFilter current checkbox filter
+     * @param type $results        search result set
      * @return int record count
      */
-    public function getAvailableWithCbFacet($checkboxFilter, $searchClassId,
-        $facetSet
-    ) {
-        if ($searchClassId == 'Primo') {
-            foreach ($facetSet['tlevel']['list'] as $item) {
-                if ($item['value'] == $checkboxFilter['desc']) {
-                    return $item['count'];
+    public function getAvailableWithCbFacet($checkboxFilter, $results)
+    {
+        $ret = 0;
+
+        list($field, $value) = $results->getParams()
+            ->parseFilter($checkboxFilter['filter']);
+        $facets = $results->
+            getFacetList([$field => $value]);
+
+        if (isset($facets[$field])) {
+            foreach ($facets[$field]['list'] as $item) {
+                if ($item['value'] == $value
+                    || (substr($value, -1) == '*'
+                    && preg_match('/^' . $value . '/', $item['value']))
+                    || ($item['value'] == 'true' && $value == '1')
+                    || ($item['value'] == 'false' && $value == '0')
+                ) {
+                    $ret += $item['count'];
                 }
-            }
-        } else if ($searchClassId == 'Solr') {
-            $filter = explode(':', $checkboxFilter['filter']);
-            if (isset($facetSet[$filter[0]])) {
-                return $facetSet[$filter[0]]['list'][0]['count'];
             }
         }
 
-        return -1;
+        return $ret;
     }
+
 
 }

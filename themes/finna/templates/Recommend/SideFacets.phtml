@@ -2,18 +2,12 @@
 <? if ($results->getResultTotal() > 0): ?>
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <? endif; ?>
-<? $sideFacetSet = $this->recommend->getFacetSet(); ?>
-<? $excludeFacets = ['tlevel' => 'Limit To', 'online_boolean' => 'Available online']; ?>
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
 <?
   $html = '';
   $shown = 0;
   foreach ($checkboxFilters as $current) {
-      $availCount = $this->checkboxFacetAvailables()->getAvailableWithCbFacet(
-          $current,
-          $results->getParams()->getSearchClassId(),
-          $sideFacetSet
-      );
+    $availCount = $this->checkboxFacetAvailables()->getAvailableWithCbFacet($current, $results);
     $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
     $html .= '<label class="checkbox';
     if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
@@ -76,10 +70,9 @@
   </ul>
 <? endif; ?>
 <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
-<? $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
+<? $sideFacetSet = $this->recommend->getFacetSet(); $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
-    <? if(in_array($cluster['label'], $excludeFacets)) { continue; } ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <ul class="list-group facet" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
       <li class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >

@@ -25,7 +25,6 @@ topic_facet        = Topic
 hierarchy_parent_title = component_part_is_part_of
 first_indexed      = "New Items in Index"
 category_str_mv    = Category
-online_boolean     = Available online
 
 ; Facets that will appear at the top of search results when the TopFacets
 ; recommendations module is used.  See the [TopRecommendations] section of
