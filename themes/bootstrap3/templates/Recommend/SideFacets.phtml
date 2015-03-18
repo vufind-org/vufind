@@ -90,11 +90,11 @@
           <? if ($rangeFacets[$title]['type'] == 'date'): ?>
             <? $this->headScript()->appendFile('vendor/bootstrap-slider.js'); ?>
             <?
-              $min = !empty($rangeFacets[$title][0]) ? min($rangeFacets[$title][0], 1400) : 1400;
+              $min = !empty($rangeFacets[$title]['values'][0]) ? min($rangeFacets[$title]['values'][0], 1400) : 1400;
               $future = date('Y', time()+31536000);
-              $max = !empty($rangeFacets[$title][1]) ? max($future, $rangeFacets[$title][1]) : $future;
-              $low  = !empty($rangeFacets[$title][0]) ? $rangeFacets[$title][0] : $min;
-              $high = !empty($rangeFacets[$title][1]) ? $rangeFacets[$title][1] : $max;
+              $max = !empty($rangeFacets[$title]['values'][1]) ? max($future, $rangeFacets[$title]['values'][1]) : $future;
+              $low  = !empty($rangeFacets[$title]['values'][0]) ? $rangeFacets[$title]['values'][0] : $min;
+              $high = !empty($rangeFacets[$title]['values'][1]) ? $rangeFacets[$title]['values'][1] : $max;
               $script = <<<JS
 $(document).ready(function() {
   var fillTexts = function() {
