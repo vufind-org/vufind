@@ -81,6 +81,23 @@ class DAIA extends AbstractBase implements
     protected $legacySupport = false;
 
     /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $httpClient;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Http\Client $httpClient HTTP client
+     */
+    public function __construct(\Zend\Http\Client $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -266,6 +283,13 @@ class DAIA extends AbstractBase implements
         ];
 
         try {
+            $result = $this->httpClient->getResponse($this->baseUrl, $params, null, $http_headers);
+var_dump($result->isSuccess());
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+/*
             if ($this->legacySupport) {
                 // HttpRequest for DAIA legacy support as all
                 // the parameters are contained in the baseUrl
@@ -278,10 +302,8 @@ class DAIA extends AbstractBase implements
                     $this->baseUrl,
                     $params, null, $http_headers
                 );
-            }
-        } catch (\Exception $e) {
-            throw new ILSException($e->getMessage());
-        }
+         }
+*/
 
         if (!$result->isSuccess()) {
             // throw ILSException disabled as this will be shown in VuFind-Frontend

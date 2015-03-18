@@ -46,6 +46,7 @@ use InvalidArgumentException;
  */
 class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
+
     /**
      * Constructor
      */
@@ -53,6 +54,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $this->driver = new DAIA();
     }
+
 
     /**
      * Test that dummy history.
@@ -64,20 +66,35 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 
     }
 
-
     /**
-     * Test that an empty query causes an error.
+     * Test 
      *
      * @return void
      */
-    public function testgetStatus()
+    public function testJSONgetStatus()
     {
         $conn = $this->createConnector('daiajson');
-        $result = $conn->getStatus('123456');
-        var_dump($conn);
-        $this->assertEquals("test", $result['id']);
+        $conn->setConfig(['DAIA' => ['responseFormat' => 'json', 'baseUrl' => 'http://daia.example.org']]);
+        $conn->init();
+        //$result = $conn->getStatus('123456');
+        $this->assertEquals("test", "bla");
     }
 
+    /**
+     * Test 
+     *
+     * @return void
+     */
+/*    public function testXMLgetStatus()
+    {
+       $conn = $this->createConnector('daiaxml');
+       $conn->setConfig(['DAIA' => ['responseFormat' => 'xml', 'baseUrl' => 'http://daia.example.org']]);
+       $conn->init();
+
+        $result = $conn->getStatus('123456');
+        $this->assertEquals("test", $result['id']);
+    }
+*/
 
     /**
      * Create connector with fixture file.
@@ -92,18 +109,16 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(sprintf('%s/daiajson/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
+            $file = realpath(__DIR__ . '/../../../../../../tests/fixtures/daia/response/' . $fixture);
             if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
+                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s ', $file));
             }
             $response = file_get_contents($file);
             $adapter->setResponse($response);
         }
         $client = new HttpClient();
         $client->setAdapter($adapter);
-//        var_dump($client);
         $conn = new DAIA($client);
-        var_dump($conn);
         return $conn;
     }
 }
