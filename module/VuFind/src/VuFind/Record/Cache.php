@@ -69,25 +69,11 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     protected $recordFactoryManager = null;
 
     /**
-     * Current operating mode ('disabled' / 'primary' / 'fallback')
-     *
-     * @var string
-     */
-    protected $operatingMode = 'disabled';
-
-    /**
      * Record sources which may be cached.
      *
      * @var array
      */
     protected $cachableSources = [];
-
-    /**
-     * Elements which may be used to form the unique cache ID.
-     *
-     * @var array
-     */
-    protected $cacheIdComponents = ['userId'];
 
     /**
      * Constructor
@@ -123,7 +109,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     public function createOrUpdate($recordId, $userId, $source,
         $rawData, $sessionId, $resourceId
     ) {
-        if (in_array($source, $this->cachableSources)) {
+        if (isset($this->cachableSources[$source])) {
             $cId = $this->getCacheId($recordId, $source, $userId);
             $this->debug(
                 'createOrUpdate cache for record: ' . $recordId .
@@ -162,9 +148,6 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      */
     public function lookup($ids, $source = null)
     {
-        if ($this->operatingMode === 'disabled') {
-            return [];
-        }
 
         if (isset($source)) {
             foreach ($ids as $id) {
@@ -180,7 +163,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
                 $details = ['source' => $parts[0],'id' => $parts[1]];
             }
 
-            if (in_array($details['source'], $this->cachableSources)) {
+            if (isset($this->cachableSources[$details['source']])) {
                 $userId = isset($_SESSION['Account'])
                     ? $_SESSION['Account']->userId : null;
 
@@ -220,19 +203,29 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     public function setPolicy($cachePolicy)
     {
         $cachePolicy = ucfirst($cachePolicy);
-        $policy = $this->cacheConfig->$cachePolicy;
-        if (isset($policy)) {
-            $this->cachableSources
-                = preg_split("/[\s,]+/", $policy->cachableSources);
-            $this->operatingMode = $policy->operatingMode;
-            $this->cacheIdComponents
-                = preg_split("/[\s,]+/", $policy->cacheIdComponents);
-        }
+        $cachableSources = $this->cacheConfig->$cachePolicy->toArray();
+        
+       	foreach ($cachableSources as $key => $cachableSource) {
+       		if (isset($cachableSource['operatingMode'])) {
+       			$this->cachableSources[$key]['operatingMode'] 
+       				= $cachableSource['operatingMode']; 
+       		} else {
+       			$this->cachableSources[$key]['operatingMode'] = 'disabled';
+       		}
+       		
+       		
+       		if (isset($cachableSource['cacheIdComponents'])) {
+	       		$this->cachableSources[$key]['cacheIdComponents']  
+	        		= preg_split("/[\s,]+/", $cachableSource['cacheIdComponents']);
+       		} else {
+       			$this->cachableSources[$key]['cacheIdComponents'] = ['userId'];
+       		}
+       	}
 
         // due to legacy resasons add 'VuFind' to cachable sources if
         // record from source 'Solr' are cacheable.
-        if (in_array('Solr', $this->cachableSources)) {
-            $this->cachableSources[] = 'VuFind';
+        if (isset($this->cachableSources['Solr'])) {
+            $this->cachableSources['VuFind'] = $this->cachableSources['Solr'];
         }
     }
 
@@ -241,9 +234,13 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      *
      * @return bool
      */
-    public function isPrimary()
+    public function isPrimary($source)
     {
-        return ($this->operatingMode === "primary");
+    	if (isset($this->cachableSources[$source]['operatingMode'])) {
+	    	return ($this->cachableSources[$source]['operatingMode'] === "primary");
+    	}
+    	
+    	return false;
     }
 
     /**
@@ -251,9 +248,13 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      *
      * @return bool
      */
-    public function isFallback()
+    public function isFallback($source)
     {
-        return ($this->operatingMode === "fallback");
+    	if (isset($this->cachableSources[$source]['operatingMode'])) {
+	        return ($this->cachableSources[$source]['operatingMode'] === "fallback");
+    	}
+	
+    	return false;
     }
 
     /**
@@ -273,7 +274,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
         $cIdHelper['recordId'] = $recordId;
         $cIdHelper['source']   = $source;
 
-        if (in_array('userId', $this->cacheIdComponents)) {
+        if (in_array('userId', $this->cachableSources[$source]['cacheIdComponents'])) {
             $cIdHelper['userId']   = $userId;
         }
 

@@ -85,14 +85,14 @@ class Loader
     public function load($id, $source = 'VuFind', $tolerateMissing = false)
     {
         $results = [];
-        if (isset($this->recordCache) && $this->recordCache->isPrimary()) {
+        if (isset($this->recordCache) && $this->recordCache->isPrimary($source)) {
             $results = $this->recordCache->lookup(["$source|$id"]);
         }
         if (count($results) === 0) {
-            $results = $this->searchService->retrieve($source, $id)->getRecords();
+        	$results = $this->searchService->retrieve($source, $id)->getRecords();
         }
         if (isset($this->recordCache)
-            && $this->recordCache->isFallback() && count($results) === 0
+            && $this->recordCache->isFallback($source) && count($results) === 0
         ) {
             $results = $this->recordCache->lookup(["$source|$id"]);
         }
@@ -124,7 +124,7 @@ class Loader
     public function loadBatchForSource($ids, $source = 'VuFind')
     {
         $cachedRecords = [];
-        if (isset($this->recordCache) && $this->recordCache->isPrimary()) {
+        if (isset($this->recordCache) && $this->recordCache->isPrimary($source)) {
             // try to load records from cache if source is cachable
             $cachedRecords = $this->recordCache->lookup($ids, $source);
             // which records could not be loaded from the record cache?
@@ -148,7 +148,7 @@ class Loader
         }
         
         if (isset($this->recordCache)
-            && $this->recordCache->isFallback() && count($ids) > 0
+            && $this->recordCache->isFallback($source) && count($ids) > 0
         ) {
             // try to load missing records from cache if source is cachable
             $cachedRecords = $this->recordCache->lookup($ids, $source);
