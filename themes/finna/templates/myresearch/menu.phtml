@@ -5,7 +5,27 @@
 <div class="col-xs-12">
   <div class="row">
     <div class="dropdown visible-xs myresearch-nav-mobile">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-arrow-down"></i></a>
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+      <?
+        switch ($this->active) {
+        case 'profile': echo $this->transEsc('Profile'); break;
+        case 'checkedout': echo $this->transEsc('Checked Out Items'); break;
+        case 'holds': echo $this->transEsc('Holds and Recalls'); break;
+        case 'storageRetrievalRequests': echo $this->transEsc('Storage Retrieval Requests'); break;
+        case 'Interlibrary Loan Requests': echo $this->transEsc('Interlibrary Loan Requests'); break;
+        case 'fines': echo $this->transEsc('Fines'); break;
+        case 'favorites': echo $this->transEsc('Favorites'); break;
+        case 'history': echo $this->transEsc('history_saved_searches'); break;
+        default:
+            if (substr($this->active, 0, 4) == 'list') {
+                echo $this->transEsc('Favorites');
+                break;
+            }
+            echo $this->transEsc('Your Account');
+            break;
+      }
+      ?>
+      <i class="fa fa-arrow-down"></i></a>
       <ul class="dropdown-menu">
         <? if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
           <? if ($this->ils()->checkCapability('getMyProfile')): ?>
@@ -40,7 +60,7 @@
            <? endif; ?>
         <? endif; ?>
         <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-           <li><a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' ? ' active' : ''?>">
+           <li><a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' || substr($this->active, 0, 4) == 'list' ? ' active' : ''?>">
            <?=$this->transEsc('Favorites')?>
            </a></li>
         <? endif; ?>
@@ -84,7 +104,7 @@
       <? endif; ?>
     <? endif; ?>
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <li><a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' ? ' active' : ''?>">
+      <li><a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=$this->active == 'favorites' || substr($this->active, 0, 4) == 'list' ? ' active' : ''?>">
       <?=$this->transEsc('Favorites')?>
       </a></li>
     <? endif; ?>

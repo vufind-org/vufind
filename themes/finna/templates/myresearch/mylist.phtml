@@ -4,7 +4,7 @@
 
   // Set up page title:
   $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
-  
+
   // Set up myresearch menu
   $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'));
 
@@ -20,7 +20,7 @@
   // Convenience variable:
   $account = $this->auth()->getManager();
   $user = $this->auth()->isLoggedIn();
-  
+
   // Set up Finna Main Header:
 
 ?>
@@ -28,7 +28,7 @@
   <?=$this->recommend($current)?>
 <? endforeach; ?>
 <div class="row">
-  <div class="<?=$this->layoutClass('mainbody')?>">  
+  <div class="<?=$this->layoutClass('mainbody')?>">
     <div class="clearfix hidden-print">
     <div class="row">
       <div class="col-xs-7">
@@ -101,7 +101,7 @@
     <? $lists = $user->getLists() ?>
     <? foreach ($lists as $list): ?>
     <li>
-        <a href="<?=$this->url('userList', array('id' => $list['id']))?>" class="list-group-item<?=$this->active == 'list' . $list['id'] ? ' active' : ''?>">
+        <a href="<?=$this->url('userList', array('id' => $list['id']))?>" class="list-group-item<?=$list && $list->id == $list['id'] ? ' active' : ''?>">
           <?=$this->escapeHtml($list['title'])?>
           <span> (<?=$list->cnt?>)</span>
         </a>
