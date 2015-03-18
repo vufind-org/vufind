@@ -125,7 +125,7 @@
    <!-- Generic Fields -->
    <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="format" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="author" type="textProper" indexed="true" stored="true" termVectors="true"/>   
+   <field name="author" type="textProper" indexed="true" stored="true" termVectors="true"/>
    <field name="author-letter" type="string" indexed="true" stored="true"/>
    <field name="authorStr" type="textFacet" indexed="true" stored="false"/>
    <field name="title" type="text" indexed="true" stored="true"/>
@@ -253,7 +253,7 @@
  <copyField source="topic"    dest="topic_browse"/>
  <copyField source="author"    dest="author_browse"/>
  <copyField source="author2"    dest="author_browse"/>
-<!-- CopyFields for All Fields -->
+ <!-- CopyFields for All Fields -->
  <copyField source="format"    dest="allfields"/>
  <copyField source="format"    dest="allfields_unstemmed"/>
  <!-- CopyFields for call numbers -->
