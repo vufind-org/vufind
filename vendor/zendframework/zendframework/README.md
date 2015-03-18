@@ -11,20 +11,16 @@ Develop:
 
 ## RELEASE INFORMATION
 
-*Zend Framework 2.3.5*
+*Zend Framework 2.3.7*
 
-This is the fifth maintenance release for the version 2.3 series.
+This is the seventh maintenance release for the version 2.3 series.
 
-18 Feb 2015
+12 Mar 2015
 
-### UPDATES IN 2.3.5
+### UPDATES IN 2.3.7
 
-This release contains security updates:
-
-- **ZF2015-02:** `Zend\Db\Adapter\Platform\Postgresql` was incorrectly using
-  `\\` to escape double quotes in identifiers and values, which could lead to
-  SQL injection vectors. We have provided patches that use proper escaping. If
-  you use Postgresql with Zend Framework 2, we recommend upgrading immediately.
+- This release reverts [#7255](https://github.com/zendframework/zf2/pull/7255),
+  as it introduced a BC break against `Zend\Mvc\Controller\AbstractRestfulController`.
 
 Please see [CHANGELOG.md](CHANGELOG.md).
 

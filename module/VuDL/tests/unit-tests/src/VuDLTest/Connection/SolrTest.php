@@ -106,11 +106,13 @@ class SolrTest extends \VuFindTest\Unit\TestCase
 
         $this->assertEquals(null, $subject->getDetails('id', false));
         $this->assertEquals(["author" => ["A1","A2"],"series" => "S1"], $subject->getDetails('id', false));
-        $this->assertEquals([
+        $this->assertEquals(
+            [
             "author" => ["title" => "Author", "value" => ["A1","A2"]],
             "bacon" => ["title" => "Yum", "value" => ["MORE"]],
             "series" => ["title" => "Series", "value" => "S1"],
-        ], $subject->getDetails('id', true));
+            ], $subject->getDetails('id', true)
+        );
 
         $this->assertEquals(null, $subject->getLabel('id'));
         $this->assertEquals("LABEL", $subject->getLabel('id'));

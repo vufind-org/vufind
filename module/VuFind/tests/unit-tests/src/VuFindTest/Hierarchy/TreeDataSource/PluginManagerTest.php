@@ -54,7 +54,8 @@ class PluginManagerTest extends \VuFindTest\Unit\TestCase
      * Test expected interface.
      *
      * @return void
-     * @expectedException Zend\ServiceManager\Exception\RuntimeException
+     *
+     * @expectedException        Zend\ServiceManager\Exception\RuntimeException
      * @expectedExceptionMessage Plugin ArrayObject does not belong to VuFind\Hierarchy\TreeDataSource\AbstractBase
      */
     public function testExpectedInterface()

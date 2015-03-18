@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind;
+use VuFind\Cookie\CookieManager;
 
 /**
  * Cart Class
@@ -69,11 +70,11 @@ class Cart
     protected $recordLoader;
 
     /**
-     * Domain context for cookies (null for default)
+     * Cookie manager
      *
-     * @var string
+     * @var CookieManager
      */
-    protected $cookieDomain;
+    protected $cookieManager;
 
     const CART_COOKIE =  'vufind_cart';
     const CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -82,24 +83,22 @@ class Cart
     /**
      * Constructor
      *
-     * @param \VuFind\Record\Loader $loader       Object for loading records
-     * @param int                   $maxSize      Maximum size of cart contents
-     * @param bool                  $active       Is cart enabled?
-     * @param array                 $cookies      Current cookie values (leave null
-     * to use $_COOKIE superglobal)
-     * @param string                $cookieDomain Domain context for cookies
-     * (optional)
+     * @param \VuFind\Record\Loader $loader        Object for loading records
+     * @param CookieManager         $cookieManager Cookie manager
+     * @param int                   $maxSize       Maximum size of cart contents
+     * @param bool                  $active        Is cart enabled?
      */
     public function __construct(\VuFind\Record\Loader $loader,
-        $maxSize = 100, $active = true, $cookies = null, $cookieDomain = null
+        \VuFind\Cookie\CookieManager $cookieManager,
+        $maxSize = 100, $active = true
     ) {
         $this->recordLoader = $loader;
+        $this->cookieManager = $cookieManager;
         $this->maxSize = $maxSize;
         $this->active = $active;
-        $this->cookieDomain = $cookieDomain;
 
         // Initialize contents
-        $this->init(null === $cookies ? $_COOKIE : $cookies);
+        $this->init($this->cookieManager->getCookies());
     }
 
     /**
@@ -292,24 +291,9 @@ class Cart
 
         // Save the cookies:
         $cookie = implode(self::CART_COOKIE_DELIM, $ids);
-        $this->setCookie(self::CART_COOKIE, $cookie, 0, '/', $this->cookieDomain);
-        $cookie = implode(self::CART_COOKIE_DELIM, $sources);
-        $this->setCookie(
-            self::CART_COOKIE_SOURCES, $cookie, 0, '/', $this->cookieDomain
-        );
-    }
-
-    /**
-     * Set a cookie (wrapper in case Zend Framework offers a better abstraction
-     * of cookie handling in the future).
-     *
-     * @return bool
-     */
-    protected function setCookie()
-    {
-        // @codeCoverageIgnoreStart
-        return call_user_func_array('setcookie', func_get_args());
-        // @codeCoverageIgnoreEnd
+        $this->cookieManager->set(self::CART_COOKIE, $cookie, 0);
+        $srcCookie = implode(self::CART_COOKIE_DELIM, $sources);
+        $this->cookieManager->set(self::CART_COOKIE_SOURCES, $srcCookie, 0);
     }
 
     /**
@@ -319,7 +303,7 @@ class Cart
      */
     public function getCookieDomain()
     {
-        return $this->cookieDomain;
+        return $this->cookieManager->getDomain();
     }
 
     /**

@@ -121,7 +121,7 @@ class Options extends \VuFind\Search\Base\Options
         } else {
             $this->sortOptions = ['relevance' => 'sort_relevance',
                 'year' => 'sort_year', 'year asc' => 'sort_year asc',
-                'callnumber' => 'sort_callnumber', 'author' => 'sort_author',
+                'callnumber-sort' => 'sort_callnumber', 'author' => 'sort_author',
                 'title' => 'sort_title'];
         }
         // Load view preferences (or defaults if none in .ini file):

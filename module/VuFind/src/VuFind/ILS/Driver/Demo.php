@@ -573,6 +573,13 @@ class Demo extends AbstractBase
      */
     public function patronLogin($barcode, $password)
     {
+        if (isset($this->config['Users'])) {
+            if (!isset($this->config['Users'][$barcode])
+                || $password !== $this->config['Users'][$barcode]
+            ) {
+                return null;
+            }
+        }
         $user = [];
 
         $user['id']           = trim($barcode);
@@ -599,7 +606,7 @@ class Demo extends AbstractBase
     public function getMyProfile($patron)
     {
         $patron = [
-            'firstname' => 'Lib',
+            'firstname' => 'Lib-' . $patron['cat_username'],
             'lastname'  => 'Rarian',
             'address1'  => 'Somewhere...',
             'address2'  => 'Over the Rainbow',
