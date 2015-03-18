@@ -11,7 +11,7 @@
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <?=$this->flashmessages()?>
-    <h2 class="myresearch-title"><?=$this->transEsc('Your Holds and Recalls') ?> (<?=count($this->recordList)?>)</h2>
+    <h2><?=$this->transEsc('Your Holds and Recalls') ?> (<?=count($this->recordList)?>)</h2>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
       <form name="cancelForm" class="inline" action="&#32;" method="post" id="cancelHold">
