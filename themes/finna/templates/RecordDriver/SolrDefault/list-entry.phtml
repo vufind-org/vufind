@@ -168,7 +168,7 @@
         <?=$this->escapeHtml($note)?><br/>
       <? endforeach; ?>
     <? else: ?>
-      TODO <span class="text-right"><a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Add new note')?> <i class="fa fa-pen"></i></a></span>
+      TODO <span class="text-right"><a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Add note')?> <i class="fa fa-pen"></i></a></span>
     <? endif; ?>
     </div>
   </div>

@@ -11,8 +11,7 @@
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <?=$this->flashmessages()?>
-    <? $count = $this->recordList;?>
-    <h2 class="myresearch-title"><?=$this->transEsc('Your Holds and Recalls') ?> (<?=count($count)?>)</h2>
+    <h2 class="myresearch-title"><?=$this->transEsc('Your Holds and Recalls') ?> (<?=count($this->recordList)?>)</h2>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
       <form name="cancelForm" class="inline" action="&#32;" method="post" id="cancelHold">
@@ -38,7 +37,7 @@
         </div>
         <? else: ?>
         <div class="toolbar">
-          <p><?=$this->transEsc('Cannot cancel any reservations')?></p>
+          <p><?=$this->transEsc('cannot cancel any reservations')?></p>
         </div>
         <? endif; ?>
 
@@ -51,13 +50,13 @@
           <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
             <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
             <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
-             <div class="checkboxFilter">
-                <label class="checkbox">
-                  <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
-                </label>
-             </div>
+            <div class="checkboxFilter">
+              <label class="checkbox">
+                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
+              </label>
+            </div>
           <? else: ?>
-          <span class="no-checkbox">Cannot renew</span>
+            <span class="no-checkbox"><?=$this->transEsc('cannot cancel');?></span>
           <? endif; ?>
           </div>
           <div class="col-sm-1 text-left hidden-xs">

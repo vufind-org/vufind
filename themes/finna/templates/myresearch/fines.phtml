@@ -42,6 +42,7 @@
       <td><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
       <td class="balance"><?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?></td>
     </tr>
+    <tr>
       <? $totalDue += $record['balance']; ?>
     <? endforeach; ?>
       <th colspan="5" class="total-balance"><?=$this->transEsc('Total Balance Due')?></th>
