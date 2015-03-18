@@ -3,7 +3,7 @@
     "description" : "ZF2 module for integration with new ReCaptcha service form Google",
     "require" : {
         "php" : ">=5.4.0",
-        "zendframework/zendframework" : "2.3.*",
+        "zendframework/zendframework" : "2.3.*"
     },
     "require-dev": {
         "satooshi/php-coveralls": "dev-master"
