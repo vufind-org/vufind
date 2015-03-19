@@ -92,9 +92,11 @@ class DAIA extends AbstractBase implements
      *
      * @param \Zend\Http\Client $httpClient HTTP client
      */
-    public function __construct(\Zend\Http\Client $httpClient)
+    public function __construct(\Zend\Http\Client $httpClient=null)
     {
-        $this->httpClient = $httpClient;
+        if ($httpClient) {
+                 $this->httpClient = $httpClient;
+        }
     }
 
     /**
@@ -283,14 +285,14 @@ class DAIA extends AbstractBase implements
         ];
 
         try {
-             if ($this->legacySupport) {
+            if ($this->legacySupport) {
                 // HttpRequest for DAIA legacy support as all
                 // the parameters are contained in the baseUrl
                 $this->httpClient->setUri($this->baseUrl . $id);
-             } else {
+            } else {
                 $this->httpClient->setUri($this->baseUrl);
                 $this->httpClient->setParameterGet($params);
-             }
+            }
              $this->httpClient->setHeaders($http_headers);
              $result = $this->httpClient->send();
         } catch (\Exception $e) {
