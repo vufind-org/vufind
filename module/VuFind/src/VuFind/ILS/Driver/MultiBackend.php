@@ -89,13 +89,6 @@ class MultiBackend extends AbstractBase
     protected $config = [];
 
     /**
-     * The separating values to be used for each ILS.
-     * Not yet implemented
-     * @var object
-     */
-    protected $delimiters = [];
-
-    /**
      * Configuration loader
      *
      * @var \VuFind\Config\PluginManager
@@ -152,9 +145,6 @@ class MultiBackend extends AbstractBase
         $this->defaultDriver = isset($this->config['General']['default_driver'])
             ? $this->config['General']['default_driver']
             : null;
-        $this->delimiters['login'] = isset($this->config['Delimiters']['login'])
-            ? $this->config['Delimiters']['login']
-            : '.';
     }
 
     /**
@@ -364,7 +354,7 @@ class MultiBackend extends AbstractBase
         $driver = $this->getDriver($source);
         if ($driver) {
             $patron = $driver->patronLogin(
-                $this->getLocalId($username, $this->delimiters['login']), $password
+                $this->getLocalId($username), $password
             );
             $patron = $this->addIdPrefixes($patron, $source);
             return $patron;
@@ -1186,40 +1176,35 @@ class MultiBackend extends AbstractBase
     /**
      * Extract local ID from the given prefixed ID
      *
-     * @param string $id        The id to be split
-     * @param string $delimiter The delimiter to be used
+     * @param string $id The id to be split
      *
      * @return string  Local ID
      */
-    protected function getLocalId($id, $delimiter = '.')
+    protected function getLocalId($id)
     {
-        $pos = strpos($id, $delimiter);
+        $pos = strpos($id, '.');
         if ($pos > 0) {
             return substr($id, $pos + 1);
         }
-        $this->debug("Could not find local id in '$id' using '$delimiter'");
+        $this->debug("Could not find local id in '$id'");
         return $id;
     }
 
     /**
      * Extract source from the given ID
      *
-     * @param string $id        The id to be split
-     * @param string $delimiter The delimiter to be used from $this->delimiters
+     * @param string $id The id to be split
      *
      * @return string  Source
      */
-    protected function getSource($id, $delimiter = '')
+    protected function getSource($id)
     {
-        $delimiter = $delimiter && isset($this->delimiters[$delimiter])
-            ? $this->delimiters[$delimiter]
-            : '.';
-        $pos = strpos($id, $delimiter);
+        $pos = strpos($id, '.');
         if ($pos > 0) {
             return substr($id, 0, $pos);
         }
 
-        $this->debug("Could not find source id in '$id' using '$delimiter'");
+        $this->debug("Could not find source id in '$id'");
         return '';
     }
 
@@ -1409,10 +1394,7 @@ class MultiBackend extends AbstractBase
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
-                    $delimiter = $key === 'cat_username'
-                        ? $this->delimiters['login']
-                        : '.';
-                    $data[$key] = "$source$delimiter$value";
+                    $data[$key] = "$source.$value";
                 }
             }
         }
@@ -1444,12 +1426,9 @@ class MultiBackend extends AbstractBase
                     $value, $source, $modifyFields
                 );
             } else {
-                $delimiter = $key === 'cat_username'
-                    ? $this->delimiters['login']
-                    : '.';
-                $prefixLen = strlen($source) + strlen($delimiter);
+                $prefixLen = strlen($source) + 1;
                 if ((!is_array($data) || in_array($key, $modifyFields))
-                    && strncmp($source . $delimiter, $value, $prefixLen) == 0
+                    && strncmp("$source.", $value, $prefixLen) == 0
                 ) {
                     $array[$key] = substr($value, $prefixLen);
                 }
