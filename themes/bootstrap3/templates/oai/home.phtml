@@ -28,9 +28,9 @@
     <hr/>
     <a name="ListIdentifiers"></a>
     <p class="lead">ListIdentifiers</p>
-    <div class="row">
-      <div class="col-sm-8">
-        <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="col-sm-8">
           <input type="hidden" name="verb" value="ListIdentifiers"/>
           <p class="help-block">Returns a listing of available identifiers</p>
           <div class="form-group">
@@ -63,128 +63,128 @@
               <input id="ListIdentifier_resumptionToken" type="text" name="resumptionToken" class="form-control"/>
             </div>
           </div>
-        </form>
+        </div>
+        <div class="col-sm-4">
+          <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+        </div>
       </div>
-      <div class="col-sm-4">
-        <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
-      </div>
-    </div>
+    </form>
     <hr/>
     <a name="ListMetadataFormats"></a>
     <p class="lead">ListMetadataFormats</p>
-    <div class="row">
-      <div class="col-sm-8">
-        <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
-          <input type="hidden" name="verb" value="ListMetadataFormats"/>
-          <p class="help-block">Returns a listing of available metadata formats.</p>
-          <div class="form-group">
-            <label for="ListMetadataFormats_identifier" class="col-sm-3 control-label"><?=$this->transEsc('Identifier')?>:</label>
-            <div class="col-sm-9">
-              <input id="ListMetadataFormats_identifier" type="text" name="identifier" class="form-control"/>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="col-sm-8">
+            <input type="hidden" name="verb" value="ListMetadataFormats"/>
+            <p class="help-block">Returns a listing of available metadata formats.</p>
+            <div class="form-group">
+              <label for="ListMetadataFormats_identifier" class="col-sm-3 control-label"><?=$this->transEsc('Identifier')?>:</label>
+              <div class="col-sm-9">
+                <input id="ListMetadataFormats_identifier" type="text" name="identifier" class="form-control"/>
+              </div>
             </div>
-          </div>
-        </form>
+        </div>
+        <div class="col-sm-4">
+          <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+        </div>
       </div>
-      <div class="col-sm-4">
-        <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
-      </div>
-    </div>
+    </form>
     <hr/>
     <a name="ListSets"></a>
     <p class="lead">ListSets</p>
-    <div class="row">
-      <div class="col-sm-8">
-        <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
-          <input type="hidden" name="verb" value="ListSets"/>
-          <p class="help-block">Returns a listing of available sets.</p>
-          <div class="form-group">
-            <label for="ListSets_metadataPrefix" class="col-sm-3 control-label"><?=$this->transEsc('Metadata Prefix')?>:</label>
-            <div class="col-sm-9">
-              <input id="ListSets_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="col-sm-8">
+            <input type="hidden" name="verb" value="ListSets"/>
+            <p class="help-block">Returns a listing of available sets.</p>
+            <div class="form-group">
+              <label for="ListSets_metadataPrefix" class="col-sm-3 control-label"><?=$this->transEsc('Metadata Prefix')?>:</label>
+              <div class="col-sm-9">
+                <input id="ListSets_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="ListSets_resumptionToken" class="col-sm-3 control-label"><?=$this->transEsc('Resumption Token')?>:</label>
-            <div class="col-sm-9">
-              <input id="ListSets_resumptionToken" type="text" name="resumptionToken" class="form-control"/>
+            <div class="form-group">
+              <label for="ListSets_resumptionToken" class="col-sm-3 control-label"><?=$this->transEsc('Resumption Token')?>:</label>
+              <div class="col-sm-9">
+                <input id="ListSets_resumptionToken" type="text" name="resumptionToken" class="form-control"/>
+              </div>
             </div>
-          </div>
-        </form>
+        </div>
+        <div class="col-sm-4">
+          <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+        </div>
       </div>
-      <div class="col-sm-4">
-        <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
-      </div>
-    </div>
+    </form>
     <hr/>
     <a name="ListRecords"></a>
     <p class="lead">ListRecords</p>
-    <div class="row">
-      <div class="col-sm-8">
-        <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
-          <input type="hidden" name="verb" value="ListRecords"/>
-          <p class="help-block">Returns a listing of available records.</p>
-          <div class="form-group">
-            <label for="ListRecord_from" class="col-sm-3 control-label"><?=$this->transEsc('From')?>:</label>
-            <div class="col-sm-9">
-              <input id="ListRecord_from" type="text" name="from" class="form-control"/>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="col-sm-8">
+            <input type="hidden" name="verb" value="ListRecords"/>
+            <p class="help-block">Returns a listing of available records.</p>
+            <div class="form-group">
+              <label for="ListRecord_from" class="col-sm-3 control-label"><?=$this->transEsc('From')?>:</label>
+              <div class="col-sm-9">
+                <input id="ListRecord_from" type="text" name="from" class="form-control"/>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="ListRecord_until" class="col-sm-3 control-label"><?=$this->transEsc('Until')?>:</label>
-            <div class="col-sm-9">
-              <input id="ListRecord_until" type="text" name="until" class="form-control"/>
+            <div class="form-group">
+              <label for="ListRecord_until" class="col-sm-3 control-label"><?=$this->transEsc('Until')?>:</label>
+              <div class="col-sm-9">
+                <input id="ListRecord_until" type="text" name="until" class="form-control"/>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="ListRecord_set" class="col-sm-3 control-label"><?=$this->transEsc('Set')?>:</label>
-            <div class="col-sm-9">
-              <input id="ListRecord_set" type="text" name="set" class="form-control"/>
+            <div class="form-group">
+              <label for="ListRecord_set" class="col-sm-3 control-label"><?=$this->transEsc('Set')?>:</label>
+              <div class="col-sm-9">
+                <input id="ListRecord_set" type="text" name="set" class="form-control"/>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="ListRecord_metadataPrefix" class="col-sm-3 control-label"><?=$this->transEsc('Metadata Prefix')?>:</label>
-            <div class="col-sm-9">
-              <input id="ListRecord_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+            <div class="form-group">
+              <label for="ListRecord_metadataPrefix" class="col-sm-3 control-label"><?=$this->transEsc('Metadata Prefix')?>:</label>
+              <div class="col-sm-9">
+                <input id="ListRecord_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="ListRecord_resumptionToken" class="col-sm-3 control-label"><?=$this->transEsc('Resumption Token')?>:</label>
-            <div class="col-sm-9">
-              <input id="ListRecord_resumptionToken" type="text" name="resumptionToken" class="form-control"/>
+            <div class="form-group">
+              <label for="ListRecord_resumptionToken" class="col-sm-3 control-label"><?=$this->transEsc('Resumption Token')?>:</label>
+              <div class="col-sm-9">
+                <input id="ListRecord_resumptionToken" type="text" name="resumptionToken" class="form-control"/>
+              </div>
             </div>
-          </div>
-        </form>
+        </div>
+        <div class="col-sm-4">
+          <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+        </div>
       </div>
-      <div class="col-sm-4">
-        <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
-      </div>
-    </div>
+    </form>
     <hr/>
     <a name="GetRecord"></a>
     <p class="lead">GetRecord</p>
-    <div class="row">
-      <div class="col-sm-8">
-        <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
-          <input type="hidden" name="verb" value="GetRecord"/>
-          <p class="help-block">Returns a single record.</p>
-          <div class="form-group">
-            <label for="GetRecord_identifier" class="col-sm-3 control-label"><?=$this->transEsc('Identifier')?>:</label>
-            <div class="col-sm-9">
-              <input id="GetRecord_identifier" type="text" name="identifier" class="form-control"/>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="col-sm-8">
+            <input type="hidden" name="verb" value="GetRecord"/>
+            <p class="help-block">Returns a single record.</p>
+            <div class="form-group">
+              <label for="GetRecord_identifier" class="col-sm-3 control-label"><?=$this->transEsc('Identifier')?>:</label>
+              <div class="col-sm-9">
+                <input id="GetRecord_identifier" type="text" name="identifier" class="form-control"/>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="GetRecord_metadataPrefix" class="col-sm-3 control-label"><?=$this->transEsc('Metadata Token')?>:</label>
-            <div class="col-sm-9">
-              <input id="GetRecord_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+            <div class="form-group">
+              <label for="GetRecord_metadataPrefix" class="col-sm-3 control-label"><?=$this->transEsc('Metadata Token')?>:</label>
+              <div class="col-sm-9">
+                <input id="GetRecord_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+              </div>
             </div>
-          </div>
-        </form>
+        </div>
+        <div class="col-sm-4">
+          <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+        </div>
       </div>
-      <div class="col-sm-4">
-        <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
-      </div>
-    </div>
+    </form>
   </div>
   <div class="col-sm-3">
     <p class="lead"><?=$this->transEsc('Available Functionality') ?>:</p>
