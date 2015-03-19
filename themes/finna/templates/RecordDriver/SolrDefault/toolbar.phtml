@@ -54,11 +54,12 @@
         <a class="addthis_button_pinterest_share"><i class="fa fa-pinterest"></i></a>
         <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus"></i></a> -->
       </div>
-      <!-- Fetch correct image link and meta properity information here for facebook twitter and pinterest
+      <? // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
+      <!--
       <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" />
       <? if ($summary): ?><meta property="og:description" content="<?=$this->truncate($summary[0], 100)?>" /><? endif; ?>
-      <? if ($author): ?><meta property="article:author" content="https://www.facebook.com/fareedzakaria" /><? endif; ?>
-      <? if ($publisher): ?><meta property="article:publisher" content="https://www.facebook.com/cnn" /><? endif; ?>
+      <? if ($author): /* TODO */ ?><meta property="article:author" content="" /><? endif; ?>
+      <? if ($publisher): /* TODO */ ?><meta property="article:publisher" content="" /><? endif; ?>
       <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />
       -->
     </li>

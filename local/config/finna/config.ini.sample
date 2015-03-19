@@ -1053,6 +1053,7 @@ tags = disabled
 ; This controls the maximum length of a single tag; it should correspond with the
 ; field size in the tags database table.
 max_tag_length = 64
+tags = disabled
 
 ; Uncomment this section and provide your API key to enable Google Analytics
 ;[GoogleAnalytics]

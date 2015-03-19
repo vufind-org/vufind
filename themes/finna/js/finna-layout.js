@@ -130,7 +130,7 @@ finna.layout = (function() {
             }
         });
     };
-
+    
     var initOpenUrlLinks = function() {
         var links = $('a.openUrlEmbed');
         links.each(function(ind, e) {

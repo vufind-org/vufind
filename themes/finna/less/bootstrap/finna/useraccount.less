@@ -1,0 +1,191 @@
+// Custom styles for Myresearch
+
+.main.template-dir-myresearch, .main.template-dir-search.template-name-history {
+    & .myresearch-table {
+        margin-bottom: 40px;
+        & .headers th {
+            background: none;
+        }
+        & .total-balance {
+            background: none;
+            border-top: 1px solid @gray-light;
+            text-align: right;
+        }
+        & .balance {
+            text-align: right;   
+        }
+        & th {
+            font-size: 1.1em;   
+        }
+        & .history-time {
+            width: 20%;
+        }
+        & .history-save {
+            text-align: center;
+            width: 15%;
+        }
+        & .history-results {
+            width: 15%;   
+        }
+    } 
+    .myresearch-grid-list {
+        margin-bottom: 20px;   
+    }
+    .checkboxFilter.mylist-select-all {
+        float: left;
+        margin-right: 15px;
+        & .checkbox {
+            margin:0;   
+        }
+    }
+    & .myresearch-notes {
+        margin-top: 10px;  
+    }
+    & .myresearch-notes a, .myresearch-notes i {
+        color: @gray-light;  
+    }
+    .bulk-action-buttons-row {
+        margin: 0;   
+    }
+    .bulk-action-buttons-col {
+        padding: 10px 0;
+        border-top: 3px solid @gray-lighter;
+        border-bottom: 3px solid @gray-lighter;
+        & input.btn {
+              margin-right: 3px;   
+        }
+    }
+    .finna-main-header {
+        background: @myresearch-header-background;
+        & h1 {
+            font-size: @finna-header-font-size;
+            margin: 0;
+        }
+    }
+    .finna-main-tabs {
+         background: @myresearch-header-background;
+    }
+    & .list-title {
+         margin-bottom: 0px;   
+    }
+    & .list-title, .list-description {
+             border: 1px solid transparent;
+             display: inline-block;
+             padding: 5px;
+             transition: all 0.2s linear;
+        &:hover {
+            border: 1px solid @gray-lighter; 
+            & i {
+                transition: all 0.2s linear;
+                color: @gray;   
+            }
+        }
+        & i {
+            color: @gray-light;   
+        }
+    }
+    & .mylist-bar {
+        margin-top: 20px;  
+    }
+    .mylist-nav {
+        & li > a:not(.add-new-list) {
+            background: @gray;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+    }
+    .toolbar {
+        margin: 10px 0px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid @gray-lighter;
+        .status-text {
+            float: right;
+            line-height: 38px;   
+        }
+    }
+    .myresearch-row {
+        padding: 10px 0px;
+        border-bottom: 1px solid @gray-lighter;
+        & h3 {
+            margin: 0;
+            font-size: 1.3em;
+        }
+        & .no-checkbox {
+            font-size: 0.8em;
+            color: @gray-light;
+        }
+    }
+    & .myresearch-cancel > li {
+        border-bottom: none;
+        &:not(.disabled) {
+            float: left;
+            width: 45%;
+            padding: 10px;
+            text-align: center;
+            & a {
+                border-radius: @border-radius-base;
+                background: @link-color;
+                color: @body-bg;
+            }
+        }
+    }
+    & .checkboxFilter label.checkbox {
+        padding-left: 5px;
+        color: @gray-light;
+    }
+    .myresearch-menu {
+        background:  @myresearch-header-background;
+        margin-bottom: 20px;
+    }
+    @media(max-width:@screen-md-max) {
+        .paginationSimple {
+            margin-top: 0px;   
+        }
+    }
+    .paginationSimple {
+        margin-left: 5px;   
+    }
+    .myresearch-nav-mobile {
+        background: @link-color;
+        padding: 10px;
+        text-align: center;
+        > a, > i {
+            color: @body-bg;
+        }
+        > a {
+            display: block;
+            width: 100%;
+        }
+        .dropdown-menu {
+              left: 20%;   
+        }
+    }
+    .myresearch-nav {
+        & li {
+            float:left;
+            margin:0;
+            .list-group-item {
+                padding: 10px;
+                margin:0;
+                margin-right: 3px;
+                background: @link-color;
+                color: @body-bg;
+                font-weight: bold;
+                @media(max-width:@screen-md-max) {
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    max-width: 160px;
+                }
+                @media(max-width:@screen-sm-max) {
+                    max-width: 100px;
+                    font-size: 0.85em;
+                }
+                &.active {
+                    background: @body-bg;
+                    color: @gray;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,31 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Search History'));
+    
+  // Set up myresearch menu
+  if ($this->auth()->isLoggedIn()):
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", $this->auth()->isLoggedIn() ? array('active' => 'history') : array());
+  else:
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1>' . $this->transEsc("history_saved_searches") . '</h1></div>';
+  endif;
+  
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+    . '<li class="active">' . $this->transEsc('History') . '</li>';
+?>
+<div class="row">
+  <div class="col-xs-12 myresearch-grid-list">
+    <?=$this->flashmessages();?>
+    <? if (!empty($this->saved)): ?>
+      <h2><?=$this->transEsc("history_saved_searches")?></h2>
+      <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => true));?>
+    <? endif; ?>
+
+    <h2><?=$this->transEsc("history_recent_searches")?></h2>
+    <? if (!empty($this->unsaved)): ?>
+      <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => false));?>
+    <? else: ?>
+      <?=$this->transEsc("history_no_searches")?>
+    <? endif; ?>
+  </div>
+</div>
