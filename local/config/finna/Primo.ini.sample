@@ -98,7 +98,7 @@ topic   = Subjects
 top_rows = 2
 top_cols = 3
 ; Do we want any facets to be collapsed by default?
-collapsedFacets = "jtitle,domain,topic"
+collapsedFacets = "creator,jtitle,domain,topic,lang"
 
 ; These settings affect the way the facets are displayed
 [Facet_Settings]

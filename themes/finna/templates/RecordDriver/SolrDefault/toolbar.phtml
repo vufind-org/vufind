@@ -57,7 +57,7 @@
       <? // Fetch correct image link and metadata here for Facebook, Twitter and Pinterest ?>
       <!--
       <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" />
-      <? if ($summary): ?><meta property="og:description" content="<?=$this->truncate($summary, 100)?>" /><? endif; ?>
+      <? if ($summary): ?><meta property="og:description" content="<?=$this->truncate($summary[0], 100)?>" /><? endif; ?>
       <? if ($author): /* TODO */ ?><meta property="article:author" content="" /><? endif; ?>
       <? if ($publisher): /* TODO */ ?><meta property="article:publisher" content="" /><? endif; ?>
       <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />

@@ -20,6 +20,9 @@ Less_Autoloader::register();
 require_once $dir.'/lessc.inc.php';
 
 
+//? performance improvement (php 5.3+)
+//https://github.com/composer/composer/pull/3482
+//gc_disable();
 
 //using release
 /* require_once $dir.'/test/release/Less.php'; */
