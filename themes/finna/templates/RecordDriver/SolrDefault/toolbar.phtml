@@ -55,12 +55,12 @@
         <!-- <a class="addthis_button_google_plusone_share"><i class="fa fa-google-plus"></i></a> -->
       </div>
       <!-- Fetch correct image link and meta properity information here for facebook twitter and pinterest
-      <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" /> 
-      <? if ($summary): ?><meta property="og:description" content="<?=$this->truncate($summary, 100)?>" /><? endif; ?>
+      <meta property="og:title" content="<?=$this->escapeHtml($this->driver->getShortTitle()); ?>" />
+      <? if ($summary): ?><meta property="og:description" content="<?=$this->truncate($summary[0], 100)?>" /><? endif; ?>
       <? if ($author): ?><meta property="article:author" content="https://www.facebook.com/fareedzakaria" /><? endif; ?>
       <? if ($publisher): ?><meta property="article:publisher" content="https://www.facebook.com/cnn" /><? endif; ?>
-      <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" /> 
-      --> 
+      <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />
+      -->
     </li>
     <li>
       <span class="visible-xs"><a id="whatsapp-record" href="whatsapp://send?text=<?=$this->url('record-sms', array('id'=>$id)) ?>" data-action="share/whatsapp/share"><i class="fa fa-phone"></i></a></span>
