@@ -51,19 +51,25 @@ class PluginFactory extends \VuFind\Search\Params\PluginFactory
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
         $name, $requestedName
     ) {
-        if ($name !== 'primo') {
-            return parent::createServiceWithName(
-                $serviceLocator, $name, $requestedName
-            );
-        }
-
         $options = $serviceLocator->getServiceLocator()
             ->get('VuFind\SearchOptionsPluginManager')->get($requestedName);
 
-        // Clone the options instance in case caller modifies it:
-        return new \Finna\Search\Primo\Params(
-            clone($options),
-            $serviceLocator->getServiceLocator()->get('VuFind\Config')
+        if ($name === 'solr') {
+            // Clone the options instance in case caller modifies it:
+            return new \Finna\Search\Solr\Params(
+                clone($options),
+                $serviceLocator->getServiceLocator()->get('VuFind\Config')
+            );
+        } else if ($name === 'primo') {
+            // Clone the options instance in case caller modifies it:
+            return new \Finna\Search\Primo\Params(
+                clone($options),
+                $serviceLocator->getServiceLocator()->get('VuFind\Config')
+            );
+        }
+
+        return parent::createServiceWithName(
+            $serviceLocator, $name, $requestedName
         );
     }
 }
