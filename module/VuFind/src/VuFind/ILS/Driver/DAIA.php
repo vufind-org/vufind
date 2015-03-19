@@ -283,27 +283,19 @@ class DAIA extends AbstractBase implements
         ];
 
         try {
-            $result = $this->httpClient->getResponse($this->baseUrl, $params, null, $http_headers);
-var_dump($result->isSuccess());
+             if ($this->legacySupport) {
+                // HttpRequest for DAIA legacy support as all
+                // the parameters are contained in the baseUrl
+                $this->httpClient->setUri($this->baseUrl . $id);
+             } else {
+                $this->httpClient->setUri($this->baseUrl);
+                $this->httpClient->setParameterGet($params);
+             }
+             $this->httpClient->setHeaders($http_headers);
+             $result = $this->httpClient->send();
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
-
-/*
-            if ($this->legacySupport) {
-                // HttpRequest for DAIA legacy support as all
-                // the parameters are contained in the baseUrl
-                $result = $this->httpService->get(
-                    $this->baseUrl . $id,
-                    [], null, $http_headers
-                );
-            } else {
-                $result = $this->httpService->get(
-                    $this->baseUrl,
-                    $params, null, $http_headers
-                );
-         }
-*/
 
         if (!$result->isSuccess()) {
             // throw ILSException disabled as this will be shown in VuFind-Frontend
