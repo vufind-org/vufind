@@ -7,7 +7,7 @@
   $html = '';
   $shown = 0;
   foreach ($checkboxFilters as $current) {
-    $availCount = $this->checkboxFacetAvailables()->getAvailableWithCbFacet($current, $results);
+    $availCount = $this->checkboxFacetAvailables($current, $results);
     $availableRecords = $availCount < 0 ? '' : $this->localizedNumber($availCount);
     $html .= '<label class="checkbox';
     if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
@@ -15,9 +15,9 @@
     } else {
       $shown ++;
     }
-    $html .= '"><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
+    $html .= '"><span class="badge cb-facet">'.$availableRecords.'</span><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
       '. ($current['selected'] ? 'checked="checked"' : '') .' id="'.$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])).'"
-      onclick="document.location.href=\''.($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).' <span>'.$availableRecords.'</span></label>';
+      onclick="document.location.href=\''. ($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).'</label>';
   }
 ?>
   <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>

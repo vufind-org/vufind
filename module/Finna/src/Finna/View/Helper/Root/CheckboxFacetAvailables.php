@@ -45,7 +45,7 @@ class CheckboxFacetAvailables extends \Zend\View\Helper\AbstractHelper
      * @param type $results        search result set
      * @return int record count
      */
-    public function getAvailableWithCbFacet($checkboxFilter, $results)
+    public function __invoke($checkboxFilter, $results)
     {
         $ret = 0;
 
