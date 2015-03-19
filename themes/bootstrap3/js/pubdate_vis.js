@@ -18,6 +18,30 @@ function PadDigits(n, totalDigits)
 }
 
 function loadVis(facetFields, searchParams, baseURL, zooming) {
+  // Get colors from CSS
+  var cssColorSettings = {
+    'background': '#ffffff',    // background of box
+    'fill': 'rgb(234,234,234)', // fillColor
+    'outline-color': '#e8cfac', // selection color
+    'stroke': '#265680'         // color
+  }
+  var classes = document.styleSheets[0].rules || document.styleSheets[0].cssRules;
+  for(var i=classes.length;i--;) {
+    if(classes[i].selectorText == '#dateVisColorSettings') {
+      // Get rule definition
+      rules = classes[i].cssText ? classes[i].cssText : classes[i].style.cssText;
+      rules = rules.match(/\{\s*([^\}]*)/);
+      rules = rules[1].split(/;\s*/);
+      // Extract colors
+      for(var j=rules.length;j--;) {
+        var parts = rules[j].split(/\s*:\s*/);
+        if(parts.length > 1) {
+          cssColorSettings[parts[0]] = parts[1].match(/rgb[a]?\([^\)]+\)|#[a-fA-F0-9]+/)[0];
+        }
+      }
+      break;
+    }
+  }
   // options for the graph, TODO: make configurable
   var options = {
     series: {
@@ -25,15 +49,15 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
         show: true,
         align: "center",
         fill: true,
-        fillColor: "rgb(234,234,234)"
+        fillColor: cssColorSettings['fill']
       }
     },
-    colors: ["#265680"],
+    colors: [cssColorSettings['stroke']],
     legend: { noColumns: 2 },
     xaxis: { tickDecimals: 0 },
     yaxis: { min: 0, ticks: [] },
-    selection: {mode: "x"},
-    grid: { backgroundColor: null /*"#ffffff"*/ }
+    selection: {mode: "x", color: cssColorSettings['outline-color']},
+    grid: { backgroundColor: cssColorSettings['background'] }
   };
 
   // AJAX call
