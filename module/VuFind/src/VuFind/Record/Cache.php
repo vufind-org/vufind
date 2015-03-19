@@ -256,6 +256,15 @@ class Cache implements \Zend\Log\LoggerAwareInterface
 	
     	return false;
     }
+    
+    public function isCacheable($source) {
+    	$operatingMode = 'disabled';
+    	if (isset($this->cachableSources[$source]['operatingMode'])) {
+    		$operatingMode = $this->cachableSources[$source]['operatingMode'];
+    	}
+    	
+    	return ($operatingMode !== 'disabled');
+    }
 
     /**
      * Helper method to calculate and ensure consistent cacheIds
