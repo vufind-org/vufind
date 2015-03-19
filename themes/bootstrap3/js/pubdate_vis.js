@@ -20,26 +20,15 @@ function PadDigits(n, totalDigits)
 function loadVis(facetFields, searchParams, baseURL, zooming) {
   // Get colors from CSS
   var cssColorSettings = {
-    'background': '#ffffff',    // background of box
+    'background-color': '#ffffff',    // background of box
     'fill': 'rgb(234,234,234)', // fillColor
     'outline-color': '#e8cfac', // selection color
     'stroke': '#265680'         // color
   }
-  var classes = document.styleSheets[0].rules || document.styleSheets[0].cssRules;
-  for(var i=classes.length;i--;) {
-    if(classes[i].selectorText == '#dateVisColorSettings') {
-      // Get rule definition
-      rules = classes[i].cssText ? classes[i].cssText : classes[i].style.cssText;
-      rules = rules.match(/\{\s*([^\}]*)/);
-      rules = rules[1].split(/;\s*/);
-      // Extract colors
-      for(var j=rules.length;j--;) {
-        var parts = rules[j].split(/\s*:\s*/);
-        if(parts.length > 1) {
-          cssColorSettings[parts[0]] = parts[1].match(/rgb[a]?\([^\)]+\)|#[a-fA-F0-9]+/)[0];
-        }
-      }
-      break;
+  var $dateVisColorSettings = $('#dateVisColorSettings');
+  for(var rule in cssColorSettings) {
+    if($dateVisColorSettings.css(rule)) {
+      cssColorSettings[rule] = $dateVisColorSettings.css(rule).match(/rgb[a]?\([^\)]+\)|#[a-fA-F0-9]+/)[0];
     }
   }
   // options for the graph, TODO: make configurable
@@ -57,7 +46,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
     xaxis: { tickDecimals: 0 },
     yaxis: { min: 0, ticks: [] },
     selection: {mode: "x", color: cssColorSettings['outline-color']},
-    grid: { backgroundColor: cssColorSettings['background'] }
+    grid: { backgroundColor: cssColorSettings['background-color'] }
   };
 
   // AJAX call

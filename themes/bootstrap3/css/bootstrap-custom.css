@@ -589,7 +589,7 @@ label.list-group-item {
 }
 /* --- PubDateVis --- */
 #dateVisColorSettings {
-  background: #ffffff;
+  background-color: #ffffff;
   fill: #eaeaea;
   outline-color: #e8cfac;
   stroke: #265680;
