@@ -97,13 +97,36 @@ section.main.template-dir-content.template-name-content .container-fluid.finna-m
 }
 h1.introductionText, h3.introductionText {
     margin: 0px 0px 5px;
-    
+    em {
+        font-style: normal;
+    }
+}
+h1.introductionText > em {  
+    color: @brand-secondary;
+}
+h3.introductionText > em {
+    color: @link-color;   
 }
 .home-top-content {
     background-color: @home-top-background;
 }
 .home-middle-content {
     background-color: @home-middle-background;
+}
+.document-types {
+    li {
+        font-size: 1.05em;
+        margin-bottom: 3px;   
+    }
+    & a.iconlabel {
+        color: @link-color;
+        &:before {
+            color: @gray;   
+        }
+        &:hover {
+                text-decoration: none;
+        }
+    }
 }
 .infobox {
     margin: 20px 0px;
@@ -242,7 +265,12 @@ mark, .highlight {
     margin-top: 10px;
     font-size: 1.08em;
     @media(max-width: 400px) {
-        .mobileMargin();   
+        .template-name-results & {
+            .mobileMargin();   
+        }
+        .template-name-mylist & {
+            margin-left: -55%;   
+        }
     }
 }
 .groupLocation, .groupCallnumber {
@@ -280,9 +308,6 @@ mark, .highlight {
 }
 .right-top {
     background: @body-bg;
-    @media(max-width:@screen-xs-max) {
-    .introductionBackground();
-    }
 }
 /* Carousel styling */
 .carousel {
@@ -414,7 +439,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         margin-right: 10px;
     }
     .back-to-search-text {
-        margin-left: 4px;
         vertical-align: middle;
     }
 }
@@ -882,7 +906,11 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
   background: @brand-primary !important;
   color: #fff;
 }
-
+.list-group.facet #side-collapse-creationdate, .list-group.facet #side-collapse-publishDate {
+    .list-group-item {
+        padding: 10px 15px;
+    }
+}
 /* --- Hierarchy tree --- */
 /* jsTree arrows */
 .hierarchy-tree {
