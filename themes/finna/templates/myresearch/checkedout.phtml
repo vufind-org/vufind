@@ -88,7 +88,12 @@
           </div>
           <div class="col-xs-5 col-sm-4 text-right">
             <? $showStatus = true; ?>
-
+            <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
+              <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
+              <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
+                <? $showStatus = false; ?>
+              <? endif; ?>
+            <? endif; ?>
             <? if ($showStatus && isset($ilsDetails['message']) && !empty($ilsDetails['message'])): ?>
               <div class="alert alert-info"><?=$this->transEsc($ilsDetails['message'])?></div>
             <? endif; ?>
@@ -116,7 +121,6 @@
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
               <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
               <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
-                <? $showStatus = false; ?>
                 <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($renewDetails['new_date'])?> <? if (isset($renewDetails['new_time'])): ?><?=$this->escapeHtml($renewDetails['new_time'])?><? endif; ?></strong>
                 <div class="alert alert-success"><?=$this->transEsc('renew_success')?></div>
               <? else: ?>
