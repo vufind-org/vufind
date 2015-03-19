@@ -458,7 +458,7 @@ class Factory
     public static function getRecaptcha(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config')->get('config');
-        $recaptcha = new \ZendService\ReCaptcha\ReCaptcha(
+        $recaptcha = new \LosReCaptcha\Service\ReCaptcha(
             isset($config->Captcha->publicKey) ? $config->Captcha->publicKey : '',
             isset($config->Captcha->privateKey) ? $config->Captcha->privateKey : ''
         );

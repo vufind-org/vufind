@@ -118,26 +118,22 @@ class Recaptcha extends AbstractPlugin
             return true;
         }
         $captchaPassed = false;
-        $recaptchaChallenge = $this->getController()->params()
-            ->fromPost('recaptcha_challenge_field');
-        $recaptchaResponse = $this->getController()->params()
-            ->fromPost('recaptcha_response_field', 'manual_challenge');
-        if (!empty($recaptchaChallenge)) {
+        $responseField = $this->getController()->params()
+            ->fromPost('g-recaptcha-response');
+        if (!empty($responseField)) {
             try {
-                $result = $this->recaptcha->verify(
-                    $recaptchaChallenge,
-                    $recaptchaResponse
-                );
+                $response = $this->recaptcha->verify($responseField);
             } catch (\ZendService\ReCaptcha\Exception $e) {
-                $result = false;
+                $response = false;
             }
-            $captchaPassed = $result && $result->isValid();
+            $captchaPassed = $response && $response->isValid();
+            var_dump($captchaPassed);
             if (!$captchaPassed) {
                 if ($this->errorMode == 'flash') {
                     $this->getController()->flashMessenger()->setNamespace('error')
-                        ->addMessage('recaptcha_not_passed');
+                        ->addMessage($response->getErrorCode());
                 } else {
-                    throw new \Exception('recaptcha_not_passed');
+                    throw new \Exception($response->getErrorCode());
                 }
             }
         }

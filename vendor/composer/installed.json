@@ -448,54 +448,6 @@
         }
     },
     {
-        "name": "zendframework/zendservice-recaptcha",
-        "version": "2.0.1",
-        "version_normalized": "2.0.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/zendframework/ZendService_ReCaptcha.git",
-            "reference": "4324cca8502d9f47b3b43a18acdd3fdbeb965536"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendservice-recaptcha-4324cca8502d9f47b3b43a18acdd3fdbeb965536-zip-8c45bf.zip",
-            "reference": "2.0.1",
-            "shasum": "fab92465cda889ff975c1ec79bb378d7e3f39081"
-        },
-        "require": {
-            "php": ">=5.3.3",
-            "zendframework/zend-http": ">=2.0.0",
-            "zendframework/zend-uri": ">=2.0.0",
-            "zendframework/zend-version": ">=2.0.0"
-        },
-        "time": "2012-09-24 15:18:29",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "ZendService": "library/"
-            }
-        },
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "description": "OOP wrapper for the ReCaptcha web service",
-        "homepage": "http://packages.zendframework.com/",
-        "keywords": [
-            "recaptcha",
-            "zf2"
-        ],
-        "support": {
-            "source": "https://github.com/zendframework/ZendService_ReCaptcha/tree/release-2.0.1",
-            "issues": "https://github.com/zendframework/ZendService_ReCaptcha/issues"
-        }
-    },
-    {
         "name": "vufind-org/vufindcode",
         "version": "v1.0.2",
         "version_normalized": "1.0.2.0",
@@ -708,59 +660,6 @@
         "homepage": "http://symfony.com"
     },
     {
-        "name": "symfony/css-selector",
-        "version": "v2.6.4",
-        "version_normalized": "2.6.4.0",
-        "target-dir": "Symfony/Component/CssSelector",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/CssSelector.git",
-            "reference": "3f80ecc614fec68d5b4a84a0703db3fdf5ce8584"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/3f80ecc614fec68d5b4a84a0703db3fdf5ce8584",
-            "reference": "3f80ecc614fec68d5b4a84a0703db3fdf5ce8584",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "time": "2015-01-03 08:01:59",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.6-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Symfony\\Component\\CssSelector\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            },
-            {
-                "name": "Jean-François Simon",
-                "email": "jeanfrancois.simon@sensiolabs.com"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            }
-        ],
-        "description": "Symfony CssSelector Component",
-        "homepage": "http://symfony.com"
-    },
-    {
         "name": "behat/mink",
         "version": "v1.6.1",
         "version_normalized": "1.6.1.0",
@@ -816,55 +715,6 @@
             "testing",
             "web"
         ]
-    },
-    {
-        "name": "symfony/process",
-        "version": "v2.6.4",
-        "version_normalized": "2.6.4.0",
-        "target-dir": "Symfony/Component/Process",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/Process.git",
-            "reference": "ecfc23e89d9967999fa5f60a1e9af7384396e9ae"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Process/zipball/ecfc23e89d9967999fa5f60a1e9af7384396e9ae",
-            "reference": "ecfc23e89d9967999fa5f60a1e9af7384396e9ae",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "time": "2015-01-25 04:39:26",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.6-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Symfony\\Component\\Process\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            }
-        ],
-        "description": "Symfony Process Component",
-        "homepage": "http://symfony.com"
     },
     {
         "name": "zfr/rbac",
@@ -1352,5 +1202,175 @@
             "source": "https://github.com/zendframework/zf2/tree/release-2.3.7",
             "issues": "https://github.com/zendframework/zf2/issues"
         }
+    },
+    {
+        "name": "symfony/process",
+        "version": "v2.6.5",
+        "version_normalized": "2.6.5.0",
+        "target-dir": "Symfony/Component/Process",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/Process.git",
+            "reference": "4d717f34f3d1d6ab30fbe79f7132960a27f4a0dc"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/Process/zipball/4d717f34f3d1d6ab30fbe79f7132960a27f4a0dc",
+            "reference": "4d717f34f3d1d6ab30fbe79f7132960a27f4a0dc",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "symfony/phpunit-bridge": "~2.7"
+        },
+        "time": "2015-03-12 10:28:44",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.6-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Symfony\\Component\\Process\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Symfony Community",
+                "homepage": "http://symfony.com/contributors"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Symfony Process Component",
+        "homepage": "http://symfony.com"
+    },
+    {
+        "name": "symfony/css-selector",
+        "version": "v2.6.5",
+        "version_normalized": "2.6.5.0",
+        "target-dir": "Symfony/Component/CssSelector",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/CssSelector.git",
+            "reference": "86cf0aa16065ffc4545374e9479dd7878bf1d90f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/86cf0aa16065ffc4545374e9479dd7878bf1d90f",
+            "reference": "86cf0aa16065ffc4545374e9479dd7878bf1d90f",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "symfony/phpunit-bridge": "~2.7"
+        },
+        "time": "2015-02-24 11:52:21",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.6-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Symfony\\Component\\CssSelector\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Symfony Community",
+                "homepage": "http://symfony.com/contributors"
+            },
+            {
+                "name": "Jean-François Simon",
+                "email": "jeanfrancois.simon@sensiolabs.com"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            }
+        ],
+        "description": "Symfony CssSelector Component",
+        "homepage": "http://symfony.com"
+    },
+    {
+        "name": "los/losrecaptcha",
+        "version": "0.9.0",
+        "version_normalized": "0.9.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Lansoweb/LosReCaptcha.git",
+            "reference": "9340ae7bf638e545842ff170f593afcc75f5a14b"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/9340ae7bf638e545842ff170f593afcc75f5a14b",
+            "reference": "9340ae7bf638e545842ff170f593afcc75f5a14b",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0",
+            "zendframework/zendframework": "2.3.*"
+        },
+        "require-dev": {
+            "satooshi/php-coveralls": "dev-master"
+        },
+        "suggest": {
+            "los/losbase": "los/losbase for some abstract classes to speed development ",
+            "los/loslog": "los/loslog for logging",
+            "los/losui": "los/losui for twitter bootstrap 3 styling, jquery, chosen and other libraries"
+        },
+        "time": "2015-03-18 23:55:28",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "LosReCaptcha\\": "src/"
+            },
+            "psr-0": {
+                "LosReCaptcha\\": "src/"
+            },
+            "classmap": [
+                "./"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Leandro Silva",
+                "email": "leandro@leandrosilva.info",
+                "homepage": "http://leandrosilva.info"
+            }
+        ],
+        "description": "ZF2 module for integration with new ReCaptcha service form Google",
+        "homepage": "http://github.com/Lansoweb/LosReCaptcha",
+        "keywords": [
+            "captcha",
+            "los",
+            "module",
+            "recaptcha",
+            "zf2"
+        ]
     }
 ]
