@@ -31,6 +31,7 @@ use VuFind\ILS\Driver\DAIA;
 
 use Zend\Http\Client\Adapter\Test as TestAdapter;
 use Zend\Http\Client as HttpClient;
+use Zend\Http\Response as HttpResponse;
 
 use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;
@@ -52,7 +53,8 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function __construct()
     {
-        $this->driver = new DAIA();
+        $client = new HttpClient();
+        $this->driver = new DAIA($client);
     }
 
 
@@ -154,7 +156,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         );
         $conn->init();
         $result = $conn->getStatus('027586081');
-
+//var_dump($result);
         /*
         // exact result for using the DAIA.php with testfile daia.xml
         $testResult = [
@@ -241,7 +243,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 ],
         ];*/
 
-        $this->assertEquals("test", $result['id']);
+        $this->assertEquals("test", "notest");
     }
 
     /**
@@ -262,10 +264,11 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s ', $file));
             }
             $response = file_get_contents($file);
-            $adapter->setResponse($response);
+            $adapter->setResponse(new HttpResponse($response));
         }
         $client = new HttpClient();
         $client->setAdapter($adapter);
+        $client->setResponse(new HttpResponse($response));
         $conn = new DAIA($client);
         return $conn;
     }
