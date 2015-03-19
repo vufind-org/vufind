@@ -64,7 +64,6 @@ $config = array(
         'allow_override' => true,
         'factories' => array(
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
-            'VuFind\Translator' => 'Finna\Service\Factory::getTranslator',
         )
     ),
     // This section contains all VuFind-specific settings (i.e. configurations
