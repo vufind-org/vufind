@@ -24,7 +24,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
     'fill': 'rgb(234,234,234)', // fillColor
     'outline-color': '#e8cfac', // selection color
     'stroke': '#265680'         // color
-  }
+  };
   var $dateVisColorSettings = $('#dateVisColorSettings');
   for(var rule in cssColorSettings) {
     if($dateVisColorSettings.css(rule)) {
