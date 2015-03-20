@@ -264,11 +264,12 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s ', $file));
             }
             $response = file_get_contents($file);
-            $adapter->setResponse(new HttpResponse($response));
+            $responseObj = new HttpResponse();
+            $responseObj->setContent($response);
+            $adapter->setResponse($responseObj);
         }
         $client = new HttpClient();
         $client->setAdapter($adapter);
-        $client->setResponse(new HttpResponse($response));
         $conn = new DAIA($client);
         return $conn;
     }
