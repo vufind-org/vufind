@@ -462,7 +462,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 /* --- Autocomplete --- */
 .twitter-typeahead {
   background: transparent;
-  top: 3px;
   vertical-align: top;
   .tt-hint {color: @gray-light !important;}
 }
@@ -487,7 +486,12 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 
 /* --- Badges - blend the links in --- */
-.badge a {color:#FFF}
+.badge a {
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 3px;
+    background: @gray-light;
+}
 
 /* --- Browse --- */
 .browse.list-group .list-group-item {
@@ -889,11 +893,15 @@ li.jstree-facet, li.jstree-node {
   list-style: none;
 }
 ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(.title) {
-  padding: 5px 10px 5px 20px;
+  padding: 3px 10px 3px 20px;
   background: whitesmoke;
   border-bottom:2px solid @body-bg;
   @media(max-width:@screen-xs-max) {
     font-size: 1.15em;   
+  }
+  .jstree-children li {
+    padding-bottom: 2px;
+    padding-top: 3px;
   }
 }
 .jstree-facet .jstree-container-ul {
