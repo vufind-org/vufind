@@ -8,11 +8,8 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>';
   $lastSearchLink = $this->getLastSearchLink($this->transEsc('Search'));
-  if (!empty($lastSearchLink)) {
-    $this->layout()->breadcrumbs .= $lastSearchLink;
-  } else {
-    $this->transEsc('Search');
-  }
+  $this->layout()->breadcrumbs .= !empty($lastSearchLink)
+    ? $lastSearchLink : $this->transEsc('Search');
   $this->layout()->breadcrumbs .= '</li> <li class="active">' . $this->transEsc('Advanced') . '</li>';
 
   // Set up saved search details:
