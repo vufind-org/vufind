@@ -118,6 +118,27 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Modify location string to add status information, if necessary
+     *
+     * @param string $location Original location string
+     * @param string $cattime Date and time item record was created
+     *
+     * @return string
+     */
+    protected function getLocationText($location, $cattime)
+    {
+        if (isset($this->config['Catalog']['just_cataloged_time']) && (time()-(60*60*$this->config['Catalog']['just_cataloged_time'])) < strtotime($cattime)) {
+            if (isset($this->config['Catalog']['just_cataloged_append']) && $this->config['Catalog']['just_cataloged_append'] == "Y") {
+                $finalLocation = $location . " " . $this->translate('just_cataloged');
+           } else {
+                $finalLocation = $this->translate('just_cataloged');
+           }
+           return $finalLocation;
+       }
+       return $location;
+    }
+
+    /**
      * Some call number processing used for both getStatus and getHoldings
      *
      * @param string $callnumber Call number
@@ -363,7 +384,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                     . "varfield_view.field_content, "
                     . "varfield_view.varfield_type_code, "
                     . "checkout.due_gmt, "
-		    . "item_view.record_creation_date_gmt "
+                    . "item_view.record_creation_date_gmt "
                     . "FROM sierra_view.item_view "
                     . "LEFT JOIN sierra_view.varfield_view "
                     . "ON (item_view.id = varfield_view.record_id) "
@@ -397,14 +418,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 } else {
                     $availability = false;
                 }
-		$location = $resultArray[1];
-		if ((time()-(60*60*$this->config['Catalog']['just_cataloged_time'])) < strtotime($resultArray[5])) {
-		    if ($this->config['Catalog']['just_cataloged_append'] == "Y") {
-			$location = $resultArray[1] . " " . $this->translate('just_cataloged');
-		    } else {
-			$location = $this->translate('just_cataloged');
-		    }
-		}		    
+                $location = $this->getLocationText($resultArray[1], $resultArray[5]);
                 $itemInfo = [
                     "id" => $id,
                     "status" => $resultArray[0],
@@ -450,9 +464,9 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                         checkout.due_gmt,
                         varfield_view.field_content,
                         varfield_view.varfield_type_code,
-			item_view.record_creation_date_gmt
-                            FROM
-                            sierra_view.item_view
+                        item_view.record_creation_date_gmt
+                        FROM
+                        sierra_view.item_view
                         LEFT JOIN sierra_view.location
                         ON (item_view.location_code = location.code)
                         LEFT JOIN sierra_view.location_name
@@ -489,14 +503,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
                 } else {
                     $availability = false;
                 }
-		$location = $resultArray[1];
-		if ((time()-(60*60*$this->config['Catalog']['just_cataloged_time'])) < strtotime($resultArray[5])) {
-		    if ($this->config['Catalog']['just_cataloged_append'] == "Y") {
-			$location = $resultArray[1] . " " . $this->translate('just_cataloged');
-		    } else {
-			$location = $this->translate('just_cataloged');
-		    }
-		}		    
+                $location = $this->getLocationText($resultArray[1], $resultArray[5]);
                 $itemInfo = [
                     "id" => $id,
                     "availability" => $availability,
