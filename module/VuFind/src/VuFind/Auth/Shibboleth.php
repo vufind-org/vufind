@@ -23,6 +23,7 @@
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
+ * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
@@ -37,6 +38,7 @@ use VuFind\Exception\Auth as AuthException;
  * @package  Authentication
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Jochen Lienhard <lienhard@ub.uni-freiburg.de>
+ * @author   Bernd Oberknapp <bo@ub.uni-freiburg.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
@@ -53,21 +55,19 @@ class Shibboleth extends AbstractBase
      */
     protected function validateConfig()
     {
-        // Throw an exception if no login endpoint is available.
+        // Throw an exception if the required username setting is missing.
         $shib = $this->config->Shibboleth;
+        if (!isset($shib->username) || empty($shib->username)) {
+            throw new AuthException(
+                "Shibboleth username is missing in your configuration file."
+            );
+        }
+
+        // Throw an exception if no login endpoint is available.
         if (!isset($shib->login)) {
             throw new AuthException(
                 'Shibboleth login configuration parameter is not set.'
             );
-        }
-        foreach ($shib->toArray() as $key => $value) {
-            if (preg_match("/^userattribute/", $key)) {
-                throw new AuthException(
-                    'You must change your configuration. 
-                 Attributes in login process is not longer supported. 
-                 Please look at permissions.ini'
-                );
-            }
         }
     }
 
@@ -84,25 +84,15 @@ class Shibboleth extends AbstractBase
     {
         // Check if username is set.
         $shib = $this->getConfig()->Shibboleth;
-
-        $entityId = $request->getServer()->get('Shib-Identity-Provider');
-        if (!$entityId) {
-            throw new AuthException('authentication_error_admin');
-        }
-
-        $username = $request->getServer()->get('REMOTE_USER');
+        $username = $request->getServer()->get($shib->username);
         if (empty($username)) {
             throw new AuthException('authentication_error_admin');
         }
 
-        if (isset($shib->idpentityid)) { 
-            if (is_string($shib->idpentityid)) {
-                 $confiidps=(array)$shib->idpentityid;
-            } else {
-                 $confiidps=$shib->idpentityid->toArray();
-            }
-            if (!in_array($entityId, $confiidps)) {
-                 throw new AuthException('authentication_error_denied');
+        // Check if required attributes match up:
+        foreach ($this->getRequiredAttributes() as $key => $value) {
+            if (!preg_match('/' . $value . '/', $request->getServer()->get($key))) {
+                throw new AuthException('authentication_error_denied');
             }
         }
 
@@ -136,7 +126,6 @@ class Shibboleth extends AbstractBase
 
         // Save and return the user object:
         $user->save();
-
         return $user;
     }
 
@@ -160,18 +149,16 @@ class Shibboleth extends AbstractBase
         $append = (strpos($shibTarget, '?') !== false) ? '&' : '?';
         $sessionInitiator = $config->Shibboleth->login
             . '?target=' . urlencode($shibTarget)
-            . urlencode($append . 'auth_method=Shibboleth'); 
+            . urlencode($append . 'auth_method=Shibboleth');
                                                     // makes it possible to
                                                     // handle logins when using
                                                     // an auth method that
                                                     // proxies others
 
-        if (isset($config->Shibboleth->idpentityid) 
-            && is_string($config->Shibboleth->idpentityid)
-        ) {
+        if (isset($config->Shibboleth->provider_id)) {
             $sessionInitiator = $sessionInitiator . '&entityID=' .
-                urlencode($config->Shibboleth->idpentityid);
-        } 
+                urlencode($config->Shibboleth->provider_id);
+        }
 
         return $sessionInitiator;
     }
@@ -183,10 +170,7 @@ class Shibboleth extends AbstractBase
      */
     public function isExpired()
     {
-        if (!isset($_SERVER['Shib-Identity-Provider'])) {
-            return true;
-        }
-        return false;
+        return isset($_SERVER['Shib-Identity-Provider']);
     }
 
     /**
@@ -209,5 +193,35 @@ class Shibboleth extends AbstractBase
 
         // Send back the redirect URL (possibly modified):
         return $url;
+    }
+
+    /**
+     * Extract required user attributes from the configuration.
+     *
+     * @return array      Only username and attribute-related values
+     */
+    protected function getRequiredAttributes()
+    {
+        // Special case -- store username as-is to establish return array:
+        $sortedUserAttributes = [];
+
+        // Now extract user attribute values:
+        $shib = $this->getConfig()->Shibboleth;
+        foreach ($shib as $key => $value) {
+            if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
+                $valueKey = 'userattribute_value_' . substr($key, 14);
+                $sortedUserAttributes[$value] = isset($shib->$valueKey)
+                    ? $shib->$valueKey : null;
+
+                // Throw an exception if attributes are missing/empty.
+                if (empty($sortedUserAttributes[$value])) {
+                    throw new AuthException(
+                        "User attribute value of " . $value . " is missing!"
+                    );
+                }
+            }
+        }
+
+        return $sortedUserAttributes;
     }
 }
