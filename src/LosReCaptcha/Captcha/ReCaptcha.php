@@ -61,10 +61,14 @@ class ReCaptcha extends ZendReCaptcha
         }
 
         if (!empty($options)) {
-            if (array_key_exists('private_key', $options)) {
+            if (array_key_exists('secret_key', $options)) {
+                $this->getService()->setSecretKey($options['secret_key']);
+            } elseif (array_key_exists('private_key', $options)) {
                 $this->getService()->setPrivateKey($options['private_key']);
             }
-            if (array_key_exists('public_key', $options)) {
+            if (array_key_exists('site_key', $options)) {
+                $this->getService()->setSiteKey($options['site_key']);
+            } elseif (array_key_exists('public_key', $options)) {
                 $this->getService()->setPublicKey($options['public_key']);
             }
             $this->setOptions($options);
