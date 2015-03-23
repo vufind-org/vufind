@@ -30,7 +30,6 @@ namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\DAIA;
 
 use Zend\Http\Client\Adapter\Test as TestAdapter;
-use Zend\Http\Client as HttpClient;
 use Zend\Http\Response as HttpResponse;
 
 use InvalidArgumentException;
