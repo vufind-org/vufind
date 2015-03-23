@@ -139,6 +139,38 @@ finna.layout = (function() {
             });
         });
     };
+    
+    var initContentNavigation = function() {
+      if ($('.content-navigation-menu')[0]) {
+        $('.content-section').each(function(index) {
+          var link = '#'+$(this).attr('id');
+          $('.content-navigation-menu').append('<h2 class="nav-'+index+'">'+$('h2', this).text()+'</h2>');
+          $('.content-navigation-menu h2.nav-'+index).click(function () {
+            $('body, html').animate({
+              scrollTop: $(link).offset().top-5
+            }, 350);
+          });
+        });
+        
+        var menuPosition = $('.content-navigation-menu').offset().top;
+        // fixed menu & prevent footer overlap
+        $( window ).scroll(function() {
+          if ($(window).scrollTop() > menuPosition) {
+            $('.content-navigation-menu').addClass('attached');
+            if ($(window).scrollTop()+$('.content-navigation-menu').outerHeight(true) > $('footer').offset().top) {
+              $('.content-navigation-menu').css({'bottom': $('footer').height()+20+'px', 'top': 'auto'});
+            }
+            else { 
+              $('.content-navigation-menu').css({'bottom': 'auto', 'top': '0px'});
+            }
+          }
+          else {
+            $('.content-navigation-menu').removeClass('attached');
+          }
+        });
+      }
+    };
+
 
     var my = {
         isTouchDevice: isTouchDevice,
@@ -153,6 +185,7 @@ finna.layout = (function() {
 
             initTruncatedRecordImageNavi();
             initTruncate();
+            initContentNavigation();
         },
     };
 
