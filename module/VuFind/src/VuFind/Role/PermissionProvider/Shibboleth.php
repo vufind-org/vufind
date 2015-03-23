@@ -29,6 +29,7 @@
  */
 namespace VuFind\Role\PermissionProvider;
 use Zend\Http\PhpEnvironment\Request;
+use VuFind\Auth\Shibboleth as ShibbolethAuth;
 use VuFind\Role\PermissionProvider\ServerParam;
 
 /**
@@ -54,15 +55,27 @@ class Shibboleth extends ServerParam
     protected $request;
 
     /**
+     * Server param with the identity provider entityID
+     *
+     * @var string
+     */
+    protected $idpServerParam;
+
+    /**
      * Constructor
      *
-     * @param Request $request Request object
+     * @param Request             $request Request object
+     * @param \Zend\Config\Config $config  VuFind configuration
      */
-    public function __construct(Request $request)
+    public function __construct(Request $request, $config)
     {
         parent::__construct($request);
 
-        $this->aliases = ['idpentityid' => 'Shib-Identity-Provider'];
+        $this->idpServerParam = isset($config->Shibboleth->idpserverparam)
+            ? $config->Shibboleth->idpserverparam
+            : ShibbolethAuth::DEFAULT_IDPSERVERPARAM;
+
+        $this->aliases = ['idpentityid' => $this->idpServerParam];
         $this->serverParamDelimiter = ';';
         $this->serverParamEscape = '\\';
     }
@@ -77,7 +90,8 @@ class Shibboleth extends ServerParam
      */
     public function getPermissions($options)
     {
-        if ($this->request->getServer()->get('Shib-Identity-Provider') === false) {
+        $this->debug('getPermissions: idpServerParam = ' . $this->idpServerParam);
+        if ($this->request->getServer()->get($this->idpServerParam) === null) {
             $this->logWarning('getPermissions: Shibboleth server params missing');
 
             return [];

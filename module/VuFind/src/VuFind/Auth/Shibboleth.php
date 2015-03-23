@@ -45,6 +45,8 @@ use VuFind\Exception\Auth as AuthException;
  */
 class Shibboleth extends AbstractBase
 {
+    const DEFAULT_IDPSERVERPARAM = 'Shib-Identity-Provider';
+
     /**
      * Validate configuration parameters.  This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
@@ -170,7 +172,18 @@ class Shibboleth extends AbstractBase
      */
     public function isExpired()
     {
-        return isset($_SERVER['Shib-Identity-Provider']);
+        $config = $this->getConfig();
+        if (isset($config->Shibboleth->username)
+            && isset($config->Shibboleth->logout)
+        ) {
+            // It would be more proper to call getServer on a Zend request
+            // object... except that the request object doesn't exist yet when
+            // this routine gets called.
+            $username = isset($_SERVER[$config->Shibboleth->username])
+                ? $_SERVER[$config->Shibboleth->username] : null;
+            return empty($username);
+        }
+        return false;
     }
 
     /**
