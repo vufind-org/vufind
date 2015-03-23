@@ -157,6 +157,19 @@ class Params extends \VuFind\Search\Base\Params
         // The "relevance" sort option is a VuFind reserved word; we need to make
         // this null in order to achieve the desired effect with Summon:
         $sort = $this->getSort();
+        if ($sort) {
+            // If we have an empty search with relevance sort, see if there is
+            // an override configured:
+            if ($sort == 'relevance') {
+                $relevanceOverride = $this->getOptions()
+                    ->getEmptySearchRelevanceOverride();
+                if ($relevanceOverride && $this->getQuery()->getAllTerms() == '') {
+                    $sort = $relevanceOverride;
+                }
+            }
+            $backendParams->add('sort', $this->normalizeSort($sort));
+        }
+
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
 
