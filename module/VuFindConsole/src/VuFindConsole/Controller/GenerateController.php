@@ -44,6 +44,53 @@ use Zend\Console\Console;
 class GenerateController extends AbstractBase
 {
     /**
+     * Add a new dynamic route definition
+     *
+     * @return \Zend\Console\Response
+     */
+    public function dynamicrouteAction()
+    {
+        $argv = $this->consoleOpts->getRemainingArgs();
+        if (!isset($argv[3])) {
+            Console::writeLine(
+                "Usage: {$_SERVER['argv'][0]} [route] [controller] [action]"
+                . " [target_module]"
+            );
+            Console::writeLine(
+                "\troute - the route name (used by router), e.g. customList"
+            );
+            Console::writeLine(
+                "\tcontroller - the controller name (used in URL), e.g. MyResearch"
+            );
+            Console::writeLine(
+                "\taction - the action and segment params, e.g. CustomList/[:id]"
+            );
+            Console::writeLine(
+                "\ttarget_module - the module where the new route will be generated"
+            );
+            return $this->getFailureResponse();
+        }
+
+        $route = $argv[0];
+        $controller = $argv[1];
+        $action = $argv[2];
+        $module = $argv[3];
+
+        // Create backup of configuration
+        $configPath = $this->getModuleConfigPath($module);
+        $this->backUpFile($configPath);
+
+        // Append the route
+        $config = include $configPath;
+        $routeGenerator = new \VuFind\Route\RouteGenerator();
+        $routeGenerator->addDynamicRoute($config, $route, $controller, $action);
+
+        // Write updated configuration
+        $this->writeModuleConfig($configPath, $config);
+        return $this->getSuccessResponse();
+    }
+
+    /**
      * Extend an existing service
      *
      * @return \Zend\Console\Response

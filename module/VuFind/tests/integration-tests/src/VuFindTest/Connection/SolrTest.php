@@ -77,7 +77,7 @@ class SolrTest extends \VuFindTest\Unit\TestCase
     public function testAlphaBrowseUseInstead()
     {
         $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
-           ->get('Solr');
+            ->get('Solr');
         $result = $solr->alphabeticBrowse('author', 'Dublin Society, Royal', 0, 1);
         $item = $result['Browse']['items'][0];
         $this->assertEquals(0, $item['count']);

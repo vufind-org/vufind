@@ -62,11 +62,14 @@ class Missing extends SolrDefault
     public function determineMissingTitle()
     {
         // If available, load title from database:
-        $table = $this->getDbTable('Resource');
-        $resource = $table
-            ->findResource($this->getUniqueId(), $this->getResourceSource(), false);
-        if (!empty($resource) && !empty($resource->title)) {
-            return $resource->title;
+        $id = $this->getUniqueId();
+        if ($id) {
+            $table = $this->getDbTable('Resource');
+            $resource = $table
+                ->findResource($id, $this->getResourceSource(), false);
+            if (!empty($resource) && !empty($resource->title)) {
+                return $resource->title;
+            }
         }
 
         // Default -- message about missing title:

@@ -165,7 +165,10 @@ class ExtendedIni implements FileLoaderInterface
         $data = false;
         foreach ($this->pathStack as $path) {
             if (file_exists($path . '/' . $filename)) {
-                $current = $this->reader->getTextDomain($path . '/' . $filename);
+                // Load current file with parent data, if necessary:
+                $current = $this->loadParentData(
+                    $this->reader->getTextDomain($path . '/' . $filename)
+                );
                 if ($data === false) {
                     $data = $current;
                 } else {
@@ -177,8 +180,7 @@ class ExtendedIni implements FileLoaderInterface
             throw new InvalidArgumentException("Ini file '{$filename}' not found");
         }
 
-        // Load parent data, if necessary:
-        return $this->loadParentData($data);
+        return $data;
     }
 
     /**
