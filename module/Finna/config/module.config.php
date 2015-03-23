@@ -70,6 +70,11 @@ $config = array(
     // unrelated to specific Zend Framework 2 components).
     'vufind' => array(
         'plugin_managers' => array(
+            'db_table' => [
+                'factories' => [
+                    'user' => 'Finna\Db\Table\Factory::getUser',
+                ],
+            ],
             'search_backend' => array(
                 'factories' => array(
                     'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
