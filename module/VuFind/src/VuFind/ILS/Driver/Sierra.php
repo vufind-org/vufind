@@ -28,7 +28,8 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException,
+    VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Sierra (III) ILS Driver for Vufind2
@@ -39,8 +40,10 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/GPL-3.0 GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class Sierra extends AbstractBase
+
+class Sierra extends AbstractBase implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
     /**
      * Database connection
      *
@@ -115,6 +118,27 @@ class Sierra extends AbstractBase
     }
 
     /**
+     * Modify location string to add status information, if necessary
+     *
+     * @param string $location Original location string
+     * @param string $cattime Date and time item record was created
+     *
+     * @return string
+     */
+    protected function getLocationText($location, $cattime)
+    {
+        if (isset($this->config['Catalog']['just_cataloged_time']) && (time()-(60*60*$this->config['Catalog']['just_cataloged_time'])) < strtotime($cattime)) {
+            if (isset($this->config['Catalog']['just_cataloged_append']) && $this->config['Catalog']['just_cataloged_append'] == "Y") {
+                $finalLocation = $location . " " . $this->translate('just_cataloged');
+           } else {
+                $finalLocation = $this->translate('just_cataloged');
+           }
+           return $finalLocation;
+       }
+       return $location;
+    }
+
+    /**
      * Some call number processing used for both getStatus and getHoldings
      *
      * @param string $callnumber Call number
@@ -163,7 +187,6 @@ class Sierra extends AbstractBase
                 . " dbname=" . $this->config['Catalog']['dna_db']
                 . " user=" . $this->config['Catalog']['dna_user']
                 . " password=" . $this->config['Catalog']['dna_password'];
-
             $this->db = pg_connect($conn_string);
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -360,7 +383,8 @@ class Sierra extends AbstractBase
                     . "location_name.name, "
                     . "varfield_view.field_content, "
                     . "varfield_view.varfield_type_code, "
-                    . "checkout.due_gmt "
+                    . "checkout.due_gmt, "
+                    . "item_view.record_creation_date_gmt "
                     . "FROM sierra_view.item_view "
                     . "LEFT JOIN sierra_view.varfield_view "
                     . "ON (item_view.id = varfield_view.record_id) "
@@ -394,11 +418,11 @@ class Sierra extends AbstractBase
                 } else {
                     $availability = false;
                 }
-
+                $location = $this->getLocationText($resultArray[1], $resultArray[5]);
                 $itemInfo = [
                     "id" => $id,
                     "status" => $resultArray[0],
-                    "location" => $resultArray[1],
+                    "location" => $location,
                     "reserve" => "N",
                     "callnumber" => $finalcallnumber,
                     "availability" => $availability
@@ -439,9 +463,10 @@ class Sierra extends AbstractBase
                         location_name.name,
                         checkout.due_gmt,
                         varfield_view.field_content,
-                        varfield_view.varfield_type_code
-                            FROM
-                            sierra_view.item_view
+                        varfield_view.varfield_type_code,
+                        item_view.record_creation_date_gmt
+                        FROM
+                        sierra_view.item_view
                         LEFT JOIN sierra_view.location
                         ON (item_view.location_code = location.code)
                         LEFT JOIN sierra_view.location_name
@@ -478,12 +503,12 @@ class Sierra extends AbstractBase
                 } else {
                     $availability = false;
                 }
-
+                $location = $this->getLocationText($resultArray[1], $resultArray[5]);
                 $itemInfo = [
                     "id" => $id,
                     "availability" => $availability,
                     "status" => $resultArray[0],
-                    "location" => $resultArray[1],
+                    "location" => $location,
                     "reserve" => "N",
                     "callnumber" => $finalcallnumber,
                     "duedate" => $resultArray[2],
