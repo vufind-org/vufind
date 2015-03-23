@@ -154,8 +154,6 @@ class Params extends \VuFind\Search\Base\Params
 
         $options = $this->getOptions();
 
-        // The "relevance" sort option is a VuFind reserved word; we need to make
-        // this null in order to achieve the desired effect with Summon:
         $sort = $this->getSort();
         if ($sort) {
             // If we have an empty search with relevance sort, see if there is
@@ -167,9 +165,10 @@ class Params extends \VuFind\Search\Base\Params
                     $sort = $relevanceOverride;
                 }
             }
-            $backendParams->add('sort', $this->normalizeSort($sort));
         }
 
+        // The "relevance" sort option is a VuFind reserved word; we need to make
+        // this null in order to achieve the desired effect with Summon:
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
 
