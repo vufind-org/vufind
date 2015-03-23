@@ -88,6 +88,7 @@ $config = [
             'index' => 'VuFind\Controller\IndexController',
             'install' => 'VuFind\Controller\InstallController',
             'libguides' => 'VuFind\Controller\LibGuidesController',
+            'librarycards' => 'VuFind\Controller\LibraryCardsController',
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
@@ -678,6 +679,7 @@ $config = [
                 'ipRange' => 'VuFind\Role\PermissionProvider\Factory::getIpRange',
                 'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
                 'serverParam' => 'VuFind\Role\PermissionProvider\Factory::getServerParam',
+                'shibboleth' => 'VuFind\Role\PermissionProvider\Factory::getShibboleth',
                 'username' => 'VuFind\Role\PermissionProvider\Factory::getUsername',
             ],
             'invokables' => [
@@ -703,6 +705,7 @@ $recordRoutes = [
 // Define dynamic routes -- controller => [route name => action]
 $dynamicRoutes = [
     'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
+    'LibraryCards' => ['editLibraryCard' => 'editCard/[:id]'],
 ];
 
 // Define static routes -- Controller/Action strings
@@ -723,6 +726,8 @@ $staticRoutes = [
     'Install/FixSecurity', 'Install/FixSolr', 'Install/Home',
     'Install/PerformSecurityFix', 'Install/ShowSQL',
     'LibGuides/Home', 'LibGuides/Results',
+    'LibraryCards/Home', 'LibraryCards/SelectCard',
+    'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangePassword', 'MyResearch/CheckedOut',
     'MyResearch/Delete', 'MyResearch/DeleteList', 'MyResearch/Edit',
     'MyResearch/Email', 'MyResearch/Favorites', 'MyResearch/Fines',

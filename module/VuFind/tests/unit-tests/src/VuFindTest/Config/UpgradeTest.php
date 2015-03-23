@@ -138,6 +138,14 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $results['searches.ini']['TopRecommendations']
         );
         $this->assertEquals(
+            ['CallNumber' => 'callnumber-sort'],
+            $results['searches.ini']['DefaultSortingByType']
+        );
+        $this->assertEquals(
+            'sort_callnumber',
+            $results['searches.ini']['Sorting']['callnumber-sort']
+        );
+        $this->assertEquals(
             ['SummonDatabases', 'SpellingSuggestions'],
             $results['Summon.ini']['General']['default_top_recommend']
         );
