@@ -87,16 +87,16 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ]
         );
         $conn->init();
-        $result = $conn->getStatus('027586081');
+        $result = $conn->getStatus('0001880463');
 
-        /*
+        
         // exact result for using the DAIA.php with testfile daia.json
         $testResult = [
             0 =>
                 [
-                    'status' =>    NULL,
+                    'status' =>    null,
                     'availability' => true,
-                    'duedate' => NULL,
+                    'duedate' => null,
                     'id' => "0001880463",
                     'item_id' => "0001880463",
                     'number' => 1,
@@ -105,11 +105,11 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'callnumber' => "ABC 12",
                     'location' => "Abteilung III",
                 ],
-            1 =>
+                1 =>
                 [
-                    'status' => NULL,
+                    'status' => null,
                     'availability' => true,
-                    'duedate' => NULL,
+                    'duedate' => null,
                     'id' => "0001880463",
                     'item_id' => "0001880463",
                     'number' => 2,
@@ -118,7 +118,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'callnumber' => "DEF 34",
                     'location' => "Abteilung III",
                 ],
-            2 =>
+                2 =>
                 [
                     'status' => "dummy text",
                     'availability' => false,
@@ -131,9 +131,9 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'callnumber' => "GHI 56",
                     'location' => "Abteilung III",
                 ],
-        ];*/
+        ];
 
-        $this->assertEquals("test", "bla");
+        $this->assertEquals($result, $testResult);
     }
 
     /**
@@ -155,9 +155,8 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ]
         );
         $conn->init();
-        $result = $conn->getStatus('027586081');
-//var_dump($result);
-        /*
+        $result = $conn->getStatus('0001880463');
+        
         // exact result for using the DAIA.php with testfile daia.xml
         $testResult = [
             0 => [
@@ -171,10 +170,13 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'barcode' => 1,
                     'status' => "",
                     'id' => "0001880463",
-                    'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:711134758",
-                    'recallhref' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                    'item_id' => 
+                     "http://uri.gbv.de/document/opac-de-000:epn:711134758",
+                    'recallhref' => 
+                     "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
                     'location' => "Abteilung III",
-                    'location.id' => "http://uri.gbv.de/organization/isil/DE-000",
+                    'location.id' => 
+                     "http://uri.gbv.de/organization/isil/DE-000",
                     'location.href' => "http://www.example-library.edu",
                     'label' => "ABC 12",
                     'notes' => [],
@@ -186,7 +188,8 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'loan.delay' => "unknown",
                     'interloan.availability' => "1",
                     'interloan.delay' => "unknown",
-                    'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                    'ilslink' => 
+                     "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
                 ],
             1 => [
                     'callnumber' => "DEF 34",
@@ -199,10 +202,13 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'barcode' => 1,
                     'status' => "",
                     'id' => "0001880463",
-                    'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:711134766",
-                    'recallhref' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                    'item_id' => 
+                     "http://uri.gbv.de/document/opac-de-000:epn:711134766",
+                    'recallhref' => 
+                     "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
                     'location' => "Abteilung III",
-                    'location.id' => "http://uri.gbv.de/organization/isil/DE-000",
+                    'location.id' => 
+                     "http://uri.gbv.de/organization/isil/DE-000",
                     'location.href' => "http://www.example-library.edu",
                     'label' => "DEF 34",
                     'notes' => [],
@@ -211,7 +217,8 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'loan.availability' => "1",
                     'loan_availability' => "1",
                     'interloan.availability' => "1",
-                    'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                    'ilslink' => 
+                     "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
                 ],
             2 => [
                     'callnumber' => "GHI 56",
@@ -224,10 +231,13 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'barcode' => 1,
                     'status' => "",
                     'id' => "0001880463",
-                    'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:7111347777",
-                    'recallhref' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                    'item_id' => 
+                     "http://uri.gbv.de/document/opac-de-000:epn:7111347777",
+                    'recallhref' => 
+                     "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
                     'location' => "Abteilung III",
-                    'location.id' => "http://uri.gbv.de/organization/isil/DE-000",
+                    'location.id' => 
+                     "http://uri.gbv.de/organization/isil/DE-000",
                     'location.href' => "http://www.example-library.edu",
                     'label' => "GHI 56",
                     'notes' => [],
@@ -239,11 +249,12 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'loan.duedate' => "2115-02-09",
                     'interloan.availability' => "0",
                     'interloan.duedate' => "2115-02-09",
-                    'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+                    'ilslink' => 
+                     "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
                 ],
-        ];*/
+        ];
 
-        $this->assertEquals("test", "notest");
+        $this->assertEquals($result, $testResult);
     }
 
     /**
@@ -259,9 +270,14 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $adapter = new TestAdapter();
         if ($fixture) {
-            $file = realpath(__DIR__ . '/../../../../../../tests/fixtures/daia/response/' . $fixture);
+            $file = realpath(
+                __DIR__ . 
+                '/../../../../../../tests/fixtures/daia/response/' . $fixture
+            );
             if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s ', $file));
+                throw new InvalidArgumentException(
+                    sprintf('Unable to load fixture file: %s ', $file)
+                );
             }
             $response = file_get_contents($file);
             $responseObj = new HttpResponse();
