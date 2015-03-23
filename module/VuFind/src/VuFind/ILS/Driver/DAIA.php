@@ -81,6 +81,25 @@ class DAIA extends AbstractBase implements
     protected $legacySupport = false;
 
     /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $httpClient;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Http\Client $httpClient HTTP client
+     */
+    public function __construct(\Zend\Http\Client $httpClient=null)
+    {
+        if ($httpClient) {
+                 $this->httpClient = $httpClient;
+        }
+    }
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -269,16 +288,13 @@ class DAIA extends AbstractBase implements
             if ($this->legacySupport) {
                 // HttpRequest for DAIA legacy support as all
                 // the parameters are contained in the baseUrl
-                $result = $this->httpService->get(
-                    $this->baseUrl . $id,
-                    [], null, $http_headers
-                );
+                $this->httpClient->setUri($this->baseUrl . $id);
             } else {
-                $result = $this->httpService->get(
-                    $this->baseUrl,
-                    $params, null, $http_headers
-                );
+                $this->httpClient->setUri($this->baseUrl);
+                $this->httpClient->setParameterGet($params);
             }
+             $this->httpClient->setHeaders($http_headers);
+             $result = $this->httpClient->send();
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
@@ -510,8 +526,11 @@ class DAIA extends AbstractBase implements
                             = $departmentElements->item(0)->nodeValue;
                         $result['location.id'] = $departmentElements
                             ->item(0)->attributes->getNamedItem('id')->nodeValue;
-                        $result['location.href'] = $departmentElements
-                            ->item(0)->attributes->getNamedItem('href')->nodeValue;
+                        if ($departmentElements->item(0)->attributes->getNamedItem('href')!== null
+                        ) {
+                            $result['location.href'] = $departmentElements->item(0)
+                                ->attributes->getNamedItem('href')->nodeValue;
+                        }
                     }
                 }
                 $storageElements
@@ -550,8 +569,12 @@ class DAIA extends AbstractBase implements
                     = $itemlist->item($c)->getElementsByTagName('message');
                 if ($messageElements->length > 0) {
                     for ($m = 0; $messageElements->item($m) !== null; $m++) {
-                        $errno = $messageElements->item($m)->attributes
-                            ->getNamedItem('errno')->nodeValue;
+                        $errno = "";
+                        if ($messageElements->item($m)->attributes->getNamedItem('errno')!==null
+                        ) {
+                            $errno = $messageElements->item($m)->attributes
+                                ->getNamedItem('errno')->nodeValue;
+                        }
                         if ($errno === '404') {
                             $result['status'] = 'missing';
                         } else if ($this->logger) {
