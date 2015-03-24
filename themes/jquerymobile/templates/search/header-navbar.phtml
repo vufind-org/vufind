@@ -4,15 +4,17 @@
   <div data-role="navbar">
     <ul>
       <li><a href="#Search-narrow" data-rel="dialog" data-transition="flip"><?=$this->transEsc('Narrow Search')?></a></li>
-      <li>
-        <? if (isset($this->results) && is_numeric($this->results->getSearchId())): ?>
-          <? if ($this->results->isSavedSearch()): ?>
-            <a rel="external" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
-          <? else: ?>
-            <a rel="external" href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
+      <? if (($account = $this->auth()->getManager()) && $account->loginEnabled()): // hide save option if login disabled ?>
+        <li>
+          <? if (isset($this->results) && is_numeric($this->results->getSearchId())): ?>
+            <? if ($this->results->isSavedSearch()): ?>
+              <a rel="external" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
+            <? else: ?>
+              <a rel="external" href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
+            <? endif; ?>
           <? endif; ?>
-        <? endif; ?>
-      </li>
+        </li>
+      <? endif; ?>
     </ul>
   </div>
 <? endif; ?>

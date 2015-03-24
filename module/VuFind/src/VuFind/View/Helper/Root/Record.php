@@ -94,16 +94,17 @@ class Record extends AbstractHelper
         // in case we need to use a parent class' name to find the appropriate
         // template.
         $className = get_class($this->driver);
+        $resolver = $this->view->resolver();
         while (true) {
             // Guess the template name for the current class:
             $classParts = explode('\\', $className);
             $template = 'RecordDriver/' . array_pop($classParts) . '/' . $name;
-            try {
+            if ($resolver->resolve($template)) {
                 // Try to render the template....
                 $html = $this->view->render($template);
                 $this->contextHelper->restore($oldContext);
                 return $html;
-            } catch (RuntimeException $e) {
+            } else {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent class:
                 $className = get_parent_class($className);
