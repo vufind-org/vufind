@@ -1,7 +1,7 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('My Fines'));
-    
+
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'fines'));
 
@@ -11,11 +11,11 @@
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <? $count = $this->fines;?>
-    <h2 class="myresearch-title"><?=$this->transEsc('Your Fines')?> (<?=count($count);?>)</h2>
+    <h2><?=$this->transEsc('Your Fines')?> (<?=count($count);?>)</h2>
     <? if (empty($this->fines)): ?>
     <h4><?=$this->transEsc('You do not have any fines')?></h4>
     <? else: ?>
-    <table class="table myresearch-table table-striped" summary="<?=$this->transEsc('Your Fines')?>">
+    <table class="table useraccount-table table-striped" summary="<?=$this->transEsc('Your Fines')?>">
     <tr class="headers">
       <th><?=$this->transEsc('Title')?></th>
       <th><?=$this->transEsc('Checked Out')?></th>

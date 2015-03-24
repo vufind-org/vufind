@@ -5,7 +5,6 @@
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'checkedout'));
 
-
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Checked Out Items') . '</li>';
 ?>
@@ -24,7 +23,7 @@
         <div class="toolbar">
           <p><?=$this->transEsc('cannot renew any checked out items')?></p>
         </div>
-      <? endif; ?> 
+      <? endif; ?>
       <? $i = 0; foreach ($this->transactions as $resource): ?>
         <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row myresearch-row">
@@ -74,7 +73,7 @@
             <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
               <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
             <? endif; ?>
-            
+
             <? if (!empty($ilsDetails['volume'])): ?>
               <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
               <br />
@@ -117,7 +116,7 @@
               <? endif; ?>
               <br />
             <? endif; ?>
-            
+
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
               <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
               <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
