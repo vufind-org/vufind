@@ -9,7 +9,6 @@ function addSearch(group, fieldValues)
   var inputIndex = $('#group'+group+' input[type=text]').length;
   var inputID = group+'_'+inputIndex;
   var $newSearch = $($('#new_search_template').html());
-  console.log($newSearch.html());
 
   $newSearch.attr('id', 'search'+inputID);
   $newSearch.find('input.form-control')
@@ -88,12 +87,12 @@ function addGroup(firstTerm, firstField, join)
   $newGroup.find('.search_bool')
     .attr('for', 'search_bool'+nextGroup);
   if(join.length > 0) {
-    $newSearch.find('option[value="'+join+'"]').attr('selected', 1);
+    $newGroup.find('option[value="'+join+'"]').attr('selected', 1);
   }
   // Insert
   $('#groupPlaceHolder').before($newGroup);
   // Populate
-  addSearch(nextGroup, firstTerm, firstField);
+  addSearch(nextGroup, {term:firstTerm, field:firstField});
   // Show join menu
   if($('.group').length > 1) {
     $('#groupJoin').removeClass('hidden');
