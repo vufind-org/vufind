@@ -1,28 +1,48 @@
-<div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-  <div class="span-2">
-  <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-    <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-      <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-    <? else: ?>
-      <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-    <? endif; ?>
+<? if($this->params->getOptions()->getListViewOption()!="full"): ?>
+  <div>
+    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption()?>">
+     <?
+      $summHighlightedTitle = $this->driver->getHighlightedTitle();
+      $summTitle = $this->driver->getTitle();
+      if (!empty($summHighlightedTitle)) {
+        echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+      } else if (!empty($summTitle)) {
+        echo $this->escapeHtml($this->truncate($summTitle, 180));
+      } else {
+        echo $this->transEsc('Title not available');
+      }
+    ?>
   </a>
+<? endif;?>
+<div id="loading_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hide"><p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p></div>
+  <div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+  <div class="span-2">
+    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+      <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
+        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+      <? else: ?>
+        <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      <? endif; ?>
+    </a>
   </div>
   <div class="span-9">
-    <div class="resultItemLine1">
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title"><?
-        $summHighlightedTitle = $this->driver->getHighlightedTitle();
-        $summTitle = $this->driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-            echo $this->transEsc('Title not available');
-        }
-      ?></a>
-    </div>
+    <? if ($this->params->getOptions()->getListViewOption()=="full"): ?>
+      <div class="resultItemLine1">
+        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title"><?
+          $summHighlightedTitle = $this->driver->getHighlightedTitle();
+          $summTitle = $this->driver->getTitle();
+          if (!empty($summHighlightedTitle)) {
+              echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+          } else if (!empty($summTitle)) {
+              echo $this->escapeHtml($this->truncate($summTitle, 180));
+          } else {
+              echo $this->transEsc('Title not available');
+          }
+        ?></a>
+      </div>
+    <? endif; ?>
 
     <div class="resultItemLine2">
       <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
@@ -184,3 +204,8 @@
 </div>
 
 <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+
+<? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
+    <div id="long_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"></div>
+  </div>
+<?endif?>

@@ -206,6 +206,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $facetsIni = 'facets';
 
     /**
+     * Active list view option (see [List] in searches.ini).
+     *
+     * @var string
+     */
+    protected $listviewOption = "full";
+
+    /*
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -503,6 +510,16 @@ abstract class Options implements TranslatorAwareInterface
     public function autocompleteEnabled()
     {
         return $this->autocompleteEnabled;
+    }
+
+    /**
+     * Get a string of the listviewOption (full or tab).
+     *
+     * @return string 
+     */
+    public function getListViewOption()
+    {
+        return $this->listviewOption;
     }
 
     /**

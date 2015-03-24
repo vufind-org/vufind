@@ -1073,7 +1073,7 @@ table.authors th {
 
 /************* Tabs (Record Page) *****************/
 
-#tabnav {
+#tabnav, .tabnav {
     font-size:90%;
     margin-top:1em;
     padding:0 0 0 1em;
@@ -1081,37 +1081,39 @@ table.authors th {
     border-top:1px #eee solid;
     border-bottom: 1px #dcdcdc solid;
 }
-#tabnav ul {
-float: left;
+#tabnav ul, .tabnav ul {
+    float: left;
     margin:0;
     padding:0px 5px 0 0;
     list-style:none;
 }
-#tabnav li {
+#tabnav li, .tabnav li,
+.recordTabs.tabnav li {
     float:left;
-    margin:0 0 0 0px;
+    margin:2px 0 0 0px;
     padding:0 0 0 10px;
 }
-#tabnav a {
+#tabnav a, .tabnav a {
     float:left;
     display:block;
-    padding:18px 10px 10px 5px;
+    padding:16px 10px 10px 5px;
     text-decoration:none;
     font-weight:normal;
     color:#000;
+    cursor:pointer
 }
 /* Commented Backslash Hack
     hides rule from IE5-Mac \*/
-#tabnav a {float:none;}
+#tabnav a, .tabnav a {float:none;}
 /* End IE5-Mac hack */
-#tabnav a:hover {
+#tabnav a:hover, .tabnav a:hover {
     color:#000;
 }
-#tabnav .active {
+#tabnav .active, .tabnav .active {
     background:url(../images/subnavTab_left.jpg) no-repeat left top;
     margin-bottom:-1px;
 }
-#tabnav .active a {
+#tabnav .active a, .tabnav .active a {
     background:url(../images/subnavTab_right.jpg) no-repeat right top;
     color:#000;
     padding:18px 10px 12px 0px;

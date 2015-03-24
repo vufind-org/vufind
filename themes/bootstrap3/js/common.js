@@ -26,8 +26,7 @@ function extractClassParams(str) {
 function jqEscape(myid) {
   return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@\[\\\]\^`{|}~]/g, "\\$&");
 }
-function html_entity_decode(string, quote_style)
-{
+function html_entity_decode(string, quote_style) {
   var hash_map = {},
     symbol = '',
     tmp_str = '',
@@ -79,6 +78,81 @@ function moreFacets(id) {
 function lessFacets(id) {
   $('.'+id).addClass('hidden');
   $('#more-'+id).removeClass('hidden');
+}
+
+// Advanced facets
+function updateOrFacets(url, op) {
+  window.location.assign(url);
+  var list = $(op).parents('ul');
+  var header = $(list).find('li.nav-header');
+  list.html(header[0].outerHTML+'<div class="alert alert-info">'+vufindString.loading+'...</div>');
+}
+function setupOrFacets() {
+  $('.facetOR').find('.icon-check').replaceWith('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
+  $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
+}
+
+// Record
+function refreshCommentList(recordId, recordSource) {
+  var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
+  $.ajax({
+    dataType: 'json',
+    url: url,
+    success: function(response) {
+      // Update HTML
+      if (response.status == 'OK') {
+        $('#commentList').empty();
+        $('#commentList').append(response.data);
+        $('input[type="submit"]').button('reset');
+        $('.delete').unbind('click').click(function() {
+          var commentId = $(this).attr('id').substr('recordComment'.length);
+          deleteRecordComment(this, recordId, recordSource, commentId);
+          return false;
+        });
+      }
+    }
+  });
+}
+function registerAjaxCommentRecord(form) {
+  // Form submission
+  var $form = $(form);
+  form = $form[0];
+  var id = form.id.value;
+  var recordSource = form.source.value;
+  var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+  var data = {
+    comment:form.comment.value,
+    id:id,
+    source:recordSource
+  };
+  $.ajax({
+    type: 'POST',
+    url:  url,
+    data: data,
+    dataType: 'json',
+    success: function(response) {
+      if (response.status == 'OK') {
+        refreshCommentList(id, recordSource);
+        $form.find('textarea[name="comment"]').val('');
+        $form.find('input[type="submit"]').button('loading');
+      } else {
+        Lightbox.displayError(response.data);
+      }
+    }
+  });
+  return false;
+}
+function deleteRecordComment(element, recordId, recordSource, commentId) {
+  var url = path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+  $.ajax({
+    dataType: 'json',
+    url: url,
+    success: function(response) {
+      if (response.status == 'OK') {
+        $($(element).parents('.comment')[0]).remove();
+      }
+    }
+  });
 }
 
 // Lightbox
@@ -187,9 +261,13 @@ function updatePageForLogin() {
 
   // Refresh tab content
   var recordTabs = $('.recordTabs');
-  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
+  if(typeof ajaxLoadTab == "function" && !summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
     var tab = recordTabs.find('.active a').attr('id');
     ajaxLoadTab(tab);
+  }
+  if(typeof ajaxFLLoadTab == "function") {
+    var $activeTab = $('.search_tabs .recordTabs li.active a');
+    ajaxFLLoadTab($activeTab.attr('id'), true);
   }
 }
 function newAccountHandler(html) {
