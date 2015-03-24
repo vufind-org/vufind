@@ -229,7 +229,7 @@
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
         margin-bottom: 10px;
-        line-height: 32px;
+        height: 34px;
         
         & option:checked {
             background: @btn-primary-bg;
@@ -241,7 +241,7 @@
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
         color: @body-bg;
-        line-height: 32px;
+        line-height: 34px;
     }
     &.prefilter-select {
         color: @gray;
@@ -282,6 +282,10 @@
 .view-buttons {
     margin-right: 10px;
     margin-bottom: 10px;
+    @media(max-width:@screen-xs-max) {
+        float: left;
+        margin-right: 5px;
+    }
 }
 .view-buttons, .view-buttons a {
     display: inline-block;
