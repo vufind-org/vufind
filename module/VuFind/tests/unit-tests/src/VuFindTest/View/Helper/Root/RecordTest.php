@@ -615,7 +615,7 @@ class RecordTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Set up expectations for a template
-     * 
+     *
      * @param Record $record    Record helper
      * @param string $tpl       Template to expect
      * @param string $response  Response to send
