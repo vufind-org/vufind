@@ -100,6 +100,17 @@ trait SolrFinna
     }
 
     /**
+     * Return an external URL where a displayable description text
+     * can be retrieved from, if available; false otherwise.
+     *
+     * @return mixed
+     */
+    public function getDescriptionURL()
+    {
+        return false;
+    }
+
+    /**
      * Return genres
      *
      * @return array

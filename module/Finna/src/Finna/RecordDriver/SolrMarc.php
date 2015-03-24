@@ -154,7 +154,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      * Get an array of alternative titles for the record.
      *
      * @return array
-     * @access protected
      */
     public function getAlternativeTitles()
     {
@@ -210,7 +209,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      * can be retrieved from, if available; false otherwise.
      *
      * @return mixed
-     * @access public
      */
     public function getDescriptionURL()
     {
@@ -230,8 +228,10 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             }
         }
 
-        return 'http://siilo-kk.lib.helsinki.fi/getText.php?query=' .
-            $this->getCleanISBN();
+        if ($isbn = $this->getCleanISBN()) {
+            return 'http://siilo-kk.lib.helsinki.fi/getText.php?query=' . $isbn;
+        }
+        return false;
     }
 
     /**

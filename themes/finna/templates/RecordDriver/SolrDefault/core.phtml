@@ -7,7 +7,7 @@
       <?= $img->render('record', array('small' => array('w' => 189, 'h' => 300), 'medium' => array('w' => 200))) ?>
       <? /* Display qrcode if appropriate: */ ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
-      <? if ($QRCode): ?> 
+      <? if ($QRCode): ?>
         <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
       <? endif; ?>
     </div>
@@ -41,7 +41,7 @@
         </div>
     <? endif; ?>
     </div>
-    
+
        <? $urls = $this->driver->getURLs(); $openURL = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false; $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
       <? if (!empty($urls) || $openURL || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
         <div class="recordURLs local-available-online-record">
@@ -65,21 +65,11 @@
             <? endif; ?>
         </div>
       <? endif; ?>
-    <!-- TODO Get  online summary first. If no summary, return basic summary -->
-    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
-    <? if ($summary): ?>
-      <div class="truncate-field wide">
-        <p class="summary"><?=$summary ?></p>
-      </div>
-    <? endif; ?>
-    <? if (empty($summary)) : ?>
     <div class="description">
-      <span id="description_text" data-id="<?=$this->escapeHtml($this->driver->getUniqueID())?>">
+      <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
         <i class="fa fa-spinner fa-spin"></i>
       </span>
     </div>
-    <? endif; ?>
-    <!-- END TODO -->
 
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
@@ -113,10 +103,10 @@
         </td>
       </tr>
       <? endif; ?>
-      
+
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <tr class="recordFormat">
-          <th> 
+          <th>
             <?=$this->record($this->driver)->getFormatList()?>
           </th>
           <td>
@@ -127,7 +117,7 @@
             <? endif; ?>
             <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
             <span class="recordEdition">
-              <?=$this->transEsc('Edition')?> 
+              <?=$this->transEsc('Edition')?>
               <span property="bookEdition"><?=$this->escapeHtml($edition)?></span>
             </span>
             <? endif; ?>
@@ -188,7 +178,7 @@
           </td>
         </tr>
       <? endif; ?>
-      
+
       <? $notes = $this->driver->getGeneralNotes(); if (!empty($notes)): ?>
       <? $contentDisplayed = true; ?>
       <tr>
@@ -200,7 +190,7 @@
           </td>
         </tr>
       <? endif; ?>
-      
+
       <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
       <tr class="recordPublications">
         <th><?=$this->transEsc('Published')?>: </th>
@@ -275,7 +265,7 @@
         </td>
       </tr>
       <? endif; ?>
-      </tbody>   
+      </tbody>
       <tbody class="record-details-more">
       <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
       <tr class="recordSubjects">
@@ -297,14 +287,14 @@
         </td>
       </tr>
       <? endif; ?>
-      
+
       <? $manufacturer = $this->driver->tryMethod('getManufacturer'); if (!empty($manufacturer)): ?>
       <tr class="recordManufacturer">
         <th><?=$this->transEsc('Manufacturer')?>: </th>
         <td><?=$this->escapeHtml($manufacturer)?></td>
       </tr>
       <? endif; ?>
-      
+
       <? if ($results = $this->driver->getTitleStatement()): ?>
          <tr class="recordFormat">
            <th><?=$this->transEsc('Additional Information') ?>:</th>
@@ -572,7 +562,7 @@
       </td>
     </tr>
   <? endif; ?>
-      
+
       <? if ($this->usertags()->getMode() !== 'disabled'): ?>
         <? $tagList = $this->driver->getTags(); ?>
         <tr>

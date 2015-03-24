@@ -113,6 +113,11 @@ class AjaxController extends \VuFind\Controller\AjaxController
                     return $this->output($content, self::STATUS_OK);
                 }
             }
+            if ($summary = $driver->getSummary()) {
+                return $this->output(
+                    implode('<br><br>', $summary), self::STATUS_OK
+                );
+            }
         }
         return $this->output('', self::STATUS_ERROR);
     }

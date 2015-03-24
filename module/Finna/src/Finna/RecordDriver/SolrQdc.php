@@ -74,6 +74,20 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Return an external URL where a displayable description text
+     * can be retrieved from, if available; false otherwise.
+     *
+     * @return mixed
+     */
+    public function getDescriptionURL()
+    {
+        if ($isbn = $this->getCleanISBN()) {
+            return 'http://siilo-kk.lib.helsinki.fi/getText.php?query=' . $isbn;
+        }
+        return false;
+    }
+
+    /**
      * Set raw data to initialize the object.
      *
      * @param mixed $data Raw data representing the record; Record Model

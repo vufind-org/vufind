@@ -1,3 +1,4 @@
+<? $this->headScript()->appendFile("finna-record.js"); ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <div class="col-sm-2">
     <div class="cover-wrapper">
@@ -30,8 +31,14 @@
             <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
           <? endforeach; ?>
         </span>
-      <? endif; ?>
-      
+        <? endif; ?>
+
+        <div class="description">
+          <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
+            <i class="fa fa-spinner fa-spin"></i>
+          </span>
+        </div>
+
         <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
         <? foreach ($publications as $field): ?>
             <span property="publisher" typeof="Organization">
@@ -49,7 +56,7 @@
         <? endif; ?>
       </div>
     </div>
-    
+
     <?
         $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
         // Account for replace_other_urls setting
@@ -65,7 +72,7 @@
       <? endif; ?>
     </div>
     <? endif; ?>
-    
+
     <? if ($abstracts = $this->driver->getAbstracts()): ?>
       <div class="truncate-field wide">
         <p class="summary">
