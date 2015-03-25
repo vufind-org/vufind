@@ -17,7 +17,7 @@
           'rel' => 'search'
         )
       );
-      
+
       // IE-specific stylesheet
       $this->headLink()->appendStylesheet('ie9-and-lower.css', 'screen', 'lte IE 9');
     ?>
@@ -39,6 +39,7 @@
             'sms_success' => 'sms_success',
             'show_more' => 'show_more',
             'show_less' => 'show_less',
+            'number_thousands_separator' => ['number_thousands_separator', null, ',']
           )
         );
         if ($cart->isActive()) {
