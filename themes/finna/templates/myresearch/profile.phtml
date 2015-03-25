@@ -15,17 +15,8 @@
 <div class="row">
   <div class="col-md-9">
     <?=$this->flashmessages();?>
-    <h2><?=$this->transEsc('Your Profile')?></h2>
-    <table class="table useraccount-table table-striped">
-      <?
-        echo $this->renderArray(
-          $arrTemplate, $this->profile,
-          array(
-            $this->transEsc('First Name') => 'firstname',
-            $this->transEsc('Last Name') => 'lastname'
-          )
-        );
-       ?>
+    <h2><?=$this->transEsc('Library Card Settings')?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
+    <table class="table">
       <? if ($showHomeLibForm): ?>
         <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
         <?
@@ -39,10 +30,25 @@
                 <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
               <? endforeach; ?>
             </select>
-            <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Save')?>" />
+            <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>" />
           </form>
         </td>
+        </tr>
       <? endif; ?>
+    </table>
+    <table class="table table-striped useraccount-table">
+        <tr class="headers">
+          <th colspan="2"><h4><?=$this->transEsc('Personal details maintained by the library');?></h4></th>
+        </tr>
+      <?
+        echo $this->renderArray(
+          $arrTemplate, $this->profile,
+          array(
+            $this->transEsc('First Name') => 'firstname',
+            $this->transEsc('Last Name') => 'lastname'
+          )
+        );
+       ?>
       <?
         echo $this->renderArray(
           $arrTemplate, $this->profile,

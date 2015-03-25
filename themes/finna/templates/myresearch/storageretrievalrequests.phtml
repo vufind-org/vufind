@@ -12,8 +12,7 @@
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <?=$this->flashmessages()?>
-    <? $count = $this->recordList;?>
-    <h2><?=$this->transEsc('Storage Retrieval Requests') ?> (<?=count($count);?>)</h2>
+    <h2><?=$this->transEsc('Storage Retrieval Requests') ?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
       <form name="cancelForm" class="inline" action="" method="post" id="cancelStorageRetrievalRequest">
@@ -36,10 +35,11 @@
               <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
+          <span class="myresearch-count"><?=$this->transEsc('Total')?>:  <?=count($this->recordList);?></span>
         </div>
         <? else: ?>
         <div class="toolbar">
-          <p><?=$this->transEsc('Cannot cancel any Retrieval Requests')?></p>
+          <p><?=$this->transEsc('Cannot cancel any Retrieval Requests')?><span class="myresearch-count no-buttons"><?=$this->transEsc('Total')?>:  <?=count($this->recordList);?></span></p>
         </div>
         <? endif; ?>
 

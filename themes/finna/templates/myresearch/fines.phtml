@@ -10,12 +10,11 @@
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
-    <? $count = $this->fines;?>
-    <h2><?=$this->transEsc('Your Fines')?> (<?=count($count);?>)</h2>
+    <h2><?=$this->transEsc('Your Fines')?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
     <? if (empty($this->fines)): ?>
     <h4><?=$this->transEsc('You do not have any fines')?></h4>
     <? else: ?>
-    <table class="table useraccount-table table-striped" summary="<?=$this->transEsc('Your Fines')?>">
+    <table class="table table-striped useraccount-table" summary="<?=$this->transEsc('Your Fines')?>">
     <tr class="headers">
       <th><?=$this->transEsc('Title')?></th>
       <th><?=$this->transEsc('Checked Out')?></th>
@@ -42,10 +41,10 @@
       <td><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
       <td class="balance"><?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?></td>
     </tr>
-    <tr>
       <? $totalDue += $record['balance']; ?>
     <? endforeach; ?>
-      <th colspan="5" class="total-balance"><?=$this->transEsc('Total Balance Due')?></th>
+    <tr>
+      <th colspan="5" class="total-balance"><?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines);?>)</th>
       <th class="total-balance"><?=$this->safeMoneyFormat($totalDue/100.00) ?></th>
     </tr>
     </table>
