@@ -39,15 +39,19 @@ stack_placement = distributed
 
 [Solr]
 label = tabs_local
-;sublabel = "library books, videos, CDs, microform, local resources"
+;sublabel = "local_description_html"
 more_link = "show_more"
-;limit = 10
+limit = 20
 
 
 [Primo]
+;sublabel = "primo_description_html"
 label = tabs_pci
 more_link = "show_more"
 ajax = true
+limit = 20
+
+
 
 ; This section controls recommendation modules displayed in combination with
 ; combined search results. Right now, only the top and bottom areas are

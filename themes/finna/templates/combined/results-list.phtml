@@ -1,0 +1,103 @@
+<?
+  $view = $currentSearch['view'];
+  $results = $view->results;
+  $params = $results->getParams();
+  $lookfor = $params->getDisplayQuery();
+  $recordTotal = $results->getResultTotal();
+
+  // More link should use default limit, not custom limit:
+  $limit = $params->getLimit();
+  $params->setLimit($params->getOptions()->getDefaultLimit());
+  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
+  $params->setLimit($limit);
+  
+   
+
+?>
+<div class="row">
+  <div class="col-xs-12 combined-titles">
+    <? if (isset($currentSearch['more_link']) && $currentSearch['more_link'] && ($recordTotal > 0)): ?>
+      <a href="<?=$moreUrl?>">
+        <h2 class="combined-list-title"><?=$this->transEsc($currentSearch['label'])?></h2>
+      </a>
+    <? else: ?>
+      <h2 class="combined-list-title"><?=$this->transEsc($currentSearch['label'])?></h2>
+    <? endif; ?>
+
+    <? if (isset($currentSearch['sublabel'])): ?>
+      <p class="show-list-details pull-right" onclick="$(this).next().toggleClass('hidden');$('i', this).toggleClass('fa-arrow-up');"><?=$this->transEsc('More Information');?> <i class="fa fa-arrow-down"></i></p>
+      <p class="sub-label hidden"><?=$this->translate($currentSearch['sublabel'])?></p>
+    <? endif; ?>
+  </div>
+</div>
+<div class="clearfix">
+  <? if ($recordTotal > 0): ?>
+  <div class="row">
+    <div class="col-xs-12 combined-search-results">
+      <h4>
+      <?=$this->transEsc('Search Results')?>
+      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
+      <? if (!isset($view->skipTotalCount)): ?>
+        / <strong><?=$this->localizedNumber($recordTotal)?></strong>
+      <? endif; ?>
+      </h4>
+      <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+        <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
+      <? endif; ?>
+      </div>
+  </div>
+  <? endif; ?>
+</div>
+<? /* End Listing Options */ ?>
+
+<? if ($recordTotal < 1): ?>
+  <p class="alert alert-danger">
+    <? if (isset($view->overrideEmptyMessage)): ?>
+      <?=$view->overrideEmptyMessage?>
+    <? else: ?>
+      <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+    <? endif; ?>
+  </p>
+  <? if (isset($view->parseError)): ?>
+    <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
+  <? endif; ?>
+  <? foreach (($top = $results->getRecommendations('top')) as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+  <? foreach ($results->getRecommendations('noresults') as $current): ?>
+    <? if (!in_array($current, $top)): ?>
+      <?=$this->recommend($current)?>
+    <? endif; ?>
+  <? endforeach; ?>
+<? else: ?>
+  <?
+    $viewType = in_array('list', array_keys($params->getViewList()))
+      ? 'list' : $params->getView();
+    $viewParams = array(
+      'results' => $results,
+      'params' => $params,
+      'showCartControls' => $this->showCartControls,
+      'showBulkOptions' => $this->showBulkOptions
+    );
+  ?>
+  <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
+  
+  <div class="clearfix">
+    <? if ($recordTotal > 0): ?>
+    <div class="row">
+      <div class="col-xs-12 combined-search-results">
+      <h4>
+      <?=$this->transEsc('Search Results')?>
+      <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
+      <? if (!isset($view->skipTotalCount)): ?>
+        / <strong><?=$this->localizedNumber($recordTotal)?></strong>
+      <? endif; ?>
+      </h4>
+      <? if (isset($currentSearch['more_link']) && $currentSearch['more_link']): ?>
+        <strong><a href="<?=$moreUrl?>" class="pull-right"><?=$this->transEsc('More')?> &raquo;</a></strong>
+      <? endif; ?>
+      </div>
+    </div>
+    <? endif; ?>
+  </div>
+<? endif; ?>
