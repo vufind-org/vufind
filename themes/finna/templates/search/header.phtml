@@ -1,6 +1,6 @@
 <div class="col-sm-9">
   <h1 class="search-result-header">
-  <? if ($this->results->getResultTotal() > 0): ?>
+  <? if ($this->recordsFound): ?>
     <? if (isset($this->overrideSearchHeading)): ?>
       <?=$this->overrideSearchHeading?>
     <? elseif ($this->params->getsearchType() == 'basic'): ?>
@@ -10,7 +10,7 @@
       <?=$this->transEsc('nohit_heading')?>
   <? endif; ?>
   </h1>
-  <? if ($this->results->getResultTotal() > 0): ?>
+  <? if ($this->recordsFound): ?>
     <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
   <? endif; ?>
 </div>

@@ -22,7 +22,7 @@
       'selectedShards' => $this->params->getSelectedShards()
     )
   );
-  
+
   // Create shortcut to combined results (since $this->results may get overwritten in processing below):
   $combinedResults = $this->results;
 
@@ -76,13 +76,13 @@
 
 <?
   // Set up Finna Main Header:
-  $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
+   $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
       'search/header.phtml',
       array(
-        'results' => $this->results,
-        'params' => $results->getParams(),
-        'lookfor' => $params->getDisplayQuery(),
-        'recordTotal' => $results->getResultTotal()
+        'results' => $combinedResults,
+        'params' => $combinedResults->getParams(),
+        'lookfor' => $combinedResults->getParams()->getDisplayQuery(),
+        'recordsFound' => true // This might not be true, but we don't really know
       )
   );
 
