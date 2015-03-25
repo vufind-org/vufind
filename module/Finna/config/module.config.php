@@ -64,6 +64,7 @@ $config = array(
         'allow_override' => true,
         'factories' => array(
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
+            'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
         )
     ),
     // This section contains all VuFind-specific settings (i.e. configurations
