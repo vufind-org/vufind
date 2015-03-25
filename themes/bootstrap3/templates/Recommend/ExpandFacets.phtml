@@ -7,11 +7,11 @@
   <div class="sidegroup">
  <? foreach ($expandFacetSet as $title=>$cluster): ?>
     <h4><?=$this->transEsc($cluster['label']) ?></h4>
-    <ul class="list-group">
+    <div class="list-group">
       <? foreach ($cluster['list'] as $thisFacet): ?>
         <a class="list-group-item" href="<?=$this->url('search-results') . $blankResults->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a>
       <? endforeach; ?>
-    </ul>
+    </div>
  <? endforeach; ?>
   </div>
 <? endif; ?>

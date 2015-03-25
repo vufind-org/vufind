@@ -356,7 +356,7 @@ class BrowseController extends AbstractBase
             'query_field' => 'callnumber-first',
             'facet_field' => 'callnumber-subject'
         ];
-        $view->searchParams = [];
+        $view->searchParams = ['sort' => 'callnumber-sort'];
         return $this->performSearch($view);
     }
 
@@ -378,6 +378,7 @@ class BrowseController extends AbstractBase
             ];
         }
         $view->categoryList = $categoryList;
+        $view->query_field = 'dewey';
         if ($this->params()->fromQuery('findby')) {
             $secondaryList = $this->quoteValues(
                 $this->getFacetList(
@@ -397,6 +398,7 @@ class BrowseController extends AbstractBase
                 'query_field' => 'dewey-tens',
                 'facet_field' => 'dewey-ones'
             ];
+            $view->searchParams = ['sort' => 'dewey-sort'];
         }
         return $this->performSearch($view);
     }

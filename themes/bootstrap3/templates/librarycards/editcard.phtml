@@ -1,0 +1,53 @@
+<?
+  // Set up page title:
+  $pageTitle = empty($this->card->id) ? 'Add a Library Card' : "Edit Library Card";
+  $this->headTitle($this->translate($pageTitle));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
+    . '<li><a href="' . $this->url('librarycards-home') . '">' . $this->transEsc('Library Cards') . '</a></li>'
+    . '<li>' . $this->transEsc($pageTitle) . '</li>';
+?>
+
+<?=$this->flashmessages()?>
+
+<h2><?=$this->transEsc($pageTitle); ?></h2>
+
+<form class="form-horizontal edit-card-form" method="post" name="<?=empty($this->card->id) ? 'newCardForm' : 'editCardForm'?>">
+  <input type="hidden" name="id" value="<?=empty($this->card->id) ? 'NEW' : $this->card->id ?>"/>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="card_name"><?=$this->transEsc('Library Card Name'); ?>:</label>
+    <div class="col-sm-9">
+      <input id="card_name" class="form-control" type="text" name="card_name" value="<?=$this->escapeHtmlAttr($this->cardName)?>"/>
+    </div>
+  </div>
+  <? if ($this->targets !== null): ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+    <div class="col-sm-9">
+      <select id="login_target" name="target" class="form-control">
+      <? foreach ($this->targets as $target): ?>
+        <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $this->target ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+      <? endforeach; ?>
+      </select>
+    </div>
+  </div>
+  <? endif; ?>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
+    <div class="col-sm-9">
+      <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->username)?>" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-3 control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
+    <div class="col-sm-9">
+      <input id="login_password" type="password" name="password" value="<?=$this->escapeHtmlAttr($this->password)?>" class="form-control"/>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-9 col-sm-offset-3">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
+    </div>
+  </div>
+</form>
