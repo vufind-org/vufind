@@ -4,6 +4,8 @@ function checkItemStatus(id) {
   var safeId = jqEscape(id);
   var item = $('.hiddenId[value="' + safeId + '"]').closest('.ajaxItem');
   item.find(".ajax-availability").removeClass('hidden');
+  item.find('.callnumAndLocation').removeClass('hidden');
+  item.find('.no-holdings').addClass('hidden');
 
   $.ajax({
     dataType: 'json',
@@ -73,7 +75,7 @@ function checkItemStatus(id) {
         // display the error message on each of the ajax status place holder
         $(".ajax-availability").empty().append(response.data);
       }
-      $(".ajax-availability").removeClass('ajax-availability');
+      item.find(".ajax-availability").removeClass('ajax-availability');
     }
   });
 }
@@ -111,9 +113,11 @@ function initDedupRecordSelection()
 }
 
 $(document).ready(function() {
-  $('.ajaxItem').each(function(i, record) {
-    var id = $(record).find('.hiddenId')[0].value;
-    checkItemStatus(id);
+  $('.ajaxItem').each(function(ind, e) {
+    $(this).unbind('inview').one('inview', function() {
+      var id = $(this).find('.hiddenId')[0].value;
+      checkItemStatus(id);
+    });
   });
   initDedupRecordSelection();
 });

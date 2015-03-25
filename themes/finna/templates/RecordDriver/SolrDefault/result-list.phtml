@@ -162,7 +162,7 @@
             <i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/>
           </span>
           <span class="location ajax-availability hidden">
-            
+
           </span>
             <div class="locationDetails clearfix"></div>
         <? else: ?>
@@ -170,11 +170,10 @@
             <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
           <? endif; ?>
         <? endif; ?>
-      
+      </div>
       <div class="no-holdings hidden">
         <?=$this->transEsc('No Holdings Available')?>
       </div>
-     </div>
     </div>
     <?=$this->context($this)->renderInContext(
         'RecordDriver/SolrDefault/result-online-urls.phtml',
