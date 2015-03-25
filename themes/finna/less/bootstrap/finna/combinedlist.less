@@ -30,7 +30,7 @@
         margin-top: 10px;   
     }
     &:first-child {
-        border-right: 2px solid @gray-lighter;
+        border-right: 4px solid @gray-lighter;
         @media(max-width:@screen-xs-max) {
             border-right: none;
             & .combined-titles {
@@ -40,10 +40,12 @@
         }
     }
     &:last-child {
-        border-left: 2px solid @gray-lighter;
+        border-left: 4px solid @gray-lighter;
+        margin-left: -4px;
         @media(max-width:@screen-xs-max) {
             border-left: none;
             border-top: 4px solid @gray-lighter;
+            margin-left: 0px;
             & .combined-titles {
                 margin-top: 20px;
                 border-bottom: none;
