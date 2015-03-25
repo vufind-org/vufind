@@ -25,7 +25,7 @@
           }
         ?>
         </a>
-        
+
       </div>
       <div class="dateyeartype">
         <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList()). '<br />'?>
@@ -157,7 +157,7 @@
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a><br/>      
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a><br/>
       <? endif; ?>
 
       <? /* Hierarchy tree link */ ?>
@@ -189,7 +189,8 @@
           <div class="heading"><strong><?=$this->transEsc('Electronic')?></strong></div>
           <? if(!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc(end($this->driver->getFormats())) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
+              <? $format = $this->driver->getFormats(); $format = end($format); ?>
+              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc('format_PCI_' . strtolower($format), null, $format) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
           <? endforeach; ?>
          <? endif; ?>
         <? endif; ?>
