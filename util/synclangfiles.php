@@ -1,16 +1,15 @@
 <?php
 /**
- * Create all the hierarchy files which are used for looking up hierarchichal trees.
- * This script will search the Solr index and create the files needed so they don't
- * need to be built at runtime. If this script is run after every index, the caching
- * time for hierarchy trees can be set to -1 so that trees are always assumed to be
- * up to date.
+ * This tool allows to compare and synchronize language files for VuFind2.
+ * You can either run it as CLI-tool with output on STDOUT to check whether
+ * language files are out of sync (default) or synchronize language files
+ * automatically by writing the missing lines into the .ini files.
  *
- * -!!!!-This script is specifically for trees built for JSTree from Solr.-!!!!-
+ * For more available options see run php synclangfiles.php --help
  *
  * PHP version 5
  *
- * Copyright (C) National Library of Ireland 2012.
+ * Copyright (C) Leipzig University Library 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,7 +26,7 @@
  *
  * @category VuFind2
  * @package  Utilities
- * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
+ * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki Wiki
  */
