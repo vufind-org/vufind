@@ -60,6 +60,11 @@ class Options extends \VuFind\Search\Base\Options
     protected $hierarchicalFacetSeparators = [];
 
     /**
+     * Relevance sort override for empty searches
+     */
+    protected $emptySearchRelevanceOverride = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -77,6 +82,10 @@ class Options extends \VuFind\Search\Base\Options
         }
         if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
+        }
+        if (isset($searchSettings->General->empty_search_relevance_override)) {
+            $this->emptySearchRelevanceOverride
+                = $searchSettings->General->empty_search_relevance_override;
         }
         if (isset($searchSettings->DefaultSortingByType)
             && count($searchSettings->DefaultSortingByType) > 0
@@ -250,6 +259,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'search-advanced';
+    }
+
+    /**
+     * Get the relevance sort override for empty searches.
+     *
+     * @return boolean|string Sort field or false if not set
+     */
+    public function getEmptySearchRelevanceOverride()
+    {
+        return $this->emptySearchRelevanceOverride;
     }
 
     /**

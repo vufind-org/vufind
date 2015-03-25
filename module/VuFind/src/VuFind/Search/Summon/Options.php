@@ -53,6 +53,11 @@ class Options extends \VuFind\Search\Base\Options
     protected $maxTopicRecommendations = false;
 
     /**
+     * Relevance sort override for empty searches
+     */
+    protected $emptySearchRelevanceOverride = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -142,6 +147,10 @@ class Options extends \VuFind\Search\Base\Options
                 $this->defaultSortByHandler[$key] = $val;
             }
         }
+        if (isset($searchSettings->General->empty_search_relevance_override)) {
+            $this->emptySearchRelevanceOverride
+                = $searchSettings->General->empty_search_relevance_override;
+        }
 
         // Load view preferences (or defaults if none in .ini file):
         if (isset($searchSettings->Views)) {
@@ -174,6 +183,16 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'summon-advanced';
+    }
+
+    /**
+     * Get the relevance sort override for empty searches.
+     *
+     * @return boolean|string Sort field or false if not set
+     */
+    public function getEmptySearchRelevanceOverride()
+    {
+        return $this->emptySearchRelevanceOverride;
     }
 
     /**
