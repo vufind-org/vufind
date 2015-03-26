@@ -44,6 +44,10 @@ use VuFindSearch\Service as SearchService;
  */
 abstract class Results implements ServiceLocatorAwareInterface
 {
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait {
+        setServiceLocator as setServiceLocatorThroughTrait;
+    }
+
     /**
      * Search parameters
      *
@@ -113,7 +117,7 @@ abstract class Results implements ServiceLocatorAwareInterface
      *
      * @var array
      */
-    protected $helpers = array();
+    protected $helpers = [];
 
     /**
      * Spelling suggestions
@@ -128,13 +132,6 @@ abstract class Results implements ServiceLocatorAwareInterface
      * @var SearchService
      */
     protected $searchService;
-
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Constructor
@@ -229,8 +226,8 @@ abstract class Results implements ServiceLocatorAwareInterface
         // Initialize variables to defaults (to ensure they don't stay null
         // and cause unnecessary repeat processing):
         $this->resultTotal = 0;
-        $this->results = array();
-        $this->suggestions = array();
+        $this->results = [];
+        $this->suggestions = [];
 
         // Run the search:
         $this->startQueryTimer();
@@ -275,7 +272,7 @@ abstract class Results implements ServiceLocatorAwareInterface
     public function getSpellingSuggestions()
     {
         // Not supported by default:
-        return array();
+        return [];
     }
 
     /**
@@ -526,8 +523,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
             $serviceLocator = $serviceLocator->getServiceLocator();
         }
-        $this->serviceLocator = $serviceLocator;
-        return $this;
+        return $this->setServiceLocatorThroughTrait($serviceLocator);
     }
 
     /**
@@ -564,16 +560,6 @@ abstract class Results implements ServiceLocatorAwareInterface
         unset($vars['searchService']);
         $vars = array_keys($vars);
         return $vars;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**

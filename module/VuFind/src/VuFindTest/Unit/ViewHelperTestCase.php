@@ -37,7 +37,6 @@ namespace VuFindTest\Unit;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-
 abstract class ViewHelperTestCase extends TestCase
 {
     /**
@@ -48,7 +47,7 @@ abstract class ViewHelperTestCase extends TestCase
      *
      * @return \Zend\View\Renderer\PhpRenderer
      */
-    protected function getPhpRenderer($plugins = array(), $theme = 'blueprint')
+    protected function getPhpRenderer($plugins = [], $theme = 'blueprint')
     {
         $resolver = new \Zend\View\Resolver\TemplatePathStack();
 
@@ -56,10 +55,10 @@ abstract class ViewHelperTestCase extends TestCase
         // from root with no intermediate themes.  Probably safe for most
         // test situations, though other scenarios are possible.
         $resolver->setPaths(
-            array(
+            [
                 $this->getPathForTheme('root'),
                 $this->getPathForTheme($theme)
-            )
+            ]
         );
         $renderer = new \Zend\View\Renderer\PhpRenderer();
         $renderer->setResolver($resolver);

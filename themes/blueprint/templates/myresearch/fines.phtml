@@ -9,9 +9,14 @@
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <? if (empty($this->fines)): ?>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
     <?=$this->transEsc('You do not have any fines')?>
   <? else: ?>
     <h3><?=$this->transEsc('Your Fines')?></h3>
+
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
     <table class="datagrid fines" summary="<?=$this->transEsc('Your Fines')?>">
     <tr>
       <th><?=$this->transEsc('Title')?></th>

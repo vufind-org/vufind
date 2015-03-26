@@ -26,12 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr\Document;
 
 use VuFindSearch\Backend\Solr\Record\SerializableRecordInterface;
-use VuFindSearch\Response\RecordInterface;
-
 use SplObjectStorage;
 use XMLWriter;
 
@@ -92,7 +89,7 @@ class UpdateDocument extends AbstractDocument
                 $writer->writeAttribute($name, $value);
             }
             foreach ($record->getFields() as $name => $values) {
-                $values = is_array($values) ? $values : array($values);
+                $values = is_array($values) ? $values : [$values];
                 foreach ($values as $value) {
                     $writer->startElement('field');
                     $writer->writeAttribute('name', $name);
@@ -116,7 +113,7 @@ class UpdateDocument extends AbstractDocument
      * @return void
      */
     public function addRecord(SerializableRecordInterface $record,
-        array $indexAttr = array()
+        array $indexAttr = []
     ) {
         $this->records->attach($record, $indexAttr);
     }

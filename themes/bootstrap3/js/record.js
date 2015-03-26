@@ -1,4 +1,4 @@
-/*global deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, vufindString */
+/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -150,13 +150,15 @@ function registerTabEvents() {
 
 function ajaxLoadTab(tabid) {
   var id = $('.hiddenId')[0].value;
-  // Grab the part of the url that is the Controller and Record ID
-  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id)) + "/";
-  if(urlroot == "null/") {
+  // Try to parse out the controller portion of the URL. If this fails, or if
+  // we're flagged to skip AJAX for this tab, just return true and let the
+  // browser handle it.
+  var urlroot = document.URL.match(new RegExp('/[^/]+/'+id));
+  if(!urlroot || document.getElementById(tabid).parentNode.className.indexOf('noajax') > -1) {
     return true;
   }
   $.ajax({
-    url: path + urlroot + 'AjaxTab',
+    url: path + urlroot + '/AjaxTab',
     type: 'POST',
     data: {tab: tabid},
     success: function(data) {
@@ -248,10 +250,13 @@ $(document).ready(function(){
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
   // Form handlers
-  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
   Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.confirm(vufindString['bulk_email_success']);
+  });
+  Lightbox.addFormCallback('saveRecord', function(){
+    checkSaveStatuses();
+    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormCallback('placeHold', function(html) {
     Lightbox.checkForError(html, function(html) {

@@ -49,7 +49,7 @@
     $('#view .nav-tabs li:not(.static) a').click(function (e) {
       e.preventDefault();
       $(this).tab('show');
-      currTab = $(this).attr('id');
+      currentTab = $(this).attr('id');
     });
     // Initialize the size of Zoomy
     $('#zoom-tab').on('shown.bs.tab', function() {
@@ -61,7 +61,7 @@
     $(window).resize(resizeZoom);
     resizeZoom();
 
-    var pageData = {
+    updateFunction({
       'id'       :'<?=$this->id ?>',
       'medium'   :'<?=$this->medium ?>',
       'large'    :'<?=$this->large ?>',
@@ -69,8 +69,7 @@
       'master'   :'<?=$this->master ?>',
       'thumbnail':'<?=$this->thumbnail ?>',
       'mimetype' :'<?=$this->mimetype ?>'
-    };
-    updateFunction(pageData, 'medium-tab');
+    }, 'medium-tab');
   });
 </script>
 <ul class="nav nav-tabs">

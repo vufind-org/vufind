@@ -55,7 +55,7 @@ class Context extends AbstractHelper
     {
         $view = $this->getView();
 
-        $oldVars = array();
+        $oldVars = [];
         foreach ($vars as $k => $v) {
             $oldVars[$k] = isset($view->$k) ? $view->$k : null;
             $view->$k = $v;

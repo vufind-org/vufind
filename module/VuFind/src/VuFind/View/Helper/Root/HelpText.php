@@ -27,8 +27,6 @@
  */
 namespace VuFind\View\Helper\Root;
 
-use Zend\View\Exception\RuntimeException;
-
 /**
  * "Load help text" view helper
  *
@@ -66,7 +64,7 @@ class HelpText extends \Zend\View\Helper\AbstractHelper
      *
      * @var array
      */
-    protected $warnings = array();
+    protected $warnings = [];
 
     /**
      * Constructor
@@ -107,27 +105,28 @@ class HelpText extends \Zend\View\Helper\AbstractHelper
         // Set up the needed context in the view:
         $this->contextHelper->__invoke($this->getView());
         $oldContext = $this->contextHelper
-            ->apply(null === $context ? array() : $context);
+            ->apply(null === $context ? [] : $context);
 
         // Sanitize the template name to include only alphanumeric characters
         // or underscores.
         $safe_topic = preg_replace('/[^\w]/', '', $name);
 
         // Clear warnings
-        $this->warnings = array();
+        $this->warnings = [];
 
-        try {
-            $tpl = "HelpTranslations/{$this->language}/{$safe_topic}.phtml";
+        $resolver = $this->getView()->resolver();
+        $tpl = "HelpTranslations/{$this->language}/{$safe_topic}.phtml";
+        if ($resolver->resolve($tpl)) {
             $html = $this->getView()->render($tpl);
-        } catch (RuntimeException $e) {
-            try {
-                // language missing -- try default language
-                $tplFallback = 'HelpTranslations/' . $this->defaultLanguage . '/'
-                    . $safe_topic . '.phtml';
+        } else {
+            // language missing -- try default language
+            $tplFallback = 'HelpTranslations/' . $this->defaultLanguage . '/'
+                . $safe_topic . '.phtml';
+            if ($resolver->resolve($tplFallback)) {
                 $html = $this->getView()->render($tplFallback);
                 $this->warnings[] = 'Sorry, but the help you requested is '
                     . 'unavailable in your language.';
-            } catch (RuntimeException $e) {
+            } else {
                 // no translation available at all!
                 $html = false;
             }

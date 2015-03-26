@@ -30,8 +30,7 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Log\LoggerInterface;
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Multiple Backend Driver.
@@ -48,19 +47,17 @@ use VuFind\Exception\ILS as ILSException,
 class MultiBackend extends AbstractBase
     implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * The serviceLocator instance (implementing ServiceLocatorAwareInterface).
-     *
-     * @var object
-     */
-    protected $serviceLocator;
+    use \VuFind\Log\LoggerAwareTrait {
+        logError as error;
+    }
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
 
     /**
      * The array of configured driver names.
      *
      * @var string[]
      */
-    protected $drivers = array();
+    protected $drivers = [];
 
     /**
      * The default driver to use
@@ -74,7 +71,7 @@ class MultiBackend extends AbstractBase
      *
      * @var object[]
      */
-     protected $cache = array();
+     protected $cache = [];
 
     /**
      * The array of booleans letting us know if a
@@ -82,21 +79,14 @@ class MultiBackend extends AbstractBase
      *
      * @var boolean[]
      */
-     protected $isInitialized = array();
+     protected $isInitialized = [];
 
     /**
      * The array of driver configuration options.
      *
      * @var string[]
      */
-    protected $config = array();
-
-    /**
-     * The separating values to be used for each ILS.
-     * Not yet implemented
-     * @var object
-     */
-    protected $delimiters = array();
+    protected $config = [];
 
     /**
      * Configuration loader
@@ -113,13 +103,6 @@ class MultiBackend extends AbstractBase
     protected $ilsAuth;
 
     /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
@@ -130,18 +113,6 @@ class MultiBackend extends AbstractBase
     ) {
         $this->configLoader = $configLoader;
         $this->ilsAuth = $ilsAuth;
-    }
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
     }
 
     /**
@@ -174,32 +145,6 @@ class MultiBackend extends AbstractBase
         $this->defaultDriver = isset($this->config['General']['default_driver'])
             ? $this->config['General']['default_driver']
             : null;
-        $this->delimiters['login'] = isset($this->config['Delimiters']['login'])
-            ? $this->config['Delimiters']['login']
-            : '.';
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Manager
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**
@@ -222,7 +167,7 @@ class MultiBackend extends AbstractBase
             $status = $driver->getStatus($this->getLocalId($id));
             return $this->addIdPrefixes($status, $source);
         }
-        return array();
+        return [];
     }
 
     /**
@@ -238,7 +183,7 @@ class MultiBackend extends AbstractBase
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         foreach ($ids as $id) {
             $items[] = $this->getStatus($id);
         }
@@ -269,7 +214,7 @@ class MultiBackend extends AbstractBase
             );
             return $this->addIdPrefixes($holdings, $source);
         }
-        return array();
+        return [];
     }
 
     /**
@@ -290,7 +235,7 @@ class MultiBackend extends AbstractBase
         if ($driver) {
             return $driver->getPurchaseHistory($this->getLocalId($id));
         }
-        return array();
+        return [];
     }
 
     /**
@@ -302,7 +247,7 @@ class MultiBackend extends AbstractBase
     {
         return isset($this->config['Login']['drivers'])
             ? $this->config['Login']['drivers']
-            : array();
+            : [];
     }
 
     /**
@@ -345,7 +290,7 @@ class MultiBackend extends AbstractBase
         if ($driver) {
             return $driver->getNewItems($page, $limit, $daysOld, $fundId);
         }
-        return array();
+        return [];
     }
 
     /**
@@ -365,7 +310,7 @@ class MultiBackend extends AbstractBase
         if ($driver) {
             return $driver->findReserves($course, $inst, $dept);
         }
-        return array();
+        return [];
     }
 
     /**
@@ -379,14 +324,14 @@ class MultiBackend extends AbstractBase
      */
     public function getMyProfile($patron)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             $profile = $driver
                 ->getMyProfile($this->stripIdPrefixes($patron, $source));
             return $this->addIdPrefixes($profile, $source);
         }
-        return array();
+        return [];
     }
 
     /**
@@ -402,14 +347,14 @@ class MultiBackend extends AbstractBase
      */
     public function patronLogin($username, $password)
     {
-        $source = $this->getSource($username, 'login');
+        $source = $this->getSource($username);
         if (!$source) {
             $source = $this->getDefaultLoginDriver();
         }
         $driver = $this->getDriver($source);
         if ($driver) {
             $patron = $driver->patronLogin(
-                $this->getLocalId($username, $this->delimiters['login']), $password
+                $this->getLocalId($username), $password
             );
             $patron = $this->addIdPrefixes($patron, $source);
             return $patron;
@@ -429,7 +374,7 @@ class MultiBackend extends AbstractBase
      */
     public function getMyTransactions($patron)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             $transactions = $driver->getMyTransactions(
@@ -478,7 +423,7 @@ class MultiBackend extends AbstractBase
      */
     public function renewMyItems($renewDetails)
     {
-        $source = $this->getSource($renewDetails['patron']['cat_username'], 'login');
+        $source = $this->getSource($renewDetails['patron']['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             $details = $driver->renewMyItems(
@@ -500,7 +445,7 @@ class MultiBackend extends AbstractBase
      */
     public function getMyFines($patron)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             $fines = $driver->getMyFines($this->stripIdPrefixes($patron, $source));
@@ -520,12 +465,12 @@ class MultiBackend extends AbstractBase
      */
     public function getMyHolds($patron)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             $holds = $driver->getMyHolds($this->stripIdPrefixes($patron, $source));
             return $this->addIdPrefixes(
-                $holds, $source, array('id', 'item_id', 'cat_username')
+                $holds, $source, ['id', 'item_id', 'cat_username']
             );
         }
         throw new ILSException('No suitable backend driver found');
@@ -542,14 +487,14 @@ class MultiBackend extends AbstractBase
      */
     public function getMyStorageRetrievalRequests($patron)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             if (!$this->methodSupported(
                 $driver, 'getMyStorageRetrievalRequests', compact('patron')
             )) {
                 // Return empty array if not supported by the driver
-                return array();
+                return [];
             }
             $requests = $driver->getMyStorageRetrievalRequests(
                 $this->stripIdPrefixes($patron, $source)
@@ -575,7 +520,7 @@ class MultiBackend extends AbstractBase
         if (!isset($patron['cat_username'])) {
             return false;
         }
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($this->getSource($id) != $source) {
@@ -603,12 +548,12 @@ class MultiBackend extends AbstractBase
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($this->getSource($id) != $source
                 || !is_callable(
-                    array($driver, 'checkStorageRetrievalRequestIsValid')
+                    [$driver, 'checkStorageRetrievalRequestIsValid']
                 )
             ) {
                 return false;
@@ -641,13 +586,13 @@ class MultiBackend extends AbstractBase
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($holdDetails) {
                 if ($this->getSource($holdDetails['id']) != $source) {
                     // Return empty array since the sources don't match
-                    return array();
+                    return [];
                 }
             }
             $locations = $driver->getPickUpLocations(
@@ -675,7 +620,7 @@ class MultiBackend extends AbstractBase
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($holdDetails) {
@@ -708,14 +653,14 @@ class MultiBackend extends AbstractBase
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($this->getSource($patron['cat_username'], 'login') != $source
+            if ($this->getSource($patron['cat_username']) != $source
                 || !$this->methodSupported(
                     $driver, 'getRequestGroups', compact('id', 'patron')
                 )
             ) {
                 // Return empty array since the sources don't match or the method
                 // isn't supported by the driver
-                return array();
+                return [];
             }
             $groups = $driver->getRequestGroups(
                 $this->stripIdPrefixes($id, $source),
@@ -742,7 +687,7 @@ class MultiBackend extends AbstractBase
      */
     public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             if (!empty($holdDetails)) {
@@ -779,14 +724,14 @@ class MultiBackend extends AbstractBase
      */
     public function placeHold($holdDetails)
     {
-        $source = $this->getSource($holdDetails['patron']['cat_username'], 'login');
+        $source = $this->getSource($holdDetails['patron']['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             if ($this->getSource($holdDetails['id']) != $source) {
-                return array(
+                return [
                     "success" => false,
                     "sysMessage" => 'hold_wrong_user_institution'
-                );
+                ];
             }
             $holdDetails = $this->stripIdPrefixes($holdDetails, $source);
             return $driver->placeHold($holdDetails);
@@ -807,9 +752,7 @@ class MultiBackend extends AbstractBase
      */
     public function cancelHolds($cancelDetails)
     {
-        $source = $this->getSource(
-            $cancelDetails['patron']['cat_username'], 'login'
-        );
+        $source = $this->getSource($cancelDetails['patron']['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             return $driver->cancelHolds(
@@ -857,16 +800,16 @@ class MultiBackend extends AbstractBase
      */
     public function placeStorageRetrievalRequest($details)
     {
-        $source = $this->getSource($details['patron']['cat_username'], 'login');
+        $source = $this->getSource($details['patron']['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
-            && is_callable(array($driver, 'placeStorageRetrievalRequest'))
+            && is_callable([$driver, 'placeStorageRetrievalRequest'])
         ) {
             if ($this->getSource($details['id']) != $source) {
-                return array(
+                return [
                     "success" => false,
                     "sysMessage" => 'hold_wrong_user_institution'
-                );
+                ];
             }
             $details = $this->stripIdPrefixes($details, $source);
             return $driver->placeStorageRetrievalRequest($details);
@@ -888,9 +831,7 @@ class MultiBackend extends AbstractBase
      */
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
-        $source = $this->getSource(
-            $cancelDetails['patron']['cat_username'], 'login'
-        );
+        $source = $this->getSource($cancelDetails['patron']['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
@@ -984,7 +925,7 @@ class MultiBackend extends AbstractBase
         ) {
             // Patron is not stripped so that the correct library can be determined
             return $driver->getILLPickupLibraries(
-                $this->stripIdPrefixes($id, $source, array('id')),
+                $this->stripIdPrefixes($id, $source, ['id']),
                 $patron
             );
         }
@@ -1016,7 +957,7 @@ class MultiBackend extends AbstractBase
         ) {
             // Patron is not stripped so that the correct library can be determined
             return $driver->getILLPickupLocations(
-                $this->stripIdPrefixes($id, $source, array('id')),
+                $this->stripIdPrefixes($id, $source, ['id']),
                 $pickupLib,
                 $patron
             );
@@ -1043,7 +984,7 @@ class MultiBackend extends AbstractBase
         if ($driver
             && $this->methodSupported($driver, 'placeILLRequest', compact($details))
         ) {
-            $details = $this->stripIdPrefixes($details, $source, array('id'));
+            $details = $this->stripIdPrefixes($details, $source, ['id']);
             return $driver->placeILLRequest($details);
         }
         throw new ILSException('No suitable backend driver found');
@@ -1060,20 +1001,20 @@ class MultiBackend extends AbstractBase
      */
     public function getMyILLRequests($patron)
     {
-        $source = $this->getSource($patron['cat_username'], 'login');
+        $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
             if (!$this->methodSupported(
                 $driver, 'getMyILLRequests', compact('patron')
             )) {
                 // Return empty array if not supported by the driver
-                return array();
+                return [];
             }
             $requests = $driver->getMyILLRequests(
                 $this->stripIdPrefixes($patron, $source)
             );
             return $this->addIdPrefixes(
-                $requests, $source, array('id', 'item_id', 'cat_username')
+                $requests, $source, ['id', 'item_id', 'cat_username']
             );
         }
         throw new ILSException('No suitable backend driver found');
@@ -1093,9 +1034,7 @@ class MultiBackend extends AbstractBase
      */
     public function cancelILLRequests($cancelDetails)
     {
-        $source = $this->getSource(
-            $cancelDetails['patron']['cat_username'], 'login'
-        );
+        $source = $this->getSource($cancelDetails['patron']['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver
             && $this->methodSupported(
@@ -1180,7 +1119,7 @@ class MultiBackend extends AbstractBase
         if (!$source) {
             $patron = $this->ilsAuth->storedCatalogLogin();
             if ($patron && isset($patron['cat_username'])) {
-                $source = $this->getSource($patron['cat_username'], 'login');
+                $source = $this->getSource($patron['cat_username']);
             }
         }
 
@@ -1194,7 +1133,7 @@ class MultiBackend extends AbstractBase
         }
 
         // If driver not available, return an empty array
-        return array();
+        return [];
     }
 
     /**
@@ -1218,7 +1157,10 @@ class MultiBackend extends AbstractBase
             $source = $this->defaultDriver;
         }
         if (!$source) {
-            return false;
+            // If we can't determine the source, assume we are capable to handle
+            // the request. This might happen e.g. when the user hasn't yet done
+            // a catalog login.
+            return true;
         }
 
         $driver = $this->getDriver($source);
@@ -1226,70 +1168,37 @@ class MultiBackend extends AbstractBase
     }
 
     /**
-     * Log an error message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function error($msg)
-    {
-        if ($this->logger) {
-            $this->logger->err(get_class($this) . ": $msg");
-        }
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
-    }
-
-    /**
      * Extract local ID from the given prefixed ID
      *
-     * @param string $id        The id to be split
-     * @param string $delimiter The delimiter to be used
+     * @param string $id The id to be split
      *
      * @return string  Local ID
      */
-    protected function getLocalId($id, $delimiter = '.')
+    protected function getLocalId($id)
     {
-        $pos = strpos($id, $delimiter);
+        $pos = strpos($id, '.');
         if ($pos > 0) {
             return substr($id, $pos + 1);
         }
-        $this->debug("Could not find local id in '$id' using '$delimiter'");
+        $this->debug("Could not find local id in '$id'");
         return $id;
     }
 
     /**
      * Extract source from the given ID
      *
-     * @param string $id        The id to be split
-     * @param string $delimiter The delimiter to be used from $this->delimiters
+     * @param string $id The id to be split
      *
      * @return string  Source
      */
-    protected function getSource($id, $delimiter = '')
+    protected function getSource($id)
     {
-        $delimiter = $delimiter && isset($this->delimiters[$delimiter])
-            ? $this->delimiters[$delimiter]
-            : '.';
-        $pos = strpos($id, $delimiter);
+        $pos = strpos($id, '.');
         if ($pos > 0) {
             return substr($id, 0, $pos);
         }
 
-        $this->debug("Could not find source id in '$id' using '$delimiter'");
+        $this->debug("Could not find source id in '$id'");
         return '';
     }
 
@@ -1316,9 +1225,7 @@ class MultiBackend extends AbstractBase
             if (is_array($value) && (is_int($key) || $key === 'patron')) {
                 $source = $this->getSourceFromParams($value);
             } elseif ($key === 0 || $key === 'id' || $key === 'cat_username') {
-                $source = $this->getSource(
-                    $value, $key === 'cat_username' ? 'login' : ''
-                );
+                $source = $this->getSource($value);
             }
             if ($source && isset($this->drivers[$source])) {
                 return $source;
@@ -1446,7 +1353,7 @@ class MultiBackend extends AbstractBase
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
             $this->error("Could not load config for $source");
-            return array();
+            return [];
         }
         return $config->toArray();
     }
@@ -1463,7 +1370,7 @@ class MultiBackend extends AbstractBase
      *                   empty/null
      */
     protected function addIdPrefixes($data, $source,
-        $modifyFields = array('id', 'cat_username')
+        $modifyFields = ['id', 'cat_username']
     ) {
         if (!isset($data) || empty($data) || !is_array($data)) {
             return $data;
@@ -1479,10 +1386,7 @@ class MultiBackend extends AbstractBase
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
-                    $delimiter = $key === 'cat_username'
-                        ? $this->delimiters['login']
-                        : '.';
-                    $data[$key] = "$source$delimiter$value";
+                    $data[$key] = "$source.$value";
                 }
             }
         }
@@ -1501,12 +1405,12 @@ class MultiBackend extends AbstractBase
     *                   empty/null
     */
     protected function stripIdPrefixes($data, $source,
-        $modifyFields = array('id', 'cat_username')
+        $modifyFields = ['id', 'cat_username']
     ) {
         if (!isset($data) || empty($data)) {
             return $data;
         }
-        $array = is_array($data) ? $data : array($data);
+        $array = is_array($data) ? $data : [$data];
 
         foreach ($array as $key => $value) {
             if (is_array($value)) {
@@ -1514,12 +1418,9 @@ class MultiBackend extends AbstractBase
                     $value, $source, $modifyFields
                 );
             } else {
-                $delimiter = $key === 'cat_username'
-                    ? $this->delimiters['login']
-                    : '.';
-                $prefixLen = strlen($source) + strlen($delimiter);
+                $prefixLen = strlen($source) + 1;
                 if ((!is_array($data) || in_array($key, $modifyFields))
-                    && strncmp($source . $delimiter, $value, $prefixLen) == 0
+                    && strncmp("$source.", $value, $prefixLen) == 0
                 ) {
                     $array[$key] = substr($value, $prefixLen);
                 }
@@ -1539,9 +1440,9 @@ class MultiBackend extends AbstractBase
      */
     protected function methodSupported($driver, $method, $params = null)
     {
-        if (is_callable(array($driver, $method))) {
+        if (is_callable([$driver, $method])) {
             if (method_exists($driver, 'supportsMethod')) {
-                return $driver->supportsMethod($method, $params ?: array());
+                return $driver->supportsMethod($method, $params ?: []);
             }
             return true;
         }

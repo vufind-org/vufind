@@ -1,34 +1,32 @@
-### Welcome to the *Zend Framework 2.2* Release!
+![Logo](https://raw.githubusercontent.com/zendframework/zf2/234b554f2ca202095aea32e4fa557553f8849664/resources/ZendFramework-logo.png)
 
-Master: [![Build Status](https://secure.travis-ci.org/zendframework/zf2.png?branch=master)](http://travis-ci.org/zendframework/zf2)
-Develop: [![Build Status](https://secure.travis-ci.org/zendframework/zf2.png?branch=develop)](http://travis-ci.org/zendframework/zf2)
+# Welcome to the *Zend Framework 2.3* Release!
+
+Master:
+[![Build Status](https://secure.travis-ci.org/zendframework/zf2.svg?branch=master)](http://travis-ci.org/zendframework/zf2)
+[![Coverage Status](https://coveralls.io/repos/zendframework/zf2/badge.svg?branch=master)](https://coveralls.io/r/zendframework/zf2)
+Develop:
+[![Build Status](https://secure.travis-ci.org/zendframework/zf2.svg?branch=develop)](http://travis-ci.org/zendframework/zf2)
+[![Coverage Status](https://coveralls.io/repos/zendframework/zf2/badge.svg?branch=develop)](https://coveralls.io/r/zendframework/zf2)
 
 ## RELEASE INFORMATION
 
-*Zend Framework 2.2.9*
+*Zend Framework 2.3.7*
 
-This is the ninth maintenance release for the 2.2 series.
+This is the seventh maintenance release for the version 2.3 series.
 
-14 Jan 2015
+12 Mar 2015
 
-### UPDATES IN 2.2.9
+### UPDATES IN 2.3.7
 
-**This release contains security updates:**
-
-- **ZF2015-01:** Session validators were not run if set before session start.
-  Essentially, the validators were writing to the `$_SESSION` superglobal before
-  session start, which meant the data was overwritten once the session began.
-  This meant on subsequent calls, the validators had no data to compare against,
-  making the sessions automatically valid. We have provided patches to ensure
-  that validators are run only after the session has begun, which will ensure
-  they validate sessions correctly going forward. If you use `Zend\Session`
-  validators, we recommend upgrading immediately.
+- This release reverts [#7255](https://github.com/zendframework/zf2/pull/7255),
+  as it introduced a BC break against `Zend\Mvc\Controller\AbstractRestfulController`.
 
 Please see [CHANGELOG.md](CHANGELOG.md).
 
 ### SYSTEM REQUIREMENTS
 
-Zend Framework 2 requires PHP 5.3.3 or later; we recommend using the
+Zend Framework 2 requires PHP 5.3.23 or later; we recommend using the
 latest PHP version whenever possible.
 
 ### INSTALLATION

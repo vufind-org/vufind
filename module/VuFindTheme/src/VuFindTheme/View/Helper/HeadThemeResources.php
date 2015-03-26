@@ -112,17 +112,22 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
         // Compile and load LESS (make sure we prepend them in the appropriate order
         // theme resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getLessCss()) as $current) {
-            $headLink()->addLessStylesheet($current);
+            $parts = explode(':', $current);
+            $headLink()->addLessStylesheet(
+                trim($parts[0]),
+                isset($parts[1]) ? trim($parts[1]) : 'all',
+                isset($parts[2]) ? trim($parts[2]) : false
+            );
         }
 
         // If we have a favicon, load it now:
         $favicon = $this->container->getFavicon();
         if (!empty($favicon)) {
             $imageLink = $this->getView()->plugin('imagelink');
-            $headLink(array(
+            $headLink([
                 'href' => $imageLink($favicon),
                 'type' => 'image/x-icon', 'rel' => 'shortcut icon'
-            ));
+            ]);
         }
     }
 
@@ -141,7 +146,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
                 trim($parts[0]),
                 'text/javascript',
                 isset($parts[1])
-                ? array('conditional' => trim($parts[1])) : array()
+                ? ['conditional' => trim($parts[1])] : []
             );
         }
     }

@@ -23,10 +23,18 @@
   <?=$this->flashmessages()?>
   <p><?=$this->transEsc('cat_establish_account')?></p>
   <form method="post" action="">
+    <? if ($this->targets !== null): ?>
+    <label class="displayBlock" for="login_target"><?=$this->transEsc('login_target')?>:</label>
+    <select id="login_target" name="target">
+    <? foreach ($this->targets as $target): ?>
+      <option value="<?=$this->escapeHtmlAttr($target)?>"><?=$this->transEsc("source_$target", null, $target)?></option>
+    <? endforeach; ?>
+    </select>
+    <? endif; ?>
     <label class="displayBlock" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
     <input id="profile_cat_username" type="text" name="cat_username" value="" size="25"/>
     <label class="displayBlock" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
-    <input id="profile_cat_password" type="text" name="cat_password" value="" size="25"/>
+    <input id="profile_cat_password" type="password" name="cat_password" value="" size="25"/>
     <br/>
     <input type="submit" name="submit" value="<?=$this->transEsc('Save')?>"/>
   </form>

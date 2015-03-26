@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
-use Zend\Log\LoggerInterface;
 
 /**
  * Hierarchy Tree Data Source (abstract base)
@@ -41,12 +40,7 @@ use Zend\Log\LoggerInterface;
  */
 abstract class AbstractBase implements \Zend\Log\LoggerAwareInterface
 {
-    /**
-     * Logger object for debug info (or false for no debugging).
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Hierarchy driver
@@ -54,32 +48,6 @@ abstract class AbstractBase implements \Zend\Log\LoggerAwareInterface
      * @var \VuFind\Hierarchy\Driver\AbstractBase
      */
     protected $hierarchyDriver = null;
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Output a debug message, if appropriate
-     *
-     * @param string $msg Message to display
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug($msg);
-        }
-    }
 
     /**
      * Get the hierarchy driver
@@ -116,7 +84,7 @@ abstract class AbstractBase implements \Zend\Log\LoggerAwareInterface
      *
      * @return string
      */
-    abstract public function getXML($id, $options = array());
+    abstract public function getXML($id, $options = []);
 
     /**
      * Does this data source support the specified hierarchy ID?

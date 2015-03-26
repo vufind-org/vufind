@@ -76,13 +76,13 @@ class Flashmessages extends AbstractHelper
     public function __invoke()
     {
         $html = '';
-        $namespaces = array('error', 'info');
+        $namespaces = ['error', 'info'];
         foreach ($namespaces as $ns) {
             $this->fm->setNamespace($ns);
             $messages = array_merge(
                 $this->fm->getMessages(), $this->fm->getCurrentMessages()
             );
-            foreach (array_unique($messages) as $msg) {
+            foreach (array_unique($messages, SORT_REGULAR) as $msg) {
                 $html .= '<div class="' . $this->getClassForNamespace($ns) . '">';
                 // Advanced form:
                 if (is_array($msg)) {
@@ -97,7 +97,7 @@ class Flashmessages extends AbstractHelper
                     }
                     $helper = $helper
                         ? $this->getView()->plugin($helper) : false;
-                    $tokens = isset($msg['tokens']) ? $msg['tokens'] : array();
+                    $tokens = isset($msg['tokens']) ? $msg['tokens'] : [];
                     $default = isset($msg['default']) ? $msg['default'] : null;
                     $html .= $helper
                         ? $helper($msg['msg'], $tokens, $default) : $msg['msg'];

@@ -36,7 +36,6 @@ namespace VuFindAdmin\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class StatisticsController extends AbstractAdmin
 {
     /**
@@ -55,7 +54,7 @@ class StatisticsController extends AbstractAdmin
         $search = $this->getServiceLocator()->get('VuFind\SearchStats');
         $view->searchesBySource = $config->Statistics->searchesBySource ?: false;
         $searchSummary = $search->getStatsSummary(7, $view->searchesBySource);
-        foreach (array('top', 'empty', 'total') as $section) {
+        foreach (['top', 'empty', 'total'] as $section) {
             $key = $section . 'Searches';
             $view->$key = isset($searchSummary[$section])
                 ? $searchSummary[$section] : null;

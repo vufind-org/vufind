@@ -42,8 +42,6 @@ namespace VuFind\Autocomplete;
 class SolrCN extends Solr
 {
     /**
-     * setConfig
-     *
      * Set parameters that affect the behavior of the autocomplete handler.
      * These values normally come from the search configuration file.
      *
@@ -58,8 +56,6 @@ class SolrCN extends Solr
     }
 
     /**
-     * mungeQuery
-     *
      * Process the user query to make it suitable for a Solr query.
      *
      * @param string $query Incoming user query
@@ -69,18 +65,18 @@ class SolrCN extends Solr
     protected function mungeQuery($query)
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
-        $forbidden = array(':', '(', ')', '*', '+', '"');
+        $forbidden = [':', '(', ')', '*', '+', '"'];
         $query = str_replace($forbidden, " ", $query);
 
         // Assign display fields and sort order based on the query -- if the
         // first character is a number, give Dewey priority; otherwise, give
         // LC priority:
         if (is_numeric(substr(trim($query), 0, 1))) {
-            $this->setDisplayField(array('dewey-full', 'callnumber-a'));
-            $this->setSortField("dewey-sort,callnumber");
+            $this->setDisplayField(['dewey-full', 'callnumber-raw']);
+            $this->setSortField("dewey-sort,callnumber-sort");
         } else {
-            $this->setDisplayField(array('callnumber-a', 'dewey-full'));
-            $this->setSortField("callnumber,dewey-sort");
+            $this->setDisplayField(['callnumber-raw', 'dewey-full']);
+            $this->setSortField("callnumber-sort,dewey-sort");
         }
 
         return $query;

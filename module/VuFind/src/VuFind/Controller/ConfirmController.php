@@ -57,10 +57,10 @@ class ConfirmController extends AbstractBase
 
             foreach ($data['messages'] as $message) {
                 $flash = (true === is_array($message))
-                    ? array(
+                    ? [
                         'msg' => $message['msg'],
                         'tokens' => $message['tokens']
-                    )
+                    ]
                     : $message;
                 $this->flashMessenger()->addMessage($flash);
             }

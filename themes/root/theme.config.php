@@ -4,6 +4,7 @@ return array(
     'helpers' => array(
         'factories' => array(
             'addthis' => 'VuFind\View\Helper\Root\Factory::getAddThis',
+            'alphabrowse' => 'VuFind\View\Helper\Root\Factory::getAlphaBrowse',
             'auth' => 'VuFind\View\Helper\Root\Factory::getAuth',
             'authornotes' => 'VuFind\View\Helper\Root\Factory::getAuthorNotes',
             'cart' => 'VuFind\View\Helper\Root\Factory::getCart',

@@ -75,7 +75,7 @@ class ContainerTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals('tmp', $this->container->value);
 
         // Test get/set of array:
-        $this->container->testArray = array(1, 2);
+        $this->container->testArray = [1, 2];
         $this->assertEquals(2, count($this->container->testArray));
 
         // Test getAllValues:

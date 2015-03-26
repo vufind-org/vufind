@@ -50,16 +50,16 @@ class Options extends \VuFind\Search\Solr\Options
         // Load sort preferences (or defaults if none in .ini file):
         $searchSettings = $configLoader->get('Collection');
         if (isset($searchSettings->Sort)) {
-            $this->sortOptions = array();
+            $this->sortOptions = [];
             foreach ($searchSettings->Sort as $key => $value) {
                 $this->sortOptions[$key] = $value;
             }
         } else {
-            $this->sortOptions = array(
+            $this->sortOptions = [
                 'title' => 'sort_title',
                 'year' => 'sort_year', 'year asc' => 'sort_year asc',
                 'author' => 'sort_author'
-            );
+            ];
         }
         $this->defaultSort = key($this->sortOptions);
     }

@@ -47,7 +47,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Activate the cart:
         $this->changeConfigs(
-            array('config' => array('Site' => array('showBookBag' => true)))
+            ['config' => ['Site' => ['showBookBag' => true, 'theme' => 'blueprint']]]
         );
 
         $session = $this->getMinkSession();
@@ -58,11 +58,14 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // Click "add" without selecting anything:
         $updateCart = $page->find('css', '#updateCart');
+        $this->assertTrue(is_object($updateCart));
         $updateCart->click();
+        $content = $page->find('css', '#contextHelpContent');
+        $this->assertTrue(is_object($content));
         $this->assertEquals(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
-            $page->find('css', '#contextHelpContent')->getText()
+            $content->getText()
         );
 
         // Now actually select something:
@@ -73,6 +76,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
 
         // Open the cart and empty it:
         $viewCart = $page->find('css', '#viewCart');
+        $this->assertTrue(is_object($viewCart));
         $viewCart->click();
         $cartSelectAll = $page->find('css', '#cartCheckboxSelectAll');
         $cartSelectAll->check();

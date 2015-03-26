@@ -61,7 +61,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('getSessionInitiator')->with($this->equalTo('foo'))->will($this->returnValue('bar'));
-        $manager = $this->getManager(array(), null, null, $pm);
+        $manager = $this->getManager([], null, null, $pm);
         $this->assertEquals('bar', $manager->getSessionInitiator('foo'));
     }
 
@@ -73,12 +73,12 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     public function testGetSelectableAuthOptions()
     {
         // Simple case -- default Database helper.
-        $this->assertEquals(array('Database'), $this->getManager()->getSelectableAuthOptions());
+        $this->assertEquals(['Database'], $this->getManager()->getSelectableAuthOptions());
 
         // Advanced case -- ChoiceAuth.
-        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
-        $this->assertEquals(array('Database', 'Shibboleth'), $manager->getSelectableAuthOptions());
+        $this->assertEquals(['Database', 'Shibboleth'], $manager->getSelectableAuthOptions());
 
         // Advanced case -- ChoiceAuth's getSelectableAuthOptions returns false.
         $pm = $this->getMockPluginManager();
@@ -87,9 +87,9 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
             ->getMock();
         $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(false));
         $pm->setService('ChoiceAuth2', $mockChoice);
-        $config = array('Authentication' => array('method' => 'ChoiceAuth2'));
+        $config = ['Authentication' => ['method' => 'ChoiceAuth2']];
         $manager = $this->getManager($config, null, null, $pm);
-        $this->assertEquals(array('ChoiceAuth2'), $manager->getSelectableAuthOptions());
+        $this->assertEquals(['ChoiceAuth2'], $manager->getSelectableAuthOptions());
     }
 
     /**
@@ -100,10 +100,10 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     public function testGetLoginTargets()
     {
         $pm = $this->getMockPluginManager();
-        $targets = array('a', 'b', 'c');
+        $targets = ['a', 'b', 'c'];
         $multi = $pm->get('MultiILS');
         $multi->expects($this->once())->method('getLoginTargets')->will($this->returnValue($targets));
-        $config = array('Authentication' => array('method' => 'MultiILS'));
+        $config = ['Authentication' => ['method' => 'MultiILS']];
         $this->assertEquals($targets, $this->getManager($config, null, null, $pm)->getLoginTargets());
     }
 
@@ -118,7 +118,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $target = 'foo';
         $multi = $pm->get('MultiILS');
         $multi->expects($this->once())->method('getDefaultLoginTarget')->will($this->returnValue($target));
-        $config = array('Authentication' => array('method' => 'MultiILS'));
+        $config = ['Authentication' => ['method' => 'MultiILS']];
         $this->assertEquals($target, $this->getManager($config, null, null, $pm)->getDefaultLoginTarget());
     }
 
@@ -134,7 +134,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $db->expects($this->once())->method('logout')->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
         $sm = $this->getMockSessionManager();
         $sm->expects($this->once())->method('destroy');
-        $manager = $this->getManager(array(), null, $sm, $pm);
+        $manager = $this->getManager([], null, $sm, $pm);
         $this->assertEquals('http://baz', $manager->logout('http://foo/bar'));
     }
 
@@ -150,7 +150,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $db->expects($this->once())->method('logout')->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
         $sm = $this->getMockSessionManager();
         $sm->expects($this->exactly(0))->method('destroy');
-        $manager = $this->getManager(array(), null, $sm, $pm);
+        $manager = $this->getManager([], null, $sm, $pm);
         $this->assertEquals('http://baz', $manager->logout('http://foo/bar', false));
     }
 
@@ -171,7 +171,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testLoginDisabled()
     {
-        $config = array('Authentication' => array('hideLogin' => true));
+        $config = ['Authentication' => ['hideLogin' => true]];
         $this->assertFalse($this->getManager($config)->loginEnabled());
     }
 
@@ -182,7 +182,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSwitchingSuccess()
     {
-        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
         $this->assertEquals('ChoiceAuth', $manager->getAuthMethod());
         // The default mock object in this test is configured to allow a
@@ -195,12 +195,13 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test security features of switching between auth options (part 2).
      *
      * @return void
-     * @expectedException \Exception
+     *
+     * @expectedException        \Exception
      * @expectedExceptionMessage Illegal authentication method: MultiILS
      */
     public function testSwitchingFailure()
     {
-        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
         $this->assertEquals('ChoiceAuth', $manager->getAuthMethod());
         // The default mock object in this test is NOT configured to allow a
@@ -215,7 +216,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      */
     public function testSupportsCreation()
     {
-        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('supportsCreation')->will($this->returnValue(true));
@@ -240,7 +241,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('supportsPasswordRecovery')->will($this->returnValue(true));
-        $config = array('Authentication' => array('recover_password' => true));
+        $config = ['Authentication' => ['recover_password' => true]];
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsRecovery());
     }
 
@@ -258,7 +259,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('supportsPasswordChange')->will($this->returnValue(true));
-        $config = array('Authentication' => array('change_password' => true));
+        $config = ['Authentication' => ['change_password' => true]];
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsPasswordChange());
     }
 
@@ -274,7 +275,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(get_class($pm->get('Database')), $this->getManager()->getAuthClassForTemplateRendering());
 
         // Complex case involving proxied authenticator in ChoiceAuth:
-        $config = array('Authentication' => array('method' => 'ChoiceAuth'));
+        $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $choice = $pm->get('ChoiceAuth');
         $choice->expects($this->once())->method('getSelectedAuthOption')->will($this->returnValue('Shibboleth'));
         $manager = $this->getManager($config, null, null, $pm);
@@ -304,7 +305,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('create')->with($request)->will($this->returnValue($user));
-        $manager = $this->getManager(array(), null, null, $pm);
+        $manager = $this->getManager([], null, null, $pm);
         $this->assertFalse($manager->isLoggedIn());
         $this->assertEquals($user, $manager->create($request));
         $this->assertEquals($user, $manager->isLoggedIn());
@@ -322,7 +323,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('authenticate')->with($request)->will($this->returnValue($user));
-        $manager = $this->getManager(array(), null, null, $pm);
+        $manager = $this->getManager([], null, null, $pm);
         $this->assertFalse($manager->isLoggedIn());
         $this->assertEquals($user, $manager->login($request));
         $this->assertEquals($user, $manager->isLoggedIn());
@@ -332,7 +333,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful login (\VuFind\Exception\PasswordSecurity)
      *
      * @return void
-     * @expectedException \VuFind\Exception\PasswordSecurity
+     *
+     * @expectedException        \VuFind\Exception\PasswordSecurity
      * @expectedExceptionMessage Boom
      */
     public function testPasswordSecurityException()
@@ -342,7 +344,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
-        $manager = $this->getManager(array(), null, null, $pm);
+        $manager = $this->getManager([], null, null, $pm);
         $manager->login($request);
     }
 
@@ -350,7 +352,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful login (\VuFind\Exception\Auth)
      *
      * @return void
-     * @expectedException \VuFind\Exception\Auth
+     *
+     * @expectedException        \VuFind\Exception\Auth
      * @expectedExceptionMessage Blam
      */
     public function testAuthException()
@@ -360,7 +363,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
-        $manager = $this->getManager(array(), null, null, $pm);
+        $manager = $this->getManager([], null, null, $pm);
         $manager->login($request);
     }
 
@@ -368,7 +371,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test that unexpected exceptions get mapped to technical errors.
      *
      * @return void
-     * @expectedException \VuFind\Exception\Auth
+     *
+     * @expectedException        \VuFind\Exception\Auth
      * @expectedExceptionMessage authentication_error_technical
      */
     public function testUnanticipatedException()
@@ -378,7 +382,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
-        $manager = $this->getManager(array(), null, null, $pm);
+        $manager = $this->getManager([], null, null, $pm);
         $manager->login($request);
     }
 
@@ -394,7 +398,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('updatePassword')->with($request)->will($this->returnValue($user));
-        $manager = $this->getManager(array(), null, null, $pm);
+        $manager = $this->getManager([], null, null, $pm);
         $this->assertEquals($user, $manager->updatePassword($request));
         $this->assertEquals($user, $manager->isLoggedIn());
     }
@@ -416,7 +420,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())->method('create')->with($request)->will($this->returnValue($user));
         $db->expects($this->once())->method('isExpired')->will($this->returnValue(true));
-        $manager = $this->getManager(array(), null, null, $pm);
+        $manager = $this->getManager([], null, null, $pm);
         $manager->create($request);
         $this->assertTrue($manager->checkForExpiredCredentials());
     }
@@ -432,8 +436,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $user = $this->getMockUser();
         $userArray = new \ArrayObject();
         $userArray->append($user);
-        $table->expects($this->once())->method('select')->with($this->equalTo(array('id' => 'foo')))->will($this->returnValue($userArray->getIterator()));
-        $manager = $this->getManager(array(), $table);
+        $table->expects($this->once())->method('select')->with($this->equalTo(['id' => 'foo']))->will($this->returnValue($userArray->getIterator()));
+        $manager = $this->getManager([], $table);
         $session = $this->getProperty($manager, 'session');
         $session->userId = 'foo';
         $this->assertEquals($user, $manager->isLoggedIn());
@@ -449,7 +453,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      *
      * @return Manager
      */
-    protected function getManager($config = array(), $userTable = null, $sessionManager = null, $pm = null)
+    protected function getManager($config = [], $userTable = null, $sessionManager = null, $pm = null)
     {
         $config = new Config($config);
         if (null === $userTable) {
@@ -461,7 +465,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         if (null === $pm) {
             $pm = $this->getMockPluginManager();
         }
-        return new Manager($config, $userTable, $sessionManager, $pm);
+        $cookies = new \VuFind\Cookie\CookieManager([]);
+        return new Manager($config, $userTable, $sessionManager, $pm, $cookies);
     }
 
     /**
@@ -472,8 +477,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     protected function getMockUserTable()
     {
         return $this->getMockBuilder('VuFind\Db\Table\User')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
@@ -499,7 +504,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         $mockChoice = $this->getMockBuilder('VuFind\Auth\ChoiceAuth')
             ->disableOriginalConstructor()
             ->getMock();
-        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(array('Database', 'Shibboleth')));
+        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(['Database', 'Shibboleth']));
         $mockDb = $this->getMockBuilder('VuFind\Auth\Database')
             ->disableOriginalConstructor()
             ->getMock();

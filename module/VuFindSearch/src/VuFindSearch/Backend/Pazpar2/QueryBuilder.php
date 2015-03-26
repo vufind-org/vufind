@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Pazpar2;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -101,6 +100,7 @@ class QueryBuilder
      * @param QueryGroup $query QueryGroup to convert
      *
      * @return string
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function queryGroupToString(QueryGroup $query)

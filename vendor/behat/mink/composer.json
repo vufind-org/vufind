@@ -1,6 +1,6 @@
 {
     "name":         "behat/mink",
-    "description":  "Web acceptance testing framework for PHP 5.3",
+    "description":  "Browser controller/emulator abstraction for PHP",
     "keywords":     ["web", "testing", "browser"],
     "homepage":     "http://mink.behat.org/",
     "type":         "library",
@@ -27,8 +27,8 @@
     },
 
     "autoload": {
-        "psr-0": {
-            "Behat\\Mink": "src/"
+        "psr-4": {
+            "Behat\\Mink\\": "src/"
         }
     },
 

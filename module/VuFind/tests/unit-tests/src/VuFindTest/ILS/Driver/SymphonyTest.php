@@ -66,7 +66,7 @@ class SymphonyTest extends \VuFindTest\Unit\TestCase
         }
 
         $this->driver->setConfig(
-            array('WebServices' => array('baseURL' => 'invalid'))
+            ['WebServices' => ['baseURL' => 'invalid']]
         );
         $this->driver->init();
         $pickup = @$this->driver->getPickUpLocations();

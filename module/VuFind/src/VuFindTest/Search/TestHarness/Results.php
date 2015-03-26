@@ -53,7 +53,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @var array
      */
-    protected $driverCache = array();
+    protected $driverCache = [];
 
     /**
      * Constructor
@@ -80,7 +80,7 @@ class Results extends \VuFind\Search\Base\Results
     public function getFacetList($filter = null)
     {
         // not supported
-        return array();
+        return [];
     }
 
     /**
@@ -93,7 +93,7 @@ class Results extends \VuFind\Search\Base\Results
     protected function performSearch()
     {
         $this->resultTotal = $this->fakeExpectedTotal;
-        $this->results = array();
+        $this->results = [];
         $limit  = $this->getParams()->getLimit();
         $start = $this->getStartRecord();
         for ($i = $start; $i < $start + $limit; $i++) {
@@ -115,7 +115,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         if (!isset($this->driverCache[$id])) {
             $this->driverCache[$id] = new RecordDriver();
-            $this->driverCache[$id]->setRawData(array('UniqueID' => $id));
+            $this->driverCache[$id]->setRawData(['UniqueID' => $id]);
         }
         return $this->driverCache[$id];
     }

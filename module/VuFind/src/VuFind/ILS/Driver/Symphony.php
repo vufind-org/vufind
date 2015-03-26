@@ -30,7 +30,7 @@ namespace VuFind\ILS\Driver;
 use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
+use Zend\Log\LoggerAwareInterface;
 
 /**
  * Symphony Web Services (symws) ILS Driver
@@ -42,10 +42,12 @@ use Zend\Log\LoggerInterface, Zend\Log\LoggerAwareInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-
 class Symphony extends AbstractBase
     implements ServiceLocatorAwareInterface, LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+    use \Zend\ServiceManager\ServiceLocatorAwareTrait;
+
     /**
      * Cache for policy information
      *
@@ -61,46 +63,6 @@ class Symphony extends AbstractBase
     protected $policies;
 
     /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
-    /**
-     * Logger (or false for none)
-     *
-     * @var LoggerInterface|bool
-     */
-    protected $logger = false;
-
-    /**
-     * Set the logger
-     *
-     * @param LoggerInterface $logger Logger to use.
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * Log a debug message.
-     *
-     * @param string $msg Message to log.
-     *
-     * @return void
-     */
-    protected function debug($msg)
-    {
-        if ($this->logger) {
-            $this->logger->debug(get_class($this) . ": $msg");
-        }
-    }
-
-    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -112,50 +74,50 @@ class Symphony extends AbstractBase
     public function init()
     {
         // Merge in defaults.
-        $this->config += array(
-            'WebServices' => array(),
-            'PolicyCache' => array(),
-            'LibraryFilter' => array(),
-            'MarcHoldings' => array(),
-            '999Holdings' => array(),
-            'Behaviors' => array(),
-        );
+        $this->config += [
+            'WebServices' => [],
+            'PolicyCache' => [],
+            'LibraryFilter' => [],
+            'MarcHoldings' => [],
+            '999Holdings' => [],
+            'Behaviors' => [],
+        ];
 
-        $this->config['WebServices'] += array(
+        $this->config['WebServices'] += [
             'clientID' => 'VuFind',
             'baseURL' => 'http://localhost:8080/symws',
-            'soapOptions' => array(),
-        );
+            'soapOptions' => [],
+        ];
 
-        $this->config['PolicyCache'] += array(
+        $this->config['PolicyCache'] += [
             'backend' => 'file',
-            'backendOptions' => array(),
-            'frontendOptions' => array(),
-        );
+            'backendOptions' => [],
+            'frontendOptions' => [],
+        ];
 
-        $this->config['PolicyCache']['frontendOptions'] += array(
+        $this->config['PolicyCache']['frontendOptions'] += [
             'automatic_serialization' => true,
             'lifetime' => null,
-        );
+        ];
 
-        $this->config['LibraryFilter'] += array(
-            'include_only' => array(),
-            'exclude' => array(),
-        );
+        $this->config['LibraryFilter'] += [
+            'include_only' => [],
+            'exclude' => [],
+        ];
 
-        $this->config['999Holdings'] += array(
+        $this->config['999Holdings'] += [
             'entry_number' => 999,
             'mode' => 'off', // also off, failover
-        );
+        ];
 
-        $this->config['Behaviors'] += array(
+        $this->config['Behaviors'] += [
             'showBaseCallNumber' => true,
             'showAccountLogin' => true,
             'showStaffNotes' => true,
             'showFeeType' => 'ALL_FEES',
             'usernameField' => 'userID',
             'userProfileGroupField' => 'USER_PROFILE_ID'
-        );
+        ];
 
         // Initialize cache manager.
         if (isset($configArray['PolicyCache']['type'])) {
@@ -181,12 +143,12 @@ class Symphony extends AbstractBase
      */
     protected function getSoapClient($service)
     {
-        static $soapClients = array();
+        static $soapClients = [];
 
         if (!isset($soapClients[$service])) {
             try {
                 $soapClients[$service] = new SoapClient(
-                    $this->config['WebServices']['baseURL']."/soap/$service?wsdl",
+                    $this->config['WebServices']['baseURL'] . "/soap/$service?wsdl",
                     $this->config['WebServices']['soapOptions']
                 );
             } catch (SoapFault $e) {
@@ -218,7 +180,7 @@ class Symphony extends AbstractBase
     protected function getSoapHeader($login = null, $password = null,
         $reset = false
     ) {
-        $data = array('clientID' => $this->config['WebServices']['clientID']);
+        $data = ['clientID' => $this->config['WebServices']['clientID']];
         if (!is_null($login)) {
             $data['sessionToken']
                 = $this->getSessionToken($login, $password, $reset);
@@ -246,7 +208,7 @@ class Symphony extends AbstractBase
      */
     protected function getSessionToken($login, $password, $reset = false)
     {
-        static $sessionTokens = array();
+        static $sessionTokens = [];
 
         // If we keyed only by $login, we might mistakenly retrieve a valid
         // session token when provided with an invalid password.
@@ -261,7 +223,7 @@ class Symphony extends AbstractBase
             if (!$reset && $token = $_SESSION['symws']['session'][$key]) {
                 $sessionTokens[$key] = $token;
             } else {
-                $params = array('login' => $login);
+                $params = ['login' => $login];
                 if (isset($password)) {
                     $params['password'] = $password;
                 }
@@ -292,8 +254,8 @@ class Symphony extends AbstractBase
      *
      * @return mixed the result of the SOAP call
      */
-    protected function makeRequest($service, $operation, $parameters = array(),
-        $options = array()
+    protected function makeRequest($service, $operation, $parameters = [],
+        $options = []
     ) {
         // If provided, use the SoapHeader and skip the rest of makeRequest().
         if (isset($options['header'])) {
@@ -301,7 +263,7 @@ class Symphony extends AbstractBase
                 $operation,
                 $parameters,
                 null,
-                array($options['header'])
+                [$options['header']]
             );
         }
 
@@ -320,7 +282,7 @@ class Symphony extends AbstractBase
         } elseif (isset($options['WebServices']['login'])
             && !in_array(
                 $operation,
-                array('isRestrictedAccess', 'license', 'loginUser', 'version')
+                ['isRestrictedAccess', 'license', 'loginUser', 'version']
             )
         ) {
             $login    = $this->config['WebServices']['login'];
@@ -374,7 +336,7 @@ class Symphony extends AbstractBase
      */
     protected function checkSymwsVersion()
     {
-        $resp = $this->makeRequest('standard', 'version', array());
+        $resp = $this->makeRequest('standard', 'version', []);
         foreach ($resp->version as $v) {
             if ($v->product == 'SYM-WS') {
                 if (version_compare($v->version, 'v3.2', '<')) {
@@ -399,8 +361,8 @@ class Symphony extends AbstractBase
      */
     protected function getStatuses999Holdings($ids)
     {
-        $items   = array();
-        $marcMap = array(
+        $items   = [];
+        $marcMap = [
             'call number'            => 'marc|a',
             'copy number'            => 'marc|c',
             'barcode number'         => 'marc|i',
@@ -409,7 +371,7 @@ class Symphony extends AbstractBase
             'home location'          => 'marc|l',
             'item type'              => 'marc|t',
             'circulate flag'         => 'marc|r'
-        );
+        ];
 
         $entryNumber = $this->config['999Holdings']['entry_number'];
 
@@ -434,7 +396,7 @@ class Symphony extends AbstractBase
 
                 $material = $this->translatePolicyID('ITYP', $result['item type']);
 
-                $items[$result['id']][] = array(
+                $items[$result['id']][] = [
                     'id' => $result['id'],
                     'availability' => $available,
                     'status' => $curr_loc,
@@ -448,7 +410,7 @@ class Symphony extends AbstractBase
                     'item_id' => $result['barcode number'],
                     'library' => $library,
                     'material' => $material
-                );
+                ];
             }
         }
         return $items;
@@ -465,7 +427,7 @@ class Symphony extends AbstractBase
      */
     protected function lookupTitleInfo($ids)
     {
-        $ids = is_array($ids) ? $ids : array($ids);
+        $ids = is_array($ids) ? $ids : [$ids];
 
         // SymWS ignores invalid titleIDs instead of rejecting them, so
         // checking ahead of time for obviously invalid titleIDs is a useful
@@ -479,13 +441,13 @@ class Symphony extends AbstractBase
         }
 
         // Prepare $params array for makeRequest().
-        $params = array(
+        $params = [
             'titleID' => $ids,
             'includeAvailabilityInfo' => 'true',
             'includeItemInfo' => 'true',
             'includeBoundTogether' => 'true',
             'includeOrderInfo' => 'true',
-        );
+        ];
 
         // If the driver is configured to populate holdings_text_fields
         // with MFHD, also request MARC holdings information from SymWS.
@@ -543,9 +505,9 @@ class Symphony extends AbstractBase
     protected function parseCallInfo($callInfos, $titleID, $is_holdable = false,
         $bound_in = null
     ) {
-        $items = array();
+        $items = [];
 
-        $callInfos = is_array($callInfos) ? $callInfos : array($callInfos);
+        $callInfos = is_array($callInfos) ? $callInfos : [$callInfos];
 
         foreach ($callInfos as $callInfo) {
             $libraryID = $callInfo->libraryID;
@@ -565,7 +527,7 @@ class Symphony extends AbstractBase
 
             $itemInfos = is_array($callInfo->ItemInfo)
                 ? $callInfo->ItemInfo
-                : array($callInfo->ItemInfo);
+                : [$callInfo->ItemInfo];
             foreach ($itemInfos as $itemInfo) {
                 $in_transit = isset($itemInfo->transitReason);
                 $currentLocation = $this->translatePolicyID(
@@ -620,7 +582,7 @@ class Symphony extends AbstractBase
                      * it is insufficient to provide just the location
                      * description as the "location."
                      */
-                    if (count($this->config['LibraryFilter']['include_only'])!=1) {
+                    if (count($this->config['LibraryFilter']['include_only']) != 1) {
                         $location = "$library - $location";
                     }
                 }
@@ -637,7 +599,7 @@ class Symphony extends AbstractBase
                             $itemInfo->numberOfHolds : 0;
 
                 // Handle item notes
-                $notes = array();
+                $notes = [];
 
                 if (isset($itemInfo->publicNote)) {
                     $notes[] = $itemInfo->publicNote;
@@ -671,7 +633,7 @@ class Symphony extends AbstractBase
 
                 $holdtype = $available ? 'hold' : 'recall';
 
-                $items[] = array(
+                $items[] = [
                     'id' => $titleID,
                     'availability' => $available,
                     'status' => $status,
@@ -685,7 +647,7 @@ class Symphony extends AbstractBase
                     'requests_placed' => $requests_placed,
                     'barcode' => $itemInfo->itemID,
                     'notes' => $notes,
-                    'summary' => array(),
+                    'summary' => [],
                     'is_holdable' => $is_holdable,
                     'holdtype' => $holdtype,
                     'addLink' => $is_holdable,
@@ -704,7 +666,7 @@ class Symphony extends AbstractBase
                         $transitDestinationLibrary,
                     'transit_reason' => $transitReason,
                     'transit_date' => $transitDate
-                );
+                ];
             }
         }
         return $items;
@@ -723,11 +685,11 @@ class Symphony extends AbstractBase
      */
     protected function parseBoundwithLinkInfo($boundwithLinkInfos, $ckey)
     {
-        $items = array();
+        $items = [];
 
         $boundwithLinkInfos = is_array($boundwithLinkInfos)
             ? $boundwithLinkInfos
-            : array($boundwithLinkInfos);
+            : [$boundwithLinkInfos];
 
         foreach ($boundwithLinkInfos as $boundwithLinkInfo) {
             // Ignore BoundwithLinkInfos which do not refer to parents
@@ -748,12 +710,12 @@ class Symphony extends AbstractBase
 
             $callInfos = is_array($resp->TitleInfo->CallInfo)
                 ? $resp->TitleInfo->CallInfo
-                : array($resp->TitleInfo->CallInfo);
+                : [$resp->TitleInfo->CallInfo];
 
             foreach ($callInfos as $callInfo) {
                 $itemInfos = is_array($callInfo->ItemInfo)
                     ? $callInfo->ItemInfo
-                    : array($callInfo->ItemInfo);
+                    : [$callInfo->ItemInfo];
                 foreach ($itemInfos as $itemInfo) {
                     if ($itemInfo->itemID == $linked_itemID) {
                         $items += $this->parseCallInfo(
@@ -782,10 +744,10 @@ class Symphony extends AbstractBase
      */
     protected function parseTitleOrderInfo($titleOrderInfos, $titleID)
     {
-        $items = array();
+        $items = [];
 
         $titleOrderInfos = is_array($titleOrderInfos)
-            ? $titleOrderInfos : array($titleOrderInfos);
+            ? $titleOrderInfos : [$titleOrderInfos];
 
         foreach ($titleOrderInfos as $titleOrderInfo) {
             $library_id = $titleOrderInfo->orderLibraryID;
@@ -827,7 +789,7 @@ class Symphony extends AbstractBase
             }
 
             for ($i = 1; $i <= $nr_copies; ++$i) {
-                $items[] = array(
+                $items[] = [
                     'id' => $titleID,
                     'availability' => false,
                     'status' => implode('; ', $statuses),
@@ -838,7 +800,7 @@ class Symphony extends AbstractBase
                     'number' => $i,
                     'barcode' => true,
                     'offsite' => $library_id == 'OFFSITE',
-                );
+                ];
             }
         }
         return $items;
@@ -854,10 +816,10 @@ class Symphony extends AbstractBase
      */
     protected function parseMarcHoldingsInfo($marcHoldingsInfos, $titleID)
     {
-        $items = array();
+        $items = [];
         $marcHoldingsInfos = is_array($marcHoldingsInfos)
             ? $marcHoldingsInfos
-            : array($marcHoldingsInfos);
+            : [$marcHoldingsInfos];
 
         foreach ($marcHoldingsInfos as $marcHoldingsInfo) {
             $libraryID = $marcHoldingsInfo->holdingLibraryID;
@@ -867,8 +829,8 @@ class Symphony extends AbstractBase
 
             $marcEntryInfos = is_array($marcHoldingsInfo->MarcEntryInfo)
                 ? $marcHoldingsInfo->MarcEntryInfo
-                : array($marcHoldingsInfo->MarcEntryInfo);
-            $item = array();
+                : [$marcHoldingsInfo->MarcEntryInfo];
+            $item = [];
 
             foreach ($marcEntryInfos as $marcEntryInfo) {
                 foreach ($this->config['MarcHoldings'] as $textfield => $spec) {
@@ -879,10 +841,10 @@ class Symphony extends AbstractBase
             }
 
             if (!empty($item)) {
-                $items[] = $item + array(
+                $items[] = $item + [
                     'id' => $titleID,
                     'location' => $this->translatePolicyID('LIBR', $libraryID),
-                );
+                ];
             }
         }
 
@@ -902,7 +864,7 @@ class Symphony extends AbstractBase
     protected function getLiveStatuses($ids)
     {
         foreach ($ids as $id) {
-            $items[$id] = array();
+            $items[$id] = [];
         }
 
         /* In Symphony, a title record has at least one "callnum" record,
@@ -914,7 +876,7 @@ class Symphony extends AbstractBase
         $response   = $this->lookupTitleInfo($ids);
         $titleInfos = is_array($response->TitleInfo)
             ? $response->TitleInfo
-            : array($response->TitleInfo);
+            : [$response->TitleInfo];
 
         foreach ($titleInfos as $titleInfo) {
             $ckey        = $titleInfo->titleID;
@@ -1009,8 +971,8 @@ class Symphony extends AbstractBase
      */
     public function getStatus($id)
     {
-        $statuses = $this->getStatuses(array($id));
-        return isset($statuses[$id]) ? $statuses[$id] : array();
+        $statuses = $this->getStatuses([$id]);
+        return isset($statuses[$id]) ? $statuses[$id] : [];
     }
 
     /**
@@ -1065,7 +1027,7 @@ class Symphony extends AbstractBase
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
      /**
@@ -1084,23 +1046,23 @@ class Symphony extends AbstractBase
     {
         $usernameField = $this->config['Behaviors']['usernameField'];
 
-        $patron = array(
+        $patron = [
             'cat_username' => $username,
             'cat_password' => $password,
-        );
+        ];
 
         try {
             $resp = $this->makeRequest(
                 'patron',
                 'lookupMyAccountInfo',
-                array(
+                [
                     'includePatronInfo' => 'true',
                     'includePatronAddressInfo' => 'true'
-                ),
-                array(
+                ],
+                [
                     'login' => $username,
                     'password' => $password,
-                )
+                ]
             );
         } catch (SoapFault $e) {
             $unableToLogin = 'ns0:com.sirsidynix.symws.service.'
@@ -1124,7 +1086,7 @@ class Symphony extends AbstractBase
         // There may be an email address in any of three numbered addresses,
         // so we search each one until we find an email address,
         // starting with the one marked primary.
-        $addrinfo_check_order = array('1','2','3');
+        $addrinfo_check_order = ['1','2','3'];
         if (isset($resp->patronAddressInfo->primaryAddress)) {
             $primary_addr_n = $resp->patronAddressInfo->primaryAddress;
             array_unshift($addrinfo_check_order, $primary_addr_n);
@@ -1134,7 +1096,7 @@ class Symphony extends AbstractBase
             if (isset($resp->patronAddressInfo->$AddressNInfo)) {
                 $addrinfos = is_array($resp->patronAddressInfo->$AddressNInfo)
                     ? $resp->patronAddressInfo->$AddressNInfo
-                    : array($resp->patronAddressInfo->$AddressNInfo);
+                    : [$resp->patronAddressInfo->$AddressNInfo];
                 foreach ($addrinfos as $addrinfo) {
                     if ($addrinfo->addressPolicyID == 'EMAIL'
                         && !empty($addrinfo->addressValue)
@@ -1168,21 +1130,21 @@ class Symphony extends AbstractBase
             $userProfileGroupField
                 = $this->config['Behaviors']['userProfileGroupField'];
 
-            $options = array(
+            $options = [
                 'includePatronInfo' => 'true',
                 'includePatronAddressInfo' => 'true',
                 'includePatronStatusInfo' => 'true',
                 'includeUserGroupInfo'     => 'true'
-            );
+            ];
 
             $result = $this->makeRequest(
                 'patron',
                 'lookupMyAccountInfo',
                 $options,
-                array(
+                [
                     'login' => $patron['cat_username'],
                     'password' => $patron['cat_password']
-                )
+                ]
             );
 
             $primaryAddress = $result->patronAddressInfo->primaryAddress;
@@ -1202,10 +1164,10 @@ class Symphony extends AbstractBase
                     'security',
                     'lookupSessionInfo',
                     $options,
-                    array(
+                    [
                         'login' => $patron['cat_username'],
                         'password' => $patron['cat_password']
-                    )
+                    ]
                 )->userProfileID;
             } elseif (strcmp($userProfileGroupField, 'PATRON_LIBRARY_ID') == 0) {
                 $group = $result->patronInfo->patronLibraryID;
@@ -1218,7 +1180,7 @@ class Symphony extends AbstractBase
             list($lastname,$firstname)
                 = explode(', ', $result->patronInfo->displayName);
 
-            $profile = array(
+            $profile = [
                 'lastname' => $lastname,
                 'firstname' => $firstname,
                 'address1' => $address1,
@@ -1226,7 +1188,7 @@ class Symphony extends AbstractBase
                 'zip' => $zip,
                 'phone' => $phone,
                 'group' => $group
-            );
+            ];
 
             return $profile;
         } catch (\Exception $e) {
@@ -1248,22 +1210,22 @@ class Symphony extends AbstractBase
     public function getMyTransactions($patron)
     {
         try {
-            $transList = array();
-            $options   = array('includePatronCheckoutInfo' => 'ALL');
+            $transList = [];
+            $options   = ['includePatronCheckoutInfo' => 'ALL'];
 
             $result = $this->makeRequest(
                 'patron',
                 'lookupMyAccountInfo',
                 $options,
-                array(
+                [
                     'login' => $patron['cat_username'],
                     'password' => $patron['cat_password']
-                )
+                ]
             );
 
             if (isset($result->patronCheckoutInfo)) {
                 $transactions = $result->patronCheckoutInfo;
-                $transactions = !is_array($transactions) ? array($transactions) :
+                $transactions = !is_array($transactions) ? [$transactions] :
                     $transactions;
 
                 foreach ($transactions as $transaction) {
@@ -1273,7 +1235,7 @@ class Symphony extends AbstractBase
                         || !empty($transaction->renewalsRemainingUnlimited);
                     $renewable = ($urr && $rr);
 
-                    $transList[] = array(
+                    $transList[] = [
                         'duedate' =>
                             date('F j, Y', strtotime($transaction->dueDate)),
                         'id' => $transaction->titleKey,
@@ -1286,7 +1248,7 @@ class Symphony extends AbstractBase
                         //'message' => null,
                         'title' => $transaction->title,
                         'item_id' => $transaction->itemID
-                    );
+                    ];
                 }
             }
             return $transList;
@@ -1308,17 +1270,17 @@ class Symphony extends AbstractBase
     public function getMyHolds($patron)
     {
         try {
-            $holdList = array();
-            $options  = array('includePatronHoldInfo' => 'ACTIVE');
+            $holdList = [];
+            $options  = ['includePatronHoldInfo' => 'ACTIVE'];
 
             $result = $this->makeRequest(
                 'patron',
                 'lookupMyAccountInfo',
                 $options,
-                array(
+                [
                     'login' => $patron['cat_username'],
                     'password' => $patron['cat_password']
-                )
+                ]
             );
 
             if (!property_exists($result, 'patronHoldInfo')) {
@@ -1326,10 +1288,10 @@ class Symphony extends AbstractBase
             }
 
             $holds = $result->patronHoldInfo;
-            $holds = !is_array($holds) ? array($holds) : $holds;
+            $holds = !is_array($holds) ? [$holds] : $holds;
 
             foreach ($holds as $hold) {
-                $holdList[] = array(
+                $holdList[] = [
                     'id' => $hold->titleKey,
                     //'type' => ,
                     'location' => $hold->pickupLibraryID,
@@ -1342,7 +1304,7 @@ class Symphony extends AbstractBase
                     //'volume' => null,
                     //'publication_year' => null,
                     'title' => $hold->title
-                );
+                ];
             }
             return $holdList;
         } catch(SoapFault $e) {
@@ -1365,26 +1327,26 @@ class Symphony extends AbstractBase
     public function getMyFines($patron)
     {
         try {
-            $fineList = array();
+            $fineList = [];
             $feeType  = $this->config['Behaviors']['showFeeType'];
-            $options  = array('includeFeeInfo' => $feeType);
+            $options  = ['includeFeeInfo' => $feeType];
 
             $result = $this->makeRequest(
                 'patron',
                 'lookupMyAccountInfo',
                 $options,
-                array(
+                [
                     'login' => $patron['cat_username'],
                     'password' => $patron['cat_password']
-                )
+                ]
             );
 
             if (isset($result->feeInfo)) {
                 $fees = $result->feeInfo;
-                $fees = !is_array($fees) ? array($fees) : $fees;
+                $fees = !is_array($fees) ? [$fees] : $fees;
 
                 foreach ($fees as $fee) {
-                    $fineList[] = array(
+                    $fineList[] = [
                         'amount' => $fee->amount->_ * 100,
                         'checkout' =>
                             isset($fee->feeItemInfo->checkoutDate) ?
@@ -1399,7 +1361,7 @@ class Symphony extends AbstractBase
                             $fee->feeItemInfo->dueDate : null,
                         'id' => isset($fee->feeItemInfo->titleKey) ?
                             $fee->feeItemInfo->titleKey : null
-                    );
+                    ];
                 }
             }
 
@@ -1439,37 +1401,37 @@ class Symphony extends AbstractBase
     public function cancelHolds($cancelDetails)
     {
         $count  = 0;
-        $items  = array();
+        $items  = [];
         $patron = $cancelDetails['patron'];
 
         foreach ($cancelDetails['details'] as $holdKey) {
             try {
-                $options = array('holdKey' => $holdKey);
+                $options = ['holdKey' => $holdKey];
 
                 $this->makeRequest(
                     'patron',
                     'cancelMyHold',
                     $options,
-                    array(
+                    [
                         'login' => $patron['cat_username'],
                         'password' => $patron['cat_password']
-                    )
+                    ]
                 );
 
                 $count++;
-                $items[$holdKey] = array(
+                $items[$holdKey] = [
                     'success' => true,
                     'status' => 'hold_cancel_success'
-                );
+                ];
             } catch (\Exception $e) {
-                $items[$holdKey] = array(
+                $items[$holdKey] = [
                     'success' => false,
                     'status' => 'hold_cancel_fail',
                     'sysMessage' => $e->getMessage()
-                );
+                ];
             }
         }
-        $result = array('count' => $count, 'items' => $items);
+        $result = ['count' => $count, 'items' => $items];
         return $result;
     }
 
@@ -1481,11 +1443,12 @@ class Symphony extends AbstractBase
      * @param array  $params   Optional feature-specific parameters (array)
      *
      * @return array An array with key-value pairs.
+      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($function, $params = null)
     {
-        if (isset($this->config[$function]) ) {
+        if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
         } else {
             $functionConfig = false;
@@ -1524,42 +1487,42 @@ class Symphony extends AbstractBase
      */
     public function renewMyItems($renewDetails)
     {
-        $details = array();
+        $details = [];
         $patron  = $renewDetails['patron'];
 
         foreach ($renewDetails['details'] as $barcode) {
             try {
-                $options = array('itemID' => $barcode);
+                $options = ['itemID' => $barcode];
 
                 $renewal = $this->makeRequest(
                     'patron',
                     'renewMyCheckout',
                     $options,
-                    array(
+                    [
                         'login' => $patron['cat_username'],
                         'password' => $patron['cat_password'],
-                    )
+                    ]
                 );
 
-                $details[$barcode] = array(
+                $details[$barcode] = [
                     'success' => true,
                     'new_date' => date('j-M-y', strtotime($renewal->dueDate)),
-                    'new_time' =>date('g:i a', strtotime($renewal->dueDate)),
+                    'new_time' => date('g:i a', strtotime($renewal->dueDate)),
                     'item_id' => $renewal->itemID,
                     'sysMessage' => $renewal->message
-                );
+                ];
             } catch (\Exception $e) {
-                $details[$barcode] = array(
+                $details[$barcode] = [
                     'success' => false,
                     'new_date' => false,
                     'new_time' => false,
                     'sysMessage' =>
                         'We could not renew this item: ' . $e->getMessage()
-                );
+                ];
             }
         }
 
-        $result = array('details' => $details);
+        $result = ['details' => $details];
         return $result;
     }
 
@@ -1576,7 +1539,7 @@ class Symphony extends AbstractBase
     public function placeHold($holdDetails)
     {
         try {
-            $options = array();
+            $options = [];
             $patron  = $holdDetails['patron'];
 
             if ($holdDetails['item_id'] != null) {
@@ -1603,23 +1566,23 @@ class Symphony extends AbstractBase
                 'patron',
                 'createMyHold',
                 $options,
-                array(
+                [
                     'login' => $patron['cat_username'],
                     'password' => $patron['cat_password']
-                )
+                ]
             );
 
-            $result = array(
+            $result = [
                 'success' => true,
                 'sysMessage' => 'Your hold has been placed.'
-            );
+            ];
             return $result;
         } catch (SoapFault $e) {
-            $result = array(
+            $result = [
                 'success' => false,
                 'sysMessage' =>
                     'We could not place the hold: ' . $e->getMessage()
-            );
+            ];
             return $result;
         }
     }
@@ -1646,8 +1609,8 @@ class Symphony extends AbstractBase
                 $this->policies[$policyType] = $policyList;
                 return $policyList;
             } else {
-                $policyList = array();
-                $options    = array('policyType' => $policyType);
+                $policyList = [];
+                $options    = ['policyType' => $policyType];
                 $policies   = $this->makeRequest(
                     'admin', 'lookupPolicyList', $options
                 );
@@ -1664,7 +1627,7 @@ class Symphony extends AbstractBase
                 return $policyList;
             }
         } catch (\Exception $e) {
-            return array();
+            return [];
         }
     }
 
@@ -1684,17 +1647,18 @@ class Symphony extends AbstractBase
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
-        $libraries = array();
+        $libraries = [];
 
-        foreach ($this->getPolicyList('LIBR') as $key=>$library) {
-            $libraries[] = array(
+        foreach ($this->getPolicyList('LIBR') as $key => $library) {
+            $libraries[] = [
                 'locationID' => $key,
                 'locationDisplay' => $library
-            );
+            ];
         }
 
         return $libraries;
@@ -1713,6 +1677,7 @@ class Symphony extends AbstractBase
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
@@ -1729,28 +1694,5 @@ class Symphony extends AbstractBase
             $libraries = $this->getPickUpLocations();
             return $libraries[0]['locationID'];
         }
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Symphony
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

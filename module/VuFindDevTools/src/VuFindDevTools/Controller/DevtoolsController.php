@@ -53,10 +53,10 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         $dir = APPLICATION_PATH
             . '/themes/root/templates/HelpTranslations/' . $language;
         if (!file_exists($dir) || !is_dir($dir)) {
-            return array();
+            return [];
         }
         $handle = opendir($dir);
-        $files = array();
+        $files = [];
         while ($file = readdir($handle)) {
             if (substr($file, -6) == '.phtml') {
                 $files[] = $file;
@@ -73,7 +73,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     protected function getLanguages()
     {
-        $langs = array();
+        $langs = [];
         $dir = opendir(APPLICATION_PATH . '/languages');
         while ($file = readdir($dir)) {
             if (substr($file, -4) == '.ini') {
@@ -113,12 +113,12 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     protected function compareLanguages($lang1, $lang2)
     {
-        return array(
+        return [
             'notInL1' => $this->findMissingLanguageStrings($lang2, $lang1),
             'notInL2' => $this->findMissingLanguageStrings($lang1, $lang2),
             'l1Percent' => number_format(count($lang1) / count($lang2) * 100, 2),
             'l2Percent' => number_format(count($lang2) / count($lang1) * 100, 2),
-        );
+        ];
     }
 
     /**
@@ -153,12 +153,12 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     {
         // Test languages with no local overrides and no fallback:
         $loader = new \VuFind\I18n\Translator\Loader\ExtendedIni(
-            array(APPLICATION_PATH  . '/languages')
+            [APPLICATION_PATH  . '/languages']
         );
         $mainLanguage = $this->params()->fromQuery('main', 'en');
         $main = $loader->load($mainLanguage, null);
 
-        $details = array();
+        $details = [];
         $allLangs = $this->getLanguages();
         sort($allLangs);
         foreach ($allLangs as $langCode) {
@@ -173,11 +173,11 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
             $details[$langCode]['helpFiles'] = $this->getHelpFiles($langCode);
         }
 
-        return array(
+        return [
             'details' => $details,
             'mainCode' => $mainLanguage,
             'mainName' => $this->getLangName($mainLanguage),
             'main' => $main,
-        );
+        ];
     }
 }

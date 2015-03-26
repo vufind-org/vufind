@@ -60,14 +60,14 @@ class Comments extends Gateway
         $resourceTable = $this->getDbTable('Resource');
         $resource = $resourceTable->findResource($id, $source, false);
         if (empty($resource)) {
-            return array();
+            return [];
         }
 
         $callback = function ($select) use ($resource) {
-            $select->columns(array('*'));
+            $select->columns(['*']);
             $select->join(
-                array('u' => 'user'), 'u.id = comments.user_id',
-                array('firstname', 'lastname')
+                ['u' => 'user'], 'u.id = comments.user_id',
+                ['firstname', 'lastname']
             );
             $select->where->equalTo('comments.resource_id',  $resource->id);
             $select->order('comments.created');
@@ -92,7 +92,7 @@ class Comments extends Gateway
         }
 
         // Comment row must exist:
-        $matches = $this->select(array('id' => $id));
+        $matches = $this->select(['id' => $id]);
         if (count($matches) == 0 || !($row = $matches->current())) {
             return false;
         }
@@ -116,17 +116,17 @@ class Comments extends Gateway
     {
         $select = $this->sql->select();
         $select->columns(
-            array(
+            [
                 'users' => new Expression(
-                    'COUNT(DISTINCT(?))', array('user_id'),
-                    array(Expression::TYPE_IDENTIFIER)
+                    'COUNT(DISTINCT(?))', ['user_id'],
+                    [Expression::TYPE_IDENTIFIER]
                 ),
                 'resources' => new Expression(
-                    'COUNT(DISTINCT(?))', array('resource_id'),
-                    array(Expression::TYPE_IDENTIFIER)
+                    'COUNT(DISTINCT(?))', ['resource_id'],
+                    [Expression::TYPE_IDENTIFIER]
                 ),
                 'total' => new Expression('COUNT(*)')
-            )
+            ]
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();

@@ -47,19 +47,19 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testTranslations()
     {
-        $pathStack = array(
+        $pathStack = [
             realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
             realpath(__DIR__ . '/../../../../../../fixtures/language/overrides')
-        );
+        ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('en', null);
         $this->assertEquals(
-            array(
+            [
                 'blank_line' =>
                     html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
                 'test1' => 'test one',
                 'test2' => 'test two - override',
-            ),
+            ],
             (array)$result
         );
     }
@@ -71,19 +71,19 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testFallback()
     {
-        $pathStack = array(
+        $pathStack = [
             realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-        );
+        ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('fake', null);
         $this->assertEquals(
-            array(
+            [
                 'blank_line' =>
                     html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
                 'test1' => 'test one',
                 'test2' => 'test two',
                 'test3' => 'test three',
-            ),
+            ],
             (array)$result
         );
     }
@@ -95,15 +95,15 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testFallbackToSelf()
     {
-        $pathStack = array(
+        $pathStack = [
             realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-        );
+        ];
         $loader = new ExtendedIni($pathStack, 'fake');
         $result = $loader->load('fake', null);
         $this->assertEquals(
-            array(
+            [
                 'test3' => 'test three',
-            ),
+            ],
             (array)$result
         );
     }
@@ -115,16 +115,16 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testSelfAsParent()
     {
-        $pathStack = array(
+        $pathStack = [
             realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-        );
+        ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('self-parent', null);
         $this->assertEquals(
-            array(
+            [
                 '@parent_ini' => 'self-parent.ini',
                 'string' => 'bad',
-            ),
+            ],
             (array)$result
         );
     }
@@ -136,18 +136,18 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      */
     public function testParentChain()
     {
-        $pathStack = array(
+        $pathStack = [
             realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
-        );
+        ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('child2', null);
         $this->assertEquals(
-            array(
+            [
                 '@parent_ini' => 'child1.ini',
                 'test1' => 'test 1',
                 'test2' => 'test 2',
                 'test3' => 'test three',
-            ),
+            ],
             (array)$result
         );
     }
@@ -156,7 +156,8 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
      * Test missing path stack.
      *
      * @return void
-     * @expectedException Zend\I18n\Exception\InvalidArgumentException
+     *
+     * @expectedException        Zend\I18n\Exception\InvalidArgumentException
      * @expectedExceptionMessage Ini file 'en.ini' not found
      */
     public function testMissingPathStack()
