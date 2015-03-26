@@ -83,8 +83,8 @@ class DAIA extends AbstractBase implements
     /**
      * DAIA legacySupport flag
      *
-     * @var boolean
-     * @deprecated  Will be removed in the next driver version
+     * @var        boolean
+     * @deprecated Will be removed in the next driver version
      */
     protected $legacySupport = false;
 
@@ -183,13 +183,13 @@ class DAIA extends AbstractBase implements
             return $this->getXMLStatus($id);
         } else {
             // let's retrieve the DAIA document by URI
-            $rawResult = $this->_doHTTPRequest($this->_generateURI($id));
+            $rawResult = $this->doHTTPRequest($this->generateURI($id));
             // extract the DAIA document for the current id from the
             // HTTPRequest's result
-            $doc = $this->_extractDaiaDoc($id, $rawResult);
+            $doc = $this->extractDaiaDoc($id, $rawResult);
             if (!is_null($doc)) {
                 // parse the extracted DAIA document and return the status info
-                return $this->_parseDaiaDoc($id, $doc);
+                return $this->parseDaiaDoc($id, $doc);
             }
         }
         return [];
@@ -211,7 +211,7 @@ class DAIA extends AbstractBase implements
      * queried ids.
      * If multiQueries are not supported, getStatus(id) is used.
      *
-     * @param array     $ids The array of record ids to retrieve the status for
+     * @param array $ids The array of record ids to retrieve the status for
      *
      * @return array    An array of status information values on success.
      */
@@ -228,18 +228,18 @@ class DAIA extends AbstractBase implements
         } else {
             if ($this->multiQuery) {
                 // perform one DAIA query with multiple URIs
-                $rawResult = $this->_doHTTPRequest($this->_generateMultiURIs($ids));
+                $rawResult = $this->doHTTPRequest($this->generateMultiURIs($ids));
                 // now we need to reestablish the key-value pair id=>document as
                 // the id used in VuFind can differ from the document-URI
                 // (depending on how the URI is generated)
                 foreach ($ids as $id) {
                     // it is assumed that each DAIA document has a unique URI,
                     // so get the document with the corresponding id
-                    $doc = $this->_extractDaiaDoc($id, $rawResult);
+                    $doc = $this->extractDaiaDoc($id, $rawResult);
                     if (!is_null($doc)) {
                         // a document with the corresponding id exists, which
                         // means we got status information for that record
-                        $status[] = $this->_parseDaiaDoc($id, $doc);
+                        $status[] = $this->parseDaiaDoc($id, $doc);
                     }
                     unset($doc);
                 }
@@ -296,7 +296,7 @@ class DAIA extends AbstractBase implements
      * @return xml or json object
      * @throws ILSException
      */
-    protected function _doHTTPRequest($id)
+    protected function doHTTPRequest($id)
     {
         $contentTypes = [
             "xml"  => "application/xml",
@@ -347,12 +347,16 @@ class DAIA extends AbstractBase implements
 
         // check if result matches daiaResponseFormat
         if (!preg_match(
-                "/^". str_replace("/", "\/", $contentTypes[$this->daiaResponseFormat]) . "(\s*)(\;.*)?/",
-                strtolower($result->getHeaders()->get("ContentType")->getFieldValue())
-            )) {
-            throw new ILSException("DAIA-ResponseFormat not supported. Received: " .
+            "/^" .
+            str_replace("/", "\/", $contentTypes[$this->daiaResponseFormat]) .
+            "(\s*)(\;.*)?/",
+            strtolower($result->getHeaders()->get("ContentType")->getFieldValue())
+        )) {
+            throw new ILSException(
+                "DAIA-ResponseFormat not supported. Received: " .
                 $result->getHeaders()->get("ContentType")->getFieldValue() . " - " .
-                "Expected: " . $contentTypes[$this->daiaResponseFormat]);
+                "Expected: " . $contentTypes[$this->daiaResponseFormat]
+            );
         }
 
         return ($result->getBody());
@@ -361,12 +365,14 @@ class DAIA extends AbstractBase implements
     /**
      * Generate a DAIA URI necessary for the query
      *
-     * @see             http://gbv.github.io/daiaspec/daia.html#query-api
+     * @param string $id Id of the record whose DAIA document should be queried
      *
-     * @param $id       Id of the record whose DAIA document should be queried
-     * @return string   URI of the DAIA document
+     * @return string     URI of the DAIA document
+     *
+     * @see http://gbv.github.io/daiaspec/daia.html#query-api
      */
-    protected function _generateURI($id) {
+    protected function generateURI($id)
+    {
         if ($this->legacySupport) {
             return $id;
         } else {
@@ -376,16 +382,19 @@ class DAIA extends AbstractBase implements
 
     /**
      * Combine several ids to DAIA Query API conform URIs
-     * @see             http://gbv.github.io/daiaspec/daia.html#query-api
      *
-     * @param arra $ids Array of ids which shall be converted into URIs and
+     * @param array $ids Array of ids which shall be converted into URIs and
      *                  combined for querying multiple DAIA documents.
+     * 
      * @return string   Combined URIs (delimited by "|")
+     *
+     * @see http://gbv.github.io/daiaspec/daia.html#query-api
      */
-    protected function _generateMultiURIs($ids) {
+    protected function generateMultiURIs($ids)
+    {
         $multiURI = '';
         foreach ($ids as $id) {
-            $multiURI .= $this->_generateURI($id) . "|";
+            $multiURI .= $this->generateURI($id) . "|";
         }
         return rtrim($multiURI, "|");
     }
@@ -399,16 +408,19 @@ class DAIA extends AbstractBase implements
      *      - array (for JSON results)
      *      - DOMNode (for XML results)
      *
-     * @param string $id Record Id corresponding to the DAIA document
-     * @param mixed $daiaDoc The DAIA document, supported types are array and DOMNode
+     * @param string $id      Record Id corresponding to the DAIA document
+     * @param mixed  $daiaDoc The DAIA document, supported types are array and
+     *                        DOMNode
+     *
      * @return array An array with status information for the record
      * @throws ILSException
      */
-    protected function _parseDaiaDoc($id, $daiaDoc) {
+    protected function parseDaiaDoc($id, $daiaDoc)
+    {
         if (is_array($daiaDoc)) {
-            return $this->_parseDaiaArray($id, $daiaDoc);
+            return $this->parseDaiaArray($id, $daiaDoc);
         } elseif (is_subclass_of($daiaDoc, "DOMNode")) {
-            return $this->_parseDaiaDom($id, $daiaDoc);
+            return $this->parseDaiaDom($id, $daiaDoc);
         } else {
             throw new ILSException(
                 'Unsupported document type (did not match Array or DOMNode).'
@@ -423,13 +435,15 @@ class DAIA extends AbstractBase implements
      * the given DAIA response and returns the first document whose id matches
      * the given id.
      *
-     * @param string $id            Record Id of the DAIA document in question.
-     * @param string $daiaResponse  Raw response from DAIA request.
+     * @param string $id           Record Id of the DAIA document in question.
+     * @param string $daiaResponse Raw response from DAIA request.
+     *
      * @return Array|DOMNode|null   The DAIA document identified by id and
      *                                  type depending on daiaResponseFormat.
      * @throws ILSException
      */
-    protected function _extractDaiaDoc($id, $daiaResponse) {
+    protected function extractDaiaDoc($id, $daiaResponse)
+    {
 
         if ($this->daiaResponseFormat == 'xml') {
             try {
@@ -442,8 +456,8 @@ class DAIA extends AbstractBase implements
                     for ($i = 0; $i < $doc->length; $i++) {
                         $attr = $doc->item($i)->attributes;
                         // DAIA documents should use URIs as value for id
-                        if ($attr->getNamedItem("id")->nodeValue
-                            == $this->_generateURI($id)) {
+                        if ($attr->getNamedItem("id")->nodeValue == $this->generateURI($id)
+                        ) {
                             // we've found the document element with the
                             // matching URI
                             return $doc->item($i);
@@ -468,8 +482,8 @@ class DAIA extends AbstractBase implements
                 foreach ($docs["document"] as $doc) {
                     // DAIA documents should use URIs as value for id
                     if (isset($doc["id"])
-                        && $doc["id"] == $this->_generateURI($id))
-                    {
+                        && $doc["id"] == $this->generateURI($id)
+                    ) {
                         // we've found the document element with the matching URI
                         return $doc;
                     }
@@ -486,10 +500,12 @@ class DAIA extends AbstractBase implements
      * Parse an array with DAIA status information.
      *
      * @param string $id        Record id for the DAIA array.
-     * @param array $daiaArray  Array with raw DAIA status information.
+     * @param array  $daiaArray Array with raw DAIA status information.
+     *
      * @return array            Array with VuFind compatible status information.
      */
-    protected function _parseDaiaArray($id, $daiaArray) {
+    protected function parseDaiaArray($id, $daiaArray)
+    {
         $doc_id = null;
         $doc_href = null;
         $doc_message = null;
@@ -531,7 +547,7 @@ class DAIA extends AbstractBase implements
                     $result_item["location"] = "Unknown";
                 }
                 // status and availability will be calculated in own function
-                $result_item = $this->_calculateStatus($item)+$result_item;
+                $result_item = $this->calculateStatus($item)+$result_item;
                 // add result_item to the result array
                 $result[] = $result_item;
             } // end iteration on item
@@ -543,11 +559,13 @@ class DAIA extends AbstractBase implements
     /**
      * Parse a DOMNode Object with DAIA status information.
      *
-     * @param string $id        Record id for the DAIA array.
-     * @param DOMNode $daiaDom  DOMNode object with raw DAIA status information.
+     * @param string  $id      Record id for the DAIA array.
+     * @param DOMNode $daiaDom DOMNode object with raw DAIA status information.
+     * 
      * @return array            Array with VuFind compatible status information.
      */
-    protected function _parseDaiaDom($id, $daiaDom) {
+    protected function parseDaiaDom($id, $daiaDom)
+    {
         $itemlist = $daiaDom->getElementsByTagName('item');
         $ilslink = '';
         if ($daiaDom->attributes->getNamedItem('href') !== null) {
@@ -817,7 +835,7 @@ class DAIA extends AbstractBase implements
      *
      * @return array("status"=>"only for VIPs" ... )
      */
-    protected function _calculateStatus($item)
+    protected function calculateStatus($item)
     {
         $availability = false;
         $status = null;
@@ -856,13 +874,13 @@ class DAIA extends AbstractBase implements
      *
      * @param string $id The id of the bib record
      *
-     * @return array()      of items
+     * @return     array()      of items
      * @deprecated
      */
     protected function getJSONStatus($id)
     {
         // get daia json request for id and decode it
-        $daia = json_decode($this->_doHTTPRequest($id), true);
+        $daia = json_decode($this->doHTTPRequest($id), true);
         $result = [];
         if (array_key_exists("message", $daia)) {
             // analyse the message for the error handling and debugging
@@ -925,7 +943,7 @@ class DAIA extends AbstractBase implements
                             $result_item["location"] = "Unknown";
                         }
                         // status and availability will be calculated in own function
-                        $result_item = $this->_calculateStatus($item)+$result_item;
+                        $result_item = $this->calculateStatus($item)+$result_item;
                         // add result_item to the result array
                         $result[] = $result_item;
                     } // end iteration on item
@@ -943,12 +961,12 @@ class DAIA extends AbstractBase implements
      *
      * @return array
      *
-     * @deprecated      Only kept for legacySupport
+     * @deprecated Only kept for legacySupport
      */
     protected function getXMLStatus($id)
     {
         $daia = new DOMDocument();
-        $response = $this->_doHTTPRequest($id);
+        $response = $this->doHTTPRequest($id);
         if ($response) {
             $daia->loadXML($response);
         }
@@ -1233,12 +1251,12 @@ class DAIA extends AbstractBase implements
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
      * number
      *
-     * @deprecated      Only kept for legacySupport
+     * @deprecated Only kept for legacySupport
      */
     public function getXMLShortStatus($id)
     {
         $daia = new DOMDocument();
-        $response = $this->_doHTTPRequest($id);
+        $response = $this->doHTTPRequest($id);
         if ($response) {
             $daia->loadXML($response);
         }
