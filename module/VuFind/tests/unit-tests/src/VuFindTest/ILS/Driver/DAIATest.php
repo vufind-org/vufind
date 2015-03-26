@@ -269,8 +269,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                 );
             }
             $response = file_get_contents($file);
-            $responseObj = new HttpResponse();
-            $responseObj->setContent($response);
+            $responseObj = HttpResponse::fromString($response);
             $adapter->setResponse($responseObj);
         }
         $service = new \VuFindHttp\HttpService();
