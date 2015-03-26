@@ -39,6 +39,24 @@ namespace Finna\Db\Table;
 class User extends \VuFind\Db\Table\User
 {
     /**
+     * Create a row for the specified username.
+     *
+     * @param string $username Username to use for retrieval.
+     *
+     * @return UserRow
+     */
+    public function createRowForUsername($username)
+    {
+        $row = $this->createRow();
+        // Prefix username with the institution code if set
+        $row->username = isset($this->config->Site->institution)
+            ? $this->config->Site->institution . ":$username"
+            : $username;
+        $row->created = date('Y-m-d H:i:s');
+        return $row;
+    }
+
+    /**
      * Retrieve a user object from the database based on username; create a new
      * row if no existing match is found.
      *
@@ -50,10 +68,14 @@ class User extends \VuFind\Db\Table\User
     public function getByUsername($username, $create = true)
     {
         // Prefix username with the institution code if set
-        if (isset($this->config->Site->institution)) {
-            $username = $this->config->Site->institution . ":$username";
-        }
-        return parent::getByUsername($username, $create);
+        $row = $this->select(
+            [
+                'username' => isset($this->config->Site->institution)
+                    ? $this->config->Site->institution . ":$username"
+                    : $username
+            ]
+        )->current();
+        return ($create && empty($row))
+            ? $this->createRowForUsername($username) : $row;
     }
-
 }
