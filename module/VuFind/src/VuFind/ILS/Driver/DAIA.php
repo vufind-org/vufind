@@ -345,11 +345,14 @@ class DAIA extends AbstractBase implements
             return false;
         }
 
-        // @todo: more robust comparison of content-type
         // check if result matches daiaResponseFormat
-        if ($result->getHeaders()->get("ContentType")->getFieldValue()
-            != $contentTypes[$this->daiaResponseFormat]) {
-            throw new ILSException("DAIA-ResponseFormat not supported");
+        if (!preg_match(
+                "/^". str_replace("/", "\/", $contentTypes[$this->daiaResponseFormat]) . "(\s*)(\;.*)?/",
+                strtolower($result->getHeaders()->get("ContentType")->getFieldValue())
+            )) {
+            throw new ILSException("DAIA-ResponseFormat not supported. Received: " .
+                $result->getHeaders()->get("ContentType")->getFieldValue() . " - " .
+                "Expected: " . $contentTypes[$this->daiaResponseFormat]);
         }
 
         return ($result->getBody());
