@@ -16,7 +16,7 @@
     <? else: ?>
     <table class="table table-striped useraccount-table" summary="<?=$this->transEsc('Your Fines')?>">
     <tr class="headers">
-      <th><?=$this->transEsc('Title')?></th>
+      <th class="user-account-table-title"><?=$this->transEsc('Title')?></th>
       <th><?=$this->transEsc('Checked Out')?></th>
       <th><?=$this->transEsc('Due Date')?></th>
       <th><?=$this->transEsc('Fine')?></th>
@@ -26,7 +26,7 @@
     <? $totalDue = 0; ?>
     <? foreach ($this->fines as $record): ?>
     <tr>
-      <td>
+      <td class="user-account-table-title">
         <? if (empty($record['title'])): ?>
           <?=$this->transEsc('not_applicable')?>
         <? elseif (!is_object($record['driver'])): ?>
