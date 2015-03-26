@@ -10,7 +10,10 @@
             if (strstr($username, '.')) {
               list($target, $username) = explode('.', $username, 2);
             }
-            $display = $this->transEsc($card->card_name ? $card->card_name : $card->cat_username);
+            $display = $this->transEsc($card->card_name ? $card->card_name : $username);
+            if ($display == "$target.$username") {
+              $display = $username;
+            }
             if ($target) {
               $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
             }

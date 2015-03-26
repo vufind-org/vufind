@@ -25,13 +25,16 @@
         <th class="text-right actions"><?=$this->transEsc('Actions')?></th>
       </tr>
       <? foreach ($this->libraryCards as $record): ?>
+        <? $username = $record['cat_username']; ?>
+        <? $target = ''; ?>
+        <? if ($this->multipleTargets): ?>
+          <? if (strstr($username, '.')): ?>
+            <? list($target, $username) = explode('.', $username, 2); ?>
+          <? endif; ?>
+        <? endif; ?>
         <tr>
-          <td><?=$this->escapeHtml($record['card_name'])?></td>
-          <? $username = $record['cat_username']; if ($this->multipleTargets): ?>
-            <? $target = ''; ?>
-            <? if (strstr($username, '.')): ?>
-              <? list($target, $username) = explode('.', $username, 2); ?>
-            <? endif; ?>
+          <td><?=$record['card_name'] == "$target.$username" ? $this->escapeHtml($username) : $this->escapeHtml($record['card_name'])?></td>
+          <? if ($this->multipleTargets): ?>
             <td><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></td>
           <? endif; ?>
           <td><?=$this->escapeHtml($username)?></td>
