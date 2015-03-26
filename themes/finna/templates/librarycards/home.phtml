@@ -44,7 +44,7 @@
               <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>">
                 <i class="fa fa-remove fa-button"></i> <span class="sr-only"><?=$this->transEsc('Delete')?></span>
               </a>
-              <ul class="dropdown-menu librarycard-cancel">
+              <ul class="dropdown-menu useraccount-cancel">
                 <li class="disabled"><a><?=$this->transEsc('Disconnect Library Card')?>?</a></li>
                 <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
                 <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
