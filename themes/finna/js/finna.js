@@ -4,7 +4,7 @@ var finna = (function() {
         init: function() {
             // List of modules to be inited
             var modules = [
-                'imagePopup', 'layout', 'record'
+                'imagePopup', 'layout', 'record', 'persona'
             ];
 
             $.each(modules, function(ind, module) {

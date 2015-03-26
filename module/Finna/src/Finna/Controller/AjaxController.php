@@ -121,4 +121,36 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
         return $this->output('', self::STATUS_ERROR);
     }
+
+    /**
+     * Mozilla Persona login
+     * @return mixed
+     */
+    public function personaLoginAjax()
+    {
+        try {
+            $request = $this->getRequest();
+            $auth = $this->getServiceLocator()->get('VuFind\AuthManager');
+            // Add auth method to POST
+            $request->getPost()->set('auth_method', 'MozillaPersona');
+            $user = $auth->login($request);
+        } catch (Exception $e) {
+            return $this->output(false, self::STATUS_ERROR);
+        }
+
+        return $this->output(true, self::STATUS_OK);
+    }
+
+    /**
+     * Mozilla Persona logout
+     * @return mixed
+     */
+    public function personaLogoutAjax()
+    {
+        $auth = $this->getServiceLocator()->get('VuFind\AuthManager');
+        // Logout routing is done in persona.js file.
+        $auth->logout($this->getServerUrl('home'));
+        return $this->output(true, self::STATUS_OK);
+    }
+
 }

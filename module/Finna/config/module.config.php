@@ -71,6 +71,11 @@ $config = array(
     // unrelated to specific Zend Framework 2 components).
     'vufind' => array(
         'plugin_managers' => array(
+            'auth' => array(
+                'invokables' => array(
+                    'mozillapersona' => 'Finna\Auth\MozillaPersona',
+                ),
+            ),
             'db_table' => [
                 'factories' => [
                     'user' => 'Finna\Db\Table\Factory::getUser',

@@ -1,0 +1,14 @@
+<div class="persona-auth">
+    <? $account = $this->auth()->getManager(); ?>
+    <?=$this->auth()->getLoginFields()?>
+
+    <? // If page load done and we are showing Lightbox window,
+       // Mozilla Persona script must be added to the template. ?>
+    <script>
+    if ($.isReady === true) {
+        if (typeof finna.persona !== 'undefined') {
+            finna.persona.init();
+        }
+    }
+    </script>
+</div>
