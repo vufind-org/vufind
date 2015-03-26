@@ -475,6 +475,13 @@ class Params extends \VuFind\Search\Base\Params
         // Sort
         $sort = $this->getSort();
         if ($sort) {
+            // If we have an empty search with relevance sort, see if there is
+            // an override configured:
+            if ($sort == 'relevance' && $this->getQuery()->getAllTerms() == ''
+                && ($relOv = $this->getOptions()->getEmptySearchRelevanceOverride())
+            ) {
+                $sort = $relOv;
+            }
             $backendParams->add('sort', $this->normalizeSort($sort));
         }
 
