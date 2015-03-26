@@ -2,7 +2,7 @@
 
 finna.persona = (function (finna) {
 
-    var getDestinationUrl = function () {
+    var getDestinationUrl = function (goingOut) {
         var url = window.location.href;
         // Check if we have changed tab
         var recordTabs = $('.recordTabs');
@@ -10,6 +10,13 @@ finna.persona = (function (finna) {
             var phref = recordTabs.find('.active a').prop('href');
             url = phref.split('#')[0];
         }
+        console.log(goingOut);
+        if (goingOut === true) {
+            console.log('Going out '+url);
+            url = url.split('?')[0];
+            console.log('Cleared '+url);
+        }
+        console.log(url);
         return url;
     };
 
@@ -20,7 +27,7 @@ finna.persona = (function (finna) {
             url: path + "/AJAX/JSON?method=personaLogout",
             success: function (response, status, xhr) {
                 // No reload to avoid POST request problems
-                window.location = getDestinationUrl();
+                window.location = getDestinationUrl(true);
             },
             error: function (xhr, status, err) {
                 alert("logout failure: " + err);
@@ -60,11 +67,11 @@ finna.persona = (function (finna) {
                         if (response.status === "OK") {
                             if (Lightbox.shown === false) {
                                 // No reload to avoid POST request problems
-                                window.location = getDestinationUrl();
+                                window.location = getDestinationUrl(false);
                             } else {
                                 var params = deparam(Lightbox.lastURL);
                                 if (params.subaction === 'UserLogin') {
-                                    window.location = getDestinationUrl();
+                                    window.location = getDestinationUrl(false);
                                 } else {
                                     // Update the modal
                                     updatePageForLogin();
