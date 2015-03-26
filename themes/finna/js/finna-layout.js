@@ -171,6 +171,19 @@ finna.layout = (function() {
       }
     };
 
+    var initHoldingsControls = function() {
+        $('.holdings-container-heading').click(function () {
+            $(this).nextUntil('.holdings-container-heading').toggleClass('collapsed');
+            if ($('.location .fa', this).hasClass('fa-arrow-down')) {
+                $('.location .fa', this).removeClass('fa-arrow-down');
+                $('.location .fa', this).addClass('fa-arrow-right'); 
+            }
+            else {
+                $('.location .fa', this).removeClass('fa-arrow-right');
+                $('.location .fa', this).addClass('fa-arrow-down'); 
+            }
+        });
+    };
 
     var my = {
         isTouchDevice: isTouchDevice,
@@ -186,6 +199,7 @@ finna.layout = (function() {
             initTruncatedRecordImageNavi();
             initTruncate();
             initContentNavigation();
+            initHoldingsControls();
         },
     };
 

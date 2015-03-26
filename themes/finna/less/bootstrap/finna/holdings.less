@@ -1,0 +1,46 @@
+.record-holdings-table {
+    margin: 20px 0px;
+    border: 1px solid @gray-lighter;
+    border-top: none;
+    box-shadow: 0px 15px 30px -25px @gray;
+    .holdings-container-heading {
+        &:hover {
+            cursor: pointer;   
+        }
+        & th,td {
+            border-top: 2px solid @gray-lighter;
+            vertical-align: middle;
+        }
+        &:first-child th {
+            border-top: none;   
+        }
+    }
+    & .copy-title {
+        font-weight: bold;   
+    }
+    & .copy-details {
+        &.collapsed {
+           display: none;
+        }
+        &:nth-child(odd) {
+            background: #f5f5f5;   
+        }
+    }
+    & .headers {
+            background: @brand-primary;
+            color: @body-bg;
+            padding: 4px 8px;
+        & th {
+            background: none;
+            border: none;
+            border-right: 1px solid #fff;
+            &:last-child {
+                border-right: none;   
+            }
+        }
+    }
+    & .btn-primary {
+        padding: 2px 4px;
+        margin-bottom: 2px;
+    }
+}
