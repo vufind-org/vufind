@@ -1,9 +1,5 @@
 <?
-  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1>';
-  if (in_array($this->active, ['profile', 'checkedout', 'holds', 'storageRetrievalRequests', 'ILLRequests', 'fines'])) {
-      $this->layout()->finnaMainHeader .= $this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()));
-  }
-  $this->layout()->finnaMainHeader .= '</div>';
+  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1></div>';
 ?>
 
 <div class="col-xs-12">

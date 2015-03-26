@@ -11,18 +11,18 @@
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <?=$this->flashmessages()?>
-    <h2><?=$this->transEsc('Library Cards')?></h2>
+    <h2><?=$this->transEsc('Library Cards Connected To My Account')?></h2>
     <? if ($this->libraryCards->count() == 0): ?>
       <div><?=$this->transEsc('You do not have any library cards')?></div>
     <? else: ?>
-      <table class="table useraccount-table table-striped" summary="<?=$this->transEsc('Library Cards')?>">
+      <table class="table table-striped useraccount-table" summary="<?=$this->transEsc('Library Cards')?>">
       <tr class="headers">
         <th><?=$this->transEsc('Library Card Name')?></th>
         <? if ($this->multipleTargets): ?>
         <th><?=$this->transEsc('login_target')?></th>
         <? endif; ?>
         <th><?=$this->transEsc('Username')?></th>
-        <th>&nbsp;</th>
+        <th class="text-right actions"><?=$this->transEsc('Actions')?></th>
       </tr>
       <? foreach ($this->libraryCards as $record): ?>
         <tr>
@@ -35,11 +35,11 @@
             <td><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></td>
           <? endif; ?>
           <td><?=$this->escapeHtml($username)?></td>
-          <td>
+          <td align="right">
             <div class="btn-group">
-              <a class="btn btn-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEsc('Edit Library Card')?>"><i class="fa fa-pen"></i> <?=$this->transEsc('Edit')?></a>
+              <a class="btn btn-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEsc('Edit Library Card')?>"><i class="fa fa-pen bigger gray"></i> <span class="sr-only"><?=$this->transEsc('Edit')?></span></a>
               <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>">
-                <i class="fa fa-remove"></i> <?=$this->transEsc('Delete')?>
+                <i class="fa fa-remove fa-button"></i> <span class="sr-only"><?=$this->transEsc('Delete')?></span>
               </a>
               <ul class="dropdown-menu">
                 <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
@@ -53,7 +53,7 @@
     <? endif; ?>
 
     <div class="btn-group">
-      <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-link" title="<?=$this->transEsc('Add a Library Card')?>"><i class="fa fa-plus-small"></i> <?=$this->transEsc('Add a Library Card')?></a>
+      <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-primary" title="<?=$this->transEsc('Connect Library Card')?>"><?=$this->transEsc('Connect Library Card')?>...</a>
     </div>
   </div>
 
