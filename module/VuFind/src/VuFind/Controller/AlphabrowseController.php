@@ -102,6 +102,11 @@ class AlphabrowseController extends AbstractBase
         $from   = $this->params()->fromQuery('from', false);
         $page   = intval($this->params()->fromQuery('page', 0));
 
+        // Special case: highlighting is pointless if there's no user input:
+        if (empty($from)) {
+            $highlighting = false;
+        }
+
         // Set up any extra parameters to pass
         $extraParams = new ParamBag();
         if (isset($extras[$source])) {

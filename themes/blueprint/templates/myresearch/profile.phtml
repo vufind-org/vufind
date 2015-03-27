@@ -16,6 +16,9 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h3><?=$this->transEsc('Your Profile')?></h3>
   <?=$this->flashmessages();?>
+
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
   <? if ($showHomeLibForm): ?><form method="post" action="" id="profile_form"><? endif; ?>
   <?
       echo $this->renderArray(

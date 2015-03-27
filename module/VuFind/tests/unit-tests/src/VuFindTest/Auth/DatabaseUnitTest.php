@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFindTest\Auth;
-use VuFind\Auth\Database, Zend\Stdlib\Parameters;
+use VuFind\Auth\Database, Zend\Db\ResultSet\ResultSet, Zend\Stdlib\Parameters;
 
 /**
  * Database authentication test class.
@@ -110,9 +110,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     public function testCreateDuplicateEmail()
     {
         // Fake services:
-        $table = $this->getMock(
-            'VuFind\Db\Table\Tags', ['getByEmail', 'getByUsername']
-        );
+        $table = $this->getMockTable(['getByEmail', 'getByUsername']);
         $table->expects($this->once())->method('getByEmail')
             ->with($this->equalTo('me@mysite.com'))
             ->will($this->returnValue(true));
@@ -136,9 +134,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     public function testCreateDuplicateUsername()
     {
         // Fake services:
-        $table = $this->getMock(
-            'VuFind\Db\Table\Tags', ['getByUsername']
-        );
+        $table = $this->getMockTable(['getByUsername']);
         $table->expects($this->any())->method('getByUsername')
             ->with($this->equalTo('good'))
             ->will($this->returnValue(true));
@@ -156,10 +152,7 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
     public function testSuccessfulCreation()
     {
         // Fake services:
-        $table = $this->getMock(
-            'VuFind\Db\Table\Tags', ['insert', 'getByEmail', 'getByUsername']
-        );
-        $table->expects($this->once())->method('insert');
+        $table = $this->getMockTable(['insert', 'getByEmail', 'getByUsername']);
         $table->expects($this->once())->method('getByEmail')
             ->with($this->equalTo('me@mysite.com'))
             ->will($this->returnValue(false));
@@ -167,9 +160,10 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
             ->with($this->equalTo('good'))
             ->will($this->returnValue(false));
         $db = $this->getDatabase($table);
-        $this->assertEquals(
-            false, $db->create($this->getRequest($this->getCreateParams()))
-        );
+        $prototype = $table->getResultSetPrototype()->getArrayObjectPrototype();
+        $prototype->expects($this->once())->method('save');
+        $user = $db->create($this->getRequest($this->getCreateParams()));
+        $this->assertTrue(is_object($user));
     }
 
     // INTERNAL API
@@ -189,6 +183,43 @@ class DatabaseUnitTest extends \VuFindTest\Unit\DbTestCase
             'password2' => 'pass',
             'email' => 'me@mysite.com',
         ];
+    }
+
+    /**
+     * Get a mock row object
+     *
+     * @return \VuFind\Db\Row\User
+     */
+    protected function getMockRow()
+    {
+        return $this->getMockBuilder('VuFind\Db\Row\User')
+            ->disableOriginalConstructor()
+            ->getMock();
+    }
+
+    /**
+     * Get a mock table object
+     *
+     * @param array $methods Methods to mock
+     *
+     * @return \VuFind\Db\Table\User
+     */
+    protected function getMockTable($methods = [])
+    {
+        $methods[] = 'getResultSetPrototype';
+        $mock = $this->getMockBuilder('VuFind\Db\Table\User')
+            ->disableOriginalConstructor()
+            ->setMethods($methods)
+            ->getMock();
+        $mock->expects($this->any())->method('getResultSetPrototype')
+            ->will(
+                $this->returnValue(
+                    new ResultSet(
+                        ResultSet::TYPE_ARRAYOBJECT, $this->getMockRow()
+                    )
+                )
+            );
+        return $mock;
     }
 
     /**
