@@ -386,7 +386,17 @@ $(document).ready(function(){
         } else {
             $(this).html(vufindString.qrcode_hide).addClass("active");
         }
-        $(this).next('.qrcodeHolder').toggle();
+
+        var holder = $(this).next('.qrcodeHolder');
+
+        if (holder.find('img').length == 0) {
+            // We need to insert the QRCode image
+            var template = holder.find('.qrCodeImgTag').html();
+            holder.html(template);
+        }
+
+        holder.toggle();
+
         return false;
     });
 

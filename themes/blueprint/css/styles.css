@@ -451,7 +451,10 @@ ul.recordSet .addToFavLink {
     background-repeat: repeat-x;
     background-position: bottom;
 }
-.authorBox .span-5 {white-space:nowrap;}
+.authorbox .applied {color:#000;}
+.authorbox .applied img {vertical-align:sub;}
+.authorbox .span-5 {white-space:nowrap;}
+.authorbox .span-5 a {white-space:normal;}
 .authorbio .providerLink {
     margin-top: 1em;
     margin-bottom: .4em;
@@ -2342,7 +2345,7 @@ div.handle {
 
 /********** Styles for results visualizations **********/
 
-.node {
+#visualResults .node {
   border: solid 1px white;
   font: 10px sans-serif;
   line-height: 12px;
@@ -2351,16 +2354,14 @@ div.handle {
   margin:-1px;
 }
 
-.node div {
+#visualResults .node div {
   margin-left: 3px;
   margin-top: 0px;
 }
 
-.toplevel {
-  border: 2px solid black;
-}
+#visualResults .toplevel {border: 2px solid black;}
 
-.label {
+#visualResults .label {
   display: block;
   line-height: 1;
   padding: 2px;
@@ -2373,13 +2374,10 @@ div.handle {
   right: 0;
 }
 
-.notalabel {
-  color: #000000;
-}
+#visualResults .notalabel {color: #000000;}
 
-#viz-instructions {
-  padding-top:600px;
-}
+#viz-instructions {padding-top:600px;}
+
 #gbsViewer {
   margin:25px 0px 50px 25px;
   width: 90%;

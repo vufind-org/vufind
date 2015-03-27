@@ -51,17 +51,17 @@ class CacheDecoratorTest extends \PHPUnit_Framework_TestCase
     {
         $cache = $this->getMockForAbstractClass('Zend\Cache\Storage\StorageInterface', ['setItem', 'hasItem']);
         $cache->expects($this->exactly(2))
-              ->method('setItem');
+            ->method('setItem');
         $cache->expects($this->exactly(2))
-              ->method('hasItem')
-              ->will($this->returnValue(false));
+            ->method('hasItem')
+            ->will($this->returnValue(false));
         $reader = $this->getMockForAbstractClass('Zend\Config\Reader\ReaderInterface', ['fromFile', 'fromString']);
         $reader->expects($this->once())
-               ->method('fromFile')
-               ->will($this->returnValue([]));
+            ->method('fromFile')
+            ->will($this->returnValue([]));
         $reader->expects($this->once())
-               ->method('fromString')
-               ->will($this->returnValue([]));
+            ->method('fromString')
+            ->will($this->returnValue([]));
         $deco = new CacheDecorator($reader, $cache);
         $deco->fromFile('ignore');
         $deco->fromString('ignore');

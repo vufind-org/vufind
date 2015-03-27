@@ -139,7 +139,8 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
 
         // If this is a PostgreSQL connection, we may need to initialize the ID
         // from a sequence:
-        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql"
+        if ($this->adapter
+            && $this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql"
             && $obj instanceof \VuFind\Db\Row\RowGateway
         ) {
             // Do we have a sequence feature?
