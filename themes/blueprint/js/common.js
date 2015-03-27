@@ -310,11 +310,9 @@ function phoneNumberFormHandler(numID, regionCode) {
       for(var i=libphoneErrorStrings.length;i--;) {
         valid.replace(libphoneErrorStrings[i], vufindString[libphoneTranslateCodes[i]]);
       }
-        console.log(valid);
       $(phoneInput).siblings('.phone-error').html(valid);
     } else {
       $(phoneInput).siblings('.phone-error').html(vufindString['libphonenumber_invalid']);
-      console.log(vufindString['libphonenumber_invalid']);
     }
   } else {
     $(phoneInput).siblings('.phone-error').html('');
