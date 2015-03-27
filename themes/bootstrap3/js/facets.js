@@ -1,4 +1,4 @@
-/*global htmlEncode, path */
+/*global htmlEncode, path, vufindString */
 function buildFacetNodes(data, currentPath, allowExclude, excludeTitle, counts)
 {
   var json = [];

@@ -378,7 +378,7 @@ class BrowseController extends AbstractBase
             ];
         }
         $view->categoryList = $categoryList;
-        $view->query_field = 'dewey';
+        $view->dewey_flag = 1;
         if ($this->params()->fromQuery('findby')) {
             $secondaryList = $this->quoteValues(
                 $this->getFacetList(
