@@ -447,8 +447,9 @@ class LuceneSyntaxHelper
      */
     protected function normalizeColons($input)
     {
+        $lookahead = self::$insideQuotes;
         $input = preg_replace('/:+/', ':', $input);
-        $input = preg_replace('/(\:[:\s]+|[:\s]+:)/', ' ', $input);
+        $input = preg_replace('/(\:[:\s]+|[:\s]+:)' . $lookahead . '/', ' ', $input);
         return $input == ':' ? '' : $input;
     }
     /**
