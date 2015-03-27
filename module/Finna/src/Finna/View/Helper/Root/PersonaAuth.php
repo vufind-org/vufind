@@ -81,7 +81,7 @@ class PersonaAuth extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Return Mozill Persona Auto logout value from config file.
+     * Return Mozilla Persona Auto logout value from config file.
      * @return type User's email or null
      */
     public function getAutoLogout()

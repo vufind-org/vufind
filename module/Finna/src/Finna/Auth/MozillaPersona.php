@@ -95,20 +95,10 @@ class MozillaPersona extends \VuFind\Auth\AbstractBase
     protected function createPersonaUser($username, $email)
     {
         $table = $this->getUserTable();
-        // Make sure we have a unique email
-        if ($table->getByEmail($email)) {
-            throw new AuthException('That email address is already used');
-        }
         // If we got this far, we're ready to create the account:
-        $data = [
-            'username' => $username,
-            'email' => $email,
-            'created' => date('Y-m-d H:i:s')
-        ];
-        // Create the row and return it back
-        $table->insert($data);
-        $user = $table->getByUsername($username, false);
-
+        $user = $table->createRowForUsername($username);
+        $user->email = $email;
+        $user->save();
         return $user;
     }
 

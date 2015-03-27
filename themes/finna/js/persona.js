@@ -10,13 +10,12 @@ finna.persona = (function (finna) {
             var phref = recordTabs.find('.active a').prop('href');
             url = phref.split('#')[0];
         }
-        console.log(goingOut);
         if (goingOut === true) {
-            console.log('Going out '+url);
+            if (url.match('/MyResearch/')) {
+                return path;
+            }
             url = url.split('?')[0];
-            console.log('Cleared '+url);
         }
-        console.log(url);
         return url;
     };
 
@@ -48,7 +47,6 @@ finna.persona = (function (finna) {
 
     var mozillaPersonaSetup = function (currentUser, autoLogoutEnabled) {
         if (navigator.id === undefined || navigator.id === null) {
-            console.log('Persona support not properly loaded');
             // Persona support not properly loaded
             return;
         }
