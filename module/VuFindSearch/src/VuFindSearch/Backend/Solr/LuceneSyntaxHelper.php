@@ -450,7 +450,7 @@ class LuceneSyntaxHelper
         $lookahead = self::$insideQuotes;
         $input = preg_replace('/:+/', ':', $input);
         $input = preg_replace('/(\:[:\s]+|[:\s]+:)' . $lookahead . '/', ' ', $input);
-        return $input == ':' ? '' : $input;
+        return trim($input, ':');
     }
     /**
      * Prepare input to be used in a SOLR query.
