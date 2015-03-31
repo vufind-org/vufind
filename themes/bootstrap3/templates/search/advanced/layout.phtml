@@ -36,6 +36,21 @@
     isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
     array('options' => $this->options, 'searchDetails' => $searchDetails)
   );
+
+  // Collect previous search queries
+  $setSearchGroups = [];
+  $setQueries = [];
+  if (isset($searchDetails) && is_object($searchDetails)) {
+    foreach ($searchDetails->getQueries() as $group=>$searchGroup) {
+      $setSearchGroups[$group] = $searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator();
+      if (!isset($setQueries[$group])) {
+        $setQueries[$group] = [];
+      }
+      foreach ($searchGroup->getQueries() as $search) {
+        $setQueries[$group][] = $search;
+      }
+    }
+  }
 ?>
 
 <?=$this->flashmessages()?>
@@ -45,7 +60,7 @@
       <input type="hidden" name="sort" value="relevance">
       <div class="clearfix">
         <p class="lead pull-left"><?=$this->transEsc('Advanced Search')?></p>
-        <div id="groupJoin" class="form-inline pull-right hidden">
+        <div id="groupJoin" class="form-inline pull-right">
           <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
           <select id="groupJoinOptions" name="join" class="form-control">
             <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('group_AND') ?></option>
@@ -77,17 +92,17 @@
                   <div id="search<?=$group.'_'.$search ?>" class="search">
                     <div class="row">
                       <div class="col-md-7">
-                        <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control" type="text">
+                        <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control" type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
                       </div>
                       <div class="col-md-4">
-                        <select class="form-control">
+                        <select class="type form-control" name="type<?=$group ?>[]">
                           <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                            <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
+                            <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
                           <? endforeach; ?>
                         </select>
                       </div>
                       <div class="col-md-1">
-                        <a onclick="deleteSearch(<?=$group.','.$search ?>)" class="help-block delete" href="#">&times;</a>
+                        <a onclick="deleteSearch(<?=$group.','.$search ?>)" class="help-block delete hidden" href="#">&times;</a>
                       </div>
                     </div>
                   </div>
@@ -103,9 +118,9 @@
             <label class="search_bool"><?=$this->transEsc("search_match")?>:&nbsp;</label>
             <a href="#" class="close hidden" title="<?=$this->transEsc("del_search")?>">&times;</a>
             <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control">
-              <option value="AND"><?=$this->transEsc("search_AND")?></option>
-              <option value="OR"><?=$this->transEsc("search_OR")?></option>
-              <option value="NOT"><?=$this->transEsc("search_NOT")?></option>
+              <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
+              <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
+              <option value="NOT"<? if(isset($setSearchGroups[$group]) && 'NOT' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_NOT")?></option>
             </select>
           </div>
         </div>
