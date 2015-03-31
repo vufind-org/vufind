@@ -7,6 +7,9 @@
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Your Fines')?></h2>
+
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
   <? if (empty($this->fines)): ?>
     <?=$this->transEsc('You do not have any fines')?>
   <? else: ?>

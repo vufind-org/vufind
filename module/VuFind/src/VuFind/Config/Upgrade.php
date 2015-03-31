@@ -742,6 +742,19 @@ class Upgrade
             }
         }
 
+        // fix call number sort settings:
+        if (isset($newConfig['Sorting']['callnumber'])) {
+            $newConfig['Sorting']['callnumber-sort']
+                = $newConfig['Sorting']['callnumber'];
+            unset($newConfig['Sorting']['callnumber']);
+        }
+        if (isset($newConfig['DefaultSortingByType'])) {
+            foreach ($newConfig['DefaultSortingByType'] as & $v) {
+                if ($v === 'callnumber') {
+                    $v = 'callnumber-sort';
+                }
+            }
+        }
         $this->upgradeSpellingSettings('searches.ini', ['CallNumber']);
 
         // save the file

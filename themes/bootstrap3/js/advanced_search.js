@@ -11,7 +11,7 @@ function addSearch(group, term, field)
   // Build the new search
   var inputIndex = $('#group'+group+' input').length;
   var inputID = group+'_'+inputIndex;
-  var newSearch = '<div class="search" id="search'+inputID+'"><div class="row"><div class="col-md-7"><input id="search_lookfor'+inputID+'" class="form-control" type="text" name="lookfor'+group+'[]" value="'+term+'"/></div>'
+  var newSearch = '<div class="search" id="search'+inputID+'"><div class="row"><div class="col-md-7"><input id="search_lookfor'+inputID+'" class="form-control" type="text" name="lookfor'+group+'[]" value="'+term.replace(/"/g, '&quot;')+'"/></div>'
     + '<div class="col-md-4"><select id="search_type'+inputID+'" name="type'+group+'[]" class="form-control">';
   for (var key in searchFields) {
     newSearch += '<option value="' + key + '"';

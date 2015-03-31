@@ -34,7 +34,7 @@
                 <i class="fa fa-trash-o"></i> <?=$this->transEsc("delete_list")?>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('Delete') ?></a></li>
+                <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
                 <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
               </ul>
             </div>

@@ -1,0 +1,63 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Library Cards'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Library Cards') . '</li>';
+?>
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+
+    <?=$this->flashmessages()?>
+
+    <h2><?=$this->transEsc('Library Cards')?></h2>
+    <? if ($this->libraryCards->count() == 0): ?>
+      <div><?=$this->transEsc('You do not have any library cards')?></div>
+    <? else: ?>
+      <table class="table table-striped" summary="<?=$this->transEsc('Library Cards')?>">
+      <tr>
+        <th><?=$this->transEsc('Library Card Name')?></th>
+        <? if ($this->multipleTargets): ?>
+        <th><?=$this->transEsc('login_target')?></th>
+        <? endif; ?>
+        <th><?=$this->transEsc('Username')?></th>
+        <th>&nbsp;</th>
+      </tr>
+      <? foreach ($this->libraryCards as $record): ?>
+        <tr>
+          <td><?=$this->escapeHtml($record['card_name'])?></td>
+          <? $username = $record['cat_username']; if ($this->multipleTargets): ?>
+            <? $target = ''; ?>
+            <? if (strstr($username, '.')): ?>
+              <? list($target, $username) = explode('.', $username, 2); ?>
+            <? endif; ?>
+            <td><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></td>
+          <? endif; ?>
+          <td><?=$this->escapeHtml($username)?></td>
+          <td>
+            <div class="btn-group">
+              <a class="btn btn-link" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEsc('Edit Library Card')?>"><i class="fa fa-edit"></i> <?=$this->transEsc('Edit')?></a>
+              <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>">
+                <i class="fa fa-trash-o"></i> <?=$this->transEsc('Delete')?>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="<?=$this->url('librarycards-deletecard') ?>?cardID=<?=urlencode($record['id'])?>&amp;confirm=1"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+                <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+      <? endforeach; ?>
+      </table>
+    <? endif; ?>
+
+    <div class="btn-group">
+      <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-link" title="<?=$this->transEsc('Add a Library Card')?>"><i class="fa fa-edit"></i> <?=$this->transEsc('Add a Library Card')?></a>
+    </div>
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'librarycards'))?>
+  </div>
+
+</div>

@@ -26,13 +26,17 @@
     margin:0;
   }
 }
-.highlight{&:extend(mark);}
+.highlight,mark {
+  background: lighten(#FF0, 20%);
+  padding: .1em .2em;
+}
 .icon-bar {background-color:#888}
 img {max-width:100%}
 label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-left:35px}
 .list-group-item.title {font-weight:bold}
 #modal .modal-body > h2:first-child {display:none}
 .popover {width:250px}
+.recordcover {max-height: 300px;}
 .sub-breadcrumb {
   padding:5px 10px;
   white-space:nowrap;
@@ -185,6 +189,14 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .fa-videodisc:before      {content:"\f109"} // .fa-laptop
 .fa-videoreel:before      {content:"\f03d"} // .fa-video-camera
 
+/* --- PubDateVis --- */
+#dateVisColorSettings {
+  background-color: #fff; // background of box
+  fill: rgb(234,234,234); // fillColor
+  outline-color: #e8cfac; // selection color
+  stroke: @brand-primary; // color
+}
+
 /* --- Record --- */
 .citation {
   .pace-car {
@@ -251,6 +263,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 /* --- Sidebar --- */
 /* Sidebar rounded corners */
 .sidebar {
+  label {margin-left: 20px;}
   .list-group:not(.filters) .title {
     cursor:pointer;
     &.collapsed {
