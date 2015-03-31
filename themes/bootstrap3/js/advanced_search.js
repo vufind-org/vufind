@@ -30,15 +30,19 @@ function addSearch(group, fieldValues)
     $newSearch.find('select.op option[value="'+fieldValues.op+'"]').attr('selected', 1);
   }
   // Insert it
+  console.log($("#group" + group + "Holder").length);
   $("#group" + group + "Holder").before($newSearch);
-  // Individual search ops
+  // Individual search ops (for searches like EDS)
   if (inputIndex == 0) {
-    $newSearch.find('.first-op').attr('name', 'op' + group + '[]');
+    $newSearch.find('.first-op')
+      .attr('name', 'op' + group + '[]')
+      .removeClass('hidden');
     $newSearch.find('select.op').remove();
   } else {
     $newSearch.find('select.op')
       .attr('id', 'search_op' + group + '_' + inputIndex)
-      .attr('name', 'op' + group + '[]');
+      .attr('name', 'op' + group + '[]')
+      .removeClass('hidden');
     $newSearch.find('.first-op').remove();
     $newSearch.find('label').remove();
     // Show x if we have more than one search inputs
@@ -72,7 +76,7 @@ function addGroup(firstTerm, firstField, join)
 
   var $newGroup = $($('#new_group_template').html());
   $newGroup.attr('id', 'group'+nextGroup);
-  $newGroup.find('.fa.fa-plus-circle')
+  $newGroup.find('.search_place_holder')
     .attr('id', 'group'+nextGroup+'Holder')
     .removeClass('hidden');
   $newGroup.find('.add_search_link')

@@ -1,9 +1,12 @@
 <script>
   $(document).ready(function() {
     // Switch and prepare for JS mode
+    $('#groupPlaceHolder').addClass('hidden');
+    $('#new_search_template').addClass('hidden').detach().appendTo('[role="main"]');
+    $('#new_group_template').addClass('hidden').detach().appendTo('[role="main"]');
+    $('#new_group_template .search').remove();
     $('#advSearchForm .no-js').remove();
-    $('#new_group_template_overwrite').attr('id', 'new_group_template');
-    $('#new_search_template_overwrite').attr('id', 'new_search_template');
+    $('#groupJoin').remove();
     // Build page
     <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
       <? foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
@@ -29,41 +32,5 @@
       addSearch(new_group);
     <? endif; ?>
 
-    $('#groupPlaceHolder').hide();
   });
-</script>
-
-<script type="text/template" id="new_search_template_overwrite">
-  <div class="search row">
-    <div class="col-sm-3">
-      <input type="hidden" value="AND" class="first-op"/>
-      <label class="help-block"><?=$this->transEsc("adv_search_label")?>:</label>
-      <select class="op col-sm-9 form-control">
-        <option value="AND"><?=$this->transEsc("AND")?></option>
-        <option value="OR"><?=$this->transEsc("OR")?></option>
-        <option value="NOT"><?=$this->transEsc("NOT")?></option>
-      </select>
-    </div>
-    <div class="col-sm-9">
-      <div class="col-sm-6">
-        <input class="form-control" type="text"/>
-      </div>
-      <span class="col-sm-1 help-block"><?=$this->transEsc("in")?></span>
-      <div class="col-sm-4">
-        <select class="type form-control">
-          <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-            <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
-          <? endforeach; ?>
-        </select>
-      </div>
-      <a href="#" class="col-sm-1 help-block delete hidden">&times;</a>
-    </div>
-  </div>
-</script>
-
-<script type="text/template" id="new_group_template_overwrite">
-  <div class="group well clearfix">
-    <input type="hidden" name="bool0[]" value="AND"/>
-    <i class="col-sm-offset-3 fa fa-plus-circle"></i> <a href="#" class="add_search_link"><?=$this->transEsc("add_search")?></a>
-  </div>
 </script>
