@@ -255,8 +255,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             = isset($this->config['Holds']['holdCheckLimit'])
             ? $this->config['Holds']['holdCheckLimit'] : "15";
         $this->callSlipCheckLimit
-            = isset($this->config['CallSlips']['callSlipCheckLimit'])
-            ? $this->config['CallSlips']['callSlipCheckLimit'] : "15";
+            = isset($this->config['StorageRetrievalRequests']['checkLimit'])
+            ? $this->config['StorageRetrievalRequests']['checkLimit'] : "15";
 
         $this->recallsEnabled
             = isset($this->config['Holds']['enableRecalls'])
@@ -432,9 +432,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected function isStorageRetrievalRequestAllowed($holdingsRow)
     {
         $holdingsRow = $holdingsRow['_fullRow'];
-        if (isset($this->config['CallSlips']['valid_item_types'])) {
+        if (isset($this->config['StorageRetrievalRequests']['valid_item_types'])) {
             $validTypes = explode(
-                ':', $this->config['CallSlips']['valid_item_types']
+                ':', $this->config['StorageRetrievalRequests']['valid_item_types']
             );
 
             $type = $holdingsRow['TEMP_ITEM_TYPE_ID']
@@ -638,7 +638,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             return false;
         }
         if ($this->checkAccountBlocks($patron['id'])) {
-            return 'block';
+            return false;
         }
 
         $level = isset($data['level']) ? $data['level'] : "copy";
