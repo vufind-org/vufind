@@ -39,6 +39,86 @@ namespace Finna\Controller;
 class AjaxController extends \VuFind\Controller\AjaxController
 {
     /**
+     * Check Requests are Valid
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function checkRequestsAreValidAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
+        $data = $this->params()->fromPost('data', $this->params()->fromQuery('data'));
+        $requestType = $this->params()->fromPost('requestType', $this->params()->fromQuery('requestType'));
+        if (!empty($id) && !empty($data)) {
+            // check if user is logged in
+            $user = $this->getUser();
+            if (!$user) {
+                return $this->output(
+                    [
+                        'status' => false,
+                        'msg' => $this->translate('You must be logged in first')
+                    ],
+                    self::STATUS_NEED_AUTH
+                );
+            }
+
+            try {
+                $catalog = $this->getILS();
+                $patron = $this->getILSAuthenticator()->storedCatalogLogin();
+                if ($patron) {
+                    $results = [];
+                    foreach ($data as $item) {
+                        switch ($requestType) {
+                        case 'ILLRequest':
+                            $result = $catalog->checkILLRequestIsValid(
+                                $id, $item, $patron
+                            );
+
+                            $msg = $result
+                                ? $this->translate('ill_request_place_text')
+                                : $this->translate('ill_request_error_blocked');
+                            break;
+                        case 'StorageRetrievalRequest':
+                            $result = $catalog->checkStorageRetrievalRequestIsValid(
+                                $id, $item, $patron
+                            );
+
+                            $msg = $result
+                                ? $this->translate(
+                                    'storage_retrieval_request_place_text'
+                                )
+                                : $this->translate(
+                                    'storage_retrieval_request_error_blocked'
+                                );
+                            break;
+                        default:
+                            $result = $catalog->checkRequestIsValid(
+                                $id, $item, $patron
+                            );
+
+                            $msg = $result
+                                ? $this->translate('request_place_text')
+                                : $this->translate('hold_error_blocked');
+                            break;
+                        }
+                        $results[] = [
+                            'status' => $result,
+                            'msg' => $msg
+                        ];
+                    }
+                    return $this->output($results, self::STATUS_OK);
+                }
+            } catch (\Exception $e) {
+                // Do nothing -- just fail through to the error message below.
+            }
+        }
+
+        return $this->output(
+            $this->translate('An error has occurred'), self::STATUS_ERROR
+        );
+    }
+
+    /**
      * Return rendered HTML for record image popup.
      *
      * @return mixed

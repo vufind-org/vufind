@@ -188,6 +188,12 @@ renewals_enabled = true
 ;   if available, but not supported by all drivers)
 title_level_holds_mode = "driver"
 
+; Determines how holdings are grouped in the record display.
+; Legal values:
+; - holdings_id (Use holdings record id if available, location name otherwise - Default)
+; - location_name (Use location name)
+holdings_grouping = holdings_id
+
 ; This section allows you to determine how the users will authenticate.
 ; You can use an LDAP directory, the local ILS, the VuFind database (Database),
 ; Shibboleth, SIP2, CAS or some combination of these (via the MultiAuth option).
@@ -898,6 +904,13 @@ marc_links = "760,762,765,767,770,772,775,776,780,785"
 ; You can use this setting to hide holdings information for particular named locations
 ; as returned by the catalog.
 hide_holdings[] = "World Wide Web"
+
+; You can use this setting to specify how grouped holdings details are displayed 
+; by default. Available options:
+;    collapse     - Collapse all details
+;    expand-first - Expand first group, collapse others (default)
+;    expand-all   - Expand all groups
+;holdings_details = collapse
 
 ; This array controls which Related modules are used to display sidebars on the
 ; record view page.

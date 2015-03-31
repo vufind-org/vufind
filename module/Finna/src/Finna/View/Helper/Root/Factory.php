@@ -42,6 +42,20 @@ use Zend\ServiceManager\ServiceManager;
 class Factory extends \VuFind\View\Helper\Root\Factory
 {
     /**
+     * Construct the Holdings Details Mode helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HoldingsDetailsMode
+     */
+    public static function getHoldingsDetailsMode(ServiceManager $sm)
+    {
+        return new HoldingsDetailsMode(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
+    }
+
+    /**
      * Construct the Record helper.
      *
      * @param ServiceManager $sm Service manager.
