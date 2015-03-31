@@ -545,7 +545,7 @@ class DAIA extends AbstractBase implements
                     $result_item["callnumber"] = "Unknown";
                 }
                 // get location
-                if (isset($item["storage"])) {
+                if (isset($item["storage"]["content"])) {
                     $result_item["location"] = $item["storage"]["content"];
                 } else {
                     $result_item["location"] = "Unknown";
