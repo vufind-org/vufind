@@ -56,33 +56,33 @@ class PersonaAuth extends \Zend\View\Helper\AbstractHelper
 
     /**
      * Is current user logged in by Mozilla Persona authentication.
+     *
      * @return type User's email or null
      */
     public function getUser()
     {
         $authManager = $this->serviceLocator->get('VuFind\AuthManager');
-        $sessionManager = $this->serviceLocator->get('VuFind\SessionManager');
-        $authMethod = $authManager->getAuthMethod();
-        if ($authMethod == 'ChoiceAuth') {
-            $currentAuth = $sessionManager->getStorage()['ChoiceAuth'];
-            $authMethod = $currentAuth ? $currentAuth->auth_method : null;
-        }
-        if ($authMethod != 'MozillaPersona') {
-            return null;
-        }
         $user = $authManager->isLoggedIn();
         if ($user === false) {
             return null;
         } else {
-            $institution = $this->config->get('Site')->get('institution');
-            $username = substr($user->username, strlen($institution) + 1);
+            $authMethod = $authManager->getAuthMethod();
+            if ($authMethod == 'ChoiceAuth') {
+                $currentAuth = $authManager->getActiveAuth();
+                $authMethod = $currentAuth->getSelectedAuthOption();
+            }
+            if ($authMethod != 'MozillaPersona') {
+                return null;
+            }
+            list(,$username) = explode(':', $user->username, 2);
             return $username;
         }
     }
 
     /**
      * Return Mozilla Persona Auto logout value from config file.
-     * @return type User's email or null
+     *
+     * @return boolean
      */
     public function getAutoLogout()
     {

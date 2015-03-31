@@ -144,7 +144,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
-     * Construct the PersonaUser view helper.
+     * Construct the PersonaAuth view helper.
      *
      * @param ServiceManager $sm Service manager.
      *

@@ -29,7 +29,6 @@
 namespace Finna\Auth;
 
 use VuFind\Exception\Auth as AuthException;
-use Zend\Http\Client as HttpClient;
 
 /**
  * Mozilla Persona authentication module.
@@ -40,8 +39,10 @@ use Zend\Http\Client as HttpClient;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class MozillaPersona extends \VuFind\Auth\AbstractBase
+class MozillaPersona extends \VuFind\Auth\AbstractBase implements
+    \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
@@ -58,14 +59,15 @@ class MozillaPersona extends \VuFind\Auth\AbstractBase
         if ($assertion === null) {
             throw new AuthException('authentication_missing_assertion');
         }
-        $audience = (empty($request->getServer('HTTPS')) ?
-                'http://' :
-                'https://') . $request->getServer('SERVER_NAME') . ':' .
+        $protocol = $request->getServer('HTTPS');
+        $audience = (empty($protocol) ? 'http://' : 'https://') .
+            $request->getServer('SERVER_NAME') . ':' .
             $request->getServer('SERVER_PORT');
 
-        $client = new HttpClient();
-        $client->setUri('https://verifier.login.persona.org/verify');
-        $client->setMethod('POST');
+        $client = $this->httpService->createClient(
+            'https://verifier.login.persona.org/verify',
+            \Zend\Http\Request::METHOD_POST
+        );
         $client->setParameterPost(
             ['assertion' => $assertion, 'audience' => $audience]
         );
@@ -87,15 +89,16 @@ class MozillaPersona extends \VuFind\Auth\AbstractBase
 
     /**
      * Create a new Mozilla Persona authenticated user
+     *
      * @param type $username user's name
      * @param type $email    User's email
+     *
      * @return type
      * @throws AuthException
      */
     protected function createPersonaUser($username, $email)
     {
         $table = $this->getUserTable();
-        // If we got this far, we're ready to create the account:
         $user = $table->createRowForUsername($username);
         $user->email = $email;
         $user->save();

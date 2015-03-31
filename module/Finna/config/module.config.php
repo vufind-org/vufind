@@ -65,6 +65,7 @@ $config = array(
         'factories' => array(
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
+            'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
         )
     ),
     // This section contains all VuFind-specific settings (i.e. configurations

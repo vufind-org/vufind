@@ -2,7 +2,7 @@
 
 finna.persona = (function (finna) {
 
-    var getDestinationUrl = function (goingOut) {
+    var getDestinationUrl = function (loggingOut) {
         var url = window.location.href;
         // Check if we have changed tab
         var recordTabs = $('.recordTabs');
@@ -10,7 +10,7 @@ finna.persona = (function (finna) {
             var phref = recordTabs.find('.active a').prop('href');
             url = phref.split('#')[0];
         }
-        if (goingOut === true) {
+        if (loggingOut) {
             if (url.match('/MyResearch/')) {
                 return path;
             }
@@ -34,10 +34,10 @@ finna.persona = (function (finna) {
         });
     };
 
-    var setSignoutLink = function () {
-        var signoutLink = document.getElementById('persona-logout');
-        if (signoutLink) {
-            signoutLink.onclick = function () {
+    var setLogoutLink = function () {
+        var logoutLink = document.getElementById('persona-logout');
+        if (logoutLink) {
+            logoutLink.onclick = function () {
                 navigator.id.logout();
                 personaLogout();
                 return false;
@@ -80,7 +80,7 @@ finna.persona = (function (finna) {
                                             );
                                     // No page load, so have to add logout id
                                     $('i.fa-sign-out').parent().attr('id', 'persona-logout');
-                                    Lightbox.addCloseAction(finna.persona.setSignoutLink);
+                                    Lightbox.addCloseAction(finna.persona.setLogoutLink);
                                 }
                             }
                         } else {
@@ -104,14 +104,14 @@ finna.persona = (function (finna) {
             }
         });
 
-        var signinLink = document.getElementById('persona-login');
-        if (signinLink) {
-            signinLink.onclick = function () {
+        var loginLink = document.getElementById('persona-login');
+        if (loginLink) {
+            loginLink.onclick = function () {
                 navigator.id.request();
                 return false;
             };
         }
-        setSignoutLink();
+        setLogoutLink();
     };
 
     var initPersona = function () {
@@ -128,7 +128,7 @@ finna.persona = (function (finna) {
 
 
     var my = {
-        setSignoutLink: setSignoutLink,
+        setLogoutLink: setLogoutLink,
         init: function () {
             initPersona();
         }
