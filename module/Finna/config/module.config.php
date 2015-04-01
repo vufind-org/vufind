@@ -76,6 +76,11 @@ $config = array(
                     'user' => 'Finna\Db\Table\Factory::getUser',
                 ],
             ],
+            'ils_driver' => [
+                'factories' => [
+                    'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful',
+                ],
+            ],
             'search_backend' => array(
                 'factories' => array(
                     'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
