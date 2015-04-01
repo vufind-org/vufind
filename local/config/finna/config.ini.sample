@@ -225,10 +225,13 @@ encrypt_ils_password = "1"
 ; filled in with a random string value when encrypt_ils_passwords is set to true.
 ils_encryption_key = ""
 
+;Whether Mozilla Persona login is enabled
+;mozillaPersona = true
+;Whether Persona autologout is enabled (default is true)
+mozillaPersonaAutoLogout = false
+
 [ChoiceAuth]
-; TODO: MozillaPersona not yet implemented:
-;choice_order = MozillaPersona,Shibboleth,MultiILS
-choice_order = Shibboleth,MultiILS
+choice_order = MozillaPersona,Shibboleth,MultiILS
 
 ; See the comments in library/VF/Auth/MultiAuth.php for full details
 ; on using multiple authentication methods.  Note that MultiAuth assumes login

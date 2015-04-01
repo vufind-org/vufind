@@ -65,12 +65,18 @@ $config = array(
         'factories' => array(
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
+            'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
         )
     ),
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
     'vufind' => array(
         'plugin_managers' => array(
+            'auth' => array(
+                'invokables' => array(
+                    'mozillapersona' => 'Finna\Auth\MozillaPersona',
+                ),
+            ),
             'db_table' => [
                 'factories' => [
                     'user' => 'Finna\Db\Table\Factory::getUser',
