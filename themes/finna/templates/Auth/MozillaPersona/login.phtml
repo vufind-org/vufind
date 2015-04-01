@@ -1,0 +1,14 @@
+<div class="persona-auth">
+    <? $account = $this->auth()->getManager(); ?>
+    <?=$this->auth()->getLoginFields()?>
+
+    <? // If page load done and we are showing Lightbox window,
+       // Mozilla Persona login link must be updated. ?>
+    <script>
+    if ($.isReady === true) {
+        if (typeof finna.persona !== 'undefined') {
+            finna.persona.setLoginLink();
+        }
+    }
+    </script>
+</div>

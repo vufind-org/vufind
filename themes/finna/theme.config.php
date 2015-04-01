@@ -12,6 +12,7 @@ return array(
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
             'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
+            'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
         ),
         'invokables' => array(
             'search' => 'Finna\View\Helper\Root\Search',
@@ -31,6 +32,7 @@ return array(
         'finna.js',
         'image-popup.js',
         'finna-layout.js',
+        'finna-persona.js',
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js',
         'vendor/jquery.inview.min.js',

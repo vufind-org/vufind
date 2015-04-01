@@ -145,7 +145,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
-     * Construct the Total indexed countr view helper.
+     * Construct the Total indexed count view helper.
      *
      * @param ServiceManager $sm Service manager.
      *
@@ -155,5 +155,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     {
         $locator = $sm->getServiceLocator();
         return new TotalIndexed($locator);
+    }
+
+    /**
+     * Construct the PersonaAuth view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\View\Helper\Root\PersonaAuth
+     */
+    public static function getPersonaAuth(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        return new PersonaAuth($locator);
     }
 }
