@@ -1,4 +1,4 @@
-<? $unprocessedFormats = $this->driver->getUnprocessedFormat(); ?>
+<? $unprocessedFormats = $this->driver->getUnprocessedFormats(); ?>
 <? $formats = $this->driver->getFormats(); if ($formats): ?>
   <span class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($unprocessedFormats))?>"><?=$this->transEsc(end($formats))?></span>
 <? endif; ?>

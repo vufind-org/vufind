@@ -291,16 +291,16 @@ trait SolrFinna
     }
 
     /**
-     * Like getFormat() but takes into account __unprocessed_format field.
+     * Like getFormats() but takes into account __unprocessed_format field.
      *
      * @return array Formats
      */
-    public function getUnprocessedFormat()
+    public function getUnprocessedFormats()
     {
         if (isset($this->fields['__unprocessed_format'])) {
             return $this->fields['__unprocessed_format'];
         }
-        return $this->getFormat();
+        return $this->getFormats();
     }
 
     /**
