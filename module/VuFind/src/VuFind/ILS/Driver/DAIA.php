@@ -842,26 +842,33 @@ class DAIA extends AbstractBase implements
     protected function calculateStatus($item)
     {
         $availability = false;
-        $status = null;
+        $status = ''; // status cannot be null as this will crash the translator
         $duedate = null;
         if (array_key_exists("available", $item)) {
             // check if item is loanable or presentation
             foreach ($item["available"] as $available) {
-                if ($available["service"] == "loan") {
-                    $availability = true;
-                }
-                if ($available["service"] == "presentation") {
-                    $availability = true;
+                // attribute service can be set once or not
+                if (isset($available["service"])) {
+                    if ($available["service"] == "loan") {
+                        $availability = true;
+                    }
+                    if ($available["service"] == "presentation") {
+                        $availability = true;
+                    }
                 }
             }
         }
         if (array_key_exists("unavailable", $item)) {
             foreach ($item["unavailable"] as $unavailable) {
-                if ($unavailable["service"] == "loan") {
-                    if (isset($unavailable["expected"])) {
-                        $duedate = $unavailable["expected"];
+                // attribute service can be set once or not
+                if (isset($unavailable["service"])) {
+                    if ($unavailable["service"] == "loan") {
+                        $status = "dummy text";
                     }
-                    $status = "dummy text";
+                }
+                // attribute expected is mandatory for unavailable element
+                if (isset($unavailable["expected"])) {
+                    $duedate = $unavailable["expected"];
                 }
             }
         }
