@@ -148,7 +148,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     public function personaLogoutAjax()
     {
         $auth = $this->getServiceLocator()->get('VuFind\AuthManager');
-        // Logout routing is done in persona.js file.
+        // Logout routing is done in finna-persona.js file.
         $auth->logout($this->getServerUrl('home'));
         return $this->output(true, self::STATUS_OK);
     }

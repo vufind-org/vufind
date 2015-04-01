@@ -34,6 +34,16 @@ finna.persona = (function (finna) {
         });
     };
 
+    var setLoginLink = function() {
+        var loginLink = document.getElementById('persona-login');
+        if (loginLink) {
+            loginLink.onclick = function () {
+                navigator.id.request();
+                return false;
+            };
+        }
+    };
+
     var setLogoutLink = function () {
         var logoutLink = document.getElementById('persona-logout');
         if (logoutLink) {
@@ -53,7 +63,7 @@ finna.persona = (function (finna) {
         navigator.id.watch({
             loggedInUser: currentUser,
             onlogin: function (assertion) {
-                $("#persona-login").addClass("persona-auth-loading");
+                $("#persona-login").addClass("persona-login-loading");
                 $.ajax({
                     type: "POST",
                     dataType: "json",
@@ -84,14 +94,14 @@ finna.persona = (function (finna) {
                                 }
                             }
                         } else {
-                            $("#persona-login").removeClass("persona-auth-loading");
+                            $("#persona-login").removeClass("persona-login-loading");
                             navigator.id.logout();
                             alert("Login failed");
                         }
                     },
                     error: function (xhr, status, err) {
                         navigator.id.logout();
-                        $("#persona-login").removeClass("persona-auth-loading");
+                        $("#persona-login").removeClass("persona-login-loading");
                         alert("login failure: " + err);
                     }
                 });
@@ -104,13 +114,7 @@ finna.persona = (function (finna) {
             }
         });
 
-        var loginLink = document.getElementById('persona-login');
-        if (loginLink) {
-            loginLink.onclick = function () {
-                navigator.id.request();
-                return false;
-            };
-        }
+        setLoginLink();
         setLogoutLink();
     };
 
@@ -129,6 +133,7 @@ finna.persona = (function (finna) {
 
     var my = {
         setLogoutLink: setLogoutLink,
+        setLoginLink: setLoginLink,
         init: function () {
             initPersona();
         }

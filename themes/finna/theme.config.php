@@ -31,7 +31,7 @@ return array(
         'finna.js',
         'image-popup.js',
         'finna-layout.js',
-        'persona.js',
+        'finna-persona.js',
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js',
         'vendor/jquery.inview.min.js',
