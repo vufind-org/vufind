@@ -20,11 +20,15 @@ finna.myList = (function() {
             toggleSpinner(spinner, true);
         }
 
+        var desc = $('.list-description span').html();
+        desc = desc.replace(/\&lt;/g, '<');
+        desc = desc.replace(/\&gt;/g, '>');
+
         toggleErrorMessage(false);
         listParams = {
             'id': getActiveListId(),
-            'title': $('.list-title span').html(),
-            'desc': $('.list-description span').html(),
+            'title': $('.list-title span').text(),
+            'desc': desc,
             'public': $(".list-visibility input[type='radio']:checked").val()
         };
         if (typeof(params) !== 'undefined') {
@@ -262,8 +266,12 @@ finna.myList = (function() {
                     var row = e.target.closest('.myresearch-row');
                     var id = row.find('.hiddenId').val();
                     var listId = getActiveListId();
+                    var notes = e.target.html();
+                    notes = notes.replace(/\&lt;/g, '<');
+                    notes = notes.replace(/\&gt;/g, '>');
+
                     updateListResource(
-                        {'id': id, 'listId': listId, 'notes': e.target.html()},
+                        {'id': id, 'listId': listId, 'notes': notes},
                         e.target
                     );
                 }
