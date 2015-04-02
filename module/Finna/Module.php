@@ -26,6 +26,7 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace Finna;
+use Zend\EventManager\StaticEventManager;
 use Zend\ModuleManager\ModuleManager,
     Zend\Mvc\MvcEvent;
 
@@ -57,13 +58,13 @@ class Module
      */
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     /**
@@ -75,6 +76,25 @@ class Module
      */
     public function init(ModuleManager $m)
     {
+        $em = StaticEventManager::getInstance();
+        $em->attach('*', 'bootstrap', [$this, 'registerBaseUrl'], 100000);
+    }
+
+    /**
+     * Initializes the base url for the application from environment variable
+     * @param MvcEvent $e
+     */
+    public function registerBaseUrl(MvcEvent $e)
+    {
+        $request = $e->getApplication()->getRequest();
+        $baseUrl = $request->getServer('FINNA_BASE_URL');
+
+        if (!empty($baseUrl)) {
+            $baseUrl = '/' . trim($baseUrl, '/');
+            $router = $e->getApplication()->getServiceManager()->get('Router');
+            $router->setBaseUrl($baseUrl);
+            $request->setBaseUrl($baseUrl);
+        }
     }
 
     /**
@@ -86,14 +106,6 @@ class Module
      */
     public function onBootstrap(MvcEvent $e)
     {
-        $request = $e->getApplication()->getRequest();
-        $baseUrl = $request->getServer('FINNA_BASE_URL');
 
-        if (!empty($baseUrl)) {
-            $baseUrl = '/' . trim($baseUrl, '/');
-            $router = $e->getApplication()->getServiceManager()->get('Router');
-            $router->setBaseUrl($baseUrl);
-            $request->setBaseUrl($baseUrl);
-        }
     }
 }
