@@ -26,8 +26,8 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace Finna;
-use Zend\EventManager\StaticEventManager;
-use Zend\ModuleManager\ModuleManager,
+use Zend\EventManager\StaticEventManager,
+    Zend\ModuleManager\ModuleManager,
     Zend\Mvc\MvcEvent;
 
 /**
@@ -58,13 +58,13 @@ class Module
      */
     public function getAutoloaderConfig()
     {
-        return [
-            'Zend\Loader\StandardAutoloader' => [
-                'namespaces' => [
+        return array(
+            'Zend\Loader\StandardAutoloader' => array(
+                'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
+                ),
+            ),
+        );
     }
 
     /**
