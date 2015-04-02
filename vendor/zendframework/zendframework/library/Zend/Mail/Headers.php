@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -178,7 +178,6 @@ class Headers implements Countable, Iterator
             } elseif (is_string($name)) {
                 $this->addHeaderLine($name, $value);
             }
-
         }
 
         return $this;
@@ -237,18 +236,26 @@ class Headers implements Countable, Iterator
     /**
      * Remove a Header from the container
      *
-     * @param  string $fieldName
+     * @param  string|Header\HeaderInterface field name or specific header instance to remove
      * @return bool
      */
-    public function removeHeader($fieldName)
+    public function removeHeader($instanceOrFieldName)
     {
-        $key = $this->normalizeFieldName($fieldName);
-        $index = array_search($key, $this->headersKeys, true);
-        if ($index !== false) {
-            unset($this->headersKeys[$index]);
-            unset($this->headers[$index]);
+        if ($instanceOrFieldName instanceof Header\HeaderInterface) {
+            $indexes = array_keys($this->headers, $instanceOrFieldName, true);
+        } else {
+            $key = $this->normalizeFieldName($instanceOrFieldName);
+            $indexes = array_keys($this->headersKeys, $key, true);
+        }
+
+        if (!empty($indexes)) {
+            foreach ($indexes as $index) {
+                unset ($this->headersKeys[$index]);
+                unset ($this->headers[$index]);
+            }
             return true;
         }
+
         return false;
     }
 
@@ -295,6 +302,7 @@ class Headers implements Countable, Iterator
                 } else {
                     return $results[0];
                 }
+                //fall-trough
             default:
                 return new ArrayIterator($results);
         }

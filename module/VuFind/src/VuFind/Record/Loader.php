@@ -87,7 +87,7 @@ class Loader
         }
         if ($tolerateMissing) {
             $record = $this->recordFactory->get('Missing');
-            $record->setRawData(array('id' => $id));
+            $record->setRawData(['id' => $id]);
             $record->setSourceIdentifier($source);
             return $record;
         }
@@ -130,25 +130,31 @@ class Loader
         // Sort the IDs by source -- we'll create an associative array indexed by
         // source and record ID which points to the desired position of the indexed
         // record in the final return array:
-        $idBySource = array();
+        $idBySource = [];
         foreach ($ids as $i => $details) {
             // Convert source|id string to array if necessary:
             if (!is_array($details)) {
                 $parts = explode('|', $details, 2);
-                $ids[$i] = $details = array(
+                $ids[$i] = $details = [
                     'source' => $parts[0], 'id' => $parts[1]
-                );
+                ];
             }
             $idBySource[$details['source']][$details['id']] = $i;
         }
 
         // Retrieve the records and put them back in order:
-        $retVal = array();
+        $retVal = [];
         foreach ($idBySource as $source => $details) {
             $records = $this->loadBatchForSource(array_keys($details), $source);
             foreach ($records as $current) {
                 $id = $current->getUniqueId();
-                $retVal[$details[$id]] = $current;
+                // In theory, we should be able to assume that $details[$id] is
+                // set... but in practice, we can't make that assumption. In some
+                // cases, Summon IDs will change, and requests for an old ID value
+                // will return a record with a different ID.
+                if (isset($details[$id])) {
+                    $retVal[$details[$id]] = $current;
+                }
             }
         }
 
@@ -157,7 +163,7 @@ class Loader
         foreach ($ids as $i => $details) {
             if (!isset($retVal[$i]) || !is_object($retVal[$i])) {
                 $fields = isset($details['extra_fields'])
-                    ? $details['extra_fields'] : array();
+                    ? $details['extra_fields'] : [];
                 $fields['id'] = $details['id'];
                 $retVal[$i] = $this->recordFactory->get('Missing');
                 $retVal[$i]->setRawData($fields);

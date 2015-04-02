@@ -50,7 +50,7 @@ class Entry extends ParentEntry
      *
      * @var array
      */
-    protected $dcFormats = array();
+    protected $dcFormats = [];
 
     /**
      * Date

@@ -78,12 +78,12 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
     ) {
             $output = '';
         //There should only ever be 1 group with EDS queries.
-        $all = array();
+        $all = [];
         foreach ($query->getQueries() as $search) {
             if ($search instanceof QueryGroup) {
                 // Process each search group. There should only be 1 with EDS queries
                 $groupQueries = $search->getQueries();
-                for ($i=0; $i < count($groupQueries); $i++) {
+                for ($i = 0; $i < count($groupQueries); $i++) {
                     $group = $groupQueries[$i];
                     if ($group instanceof Query) {
                         // Build this group individually as a basic search

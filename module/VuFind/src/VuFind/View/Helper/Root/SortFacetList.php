@@ -54,7 +54,7 @@ class SortFacetList extends AbstractHelper
      */
     public function __invoke($results, $field, $list, $searchRoute)
     {
-        $facets = array();
+        $facets = [];
         // avoid limit on URL
         $results->getParams()->setLimit($results->getOptions()->getDefaultLimit());
         $urlHelper = $this->getView()->plugin('url');

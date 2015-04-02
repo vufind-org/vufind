@@ -36,7 +36,6 @@ namespace VuFindAdmin\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class TagsController extends AbstractAdmin
 {
     /**
@@ -132,17 +131,17 @@ class TagsController extends AbstractAdmin
         $action = ("list" == $origin) ? 'List' : 'Manage';
 
         $originUrl = $this->url()
-            ->fromRoute('admin/tags', array('action' => $action));
+            ->fromRoute('admin/tags', ['action' => $action]);
         if ($action == 'List') {
             $originUrl .= '?' . http_build_query(
-                array(
+                [
                     'user_id' => $this->getParam('user_id'),
                     'resource_id' => $this->getParam('resource_id'),
                     'tag_id' => $this->getParam('tag_id'),
-                )
+                ]
             );
         }
-        $newUrl = $this->url()->fromRoute('admin/tags', array('action' => 'Delete'));
+        $newUrl = $this->url()->fromRoute('admin/tags', ['action' => 'Delete']);
 
         $confirm = $this->params()->fromPost('confirm', false);
 
@@ -183,12 +182,57 @@ class TagsController extends AbstractAdmin
 
         $this->flashMessenger()->setNamespace('info')
             ->addMessage(
-                array(
+                [
                     'msg' => 'tags_deleted',
-                    'tokens' => array('%count%' => $delete)
-                )
+                    'tokens' => ['%count%' => $delete]
+                ]
             );
         return $this->redirect()->toUrl($originUrl);
+    }
+
+    /**
+     * Get confirmation messages.
+     *
+     * @param int $count Count of tags that are about to be deleted
+     *
+     * @return array
+     */
+    protected function getConfirmDeleteMessages($count)
+    {
+        $messages = [];
+        $user = $this->getTable('user')
+            ->select(['id' => $this->getParam('user_id')])
+            ->current();
+        $userMsg = (false !== $user)
+            ? $user->username . " (" . $user->id . ")" : "All";
+
+        $tag = $this->getTable('tags')
+            ->select(['id' => $this->getParam('tag_id')])
+            ->current();
+        $tagMsg = (false !== $tag) ? $tag->tag . " (" . $tag->id . ")" : " All";
+
+        $resource = $this->getTable('resource')
+            ->select(['id' => $this->getParam('resource_id')])
+            ->current();
+        $resourceMsg = (false !== $resource)
+            ? $resource->title . " (" . $resource->id . ")" : " All";
+
+        $messages[] = [
+            'msg' => 'tag_delete_warning',
+            'tokens' => ['%count%' => $count]
+        ];
+        if (false !== $user || false !== $tag || false !== $resource) {
+            $messages[] = [
+                'msg' => 'tag_delete_filter',
+                'tokens' => [
+                    '%username%' => $userMsg,
+                    '%tag%' => $tagMsg,
+                    '%resource%' => $resourceMsg
+                ]
+            ];
+        }
+        $messages[] = ['msg' => 'confirm_delete'];
+        return $messages;
     }
 
     /**
@@ -198,60 +242,28 @@ class TagsController extends AbstractAdmin
      * @param string $originUrl An origin url
      * @param string $newUrl    The url of the desired action
      *
-     * @return $this->confirmAction
+     * @return mixed
      */
     protected function confirmTagsDelete($ids, $originUrl, $newUrl)
     {
-        $messages = array();
         $count = count($ids);
 
-        $user = $this->getTable('user')
-            ->select(array('id' => $this->getParam('user_id')))
-            ->current();
-        $userMsg = (false !== $user)
-            ? $user->username . " (" . $user->id . ")" : "All";
-
-        $tag = $this->getTable('tags')
-            ->select(array('id' => $this->getParam('tag_id')))
-            ->current();
-        $tagMsg = (false !== $tag) ? $tag->tag. " (" . $tag->id . ")" : " All";
-
-        $resource = $this->getTable('resource')
-            ->select(array('id' => $this->getParam('resource_id')))
-            ->current();
-        $resourceMsg = (false !== $resource)
-            ? $resource->title. " (" . $resource->id . ")" : " All";
-
-        $messages[] = array(
-            'msg' => 'tag_delete_warning',
-            'tokens' => array('%count%' => $count)
-        );
-        if (false !== $user || false!== $tag || false !== $resource) {
-            $messages[] = array(
-                'msg' => 'tag_delete_filter',
-                'tokens' => array(
-                    '%username%' => $userMsg,
-                    '%tag%' => $tagMsg,
-                    '%resource%' => $resourceMsg
-                )
-            );
-        }
-        $data = array(
-            'data' => array(
+        $data = [
+            'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
                 'title' => "confirm_delete_tags_brief",
-                'messages' => $messages,
+                'messages' => $this->getConfirmDeleteMessages($count),
                 'ids' => $ids,
-                'extras' => array(
+                'extras' => [
                     'origin' => 'list',
                     'user_id' => $this->getParam('user_id'),
                     'tag_id' => $this->getParam('tag_id'),
                     'resource_id' => $this->getParam('resource_id'),
                     'ids' => $ids
-                )
-            )
-        );
+                ]
+            ]
+        ];
 
         return $this->forwardTo('Confirm', 'Confirm', $data);
     }
@@ -263,69 +275,32 @@ class TagsController extends AbstractAdmin
      * @param string $originUrl An origin url
      * @param string $newUrl    The url of the desired action
      *
-     * @return $this->confirmAction
+     * @return mixed
      */
     protected function confirmTagsDeleteByFilter($tagModel, $originUrl, $newUrl)
     {
-        $messages = array();
         $count = $tagModel->getResourceTags(
             $this->convertFilter($this->getParam('user_id')),
             $this->convertFilter($this->getParam('resource_id')),
             $this->convertFilter($this->getParam('tag_id'))
         )->getTotalItemCount();
 
-        $user = $this->getTable('user')
-            ->select(array('id' => $this->getParam('user_id')))
-            ->current();
-        $userMsg = (false !== $user)
-            ? $user->username . " (" . $user->id . ")" : "All";
-
-        $tag = $this->getTable('tags')
-            ->select(array('id' => $this->getParam('tag_id')))
-            ->current();
-
-        $tagMsg = (false !== $tag)
-            ? $tag->tag. " (" . $tag->id . ")" : " All";
-
-        $resource = $this->getTable('resource')
-            ->select(array('id' => $this->getParam('resource_id')))
-            ->current();
-
-        $resourceMsg = (false !== $resource)
-            ? $resource->title. " (" . $resource->id . ")" : " All";
-
-        $messages[] = array(
-            'msg' => 'tag_delete_warning',
-            'tokens' => array('%count%' => $count)
-        );
-
-        if (false !== $user || false!== $tag || false !== $resource) {
-            $messages[] = array(
-                'msg' => 'tag_delete_filter',
-                'tokens' => array(
-                    '%username%' => $userMsg,
-                    '%tag%' => $tagMsg,
-                    '%resource%' => $resourceMsg
-                )
-            );
-        }
-
-        $data = array(
-            'data' => array(
+        $data = [
+            'data' => [
                 'confirm' => $newUrl,
                 'cancel' => $originUrl,
                 'title' => "confirm_delete_tags_brief",
-                'messages' => $messages,
-                'origin' => 'manage',
-                'extras' => array(
+                'messages' => $this->getConfirmDeleteMessages($count),
+                'extras' => [
+                    'origin' => 'manage',
                     'type' => $this->getParam('type'),
                     'user_id' => $this->getParam('user_id'),
                     'tag_id' => $this->getParam('tag_id'),
                     'resource_id' => $this->getParam('resource_id'),
                     'deleteFilter' => $this->getParam('deleteFilter')
-                )
-            )
-        );
+                ]
+            ]
+        ];
 
         return $this->forwardTo('Confirm', 'Confirm', $data);
     }
@@ -412,7 +387,7 @@ class TagsController extends AbstractAdmin
     protected function deleteResourceTagsByFilter()
     {
         $tags = $this->getResourceTags();
-        $ids = array();
+        $ids = [];
         foreach ($tags as $tag) {
             $ids[] = $tag->id;
         }

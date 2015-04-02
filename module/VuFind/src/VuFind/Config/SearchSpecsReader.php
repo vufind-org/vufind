@@ -51,7 +51,7 @@ class SearchSpecsReader
      *
      * @var array
      */
-    protected $searchSpecs = array();
+    protected $searchSpecs = [];
 
     /**
      * Constructor
@@ -92,7 +92,7 @@ class SearchSpecsReader
 
             // Generate data if not found in cache:
             if ($cache === false || !($results = $cache->getItem($cacheKey))) {
-                $results = file_exists($fullpath) ? Yaml::parse($fullpath) : array();
+                $results = file_exists($fullpath) ? Yaml::parse($fullpath) : [];
                 if (!empty($local)) {
                     $localResults = Yaml::parse($local);
                     foreach ($localResults as $key => $value) {

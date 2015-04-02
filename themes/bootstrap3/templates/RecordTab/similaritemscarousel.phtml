@@ -1,0 +1,73 @@
+<h4><?=$this->transEsc('Similar Items')?></h4>
+<? $similarRecords = $this->tab->getResults(); ?>
+<? if (!empty($similarRecords)): ?>
+  <? $perPage = 4 ?>
+  <div id="similar-items-carousel" class="carousel slide" data-ride="carousel">
+    <!-- Indicators -->
+    <ol class="carousel-indicators">
+      <li data-target="#similar-items-carousel" data-slide-to="0" class="active"></li>
+      <? for($i=1;$i<count($similarRecords)/$perPage;$i++): ?>
+        <li data-target="#similar-items-carousel" data-slide-to="<?=$i ?>"></li>
+      <? endfor; ?>
+    </ol>
+
+    <!-- Wrapper for slides -->
+    <div class="carousel-inner">
+      <div class="item active">
+        <div class="row">
+          <? foreach ($similarRecords as $index=>$data): ?>
+            <div class="col-sm-<?=floor(12/$perPage) ?>">
+              <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
+                <? $thumb = $this->record($data)->getThumbnail('large'); ?>
+                <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
+                <div class="content">
+                  <? $formats = $data->getFormats(); ?>
+                  <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
+                  <b><?=$this->escapeHtml($data->getTitle())?></b>
+                  <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
+                    <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($author);?>
+                  <? endif; ?>
+                  <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
+                    <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+                  <? endif; ?>
+                </div>
+              </a>
+            </div>
+            <? if(($index+1) % $perPage == 0 && $index < count($similarRecords)-1): ?>
+          </div>
+        </div>
+        <div class="item">
+          <div class="row">
+            <? endif; ?>
+          <? endforeach; ?>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <a class="left carousel-control" href="#similar-items-carousel" role="button" data-slide="prev">
+      <span class="fa fa-chevron-left glyphicon-chevron-left"></span>
+    </a>
+    <a class="right carousel-control" href="#similar-items-carousel" role="button" data-slide="next">
+      <span class="fa fa-chevron-right glyphicon-chevron-right"></span>
+    </a>
+  </div>
+<? else: ?>
+  <p><?=$this->transEsc('Cannot find similar records')?></p>
+<? endif; ?>
+<?
+  $script = <<<JS
+function normalizeHeights() {
+  var tallest = 0;
+  var items = $('#similar-items-carousel .hover-overlay');
+  items.each(function() { //add heights to array
+    if(tallest < $(this).height()) {
+      tallest = $(this).height();
+    }
+  });
+  items.css('min-height',tallest + 'px');
+}
+$('#similar-items-carousel img').load(normalizeHeights);
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

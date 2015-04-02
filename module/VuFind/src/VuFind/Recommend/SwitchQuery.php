@@ -62,7 +62,7 @@ class SwitchQuery implements RecommendInterface
      *
      * @var array
      */
-    protected $suggestions = array();
+    protected $suggestions = [];
 
     /**
      * Names of checks that should be skipped. These should correspond
@@ -71,7 +71,7 @@ class SwitchQuery implements RecommendInterface
      *
      * @var array
      */
-    protected $skipChecks = array();
+    protected $skipChecks = [];
 
     /**
      * Names of transforms to apply. These should correspond
@@ -80,7 +80,7 @@ class SwitchQuery implements RecommendInterface
      *
      * @var array
      */
-    protected $transforms = array();
+    protected $transforms = [];
 
     /**
      * Search results object.
@@ -100,8 +100,6 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -116,14 +114,12 @@ class SwitchQuery implements RecommendInterface
             return trim(strtolower($i));
         };
         $this->skipChecks = !empty($params[1])
-            ? array_map($callback, explode(',', $params[1])) : array();
+            ? array_map($callback, explode(',', $params[1])) : [];
         $this->transforms = !empty($params[2])
-            ? explode(',', $params[2]) : array();
+            ? explode(',', $params[2]) : [];
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -140,8 +136,6 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -310,9 +304,9 @@ class SwitchQuery implements RecommendInterface
     protected function getLuceneHelper()
     {
         $backend = $this->backendManager->get($this->backend);
-        $qb = is_callable(array($backend, 'getQueryBuilder'))
+        $qb = is_callable([$backend, 'getQueryBuilder'])
             ? $backend->getQueryBuilder() : false;
-        return $qb && is_callable(array($qb, 'getLuceneHelper'))
+        return $qb && is_callable([$qb, 'getLuceneHelper'])
             ? $qb->getLuceneHelper() : false;
     }
 

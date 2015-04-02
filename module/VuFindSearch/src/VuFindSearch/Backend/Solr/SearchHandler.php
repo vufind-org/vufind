@@ -51,17 +51,17 @@ class SearchHandler
      *
      * @var array
      */
-    protected static $configKeys = array(
+    protected static $configKeys = [
         'CustomMunge', 'DismaxFields', 'DismaxHandler', 'QueryFields',
         'DismaxParams', 'FilterQuery'
-    );
+    ];
 
     /**
      * Known boolean operators.
      *
      * @var array
      */
-    protected static $booleanOperators = array('AND', 'OR', 'NOT');
+    protected static $booleanOperators = ['AND', 'OR', 'NOT'];
 
     /**
      * Search handler specification.
@@ -82,7 +82,7 @@ class SearchHandler
     public function __construct(array $spec, $defaultDismaxHandler = 'dismax')
     {
         foreach (self::$configKeys as $key) {
-            $this->specs[$key] = isset($spec[$key]) ? $spec[$key] : array();
+            $this->specs[$key] = isset($spec[$key]) ? $spec[$key] : [];
         }
         // Set dismax handler to default if not specified:
         if (empty($this->specs['DismaxHandler'])) {
@@ -132,7 +132,7 @@ class SearchHandler
      */
     public function createBoostQueryString($search)
     {
-        $boostQuery = array();
+        $boostQuery = [];
         if ($this->hasDismax()) {
             foreach ($this->getDismaxParams() as $param) {
                 list($name, $value) = $param;
@@ -219,7 +219,6 @@ class SearchHandler
      * Return the filter query.
      *
      * @return string
-     *
      */
     public function getFilterQuery()
     {
@@ -258,7 +257,7 @@ class SearchHandler
      */
     protected function dismaxSubquery($search)
     {
-        $dismaxParams = array();
+        $dismaxParams = [];
         foreach ($this->specs['DismaxParams'] as $param) {
             $dismaxParams[] = sprintf(
                 "%s='%s'", $param[0], addcslashes($param[1], "'")
@@ -288,19 +287,19 @@ class SearchHandler
     {
         if ($tokenize) {
             $tokens = $this->tokenize($search);
-            $mungeValues = array(
+            $mungeValues = [
                 'onephrase' => sprintf(
                     '"%s"', str_replace('"', '', implode(' ', $tokens))
                 ),
                 'and' => implode(' AND ', $tokens),
                 'or'  => implode(' OR ', $tokens),
                 'identity' => $search,
-            );
+            ];
         } else {
-            $mungeValues = array(
+            $mungeValues = [
                 'and' => $search,
                 'or'  => $search,
-            );
+            ];
             // If we're skipping tokenization, we just want to pass $lookfor through
             // unmodified (it's probably an advanced search that won't benefit from
             // tokenization).  We'll just set all possible values to the same thing,
@@ -358,7 +357,6 @@ class SearchHandler
      * @param bool   $advanced Is the search an advanced search string?
      *
      * @return string
-     *
      */
     protected function createQueryString($search, $advanced = false)
     {
@@ -406,7 +404,7 @@ class SearchHandler
      */
     protected function munge(array $mungeRules, array $mungeValues, $joiner = 'OR')
     {
-        $clauses = array();
+        $clauses = [];
         foreach ($mungeRules as $field => $clausearray) {
             if (is_numeric($field)) {
                 // shift off the join string and weight
@@ -454,13 +452,15 @@ class SearchHandler
      */
     protected function tokenize($string)
     {
-        // Tokenize on spaces and quotes
-        $phrases = array();
-        preg_match_all('/"[^"]*"[~[0-9]+]*|"[^"]*"|[^ ]+/', $string, $phrases);
+        // Tokenize on spaces and quotes (but ignore escaped quotes)
+        $phrases = [];
+        preg_match_all(
+            '/"(?:\\\\"|.)*?"[~[0-9]+]*|"(?:\\\\"|.)*?"|[^ ]+/', $string, $phrases
+        );
         $phrases = $phrases[0];
 
-        $tokens  = array();
-        $token   = array();
+        $tokens  = [];
+        $token   = [];
 
         reset($phrases);
         while (current($phrases) !== false) {
@@ -473,7 +473,7 @@ class SearchHandler
                 }
             } else {
                 $tokens[] = implode(' ', $token);
-                $token = array();
+                $token = [];
             }
         }
 

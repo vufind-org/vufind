@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\Primo\Response;
 
 use VuFindSearch\Backend\Primo\Response\RecordCollection;
@@ -50,9 +49,9 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
      */
     public function testDefaults()
     {
-        $rc = new RecordCollection(array());
+        $rc = new RecordCollection([]);
         $this->assertEquals(0, $rc->getTotal());
         $this->assertEquals(0, $rc->getOffset());
-        $this->assertEquals(array(), $rc->getFacets());
+        $this->assertEquals([], $rc->getFacets());
     }
 }

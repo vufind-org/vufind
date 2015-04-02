@@ -41,7 +41,7 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
 {
     protected function getTestSubject()
     {
-        return new \VuDL\Connection\Manager(array('First', 'Second'), new FakeServiceLocator());
+        return new \VuDL\Connection\Manager(['First', 'Second'], new FakeServiceLocator());
     }
 
     public function testManager()
@@ -88,7 +88,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
 
 class FakeServiceLocator
 {
-    public function get($class) {
+    public function get($class)
+    {
         if($class == "VuDL\\Connection\\First") {
             return new First();
         } else {

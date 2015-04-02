@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
@@ -36,7 +35,7 @@ use VuFindSearch\Backend\BackendInterface;
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\I18n\Translator\Translator;
+use Zend\I18n\Translator\TranslatorInterface;
 
 /**
  * Solr hierarchical facet handling listener.
@@ -81,7 +80,7 @@ class HierarchicalFacetListener
     /**
      * Translator.
      *
-     * @var Translator
+     * @var TranslatorInterface
      */
     protected $translator;
 
@@ -132,16 +131,16 @@ class HierarchicalFacetListener
         $this->translatedFacets
             = isset($this->facetConfig->Advanced_Settings->translated_facets)
             ? $this->facetConfig->Advanced_Settings->translated_facets->toArray()
-            : array();
+            : [];
         $specialFacets = $this->facetConfig->SpecialFacets;
         $this->displayStyles
             = isset($specialFacets->hierarchicalFacetDisplayStyles)
             ? $specialFacets->hierarchicalFacetDisplayStyles->toArray()
-            : array();
+            : [];
         $this->separators
             = isset($specialFacets->hierarchicalFacetSeparators)
             ? $specialFacets->hierarchicalFacetSeparators->toArray()
-            : array();
+            : [];
     }
 
     /**
@@ -154,7 +153,7 @@ class HierarchicalFacetListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'post', array($this, 'onSearchPost'));
+        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
     }
 
     /**
@@ -197,17 +196,19 @@ class HierarchicalFacetListener
                 if (!isset($fields[$facetName])) {
                     continue;
                 }
+                // Keep the original data too
+                $fields["__unprocessed_$facetName"] = $fields[$facetName];
                 if (is_array($fields[$facetName])) {
                     // If full facet display style is used, discard all but the
                     // most significant value
                     if (isset($this->displayStyles[$facetName])
                         && $this->displayStyles[$facetName] == 'full'
                     ) {
-                        $fields[$facetName] = array(
+                        $fields[$facetName] = [
                             $this->formatFacetField(
                                 $facetName, end($fields[$facetName])
                             )
-                        );
+                        ];
                     } else {
                         foreach ($fields[$facetName] as &$value) {
                             $value = $this->formatFacetField($facetName, $value);

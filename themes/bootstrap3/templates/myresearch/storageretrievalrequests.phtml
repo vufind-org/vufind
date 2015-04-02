@@ -11,6 +11,8 @@
 
     <?=$this->flashmessages()?>
 
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
         <form name="cancelForm" class="inline" action="" method="post" id="cancelStorageRetrievalRequest">
@@ -112,9 +114,12 @@
               <br />
             <? endif; ?>
 
-            <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?>
+            <? if (!empty($ilsDetails['create'])): ?>
+              <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?>
+              <? if (!empty($ilsDetails['expire'])): ?>|<? endif; ?>
+            <? endif; ?>
             <? if (!empty($ilsDetails['expire'])): ?>
-              | <strong><?=$this->transEsc('Expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
+              <strong><?=$this->transEsc('Expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
             <? endif; ?>
             <br />
 

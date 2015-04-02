@@ -80,7 +80,7 @@ class Export
     public function getBulkOptions()
     {
         if ($this->bulkOptions === false) {
-            $this->bulkOptions = array();
+            $this->bulkOptions = [];
             if (isset($this->mainConfig->BulkExport->enabled)
                 && isset($this->mainConfig->BulkExport->options)
                 && $this->mainConfig->BulkExport->enabled
@@ -90,7 +90,7 @@ class Export
                     if (isset($this->mainConfig->Export->$option)
                         && $this->mainConfig->Export->$option == true
                     ) {
-                            $this->bulkOptions[] = $option;
+                        $this->bulkOptions[] = $option;
                     }
                 }
             }
@@ -112,7 +112,7 @@ class Export
      */
     public function getBulkUrl($view, $format, $ids)
     {
-        $params = array();
+        $params = [];
         $params[] = 'f=' . urlencode($format);
         foreach ($ids as $id) {
             $params[] = urlencode('i[]') . '=' . urlencode($id);
@@ -190,7 +190,7 @@ class Export
         if (isset($this->exportConfig->$format->combineXpath)) {
             $ns = isset($this->exportConfig->$format->combineNamespaces)
                 ? $this->exportConfig->$format->combineNamespaces->toArray()
-                : array();
+                : [];
             $ns = array_map(
                 function ($current) {
                     return explode('|', $current, 2);
@@ -235,7 +235,7 @@ class Export
     public function recordSupportsFormat($driver, $format)
     {
         // Check if the driver explicitly disallows the format:
-        if ($driver->tryMethod('exportDisabled', array($format))) {
+        if ($driver->tryMethod('exportDisabled', [$format])) {
             return false;
         }
 
@@ -244,7 +244,7 @@ class Export
             if (isset($this->exportConfig->$format->requiredMethods)) {
                 foreach ($this->exportConfig->$format->requiredMethods as $method) {
                     // If a required method is missing, give up now:
-                    if (!is_callable(array($driver, $method))) {
+                    if (!is_callable([$driver, $method])) {
                         return false;
                     }
                 }
@@ -273,10 +273,10 @@ class Export
         // if nothing in config array).
         $active = isset($this->mainConfig->Export)
             ? $this->mainConfig->Export->toArray()
-            : array('RefWorks' => true, 'EndNote' => true);
+            : ['RefWorks' => true, 'EndNote' => true];
 
         // Loop through all possible formats:
-        $formats = array();
+        $formats = [];
         foreach (array_keys($this->exportConfig->toArray()) as $format) {
             if (isset($active[$format]) && $active[$format]
                 && $this->recordSupportsFormat($driver, $format)
@@ -302,7 +302,7 @@ class Export
         $formats = $this->getBulkOptions();
         foreach ($drivers as $driver) {
             // Filter out unsupported export formats:
-            $newFormats = array();
+            $newFormats = [];
             foreach ($formats as $current) {
                 if ($this->recordSupportsFormat($driver, $current)) {
                     $newFormats[] = $current;
@@ -323,6 +323,19 @@ class Export
     public function getHeaders($format)
     {
         return isset($this->exportConfig->$format->headers)
-            ? $this->exportConfig->$format->headers : array();
+            ? $this->exportConfig->$format->headers : [];
+    }
+
+    /**
+     * Get the display label for the specified export format.
+     *
+     * @param string $format Format identifier
+     *
+     * @return string
+     */
+    public function getLabelForFormat($format)
+    {
+        return isset($this->exportConfig->$format->label)
+            ? $this->exportConfig->$format->label : $format;
     }
 }

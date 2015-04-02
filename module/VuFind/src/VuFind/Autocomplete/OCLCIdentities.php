@@ -49,8 +49,6 @@ class OCLCIdentities implements AutocompleteInterface
     protected $url = 'http://worldcat.org/identities/AutoSuggest';
 
     /**
-     * getSuggestions
-     *
      * This method returns an array of strings matching the user's query for
      * display in the autocomplete box.
      *
@@ -61,7 +59,7 @@ class OCLCIdentities implements AutocompleteInterface
     public function getSuggestions($query)
     {
         // Initialize return array:
-        $results = array();
+        $results = [];
 
         // Build target URL:
         $target = $this->url . '?query=' . urlencode($query);
@@ -83,8 +81,6 @@ class OCLCIdentities implements AutocompleteInterface
     }
 
     /**
-     * setConfig
-     *
      * Set parameters that affect the behavior of the autocomplete handler.
      * These values normally come from the search configuration file.
      *

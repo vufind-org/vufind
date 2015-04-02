@@ -48,8 +48,8 @@ class FacetCloudTest extends \VuFindTest\Unit\TestCase
     {
         $results = $this->getMockResults();
         $results->getParams()->expects($this->once())->method('getFacetSettings')
-            ->will($this->returnValue(array('limit' => 50)));
-        $fc = $this->getFacetCloud(null,$results);
+            ->will($this->returnValue(['limit' => 50]));
+        $fc = $this->getFacetCloud(null, $results);
         $this->assertEquals(49, $fc->getFacetLimit());
     }
 
@@ -76,7 +76,7 @@ class FacetCloudTest extends \VuFindTest\Unit\TestCase
             $emptyResults = $this->getMockResults();
         }
         if (null === $request) {
-            $request = new \Zend\StdLib\Parameters(array());
+            $request = new \Zend\StdLib\Parameters([]);
         }
         $fc = new FacetCloud($configLoader, $emptyResults);
         $fc->setConfig($settings);
@@ -93,7 +93,7 @@ class FacetCloudTest extends \VuFindTest\Unit\TestCase
      *
      * @return \VuFind\Config\PluginManager
      */
-    protected function getMockConfigLoader($config = array(), $key = 'facets')
+    protected function getMockConfigLoader($config = [], $key = 'facets')
     {
         $loader = $this->getMockBuilder('VuFind\Config\PluginManager')
             ->disableOriginalConstructor()->getMock();

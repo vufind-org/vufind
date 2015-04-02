@@ -119,6 +119,6 @@ class SolrReserves extends SolrDefault
     public function getItemIds()
     {
         return isset($this->fields['bib_id'])
-            ? $this->fields['bib_id'] : array();
+            ? $this->fields['bib_id'] : [];
     }
 }

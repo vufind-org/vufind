@@ -39,12 +39,7 @@ namespace VuFind\Content\Covers;
 class Google extends \VuFind\Content\AbstractCover
     implements \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Constructor
@@ -70,18 +65,6 @@ class Google extends \VuFind\Content\AbstractCover
     }
 
     /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
-    }
-
-    /**
      * Get image URL for a particular API key and set of IDs (or false if invalid).
      *
      * @param string $key  API key
@@ -90,6 +73,7 @@ class Google extends \VuFind\Content\AbstractCover
      * pointing to an ISBN object and 'issn' pointing to a string)
      *
      * @return string|bool
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getUrl($key, $size, $ids)
@@ -123,7 +107,7 @@ class Google extends \VuFind\Content\AbstractCover
             $json = $matches[1];
 
             // convert \x26 or \u0026 to &
-            $json = str_replace(array("\\x26", "\\u0026"), "&", $json);
+            $json = str_replace(["\\x26", "\\u0026"], "&", $json);
 
             // decode the object:
             $json = json_decode($json, true);
@@ -131,7 +115,7 @@ class Google extends \VuFind\Content\AbstractCover
             // convert a flat object to an array -- probably unnecessary, but
             // retained just in case the response format changes:
             if (isset($json['thumbnail_url'])) {
-                $json = array($json);
+                $json = [$json];
             }
 
             // find the first thumbnail URL and process it:

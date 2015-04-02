@@ -59,13 +59,13 @@ class RC4
          * Email: ali[at]farhadi[dot]ir
          * Website: http://farhadi.ir/
          */
-        $s = array();
-        for ($i=0; $i<256; $i++) {
+        $s = [];
+        for ($i = 0; $i<256; $i++) {
             $s[$i] = $i;
         }
         $j = 0;
         $x;
-        for ($i=0; $i<256; $i++) {
+        for ($i = 0; $i<256; $i++) {
             $j = ($j + $s[$i] + ord($key[$i % strlen($key)])) % 256;
             $x = $s[$i];
             $s[$i] = $s[$j];
@@ -75,7 +75,7 @@ class RC4
         $j = 0;
         $ct = '';
         $y;
-        for ($y=0; $y<strlen($pt); $y++) {
+        for ($y = 0; $y<strlen($pt); $y++) {
             $i = ($i + 1) % 256;
             $j = ($j + $s[$i]) % 256;
             $x = $s[$i];

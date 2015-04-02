@@ -45,20 +45,22 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test config validation
      *
      * @return void
-     * @expectedException \VuFind\Exception\Auth
+     *
+     * @expectedException        \VuFind\Exception\Auth
      * @expectedExceptionMessage One or more ChoiceAuth parameters are missing.
      */
     public function testBadConfiguration()
     {
         $ca = new ChoiceAuth();
-        $ca->setConfig(new Config(array()));
+        $ca->setConfig(new Config([]));
     }
 
     /**
      * Test default getPluginManager behavior
      *
      * @return void
-     * @expectedException \Exception
+     *
+     * @expectedException        \Exception
      * @expectedExceptionMessage Plugin manager missing.
      */
     public function testMissingPluginManager()
@@ -133,7 +135,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetSelectableAuthOptions()
     {
-        $this->assertEquals(array('Database', 'Shibboleth'), $this->getChoiceAuth()->getSelectableAuthOptions());
+        $this->assertEquals(['Database', 'Shibboleth'], $this->getChoiceAuth()->getSelectableAuthOptions());
     }
 
     /**
@@ -174,7 +176,8 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
      * Test an illegal auth method
      *
      * @return void
-     * @expectedException \Exception
+     *
+     * @expectedException        \Exception
      * @expectedExceptionMessage Illegal setting: foo
      */
     public function testIllegalMethod()
@@ -209,7 +212,7 @@ class ChoiceAuthTest extends \VuFindTest\Unit\TestCase
     {
         $ca = new ChoiceAuth();
         $ca->setConfig(
-            new Config(array('ChoiceAuth' => array('choice_order' => $strategies)))
+            new Config(['ChoiceAuth' => ['choice_order' => $strategies]])
         );
         $ca->setPluginManager($pm ?: $this->getMockPluginManager());
         return $ca;

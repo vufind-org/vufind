@@ -49,7 +49,7 @@ class HMACTest extends \VuFindTest\Unit\TestCase
         $hmac = new HMAC('secret');
         $this->assertEquals(
             '330891b9db42bdf6aeb558a35e2a1780',
-            $hmac->generate(array('foo'), array('foo' => 'bar'))
+            $hmac->generate(['foo'], ['foo' => 'bar'])
         );
     }
 }

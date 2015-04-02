@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Service;
@@ -94,10 +93,10 @@ class InjectSpellingListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search', Service::EVENT_PRE, array($this, 'onSearchPre')
+            'VuFind\Search', Service::EVENT_PRE, [$this, 'onSearchPre']
         );
         $manager->attach(
-            'VuFind\Search', Service::EVENT_POST, array($this, 'onSearchPost')
+            'VuFind\Search', Service::EVENT_POST, [$this, 'onSearchPost']
         );
     }
 

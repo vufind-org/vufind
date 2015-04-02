@@ -76,17 +76,17 @@ CONTEXT;
                 && false !== strpos($a[5], 'function =')
                 && count($a) == 5;
         };
-        $logger = $this->getMock('VuFind\Log\Logger', array('log'));
+        $logger = $this->getMock('VuFind\Log\Logger', ['log']);
         $logger->expects($this->once())->method('log')->with($this->equalTo(Logger::CRIT), $this->callback($callback));
         try {
             throw new \Exception('test');
         } catch (\Exception $e) {
             $fakeServer = new \Zend\Stdlib\Parameters(
-                array(
+                [
                     'REMOTE_ADDR' => '1.2.3.4',
                     'HTTP_USER_AGENT' => 'Fake browser',
                     'REQUEST_URI' => '/foo/bar'
-                )
+                ]
             );
             $logger->logException($e, $fakeServer);
         }

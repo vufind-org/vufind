@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\WorldCat\Response\XML;
 
 use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
@@ -46,7 +45,8 @@ class RecordCollectionFactoryTest extends \PHPUnit_Framework_TestCase
      * Test bad callback.
      *
      * @return void
-     * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     *
+     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Record factory must be callable.
      */
     public function testBadCallback()
@@ -58,7 +58,8 @@ class RecordCollectionFactoryTest extends \PHPUnit_Framework_TestCase
      * Test bad factory input.
      *
      * @return void
-     * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     *
+     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
      * @expectedExceptionMessage Unexpected type of value: Expected array, got string
      */
     public function testBadFactoryInput()

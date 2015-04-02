@@ -67,10 +67,10 @@ class CollectionsController extends AbstractBase
             $this->params()->fromQuery('title')
         );
         if (count($collections) != 1) {
-            return $this->createViewModel(array('collections' => $collections));
+            return $this->createViewModel(['collections' => $collections]);
         }
         return $this->redirect()
-            ->toRoute('collection', array('id' => $collections[0]->getUniqueId()));
+            ->toRoute('collection', ['id' => $collections[0]->getUniqueId()]);
     }
 
     /**
@@ -138,7 +138,7 @@ class CollectionsController extends AbstractBase
         $view->letters = $this->getAlphabetList();
 
         // Format the results for proper display:
-        $finalresult = array();
+        $finalresult = [];
         $delimiter = $this->getBrowseDelimiter();
         foreach ($result['Browse']['items'] as $rkey => $collection) {
             $collectionIdNamePair
@@ -163,7 +163,7 @@ class CollectionsController extends AbstractBase
         // Process incoming parameters:
         $from = $this->params()->fromQuery('from', '');
         $page = $this->params()->fromQuery('page', 0);
-        $appliedFilters = $this->params()->fromQuery('filter', array());
+        $appliedFilters = $this->params()->fromQuery('filter', []);
         $limit = $this->getBrowseLimit();
 
         $browseField = "hierarchy_browse";
@@ -176,7 +176,7 @@ class CollectionsController extends AbstractBase
 
         // Only grab 150,000 facet values to avoid out-of-memory errors:
         $result = $searchObject->getFullFieldFacets(
-            array($browseField), false, 150000, 'index'
+            [$browseField], false, 150000, 'index'
         );
         $result = $result[$browseField]['data']['list'];
 
@@ -231,8 +231,8 @@ class CollectionsController extends AbstractBase
      * Function to sort the results and find the position of the from
      * value in the result set; if the value doesn't exist, it's inserted.
      *
-     * @param array  &$result Array to sort
-     * @param string $from    Position to find
+     * @param array  $result Array to sort
+     * @param string $from   Position to find
      *
      * @return int
      */
@@ -242,10 +242,10 @@ class CollectionsController extends AbstractBase
         $from = $this->normalizeForBrowse($from);
 
         // Push the from value into the array so we can find the matching position:
-        array_push($result, array('displayText' => $from, 'placeholder' => true));
+        array_push($result, ['displayText' => $from, 'placeholder' => true]);
 
         // Declare array to hold the $result array in the right sort order
-        $sorted = array();
+        $sorted = [];
         foreach (array_keys($this->normalizeAndSortFacets($result)) as $i) {
             // If this is the placeholder we added earlier, we have found the
             // array position we want to use as our start; otherwise, it is an
@@ -266,14 +266,14 @@ class CollectionsController extends AbstractBase
     /**
      * Function to normalize the names so they sort properly
      *
-     * @param array &$result Array to sort (passed by reference to use less
+     * @param array $result Array to sort (passed by reference to use less
      * memory)
      *
      * @return array $resultOut
      */
     protected function normalizeAndSortFacets(&$result)
     {
-        $valuesSorted = array();
+        $valuesSorted = [];
         foreach ($result as $resKey => $resVal) {
             $valuesSorted[$resKey]
                 = $this->normalizeForBrowse($resVal['displayText']);

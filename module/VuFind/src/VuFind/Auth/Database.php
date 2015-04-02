@@ -110,10 +110,10 @@ class Database extends AbstractBase
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
-        $params = array(
+        $params = [
             'firstname' => '', 'lastname' => '', 'username' => '',
             'password' => '', 'password2' => '', 'email' => ''
-        );
+        ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
         }
@@ -141,23 +141,18 @@ class Database extends AbstractBase
         }
 
         // If we got this far, we're ready to create the account:
-        $data = array(
-            'username'  => $params['username'],
-            'firstname' => $params['firstname'],
-            'lastname'  => $params['lastname'],
-            'email'     => $params['email'],
-            'created'   => date('Y-m-d H:i:s')
-        );
-
+        $user = $table->createRowForUsername($params['username']);
+        $user->firstname = $params['firstname'];
+        $user->lastname = $params['lastname'];
+        $user->email = $params['email'];
         if ($this->passwordHashingEnabled()) {
             $bcrypt = new Bcrypt();
-            $data['pass_hash'] = $bcrypt->create($params['password']);
+            $user->pass_hash = $bcrypt->create($params['password']);
         } else {
-            $data['password'] = $params['password'];
+            $user->password = $params['password'];
         }
-        // Create the row and send it back to the caller:
-        $table->insert($data);
-        return $table->getByUsername($params['username'], false);
+        $user->save();
+        return $user;
     }
 
     /**
@@ -173,9 +168,9 @@ class Database extends AbstractBase
     {
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
-        $params = array(
+        $params = [
             'username' => '', 'password' => '', 'password2' => ''
-        );
+        ];
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
         }

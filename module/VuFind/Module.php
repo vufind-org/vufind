@@ -56,18 +56,18 @@ class Module
      */
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\ClassMapAutoloader' => array(
-                'classes' => array(
+        return [
+            'Zend\Loader\ClassMapAutoloader' => [
+                'classes' => [
                     'minSO' => __DIR__ . '/src/VuFind/Search/minSO.php'
-                )
-            ),
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+                ]
+            ],
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     /**
