@@ -2,37 +2,35 @@
   // Grab list object from search results (if applicable):
   $list = $this->results->getListObject();
 
-$activeId = $list['id'];
-$activeUrl = $this->serverUrl() . $this->url('home') . 'List/' . $activeId;
-$activePublic = $list['public'];
-$isDefaultList = !isset($list);
+  $activeId = $list['id'];
+  $activeUrl = $this->serverUrl() . $this->url('home') . 'List/' . $activeId;
+  $activePublic = $list['public'];
+  $isDefaultList = !isset($list);
 
-// Set up page title:
-$this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
+  // Set up page title:
+  $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
 
-// Set up myresearch menu
-$this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'));
+  // Set up myresearch menu
+  $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'));
 
-// Set up breadcrumbs:
-$currPage = isset($list) ? 'List' : 'Favorites';
-$this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
+  // Set up breadcrumbs:
+  $currPage = isset($list) ? 'List' : 'Favorites';
+  $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc($currPage) . '</li>';
 
-// Load Javascript dependencies into header:
-$this->headScript()->appendFile("check_item_statuses.js");
-$this->headScript()->appendFile("finna-mylist.js");
-$this->headScript()->appendFile("vendor/jquery.editable.js");
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("check_item_statuses.js");
+  $this->headScript()->appendFile("finna-mylist.js");
+  $this->headScript()->appendFile("vendor/jquery.editable.js");
 
-$this->jsTranslations()->addStrings(['add_note' => 'Add note']);
+  $this->jsTranslations()->addStrings(['add_note' => 'Add note']);
 
-$recordTotal = $this->results->getResultTotal();
+  $recordTotal = $this->results->getResultTotal();
 
-// Convenience variable:
-$account = $this->auth()->getManager();
-$user = $this->auth()->isLoggedIn();
+  // Convenience variable:
+  $account = $this->auth()->getManager();
+  $user = $this->auth()->isLoggedIn();
 
-$lists = $user->getLists();
-
-// Set up Finna Main Header:
+  $lists = $user->getLists();
 ?>
 <? foreach ($this->results->getRecommendations('side') as $current): ?>
 <?=$this->recommend($current)?>
