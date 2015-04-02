@@ -77,7 +77,7 @@ class Module
     public function init(ModuleManager $m)
     {
         $em = StaticEventManager::getInstance();
-        $em->attach('*', 'bootstrap', [$this, 'registerBaseUrl'], 100000);
+        $em->attach('Zend\Mvc\Application', 'bootstrap', [$this, 'registerBaseUrl'], 100000);
     }
 
     /**
