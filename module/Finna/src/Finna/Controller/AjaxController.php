@@ -215,6 +215,11 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function getMyListsAjax()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            return $this->output('Lists disabled', self::STATUS_ERROR);
+        }
+
         $user = $this->getUser();
         if (!$user) {
             return $this->output(
@@ -272,7 +277,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $newList = ($id == 'NEW');
         $list = $newList ? $table->getNew($user) : $table->getExisting($id);
 
-        $params = new \Zend\Stdlib\Parameters($params);
+        //$params = new \Zend\Stdlib\Parameters($params);
         $finalId = $list->updateFromRequest(
             $user, new \Zend\Stdlib\Parameters($params)
         );
@@ -288,6 +293,11 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function editListResourceAjax()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            return $this->output('Lists disabled', self::STATUS_ERROR);
+        }
+
         // User must be logged in to edit list:
         $user = $this->getUser();
         if (!$user) {
@@ -340,6 +350,11 @@ class AjaxController extends \VuFind\Controller\AjaxController
      */
     public function addToListAjax()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            return $this->output('Lists disabled', self::STATUS_ERROR);
+        }
+
         // User must be logged in to edit list:
         $user = $this->getUser();
         if (!$user) {
