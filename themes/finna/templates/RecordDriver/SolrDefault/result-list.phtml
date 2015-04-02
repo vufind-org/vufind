@@ -174,12 +174,7 @@
         </div>
       </div>
     </div>
-    <?=$this->context($this)->renderInContext(
-        'RecordDriver/SolrDefault/result-online-urls.phtml',
-        array(
-          'driver' => $this->driver
-        )
-    );?>
+    <?=$this->record($this->driver)->getOnlineUrls()?>
       <?=$this->record($this->driver)->getPreviews()?>
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Saved lists */ ?>

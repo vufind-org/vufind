@@ -1,9 +1,3 @@
-<?
-  $openUrl = $this->driver->getOpenURL();
-  $openUrlActive = $this->driver->openURLActive('results');
-  $openUrlMoreOptions = $this->openUrl($openUrl, true);
-  $urls = $this->record($this->driver)->getLinkDetails();
-?>
 <!-- start of result-list.phtml -->
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
     <div>
@@ -175,38 +169,16 @@
     </div>
     <div class="clearfix visible-xs"></div>
     <div class="col-sm-3 col-sm-pull-1">
-      <?
-      $fulltextAvailable = false;
-      foreach ($urls as $url) {
-        if (!$url['citation']) {
-          $fulltextAvailable = true;
-          break;
-        }
-      }
-      ?>
-      <div class="primo-available-online<?= $fulltextAvailable ? ' fulltext-available' : ''?>">
-        <? if ($openUrlActive || !empty($urls)): ?>
-          <div class="heading"><strong><?=$this->transEsc('Electronic')?></strong></div>
-          <? if(!$this->driver->isCollection()):
-            foreach ($urls as $current): ?>
-              <? $format = $this->driver->getFormats(); $format = end($format); ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc('format_PCI_' . strtolower($format), null, $format) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
-          <? endforeach; ?>
-         <? endif; ?>
-        <? endif; ?>
-
-        <? if ($openUrlActive): ?>
-          <?=$this->openUrl($openUrl)?>
-        <? endif; ?>
-
-      <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
-        <span class="status ajax-availability hidden">
-          <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
-        </span>
-      <? endif; ?>
-      </div>
+      <?=$this->record($this->driver)->getOnlineUrls()?>
     </div>
     <div class="col-xs-12">
+      <?
+      $openUrlActive = $this->driver->openURLActive('results');
+      if ($openUrlActive) {
+        $openUrl = $this->driver->getOpenURL();
+        $openUrlMoreOptions = $this->openUrl($openUrl, true);
+      }
+      ?>
       <?= $openUrlMoreOptions ? $openUrlMoreOptions : '' ?>
     </div>
 </div>

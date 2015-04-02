@@ -54,10 +54,17 @@ finna.imagePopup = (function(finna) {
             function() {
                 var id = null;
 
+                // result list
                 id = $(this).closest('.result').find('.hiddenId');
                 if (!id.length) {
+                    // record page
                     id = $(this).closest('.record.recordId').find('.hiddenId');
                 }
+                if (!id.length) {
+                    // my list
+                    id = $(this).closest('.myresearch-row').find('.hiddenId');
+                }
+
                 if (!id.length) {
                     return;
                 }
