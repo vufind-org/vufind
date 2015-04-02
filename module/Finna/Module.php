@@ -81,6 +81,18 @@ class Module
     }
 
     /**
+     * Bootstrap the module
+     *
+     * @param MvcEvent $e Event
+     *
+     * @return void
+     */
+    public function onBootstrap(MvcEvent $e)
+    {
+
+    }
+
+    /**
      * Initializes the base url for the application from environment variable
      * @param MvcEvent $e
      */
@@ -95,17 +107,5 @@ class Module
             $router->setBaseUrl($baseUrl);
             $request->setBaseUrl($baseUrl);
         }
-    }
-
-    /**
-     * Bootstrap the module
-     *
-     * @param MvcEvent $e Event
-     *
-     * @return void
-     */
-    public function onBootstrap(MvcEvent $e)
-    {
-
     }
 }
