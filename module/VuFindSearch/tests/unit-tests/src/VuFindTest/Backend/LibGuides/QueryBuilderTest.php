@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\LibGuides;
 
 use VuFindSearch\Backend\LibGuides\QueryBuilder;
@@ -54,7 +53,7 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
     {
         $q = new Query('query1');
         $qb = new QueryBuilder();
-        $expected = array('query1');
+        $expected = ['query1'];
         $result = $qb->build($q)->get('search');
         $this->assertEquals($expected, $result);
     }
@@ -63,12 +62,13 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
      * Test advanced query parsing (not currently supported)
      *
      * @return void
+     *
      * @expectedException        \Exception
      * @expectedExceptionMessage Advanced search not supported.
      */
     public function testAdvanced()
     {
         $qb = new QueryBuilder();
-        $qb->build(new QueryGroup('AND', array()));
+        $qb->build(new QueryGroup('AND', []));
     }
 }

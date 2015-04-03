@@ -52,14 +52,15 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
      * Test that failure to load even the baseline image causes an exception.
      *
      * @return void
-     * @expectedException Exception
+     *
+     * @expectedException        Exception
      * @expectedExceptionMessage Could not load default fail image.
      */
     public function testUtterFailure()
     {
-        $theme = $this->getMock('VuFindTheme\ThemeInfo', array(), array('foo', 'bar'));
-        $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(array('images/noQRCode.gif')))->will($this->returnValue(false));
-        $loader = $this->getLoader(array(), $theme);
+        $theme = $this->getMock('VuFindTheme\ThemeInfo', [], ['foo', 'bar']);
+        $theme->expects($this->once())->method('findContainingTheme')->with($this->equalTo(['images/noQRCode.gif']))->will($this->returnValue(false));
+        $loader = $this->getLoader([], $theme);
         $loader->getImage();
     }
 
@@ -79,20 +80,20 @@ class LoaderTest extends \VuFindTest\Unit\TestCase
     /**
      * Get a loader object to test.
      *
-     * @param array      $config  Configuration
-     * @param ThemeInfo  $theme   Theme info object (null to create default)
-     * @param array|bool $mock    Array of functions to mock, or false for real object
+     * @param array      $config Configuration
+     * @param ThemeInfo  $theme  Theme info object (null to create default)
+     * @param array|bool $mock   Array of functions to mock, or false for real object
      *
      * @return void
      */
-    protected function getLoader($config = array(), $theme = null, $mock = false)
+    protected function getLoader($config = [], $theme = null, $mock = false)
     {
         $config = new Config($config);
         if (null === $theme) {
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
         if ($mock) {
-            return $this->getMock('VuFind\QRCode\Loader', $mock, array($config, $theme));
+            return $this->getMock('VuFind\QRCode\Loader', $mock, [$config, $theme]);
         }
         return new Loader($config, $theme);
     }

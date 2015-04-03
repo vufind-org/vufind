@@ -48,13 +48,23 @@ class Container
     protected $groupName;
 
     /**
+     * Cookie manager.
+     *
+     * @var CookieManager
+     */
+    protected $manager;
+
+    /**
      * Constructor
      *
-     * @param string $groupName Prefix to use for cookie values.
+     * @param string        $groupName Prefix to use for cookie values.
+     * @param CookieManager $manager   Cookie manager.
      */
-    public function __construct($groupName)
+    public function __construct($groupName, CookieManager $manager = null)
     {
         $this->groupName = $groupName;
+        $this->manager = (null === $manager)
+            ? new CookieManager($_COOKIE) : $manager;
     }
 
     /**
@@ -64,8 +74,8 @@ class Container
      */
     public function getAllValues()
     {
-        $retVal = array();
-        foreach ($_COOKIE as $key => $value) {
+        $retVal = [];
+        foreach ($this->manager->getCookies() as $key => $value) {
             if (substr($key, 0, strlen($this->groupName)) == $this->groupName) {
                 $retVal[substr($key, strlen($this->groupName))] = $value;
             }
@@ -83,7 +93,8 @@ class Container
      */
     public function & __get($var)
     {
-        return $_COOKIE[$this->groupName . $var];
+        $val = $this->manager->get($this->groupName . $var);
+        return $val;
     }
 
     /**
@@ -97,18 +108,7 @@ class Container
      */
     public function __set($var, $value)
     {
-        $_COOKIE[$this->groupName . $var] = $value;
-        if (is_array($value)) {
-            $i = 0;
-            foreach ($value as $curr) {
-                setcookie(
-                    $this->groupName . $var . '[' . $i . ']', $curr, null, '/'
-                );
-                $i++;
-            }
-        } else {
-            setcookie($this->groupName . $var, $value, null, '/');
-        }
+        $this->manager->set($this->groupName . $var, $value);
     }
 
     /**
@@ -121,7 +121,7 @@ class Container
      */
     public function __isset($var)
     {
-        return isset($_COOKIE[$this->groupName . $var]);
+        return null !== $this->manager->get($this->groupName . $var);
     }
 
     /**
@@ -134,19 +134,6 @@ class Container
      */
     public function __unset($var)
     {
-        $isArray = is_array($_COOKIE[$this->groupName . $var]);
-        if ($isArray) {
-            $count = count($_COOKIE[$this->groupName . $var]);
-        }
-        unset($_COOKIE[$this->groupName . $var]);
-        if ($isArray) {
-            for ($i = 0; $i < $count; $i++) {
-                setcookie(
-                    $this->groupName . $var . '[' . $i . ']', '', time() - 3600, '/'
-                );
-            }
-        } else {
-            setcookie($this->groupName . $var, '', time() - 3600, '/');
-        }
+        $this->manager->clear($this->groupName . $var);
     }
 }

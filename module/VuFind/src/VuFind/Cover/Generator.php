@@ -44,7 +44,7 @@ class Generator
      *
      * @var array
      */
-    protected $settings = array();
+    protected $settings = [];
     /**
      * Reserved color
      */
@@ -60,10 +60,10 @@ class Generator
      * @param \VuFindTheme\ThemeInfo $themeTools For font loading
      * @param array                  $settings   Overwrite styles
      */
-    public function __construct($themeTools, $settings = array())
+    public function __construct($themeTools, $settings = [])
     {
         $this->themeTools = $themeTools;
-        $default = array(
+        $default = [
             'mode'         => 'grid',
             'authorFont'   => 'DroidSerif-Bold.ttf',
             'fontSize'     => 7,
@@ -76,8 +76,8 @@ class Generator
             'titleFont'    => 'DroidSerif-Bold.ttf',
             'topPadding'   => 19,
             'wrapWidth'    => 80,
-        );
-        foreach ($settings as $i=>$setting) {
+        ];
+        foreach ($settings as $i => $setting) {
             $default[$i] = $setting;
         }
         $default['authorFont'] = $this->fontPath($default['authorFont']);
@@ -111,6 +111,8 @@ class Generator
      * @param string $callnumber Callnumber of the book
      *
      * @return string contents of image file
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function generateSolid($title, $author, $callnumber)
     {
@@ -239,7 +241,7 @@ class Generator
         }
         if (null !== $callnumber) {
             $cv = 0;
-            for ($i=0;$i<strlen($callnumber);$i++) {
+            for ($i = 0;$i<strlen($callnumber);$i++) {
                 $cv += ord($callnumber[$i]);
             }
             return $cv;
@@ -295,7 +297,7 @@ class Generator
         $line = '';
         $lineCount = 0;
         $i = 0;
-        while ($i<count($words)&&$lineCount<$this->settings->maxLines-1) {
+        while ($i<count($words) && $lineCount<$this->settings->maxLines-1) {
             $pline = $line;
             // Format
             $text = strtoupper($words[$i]);
@@ -361,7 +363,7 @@ class Generator
         // Scale author to fit by incrementing fontsizes down
         $fontSize = $this->settings->fontSize;
         do {
-            $txtWidth=$this->textWidth(
+            $txtWidth = $this->textWidth(
                 $author,
                 $this->settings->titleFont,
                 $fontSize
@@ -399,7 +401,7 @@ class Generator
     protected function fontPath($font)
     {
         // Check all supported image formats:
-        $filenames = array('css/font/' . $font);
+        $filenames = ['css/font/' . $font];
         $fileMatch = $this->themeTools->findContainingTheme($filenames, true);
         return empty($fileMatch) ? false : $fileMatch;
     }
@@ -435,7 +437,7 @@ class Generator
      * @return void
      */
     protected function drawText($im, $text, $x, $y,
-        $font, $fontSize, $mcolor, $scolor=false, $align=null
+        $font, $fontSize, $mcolor, $scolor = false, $align = null
     ) {
         $txtWidth = $this->textWidth(
             $text,
@@ -486,12 +488,12 @@ class Generator
     protected function render($bc, $im, $color, $half, $box)
     {
         $bc = str_split($bc);
-        for ($k=0;$k<4;$k++) {
+        for ($k = 0;$k<4;$k++) {
             $x = $k%2   ? $half : $half-$box;
             $y = $k/2<1 ? $half : $half-$box;
             $u = $k%2   ? $box : -$box;
             $v = $k/2<1 ? $box : -$box;
-            for ($i=0;$i<16;$i++) {
+            for ($i = 0;$i<16;$i++) {
                 if ($bc[$i] == "1") {
                     imagefilledrectangle($im, $x, $y, $x+$box-1, $y+$box-1, $color);
                 }

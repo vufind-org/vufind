@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind;
+use SimpleXMLElement;
 
 /**
  * VuFind SimpleXML enhancement functionality
@@ -39,57 +40,28 @@ namespace VuFind;
 class SimpleXML
 {
     /**
-     * Attach $child to $parent.  Adapted from function defined in PHP docs here:
-     *      http://www.php.net/manual/en/class.simplexmlelement.php#99071
+     * Attach $child to $parent.
      *
-     * @param SimpleXMLElement $parent Parent element to modify
-     * @param SimpleXMLElement $child  Child element to attach
+     * @param SimpleXMLElement        $parent Parent element to modify
+     * @param SimpleXMLElement|string $child  Child element (or XML fragment) to
+     * attach
      *
      * @return void
      */
     public static function appendElement($parent, $child)
     {
-        // get all namespaces for document
-        $namespaces = $child->getNamespaces(true);
+        $xml = $child instanceof SimpleXMLElement
+            ? $child->asXML() : $child;
 
-        // check if there is a default namespace for the current node
-        $currentNs = $child->getNamespaces();
-        $defaultNs = count($currentNs) > 0 ? current($currentNs) : null;
-        $prefix = (count($currentNs) > 0) ? current(array_keys($currentNs)) : '';
-        $childName = strlen($prefix) > 1
-            ? $prefix . ':' . $child->getName() : $child->getName();
-
-        // check if the value is string value / data
-        if (trim((string) $child) == '') {
-            $element = $parent->addChild($childName, null, $defaultNs);
-        } else {
-            $element = $parent->addChild(
-                $childName, htmlspecialchars((string)$child), $defaultNs
-            );
+        // strip off xml header
+        $mark = strpos($xml, '?' . '>');
+        if ($mark>0 && $mark<40) {
+            $xml = substr($xml, $mark + 2);
         }
 
-        foreach ($child->attributes() as $attKey => $attValue) {
-            $element->addAttribute($attKey, $attValue);
-        }
-        foreach ($namespaces as $nskey => $nsurl) {
-            foreach ($child->attributes($nsurl) as $attKey => $attValue) {
-                $element->addAttribute($nskey . ':' . $attKey, $attValue, $nsurl);
-            }
-        }
-
-        // add children -- try with namespaces first, but default to all children
-        // if no namespaced children are found.
-        $children = 0;
-        foreach ($namespaces as $nskey => $nsurl) {
-            foreach ($child->children($nsurl) as $currChild) {
-                self::appendElement($element, $currChild);
-                $children++;
-            }
-        }
-        if ($children == 0) {
-            foreach ($child->children() as $currChild) {
-                self::appendElement($element, $currChild);
-            }
-        }
+        $dom = dom_import_simplexml($parent);
+        $fragment = $dom->ownerDocument->createDocumentFragment();
+        $fragment->appendXML($xml);
+        $dom->appendChild($fragment);
     }
 }

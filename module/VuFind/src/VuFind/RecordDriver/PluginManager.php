@@ -54,9 +54,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         // Add an initializer for setting up hierarchies
         $initializer = function ($instance, $manager) {
-            $hasHierarchyType = is_callable(array($instance, 'getHierarchyType'));
+            $hasHierarchyType = is_callable([$instance, 'getHierarchyType']);
             if ($hasHierarchyType
-                && is_callable(array($instance, 'setHierarchyDriverManager'))
+                && is_callable([$instance, 'setHierarchyDriverManager'])
             ) {
                 $sm = $manager->getServiceLocator();
                 if ($sm && $sm->has('VuFind\HierarchyDriverPluginManager')) {
@@ -89,8 +89,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     public function getSolrRecord($data)
     {
-        $key = 'Solr' . ucwords($data['recordtype']);
-        $recordType = $this->has($key) ? $key : 'SolrDefault';
+        if (isset($data['recordtype'])) {
+            $key = 'Solr' . ucwords($data['recordtype']);
+            $recordType = $this->has($key) ? $key : 'SolrDefault';
+        } else {
+            $recordType = 'SolrDefault';
+        }
 
         // Build the object:
         $driver = $this->get($recordType);

@@ -70,6 +70,6 @@ class Results extends \VuFind\Search\Base\Results
     public function getFacetList($filter = null)
     {
         // Facets not supported.
-        return array();
+        return [];
     }
 }

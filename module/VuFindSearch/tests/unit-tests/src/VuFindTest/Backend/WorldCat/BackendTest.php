@@ -26,12 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\WorldCat;
 
 use VuFindSearch\Backend\WorldCat\Backend;
-use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
-use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;
@@ -54,7 +51,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testRetrieve()
     {
-        $conn = $this->getConnectorMock(array('getRecord'));
+        $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
             ->will($this->returnValue($this->loadResponse('single-record')));
@@ -76,7 +73,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testSearch()
     {
-        $conn = $this->getConnectorMock(array('search'));
+        $conn = $this->getConnectorMock(['search']);
         $conn->expects($this->once())
             ->method('search')
             ->will($this->returnValue($this->loadResponse('search')));
@@ -150,12 +147,12 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = array())
+    protected function getConnectorMock(array $mock = [])
     {
         $client = $this->getMock('Zend\Http\Client');
         return $this->getMock(
             'VuFindSearch\Backend\WorldCat\Connector',
-            $mock, array('fake', $client)
+            $mock, ['fake', $client]
         );
     }
 }

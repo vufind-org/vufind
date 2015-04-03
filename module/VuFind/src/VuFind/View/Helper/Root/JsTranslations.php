@@ -58,7 +58,7 @@ class JsTranslations extends AbstractHelper
      *
      * @var array
      */
-    protected $strings = array();
+    protected $strings = [];
 
     /**
      * Constructor
@@ -93,9 +93,12 @@ class JsTranslations extends AbstractHelper
      */
     public function getScript()
     {
-        $parts = array();
+        $parts = [];
         foreach ($this->strings as $k => $v) {
-            $parts[] = $k . ': "' . addslashes($this->transEsc->__invoke($v)) . '"';
+            $translation = is_array($v)
+                ? call_user_func_array([$this->transEsc, '__invoke'], $v)
+                : $this->transEsc->__invoke($v);
+            $parts[] = $k . ': "' . addslashes($translation) . '"';
         }
         return $this->varName . ' = {' . implode(',', $parts) . '};';
     }

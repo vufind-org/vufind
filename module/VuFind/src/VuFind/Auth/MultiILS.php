@@ -59,15 +59,18 @@ class MultiILS extends ILS
         $target = trim($request->getPost()->get('target'));
         $username = trim($request->getPost()->get('username'));
         $password = trim($request->getPost()->get('password'));
-        if ($target == '' || $username == '' || $password == '') {
+        if ($username == '' || $password == '') {
             throw new AuthException('authentication_error_blank');
+        }
+
+        // We should have target either separately or already embedded into username
+        if ($target) {
+            $username = "$target.$username";
         }
 
         // Connect to catalog:
         try {
-            $patron = $this->getCatalog()->patronLogin(
-                "$target.$username", $password
-            );
+            $patron = $this->getCatalog()->patronLogin($username, $password);
         } catch (\Exception $e) {
             throw new AuthException('authentication_error_technical');
         }
@@ -90,7 +93,7 @@ class MultiILS extends ILS
     {
         return $this->getCatalog()->getLoginDrivers();
     }
-    
+
     /**
      * Get default login target (ILS driver/source ID)
      *

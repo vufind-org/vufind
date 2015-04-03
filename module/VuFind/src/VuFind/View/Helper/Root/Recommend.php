@@ -52,23 +52,24 @@ class Recommend extends AbstractHelper
         // Set up the rendering context:
         $contextHelper = $this->getView()->plugin('context');
         $oldContext = $contextHelper($this->getView())->apply(
-            array('recommend' => $recommend)
+            ['recommend' => $recommend]
         );
 
         // Get the current recommendation module's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // template.
         $className = get_class($recommend);
+        $resolver = $this->getView()->resolver();
         while (true) {
             // Guess the template name for the current class:
             $classParts = explode('\\', $className);
             $template = 'Recommend/' . array_pop($classParts) . '.phtml';
-            try {
+            if ($resolver->resolve($template)) {
                 // Try to render the template....
                 $html = $this->getView()->render($template);
                 $contextHelper($this->getView())->restore($oldContext);
                 return $html;
-            } catch (RuntimeException $e) {
+            } else {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent recommendation class:
                 $className = get_parent_class($className);

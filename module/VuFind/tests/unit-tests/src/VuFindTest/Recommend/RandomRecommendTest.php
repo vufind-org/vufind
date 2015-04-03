@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\RandomRecommend as Random;
@@ -64,14 +63,14 @@ class RandomRecommendTest extends TestCase
     public function testCanSetSettings()
     {
         //[backend]:[limit]:[display mode]:[random mode]:[minimumset]:[facet1]:[facetvalue1]
-        $this->recommend->setConfig("Solr:10:mixed:disregard:20:facet1:value1:facet2:value2");
+        $this->recommend->setConfig("SolrWeb:5:mixed:disregard:20:facet1:value1:facet2:value2");
         $this->assertEquals(
-            "Solr", \PHPUnit_Framework_Assert::readAttribute(
+            "SolrWeb", \PHPUnit_Framework_Assert::readAttribute(
                 $this->recommend, 'backend'
             )
         );
         $this->assertEquals(
-            "10", \PHPUnit_Framework_Assert::readAttribute(
+            "5", \PHPUnit_Framework_Assert::readAttribute(
                 $this->recommend, 'limit'
             )
         );
@@ -98,6 +97,47 @@ class RandomRecommendTest extends TestCase
     }
 
     /**
+     * Test default settings
+     *
+     * @return void
+     */
+    public function testDefaultSettings()
+    {
+        //[backend]:[limit]:[display mode]:[random mode]:[minimumset]:[facet1]:[facetvalue1]
+        $this->recommend->setConfig('');
+        $this->assertEquals(
+            "Solr", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'backend'
+            )
+        );
+        $this->assertEquals(
+            "10", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'limit'
+            )
+        );
+        $this->assertEquals(
+            "standard", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'displayMode'
+            )
+        );
+        $this->assertEquals(
+            "retain", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'mode'
+            )
+        );
+        $this->assertEquals(
+            "0", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'minimum'
+            )
+        );
+        $this->assertEquals(
+            [], \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'filters'
+            )
+        );
+    }
+
+    /**
      * Test initialisation
      *
      * @return void
@@ -120,8 +160,7 @@ class RandomRecommendTest extends TestCase
                 $this->equalTo("Solr"),
                 $this->equalTo($params->getQuery()),
                 $this->equalTo(10)
-            )->will($this->returnValue($this->getMock('VuFindTest\Recommend\TestSearchResultsForRandom')));
-
+            )->will($this->returnValue($this->getMock('VuFindSearch\Response\RecordCollectionInterface')));
 
         $recommend->setConfig("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
         $recommend->init($params, $request);
@@ -140,9 +179,10 @@ class RandomRecommendTest extends TestCase
 
         $paramManager->expects($this->once())->method('get')
             ->with($this->equalTo("Solr"))
-            ->will($this->returnValue(
-                $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
-                    ->get('Solr')
+            ->will(
+                $this->returnValue(
+                    $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+                        ->get('Solr')
                 )
             );
 
@@ -155,14 +195,14 @@ class RandomRecommendTest extends TestCase
 
         $service->expects($this->once())->method('random')
             ->with($this->equalTo("Solr"))
-            ->will($this->returnValue($this->getMock('VuFindTest\Recommend\TestSearchResultsForRandom')));
+            ->will($this->returnValue($this->getMock('VuFindSearch\Response\RecordCollectionInterface')));
 
         $recommend->setConfig("Solr:10:mixed:disregard:20:facet1:value1:facet2:value2");
         $recommend->init($params, $request);
     }
 
     /**
-     * Test initialisation
+     * Test minimum result limit feature
      *
      * @return void
      */
@@ -171,30 +211,70 @@ class RandomRecommendTest extends TestCase
         $service = $this->getMock('VuFindSearch\Service');
         $paramManager = $this->getMock('VuFind\Search\Params\PluginManager');
         $recommend = new Random($service, $paramManager);
-        $records = array("1", "2", "3", "4", "5");
+        $records = ["1", "2", "3", "4", "5"];
 
         // Use Solr since some Base components are abstract:
-        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+        $results = $this->getServiceManager()->get('VuFind\SearchResultsPluginManager')
             ->get('Solr');
+        $params = $results->getParams();
         $query = $this->getFixture('query');
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->getMock('\Zend\StdLib\Parameters');
 
-        $results = $this->getMock('VuFindTest\Recommend\TestSearchResultsForRandom');
+        $results = $this->getMock('VuFindSearch\Response\RecordCollectionInterface');
         $results->expects($this->once())->method('getRecords')
             ->will($this->returnValue($records));
 
         $service->expects($this->once())->method('random')
-        ->with(
-            $this->equalTo("Solr"),
-            $this->equalTo($params->getQuery()),
-            $this->equalTo(10)
-        )->will($this->returnValue($results));
+            ->with(
+                $this->equalTo("Solr"),
+                $this->equalTo($params->getQuery()),
+                $this->equalTo(10)
+            )->will($this->returnValue($results));
 
         $recommend->setConfig("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
         $recommend->init($params, $request);
+        $recommend->process($results);
         $output = $recommend->getResults();
         $this->assertEmpty($output);
+    }
+
+    /**
+     * Test results coming back
+     *
+     * @return void
+     */
+    public function testWillReturnResults()
+    {
+        $service = $this->getMock('VuFindSearch\Service');
+        $paramManager = $this->getMock('VuFind\Search\Params\PluginManager');
+        $recommend = new Random($service, $paramManager);
+        $records = ["1", "2", "3", "4", "5"];
+
+        // Use Solr since some Base components are abstract:
+        $results = $this->getServiceManager()->get('VuFind\SearchResultsPluginManager')
+            ->get('Solr');
+        $params = $results->getParams();
+        $query = $this->getFixture('query');
+        $params->setBasicSearch($query->getString(), $query->getHandler());
+        $request = $this->getMock('\Zend\StdLib\Parameters');
+
+        $results = $this->getMock('VuFindSearch\Response\RecordCollectionInterface');
+        $results->expects($this->once())->method('getRecords')
+            ->will($this->returnValue($records));
+
+        $service->expects($this->once())->method('random')
+            ->with(
+                $this->equalTo("Solr"),
+                $this->equalTo($params->getQuery()),
+                $this->equalTo(10)
+            )->will($this->returnValue($results));
+
+        $recommend->setConfig("Solr:10:mixed:retain:0:facet1:value1:facet2:value2");
+        $recommend->init($params, $request);
+        $recommend->process($results);
+        $output = $recommend->getResults();
+        $this->assertEquals($records, $output);
     }
 
     /**
@@ -218,12 +298,4 @@ class RandomRecommendTest extends TestCase
         $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches/basic') . '/';
         return unserialize(file_get_contents($fixturePath . $file));
     }
-}
-
-/**
- * Stub class to test random.
- */
-abstract class TestSearchResultsForRandom
-{
-    abstract function getRecords();
 }

@@ -121,7 +121,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $ct->expects($this->at(0))->method('markDeleted')->with($this->equalTo('biblio'), $this->equalTo('foo'));
         $ct->expects($this->at(1))->method('markDeleted')->with($this->equalTo('biblio'), $this->equalTo('bar'));
         $writer = new Writer($bm, $ct);
-        $writer->deleteRecords('Solr', array('foo', 'bar'));
+        $writer->deleteRecords('Solr', ['foo', 'bar']);
     }
 
     /**
@@ -138,7 +138,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
             ->getMock();
         $mockConnector = $this->getMockBuilder('VuFindSearch\Backend\Solr\Connector')
             ->disableOriginalConstructor()
-            ->setMethods(array('getUrl', 'setTimeout', 'write'))
+            ->setMethods(['getUrl', 'setTimeout', 'write'])
             ->getMock();
         $mockBackend->expects($this->any())->method('getConnector')->will($this->returnValue($mockConnector));
         $mockConnector->expects($this->any())->method('getTimeout')->will($this->returnValue(30));
@@ -156,7 +156,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
     {
         return $this->getMockBuilder('VuFind\Db\Table\ChangeTracker')
             ->disableOriginalConstructor()
-            ->setMethods(array('markDeleted'))
+            ->setMethods(['markDeleted'])
             ->getMock();
     }
 }

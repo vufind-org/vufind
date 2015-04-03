@@ -68,7 +68,7 @@ class UtilsTest extends \VuFindTest\Unit\TestCase
      */
     public function testSanitizeDate()
     {
-        $tests = array(
+        $tests = [
             '[2014]' => '2014-01-01',
             'n.d.' => null,
             'may 7, 1981' => '1981-05-07',
@@ -81,7 +81,14 @@ class UtilsTest extends \VuFindTest\Unit\TestCase
             '1973-31-31' => '1973-01-01',       // illegal month
             '1964-zz' => '1964-01-01',
             '1964-01-zz' => '1964-01-01',
-        );
+            'Winter 2012' => '2012-01-01',
+            '05-1901' => '1901-05-01',
+            '5-1901' => '1901-05-01',
+            '05/1901' => '1901-05-01',
+            '5/1901' => '1901-05-01',
+            '2nd Quarter 2004' => '2004-01-01',
+            'Nov 2009 and Dec 2009' => '2009-01-01',
+        ];
         
         foreach ($tests as $in => $out) {
             $this->assertEquals(

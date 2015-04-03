@@ -101,7 +101,7 @@ class Generator
      *
      * @var array
      */
-    protected $warnings = array();
+    protected $warnings = [];
 
     /**
      * Mode of retrieving IDs from the index (may be 'terms' or 'search')
@@ -126,12 +126,12 @@ class Generator
 
         // Process backend configuration:
         $backendConfig = isset($this->config->Sitemap->index)
-            ? $this->config->Sitemap->index : array('Solr,/Record/');
-        $backendConfig = is_callable(array($backendConfig, 'toArray'))
+            ? $this->config->Sitemap->index : ['Solr,/Record/'];
+        $backendConfig = is_callable([$backendConfig, 'toArray'])
             ? $backendConfig->toArray() : (array)$backendConfig;
         $callback = function ($n) {
             $parts = array_map('trim', explode(',', $n));
-            return array('id' => $parts[0], 'url' => $parts[1]);
+            return ['id' => $parts[0], 'url' => $parts[1]];
         };
         $this->backendSettings = array_map($callback, $backendConfig);
 
@@ -145,7 +145,7 @@ class Generator
         }
         if (isset($this->config->SitemapIndex->indexFileName)) {
             $this->indexFile = $this->config->Sitemap->fileLocation . '/' .
-                $this->config->SitemapIndex->indexFileName. '.xml';
+                $this->config->SitemapIndex->indexFileName . '.xml';
         }
     }
 
@@ -210,7 +210,7 @@ class Generator
             foreach ($ids as $item) {
                 $loc = htmlspecialchars($recordUrl . urlencode($item));
                 if (strpos($loc, 'http') === false) {
-                    $loc = 'http://'.$loc;
+                    $loc = 'http://' . $loc;
                 }
                 $smf->addUrl($loc);
                 $lastTerm = $item;
@@ -257,7 +257,7 @@ class Generator
         $key = $backend->getConnector()->getUniqueKey();
         $info = $backend->terms($key, $lastTerm, $this->countPerPage)
             ->getFieldTerms($key);
-        return null === $info ? array() : array_keys($info->toArray());
+        return null === $info ? [] : array_keys($info->toArray());
     }
 
     /**
@@ -273,18 +273,18 @@ class Generator
         $connector = $backend->getConnector();
         $key = $connector->getUniqueKey();
         $params = new ParamBag(
-            array(
+            [
                 'q' => '*:*',
                 'fl' => $key,
                 'rows' => $this->countPerPage,
                 'start' => $offset,
                 'wt' => 'json',
                 'sort' => $key . ' asc',
-            )
+            ]
         );
         $raw = $connector->search($params);
         $result = json_decode($raw);
-        $ids = array();
+        $ids = [];
         if (isset($result->response->docs)) {
             foreach ($result->response->docs as $doc) {
                 $ids[] = $doc->$key;

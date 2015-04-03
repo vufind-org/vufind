@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -63,7 +64,7 @@ class Factory
     {
         $search = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
         $config = isset($search->NewItem)
-            ? $search->NewItem : new \Zend\Config\Config(array());
+            ? $search->NewItem : new \Zend\Config\Config([]);
         return new NewItems($config);
     }
 

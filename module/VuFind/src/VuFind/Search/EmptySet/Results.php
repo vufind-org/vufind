@@ -61,6 +61,6 @@ class Results extends BaseResults
      */
     public function getFacetList($filter = null)
     {
-        return array();
+        return [];
     }
 }

@@ -93,7 +93,7 @@ class Holds extends AbstractRequestBase
             $details = $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed
-            return array();
+            return [];
         }
 
         if (!empty($details)) {
@@ -105,10 +105,10 @@ class Holds extends AbstractRequestBase
                         $this->getController()->url()->fromRoute('myresearch-holds'),
                         $this->getController()->url()->fromRoute('myresearch-holds'),
                         'confirm_hold_cancel_all_text',
-                        array(
+                        [
                             'cancelAll' => 1,
                             'cancelAllIDS' => $params->fromPost('cancelAllIDS')
-                        )
+                        ]
                     );
                 } else {
                     return $this->getController()->confirm(
@@ -116,11 +116,11 @@ class Holds extends AbstractRequestBase
                         $this->getController()->url()->fromRoute('myresearch-holds'),
                         $this->getController()->url()->fromRoute('myresearch-holds'),
                         'confirm_hold_cancel_selected_text',
-                        array(
+                        [
                             'cancelSelected' => 1,
                             'cancelSelectedIDS' =>
                                 $params->fromPost('cancelSelectedIDS')
-                        )
+                        ]
                     );
                 }
             }
@@ -131,13 +131,13 @@ class Holds extends AbstractRequestBase
                 if (!in_array($info, $this->getSession()->validIds)) {
                     $flashMsg->setNamespace('error')
                         ->addMessage('error_inconsistent_parameters');
-                    return array();
+                    return [];
                 }
             }
 
             // Add Patron Data to Submitted Data
             $cancelResults = $catalog->cancelHolds(
-                array('details' => $details, 'patron' => $patron)
+                ['details' => $details, 'patron' => $patron]
             );
             if ($cancelResults == false) {
                 $flashMsg->setNamespace('error')->addMessage('hold_cancel_fail');
@@ -156,6 +156,6 @@ class Holds extends AbstractRequestBase
         } else {
              $flashMsg->setNamespace('error')->addMessage('hold_empty_selection');
         }
-        return array();
+        return [];
     }
 }

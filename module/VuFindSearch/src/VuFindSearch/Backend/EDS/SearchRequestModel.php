@@ -42,7 +42,7 @@ class SearchRequestModel
      *
      * @var array
      */
-    protected $query = array();
+    protected $query = [];
 
     /**
      * Whether or not to return facets with the search results. valid values are
@@ -57,7 +57,7 @@ class SearchRequestModel
      *
      * @var array
      */
-    protected $facetFilters = array();
+    protected $facetFilters = [];
 
     /**
      * Sort option to apply
@@ -71,7 +71,7 @@ class SearchRequestModel
      *
      * @var array
      */
-    protected $limiters = array();
+    protected $limiters = [];
 
     /**
      * Mode to be effective in the search
@@ -85,7 +85,7 @@ class SearchRequestModel
      *
      * @var string
      */
-    protected $expanders = array();
+    protected $expanders = [];
 
     /**
      * Requested level of detail to return the results with
@@ -121,7 +121,7 @@ class SearchRequestModel
      *
      * @var array
      */
-    protected $actions = array();
+    protected $actions = [];
 
     /**
      * Constructor
@@ -130,7 +130,7 @@ class SearchRequestModel
      *
      * @param array $parameters parameters to populate request
      */
-    public function __construct($parameters = array())
+    public function __construct($parameters = [])
     {
         $this->setParameters($parameters);
     }
@@ -168,7 +168,7 @@ class SearchRequestModel
      *
      * @return void
      */
-    public function setParameters($parameters = array())
+    public function setParameters($parameters = [])
     {
         foreach ($parameters as $key => $values) {
             switch($key) {
@@ -204,69 +204,7 @@ class SearchRequestModel
      */
     public function convertToQueryString()
     {
-        $qs = '';
-        if (isset($this->query) && 0 < sizeof($this->query)) {
-            for ($x=0; $x<sizeof($this->query); $x++) {
-                $qs .= 'query-'.($x+1).'='.$this->query[$x].'&';
-            }
-        }
-
-        if (isset($this->facetFilters) && 0 < sizeof($this->facetFilters)) {
-            for ($x=0; $x<sizeof($this->facetFilters); $x++) {
-                $qs .= 'facetfilter='.$this->facetFilters[$x].'&';
-            }
-        }
-
-        if (isset($this->limiters) && 0 < sizeof($this->limiters)) {
-            for ($x=0; $x<sizeof($this->limiters); $x++) {
-                $qs .= 'limiter='.$this->limiters[$x].'&';
-            }
-        }
-
-        if (isset($this->expanders) && 0 < sizeof($this->expanders)) {
-            $expand = implode(",", $this->expanders);
-            $qs .= 'expander='.$expand.'&';
-        }
-
-        if (isset($this->includeFacets)) {
-            $qs .= 'includefacets='.$this->includeFacets.'&';
-        }
-
-        if (isset($this->sort)) {
-            $qs .= 'sort='.$this->sort.'&';;
-        }
-
-        if (isset($this->searchMode)) {
-            $qs .= 'searchmode='.$this->searchMode.'&';
-        }
-
-        if (isset($this->view)) {
-            $qs .= 'view='.$this->view.'&';
-        }
-
-        if (isset($this->resultsPerPage)) {
-            $qs .= 'resultsperpage='.$this->resultsPerPage.'&';
-        }
-
-        if (isset($this->pageNumber)) {
-            $qs .= 'pagenumber='.$this->pageNumber.'&';
-        }
-
-        if (isset($this->highlight)) {
-            $highlightVal = $this->highlight ? 'y' : 'n';
-            $qs .= 'highlight='.$highlightVal.'&';
-        }
-
-        if (isset($this->actions) && 0 < sizeof($this->actions)) {
-            for ($x=0; $x<sizeof($this->actions); $x++) {
-                $qs .= 'action-'.($x+1).'='.$this->actions[$x].'&';
-            }
-        }
-
-        if ($this->endsWith($qs, '&')) {
-            $qs = substr($qs, 0, -1);
-        }
-        return $qs;
+        return http_build_query($this->convertToQueryStringParameterArray());
     }
 
     /**
@@ -276,7 +214,7 @@ class SearchRequestModel
      */
     public function convertToQueryStringParameterArray()
     {
-        $qs = array();
+        $qs = [];
         if (isset($this->query) && 0 < sizeof($this->query)) {
             $qs['query-x'] = $this->query;
         }
@@ -322,7 +260,7 @@ class SearchRequestModel
         }
 
         $highlightVal = isset($this->highlight) && $this->highlight ? 'y' : 'n';
-        $qs['highlight']= $highlightVal;
+        $qs['highlight'] = $highlightVal;
 
         return $qs;
     }
@@ -353,7 +291,7 @@ class SearchRequestModel
     public static function isParameterIndexed($value)
     {
         //Indexed parameter names end with '-x'
-        return SearchRequestModel::endsWith($value, '-x');
+        return static::endsWith($value, '-x');
     }
 
     /**

@@ -43,7 +43,7 @@ class Editions implements RelatedInterface
      *
      * @var array
      */
-    protected $results = array();
+    protected $results = [];
 
     /**
      * Results plugin manager
@@ -83,8 +83,6 @@ class Editions implements RelatedInterface
     }
 
     /**
-     * init
-     *
      * Establishes base settings for making recommendations.
      *
      * @param string                            $settings Settings from config.ini
@@ -125,8 +123,6 @@ class Editions implements RelatedInterface
     }
 
     /**
-     * getResults
-     *
      * Get an array of Record Driver objects representing other editions of the one
      * passed to the constructor.
      *
@@ -147,7 +143,7 @@ class Editions implements RelatedInterface
      */
     protected function getQueryParts($driver)
     {
-        $parts = array();
+        $parts = [];
         $oclcNum = $driver->tryMethod('getCleanOCLCNum');
         if (!empty($oclcNum)) {
             $oclcList = $this->wcUtils->getXOCLCNUM($oclcNum);

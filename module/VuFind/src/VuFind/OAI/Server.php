@@ -103,7 +103,7 @@ class Server
      *
      * @var array
      */
-    protected $metadataFormats = array();
+    protected $metadataFormats = [];
 
     /**
      * Namespace used for ID prefixing (if any)
@@ -166,7 +166,7 @@ class Server
      *
      * @var array
      */
-    protected $setQueries = array();
+    protected $setQueries = [];
 
     /**
      * Constructor
@@ -194,7 +194,7 @@ class Server
         if (isset($parts['port'])) {
             $this->baseHostURL .= $parts['port'];
         }
-        $this->params = isset($params) && is_array($params) ? $params : array();
+        $this->params = isset($params) && is_array($params) ? $params : [];
         $this->initializeMetadataFormats(); // Load details on supported formats
         $this->initializeSettings($config); // Load config.ini settings
     }
@@ -220,7 +220,7 @@ class Server
     public function getResponse()
     {
         if (!$this->hasParam('verb')) {
-            return $this->showError('badArgument', 'Missing Verb Argument');
+            return $this->showError('badVerb', 'Missing Verb Argument');
         } else {
             switch($this->params['verb']) {
             case 'GetRecord':
@@ -258,7 +258,7 @@ class Server
         $this->attachRecordHeader(
             $record, $this->prefixID($tracker['id']),
             date($this->iso8601, $this->normalizeDate($tracker['deleted'])),
-            array(),
+            [],
             'deleted'
         );
     }
@@ -274,7 +274,7 @@ class Server
      *
      * @return void
      */
-    protected function attachRecordHeader($xml, $id, $date, $sets = array(), 
+    protected function attachRecordHeader($xml, $id, $date, $sets = [],
         $status = ''
     ) {
         $header = $xml->addChild('header');
@@ -317,7 +317,7 @@ class Server
         if (!is_null($this->setField) && !empty($fields[$this->setField])) {
             $sets = $fields[$this->setField];
         } else {
-            $sets = array();
+            $sets = [];
         }
 
         // Get modification date:
@@ -334,9 +334,9 @@ class Server
         );
 
         // Inject metadata if necessary:
-        if (!$headerOnly) {
+        if (!$headerOnly && !empty($xml)) {
             $metadata = $recXml->addChild('metadata');
-            SimpleXML::appendElement($metadata, simplexml_load_string($xml));
+            SimpleXML::appendElement($metadata, $xml);
         }
 
         return true;
@@ -408,10 +408,10 @@ class Server
         $xml->repositoryName = $this->repositoryName;
         $xml->baseURL = $this->baseURL;
         $xml->protocolVersion = '2.0';
+        $xml->adminEmail = $this->adminEmail;
         $xml->earliestDatestamp = $this->earliestDatestamp;
         $xml->deletedRecord = 'transient';
         $xml->granularity = 'YYYY-MM-DDThh:mm:ssZ';
-        $xml->adminEmail = $this->adminEmail;
         if (!empty($this->idNamespace)) {
             $xml->addChild('description');
             $id = $xml->description->addChild(
@@ -441,12 +441,12 @@ class Server
      */
     protected function initializeMetadataFormats()
     {
-        $this->metadataFormats['oai_dc'] = array(
+        $this->metadataFormats['oai_dc'] = [
             'schema' => 'http://www.openarchives.org/OAI/2.0/oai_dc.xsd',
-            'namespace' => 'http://www.openarchives.org/OAI/2.0/oai_dc/');
-        $this->metadataFormats['marc21'] = array(
+            'namespace' => 'http://www.openarchives.org/OAI/2.0/oai_dc/'];
+        $this->metadataFormats['marc21'] = [
             'schema' => 'http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd',
-            'namespace' => 'http://www.loc.gov/MARC21/slim');
+            'namespace' => 'http://www.loc.gov/MARC21/slim'];
     }
 
     /**
@@ -552,7 +552,7 @@ class Server
         // they come from the OAI-PMH request or the database, the format may be
         // slightly different; this ensures they are reduced to a consistent value!
         $from = $this->normalizeDate($params['from']);
-        $until = $this->normalizeDate($params['until']);
+        $until = $this->normalizeDate($params['until'], '23:59:59');
         if (!$this->listRecordsValidateDates($from, $until)) {
             return;
         }
@@ -645,7 +645,7 @@ class Server
             // proves not to be the case:
             $results = $this->resultsManager->get($this->searchClassId);
             try {
-                $facets = $results->getFullFieldFacets(array($this->setField));
+                $facets = $results->getFullFieldFacets([$this->setField]);
             } catch (\Exception $e) {
                 $facets = null;
             }
@@ -722,7 +722,9 @@ class Server
         // Apply filters as needed.
         if (!empty($set)) {
             if (isset($this->setQueries[$set])) {
-                $params->addFilter($this->setQueries[$set]);
+                // use hidden filter here to allow for complex queries;
+                // plain old addFilter expects simple field:value queries.
+                $params->getOptions()->addHiddenFilter($this->setQueries[$set]);
             } else if (null !== $this->setField) {
                 $params->addFilter(
                     $this->setField . ':"' . addcslashes($set, '"') . '"'
@@ -768,9 +770,18 @@ class Server
             // Set default date range if not already provided:
             if (empty($params['from'])) {
                 $params['from'] = $this->earliestDatestamp;
+                if (strlen($params['from'])>strlen($params['until'])) {
+                    $params['from'] = substr($params['from'], 0, 10);
+                }
             }
             if (empty($params['until'])) {
                 $params['until'] = date($this->iso8601);
+                if (strlen($params['until'])>strlen($params['from'])) {
+                    $params['until'] = substr($params['until'], 0, 10);
+                }
+            }
+            if ($this->isBadDate($params['from'], $params['until'])) {
+                throw new \Exception('badArgument:Bad Date Format');
             }
         }
 
@@ -782,6 +793,10 @@ class Server
             throw new \Exception('noSetHierarchy:Sets not supported');
         }
 
+        if (!isset($params['metadataPrefix'])) {
+            throw new \Exception('badArgument:Missing metadataPrefix');
+        }
+
         // Validate requested metadata format:
         $prefixes = array_keys($this->metadataFormats);
         if (!in_array($params['metadataPrefix'], $prefixes)) {
@@ -789,6 +804,46 @@ class Server
         }
 
         return $params;
+    }
+
+    /**
+     * Validate the from and until parameters for the listRecords method.
+     *
+     * @param int $from  String for start date.
+     * @param int $until String for end date.
+     *
+     * @return bool      True if invalid, false if not.
+     */
+    protected function isBadDate($from, $until)
+    {
+        $dt = \DateTime::createFromFormat("Y-m-d", substr($until, 0, 10));
+        if ($dt === false || array_sum($dt->getLastErrors())) {
+            return true;
+        }
+        $dt = \DateTime::createFromFormat("Y-m-d", substr($from, 0, 10));
+        if ($dt === false || array_sum($dt->getLastErrors())) {
+            return true;
+        }
+        //check for different date granularity
+        if (strpos($from, 'T') && strpos($from, 'Z')) {
+            if (strpos($until, 'T') && strpos($until, 'Z')) {
+                //this is good
+            } else {
+                return true;
+            }
+        } else if (strpos($until, 'T') && strpos($until, 'Z')) {
+            return true;
+        }
+        
+        $from_time = $this->normalizeDate($from);
+        $until_time = $this->normalizeDate($until, '23:59:59');
+        if ($from_time > $until_time) {
+            throw new \Exception('noRecordsMatch:from vs. until');
+        }
+        if ($from_time < $this->normalizeDate($this->earliestDatestamp)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -869,14 +924,19 @@ class Server
      * Normalize a date to a Unix timestamp.
      *
      * @param string $date Date (ISO-8601 or YYYY-MM-DD HH:MM:SS)
+     * @param string $time Default time to use if $date has no time attached
      *
      * @return integer     Unix timestamp (or false if $date invalid)
      */
-    protected function normalizeDate($date)
+    protected function normalizeDate($date, $time = '00:00:00')
     {
         // Remove timezone markers -- we don't want PHP to outsmart us by adjusting
         // the time zone!
-        $date = str_replace(array('T', 'Z'), array(' ', ''), $date);
+        if (strlen($date) == 10) {
+            $date .= ' ' . $time;
+        } else {
+            $date = str_replace(['T', 'Z'], [' ', ''], $date);
+        }
 
         // Translate to a timestamp:
         return strtotime($date);

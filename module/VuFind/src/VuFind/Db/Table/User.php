@@ -39,16 +39,41 @@ namespace VuFind\Db\Table;
 class User extends Gateway
 {
     /**
-     * Constructor
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
      */
-    public function __construct()
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     */
+    public function __construct(\Zend\Config\Config $config)
     {
         parent::__construct('user', 'VuFind\Db\Row\User');
+        $this->config = $config;
     }
 
     /**
-     * Retrieve a user object from the database based on username; create a new
-     * row if no existing match is found.
+     * Create a row for the specified username.
+     *
+     * @param string $username Username to use for retrieval.
+     *
+     * @return UserRow
+     */
+    public function createRowForUsername($username)
+    {
+        $row = $this->createRow();
+        $row->username = $username;
+        $row->created = date('Y-m-d H:i:s');
+        return $row;
+    }
+
+    /**
+     * Retrieve a user object from the database based on username; when requested,
+     * create a new row if no existing match is found.
      *
      * @param string $username Username to use for retrieval.
      * @param bool   $create   Should we create users that don't already exist?
@@ -57,13 +82,9 @@ class User extends Gateway
      */
     public function getByUsername($username, $create = true)
     {
-        $row = $this->select(array('username' => $username))->current();
-        if ($create && empty($row)) {
-            $row = $this->createRow();
-            $row->username = $username;
-            $row->created = date('Y-m-d H:i:s');
-        }
-        return $row;
+        $row = $this->select(['username' => $username])->current();
+        return ($create && empty($row))
+            ? $this->createRowForUsername($username) : $row;
     }
 
     /**
@@ -75,7 +96,7 @@ class User extends Gateway
      */
     public function getByEmail($email)
     {
-        $row = $this->select(array('email' => $email))->current();
+        $row = $this->select(['email' => $email])->current();
         return $row;
     }
 
@@ -95,6 +116,18 @@ class User extends Gateway
     }
 
     /**
+     * Construct the prototype for rows.
+     *
+     * @return object
+     */
+    protected function initializeRowPrototype()
+    {
+        $prototype = parent::initializeRowPrototype();
+        $prototype->setConfig($this->config);
+        return $prototype;
+    }
+
+    /**
      * Return a row by a verification hash
      *
      * @param string $hash User-unique hash string
@@ -103,7 +136,7 @@ class User extends Gateway
      */
     public function getByVerifyHash($hash)
     {
-        $row = $this->select(array('verify_hash' => $hash))->current();
+        $row = $this->select(['verify_hash' => $hash])->current();
         return $row;
     }
 }

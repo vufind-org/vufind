@@ -69,7 +69,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         // on a real system -- it's only meant for the continuous integration server)
         $userTable = $test->getTable('User');
         if (count($userTable->select()) > 0) {
-            return $this->markTestSkipped(
+            return self::markTestSkipped(
                 'Test cannot run with pre-existing user data!'
             );
         }
@@ -91,12 +91,13 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         $driverManager->setService('Sample', $this->driver);
         $mockConfigReader = $this->getMock('VuFind\Config\PluginManager');
         $mockConfigReader->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Zend\Config\Config(array())));
+            ->will($this->returnValue(new \Zend\Config\Config([])));
         $this->auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
-                new \Zend\Config\Config(array('driver' => 'Sample')),
+                new \Zend\Config\Config(['driver' => 'Sample']),
                 $driverManager, $mockConfigReader
-            )
+            ),
+            $this->getMockILSAuthenticator()
         );
         $this->auth->setDbTableManager(
             $this->getServiceManager()->get('VuFind\DbTablePluginManager')
@@ -122,11 +123,11 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      *
      * @return \Zend\Http\Request
      */
-    protected function getLoginRequest($overrides = array())
+    protected function getLoginRequest($overrides = [])
     {
-        $post = $overrides + array(
+        $post = $overrides + [
             'username' => 'testuser', 'password' => 'testpass'
-        );
+        ];
         $request = new \Zend\Http\Request();
         $request->setPost(new \Zend\Stdlib\Parameters($post));
         return $request;
@@ -140,7 +141,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankUsername()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('username' => ''));
+        $request = $this->getLoginRequest(['username' => '']);
         $this->auth->authenticate($request);
     }
 
@@ -152,7 +153,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
     public function testLoginWithBlankPassword()
     {
         $this->setExpectedException('VuFind\Exception\Auth');
-        $request = $this->getLoginRequest(array('password' => ''));
+        $request = $this->getLoginRequest(['password' => '']);
         $this->auth->authenticate($request);
     }
 
@@ -165,7 +166,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
     {
         // VuFind requires the ILS driver to return a value in cat_username
         // by default -- if that is missing, we should fail.
-        $response = array();
+        $response = [];
         $this->driver->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
             ->will($this->returnValue($response));
@@ -180,10 +181,10 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public function testLogin()
     {
-        $response = array(
+        $response = [
             'cat_username' => 'testuser', 'cat_password' => 'testpass',
             'email' => 'user@test.com'
-        );
+        ];
         $this->driver->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
             ->will($this->returnValue($response));
@@ -213,5 +214,17 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
             throw new \Exception('Problem deleting expected user.');
         }
         $user->delete();
+    }
+
+    /**
+     * Get mock ILS authenticator
+     *
+     * @return \VuFind\Auth\ILSAuthenticator
+     */
+    protected function getMockILSAuthenticator()
+    {
+        return $this->getMockBuilder('VuFind\Auth\ILSAuthenticator')
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 }

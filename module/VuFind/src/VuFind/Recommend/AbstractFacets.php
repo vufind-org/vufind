@@ -46,14 +46,14 @@ abstract class AbstractFacets implements RecommendInterface
      *
      * @var array
      */
-    protected $excludableFacets = array();
+    protected $excludableFacets = [];
 
     /**
      * Facets that are "ORed" instead of "ANDed."
      *
      * @var array
      */
-    protected $orFacets = array();
+    protected $orFacets = [];
 
     /**
      * Search results
@@ -80,8 +80,6 @@ abstract class AbstractFacets implements RecommendInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.
@@ -105,6 +103,18 @@ abstract class AbstractFacets implements RecommendInterface
     public function excludeAllowed($field)
     {
         return in_array($field, $this->excludableFacets);
+    }
+
+    /**
+     * Get the facet boolean operator
+     *
+     * @param string $field Field name
+     *
+     * @return string 'AND' or 'OR'
+     */
+    public function getFacetOperator($field)
+    {
+        return in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
 
     /**

@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
 use VuFindSearch\Response\RecordInterface;
@@ -34,7 +33,7 @@ use VuFindSearch\Response\RecordInterface;
 /**
  * Simple, schema-less SOLR record.
  *
- * This record primarily servers as an example or blueprint for a schema-less
+ * This record primarily serves as an example or blueprint for a schema-less
  * record. All SOLR fields are exposed via object properties.
  *
  * @category VuFind2

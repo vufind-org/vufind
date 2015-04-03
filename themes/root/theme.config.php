@@ -4,6 +4,7 @@ return array(
     'helpers' => array(
         'factories' => array(
             'addthis' => 'VuFind\View\Helper\Root\Factory::getAddThis',
+            'alphabrowse' => 'VuFind\View\Helper\Root\Factory::getAlphaBrowse',
             'auth' => 'VuFind\View\Helper\Root\Factory::getAuth',
             'authornotes' => 'VuFind\View\Helper\Root\Factory::getAuthorNotes',
             'cart' => 'VuFind\View\Helper\Root\Factory::getCart',
@@ -27,6 +28,7 @@ return array(
             'record' => 'VuFind\View\Helper\Root\Factory::getRecord',
             'recordlink' => 'VuFind\View\Helper\Root\Factory::getRecordLink',
             'related' => 'VuFind\View\Helper\Root\Factory::getRelated',
+            'safemoneyformat' => 'VuFind\View\Helper\Root\Factory::getSafeMoneyFormat',
             'searchbox' => 'VuFind\View\Helper\Root\Factory::getSearchBox',
             'searchoptions' => 'VuFind\View\Helper\Root\Factory::getSearchOptions',
             'searchparams' => 'VuFind\View\Helper\Root\Factory::getSearchParams',
@@ -48,7 +50,6 @@ return array(
             'recommend' => 'VuFind\View\Helper\Root\Recommend',
             'renderarray' => 'VuFind\View\Helper\Root\RenderArray',
             'resultfeed' => 'VuFind\View\Helper\Root\ResultFeed',
-            'safemoneyformat' => 'VuFind\View\Helper\Root\SafeMoneyFormat',
             'sortfacetlist' => 'VuFind\View\Helper\Root\SortFacetList',
             'summon' => 'VuFind\View\Helper\Root\Summon',
             'transesc' => 'VuFind\View\Helper\Root\TransEsc',

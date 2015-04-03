@@ -155,7 +155,7 @@
           //If we're keeping the "More" facet, let's size it properly
           pivotdata.children[facetindex].children = resizedData;
           var more = new Object();
-          more.name = "<?=$this->transEsc('More topics')?>";
+          more.name = "<?=$this->transEsc('More Topics')?>";
           more.size = morefacet/totalbyfirstpivot * facetdata.size;
           more.field = "topic_facet";
           more.count = morecount;
@@ -169,9 +169,9 @@
       .data(treemap.nodes)
         .enter().append("a")
       .attr("href", function(d) {
-        if (d.parentlevel && d.name != "<?=$this->transEsc('More topics')?>") {
+        if (d.parentlevel && d.name != "<?=$this->transEsc('More Topics')?>") {
           return window.location + "&filter[]=" + d.field + ":\"" + d.name + "\"&filter[]=callnumber-first:\"" + d.parentlevel + "\"&view=list";
-        } else if (d.name == "More topics") {
+        } else if (d.name == "<?=$this->transEsc('More Topics')?>") {
           return window.location + "&filter[]=callnumber-first:\"" + d.parentlevel + "\"";
         } else if (d.name != "theData") {
           return window.location + "&filter[]=" + d.field + ":\"" + d.name + "\"";
@@ -187,8 +187,10 @@
       .attr("tabindex", 0)
       .append("div")
       .call(settext)
-      .attr("class", function(d) { return d.children ? "label" : "notalabel";} );
-  }
+      .attr("class", function(d) { return d.children ? "label" : "notalabel";} )
+      .insert("div")
+      .call(setscreenreader);
+    }
 });
 
 function position() {
@@ -202,18 +204,27 @@ function settext() {
   this.text(function(d) {
     if (!d.children && d.field == "callnumber-first") {return "";}
     if (d.field == "callnumber-first") {return d.name + " (" + d.count + ")"; }
-    if (d.field == "topic_facet" && d.name == "<?=$this->transEsc('More topics')?>") {return d.name + " (" + d.count + " <?=$this->transEsc('other topics')?>)"; }
+    if (d.field == "topic_facet" && d.name == "<?=$this->transEsc('More Topics')?>") {var topics = "<?=$this->translate('more_topics')?>"; return topics.replace("%%count%%", d.count); }
     if (d.field == "topic_facet") {return d.name + " (" + d.count + ")"; }
+  });
+}
+
+function setscreenreader() {
+  this.attr("class", "sr-only")
+  .text(function(d) {
+    if (d.field == "topic_facet") {
+      return "<?=$this->transEsc('visual_facet_parent')?> " + d.parentlevel;
+    } else {
+      return "";
+    }
   });
 }
 
 function settitle() {
   this.attr("title", function(d) {
-    if (d.field == "callnumber-first" && d.count == "1") {return d.name + " (" + d.count + " item total)"; }
-    if (d.field == "callnumber-first") {return d.name + " (" + d.count + " items total)"; }
-    if (d.field == "topic_facet" && d.name == "More topics") {return d.name + " (" + d.count + " other topics)"; }
-    if (d.field == "topic_facet" && d.count == "1") {return d.name + " (" + d.count + " item on this topic)"; }
-    if (d.field == "topic_facet") {return d.name + " (" + d.count + " items on this topic)"; }
+    if (d.field == "callnumber-first") {return d.name + " (" + d.count + " <?=$this->transEsc('items')?>)"; }
+    if (d.field == "topic_facet" && d.name == "<?=$this->transEsc('More Topics')?>") {return d.count + " <?=$this->transEsc('More Topics')?>"; }
+    if (d.field == "topic_facet") {var on_topic = "<?=$this->translate('on_topic')?>"; return d.name + " (" + on_topic.replace("%%count%%", d.count) + ")"; }
   });
 
 }

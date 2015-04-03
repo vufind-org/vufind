@@ -50,6 +50,7 @@ class Guardian extends \VuFind\Content\AbstractBase
      * @throws \Exception
      * @return array     Returns array with review data.
      * @author Eoghan Ó Carragáin <eoghan.ocarragain@gmail.com>
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function loadByIsbn($key, \VuFindCode\ISBN $isbnObj)
@@ -65,9 +66,7 @@ class Guardian extends \VuFind\Content\AbstractBase
             $url = $url . "&api-key=" . $key;
         }
 
-        if ($this->logger) {
-            $this->logger->debug('Guardian request: ' . $url);
-        }
+        $this->debug('Guardian request: ' . $url);
 
         // Find out if there are any reviews:
         $result = $this->getHttpClient($url)->send();
@@ -77,7 +76,7 @@ class Guardian extends \VuFind\Content\AbstractBase
             // parse json from response
             $data = json_decode($result->getBody(), true);
             if ($data) {
-                $result = array();
+                $result = [];
                 $i = 0;
                 foreach ($data['response']['results'] as $review) {
                     $result[$i]['Date'] = $review['webPublicationDate'];
@@ -115,7 +114,7 @@ class Guardian extends \VuFind\Content\AbstractBase
                 throw new \Exception('Could not parse Guardian response.');
             }
         } else {
-            return array();
+            return [];
         }
     }
 }

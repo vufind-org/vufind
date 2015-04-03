@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -50,5 +51,19 @@ class Factory
     public static function getResource(ServiceManager $sm)
     {
         return new Resource($sm->getServiceLocator()->get('VuFind\DateConverter'));
+    }
+
+    /**
+     * Construct the User table.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return User
+     */
+    public static function getUser(ServiceManager $sm)
+    {
+        return new User(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
     }
 }

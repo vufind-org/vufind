@@ -38,6 +38,7 @@ use Zend\ServiceManager\AbstractPluginManager as Base,
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ *
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 abstract class AbstractPluginManager extends Base
@@ -53,7 +54,7 @@ abstract class AbstractPluginManager extends Base
     {
         parent::__construct($configuration);
         $this->addInitializer(
-            array('VuFind\ServiceManager\Initializer', 'initPlugin'), false
+            ['VuFind\ServiceManager\Initializer', 'initPlugin'], false
         );
     }
 

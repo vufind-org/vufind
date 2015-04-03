@@ -82,7 +82,7 @@ class XMLFile extends AbstractBase
      *
      * @return string
      */
-    public function getXML($id, $options = array())
+    public function getXML($id, $options = [])
     {
         return file_get_contents($this->getFilename($id));
     }

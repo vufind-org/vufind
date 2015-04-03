@@ -45,13 +45,13 @@ class Module
      */
     public function getAutoloaderConfig()
     {
-        return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
+        return [
+            'Zend\Loader\StandardAutoloader' => [
+                'namespaces' => [
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
     }
 
     /**
@@ -61,15 +61,15 @@ class Module
      */
     public function getServiceConfig()
     {
-        return array(
-            'factories' => array(
+        return [
+            'factories' => [
                 'VuFindTheme\ThemeInfo' => 'VuFindTheme\Module::getThemeInfo',
-            ),
-            'invokables' => array(
+            ],
+            'invokables' => [
                 'VuFindTheme\Mobile' => 'VuFindTheme\Mobile',
                 'VuFindTheme\ResourceContainer' => 'VuFindTheme\ResourceContainer',
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -79,8 +79,8 @@ class Module
      */
     public function getViewHelperConfig()
     {
-        return array(
-            'factories' => array(
+        return [
+            'factories' => [
                 'headlink' => 'VuFindTheme\View\Helper\Factory::getHeadLink',
                 'headscript' => 'VuFindTheme\View\Helper\Factory::getHeadScript',
                 'headthemeresources' =>
@@ -89,8 +89,8 @@ class Module
                 'inlinescript' =>
                     'VuFindTheme\View\Helper\Factory::getInlineScript',
                 'mobileurl' => 'VuFindTheme\View\Helper\Factory::getMobileUrl',
-            ),
-        );
+            ],
+        ];
     }
 
     /**
@@ -100,6 +100,6 @@ class Module
      */
     public static function getThemeInfo()
     {
-        return new ThemeInfo(realpath(__DIR__ . '/../../themes'), 'blueprint');
+        return new ThemeInfo(realpath(__DIR__ . '/../../themes'), 'bootprint3');
     }
 }

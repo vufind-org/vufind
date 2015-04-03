@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -210,6 +211,20 @@ class Factory
             }
         }
         return new Preview($active);
+    }
+
+    /**
+     * Factory for SimilarItems tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SimilarItemsCarousel
+     */
+    public static function getSimilarItemsCarousel(ServiceManager $sm)
+    {
+        return new SimilarItemsCarousel(
+            $sm->getServiceLocator()->get('VuFind\Search')
+        );
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 /**
- * jqueryValidation view helper
+ * View helper for jQuery validation
  *
  * PHP version 5
  *
@@ -52,10 +52,10 @@ class JqueryValidation extends AbstractHelper
     public function __invoke($params)
     {
         // jquery validation rules that this plugin currently supports
-        $supported_rules = array('required', 'email', 'digits', 'equalTo',
-            'phoneUS', 'mobileUK');
-        $messages = array();
-        $rules = array();
+        $supported_rules = ['required', 'email', 'digits', 'equalTo',
+            'phoneUS', 'mobileUK'];
+        $messages = [];
+        $rules = [];
         foreach ($supported_rules as $rule) {
             if (isset($params[$rule])) {
                 switch($rule) {
@@ -79,7 +79,7 @@ class JqueryValidation extends AbstractHelper
                 $output .= ',';
             }
             $translator = $this->getView()->plugin('translate');
-            $message = $translator($message);
+            $message = addslashes($translator($message));
             $output .= "$rule:'$message'";
             $first = false;
         }

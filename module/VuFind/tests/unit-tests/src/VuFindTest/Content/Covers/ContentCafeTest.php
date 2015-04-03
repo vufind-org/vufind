@@ -47,12 +47,12 @@ class ContentCafeTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidCoverLoading()
     {
-        $loader = new ContentCafe(new Config(array('pw' => 'fakepw')));
+        $loader = new ContentCafe(new Config(['pw' => 'fakepw']));
         $this->assertEquals(
             'http://contentcafe2.btol.com/ContentCafe/Jacket.aspx?UserID=mykey'
             . '&Password=fakepw&Return=1&Type=S&Value=9780739313121&erroroverride=1',
             $loader->getUrl(
-                'mykey', 'small', array('isbn' => new ISBN('0739313126'))
+                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
             )
         );
     }
@@ -64,7 +64,7 @@ class ContentCafeTest extends \PHPUnit_Framework_TestCase
      */
     public function testMissingIsbn()
     {
-        $loader = new ContentCafe(new Config(array('pw' => 'fakepw')));
-        $this->assertEquals(false, $loader->getUrl('mykey', 'small', array()));
+        $loader = new ContentCafe(new Config(['pw' => 'fakepw']));
+        $this->assertEquals(false, $loader->getUrl('mykey', 'small', []));
     }
 }

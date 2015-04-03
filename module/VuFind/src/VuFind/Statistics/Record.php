@@ -49,10 +49,10 @@ class Record extends AbstractBase
     public function log($data, $request)
     {
         $this->save(
-            array(
+            [
                 'recordId'     => $data->getUniqueId(),
                 'recordSource' => $data->getResourceSource()
-            ),
+            ],
             $request
         );
     }
@@ -72,9 +72,9 @@ class Record extends AbstractBase
             $summary = $driver->getFullList('recordId');
             if (!empty($summary)) {
                 $sources = $driver->getFullList('recordSource');
-                $hashes = array();
+                $hashes = [];
                 // Generate hashes (faster than grouping by looping)
-                for ($i=0;$i<count($summary);$i++) {
+                for ($i = 0;$i<count($summary);$i++) {
                     $source = $sources[$i]['recordSource'];
                     $id = $summary[$i]['recordId'];
                     $hashes[$source][$id]
@@ -82,27 +82,27 @@ class Record extends AbstractBase
                         ? $hashes[$source][$id] + 1
                         : 1;
                 }
-                $top = array();
+                $top = [];
                 // For each source
-                foreach ($hashes as $source=>$records) {
+                foreach ($hashes as $source => $records) {
                     // Using a reference to consolidate code dramatically
-                    $reference =& $top;
+                    $reference = & $top;
                     if ($bySource) {
-                        $top[$source] = array();
-                        $reference =& $top[$source];
+                        $top[$source] = [];
+                        $reference = & $top[$source];
                     }
                     // For each record
-                    foreach ($records as $id=>$count) {
-                        $newRecord = array(
+                    foreach ($records as $id => $count) {
+                        $newRecord = [
                             'value'  => $id,
                             'count'  => $count,
                             'source' => $source
-                        );
+                        ];
                         // Insert sort (limit to listLength)
-                        for ($i=0;$i<$listLength-1 && $i<count($reference);$i++) {
+                        for ($i = 0;$i<$listLength-1 && $i<count($reference);$i++) {
                             if ($count > $reference[$i]['count']) {
                                 // Insert in order
-                                array_splice($reference, $i, 0, array($newRecord));
+                                array_splice($reference, $i, 0, [$newRecord]);
                                 continue 2; // Skip the append after this loop
                             }
                         }
@@ -112,12 +112,12 @@ class Record extends AbstractBase
                     }
                     $reference = array_slice($reference, 0, $listLength);
                 }
-                return array(
+                return [
                     'top'   => $top,
                     'total' => count($summary)
-                );
+                ];
             }
         }
-        return array();
+        return [];
     }
 }

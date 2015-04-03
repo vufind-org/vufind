@@ -67,14 +67,19 @@ class Sample extends AbstractBase
      */
     public function getStatus($id)
     {
-        $holding[] = array('availability' => 1,
-                           'status' => 'Available',
-                           'location' => '3rd Floor Main Library',
-                           'reserve' => 'No',
-                           'callnumber' => 'A1234.567',
-                           'duedate' => '',
-                           'number' => 1);
-        return $holding;
+        return [
+            [
+                'id' => $id,
+                'availability' => 1,
+                'status' => 'Available',
+                'location' => '3rd Floor Main Library',
+                'reserve' => 'N',
+                'callnumber' => 'A1234.567',
+                'duedate' => '',
+                'number' => 1,
+                'barcode' => '1234567890',
+            ]
+        ];
     }
 
     /**
@@ -89,18 +94,9 @@ class Sample extends AbstractBase
      */
     public function getStatuses($ids)
     {
-        $items = array();
+        $items = [];
         foreach ($ids as $id) {
-            $holding = array();
-            $holding[] = array('availability' => 1,
-                               'id' => $id,
-                               'status' => 'Available',
-                               'location' => '3rd Floor Main Library',
-                               'reserve' => 'No',
-                               'callnumber' => 'A1234.567',
-                               'duedate' => '',
-                               'number' => 1);
-            $items[] = $holding;
+            $items[] = $this->getStatus($id);
         }
         return $items;
     }
@@ -117,6 +113,7 @@ class Sample extends AbstractBase
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
      * number, barcode.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHolding($id, array $patron = null)
@@ -133,11 +130,12 @@ class Sample extends AbstractBase
      * @param string $id The record id to retrieve the info for
      *
      * @return mixed     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -156,11 +154,12 @@ class Sample extends AbstractBase
      * whatever that may mean.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
-        return array('count' => 0, 'results' => array());
+        return ['count' => 0, 'results' => []];
     }
 
     /**
@@ -173,11 +172,12 @@ class Sample extends AbstractBase
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
      * @return mixed An array of associative arrays representing reserve items.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {
-        return array();
+        return [];
     }
 
     /**
@@ -190,6 +190,7 @@ class Sample extends AbstractBase
      *
      * @return mixed           Associative array of patron info on successful login,
      * null on unsuccessful login.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)
