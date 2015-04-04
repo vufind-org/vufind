@@ -6,7 +6,6 @@
  * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
-
 namespace LosReCaptcha\Captcha;
 
 use Traversable;
@@ -23,25 +22,27 @@ use Zend\Stdlib\ArrayUtils;
  */
 class ReCaptcha extends ZendReCaptcha
 {
+
     /**
      * Error messages
+     *
      * @var array
      */
     protected $messageTemplates = array(
         self::MISSING_VALUE => 'Missing captcha field',
-        self::ERR_CAPTCHA   => 'Failed to validate captcha',
-        self::BAD_CAPTCHA   => 'Captcha value is wrong: %value%',
+        self::ERR_CAPTCHA => 'Failed to validate captcha',
+        self::BAD_CAPTCHA => 'Captcha value is wrong: %value%'
     );
 
     /**
      * Constructor
      *
-     * @param  null|array|Traversable $options
+     * @param null|array|Traversable $options
      */
     public function __construct($options = null)
     {
         $this->service = new ReCaptchaService();
-        $this->serviceParams  = $this->getService()->getParams();
+        $this->serviceParams = $this->getService()->getParams();
         $this->serviceOptions = $this->getService()->getOptions();
 
         if ($options instanceof Traversable) {
@@ -60,7 +61,7 @@ class ReCaptcha extends ZendReCaptcha
             $this->setOptions($options);
         }
 
-        if (!empty($options)) {
+        if (! empty($options)) {
             if (array_key_exists('secret_key', $options)) {
                 $this->getService()->setSecretKey($options['secret_key']);
             } elseif (array_key_exists('private_key', $options)) {
@@ -78,19 +79,19 @@ class ReCaptcha extends ZendReCaptcha
     /**
      * Validate captcha
      *
-     * @see    \Zend\Validator\ValidatorInterface::isValid()
-     * @param  mixed $value
-     * @param  mixed $context
+     * @see \Zend\Validator\ValidatorInterface::isValid()
+     * @param mixed $value
+     * @param mixed $context
      * @return bool
      */
     public function isValid($value, $context = null)
     {
-        if (!is_array($value) && !is_array($context)) {
+        if (! is_array($value) && ! is_array($context)) {
             $this->error(self::MISSING_VALUE);
             return false;
         }
 
-        if (!is_array($value) && is_array($context)) {
+        if (! is_array($value) && is_array($context)) {
             $value = $context;
         }
 
@@ -102,12 +103,12 @@ class ReCaptcha extends ZendReCaptcha
         $service = $this->getService();
 
         $res = $service->verify($value[$this->RESPONSE]);
-        if (!$res) {
+        if (! $res) {
             $this->error(self::ERR_CAPTCHA);
             return false;
         }
 
-        if (!$res->isValid()) {
+        if (! $res->isValid()) {
             $this->error(self::BAD_CAPTCHA, $res->getErrorCode());
             $service->setParam('error', $res->getErrorCode());
             return false;
