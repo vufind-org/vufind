@@ -1,3 +1,4 @@
+<div class="clear"></div>
 <? if (!empty($this->expanderList)): ?>
   <fieldset class="span-5">
     <legend><?=$this->transEsc('eds_modes_and_expanders')?></legend>
@@ -17,7 +18,6 @@
       <? endforeach; ?>
     </select>
   </fieldset>
-  <div class="clear"></div>
 <? endif; ?>
 
 <? if (!empty($this->limiterList)): ?>
@@ -27,7 +27,7 @@
     <? switch($facet['Type']){
         case 'multiselectvalue': ?>
             <label class="displayBlock" for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>"><?=$this->transEsc($facet['Label'])?></label>
-            <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10">
+            <select id="limit_<?=$this->escapeHtmlAttr($field)?>" name="filter[]" multiple="multiple" size="10" style="width:100%">
                 <? foreach ($facet['LimiterValues'] as $id => $facetValue): ?>
                     <? $value = $facetValue['Value']; ?>
                     <option value="<?='LIMIT|'.$this->escapeHtmlAttr($field . ':' . $facetValue['Value'])?>"<?=(isset($facetValue['selected']) && $facetValue['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($facetValue['Value'])?></option>
@@ -37,10 +37,10 @@
             <? break;
         case 'select':
             $value = $facet['LimiterValues'][0]['Value'] ?>
-            <label class="displayBlock" for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>">
+            <label class="displayBlock">
+              <input type="checkbox" id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|'.$field . ':' . $value)?>">
               <?=$this->transEsc('eds_limiter_' . $field, array(), $facet['Label'])?>
             </label>
-            <input id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '+', $field))?>" type="checkbox" <?=(isset($facet['LimiterValues'][0]['selected']) && $facet['LimiterValues'][0]['selected'])?'checked="checked"':''?> name="filter[]" value="<?=$this->escapeHtmlAttr('LIMIT|'.$field . ':' . $value)?>">
                         <!-- <br/> -->
             <? break;
         case 'text': ?>
@@ -66,8 +66,9 @@
             <? break;
         }; ?>
   <? endforeach; ?>
-  <div class="clear"></div>
-  <? if (isset($this->dateRangeLimit)): ?>
+  </fieldset>
+<? endif; ?>
+<? if (isset($this->dateRangeLimit)): ?>
   <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
   <input type="hidden" name="daterange[]" value="PublicationDate"/>
   <fieldset class="publishDateLimit span-5" id="PublicationDate">
@@ -78,9 +79,5 @@
     <input type="text" size="4" maxlength="4" class="yearbox" name="PublicationDateto" id="PublicationDateto" value="<?=$this->escapeHtmlAttr($this->dateRangeLimit[1])?>" />
     <div id="PublicationDateSlider" class="dateSlider"></div>
   </fieldset>
-<? endif; ?>
-  </fieldset>
-
- <div class="clear"></div>
 <? endif; ?>
 <div class="clear"></div>
