@@ -267,8 +267,22 @@ function ajaxLogin(form) {
 $(document).ready(function() {
   // Off canvas
   $('[data-toggle="offcanvas"]').click(function () {
-    $('.row-offcanvas').toggleClass('active')
+    $('body.offcanvas').toggleClass('active');
+    if($('body.offcanvas').hasClass('active')) {
+      if($('body.offcanvas').hasClass('offcanvas-right')) {
+        $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
+      } else {
+        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
+      }
+    } else {
+      if($('body.offcanvas').hasClass('offcanvas-right')) {
+        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
+      } else {
+        $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
+      }
+    }
   });
+  $('[data-toggle="offcanvas"]').click().click();
 
   // support "jump menu" dropdown boxes
   $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
