@@ -268,18 +268,12 @@ $(document).ready(function() {
   // Off canvas
   $('[data-toggle="offcanvas"]').click(function () {
     $('body.offcanvas').toggleClass('active');
-    if($('body.offcanvas').hasClass('active')) {
-      if($('body.offcanvas').hasClass('offcanvas-right')) {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
-      } else {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
-      }
+    var active = $('body.offcanvas').hasClass('active');
+    var right = $('body.offcanvas').hasClass('offcanvas-right');
+    if((active && !right) || (!active && right)) {
+      $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
     } else {
-      if($('body.offcanvas').hasClass('offcanvas-right')) {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
-      } else {
-        $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
-      }
+      $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
     }
   });
   $('[data-toggle="offcanvas"]').click().click();
