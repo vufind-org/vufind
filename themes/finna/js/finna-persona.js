@@ -3,18 +3,16 @@
 finna.persona = (function (finna) {
 
     var getDestinationUrl = function (loggingOut) {
+        // After logout always move to the front page.
+        if (loggingOut) {
+            return path;
+        }
         var url = window.location.href;
         // Check if we have changed tab
         var recordTabs = $('.recordTabs');
         if (recordTabs.length > 0) {
             var phref = recordTabs.find('.active a').prop('href');
             url = phref.split('#')[0];
-        }
-        if (loggingOut) {
-            if (url.match('/MyResearch/')) {
-                return path;
-            }
-            url = url.split('?')[0];
         }
         return url;
     };
@@ -79,7 +77,11 @@ finna.persona = (function (finna) {
                             } else {
                                 var params = deparam(Lightbox.lastURL);
                                 if (params.subaction === 'UserLogin') {
-                                    window.location = getDestinationUrl(false);
+                                    if( $('#loginOptions a').hasClass('navibar-login-on') ) {
+                                        window.location = path+'/MyResearch/Home?redirect=0';
+                                    } else {
+                                        window.location = getDestinationUrl(false);
+                                    }
                                 } else {
                                     // Update the modal
                                     updatePageForLogin();
