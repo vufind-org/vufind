@@ -37,8 +37,10 @@ use VuFind\Db\Table\Resource as ResourceTable, Zend\Db\Sql\Expression;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Tags extends ServiceLocatorAwareGateway
+class Tags extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+
     /**
      * Constructor
      *
@@ -66,17 +68,17 @@ class Tags extends ServiceLocatorAwareGateway
         $tag = $this;
         $callback = function ($select) use ($tag, $source, $sort, $offset, $limit) {
             $select->columns(
-                array(
+                [
                     new Expression(
-                        'DISTINCT(?)', array('resource.id'),
-                        array(Expression::TYPE_IDENTIFIER)
+                        'DISTINCT(?)', ['resource.id'],
+                        [Expression::TYPE_IDENTIFIER]
                     ), '*'
-                )
+                ]
             );
             $select->join(
-                array('rt' => 'resource_tags'),
+                ['rt' => 'resource_tags'],
                 'resource.id = rt.resource_id',
-                array()
+                []
             );
             $select->where->equalTo('rt.tag_id', $tag->id);
 

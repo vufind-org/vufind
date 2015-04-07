@@ -6,14 +6,17 @@
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <h3><?=$this->transEsc('Your Fines')?></h3>
+
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
     <? if (empty($this->fines)): ?>
       <p><?=$this->transEsc('You do not have any fines')?></p>
     <? else: ?>
       <ul class="results fines" data-role="listview">
         <? foreach ($this->fines as $record): ?>
           <li>
-            <? if ($showLink = (!empty($record['title']) && isset($record['id']))): ?>
-              <a rel="external" href="<?=$this->url('record', array('id' => $record['id']))?>">
+            <? if ($showLink = (!empty($record['title']) && is_object($record['driver']))): ?>
+              <a rel="external" href="<?=$this->recordLink()->getUrl($record['driver'])?>">
             <? endif; ?>
             <div class="result">
               <h3>

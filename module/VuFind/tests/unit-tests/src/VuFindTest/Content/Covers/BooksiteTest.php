@@ -51,7 +51,7 @@ class BooksiteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(
             'http://base/poca/content_img?apikey=mykey&ean=9780739313121',
             $loader->getUrl(
-                'mykey', 'small', array('isbn' => new ISBN('0739313126'))
+                'mykey', 'small', ['isbn' => new ISBN('0739313126')]
             )
         );
     }
@@ -64,6 +64,6 @@ class BooksiteTest extends \PHPUnit_Framework_TestCase
     public function testMissingIsbn()
     {
         $loader = new Booksite('http://base', 'mykey');
-        $this->assertEquals(false, $loader->getUrl('mykey', 'small', array()));
+        $this->assertEquals(false, $loader->getUrl('mykey', 'small', []));
     }
 }

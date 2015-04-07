@@ -50,8 +50,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     }
 
     /**
-     * getSuggestions
-     *
      * This returns an array of suggestions based on current request parameters.
      * This logic is present in the factory class so that it can be easily shared
      * by multiple AJAX handlers.
@@ -84,7 +82,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $config = $this->getServiceLocator()->get('VuFind\Config')
             ->get($options->getSearchIni());
         $types = isset($config->Autocomplete_Types) ?
-            $config->Autocomplete_Types->toArray() : array();
+            $config->Autocomplete_Types->toArray() : [];
 
         // Figure out which handler to use:
         if (!empty($type) && isset($types[$type])) {
@@ -106,6 +104,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         }
 
         return (isset($handler) && is_object($handler))
-            ? array_values($handler->getSuggestions($query)) : array();
+            ? array_values($handler->getSuggestions($query)) : [];
     }
 }

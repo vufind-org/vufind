@@ -46,12 +46,12 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetInstructors()
     {
-        $instructors = array(
+        $instructors = [
             'Mr. English' => 'Mr. English',
             'Ms. Math' => 'Ms. Math',
             'Junk' => 'Junk',
             'M. Geography' => 'M. Geography',
-        );
+        ];
         $this->assertEquals($instructors, $this->getReader()->getInstructors());
     }
 
@@ -62,12 +62,12 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetCourses()
     {
-        $courses = array(
+        $courses = [
             'English 101' => 'English 101',
             'Math 101' => 'Math 101',
             'Bad Row' => 'Bad Row',
             'Geography 101' => 'Geography 101',
-        );
+        ];
         $this->assertEquals($courses, $this->getReader()->getCourses());
     }
 
@@ -78,12 +78,12 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetDepartments()
     {
-        $departments = array(
+        $departments = [
             'English' => 'English',
             'Math' => 'Math',
             'Garbage' => 'Garbage',
             'Geography' => 'Geography',
-        );
+        ];
         $this->assertEquals($departments, $this->getReader()->getDepartments());
     }
 
@@ -94,26 +94,26 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetReserves()
     {
-        $reserves = array(
-            array(
+        $reserves = [
+            [
                 'BIB_ID' => 1,
                 'INSTRUCTOR_ID' => 'Mr. English',
                 'COURSE_ID' => 'English 101',
                 'DEPARTMENT_ID' => 'English',
-            ),
-            array(
+            ],
+            [
                 'BIB_ID' => 2,
                 'INSTRUCTOR_ID' => 'Ms. Math',
                 'COURSE_ID' => 'Math 101',
                 'DEPARTMENT_ID' => 'Math',
-            ),
-            array(
+            ],
+            [
                 'BIB_ID' => 3,
                 'INSTRUCTOR_ID' => 'M. Geography',
                 'COURSE_ID' => 'Geography 101',
                 'DEPARTMENT_ID' => 'Geography',
-            ),
-        );
+            ],
+        ];
         $this->assertEquals($reserves, $this->getReader()->getReserves());
     }
 
@@ -135,7 +135,8 @@ class CsvReaderTest extends \VuFindTest\Unit\TestCase
      * Test loading an empty file.
      *
      * @return void
-     * @expectedException \Exception
+     *
+     * @expectedException        \Exception
      * @expectedExceptionMessage Could not find valid data. Details:
      */
     public function testEmptyFile()

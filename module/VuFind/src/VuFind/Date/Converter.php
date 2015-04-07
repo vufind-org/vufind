@@ -98,15 +98,13 @@ class Converter
      */
     public function convert($inputFormat, $outputFormat, $dateString)
     {
-        $errors = "Date/time problem: Details: ";
-
         // These are date formats that we definitely know how to handle, and some
         // benefit from special processing. However, items not found in this list
         // will still be attempted in a generic fashion before giving up.
-        $validFormats = array(
+        $validFormats = [
             "m-d-Y", "m-d-y", "m/d/Y", "m/d/y", "U", "m-d-y H:i", "Y-m-d",
             "Y-m-d H:i"
-        );
+        ];
         $isValid = in_array($inputFormat, $validFormats);
         if ($isValid) {
             if ($inputFormat == 'U') {
@@ -120,48 +118,53 @@ class Converter
                 $regEx = '/0*([0-9]+)(-|\/)0*([0-9]+)(-|\/)0*([0-9]+)/';
                 $dateString = trim(preg_replace($regEx, '$1/$3/$5', $dateString));
             }
-            $getErrors = array(
-                'warning_count' => 0, 'error_count' => 0, 'errors' => array()
-            );
+            $errors = [
+                'warning_count' => 0, 'error_count' => 0, 'errors' => []
+            ];
             try {
                 $date = new DateTime($dateString, $this->timezone);
             } catch (\Exception $e) {
-                $getErrors['error_count']++;
-                $getErrors['errors'][] = $e->getMessage();
+                $errors['error_count']++;
+                $errors['errors'][] = $e->getMessage();
             }
         } else {
             $date = DateTime::createFromFormat(
                 $inputFormat, $dateString, $this->timezone
             );
-            $getErrors = DateTime::getLastErrors();
+            $errors = DateTime::getLastErrors();
         }
 
-        if (isset($date) && $date instanceof DateTime) {
+        if ($errors['warning_count'] == 0 && $errors['error_count'] == 0 && $date) {
             $date->setTimeZone($this->timezone);
-        }
-
-        if ($getErrors['warning_count'] == 0
-            && $getErrors['error_count'] == 0 && $date
-        ) {
             return $date->format($outputFormat);
-        } else {
-            if (is_array($getErrors['errors']) && $getErrors['error_count'] > 0) {
-                foreach ($getErrors['errors'] as $error) {
-                    $errors .= $error . " ";
-                }
-            } else if (is_array($getErrors['warnings'])) {
-                foreach ($getErrors['warnings'] as $warning) {
-                    $errors .= $warning . " ";
-                }
-            }
-
-            throw new DateException($errors);
         }
+        throw new DateException($this->getDateExceptionMessage($errors));
     }
 
     /**
-     * public method for conversion of a date string to admin defined
-     * date string.
+     * Build an exception message from a detailed error array.
+     *
+     * @param array $details Error details
+     *
+     * @return string
+     */
+    protected function getDateExceptionMessage($details)
+    {
+        $errors = "Date/time problem: Details: ";
+        if (is_array($details['errors']) && $details['error_count'] > 0) {
+            foreach ($details['errors'] as $error) {
+                $errors .= $error . " ";
+            }
+        } else if (is_array($details['warnings'])) {
+            foreach ($details['warnings'] as $warning) {
+                $errors .= $warning . " ";
+            }
+        }
+        return $errors;
+    }
+
+    /**
+     * Convert a date string to admin-defined format.
      *
      * @param string $createFormat The format of the date string to be changed
      * @param string $dateString   The date string
@@ -169,7 +172,6 @@ class Converter
      * @throws DateException
      * @return string               A re-formatted date string
      */
-
     public function convertToDisplayDate($createFormat, $dateString)
     {
         return $this->convert($createFormat, $this->displayDateFormat, $dateString);

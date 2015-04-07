@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/GPL-3.0 GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-
 namespace VuFind\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException,
+    VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Sierra (III) ILS Driver for Vufind2
@@ -39,10 +39,11 @@ use VuFind\Exception\ILS as ILSException;
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @license  http://opensource.org/licenses/GPL-3.0 GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
- *
  */
-class Sierra extends AbstractBase
+class Sierra extends AbstractBase implements TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
      * Database connection
      *
@@ -91,7 +92,6 @@ class Sierra extends AbstractBase
         return $fullNumber;
     }
 
-
     /**
      * Uses the bib number in VuFind to look up the database ids for the associated
      * items
@@ -109,12 +109,45 @@ class Sierra extends AbstractBase
             . "(bib_view.id = bib_record_item_record_link.bib_record_id) "
             . "WHERE bib_view.record_num = $1;";
         $record_ids = pg_query_params(
-            $this->db, $get_record_ids_query, array($this->idStrip($id))
+            $this->db, $get_record_ids_query, [$this->idStrip($id)]
         );
         while ($record = pg_fetch_row($record_ids)) {
             $itemRecords[] = $record[0];
         }
         return $itemRecords;
+    }
+
+    /**
+     * Modify location string to add status information, if necessary
+     *
+     * @param string $location Original location string
+     * @param string $cattime  Date and time item record was created
+     *
+     * @return string
+     */
+    protected function getLocationText($location, $cattime)
+    {
+        // No "just cataloged" setting? Default to unmodified location.
+        if (!isset($this->config['Catalog']['just_cataloged_time'])) {
+            return $location;
+        }
+
+        // Convert hours to seconds:
+        $seconds = 60*60*$this->config['Catalog']['just_cataloged_time'];
+
+        // Was this a recently cataloged item? If so, return a special string
+        // based on the append setting....
+        if (time() - $seconds < strtotime($cattime)) {
+            if (isset($this->config['Catalog']['just_cataloged_append'])
+                && $this->config['Catalog']['just_cataloged_append'] == 'Y'
+            ) {
+                return $location . ' ' . $this->translate('just_cataloged');
+            }
+            return $this->translate('just_cataloged');
+        }
+
+        // Default case: return the location unmodified:
+        return $location;
     }
 
     /**
@@ -136,7 +169,7 @@ class Sierra extends AbstractBase
                 . "varfield_view.varfield_type_code = 'c' and "
                 . "varfield_view.record_num = $1;";
             $results = pg_query_params(
-                $this->db, $query, array($this->idStrip($id))
+                $this->db, $query, [$this->idStrip($id)]
             );
             $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
             $callnumber = $callnumberarray[0];
@@ -166,7 +199,6 @@ class Sierra extends AbstractBase
                 . " dbname=" . $this->config['Catalog']['dna_db']
                 . " user=" . $this->config['Catalog']['dna_user']
                 . " password=" . $this->config['Catalog']['dna_password'];
-
             $this->db = pg_connect($conn_string);
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -215,7 +247,7 @@ class Sierra extends AbstractBase
     {
         try {
             // Sierra does not allow for searching for reserves by departments.
-            $departments = array();
+            $departments = [];
             return $departments;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -250,15 +282,15 @@ class Sierra extends AbstractBase
                 . "t2.record_type_code = 'r' AND t2.varfield_type_code = 'r' AND "
                 . "t2.occ_num = '0' ORDER BY t1.field_content;";
             $results = pg_query($query);
-            $instructors = array();
+            $instructors = [];
             $j = 0;
             while ($row = pg_fetch_row($results)) {
                 if ($instructors[$row[2]] != null) {
                     $fakeId = $row[2] . "-" . $j;
-                    $instructors[$fakeId] = $row[0] . " (" . $row[1]. ")";
+                    $instructors[$fakeId] = $row[0] . " (" . $row[1] . ")";
                     $j++;
                 } else {
-                    $instructors[$row[2]] = $row[0] . " (" . $row[1]. ")";
+                    $instructors[$row[2]] = $row[0] . " (" . $row[1] . ")";
                 }
             }
             return $instructors;
@@ -278,6 +310,7 @@ class Sierra extends AbstractBase
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $instructor, $department)
@@ -302,7 +335,7 @@ class Sierra extends AbstractBase
                 . "ON (course_record_item_record_link.course_record_id = "
                 . "varfield_view.record_id) "
                 . "WHERE varfield_view.record_num = $1;";
-            $results = pg_query_params($this->db, $query, array($coursenum));
+            $results = pg_query_params($this->db, $query, [$coursenum]);
             while ($resultArray = pg_fetch_row($results)) {
                 $bareNumber = $resultArray[0];
                 $fullNumber = $this->createFullId($bareNumber);
@@ -326,7 +359,7 @@ class Sierra extends AbstractBase
     public function getFunds()
     {
         try {
-            $funds = array();
+            $funds = [];
             $query = "SELECT DISTINCT fund_master.code_num, fund_master.code
                 FROM sierra_view.fund_master;";
             $results = pg_query($this->db, $query);
@@ -354,7 +387,7 @@ class Sierra extends AbstractBase
     public function getStatus($id)
     {
         try {
-            $status = array();
+            $status = [];
             $itemIds = $this->getIds($id);
             // Use the database ids to get the item-level information (status,
             // location, and potentially call number) associated with that bib record
@@ -362,7 +395,8 @@ class Sierra extends AbstractBase
                     . "location_name.name, "
                     . "varfield_view.field_content, "
                     . "varfield_view.varfield_type_code, "
-                    . "checkout.due_gmt "
+                    . "checkout.due_gmt, "
+                    . "item_view.record_creation_date_gmt "
                     . "FROM sierra_view.item_view "
                     . "LEFT JOIN sierra_view.varfield_view "
                     . "ON (item_view.id = varfield_view.record_id) "
@@ -378,7 +412,7 @@ class Sierra extends AbstractBase
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
-                $results1 = pg_execute($this->db, "prep_query", array($item));
+                $results1 = pg_execute($this->db, "prep_query", [$item]);
                 while ($resultArray = pg_fetch_row($results1)) {
                     if ($resultArray[3] == "c") {
                         $callnumber = $resultArray[2];
@@ -396,15 +430,15 @@ class Sierra extends AbstractBase
                 } else {
                     $availability = false;
                 }
-
-                $itemInfo = array(
+                $location = $this->getLocationText($resultArray[1], $resultArray[5]);
+                $itemInfo = [
                     "id" => $id,
                     "status" => $resultArray[0],
-                    "location" => $resultArray[1],
+                    "location" => $location,
                     "reserve" => "N",
                     "callnumber" => $finalcallnumber,
                     "availability" => $availability
-                    );
+                    ];
 
                 $status[] = $itemInfo;
             }
@@ -432,7 +466,7 @@ class Sierra extends AbstractBase
     public function getHolding($id, array $patron = null)
     {
         try {
-            $holdings = array();
+            $holdings = [];
             $itemIds = $this->getIds($id);
             // Use the database ids to get the item-level information (status,
             // location, and potentially call number) associated with that bib record
@@ -441,13 +475,14 @@ class Sierra extends AbstractBase
                         location_name.name,
                         checkout.due_gmt,
                         varfield_view.field_content,
-                        varfield_view.varfield_type_code
-                            FROM
-                            sierra_view.item_view
+                        varfield_view.varfield_type_code,
+                        item_view.record_creation_date_gmt
+                        FROM
+                        sierra_view.item_view
                         LEFT JOIN sierra_view.location
-                        ON (item_view.location_code = location.code) 
-                        LEFT JOIN sierra_view.location_name 
-                        ON (location.id = location_name.location_id) 
+                        ON (item_view.location_code = location.code)
+                        LEFT JOIN sierra_view.location_name
+                        ON (location.id = location_name.location_id)
                         LEFT JOIN sierra_view.checkout
                         ON (item_view.id = checkout.item_record_id)
                         LEFT JOIN sierra_view.varfield_view
@@ -458,7 +493,7 @@ class Sierra extends AbstractBase
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
-                $results1 = pg_execute($this->db, "prep_query", array($item));
+                $results1 = pg_execute($this->db, "prep_query", [$item]);
                 while ($row1 = pg_fetch_row($results1)) {
                     if ($row1[4] == "b") {
                         $barcode = $row1[3];
@@ -480,19 +515,19 @@ class Sierra extends AbstractBase
                 } else {
                     $availability = false;
                 }
-
-                $itemInfo = array(
+                $location = $this->getLocationText($resultArray[1], $resultArray[5]);
+                $itemInfo = [
                     "id" => $id,
                     "availability" => $availability,
                     "status" => $resultArray[0],
-                    "location" => $resultArray[1],
+                    "location" => $location,
                     "reserve" => "N",
                     "callnumber" => $finalcallnumber,
                     "duedate" => $resultArray[2],
                     "returnDate" => false,
                     "number" => $number,
                     "barcode" => $barcode
-                    );
+                    ];
 
                 $holdings[] = $itemInfo;
             }
@@ -523,7 +558,7 @@ class Sierra extends AbstractBase
     public function getNewItems($page, $limit, $daysOld, $fundID)
     {
         try {
-            $newItems = array();
+            $newItems = [];
             $offset = $limit * ($page - 1);
             $daysOld = (int) $daysOld;
             if (is_int($daysOld) == false || $daysOld > 30) {
@@ -556,11 +591,11 @@ class Sierra extends AbstractBase
                 . "OFFSET CAST ($2 AS integer);";
             if ($fundID != null) {
                 $results = pg_query_params(
-                    $this->db, $query, array($limit, $offset, $fundID)
+                    $this->db, $query, [$limit, $offset, $fundID]
                 );
             } else {
                 $results = pg_query_params(
-                    $this->db, $query, array($limit, $offset)
+                    $this->db, $query, [$limit, $offset]
                 );
             }
             $newItems['count'] = (string) pg_num_rows($results);
@@ -571,7 +606,7 @@ class Sierra extends AbstractBase
                     $newItems['results'][]['id'] = $fullNumber;
                 }
             } else {
-                $newItems['results'] = array();
+                $newItems['results'] = [];
                 $newItems['results'][0]['id'] = null;
             }
             return $newItems;
@@ -590,13 +625,14 @@ class Sierra extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
         try {
             // TODO
-            $history = array();
+            $history = [];
             return $history;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
@@ -617,7 +653,7 @@ class Sierra extends AbstractBase
     public function getStatuses($ids)
     {
         try {
-            $statuses = array();
+            $statuses = [];
             foreach ($ids as $id) {
                 $statuses[] = $this->getStatus($id);
             }
@@ -635,7 +671,7 @@ class Sierra extends AbstractBase
     public function getSuppressedAuthorityRecords()
     {
         try {
-            $authRecords = array();
+            $authRecords = [];
             $query = "SELECT record_metadata.record_num FROM "
                 . "sierra_view.authority_record LEFT JOIN "
                 . "sierra_view.record_metadata ON "
@@ -660,7 +696,7 @@ class Sierra extends AbstractBase
     public function getSuppressedRecords()
     {
         try {
-            $suppRecords = array();
+            $suppRecords = [];
             $query = "SELECT record_metadata.record_num FROM "
                 . "sierra_view.bib_record LEFT JOIN sierra_view.record_metadata "
                 . "ON (bib_record.record_id = record_metadata.id) "

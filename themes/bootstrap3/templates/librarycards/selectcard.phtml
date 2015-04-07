@@ -1,0 +1,24 @@
+<? if ($this->user): ?>
+  <?$cards = $this->user->getLibraryCards(); if ($cards->count() > 1): ?>
+    <form class="form-inline" action="<?=$this->url('librarycards-selectcard')?>" method="get">
+      <label for="library_card"><?=$this->transEsc('Library Card')?></label>
+      <select id="library_card" name="cardID" class="jumpMenu form-control">
+        <? foreach ($cards as $card): ?>
+          <?
+            $target = '';
+            $username = $card->cat_username;
+            if (strstr($username, '.')) {
+              list($target, $username) = explode('.', $username, 2);
+            }
+            $display = $this->transEsc($card->card_name ? $card->card_name : $card->cat_username);
+            if ($target) {
+              $display .= ' (' . $this->transEsc("source_$target", null, $target) . ')';
+            }
+          ?>
+          <option value="<?=$this->escapeHtmlAttr($card->id)?>"<?=$card->cat_username == $this->user->cat_username ? ' selected="selected"' : ''?>><?=$display ?></option>
+        <? endforeach; ?>
+      </select>
+      <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEsc("Set")?>" /></noscript>
+    </form>
+  <? endif; ?>
+<? endif; ?>

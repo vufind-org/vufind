@@ -61,7 +61,7 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @var array
      */
-    protected $loadedFiles = array();
+    protected $loadedFiles = [];
 
     /**
      * Helper for reading .ini files from disk.
@@ -80,25 +80,26 @@ class ExtendedIni implements FileLoaderInterface
      * @param ExtendedIniReader $reader          Helper for reading .ini files from
      * disk.
      */
-    public function __construct($pathStack = array(), $fallbackLocales = null,
+    public function __construct($pathStack = [], $fallbackLocales = null,
         ExtendedIniReader $reader = null
     ) {
         $this->pathStack = $pathStack;
         $this->fallbackLocales = $fallbackLocales;
         if (!empty($this->fallbackLocales) && !is_array($this->fallbackLocales)) {
-            $this->fallbackLocales = array($this->fallbackLocales);
+            $this->fallbackLocales = [$this->fallbackLocales];
         }
         $this->reader = ($reader === null) ? new ExtendedIniReader() : $reader;
     }
 
     /**
-     * load(): defined by LoaderInterface.
+     * Load method defined by FileLoaderInterface.
      *
      * @param string $locale   Locale to read from language file
      * @param string $filename Language file to read (not used)
      *
      * @return TextDomain
      * @throws InvalidArgumentException
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function load($locale, $filename)
@@ -128,7 +129,7 @@ class ExtendedIni implements FileLoaderInterface
      */
     protected function resetLoadedFiles()
     {
-        $this->loadedFiles = array();
+        $this->loadedFiles = [];
     }
 
     /**
@@ -164,7 +165,10 @@ class ExtendedIni implements FileLoaderInterface
         $data = false;
         foreach ($this->pathStack as $path) {
             if (file_exists($path . '/' . $filename)) {
-                $current = $this->reader->getTextDomain($path . '/' . $filename);
+                // Load current file with parent data, if necessary:
+                $current = $this->loadParentData(
+                    $this->reader->getTextDomain($path . '/' . $filename)
+                );
                 if ($data === false) {
                     $data = $current;
                 } else {
@@ -176,8 +180,7 @@ class ExtendedIni implements FileLoaderInterface
             throw new InvalidArgumentException("Ini file '{$filename}' not found");
         }
 
-        // Load parent data, if necessary:
-        return $this->loadParentData($data);
+        return $data;
     }
 
     /**

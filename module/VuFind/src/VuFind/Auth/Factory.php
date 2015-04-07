@@ -36,6 +36,7 @@ use Zend\ServiceManager\ServiceManager;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ *
  * @codeCoverageIgnore
  */
 class Factory
@@ -49,7 +50,10 @@ class Factory
      */
     public static function getILS(ServiceManager $sm)
     {
-        return new ILS($sm->getServiceLocator()->get('VuFind\ILSConnection'));
+        return new ILS(
+            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+        );
     }
 
     /**
@@ -110,9 +114,10 @@ class Factory
         $userTable = $sm->get('VuFind\DbTablePluginManager')->get('user');
         $sessionManager = $sm->get('VuFind\SessionManager');
         $pm = $sm->get('VuFind\AuthPluginManager');
+        $cookies = $sm->get('VuFind\CookieManager');
 
         // Build the object:
-        return new Manager($config, $userTable, $sessionManager, $pm, $catalog);
+        return new Manager($config, $userTable, $sessionManager, $pm, $cookies);
     }
 
     /**
@@ -124,6 +129,9 @@ class Factory
      */
     public static function getMultiILS(ServiceManager $sm)
     {
-        return new MultiILS($sm->getServiceLocator()->get('VuFind\ILSConnection'));
+        return new MultiILS(
+            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+        );
     }
 }

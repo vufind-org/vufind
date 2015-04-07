@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2015 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -36,18 +36,18 @@ class Uri implements UriInterface
      * Place 1 or 0 in the different positions for enable or disable the part.
      * Finally use a hexadecimal representation.
      */
-    const HOST_IPV4                 = 0x01; //00001
-    const HOST_IPV6                 = 0x02; //00010
-    const HOST_IPVFUTURE            = 0x04; //00100
-    const HOST_IPVANY               = 0x07; //00111
-    const HOST_DNS                  = 0x08; //01000
-    const HOST_DNS_OR_IPV4          = 0x09; //01001
-    const HOST_DNS_OR_IPV6          = 0x0A; //01010
-    const HOST_DNS_OR_IPV4_OR_IPV6  = 0x0B; //01011
-    const HOST_DNS_OR_IPVANY        = 0x0F; //01111
-    const HOST_REGNAME              = 0x10; //10000
-    const HOST_DNS_OR_IPV4_OR_IPV6_OR_REGNAME = 0x13; //10011
-    const HOST_ALL                  = 0x1F; //11111
+    const HOST_IPV4                           = 0x01; //00001
+    const HOST_IPV6                           = 0x02; //00010
+    const HOST_IPVFUTURE                      = 0x04; //00100
+    const HOST_IPVANY                         = 0x07; //00111
+    const HOST_DNS                            = 0x08; //01000
+    const HOST_DNS_OR_IPV4                    = 0x09; //01001
+    const HOST_DNS_OR_IPV6                    = 0x0A; //01010
+    const HOST_DNS_OR_IPV4_OR_IPV6            = 0x0B; //01011
+    const HOST_DNS_OR_IPVANY                  = 0x0F; //01111
+    const HOST_REGNAME                        = 0x10; //10000
+    const HOST_DNS_OR_IPV4_OR_IPV6_OR_REGNAME = 0x1B; //11011
+    const HOST_ALL                            = 0x1F; //11111
 
     /**
      * URI scheme
@@ -560,10 +560,8 @@ class Uri implements UriInterface
             return $this;
         }
 
-        $pathParts = preg_split('|(/)|', $this->getPath(), null,
-                                PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $baseParts = preg_split('|(/)|', $baseUri->getPath(), null,
-                                PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $pathParts = preg_split('|(/)|', $this->getPath(), null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+        $baseParts = preg_split('|(/)|', $baseUri->getPath(), null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
         // Get the intersection of existing path parts and those from the
         // provided URI

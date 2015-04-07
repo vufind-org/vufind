@@ -11,6 +11,8 @@
     <h2><?=$this->transEsc('Your Checked Out Items')?></h2>
     <?=$this->flashmessages()?>
 
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
     <? if (!empty($this->transactions)): ?>
       <? if ($this->renewForm): ?>
       <form name="renewals" action="" method="post" id="renewals">

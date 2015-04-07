@@ -86,7 +86,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($activeSearchClass, $query, $handler, $type = 'basic')
     {
-        $retVal = array();
+        $retVal = [];
         foreach ($this->config as $class => $label) {
             if ($class == $activeSearchClass) {
                 $retVal[] = $this->createSelectedTab($class, $label);
@@ -117,11 +117,11 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      */
     protected function createSelectedTab($class, $label)
     {
-        return array(
+        return [
             'class' => $class,
             'label' => $label,
             'selected' => true
-        );
+        ];
     }
 
     /**
@@ -163,12 +163,12 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
      */
     protected function createBasicTab($class, $label, $newUrl)
     {
-        return array(
+        return [
             'class' => $class,
             'label' => $label,
             'selected' => false,
             'url' => $newUrl
-        );
+        ];
     }
 
     /**
@@ -185,12 +185,12 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         // to the search home:
         $options = $this->results->get($class)->getOptions();
         $url = $this->url->__invoke($options->getSearchHomeAction());
-        return array(
+        return [
             'class' => $class,
             'label' => $label,
             'selected' => false,
             'url' => $url
-        );
+        ];
     }
 
     /**
@@ -209,11 +209,11 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         $advSearch = $options->getAdvancedSearchAction();
         $url = $this->url
             ->__invoke($advSearch ? $advSearch : $options->getSearchHomeAction());
-        return array(
+        return [
             'class' => $class,
             'label' => $label,
             'selected' => false,
             'url' => $url
-        );
+        ];
     }
 }

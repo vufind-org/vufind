@@ -56,8 +56,8 @@ class RenderArray extends AbstractHelper
         foreach ($rows as $label => $key) {
             if (isset($arr[$key])) {
                 $html .= str_replace(
-                    array('%%LABEL%%', '%%VALUE%%'),
-                    array($label, $this->view->escapeHtml($arr[$key])),
+                    ['%%LABEL%%', '%%VALUE%%'],
+                    [$label, $this->view->escapeHtml($arr[$key])],
                     $tpl
                 );
             }

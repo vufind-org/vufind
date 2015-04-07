@@ -43,36 +43,34 @@ namespace VuFind\Recommend;
 class SwitchType implements RecommendInterface
 {
     /**
-     * search handler to try
+     * Search handler to try
      *
      * @var string
      */
     protected $newHandler;
 
     /**
-     * on-screen description of handler
+     * On-screen description of handler
      *
      * @var string
      */
     protected $newHandlerName;
 
     /**
-     * is this module active?
+     * Is this module active?
      *
      * @var bool
      */
     protected $active;
 
     /**
-     * results object
+     * Results object
      *
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
 
     /**
-     * setConfig
-     *
      * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
@@ -87,8 +85,6 @@ class SwitchType implements RecommendInterface
     }
 
     /**
-     * init
-     *
      * Called at the end of the Search Params objects' initFromRequest() method.
      * This method is responsible for setting search parameters needed by the
      * recommendation module and for reading any existing search parameters that may
@@ -105,8 +101,6 @@ class SwitchType implements RecommendInterface
     }
 
     /**
-     * process
-     *
      * Called after the Search Results object has performed its main search.  This
      * may be used to extract necessary information from the Search Results object
      * or to perform completely unrelated processing.

@@ -91,6 +91,59 @@ class LanguageController extends AbstractBase
     }
 
     /**
+     * Delete a language string to another
+     *
+     * @return \Zend\Console\Response
+     */
+    public function deleteAction()
+    {
+        // Display help message if parameters missing:
+        $argv = $this->consoleOpts->getRemainingArgs();
+        if (!isset($argv[0])) {
+            Console::writeLine(
+                "Usage: {$_SERVER['argv'][0]} [source] [target]"
+            );
+            Console::writeLine("\ttarget - the target key to remove");
+            return $this->getFailureResponse();
+        }
+
+        $normalizer = new ExtendedIniNormalizer();
+        $target = $argv[0] . ' = "';
+
+        $langDir = realpath(__DIR__ . '/../../../../../languages');
+        $handle = opendir($langDir);
+        if (!$handle) {
+            Console::writeLine("Could not open directory $langDir");
+            return $this->getFailureResponse();
+        }
+        while ($file = readdir($handle)) {
+            // Only process .ini files, and ignore native.ini special case file:
+            if (substr($file, -4) == '.ini' && $file !== 'native.ini') {
+                Console::writeLine("Processing $file...");
+                $full = $langDir . '/' . $file;
+                $lines = file($full);
+                $out = '';
+                $found = false;
+                foreach ($lines as $line) {
+                    if (substr($line, 0, strlen($target)) !== $target) {
+                        $out .= $line;
+                    } else {
+                        $found = true;
+                    }
+                }
+                if ($found) {
+                    file_put_contents($full, $out);
+                    $normalizer->normalizeFile($full);
+                } else {
+                    Console::writeLine("Source key not found.");
+                }
+            }
+        }
+
+        return $this->getSuccessResponse();
+    }
+
+    /**
      * Normalizer
      *
      * @return \Zend\Console\Response

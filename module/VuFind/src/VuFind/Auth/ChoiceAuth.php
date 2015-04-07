@@ -50,7 +50,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @var array
      */
-    protected $strategies = array();
+    protected $strategies = [];
 
     /**
      * Auth strategy selected by user
@@ -248,6 +248,16 @@ class ChoiceAuth extends AbstractBase
     }
 
     /**
+     * Does this authentication method support password recovery
+     *
+     * @return bool
+     */
+    public function supportsPasswordRecovery()
+    {
+        return $this->proxyAuthMethod('supportsPasswordRecovery', func_get_args());
+    }
+
+    /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
      * @return array
@@ -296,10 +306,10 @@ class ChoiceAuth extends AbstractBase
         }
         $authenticator = $this->getPluginManager()->get($this->strategy);
         $authenticator->setConfig($this->getConfig());
-        if (!is_callable(array($authenticator, $method))) {
+        if (!is_callable([$authenticator, $method])) {
             throw new AuthException($this->strategy . "has no method $method");
         }
-        return call_user_func_array(array($authenticator, $method), $params);
+        return call_user_func_array([$authenticator, $method], $params);
     }
 
     /**

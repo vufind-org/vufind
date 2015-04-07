@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\InjectHighlightingListener;
@@ -35,6 +34,7 @@ use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
 use VuFind\Search\Solr\DeduplicationListener;
+use VuFind\Search\Solr\HierarchicalFacetListener;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
@@ -79,6 +79,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * @var string
      */
     protected $searchConfig;
+
+    /**
+     * Facet configuration file identifier.
+     *
+     * @var string
+     */
+    protected $facetConfig;
 
     /**
      * YAML searchspecs filename.
@@ -173,9 +180,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Spellcheck
         if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
             if (isset($config->Spelling->simple) && $config->Spelling->simple) {
-                $dictionaries = array('basicSpell');
+                $dictionaries = ['basicSpell'];
             } else {
-                $dictionaries = array('default', 'basicSpell');
+                $dictionaries = ['default', 'basicSpell'];
             }
             $spellingListener = new InjectSpellingListener($backend, $dictionaries);
             $spellingListener->attach($events);
@@ -202,6 +209,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         ) {
             $this->getDeduplicationListener($backend)->attach($events);
         }
+
+        // Attach hierarchical facet listener:
+        $this->getHierarchicalFacetListener($backend)->attach($events);
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
@@ -239,7 +249,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function getHiddenFilters()
     {
         $search = $this->config->get($this->searchConfig);
-        $hf = array();
+        $hf = [];
 
         // Hidden filters
         if (isset($search->HiddenFilters)) {
@@ -267,16 +277,16 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $config = $this->config->get('config');
 
-        $handlers = array(
-            'select' => array(
+        $handlers = [
+            'select' => [
                 'fallback' => true,
-                'defaults' => array('fl' => '*,score'),
-                'appends'  => array('fq' => array()),
-            ),
-            'term' => array(
-                'functions' => array('terms'),
-            ),
-        );
+                'defaults' => ['fl' => '*,score'],
+                'appends'  => ['fq' => []],
+            ],
+            'term' => [
+                'functions' => ['terms'],
+            ],
+        ];
 
         foreach ($this->getHiddenFilters() as $filter) {
             array_push($handlers['select']['appends']['fq'], $filter);
@@ -337,12 +347,12 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         return $this->serviceLocator->get('VuFind\SearchSpecsReader')
             ->get($this->searchYaml);
     }
-    
+
     /**
      * Get a deduplication listener for the backend
-     * 
+     *
      * @param BackendInterface $backend Search backend
-     * 
+     *
      * @return DeduplicationListener
      */
     protected function getDeduplicationListener(BackendInterface $backend)
@@ -355,8 +365,24 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
+     * Get a hierarchical facet listener for the backend
+     *
+     * @param BackendInterface $backend Search backend
+     *
+     * @return HierarchicalFacetListener
+     */
+    protected function getHierarchicalFacetListener(BackendInterface $backend)
+    {
+        return new HierarchicalFacetListener(
+            $backend,
+            $this->serviceLocator,
+            $this->facetConfig
+        );
+    }
+
+    /**
      * Get a highlighting listener for the backend
-     * 
+     *
      * @param BackendInterface $backend Search backend
      * @param Config           $search  Search configuration
      *

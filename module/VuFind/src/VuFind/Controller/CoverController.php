@@ -134,7 +134,7 @@ class CoverController extends AbstractBase
 
         $coverImageTtl = (60*60*24*14); // 14 days
         $headers->addHeaderLine(
-            'Cache-Control', "maxage=".$coverImageTtl
+            'Cache-Control', "maxage=" . $coverImageTtl
         );
         $headers->addHeaderLine(
             'Pragma', 'public'

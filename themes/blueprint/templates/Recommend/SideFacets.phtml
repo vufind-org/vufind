@@ -12,6 +12,7 @@
     <? endforeach; ?>
   <? endif; ?>
   <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
+  <? $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
   <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
   <? $filterList = $this->recommend->getVisibleFilters($extraFilters); if (!empty($filterList)): ?>
     <strong><?=$this->transEsc('Remove Filters')?></strong>
@@ -42,6 +43,7 @@
   <? $sideFacetSet = $this->recommend->getFacetSet(); $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
   <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
     <? foreach ($sideFacetSet as $title => $cluster): ?>
+      <? $hierarchical = in_array($title, $hierarchicalFacets); ?>
       <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
       <? if (isset($rangeFacets[$title])): ?>
         <? if ($rangeFacets[$title]['type'] == 'date'): ?>
@@ -72,17 +74,20 @@
           </dl>
           <dl class="narrowList navmenu offscreen<? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>" id="narrowGroupHidden_<?=$this->escapeHtmlAttr($title)?>">
             <? endif; ?>
-            <? if ($thisFacet['isApplied']): ?>
-              <dd class="facet<?=$thisFacet['operator'] ?> applied"<? if($thisFacet['operator'] == 'OR'): ?> href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>"<? endif ?>><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></dd>
-            <? else: ?>
+            <? $indent = $hierarchical
+                ? str_pad('', 4 * $thisFacet['level'] * 6, '&nbsp;', STR_PAD_LEFT)
+                : ''; ?>
               <dd>
-                <a class="facet<?=$thisFacet['operator'] ?>" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->localizedNumber($thisFacet['count'])?>)
+            <? if ($thisFacet['isApplied']): ?>
+                <a class="facet<?=$thisFacet['operator'] ?> applied" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>"><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></a>
+            <? else: ?>
+                <a class="facet<?=$thisFacet['operator'] ?>" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$indent?><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->localizedNumber($thisFacet['count'])?>)
                 <? if ($allowExclude): ?>
                   <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><img src="<?=$this->imageLink('fugue/cross-small.png')?>" alt="Delete"/></a>
                 <? endif; ?>
-              </dd>
             <? endif; ?>
-          <? endforeach; ?>
+              </dd>
+            <? endforeach; ?>
           <? if ($i > 5): ?><dd><a href="#" onclick="lessFacets('<?=$this->escapeHtmlAttr($title)?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>
         </dl>
       <? endif; ?>

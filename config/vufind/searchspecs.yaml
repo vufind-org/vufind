@@ -56,8 +56,8 @@
 #      QueryFields: ...
 #    # All the same settings as above, but for exact searches, i.e. search terms
 #    #     enclosed in quotes. Allows different fields or weights for exact
-#    #     searches. See below for commented-out examples.  
-#       
+#    #     searches. See below for commented-out examples.
+#
 # ...etc.
 #
 #-----------------------------------------------------------------------------------
@@ -444,6 +444,11 @@ id:
     id:
       - [onephrase, ~]
 
+ParentID:
+  QueryFields:
+    hierarchy_parent_id:
+      - [onephrase, ~]
+
 # Fields for exact matches originating from alphabetic browse
 ids:
   QueryFields:
@@ -472,7 +477,7 @@ DeweyBrowse:
 
 LccBrowse:
   QueryFields:
-    callnumber-a:
+    callnumber-raw:
       - [onephrase, ~]
 
 CallNumber:
@@ -481,7 +486,6 @@ CallNumber:
   # which will return a larger number of hits at a lower boost.
   CustomMunge:
     callnumber_exact:
-      - [uppercase]
       # Strip whitespace and quotes:
       - [preg_replace, '/[ "]/', ""]
       # Escape colons (unescape first to avoid double-escapes):
@@ -490,7 +494,6 @@ CallNumber:
       # Strip pre-existing trailing asterisks:
       - [preg_replace, "/\*+$/", ""]
     callnumber_fuzzy:
-      - [uppercase]
       # Strip whitespace and quotes:
       - [preg_replace, '/[ "]/', ""]
       # Escape colons (unescape first to avoid double-escapes):
@@ -500,10 +503,10 @@ CallNumber:
       - [preg_replace, "/\*+$/", ""]
       - [append, "*"]
   QueryFields:
-    callnumber:
+    callnumber-search:
       - [callnumber_exact, 1000]
       - [callnumber_fuzzy, ~]
-    dewey-full:
+    dewey-search:
       - [callnumber_exact, 1000]
       - [callnumber_fuzzy, ~]
 

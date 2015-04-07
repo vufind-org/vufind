@@ -9,9 +9,14 @@
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <? if (empty($this->fines)): ?>
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
     <?=$this->transEsc('You do not have any fines')?>
   <? else: ?>
     <h3><?=$this->transEsc('Your Fines')?></h3>
+
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
     <table class="datagrid fines" summary="<?=$this->transEsc('Your Fines')?>">
     <tr>
       <th><?=$this->transEsc('Title')?></th>
@@ -26,10 +31,10 @@
         <td>
           <? if (empty($record['title'])): ?>
             <?=$this->transEsc('not_applicable')?>
-          <? elseif (!isset($record['id'])): ?>
+          <? elseif (!is_object($record['driver'])): ?>
             <?=$this->escapeHtml(trim($record['title'], '/:'))?>
           <? else: ?>
-            <a href="<?=$this->url('record', array('id' => $record['id']))?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
+            <a href="<?=$this->recordLink()->getUrl($record['driver'])?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
           <? endif; ?>
         </td>
         <td><?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?></td>

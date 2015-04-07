@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\Summon\Response;
 
 use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
@@ -46,9 +45,10 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
     /**
      * Test constructor exceptions.
      *
-     * @expectedException VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Record factory must be callable.
      * @return void
+     *
+     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
+     * @expectedExceptionMessage Record factory must be callable.
      */
     public function testConstructorRequiresFactoryFunction()
     {
@@ -58,13 +58,18 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
     /**
      * Test constructor exceptions.
      *
-     * @expectedException VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Unexpected type of value: Expected array, got string
      * @return void
+     *
+     * @expectedException        VuFindSearch\Exception\InvalidArgumentException
+     * @expectedExceptionMessage Unexpected type of value: Expected array, got string
      */
     public function testFactoryRequiresArray()
     {
-        $factory = new RecordCollectionFactory(function () {});
+        $factory = new RecordCollectionFactory(
+            function () {
+
+            }
+        );
         $factory->factory('bad');
     }
 }

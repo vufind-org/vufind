@@ -12,6 +12,8 @@
 
   <?=$this->flashmessages()?>
 
+  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
   <? if (!empty($this->recordList)): ?>
     <? if ($this->cancelForm): ?>
       <form name="cancelForm" action="" method="post" id="cancelILLRequest">
@@ -83,8 +85,8 @@
             <? if (isset($ilsDetails['institution_name']) && !empty($ilsDetails['institution_name'])): ?>
               <strong><?=$this->transEsc('institution_' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name']) ?></strong>
               <br />
-            <? endif; ?> 
-                
+            <? endif; ?>
+
             <? /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
                value to display... */ ?>
             <? $pickupDisplay = ''; ?>
@@ -108,9 +110,12 @@
               <br />
             <? endif; ?>
 
-            <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?>
+            <? if (!empty($ilsDetails['create'])): ?>
+              <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?>
+              <? if (!empty($ilsDetails['expire'])): ?>|<? endif; ?>
+            <? endif; ?>
             <? if (!empty($ilsDetails['expire'])): ?>
-             | <strong><?=$this->transEsc('Expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
+              <strong><?=$this->transEsc('Expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
             <? endif; ?>
             <br />
 

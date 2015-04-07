@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindTest\Backend\Solr\Document;
 
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
@@ -53,10 +52,10 @@ class UpdateDocumentTest extends PHPUnit_Framework_TestCase
     {
         $record = $this->getMockForAbstractClass('VuFindSearch\Backend\Solr\Record\SerializableRecordInterface');
         $record->expects($this->once())
-               ->method('getFields')
-               ->will($this->returnValue(array('id' => 'ID', 'field' => 'FIELD')));
+            ->method('getFields')
+            ->will($this->returnValue(['id' => 'ID', 'field' => 'FIELD']));
         $document = new UpdateDocument();
-        $document->addRecord($record, array('boost' => '2.0'));
+        $document->addRecord($record, ['boost' => '2.0']);
         $xml = $document->asXML();
         $this->assertXmlStringEqualsXmlString(
             '<add><doc boost="2.0"><field name="id">ID</field><field name="field">FIELD</field></doc></add>',

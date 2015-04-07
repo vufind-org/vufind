@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Summon;
 
 use VuFindSearch\ParamBag;
@@ -69,7 +68,7 @@ class BackendTest extends TestCase
      */
     public function testRetrieve()
     {
-        $conn = $this->getConnectorMock(array('getRecord'));
+        $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
             ->will($this->returnValue($this->loadResponse('single-record')));
@@ -91,13 +90,13 @@ class BackendTest extends TestCase
      */
     public function testRetrieveBatch()
     {
-        $conn = $this->getConnectorMock(array('query'));
-        $expected1 = new SummonQuery(null, array('idsToFetch' => range(1, 50), 'pageNumber' => 1, 'pageSize' => 50));
+        $conn = $this->getConnectorMock(['query']);
+        $expected1 = new SummonQuery(null, ['idsToFetch' => range(1, 50), 'pageNumber' => 1, 'pageSize' => 50]);
         $conn->expects($this->at(0))
             ->method('query')
             ->with($this->equalTo($expected1))
             ->will($this->returnValue($this->loadResponse('retrieve1')));
-        $expected2 = new SummonQuery(null, array('idsToFetch' => range(51, 60), 'pageNumber' => 1, 'pageSize' => 50));
+        $expected2 = new SummonQuery(null, ['idsToFetch' => range(51, 60), 'pageNumber' => 1, 'pageSize' => 50]);
         $conn->expects($this->at(1))
             ->method('query')
             ->with($this->equalTo($expected2))
@@ -121,15 +120,16 @@ class BackendTest extends TestCase
      * Test retrieve exception handling.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testRetrieveWrapsSummonException()
     {
         $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
-        $conn = $this->getConnectorMock(array('getRecord'));
+        $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
-             ->method('getRecord')
-             ->will($this->throwException(new SummonException()));
+            ->method('getRecord')
+            ->will($this->throwException(new SummonException()));
         $back = new Backend($conn, $fact);
         $back->retrieve('id');
     }
@@ -141,7 +141,7 @@ class BackendTest extends TestCase
      */
     public function testSearch()
     {
-        $conn = $this->getConnectorMock(array('query'));
+        $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
             ->will($this->returnValue($this->loadResponse('search')));
@@ -163,7 +163,7 @@ class BackendTest extends TestCase
         $facets = $coll->getFacets();
         $this->assertEquals('Language', $facets[0]['displayName']);
         $this->assertEquals(0, $coll->getOffset());
-        $this->assertEquals(array(), $coll->getSpellcheck());
+        $this->assertEquals([], $coll->getSpellcheck());
         $this->assertEquals(false, $coll->getBestBets());
         $this->assertEquals(false, $coll->getDatabaseRecommendations());
     }
@@ -172,15 +172,16 @@ class BackendTest extends TestCase
      * Test search exception handling.
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsSummonException()
     {
         $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
-        $conn = $this->getConnectorMock(array('query'));
+        $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
-             ->method('query')
-             ->will($this->throwException(new SummonException()));
+            ->method('query')
+            ->will($this->throwException(new SummonException()));
         $back = new Backend($conn, $fact);
         $back->search(new Query(), 1, 1);
     }
@@ -192,13 +193,13 @@ class BackendTest extends TestCase
      */
     public function testMergedParamBag()
     {
-        $myParams = new ParamBag(array('maxTopics' => 32));
-        $expectedParams = new SummonQuery('boo:(baz)', array('pageSize' => 10, 'pageNumber' => 1.0, 'maxTopics' => 32));
-        $conn = $this->getConnectorMock(array('query'));
+        $myParams = new ParamBag(['maxTopics' => 32]);
+        $expectedParams = new SummonQuery('boo:(baz)', ['pageSize' => 10, 'pageNumber' => 1.0, 'maxTopics' => 32]);
+        $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
-             ->method('query')
-             ->with($this->equalTo($expectedParams))
-             ->will($this->returnValue(array('recordCount' => 0, 'documents' => array())));
+            ->method('query')
+            ->with($this->equalTo($expectedParams))
+            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
         $back = new Backend($conn);
         $back->search(new Query('baz', 'boo'), 0, 10, $myParams);
     }
@@ -257,10 +258,10 @@ class BackendTest extends TestCase
      *
      * @return array
      */
-    protected function getConnectorMock(array $mock = array())
+    protected function getConnectorMock(array $mock = [])
     {
         return $this->getMock(
-            'SerialsSolutions\Summon\Zend2', $mock, array('id', 'key')
+            'SerialsSolutions\Summon\Zend2', $mock, ['id', 'key']
         );
     }
 }

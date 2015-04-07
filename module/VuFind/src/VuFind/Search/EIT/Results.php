@@ -43,13 +43,6 @@ namespace VuFind\Search\EIT;
 class Results extends \VuFind\Search\Base\Results
 {
     /**
-     * Logger instance.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger = false;
-
-    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -79,6 +72,6 @@ class Results extends \VuFind\Search\Base\Results
     public function getFacetList($filter = null)
     {
         // No facets in EIT:
-        return array();
+        return [];
     }
 }

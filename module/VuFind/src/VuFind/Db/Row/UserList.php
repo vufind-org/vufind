@@ -39,8 +39,10 @@ use VuFind\Exception\ListPermission as ListPermissionException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class UserList extends ServiceLocatorAwareGateway
+class UserList extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface
 {
+    use \VuFind\Db\Table\DbTableAwareTrait;
+
     /**
      * Constructor
      *
@@ -74,9 +76,9 @@ class UserList extends ServiceLocatorAwareGateway
     public function getTags()
     {
         $table = $this->getDbTable('User');
-        $user = $table->select(array('id' => $this->user_id))->current();
+        $user = $table->select(['id' => $this->user_id])->current();
         if (empty($user)) {
-            return array();
+            return [];
         }
         return $user->getTags(null, $this->id);
     }
@@ -170,7 +172,7 @@ class UserList extends ServiceLocatorAwareGateway
         $resourceTable = $this->getDbTable('Resource');
         $resources = $resourceTable->findResources($ids, $source);
 
-        $resourceIDs = array();
+        $resourceIDs = [];
         foreach ($resources as $current) {
             $resourceIDs[] = $current->id;
         }

@@ -82,12 +82,12 @@ class DateTime extends \Zend\View\Helper\AbstractHelper
     {
         $dueDateHelpString
             = $this->converter->convertToDisplayDate("m-d-y", "11-22-3333");
-        $search = array("1", "2", "3");
-        $replace = array(
+        $search = ["1", "2", "3"];
+        $replace = [
             $this->view->translate("date_month_placeholder"),
             $this->view->translate("date_day_placeholder"),
             $this->view->translate("date_year_placeholder")
-        );
+        ];
 
         return str_replace($search, $replace, $dueDateHelpString);
     }
@@ -102,6 +102,6 @@ class DateTime extends \Zend\View\Helper\AbstractHelper
      */
     public function __call($methodName, $params)
     {
-        return call_user_func_array(array($this->converter, $methodName), $params);
+        return call_user_func_array([$this->converter, $methodName], $params);
     }
 }

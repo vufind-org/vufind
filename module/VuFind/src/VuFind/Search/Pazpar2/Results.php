@@ -68,6 +68,6 @@ class Results extends \VuFind\Search\Base\Results
     public function getFacetList($filter = null)
     {
         // No facets in Pazpar2:
-        return array();
+        return [];
     }
 }

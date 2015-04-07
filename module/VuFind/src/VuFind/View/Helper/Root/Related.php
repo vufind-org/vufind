@@ -82,23 +82,24 @@ class Related extends AbstractHelper
         // Set up the rendering context:
         $contextHelper = $this->getView()->plugin('context');
         $oldContext = $contextHelper($this->getView())->apply(
-            array('related' => $related)
+            ['related' => $related]
         );
 
         // Get the current related item module's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // template.
         $className = get_class($related);
+        $resolver = $this->getView()->resolver();
         while (true) {
             // Guess the template name for the current class:
             $classParts = explode('\\', $className);
             $template = 'Related/' . array_pop($classParts) . '.phtml';
-            try {
-                // Try to render the template....
+            // Try to resolve the template....
+            if ($resolver->resolve($template)) {
                 $html = $this->getView()->render($template);
                 $contextHelper($this->getView())->restore($oldContext);
                 return $html;
-            } catch (RuntimeException $e) {
+            } else {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent class:
                 $className = get_parent_class($className);

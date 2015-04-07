@@ -65,7 +65,7 @@ class UrlQueryHelper
      *
      * @var array
      */
-    protected $defaultParams = array();
+    protected $defaultParams = [];
 
     /**
      * Should we suppress the standard query parameter?
@@ -84,7 +84,7 @@ class UrlQueryHelper
         $this->params = $params;
         $this->options = $params->getOptions();
     }
-    
+
     /**
      * Set the name of the parameter used for basic search terms.
      *
@@ -137,7 +137,7 @@ class UrlQueryHelper
      *
      * @return array
      */
-    protected function getParamArray()
+    public function getParamArray()
     {
         $params = $this->defaultParams;
 
@@ -151,15 +151,15 @@ class UrlQueryHelper
                         if ($current instanceof QueryGroup) {
                             $operator = $current->isNegated()
                                 ? 'NOT' : $current->getOperator();
-                            $params['bool' . $i] = array($operator);
+                            $params['bool' . $i] = [$operator];
                             foreach ($current->getQueries() as $inner) {
                                 if (!isset($params['lookfor' . $i])) {
-                                    $params['lookfor' . $i] = array();
+                                    $params['lookfor' . $i] = [];
                                 }
                                 if (!isset($params['type' . $i])) {
-                                    $params['type' . $i] = array();
+                                    $params['type' . $i] = [];
                                 }
-                                $params['lookfor'.$i][] = $inner->getString();
+                                $params['lookfor' . $i][] = $inner->getString();
                                 $params['type' . $i][] = $inner->getHandler();
                                 if (null !== ($op = $inner->getOperator())) {
                                     $params['op' . $i][] = $op;
@@ -206,7 +206,7 @@ class UrlQueryHelper
         }
         $filters = $this->params->getFilters();
         if (!empty($filters)) {
-            $params['filter'] = array();
+            $params['filter'] = [];
             foreach ($filters as $field => $values) {
                 foreach ($values as $current) {
                     $params['filter'][] = $field . ':"' . $current . '"';
@@ -248,33 +248,37 @@ class UrlQueryHelper
     /**
      * Add a facet to the parameters.
      *
-     * @param string $field    Facet field
-     * @param string $value    Facet value
-     * @param string $operator Facet type to add (AND, OR, NOT)
+     * @param string $field      Facet field
+     * @param string $value      Facet value
+     * @param string $operator   Facet type to add (AND, OR, NOT)
+     * @param array  $paramArray Optional array of parameters to use instead of
+     * getParamArray()
      *
      * @return string
      */
-    public function addFacet($field, $value, $operator = 'AND')
+    public function addFacet($field, $value, $operator = 'AND', $paramArray = null)
     {
         // Facets are just a special case of filters:
         $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
-        return $this->addFilter($prefix . $field . ':"' . $value . '"');
+        return $this->addFilter($prefix . $field . ':"' . $value . '"', $paramArray);
     }
 
     /**
      * Add a filter to the parameters.
      *
-     * @param string $filter Filter to add
+     * @param string $filter     Filter to add
+     * @param array  $paramArray Optional array of parameters to use instead of
+     * getParamArray()
      *
      * @return string
      */
-    public function addFilter($filter)
+    public function addFilter($filter, $paramArray = null)
     {
-        $params = $this->getParamArray();
+        $params = is_null($paramArray) ? $this->getParamArray() : $paramArray;
 
         // Add the filter:
         if (!isset($params['filter'])) {
-            $params['filter'] = array();
+            $params['filter'] = [];
         }
         $params['filter'][] = $filter;
 
@@ -299,16 +303,19 @@ class UrlQueryHelper
     /**
      * Remove a facet from the parameters.
      *
-     * @param string $field    Facet field
-     * @param string $value    Facet value
-     * @param bool   $escape   Should we escape the string for use in the view?
-     * @param string $operator Facet type to add (AND, OR, NOT)
+     * @param string $field      Facet field
+     * @param string $value      Facet value
+     * @param bool   $escape     Should we escape the string for use in the view?
+     * @param string $operator   Facet type to add (AND, OR, NOT)
+     * @param array  $paramArray Optional array of parameters to use instead of
+     * getParamArray()
      *
      * @return string
      */
-    public function removeFacet($field, $value, $escape = true, $operator = 'AND')
-    {
-        $params = $this->getParamArray();
+    public function removeFacet($field, $value, $escape = true, $operator = 'AND',
+        $paramArray = null
+    ) {
+        $params = is_null($paramArray) ? $this->getParamArray() : $paramArray;
 
         // Account for operators:
         if ($operator == 'NOT') {
@@ -318,7 +325,7 @@ class UrlQueryHelper
         }
 
         // Remove the filter:
-        $newFilter = array();
+        $newFilter = [];
         if (isset($params['filter']) && is_array($params['filter'])) {
             foreach ($params['filter'] as $current) {
                 list($currentField, $currentValue)
@@ -476,7 +483,7 @@ class UrlQueryHelper
      *
      * @return string
      */
-    public function asHiddenFields($filter = array())
+    public function asHiddenFields($filter = [])
     {
         $retVal = '';
         foreach ($this->getParamArray() as $paramName => $paramValue) {
@@ -554,7 +561,7 @@ class UrlQueryHelper
      */
     protected function buildQueryString($a, $escape = true)
     {
-        $parts = array();
+        $parts = [];
         foreach ($a as $key => $value) {
             if (is_array($value)) {
                 foreach ($value as $current) {
