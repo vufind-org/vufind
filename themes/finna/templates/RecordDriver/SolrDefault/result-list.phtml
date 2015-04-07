@@ -1,5 +1,5 @@
 <!-- start of Default result-list.phtml -->
-<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?> list-view">
+<div class="result<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
     <div class="col-xs-2 resultThumb">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />

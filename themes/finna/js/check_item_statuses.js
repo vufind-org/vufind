@@ -2,7 +2,7 @@
 
 function checkItemStatus(id) {
   var safeId = jqEscape(id);
-  var item = $('.hiddenId[value="' + safeId + '"]').closest('.ajaxItem');
+  var item = $('.hiddenId[value="' + safeId + '"]').closest('.result');
   item.find(".ajax-availability").removeClass('hidden');
   item.find(".availability-load-indicator").removeClass('hidden');
 
@@ -90,7 +90,7 @@ function initDedupRecordSelection()
     var source = $(this).find('option:selected').data('source');
     $.cookie('preferredRecordSource', source);
 
-    var recordContainer = $(this).closest('.ajaxItem');
+    var recordContainer = $(this).closest('.result');
     var oldRecordId = recordContainer.find('.hiddenId')[0].value;
 
     // Update IDs of elements
