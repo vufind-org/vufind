@@ -419,6 +419,7 @@ $config = [
                     'worldcatterms' => 'VuFind\Recommend\Factory::getWorldCatTerms',
                 ],
                 'invokables' => [
+                    'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',

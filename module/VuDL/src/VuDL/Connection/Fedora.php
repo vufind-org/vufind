@@ -114,7 +114,7 @@ class Fedora extends AbstractBase
     public function getDatastreamContent($id, $stream, $justStream = false)
     {
         if ($justStream) {
-            $url = $this->getBase() . $id . '/datastreams' . $stream;
+            $url = $this->getBase() . $id . $stream;
         } else {
             $url = $this->getBase() . $id . '/datastreams/' . $stream . '/content';
         }
