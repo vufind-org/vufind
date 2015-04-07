@@ -16,7 +16,6 @@
     max-width:400px;
   }
 }
-.group [class^=col-] {padding-left:0}
 .has-error {margin-bottom:0;}
 .help-block.with-errors {
   padding:@padding-base-vertical 0;
@@ -27,7 +26,10 @@
     margin:0;
   }
 }
-.highlight{&:extend(mark);}
+.highlight,mark {
+  background: lighten(#FF0, 20%);
+  padding: .1em .2em;
+}
 .icon-bar {background-color:#888}
 img {max-width:100%}
 label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-left:35px}
@@ -35,6 +37,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 #modal .modal-body > h2:first-child {display:none}
 .nav-tabs li a {cursor:pointer}
 .popover {width:250px}
+.recordcover {max-height: 300px;}
 .sub-breadcrumb {
   padding:5px 10px;
   white-space:nowrap;
@@ -48,6 +51,29 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   }
 }
 .tab-content {padding:4px}
+
+/* --- Advanced Search --- */
+.group {
+  background: @gray-lighter;
+  border-radius: @border-radius-base;
+  border: 1px solid darken(@gray-lighter, 15%);
+  margin: 0 0 6px;
+  padding: 10px 10px 10px 25px;
+  .add_search_link {
+    display: inline-block;
+    margin-top: 4px;
+  }
+  [class^=col-] {
+    padding-left: 0;
+  }
+  .search {
+    margin-bottom:2px;
+  }
+}
+#groupPlaceHolder {
+  display:block;
+  padding:6px;
+}
 
 /* --- Alphabrowse --- */
 .alphabrowse {
@@ -164,6 +190,14 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .fa-videodisc:before      {content:"\f109"} // .fa-laptop
 .fa-videoreel:before      {content:"\f03d"} // .fa-video-camera
 
+/* --- PubDateVis --- */
+#dateVisColorSettings {
+  background-color: #fff; // background of box
+  fill: rgb(234,234,234); // fillColor
+  outline-color: #e8cfac; // selection color
+  stroke: @brand-primary; // color
+}
+
 /* --- Record --- */
 .citation {
   .pace-car {
@@ -230,6 +264,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 /* --- Sidebar --- */
 /* Sidebar rounded corners */
 .sidebar {
+  label {margin-left: 20px;}
   .list-group:not(.filters) .title {
     cursor:pointer;
     &.collapsed {
@@ -278,32 +313,33 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Slider accessibility --- */
 .slider-container {
-  padding:4px 0;
+  padding:4px 10px;
   text-align:center;
-  .slider {
-    .slider-track {
-      background:@gray-light;
-      box-shadow:inset 0 1px 0 rgba(0, 0, 0, 0.4);
-      .slider-handle {
-        background:@brand-primary;
-        background-image:none;
-        border:1px solid @brand-primary;
-        box-shadow:none;
-        opacity:.9;
-        &:hover,&:active,&:focus {
-          opacity:1;
-          background:#FFF;
-          border-color:@gray-light;
-        }
-        &:active,&:focus {
-          border-color:@brand-primary;
-        }
-      }
-      .slider-selection {
-        background:@gray-lighter;
-        box-shadow:inset 0 -1px 0 rgba(0,0,0,0.3);
-      }
+  .slider.slider-horizontal {
+    width: 100%;
+  }
+  .slider-track {
+  background:@gray-light;
+  box-shadow:inset 0 1px 0 rgba(0, 0, 0, 0.4);
+  }
+  .slider-handle {
+    background:@brand-primary;
+    background-image:none;
+    border:1px solid @brand-primary;
+    box-shadow:none;
+    opacity:.9;
+    &:hover,&:active,&:focus {
+      opacity:1;
+      background:#FFF;
+      border-color:@gray-light;
     }
+    &:active,&:focus {
+      border-color:@brand-primary;
+    }
+  }
+  .slider-selection {
+    background: #CCC;
+    box-shadow:inset 0 -1px 0 rgba(0,0,0,0.3);
   }
 }
 

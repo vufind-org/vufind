@@ -88,6 +88,7 @@ $config = [
             'index' => 'VuFind\Controller\IndexController',
             'install' => 'VuFind\Controller\InstallController',
             'libguides' => 'VuFind\Controller\LibGuidesController',
+            'librarycards' => 'VuFind\Controller\LibraryCardsController',
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
@@ -418,6 +419,7 @@ $config = [
                     'worldcatterms' => 'VuFind\Recommend\Factory::getWorldCatTerms',
                 ],
                 'invokables' => [
+                    'alphabrowselink' => 'VuFind\Recommend\AlphaBrowseLink',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
@@ -471,6 +473,9 @@ $config = [
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
+                ],
+                'initializers' => [
+                    'ZfcRbac\Initializer\AuthorizationServiceInitializer'
                 ],
             ],
             'related' => [
@@ -674,6 +679,8 @@ $config = [
             'factories' => [
                 'ipRange' => 'VuFind\Role\PermissionProvider\Factory::getIpRange',
                 'ipRegEx' => 'VuFind\Role\PermissionProvider\Factory::getIpRegEx',
+                'serverParam' => 'VuFind\Role\PermissionProvider\Factory::getServerParam',
+                'shibboleth' => 'VuFind\Role\PermissionProvider\Factory::getShibboleth',
                 'username' => 'VuFind\Role\PermissionProvider\Factory::getUsername',
             ],
             'invokables' => [
@@ -695,16 +702,12 @@ $recordRoutes = [
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
 ];
-// Record sub-routes are generally used to access tab plug-ins, but a few
-// URLs are hard-coded to specific actions; this array lists those actions.
-$nonTabRecordActions = [
-    'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
-    'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest', 'AjaxTab',
-    'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest', 'PDF',
-];
 
-// Define list-related routes -- route name => MyResearch action
-$listRoutes = ['userList' => 'MyList', 'editList' => 'EditList'];
+// Define dynamic routes -- controller => [route name => action]
+$dynamicRoutes = [
+    'MyResearch' => ['userList' => 'MyList/[:id]', 'editList' => 'EditList/[:id]'],
+    'LibraryCards' => ['editLibraryCard' => 'editCard/[:id]'],
+];
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
@@ -724,6 +727,8 @@ $staticRoutes = [
     'Install/FixSecurity', 'Install/FixSolr', 'Install/Home',
     'Install/PerformSecurityFix', 'Install/ShowSQL',
     'LibGuides/Home', 'LibGuides/Results',
+    'LibraryCards/Home', 'LibraryCards/SelectCard',
+    'LibraryCards/DeleteCard',
     'MyResearch/Account', 'MyResearch/ChangePassword', 'MyResearch/CheckedOut',
     'MyResearch/Delete', 'MyResearch/DeleteList', 'MyResearch/Edit',
     'MyResearch/Email', 'MyResearch/Favorites', 'MyResearch/Fines',
@@ -750,75 +755,10 @@ $staticRoutes = [
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 ];
 
-// Build record routes
-foreach ($recordRoutes as $routeBase => $controller) {
-    // catch-all "tab" route:
-    $config['router']['routes'][$routeBase] = [
-        'type'    => 'Zend\Mvc\Router\Http\Segment',
-        'options' => [
-            'route'    => '/' . $controller . '/[:id[/:tab]]',
-            'constraints' => [
-                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-            ],
-            'defaults' => [
-                'controller' => $controller,
-                'action'     => 'Home',
-            ]
-        ]
-    ];
-    // special non-tab actions that each need their own route:
-    foreach ($nonTabRecordActions as $action) {
-        $config['router']['routes'][$routeBase . '-' . strtolower($action)] = [
-            'type'    => 'Zend\Mvc\Router\Http\Segment',
-            'options' => [
-                'route'    => '/' . $controller . '/[:id]/' . $action,
-                'constraints' => [
-                    'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                ],
-                'defaults' => [
-                    'controller' => $controller,
-                    'action'     => $action,
-                ]
-            ]
-        ];
-    }
-}
-
-// Build list routes
-foreach ($listRoutes as $routeName => $action) {
-    $config['router']['routes'][$routeName] = [
-        'type'    => 'Zend\Mvc\Router\Http\Segment',
-        'options' => [
-            'route'    => '/MyResearch/' . $action . '/[:id]',
-            'constraints' => [
-                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-            ],
-            'defaults' => [
-                'controller' => 'MyResearch',
-                'action'     => $action,
-            ]
-        ]
-    ];
-}
-
-// Build static routes
-foreach ($staticRoutes as $route) {
-    list($controller, $action) = explode('/', $route);
-    $routeName = str_replace('/', '-', strtolower($route));
-    $config['router']['routes'][$routeName] = [
-        'type' => 'Zend\Mvc\Router\Http\Literal',
-        'options' => [
-            'route'    => '/' . $route,
-            'defaults' => [
-                'controller' => $controller,
-                'action'     => $action,
-            ]
-        ]
-    ];
-}
+$routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addRecordRoutes($config, $recordRoutes);
+$routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
+$routeGenerator->addStaticRoutes($config, $staticRoutes);
 
 // Add the home route last
 $config['router']['routes']['home'] = [

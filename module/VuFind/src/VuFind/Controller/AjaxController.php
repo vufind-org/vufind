@@ -828,7 +828,7 @@ class AjaxController extends AbstractBase
             $from = $to = '';
             if (isset($filters[$current])) {
                 foreach ($filters[$current] as $filter) {
-                    if (preg_match('/\[\d+ TO \d+\]/', $filter)) {
+                    if (preg_match('/\[[\d\*]+ TO [\d\*]+\]/', $filter)) {
                         $range = explode(' TO ', trim($filter, '[]'));
                         $from = $range[0] == '*' ? '' : $range[0];
                         $to = $range[1] == '*' ? '' : $range[1];

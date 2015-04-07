@@ -49,7 +49,7 @@ class FacetCloudTest extends \VuFindTest\Unit\TestCase
         $results = $this->getMockResults();
         $results->getParams()->expects($this->once())->method('getFacetSettings')
             ->will($this->returnValue(['limit' => 50]));
-        $fc = $this->getFacetCloud(null,$results);
+        $fc = $this->getFacetCloud(null, $results);
         $this->assertEquals(49, $fc->getFacetLimit());
     }
 

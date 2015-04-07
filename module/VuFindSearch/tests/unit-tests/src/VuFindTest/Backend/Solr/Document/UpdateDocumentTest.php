@@ -52,8 +52,8 @@ class UpdateDocumentTest extends PHPUnit_Framework_TestCase
     {
         $record = $this->getMockForAbstractClass('VuFindSearch\Backend\Solr\Record\SerializableRecordInterface');
         $record->expects($this->once())
-               ->method('getFields')
-               ->will($this->returnValue(['id' => 'ID', 'field' => 'FIELD']));
+            ->method('getFields')
+            ->will($this->returnValue(['id' => 'ID', 'field' => 'FIELD']));
         $document = new UpdateDocument();
         $document->addRecord($record, ['boost' => '2.0']);
         $xml = $document->asXML();
