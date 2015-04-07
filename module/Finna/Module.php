@@ -77,7 +77,9 @@ class Module
     public function init(ModuleManager $m)
     {
         $em = StaticEventManager::getInstance();
-        $em->attach('Zend\Mvc\Application', 'bootstrap', [$this, 'registerBaseUrl'], 100000);
+        $em->attach(
+            'Zend\Mvc\Application', 'bootstrap', [$this, 'registerBaseUrl'], 100000
+        );
     }
 
     /**
@@ -94,7 +96,10 @@ class Module
 
     /**
      * Initializes the base url for the application from environment variable
-     * @param MvcEvent $e
+     *
+     * @param MvcEvent $e Event
+     *
+     * @return void
      */
     public function registerBaseUrl(MvcEvent $e)
     {
