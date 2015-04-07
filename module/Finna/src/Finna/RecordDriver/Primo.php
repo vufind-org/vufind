@@ -158,6 +158,25 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
+     * Returns an array of parameter to send to Finna's cover generator.
+     * Fallbacks to VuFind's getThumbnail if no record image with the
+     * given index was found.
+     *
+     * @param string $size  Size of thumbnail
+     * @param int    $index Image index
+     *
+     * @return array|bool
+     */
+    public function getRecordImage($size = 'small', $index = 0)
+    {
+        $params = parent::getThumbnail($size);
+        if ($params && !is_array($params)) {
+            $params = ['url' => $params];
+        }
+        return $params;
+    }
+
+    /**
      * Get OpenURL parameters for an article.
      *
      * @return array
