@@ -75,7 +75,6 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         $conn->init();
         $result = $conn->getStatus('027586081');
 
-
         // exact result for using the DAIA.php with testfile daia.json
         $testResult = [
             0 =>
