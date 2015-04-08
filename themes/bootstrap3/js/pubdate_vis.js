@@ -20,15 +20,18 @@ function PadDigits(n, totalDigits)
 function loadVis(facetFields, searchParams, baseURL, zooming) {
   // Get colors from CSS
   var cssColorSettings = {
-    'background-color': '#ffffff',    // background of box
-    'fill': 'rgb(234,234,234)', // fillColor
-    'outline-color': '#e8cfac', // selection color
-    'stroke': '#265680'         // color
+    'background-color': '#fff', // background of box
+    'fill': '#eee',             // box fill color
+    'stroke': '#265680',        // box outline color
+    'outline-color': '#e8cfac'  // selection color
   };
   var $dateVisColorSettings = $('#dateVisColorSettings');
   for(var rule in cssColorSettings) {
     if($dateVisColorSettings.css(rule)) {
-      cssColorSettings[rule] = $dateVisColorSettings.css(rule).match(/rgb[a]?\([^\)]+\)|#[a-fA-F0-9]+/)[0];
+      var match = $dateVisColorSettings.css(rule).match(/rgb[a]?\([^\)]+\)|#[a-fA-F0-9]+/);
+      if(null != match) {
+        cssColorSettings[rule] = match[0];
+      }
     }
   }
   // options for the graph, TODO: make configurable
