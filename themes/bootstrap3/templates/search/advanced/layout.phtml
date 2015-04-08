@@ -33,10 +33,10 @@
   );
   // Step 2: Build the page
   $this->headScript()->appendScript(
-     $this->partial(
-       isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
-       ['options' => $this->options, 'searchDetails' => $searchDetails]
-     )
+    $this->partial(
+      isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
+      ['options' => $this->options, 'searchDetails' => $searchDetails]
+    )
   );
 
   // Collect previous search queries
