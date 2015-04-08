@@ -23,7 +23,7 @@
         <select id="add-to-list" class="form-control" autocomplete="off">
           <option><?= $this->translate('Add to List'); ?>&hellip;</option>
           <? foreach ($lists as $l): ?>
-          <? if ($list->id == $l->id) { continue; } ?>
+          <? if ($list && $list->id == $l->id) { continue; } ?>
           <option value="<?= $l->id; ?>"><?= $this->escapeHtml($l->title); ?></option>
           <? endforeach; ?>
         </select>
