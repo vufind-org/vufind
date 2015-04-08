@@ -52,7 +52,7 @@ class User extends \VuFind\Db\Row\User
         foreach ($lists as $l) {
             $listsSorted[$l['id']] = $l;
         }
-        sort($listsSorted);
+        ksort($listsSorted);
 
         return $listsSorted;
     }
