@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Logout message if user has just logout.
+ * Logout message if user has just logged out.
  *
  * PHP version 5
  *
@@ -56,21 +56,22 @@ class LogoutMessage extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Return logout text after user has logged out. Shown only after the
-     * first page load.
+     * Return logout text after user has logged out.
+     * Shown only after the first page load.
      *
-     * @return stirng logout message
+     * @return string logout message
      */
-    public function getLogoutText()
+    public function __invoke()
     {
         if ($this->authManager->userHasLoggedOut()) {
             if (!isset($this->session->logoutMessageShown)
-                || $this->session->logoutMessageShown === false
+                || !$this->session->logoutMessageShown
             ) {
                 $this->session->logoutMessageShown = true;
                 return 'logout_success_message';
             }
         }
+        return false;
     }
 
 }

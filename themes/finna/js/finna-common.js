@@ -1,31 +1,30 @@
 /* Login and logout helper methods. */
 
-finna.common = (function () {
+finna.common = (function() {
 
-    var navibarLogin = function () {
-        if( $('#loginOptions a').hasClass('navibar-login-on') &&
+    var navibarLogin = function() {
+        if ( $('#loginOptions a').hasClass('navibar-login-on') &&
             $('#loginOptions').hasClass('hidden') )
         {
             window.location = path+'/MyResearch/Home?redirect=0';
         }
     };
 
-    var loginSetup = function () {
+    var loginSetup = function() {
         // Login link
-        $('#loginOptions a.modal-link').click(function () {
+        $('#loginOptions a.modal-link').click(function() {
             $('#loginOptions a.modal-link').addClass('navibar-login-on');
             Lightbox.addCloseAction(function() {$('#loginOptions a.modal-link').removeClass('navibar-login-on');});
         });
 
-        Lightbox.addFormHandler('loginForm', function (evt) {
+        Lightbox.addFormHandler('loginForm', function(evt) {
             ajaxLogin(evt.target);
             Lightbox.addCloseAction(navibarLogin);
             return false;
         });
 
-        // jQuery moves focus to modal window when opening it,
-        // so we have to direct it back to username input field.
-        $('#modal').focus(function() {
+        // Modal window focus set to username input field.
+        $('#modal').on('shown.bs.modal', function (e) {
             $('#login_username').focus();
         });
         // Set focus to username at login page
@@ -34,7 +33,7 @@ finna.common = (function () {
     };
 
     var my = {
-        init: function () {
+        init: function() {
             loginSetup();
         }
     };
