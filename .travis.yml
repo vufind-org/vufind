@@ -7,5 +7,5 @@ before_script:
   - phpenv rehash
 
 script:
-  - phpunit --configuration module/VuFind/tests/phpunit.xml
+  - phpunit --stderr --configuration module/VuFind/tests/phpunit.xml
   - phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php --report=checkstyle $PWD/module
