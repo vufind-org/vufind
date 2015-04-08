@@ -31,10 +31,12 @@
   $this->headScript()->appendFile(
     isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js'
   );
-  // Step 2: Set the templates and Build the page
-  echo $this->render(
-    isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
-    array('options' => $this->options, 'searchDetails' => $searchDetails)
+  // Step 2: Build the page
+  $this->headScript()->appendScript(
+     $this->partial(
+       isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
+       ['options' => $this->options, 'searchDetails' => $searchDetails]
+     )
   );
 
   // Collect previous search queries
