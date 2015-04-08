@@ -11,4 +11,4 @@ before_script:
 
 script:
 # later when problems are sorted out  - phpunit --stderr --configuration module/VuFind/tests/phpunit.xml
-  - phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php --report=checkstyle $PWD/module
+  - phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php $PWD/module
