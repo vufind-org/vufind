@@ -131,7 +131,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $id = $this->params()->fromQuery('id');
         $index = $this->params()->fromQuery('index');
-        list($source,$recId) = explode('.', $id, 2);
+        list($source, $recId) = explode('.', $id, 2);
         if ($source == 'pci') {
             $source = 'Primo';
         } else {
@@ -277,7 +277,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $newList = ($id == 'NEW');
         $list = $newList ? $table->getNew($user) : $table->getExisting($id);
 
-        //$params = new \Zend\Stdlib\Parameters($params);
         $finalId = $list->updateFromRequest(
             $user, new \Zend\Stdlib\Parameters($params)
         );
@@ -376,6 +375,15 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $listId = $params['listId'];
         $ids = $params['ids'];
+
+        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+            ->get('UserList');
+        $list = $table->getExisting($listId);
+        if ($list->user_id !== $user->id) {
+            return $this->output(
+                "Invalid list id", self::STATUS_ERROR
+            );
+        }
 
         foreach ($ids as $id) {
             $source = $id[0];
