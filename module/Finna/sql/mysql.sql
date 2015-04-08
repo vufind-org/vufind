@@ -61,21 +61,6 @@ CREATE TABLE `finna_comments_inappropriate` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `finna_resource` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `resource_id` int(11) DEFAULT NULL,
-  `title_sort` varchar(60) NOT NULL DEFAULT '',
-  `author_sort` varchar(60) NOT NULL DEFAULT '',
-  `date_sort` varchar(60) NOT NULL DEFAULT '',
-  `format_sort` varchar(60) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
-  KEY `resource_id` (`resource_id`),
-  CONSTRAINT `finna_resource_ibfk_1` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `finna_search` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `search_id` int(11) DEFAULT NULL,
