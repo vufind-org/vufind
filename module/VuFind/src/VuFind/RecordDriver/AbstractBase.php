@@ -231,6 +231,10 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
             $list->save($user);
         } else {
             $list = $table->getExisting($listId);
+            // Validate incoming list ID:
+            if (!$list->editAllowed($user)) {
+                throw new \VuFind\Exception\ListPermission('Access denied.');
+            }
             $list->rememberLastUsed(); // handled by save() in other case
         }
 
