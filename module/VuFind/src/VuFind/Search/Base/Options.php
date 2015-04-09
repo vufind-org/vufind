@@ -212,7 +212,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     protected $listviewOption = "full";
 
-    /*
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -515,7 +515,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get a string of the listviewOption (full or tab).
      *
-     * @return string 
+     * @return string
      */
     public function getListViewOption()
     {
