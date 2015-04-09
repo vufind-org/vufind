@@ -707,6 +707,7 @@ url             = https://www.myendnoteweb.com/EndNoteWeb.html
 ; the \Zend\Http\Client's setOptions method.
 [Http]
 ;sslcapath = "/etc/ssl/certs"
+sslcafile = "/etc/ssl/certs/ca-bundle.crt"
 
 ; Spelling Suggestions
 ;
