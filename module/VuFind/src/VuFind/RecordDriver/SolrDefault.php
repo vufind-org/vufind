@@ -266,18 +266,26 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the call number associated with the record (empty string if none).
+     * Get the first call number associated with the record (empty string if none).
      *
      * @return string
      */
     public function getCallNumber()
     {
-        // Use the callnumber-a field from the Solr index; the plain callnumber
-        // field is normalized to have no spaces, so it is unsuitable for display.
-        return isset($this->fields['callnumber-a']) ?
-            $this->fields['callnumber-a'] : '';
+        $all = $this->getCallNumbers();
+        return isset($all[0]) ? $all[0] : '';
     }
 
+    /**
+     * Get all call numbers associated with the record (empty string if none).
+     *
+     * @return array
+     */
+    public function getCallNumbers()
+    {
+        return isset($this->fields['callnumber-raw'])
+            ? $this->fields['callnumber-raw'] : [];
+    }
     /**
      * Return the first valid ISBN found in the record (favoring ISBN-10 over
      * ISBN-13 when possible).

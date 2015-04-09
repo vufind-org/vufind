@@ -47,10 +47,10 @@ class BackendManagerTest extends TestCase
     /**
      * Test that get() throws on a non-object.
      *
-     * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage Expected backend registry to return object
-     *
      * @return void
+     *
+     * @expectedException        UnexpectedValueException
+     * @expectedExceptionMessage Expected backend registry to return object
      */
     public function testGetThrowsOnNonObject()
     {
@@ -65,10 +65,10 @@ class BackendManagerTest extends TestCase
     /**
      * Test that get() throws on a non-backend.
      *
-     * @expectedException UnexpectedValueException
-     * @expectedExceptionMessage does not implement the expected interface
-     *
      * @return void
+     *
+     * @expectedException        UnexpectedValueException
+     * @expectedExceptionMessage does not implement the expected interface
      */
     public function testGetThrowsOnNonBackend()
     {

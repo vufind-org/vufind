@@ -1,4 +1,4 @@
-<ul class="list-group">
+<div class="list-group">
   <? foreach ($result as $i => $item): ?>
     <a class="list-group-item" href="<?=$this->url('collection', array('id' => $item['value']))?>">
       <strong><?=$this->escapeHtml($item['displayText'])?></strong>
@@ -8,4 +8,4 @@
       </span>
     </a>
   <? endforeach; ?>
-</ul>
+</div>

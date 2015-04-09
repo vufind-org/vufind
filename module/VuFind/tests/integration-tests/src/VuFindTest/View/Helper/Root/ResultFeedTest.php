@@ -67,7 +67,8 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
             'VuFind\View\Helper\Root\RecordLink', [],
             [new \VuFind\Record\Router(
                 $this->getServiceManager()->get('VuFind\RecordLoader'),
-                new \Zend\Config\Config([]))
+                new \Zend\Config\Config([])
+            )
             ]
         );
         $recordLink->expects($this->any())->method('getUrl')

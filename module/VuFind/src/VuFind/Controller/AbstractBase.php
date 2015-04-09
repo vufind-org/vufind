@@ -417,6 +417,11 @@ class AbstractBase extends AbstractActionController
         if (($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {
+            // Check for multiple ILS target selection
+            $target = $this->params()->fromPost('target', false);
+            if ($target) {
+                $username = "$target.$username";
+            }
             $patron = $ilsAuth->newCatalogLogin($username, $password);
 
             // If login failed, store a warning message:
