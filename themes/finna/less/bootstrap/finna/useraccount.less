@@ -126,7 +126,7 @@
     & .list-title {
          margin-bottom: 0px;   
     }
-    & .list-title, .list-description, .resource-note {
+    & .list-title, .list-description, .resource-note, .add-new-list {
              border: 1px solid transparent;
              display: inline-block;
              padding: 5px;
@@ -165,8 +165,18 @@
         & li > a.active {
             background: @brand-primary;
         }
+
+        & .add-new-list {
+            display: block;
+        }
+        & .add-new-list .name {
+            width: 100%;
+        }
         & .add-new-list .icon {
             cursor: pointer;
+            position: absolute;
+            top: 0.7em;
+            right: 0.7em;
         }
     }
     .toolbar {

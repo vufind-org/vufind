@@ -6,8 +6,26 @@ finna.myList = (function() {
         return $('input[name="listID"]').val();
     };
 
+    var processHTMLforSave = function(html) {
+        html = html.replace(/\&lt;/g, '<');
+        html = html.replace(/\&gt;/g, '>');
+        html = html.replace(/<br class="newline">/g, '\n');
+        return html;
+    };
+
     var updateList = function(params, callback, type) {
         var spinner = null;
+
+        var listParams = {
+            'id': getActiveListId(),
+            'title': $('.list-title span').text(),
+            'public': $(".list-visibility input[type='radio']:checked").val()
+        };
+
+        if (type != 'add-list') {
+            listParams['desc'] = processHTMLforSave($('.list-description span').html());
+        }
+
         if (type == 'title') {
             spinner = $('.list-title .fa');
         } else if (type == 'desc') {
@@ -20,17 +38,7 @@ finna.myList = (function() {
             toggleSpinner(spinner, true);
         }
 
-        var desc = $('.list-description span').html();
-        desc = desc.replace(/\&lt;/g, '<');
-        desc = desc.replace(/\&gt;/g, '>');
-
         toggleErrorMessage(false);
-        listParams = {
-            'id': getActiveListId(),
-            'title': $('.list-title span').text(),
-            'desc': desc,
-            'public': $(".list-visibility input[type='radio']:checked").val()
-        };
         if (typeof(params) !== 'undefined') {
             $.each(params, function(key, val) {
                 listParams[key] = val;
@@ -246,7 +254,7 @@ finna.myList = (function() {
                 }
             }
         };
-        target = $('.add-new-list span.name');
+        target = $('.add-new-list .name');
         target.editable({action: 'click', triggers: [target, $('.add-new-list .icon')]}, newListCallBack, settings);
 
         // list resource notes
@@ -266,10 +274,7 @@ finna.myList = (function() {
                     var row = e.target.closest('.myresearch-row');
                     var id = row.find('.hiddenId').val();
                     var listId = getActiveListId();
-                    var notes = e.target.html();
-                    notes = notes.replace(/\&lt;/g, '<');
-                    notes = notes.replace(/\&gt;/g, '>');
-
+                    var notes = processHTMLforSave(e.target.html());
                     updateListResource(
                         {'id': id, 'listId': listId, 'notes': notes},
                         e.target
@@ -292,10 +297,20 @@ finna.myList = (function() {
                 addResourcesToList(val);
             }
         });
+
+        // Prompt before leaving page if Ajax load is in progress
+        window.onbeforeunload = function(e) {
+            if ($('.list-save').length) {
+                return vufindString.loading + "...";
+            }
+        };
     };
 
     var toggleErrorMessage = function(mode) {
         $('.alert-danger').toggleClass('hide', !mode);
+        if (mode) {
+            $("html, body").animate({ scrollTop: 0 }, 'fast');
+        }
     };
 
     var toggleSpinner = function(target, mode) {
@@ -308,7 +323,7 @@ finna.myList = (function() {
             target.attr('class', target.data('class'));
         }
         // spinner
-        target.toggleClass('fa-spinner fa-spin', mode);
+        target.toggleClass('fa-spinner fa-spin list-save', mode);
     };
 
     var my = {

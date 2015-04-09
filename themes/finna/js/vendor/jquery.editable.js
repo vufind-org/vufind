@@ -45,7 +45,7 @@
 
             var old_value = (
                 type === 'textarea' ?
-                    target.html().replace(/<br( \/)?>/gm, '\n').replace(/&gt;/gm, '>').replace(/&lt;/gm, '<') :
+                    target.html().replace(/<br class="newline"( \/)?>/gm, '\n').replace(/&gt;/gm, '>').replace(/&lt;/gm, '<') :
                     target.text()
             ).replace(/^\s+/,'').replace(/\s+$/,'');
 
@@ -71,7 +71,7 @@
             var finish = function(cancel){
                 var result = cancel ? old_value : input.val().replace(/^\s+/,'').replace(/\s+$/,'');
                 var html = escape_html(result);
-                if(type === 'textarea') html = html.replace(/[\r\n]/gm, '<br />');
+                if(type === 'textarea') html = html.replace(/[\r\n]/gm, '<br class="newline"/>');
                 target.html(html);
                 callbacks['finish']({value : result, target : target, old_value : old_value, cancel: cancel});
                 edit.register();
