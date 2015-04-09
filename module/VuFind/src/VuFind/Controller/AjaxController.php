@@ -689,7 +689,10 @@ class AjaxController extends AbstractBase
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source')
         );
-	$viewtype=preg_replace('/\W/','',trim(strtolower($this->params()->fromQuery('type'))));
+        $viewtype=preg_replace(
+            '/\W/', '',
+            trim(strtolower($this->params()->fromQuery('type')))
+        );
         $request = $this->getRequest();
         $cfg = $this->getServiceLocator()->get('Config');
         $allTabs = $this->getServiceLocator()
