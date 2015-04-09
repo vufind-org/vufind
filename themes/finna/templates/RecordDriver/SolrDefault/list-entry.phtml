@@ -11,7 +11,7 @@
   }
 ?>
 <!-- start list-entry -->
-<div class="row <? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?> myresearch-row">
+<div class="row result <? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?> myresearch-row">
   <div class="col-xs-2 col-sm-1">
     <div class="checkboxFilter">
       <label class="checkbox">
@@ -132,7 +132,7 @@
           </div>
         <? endif; ?>
       <? endif; ?>
-      
+
       <div class="callnumAndLocation">
         <? if ($this->driver->supportsAjaxStatus()): ?>
           <strong class="hideIfDetailed"></strong>
@@ -153,7 +153,7 @@
     <?=$this->record($this->driver)->getOnlineUrls()?>
 
       <?=$this->record($this->driver)->getPreviews()?>
-      
+
     </div>
     <div class="myresearch-notes">
     <?
