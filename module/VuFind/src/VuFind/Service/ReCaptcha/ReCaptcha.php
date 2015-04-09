@@ -109,7 +109,9 @@ class ReCaptcha
     );
 
     /**
-     * @var HttpClient
+     * HTTP Client for requests
+     *
+     * @var Zend\Http\Client
      */
     protected $httpClient = null;
 

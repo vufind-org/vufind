@@ -40,9 +40,7 @@ use Zend\Http\Response as HTTPResponse;
 class Response
 {
     /**
-     * Status
-     *
-     * true if the response is valid or false otherwise
+     * Status, true if the response is valid or false otherwise
      *
      * @var boolean
      */
