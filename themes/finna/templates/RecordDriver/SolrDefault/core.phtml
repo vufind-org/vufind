@@ -42,29 +42,29 @@
     <? endif; ?>
     </div>
 
-       <? $urls = $this->driver->getURLs(); $openURL = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false; $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
-      <? if (!empty($urls) || $openURL || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
-        <div class="recordURLs local-available-online-record">
-            <div class="truncate-field">
-              <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
-                <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
-                  <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
-                  <? if ($url['source']): ?>
-                    <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('source_' . $url['source'], null, $url['source']) ?>)</span>
-                  <? endif; ?>
-                  </div>
-                <? endforeach; ?>
-        <? elseif (!empty($urls)): ?>
-          <? foreach ($urls as $url): ?>
-            <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('link_' . $url['desc'], null, $url['desc']) ?></a></div>
-          <? endforeach; ?>
-        <? endif; ?>
-            </div>
-            <? if ($openURL): ?>
-              <?=$this->openUrl($openURL)?><br/>
-            <? endif; ?>
+    <? $urls = $this->driver->getURLs(); $openURL = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false; $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
+    <? if (!empty($urls) || $openURL || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
+      <div class="recordURLs local-available-online-record">
+        <div class="truncate-field">
+          <? if (!empty($onlineURLs) || !empty($mergedData['urls'])): ?>
+            <? foreach (!empty($mergedData['urls']) ? $mergedData['urls'] : $onlineURLs as $url): ?>
+              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=!empty($url['text']) ? $this->transEsc('link_' . $url['text'], null, $url['text']) : $this->escapeHtml($this->truncateUrl($url['url'])) ?></a>
+              <? if ($url['source']): ?>
+                <span class="online-source">(<?=is_array($url['source']) ? $this->transEsc('Multiple Organisations') : $this->transEsc('source_' . $url['source'], null, $url['source']) ?>)</span>
+              <? endif; ?>
+              </div>
+            <? endforeach; ?>
+          <? elseif (!empty($urls)): ?>
+            <? foreach ($urls as $url): ?>
+              <div class="fulltextField"><a class="fulltext" href="<?=$this->escapeHtmlAttr($this->proxyUrl($url['url'])) ?>" target="_blank" title="<?=$this->escapeHtmlAttr($url['url']) ?>"><i class="fa fa-external-link"></i> <?=$this->transEsc('link_' . $url['desc'], null, $url['desc']) ?></a></div>
+            <? endforeach; ?>
+          <? endif; ?>
         </div>
+      <? if ($openURL): ?>
+        <?=$this->openUrl($openURL)?><br/>
       <? endif; ?>
+      </div>
+    <? endif; ?>
     <div class="description">
       <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
         <i class="fa fa-spinner fa-spin"></i>
@@ -154,7 +154,7 @@
         <td property="author">
           <div class="truncate-field">
           <? if (!empty($results['presenters'])): ?>
-            <? foreach($results as $index => $author): ?>
+            <? foreach($results['presenters'] as $index => $author): ?>
               <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
             <? endforeach; ?>
           <? endif; ?>
