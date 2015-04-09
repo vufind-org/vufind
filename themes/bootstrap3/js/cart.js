@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 /*global Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
-=======
-/*global bulkActionSubmit, cartCookieDomain, Cookies, getFormData, Lightbox, newAccountHandler, path, updatePageForLogin, vufindString */
->>>>>>> lightbox-v3
 
 var Cart = {
   COOKIE: 'vufind_cart',
@@ -222,11 +218,11 @@ $(document).ready(function() {
   });
 });
 function cartLoginFollowup(html) {
-  alert('cart account overwrite');
+  //alert('cart account overwrite');
   updatePageForLogin();
-  if (lastCartSubmit !== false) {
-    bulkActionSubmit(lastCartSubmit);
-    lastCartSubmit = false;
+  if (Cart.lastSubmit !== false) {
+    bulkActionSubmit(Cart.lastSubmit);
+    Cart.lastSubmit = false;
   } else {
     newAccountHandler(html);
   }
@@ -234,20 +230,8 @@ function cartLoginFollowup(html) {
 
 document.addEventListener('Lightbox.init', function() {
   // Overwrite
-<<<<<<< HEAD
-  Lightbox.addFormCallback('accountForm', function(html) {
-    updatePageForLogin();
-    if (Cart.lastSubmit !== false) {
-      Cart.submit(Cart.lastSubmit);
-      Cart.lastSubmit = false;
-    } else {
-      newAccountHandler(html);
-    }
-  });
-=======
   Lightbox.addFormCallback('loginForm', cartLoginFollowup);
   Lightbox.addFormCallback('accountForm', cartLoginFollowup);
->>>>>>> lightbox-v3
   Lightbox.addFormHandler('cartForm', function(evt) {
     Cart.submit($(evt.target));
     return false;
@@ -256,13 +240,6 @@ document.addEventListener('Lightbox.init', function() {
     Lightbox.open({confirm:vufindString['bulk_email_success']});
   });
   Lightbox.addFormCallback('bulkSave', function(html) {
-<<<<<<< HEAD
-    // After we close the lightbox, redirect to list view
-    document.addEventListener('Lightbox.close', function() {
-      document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
-    }, false);
-    Lightbox.confirm(vufindString['bulk_save_success']);
-=======
     Lightbox.open({
       confirm:vufindString['bulk_save_success'],
       onClose:function() {
@@ -270,7 +247,6 @@ document.addEventListener('Lightbox.init', function() {
         document.location.href = path+'/MyResearch/MyList/'+Lightbox.LAST.post['list'];
       }
     });
->>>>>>> lightbox-v3
   });
   Lightbox.addFormHandler('exportForm', function(evt) {
     console.log(typeof evt.target);
@@ -292,51 +268,29 @@ document.addEventListener('Lightbox.init', function() {
     });
     return false;
   });
-<<<<<<< HEAD
-  document.addEventListener('Lightbox.ready', function() {
-    $form = $('#modal [name=cartForm]');
-    $form.find('[name=empty]').click(function() {
-      Cart.count = 0;
-    });
-  }, false)
-  document.addEventListener('Lightbox.close', function() {
-    // Update cart items (add to cart, remove from cart, cart lightbox interface)
-    Cart.init();
-    $('#cart-add,#cart-remove').addClass('hidden');
-    if(Cart.count > 0) {
-      var cart = Cart.getFullItems();
-      var id = $('#cartId');
-      if(id.length > 0) {
-        id = id.val();
-        if(cart.indexOf(id) > -1) {
-          $('#cart-remove').removeClass('hidden');
-        } else {
-          $('#cart-add').removeClass('hidden');
-        }
-      }
-    } else {
-      $('#cart-add').removeClass('hidden');
-    }
-  }, false);
 });
-=======
-}, false);
-document.addEventListener('Lightbox.close',  function() {
+document.addEventListener('Lightbox.ready', function() {
+  $form = $('#modal [name=cartForm]');
+  $form.find('[name=empty]').click(function() {
+    Cart.count = 0;
+  });
+}, false)
+document.addEventListener('Lightbox.close', function() {
   // Update cart items (add to cart, remove from cart, cart lightbox interface)
-  var cartCount = $('#cartItems strong');
-  if(cartCount.length > 0) {
-    var cart = getFullCartItems();
+  Cart.init();
+  $('#cart-add,#cart-remove').addClass('hidden');
+  if(Cart.count > 0) {
+    var cart = Cart.getFullItems();
     var id = $('#cartId');
     if(id.length > 0) {
       id = id.val();
-      $('#cart-add,#cart-remove').addClass('hidden');
       if(cart.indexOf(id) > -1) {
         $('#cart-remove').removeClass('hidden');
       } else {
         $('#cart-add').removeClass('hidden');
       }
     }
-    cartCount.html(cart.length);
+  } else {
+    $('#cart-add').removeClass('hidden');
   }
 }, false);
->>>>>>> lightbox-v3

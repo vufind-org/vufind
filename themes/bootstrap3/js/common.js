@@ -53,6 +53,9 @@ function html_entity_decode(string, quote_style)
 
 // Turn GET string into array
 function deparam(url) {
+  if(typeof url === "undefined" || url.length == 0) {
+    return {};
+  }
   var request = {};
   var pairs = url.substring(url.indexOf('?') + 1).split('&');
   for (var i = 0; i < pairs.length; i++) {
@@ -181,7 +184,7 @@ function registerLightboxEvents() {
     return Lightbox.open({controller:'MyResearch', action:'Account', get:get});
   });
   $('.back-to-login').click(function() {
-    Lightbox.getByUrl(Lightbox.openingURL);
+    Lightbox.getByUrl(Lightbox.LAST.url);
     return false;
   });
   // Select all checkboxes
@@ -249,14 +252,14 @@ function updatePageForLogin() {
 function newAccountHandler(html) {
   // Emit login event
   var evt = document.createEvent("Event");
-  evt.initEvent(, true, false);
+  evt.initEvent('vufind.login', true, false);
   document.dispatchEvent(evt);
   // Update Lightbox
   updatePageForLogin();
-  var params = deparam(Lightbox.openingURL);
+  var params = deparam(Lightbox.LAST.url);
   if (params['subaction'] != 'UserLogin') {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    Lightbox.openingURL = false;
+    Lightbox.getByUrl(Lightbox.LAST.url);
+    Lightbox.LAST.url = false;
   } else {
     Lightbox.close();
   }
@@ -458,6 +461,7 @@ $(document).ready(function() {
       }
     });
     return false;
+  });
   Lightbox.addFormHandler('feedback', function(evt) {
     var $form = $(evt.target);
     // Grabs hidden inputs

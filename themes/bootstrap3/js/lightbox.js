@@ -159,10 +159,11 @@ var Lightbox = {
    */
   getByUrl: function(url, options) {
     // Create our AJAX request, store it in case we need to cancel later
+    console.log(url, options);
     this.ajax({
       type:'POST',
       url:url,
-      data:isset(options.post) ? options.post : {},
+      data:isset(options) && isset(options.post) ? options.post : {},
       success:function(html) { // Success!
         if(isset(options.onResponse)) {
           options.onResponse(html, options.onOpen);
@@ -190,7 +191,7 @@ var Lightbox = {
       this.openingURL = url;
     }
     this.LAST = options;
-    console.log(this.LAST);
+    //console.log(this.LAST);
     return false;
   },
 
