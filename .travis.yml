@@ -10,5 +10,5 @@ before_script:
   - phpenv rehash
 
 script:
-# later when problems are sorted out  - phpunit --stderr --configuration module/VuFind/tests/phpunit.xml
+  - phpunit --stderr --configuration module/VuFind/tests/phpunit.xml
   - phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php $PWD/module
