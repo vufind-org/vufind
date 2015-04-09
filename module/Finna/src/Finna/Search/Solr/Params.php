@@ -42,6 +42,7 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Return current facet configurations.
      * Add checkbox facets to list.
+     *
      * @return array $facetSet
      */
     public function getFacetSettings()

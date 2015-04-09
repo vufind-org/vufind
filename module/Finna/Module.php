@@ -26,7 +26,8 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace Finna;
-use Zend\ModuleManager\ModuleManager,
+use Zend\EventManager\StaticEventManager,
+    Zend\ModuleManager\ModuleManager,
     Zend\Mvc\MvcEvent;
 
 /**
@@ -75,6 +76,10 @@ class Module
      */
     public function init(ModuleManager $m)
     {
+        $em = StaticEventManager::getInstance();
+        $em->attach(
+            'Zend\Mvc\Application', 'bootstrap', [$this, 'registerBaseUrl'], 100000
+        );
     }
 
     /**
@@ -85,6 +90,18 @@ class Module
      * @return void
      */
     public function onBootstrap(MvcEvent $e)
+    {
+
+    }
+
+    /**
+     * Initializes the base url for the application from environment variable
+     *
+     * @param MvcEvent $e Event
+     *
+     * @return void
+     */
+    public function registerBaseUrl(MvcEvent $e)
     {
         $request = $e->getApplication()->getRequest();
         $baseUrl = $request->getServer('FINNA_BASE_URL');

@@ -11,7 +11,7 @@
   }
 ?>
 <!-- start list-entry -->
-<div class="row <? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?> myresearch-row">
+<div class="row result <? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?> myresearch-row">
   <div class="col-xs-2 col-sm-1">
     <div class="checkboxFilter">
       <label class="checkbox">
@@ -131,7 +131,7 @@
           </div>
         <? endif; ?>
       <? endif; ?>
-      
+
       <div class="callnumAndLocation">
         <? if ($this->driver->supportsAjaxStatus()): ?>
           <strong class="hideIfDetailed"></strong>
@@ -157,7 +157,7 @@
     );?>
 
       <?=$this->record($this->driver)->getPreviews()?>
-      
+
     </div>
     <div class="myresearch-notes">
     <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
@@ -172,7 +172,7 @@
     <? endif; ?>
     </div>
   </div>
-  
+
   <div class="col-xs-3 col-sm-2 hidden">
     <i class="fa fa-pen"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
     <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */

@@ -8,14 +8,14 @@ $openUrlActive = $this->driver->openURLActive('results');
 $urls = $this->record($this->driver)->getLinkDetails();
 ?>
 
-<div class="result <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
+<div class="result<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
     <?=$this->record($this->driver)->getCheckbox() ?></br>
   <? endif; ?>
   <div class="text-center grid-image">
-       <? $img = $this->recordImage($this->record($this->driver))?>
-      <?= $img->render('list', array('medium' => array('w' => 210), 'large' => array('w' => 1980, 'h' => 1080))) ?>
+    <? $img = $this->recordImage($this->record($this->driver))?>
+    <?=$img->render('list', array('medium' => array('w' => 210), 'large' => array('w' => 1980, 'h' => 1080))) ?>
   </div>
   <? if (!$openUrlActive && empty($urls)): ?>
     <? if ($this->driver->supportsAjaxStatus()): ?>

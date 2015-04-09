@@ -234,7 +234,7 @@ trait SolrFinna
      * @param string $size  Size of thumbnail
      * @param int    $index Image index
      *
-     * @return string|array|bool
+     * @return array|bool
      */
     public function getRecordImage($size = 'small', $index = 0)
     {
@@ -251,7 +251,11 @@ trait SolrFinna
                 return array('id' => $this->getUniqueId(), 'url' => $url);
             }
         }
-        return parent::getThumbnail($size);
+        $params = parent::getThumbnail($size);
+        if ($params && !is_array($params)) {
+            $params = ['url' => $params];
+        }
+        return $params;
     }
 
     /**
