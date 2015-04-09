@@ -155,6 +155,9 @@
       </div>
     </section>
     <section role="main" class="main template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?>">
+      <? if ($logoutText = $this->logoutMessage()): ?>
+        <div class="alert alert-info logout-msg"><?=$this->transEsc($logoutText) ?></div>
+      <? endif; ?>
       <? if (!empty($this->layout()->finnaMainHeader)): ?>
       <div class="container-fluid finna-main-header">
         <div class="container">
