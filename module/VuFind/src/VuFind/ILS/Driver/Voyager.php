@@ -1260,7 +1260,8 @@ class Voyager extends AbstractBase
             "MAX(MFHD_ITEM.YEAR) AS YEAR",
             "MAX(BIB_TEXT.TITLE_BRIEF) AS TITLE_BRIEF",
             "MAX(BIB_TEXT.TITLE) AS TITLE",
-            "LISTAGG(ITEM_STATUS_DESC, '|') WITHIN GROUP (ORDER BY ITEM_STATUS_DESC) as status",
+            "LISTAGG(ITEM_STATUS_DESC, '|') "
+            . "WITHIN GROUP (ORDER BY ITEM_STATUS_DESC) as status",
             "MAX(CIRC_TRANSACTIONS.RENEWAL_COUNT) AS RENEWAL_COUNT",
             "MAX(CIRC_POLICY_MATRIX.RENEWAL_COUNT) as RENEWAL_LIMIT",
             "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION"
@@ -1377,7 +1378,8 @@ class Voyager extends AbstractBase
                 ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
             'renew' => $sqlRow['RENEWAL_COUNT'],
             'renewLimit' => $sqlRow['RENEWAL_LIMIT'],
-            'message' => $this->pickTransactionStatus(explode('|', $sqlRow['STATUS'])),
+            'message' =>
+                $this->pickTransactionStatus(explode('|', $sqlRow['STATUS'])),
         ];
         if (isset($this->config['Loans']['display_borrowing_location'])
             && $this->config['Loans']['display_borrowing_location']
