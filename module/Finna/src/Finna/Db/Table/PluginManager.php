@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for DB tables.
+ * Database table plugin manager
  *
  * PHP version 5
  *
@@ -21,50 +21,30 @@
  *
  * @category VuFind2
  * @package  Db_Table
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/vufind2:database_gateways Wiki
  */
 namespace Finna\Db\Table;
-use Zend\ServiceManager\ServiceManager;
 
 /**
- * Factory for DB tables.
+ * Database table plugin manager
  *
  * @category VuFind2
  * @package  Db_Table
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
- *
- * @codeCoverageIgnore
+ * @link     http://vufind.org/wiki/vufind2:database_gateways Wiki
  */
-class Factory
+class PluginManager extends \VuFind\Db\Table\PluginManager
 {
-
     /**
-     * Construct the Resource table.
+     * Construct the translator.
      *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Resource
+     * @return \Zend\I18n\Translator\TranslatorInterface
      */
-    public static function getResource(ServiceManager $sm)
+    public function getTranslator()
     {
-        return new Resource($sm->getServiceLocator()->get('VuFind\DateConverter'));
-    }
-
-    /**
-     * Construct the User table.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return User
-     */
-    public static function getUser(ServiceManager $sm)
-    {
-        return new User(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        return $this->getServiceLocator()->get('VuFind\Translator');
     }
 }

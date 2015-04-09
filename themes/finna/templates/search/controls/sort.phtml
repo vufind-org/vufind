@@ -1,4 +1,4 @@
-<? $list = $this->params->getSortList(); if (!empty($list)): ?>
+<? $list = $this->sortList ? $this->sortList : $this->params->getSortList(); if (!empty($list)): ?>
   <form class="form-inline jumpMenuForm sortForm" action="<?=$this->currentPath()?>" method="get" name="sort">
     <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
     <label for="sort_options_1" class="hidden-sm hidden-xs"><?=$this->transEsc('Sort')?></label>

@@ -39,7 +39,7 @@ use Zend\ServiceManager\ServiceManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Factory
+class Factory extends \VuFind\Service\Factory
 {
     /**
      * Construct the cache manager.
@@ -73,4 +73,23 @@ class Factory
         return $catalog->setHoldConfig($sm->get('VuFind\ILSHoldSettings'));
     }
 
+    /**
+     * Generic plugin manager factory (support method).
+     *
+     * @param ServiceManager $sm Service manager.
+     * @param string         $ns VuFind namespace containing plugin manager
+     *
+     * @return object
+     */
+    public static function getGenericPluginManager(ServiceManager $sm, $ns)
+    {
+        $className = 'Finna\\' . $ns . '\PluginManager';
+        $configKey = strtolower(str_replace('\\', '_', $ns));
+        $config = $sm->get('Config');
+        return new $className(
+            new \Zend\ServiceManager\Config(
+                $config['vufind']['plugin_managers'][$configKey]
+            )
+        );
+    }
 }
