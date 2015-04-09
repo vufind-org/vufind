@@ -41,10 +41,14 @@
 
   // Collect previous search queries
   $setSearchGroups = [];
+  $setGroupCount = 0;
   $setQueries = [];
   if (isset($searchDetails) && is_object($searchDetails)) {
     foreach ($searchDetails->getQueries() as $group=>$searchGroup) {
       $setSearchGroups[$group] = $searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator();
+      if ($setGroupCount < $group) {
+        $setGroupCount = $group;
+      }
       if (!isset($setQueries[$group])) {
         $setQueries[$group] = [];
       }
@@ -79,7 +83,7 @@
         <? if(!empty($this->formOverride)): ?>
           <?=$this->formOverride ?>
         <? else: ?>
-          <? for($group=0;$group<3;$group++): ?>
+          <? for($group=0 ; $group<3 || $group<=$setGroupCount ; $group++): ?>
             <? if($group == 0): ?>
               <div id="new_group_template">
             <? endif; ?>
