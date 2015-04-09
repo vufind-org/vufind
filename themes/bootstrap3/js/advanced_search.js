@@ -30,7 +30,6 @@ function addSearch(group, fieldValues)
     $newSearch.find('select.op option[value="'+fieldValues.op+'"]').attr('selected', 1);
   }
   // Insert it
-  console.log($("#group" + group + "Holder").length);
   $("#group" + group + "Holder").before($newSearch);
   // Individual search ops (for searches like EDS)
   if (inputIndex == 0) {
@@ -98,7 +97,7 @@ function addGroup(firstTerm, firstField, join)
   // Populate
   addSearch(nextGroup, {term:firstTerm, field:firstField});
   // Show join menu
-  if($('.group').length > 1) {
+  if(nextGroup > 0) {
     $('#groupJoin').removeClass('hidden');
     // Show x
     $('.group .close').removeClass('hidden');
@@ -113,7 +112,7 @@ function deleteGroup(group)
   // If the last group was removed, add an empty group
   if($('.group').length == 0) {
     addGroup();
-  } else if($('.group').length == 1) { // Hide join menu
+  } else if($('#advSearchForm .group').length == 1) { // Hide join menu
     $('#groupJoin').addClass('hidden');
     // Hide x
     $('.group .close').addClass('hidden');
