@@ -171,7 +171,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param int    $list_id ID of list to load tags from (null for all lists)
      * @param int    $user_id ID of user to load tags from (null for all users)
      * @param string $sort    Sort type ('count' or 'tag')
-     * @param int    $ownerID ID of user to check for ownership
+     * @param int    $ownerId ID of user to check for ownership
      *
      * @return array
      */
