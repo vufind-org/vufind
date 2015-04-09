@@ -4,6 +4,10 @@
 <div class="imagepopup-holder <?= $format ?>" data-type="<?= $format ?>" data-id="<?= $this->driver->getUniqueID() ?>">
   <div class="imagepopup-container">
     <div class="image">
+      <!-- TODO <div class="functions">
+        <div class="image-number"><?= $this->translate('Image') ?> 1 / 4</div> 
+        <div class="open-link"><a><?= $this->translate('Open in a new window') ?><i class="fa fa-new-window"></i></a></div>   
+      </div> --> 
       <img src="<?= $recordImage ?>" />
     </div>
     <div class="content">
@@ -19,7 +23,7 @@
         </p>
       </div>
       <? if ($building = $this->driver->getBuilding()): ?>
-      <div class="building"><?= $this->translate('0/' . $building[0] . '/') ?></div>
+      <div class="building"><?=$building[0] ?></div>
       <? endif ?>
       <div class="summary">
         <? if ($format == 'marc'): ?>
@@ -33,14 +37,14 @@
           <? endif ?>
         <? endif ?>
       </div>
-      <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-left"></i><?= $this->translate('To the record') ?></a></div>
+      <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('To the record') ?></a></div>
       <? $rights = $this->driver->getImageRights($this->layout()->userLang) ?>
       <div class="image-rights">
         <div class="rights">
           <? $hasLink = isset($rights['link']); ?>
           <span><?= $this->translate("Image Rights") ?>:</span> <? if (isset($rights['copyright'])) : ?><? if ($hasLink): ?><a target="_blank" href="<?= $rights['link'] ?>"><? endif; ?><?= $this->transEsc($rights['copyright']) ?><? if ($hasLink): ?></a><? endif ?><? endif ?>
         </div>
-        <div class="more-link copyright-link"><a data-mode="1" href="">Lisää<i class="fa fa-arrow-down"></i></a></div>
+        <div class="more-link copyright-link"><a data-mode="1" href=""><?= $this->translate('show_more') ?><i class="fa fa-arrow-down"></i></a></div>
         <div class="copyright">
           <? if (isset($rights['description'])): ?>
             <? foreach ($rights['description'] as $item): ?>
@@ -49,11 +53,11 @@
           <? endif ?>
           <? if (!isset($rights['copyright']) && !isset($rights['description'])): ?>
             <p><?= $this->translate('Image Rights Default') ?>
-            <p><a href="<?= $this->url('content-page', array('page' => 'terms_conditions')) . '#image_rights' ?>"><?= $this->translate('See Also') ?></a>
+            <p><a href="<?= $this->url('content-page', array('page' => 'terms_conditions')) . '#image_rights' ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('See also terms and conditions') ?></a>
           <? endif; ?>
 
         </div>
-        <div class="less-link copyright-link"><a data-mode="0" href="">vähemmän<i class="fa fa-arrow-up"></i></a></div>
+        <div class="less-link copyright-link"><a data-mode="0" href=""><?= $this->translate('show_less') ?><i class="fa fa-arrow-up"></i></a></div>
 
       </div>
       <div style="clear: both;"></div>
