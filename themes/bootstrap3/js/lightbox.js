@@ -11,6 +11,7 @@ var Lightbox = {
   formHandlers: [],  // Full custom handlers for forms; by name
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
   LAST: false,
+  openingURL: false,
 
   init: function() {
     this.elem = $('#modal');
@@ -47,6 +48,9 @@ var Lightbox = {
     }
     if(isset(options.url)) {
       this.LAST = options;
+      if(this.openingURL === false) {
+        this.openingURL = options.url;
+      }
       this.getByUrl(options.url, options);
     } else if(isset(options.controller) && isset(options.action)) {
       options.url = this.convertToUrl(options.controller, options.action, options.get);
@@ -80,6 +84,7 @@ var Lightbox = {
       delete Lightbox.LAST.onClose;
     }
     Lightbox.dispatch('Lightbox.close');
+    Lightbox.openingURL = false;
     Lightbox.LAST = false;
   },
   /**
