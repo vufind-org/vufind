@@ -54,6 +54,7 @@ class TotalIndexed extends \Zend\View\Helper\AbstractHelper
 
     /**
      * Total item count in index.
+     *
      * @return int count of indexed items or 0 if no information
      */
     public function getTotalIndexedCount()

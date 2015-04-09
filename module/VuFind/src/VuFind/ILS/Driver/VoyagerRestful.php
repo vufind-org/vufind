@@ -431,12 +431,13 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function isStorageRetrievalRequestAllowed($holdingsRow)
     {
-            if (!isset($holdingsRow['TEMP_ITEM_TYPE_ID'])
+        if (!isset($holdingsRow['TEMP_ITEM_TYPE_ID'])
             || !isset($holdingsRow['ITEM_TYPE_ID'])
         ) {
             // Not a real item
             return false;
         }
+
         $holdingsRow = $holdingsRow['_fullRow'];
         if (isset($this->config['StorageRetrievalRequests']['valid_item_types'])) {
             $validTypes = explode(

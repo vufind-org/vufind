@@ -47,8 +47,12 @@ class AjaxController extends \VuFind\Controller\AjaxController
     {
         $this->writeSession();  // avoid session write timing bug
         $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
-        $data = $this->params()->fromPost('data', $this->params()->fromQuery('data'));
-        $requestType = $this->params()->fromPost('requestType', $this->params()->fromQuery('requestType'));
+        $data = $this->params()->fromPost(
+            'data', $this->params()->fromQuery('data')
+        );
+        $requestType = $this->params()->fromPost(
+            'requestType', $this->params()->fromQuery('requestType')
+        );
         if (!empty($id) && !empty($data)) {
             // check if user is logged in
             $user = $this->getUser();
@@ -404,6 +408,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
     /**
      * Mozilla Persona login
+     *
      * @return mixed
      */
     public function personaLoginAjax()
@@ -423,6 +428,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
     /**
      * Mozilla Persona logout
+     *
      * @return mixed
      */
     public function personaLogoutAjax()

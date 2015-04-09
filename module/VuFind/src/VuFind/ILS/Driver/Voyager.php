@@ -250,6 +250,12 @@ class Voyager extends AbstractBase
                 $this->statusRankings[$row['ITEM_STATUS_DESC']]
                     = $row['ITEM_STATUS_TYPE'];
             }
+
+            if (!empty($this->config['StatusRankings'])) {
+                $this->statusRankings = array_merge(
+                    $this->statusRankings, $this->config['StatusRankings']
+                );
+            }
         }
 
         // We may occasionally get a status message not found in the array (i.e. the

@@ -1,6 +1,7 @@
 <?php
+
 /**
- * Record driver view helper
+ * Logout message if user has just logged out.
  *
  * PHP version 5
  *
@@ -21,46 +22,56 @@
  *
  * @category VuFind2
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
+
 namespace Finna\View\Helper\Root;
+use Zend\Session\Container as SessionContainer;
 
 /**
- * Record driver view helper
+ * Logout message if user has just logout.
  *
  * @category VuFind2
  * @package  View_Helpers
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class TruncateUrl extends \Zend\View\Helper\AbstractHelper
+class LogoutMessage extends \Zend\View\Helper\AbstractHelper
 {
+    protected $authManager;
+    protected $session;
+
     /**
-     * Truncate a URL for display
+     * Constructor
      *
-     * @param string $url URL to truncate
-     *
-     * @return string
+     * @param type $authManager authentication manager
      */
-    public function __invoke($url)
+    public function __construct($authManager)
     {
-        // Remove 'http://' (leave any other)
-        if (strncasecmp($url, 'http://', 7) == 0) {
-            $url = substr($url, 7);
-        }
-        // Remove trailing slash if it's the only one
-        if (strpos($url, '/') == strlen($url) - 1) {
-            $url = substr($url, 0, -1);
-        }
-        // Shorten if necessary
-        if (strlen($url) > 40) {
-            $url = preg_replace(
-                '#^ (?>((?:.*:/+)?[^/]+/.{8})) .{4,} (.{12}) $#x', '$1...$2', $url
-            );
-        }
-        return $url;
+        $this->authManager = $authManager;
+        $this->session = new SessionContainer('Logout');
     }
+
+    /**
+     * Return logout text after user has logged out.
+     * Shown only after the first page load.
+     *
+     * @return string logout message
+     */
+    public function __invoke()
+    {
+        if ($this->authManager->userHasLoggedOut()) {
+            if (!isset($this->session->logoutMessageShown)
+                || !$this->session->logoutMessageShown
+            ) {
+                $this->session->logoutMessageShown = true;
+                return 'logout_success_message';
+            }
+        }
+        return false;
+    }
+
 }

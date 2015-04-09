@@ -1,8 +1,12 @@
 /* Finna Mozilla Persona login. */
 
-finna.persona = (function (finna) {
+finna.persona = (function(finna) {
 
-    var getDestinationUrl = function (loggingOut) {
+    var getDestinationUrl = function(loggingOut) {
+        // After logout always move to the front page.
+        if (loggingOut) {
+            return path;
+        }
         var url = window.location.href;
         // Check if we have changed tab
         var recordTabs = $('.recordTabs');
@@ -10,25 +14,19 @@ finna.persona = (function (finna) {
             var phref = recordTabs.find('.active a').prop('href');
             url = phref.split('#')[0];
         }
-        if (loggingOut) {
-            if (url.match('/MyResearch/')) {
-                return path;
-            }
-            url = url.split('?')[0];
-        }
         return url;
     };
 
-    var personaLogout = function () {
+    var personaLogout = function() {
         $.ajax({
             type: "GET",
             dataType: "json",
             url: path + "/AJAX/JSON?method=personaLogout",
-            success: function (response, status, xhr) {
+            success: function(response, status, xhr) {
                 // No reload to avoid POST request problems
                 window.location = getDestinationUrl(true);
             },
-            error: function (xhr, status, err) {
+            error: function(xhr, status, err) {
                 alert("logout failure: " + err);
             }
         });
@@ -37,17 +35,17 @@ finna.persona = (function (finna) {
     var setLoginLink = function() {
         var loginLink = document.getElementById('persona-login');
         if (loginLink) {
-            loginLink.onclick = function () {
+            loginLink.onclick = function() {
                 navigator.id.request();
                 return false;
             };
         }
     };
 
-    var setLogoutLink = function () {
+    var setLogoutLink = function() {
         var logoutLink = document.getElementById('persona-logout');
         if (logoutLink) {
-            logoutLink.onclick = function () {
+            logoutLink.onclick = function() {
                 navigator.id.logout();
                 personaLogout();
                 return false;
@@ -55,14 +53,14 @@ finna.persona = (function (finna) {
         }
     };
 
-    var mozillaPersonaSetup = function (currentUser, autoLogoutEnabled) {
+    var mozillaPersonaSetup = function(currentUser, autoLogoutEnabled) {
         if (navigator.id === undefined || navigator.id === null) {
             // Persona support not properly loaded
             return;
         }
         navigator.id.watch({
             loggedInUser: currentUser,
-            onlogin: function (assertion) {
+            onlogin: function(assertion) {
                 $("#persona-login").addClass("persona-login-loading");
                 $.ajax({
                     type: "POST",
@@ -71,7 +69,7 @@ finna.persona = (function (finna) {
                     data: {
                         assertion: assertion
                     },
-                    success: function (response, status, xhr) {
+                    success: function(response, status, xhr) {
                         if (response.status === "OK") {
                             if (Lightbox.shown === false) {
                                 // No reload to avoid POST request problems
@@ -79,7 +77,11 @@ finna.persona = (function (finna) {
                             } else {
                                 var params = deparam(Lightbox.lastURL);
                                 if (params.subaction === 'UserLogin') {
-                                    window.location = getDestinationUrl(false);
+                                    if ( $('#loginOptions a').hasClass('navibar-login-on') ) {
+                                        window.location = path+'/MyResearch/Home?redirect=0';
+                                    } else {
+                                        window.location = getDestinationUrl(false);
+                                    }
                                 } else {
                                     // Update the modal
                                     updatePageForLogin();
@@ -99,14 +101,14 @@ finna.persona = (function (finna) {
                             alert("Login failed");
                         }
                     },
-                    error: function (xhr, status, err) {
+                    error: function(xhr, status, err) {
                         navigator.id.logout();
                         $("#persona-login").removeClass("persona-login-loading");
                         alert("login failure: " + err);
                     }
                 });
             },
-            onlogout: function () {
+            onlogout: function() {
                 if (!currentUser || !autoLogoutEnabled) {
                     return;
                 }
@@ -118,11 +120,11 @@ finna.persona = (function (finna) {
         setLogoutLink();
     };
 
-    var initPersona = function () {
+    var initPersona = function() {
         $.ajax({
             url: 'https://login.persona.org/include.js',
             dataType: 'script',
-            success: function () {
+            success: function() {
                 mozillaPersonaSetup(
                         mozillaPersonaCurrentUser ? mozillaPersonaCurrentUser : null,
                         mozillaPersonaAutoLogout ? true : false);
@@ -134,7 +136,7 @@ finna.persona = (function (finna) {
     var my = {
         setLogoutLink: setLogoutLink,
         setLoginLink: setLoginLink,
-        init: function () {
+        init: function() {
             initPersona();
         }
     };

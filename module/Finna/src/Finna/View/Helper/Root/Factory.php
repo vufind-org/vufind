@@ -169,4 +169,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $locator = $sm->getServiceLocator();
         return new PersonaAuth($locator);
     }
+
+    /**
+     * Construct the Logout message view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\View\Helper\Root\LogoutMessage
+     */
+    public static function getLogoutMessage(ServiceManager $sm)
+    {
+        $authManager = $sm->getServiceLocator()->get('VuFind\AuthManager');
+        return new LogoutMessage($authManager);
+    }
+
 }

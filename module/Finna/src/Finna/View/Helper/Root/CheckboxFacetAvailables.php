@@ -41,8 +41,10 @@ class CheckboxFacetAvailables extends \Zend\View\Helper\AbstractHelper
 {
     /**
      * Return the count of records when checkbox filter is activated.
+     *
      * @param type $checkboxFilter current checkbox filter
      * @param type $results        search result set
+     *
      * @return int record count
      */
     public function __invoke($checkboxFilter, $results)
@@ -69,6 +71,5 @@ class CheckboxFacetAvailables extends \Zend\View\Helper\AbstractHelper
 
         return $ret;
     }
-
 
 }

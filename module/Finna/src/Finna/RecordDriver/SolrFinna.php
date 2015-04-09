@@ -234,7 +234,7 @@ trait SolrFinna
      * @param string $size  Size of thumbnail
      * @param int    $index Image index
      *
-     * @return string|array|bool
+     * @return array|bool
      */
     public function getRecordImage($size = 'small', $index = 0)
     {
