@@ -8,6 +8,9 @@ function htmlEncode(value){
     return '';
   }
 }
+function isset(op) {
+  return typeof op !== "undefined";
+}
 function extractClassParams(str) {
   str = $(str).attr('class');
   if (typeof str === "undefined") {
@@ -71,6 +74,50 @@ function deparam(url) {
   return request;
 }
 
+// Returns all the input values from a form as an associated array
+function getFormData($form) {
+  if(typeof $form === "string") {
+    $form = $('[name='+$form+']');
+  } else if(typeof $form.innerHTML === "string") {
+    $form = $($form);
+  }
+  // Gather all the data
+  var inputs = $form.find('*[name]');
+  var data = {};
+  for(var i=0;i<inputs.length;i++) {
+    var currentName = inputs[i].name;
+    var array = currentName.substring(currentName.length-2) == '[]';
+    if(array && !data[currentName.substring(0,currentName.length-2)]) {
+      data[currentName.substring(0,currentName.length-2)] = [];
+    }
+    // Submit buttons
+    if(inputs[i].type == 'submit') {
+      if($(inputs[i]).attr('clicked') == 'true') {
+        data[currentName] = inputs[i].value;
+      }
+    // Radio buttons
+    } else if(inputs[i].type == 'radio') {
+      if(inputs[i].checked) {
+        if(array) {
+          var n = currentName.substring(0,currentName.length-2);
+          data[n].push(inputs[i].value);
+        } else {
+          data[currentName] = inputs[i].value;
+        }
+      }
+    // Checkboxes
+    } else if($(inputs[i]).attr('type') != 'checkbox' || inputs[i].checked) {
+      if(array) {
+        var f = currentName.substring(0,currentName.length-2);
+        data[f].push(inputs[i].value);
+      } else {
+        data[currentName] = inputs[i].value;
+      }
+    }
+  }
+  return data;
+}
+
 // Sidebar
 function moreFacets(id) {
   $('.'+id).removeClass('hidden');
@@ -104,7 +151,7 @@ function bulkActionSubmit($form) {
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
-    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    return Lightbox.open({error:vufindString['bulk_noitems_advice']});
   }
   if (submit == 'print') {
     //redirect page
@@ -125,13 +172,13 @@ function registerLightboxEvents() {
     var parts = this.href.split('?');
     var get = deparam(parts[1]);
     get['id'] = 'NEW';
-    return Lightbox.get('MyResearch', 'EditList', get);
+    return Lightbox.open({controller:'MyResearch', action:'EditList', get:get});
   });
   // New account link handler
   $('.createAccountLink').click(function() {
     var parts = this.href.split('?');
     var get = deparam(parts[1]);
-    return Lightbox.get('MyResearch', 'Account', get);
+    return Lightbox.open({controller:'MyResearch', action:'Account', get:get});
   });
   $('.back-to-login').click(function() {
     Lightbox.getByUrl(Lightbox.openingURL);
@@ -188,8 +235,7 @@ function updatePageForLogin() {
     if(e.value == 'Summon') {
       summon = true;
       // If summon, queue reload for when we close
-      // No need to removeEventListener, since we're reloading all JS
-      document.addEventListener('Lightbox.close', function(){document.location.reload(true);}, false);
+      Lightbox.open({onClose:function(){document.location.reload(true);}});
     }
   });
 
@@ -221,27 +267,12 @@ function ajaxLogin(form) {
   Lightbox.ajax({
     url: path + '/AJAX/JSON?method=getSalt',
     dataType: 'json',
-    success: function(response) {
-      if (response.status == 'OK') {
-        // get salt
-        var salt = response.data;
-        // get the user entered password
-        var password = form.password.value;
+    success: function(salt) {
+      if (salt.status == 'OK') {
+        var params = getFormData(form);
         // base-64 encode the password (to allow support for Unicode)
         // and then encrypt the password with the salt
-        password = rc4Encrypt(salt, btoa(unescape(encodeURIComponent(password))));
-        // hex encode the encrypted password
-        password = hexEncode(password);
-
-        var params = {password:password};
-
-        // get any other form values
-        for (var i = 0; i < form.length; i++) {
-          if (form.elements[i].name == 'password') {
-            continue;
-          }
-          params[form.elements[i].name] = form.elements[i].value;
-        }
+        params.password = hexEncode(rc4Encrypt(salt.data, btoa(unescape(encodeURIComponent(params.password)))));
 
         // login via ajax
         Lightbox.ajax({
@@ -249,30 +280,23 @@ function ajaxLogin(form) {
           url: path + '/AJAX/JSON?method=login',
           dataType: 'json',
           data: params,
-          success: function(response) {
-            if (response.status == 'OK') {
-              // Emit login event
-              var evt = document.createEvent("Event");
-              evt.initEvent('vufind.login', true, false);
-              document.dispatchEvent(evt);
-              // Lightbox callback
-              var params = deparam(Lightbox.lastURL);
-              if (params['subaction'] != 'UserLogin') {
-                Lightbox.getByUrl(
-                  Lightbox.lastURL,
-                  Lightbox.lastPOST,
-                  Lightbox.changeContent
-                );
-              } else {
+          success: function(login) {
+            if (login.status == 'OK') {
+              updatePageForLogin();
+              // and we update the modal
+              if (Lightbox.LAST.action == 'UserLogin') {
                 Lightbox.close();
+              } else {
+                console.log(Lightbox.LAST);
+                Lightbox.getByUrl(Lightbox.LAST.url, Lightbox.LAST);
               }
             } else {
-              Lightbox.displayError(response.data);
+              Lightbox.open({flash:login.data});
             }
           }
         });
       } else {
-        Lightbox.displayError(response.data);
+        Lightbox.open({flash:salt.data});
       }
     }
   });
@@ -398,21 +422,21 @@ $(document).ready(function() {
   /******************************
    * LIGHTBOX DEFAULT BEHAVIOUR *
    ******************************/
-  document.addEventListener('Lightbox.ready', registerLightboxEvents, false);
+  addEventListener('Lightbox.open', registerLightboxEvents, false);
   Lightbox.addFormCallback('newList', Lightbox.changeContent);
   Lightbox.addFormCallback('accountForm', newAccountHandler);
   Lightbox.addFormCallback('bulkDelete', function(html) {
     location.reload();
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
-    Lightbox.close();
+    Lightbox.open({confirm:vufindString['bulk_save_success']});
     checkSaveStatuses();
   });
   Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
+    Lightbox.open({confirm:vufindString['bulk_email_success']});
   });
   Lightbox.addFormCallback('saveRecord', function(html) {
-    Lightbox.close();
+    Lightbox.open({confirm:vufindString['bulk_save_success']});
     checkSaveStatuses();
   });
 
@@ -434,7 +458,6 @@ $(document).ready(function() {
       }
     });
     return false;
-  });
   Lightbox.addFormHandler('feedback', function(evt) {
     var $form = $(evt.target);
     // Grabs hidden inputs
@@ -446,10 +469,15 @@ $(document).ready(function() {
     var email = $form.find("input#email").val();
     var comments = $form.find("textarea#comments").val();
     if (name.length == 0 || comments.length == 0) {
-      Lightbox.displayError(feedbackFailure);
+      Lightbox.open({flash:feedbackFailure});
     } else {
-      Lightbox.get('Feedback', 'Email', {}, {'name':name,'email':email,'comments':comments}, function() {
-        Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
+      Lightbox.open({
+        controller:'Feedback',
+        action:'Email',
+        post:{'name':name,'email':email,'comments':comments},
+        onOpen:function() {
+          Lightbox.open({confirm:formSuccess});
+        }
       });
     }
     return false;
@@ -461,30 +489,34 @@ $(document).ready(function() {
 
   // Feedback
   $('#feedbackLink').click(function() {
-    return Lightbox.get('Feedback', 'Home');
+    return Lightbox.open({controller:'Feedback', action:'Home'});
   });
   // Help links
   $('.help-link').click(function() {
     var split = this.href.split('=');
-    return Lightbox.get('Help','Home',{topic:split[1]});
+    return Lightbox.open({
+      controller:'Help',
+      action:'Home',
+      get:{topic:split[1]}
+    });
+  });
+  // Email search link
+  $('.mailSearch').click(function() {
+    return Lightbox.open({controller:'Search', action:'Email', get:{url:document.URL}});
   });
   // Hierarchy links
   $('.hierarchyTreeLink a').click(function() {
     var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
     var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
-    return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
+    return Lightbox.open({controller:'Record', action:'AjaxTab', get:{id:id}, post:{hierarchy:hierarchyID,tab:'HierarchyTree'}});
   });
   // Login link
   $('#loginOptions a.modal-link').click(function() {
-    return Lightbox.get('MyResearch','UserLogin');
-  });
-  // Email search link
-  $('.mailSearch').click(function() {
-    return Lightbox.get('Search','Email',{url:document.URL});
+    return Lightbox.open({controller:'MyResearch', action:'UserLogin'});
   });
   // Save record links
   $('.save-record').click(function() {
     var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+    return Lightbox.open({controller:parts[parts.length-3], action:'Save', get:{id:$(this).attr('id')}});
   });
 });
