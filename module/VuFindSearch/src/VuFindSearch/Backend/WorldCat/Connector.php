@@ -147,5 +147,4 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
             'total' => isset($xml->numberOfRecords) ? (int)$xml->numberOfRecords : 0
         ];
     }
-
 }

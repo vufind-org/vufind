@@ -34,8 +34,6 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
       }
     }
   }
-  console.log($dateVisColorSettings);
-  console.log(cssColorSettings);
   // options for the graph, TODO: make configurable
   var options = {
     series: {
