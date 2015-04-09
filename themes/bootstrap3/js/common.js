@@ -256,10 +256,10 @@ function newAccountHandler(html) {
   document.dispatchEvent(evt);
   // Update Lightbox
   updatePageForLogin();
-  var params = deparam(Lightbox.LAST.url);
+  var params = deparam(Lightbox.initReq.url);
   if (params['subaction'] != 'UserLogin') {
-    Lightbox.getByUrl(Lightbox.LAST.url);
-    Lightbox.LAST.url = false;
+    Lightbox.open(Lightbox.initReq);
+    Lightbox.initReq = false;
   } else {
     Lightbox.close();
   }
@@ -290,7 +290,6 @@ function ajaxLogin(form) {
               if (Lightbox.LAST.action == 'UserLogin') {
                 Lightbox.close();
               } else {
-                console.log(Lightbox.LAST);
                 Lightbox.getByUrl(Lightbox.LAST.url, Lightbox.LAST);
               }
             } else {

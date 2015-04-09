@@ -11,7 +11,7 @@ var Lightbox = {
   formHandlers: [],  // Full custom handlers for forms; by name
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
   LAST: false,
-  openingURL: false,
+  initReq: false,
 
   init: function() {
     this.elem = $('#modal');
@@ -43,14 +43,13 @@ var Lightbox = {
    */
   add: function(options) {this.open(options);},
   open: function(options) {
-    //console.log(options);
     if(isset(options.title)) {
       this.header.text(options.title);
     }
     if(isset(options.url)) {
       this.LAST = options;
-      if(this.openingURL === false) {
-        this.openingURL = options.url;
+      if(this.initReq === false) {
+        this.initReq = options;
       }
       this.getByUrl(options.url, options);
     } else if(isset(options.controller) && isset(options.action)) {
@@ -84,8 +83,12 @@ var Lightbox = {
       Lightbox.LAST.onClose();
       delete Lightbox.LAST.onClose;
     }
+    if(isset(Lightbox.initReq.onClose)) {
+      Lightbox.initReq.onClose();
+      delete Lightbox.initReq.onClose;
+    }
     Lightbox.dispatch('Lightbox.close');
-    Lightbox.openingURL = false;
+    Lightbox.initReq = false;
     Lightbox.LAST = false;
   },
   /**
@@ -164,7 +167,7 @@ var Lightbox = {
    */
   getByUrl: function(url, options) {
     // Create our AJAX request, store it in case we need to cancel later
-    console.log(url, options);
+    //console.log(url, options);
     this.ajax({
       type:'POST',
       url:url,
@@ -188,12 +191,13 @@ var Lightbox = {
           error = d.statusText+' ('+d.status+')';
         }
         Lightbox.open({error:error, html:true});
-        console.log(url, options.post);
+        //console.log(url, options.post);
       }
     });
     // Store current "page" context for empty targets
-    if(this.openingURL === false) {
-      this.openingURL = url;
+    if(this.initReq === false) {
+      this.initReq = options;
+      this.initReq.url = url;
     }
     this.LAST = options;
     //console.log(this.LAST);
