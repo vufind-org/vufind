@@ -44,4 +44,5 @@ function checkSaveStatuses() {
 
 $(document).ready(function() {
   checkSaveStatuses();
+  document.addEventListener('vufind.login', checkSaveStatuses, false);
 });
