@@ -81,7 +81,7 @@ trait TranslatorAwareTrait
      */
     public function getTranslatorLocale($default = 'en')
     {
-        return null === $this->translator
+        return null !== $this->translator
             ? $this->translator->getLocale()
             : $default;
     }

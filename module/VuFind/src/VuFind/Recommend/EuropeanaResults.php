@@ -227,12 +227,12 @@ class EuropeanaResults implements RecommendInterface,
         $parsedFeed = FeedReader::import($this->targetUrl);
         $resultsProcessed = [];
         foreach ($parsedFeed as $value) {
-            $link = (string)$value->link;
+            $link = $value->getLink();
             if (!empty($link)) {
                 $resultsProcessed[] = [
-                    'title' => (string)$value->title,
+                    'title' => $value->getTitle(),
                     'link' => substr($link, 0, strpos($link, '.srw')) . '.html',
-                    'enclosure' => (string)$value->enclosure['url']
+                    'enclosure' => $value->getEnclosure()['url']
                 ];
             }
             if (count($resultsProcessed) == $this->limit) {
