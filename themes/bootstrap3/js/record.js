@@ -1,4 +1,4 @@
-/*global deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, vufindString */
+/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -277,6 +277,10 @@ $(document).ready(function(){
   });
   Lightbox.addFormCallback('emailRecord', function(){
     Lightbox.open({confirm:vufindString['bulk_email_success']});
+  });
+  Lightbox.addFormCallback('saveRecord', function(){
+    checkSaveStatuses();
+    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormCallback('placeHold', function(html) {
     Lightbox.checkForError(html, function(html) {

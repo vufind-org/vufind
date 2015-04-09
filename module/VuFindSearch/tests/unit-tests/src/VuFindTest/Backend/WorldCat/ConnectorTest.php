@@ -72,6 +72,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
      * Test "get holdings" HTTP failure
      *
      * @return void
+     *
      * @expectedException VuFindSearch\Backend\Exception\RequestErrorException
      */
     public function testGetHoldingsHttpFailure()

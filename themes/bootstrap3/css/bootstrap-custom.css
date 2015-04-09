@@ -1,5 +1,215 @@
+.list-group {
+  margin-bottom: 20px;
+  padding-left: 0;
+}
+.list-group-item {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  margin-bottom: -1px;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+}
+.list-group-item:first-child {
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+}
+.list-group-item:last-child {
+  margin-bottom: 0;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+a.list-group-item {
+  color: #555555;
+}
+a.list-group-item .list-group-item-heading {
+  color: #333333;
+}
+a.list-group-item:hover,
+a.list-group-item:focus {
+  text-decoration: none;
+  color: #555555;
+  background-color: #f5f5f5;
+}
+.list-group-item.disabled,
+.list-group-item.disabled:hover,
+.list-group-item.disabled:focus {
+  background-color: #eeeeee;
+  color: #777777;
+  cursor: not-allowed;
+}
+.list-group-item.disabled .list-group-item-heading,
+.list-group-item.disabled:hover .list-group-item-heading,
+.list-group-item.disabled:focus .list-group-item-heading {
+  color: inherit;
+}
+.list-group-item.disabled .list-group-item-text,
+.list-group-item.disabled:hover .list-group-item-text,
+.list-group-item.disabled:focus .list-group-item-text {
+  color: #777777;
+}
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+  z-index: 2;
+  color: #ffffff;
+  background-color: #265680;
+  border-color: #265680;
+}
+.list-group-item.active .list-group-item-heading,
+.list-group-item.active:hover .list-group-item-heading,
+.list-group-item.active:focus .list-group-item-heading,
+.list-group-item.active .list-group-item-heading > small,
+.list-group-item.active:hover .list-group-item-heading > small,
+.list-group-item.active:focus .list-group-item-heading > small,
+.list-group-item.active .list-group-item-heading > .small,
+.list-group-item.active:hover .list-group-item-heading > .small,
+.list-group-item.active:focus .list-group-item-heading > .small {
+  color: inherit;
+}
+.list-group-item.active .list-group-item-text,
+.list-group-item.active:hover .list-group-item-text,
+.list-group-item.active:focus .list-group-item-text {
+  color: #93bcdf;
+}
+.list-group-item-success {
+  color: #3c763d;
+  background-color: #dff0d8;
+}
+a.list-group-item-success {
+  color: #3c763d;
+}
+a.list-group-item-success .list-group-item-heading {
+  color: inherit;
+}
+a.list-group-item-success:hover,
+a.list-group-item-success:focus {
+  color: #3c763d;
+  background-color: #d0e9c6;
+}
+a.list-group-item-success.active,
+a.list-group-item-success.active:hover,
+a.list-group-item-success.active:focus {
+  color: #fff;
+  background-color: #3c763d;
+  border-color: #3c763d;
+}
+.list-group-item-info {
+  color: #31708f;
+  background-color: #d9edf7;
+}
+a.list-group-item-info {
+  color: #31708f;
+}
+a.list-group-item-info .list-group-item-heading {
+  color: inherit;
+}
+a.list-group-item-info:hover,
+a.list-group-item-info:focus {
+  color: #31708f;
+  background-color: #c4e3f3;
+}
+a.list-group-item-info.active,
+a.list-group-item-info.active:hover,
+a.list-group-item-info.active:focus {
+  color: #fff;
+  background-color: #31708f;
+  border-color: #31708f;
+}
+.list-group-item-warning {
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+}
+a.list-group-item-warning {
+  color: #8a6d3b;
+}
+a.list-group-item-warning .list-group-item-heading {
+  color: inherit;
+}
+a.list-group-item-warning:hover,
+a.list-group-item-warning:focus {
+  color: #8a6d3b;
+  background-color: #faf2cc;
+}
+a.list-group-item-warning.active,
+a.list-group-item-warning.active:hover,
+a.list-group-item-warning.active:focus {
+  color: #fff;
+  background-color: #8a6d3b;
+  border-color: #8a6d3b;
+}
+.list-group-item-danger {
+  color: #a94442;
+  background-color: #f2dede;
+}
+a.list-group-item-danger {
+  color: #a94442;
+}
+a.list-group-item-danger .list-group-item-heading {
+  color: inherit;
+}
+a.list-group-item-danger:hover,
+a.list-group-item-danger:focus {
+  color: #a94442;
+  background-color: #ebcccc;
+}
+a.list-group-item-danger.active,
+a.list-group-item-danger.active:hover,
+a.list-group-item-danger.active:focus {
+  color: #fff;
+  background-color: #a94442;
+  border-color: #a94442;
+}
+.list-group-item-heading {
+  margin-top: 0;
+  margin-bottom: 5px;
+}
+.list-group-item-text {
+  margin-bottom: 0;
+  line-height: 1.3;
+}
+/* mixins */
+.sr-only {
+  clip: rect(1px, 1px, 1px, 1px);
+  position: absolute;
+  /* reset */
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+}
+.sr-only:focus {
+  background-color: #ffffff;
+  border-radius: 4px;
+  clip: auto;
+  color: #132531;
+  display: block;
+  font-size: 14px;
+  height: 50px;
+  line-height: 20px;
+  padding: 15px 15px;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  text-decoration: none;
+  text-transform: none;
+  width: auto;
+  z-index: 100000;
+  /* Above WP toolbar */
+}
+/* this mixins give output generate duplicate CSS code
+ * alternatively you will to have to rewrite the original mixin in buttons.less
+ */
+.navbar-brand {
+  font-size: 20px;
+}
 /* buttons */
 /* link on white background */
+.alert.alert-info a {
+  text-decoration: underline;
+}
 .btn.disabled:active,
 .btn.disabled:focus,
 .btn.disabled:hover {
@@ -16,9 +226,6 @@
     max-width: 400px;
   }
 }
-.group [class^=col-] {
-  padding-left: 0;
-}
 .has-error {
   margin-bottom: 0;
 }
@@ -31,6 +238,11 @@
 .help-block.with-errors,
 .help-block.with-errors .list-unstyled {
   margin: 0;
+}
+.highlight,
+mark {
+  background: #ffff66;
+  padding: .1em .2em;
 }
 .icon-bar {
   background-color: #888;
@@ -50,6 +262,9 @@ label.list-group-item {
 #modal .modal-body > h2:first-child {
   display: none;
 }
+.popover {
+  width: 250px;
+}
 .sub-breadcrumb {
   padding: 5px 10px;
   white-space: nowrap;
@@ -65,13 +280,49 @@ label.list-group-item {
 .tab-content {
   padding: 4px;
 }
+/* --- Advanced Search --- */
+.group {
+  background: #eeeeee;
+  border-radius: 4px;
+  border: 1px solid #c8c8c8;
+  margin: 0 0 6px;
+  padding: 10px 10px 10px 25px;
+}
+.group .add_search_link {
+  display: inline-block;
+  margin-top: 4px;
+}
+.group [class^=col-] {
+  padding-left: 0;
+}
+.group .search {
+  margin-bottom: 2px;
+}
+#groupPlaceHolder {
+  display: block;
+  padding: 6px;
+}
 /* --- Alphabrowse --- */
+.alphabrowse {
+  border-collapse: separate;
+  /* highlighting the row makes ff bugs; operate on its children */
+}
 .alphabrowse .lcc {
   width: 20%;
 }
 .alphabrowse .titles {
   width: 10%;
   text-align: center;
+}
+.alphabrowse tr.browse-match td {
+  border-top: 0.2em solid #265680;
+  border-bottom: 0.2em solid #265680;
+}
+.alphabrowse tr.browse-match td:first-child {
+  border-left: 0.2em solid #265680;
+}
+.alphabrowse tr.browse-match td:last-child {
+  border-right: 0.2em solid #265680;
 }
 /* --- Autocomplete --- */
 .twitter-typeahead {
@@ -151,6 +402,9 @@ label.list-group-item {
 .tt-suggestion.active:hover .list-group-item-text,
 .tt-suggestion.active:focus .list-group-item-text {
   color: #93bcdf;
+}
+.tt-suggestion i.fa {
+  cursor: inherit;
 }
 .tt-suggestion.active {
   white-space: inherit;
@@ -333,6 +587,13 @@ label.list-group-item {
 .fa-videoreel:before {
   content: "\f03d";
 }
+/* --- PubDateVis --- */
+#dateVisColorSettings {
+  background-color: #ffffff;
+  fill: #eaeaea;
+  outline-color: #e8cfac;
+  stroke: #265680;
+}
 /* --- Record --- */
 .citation .pace-car th,
 .citation .pace-car td {
@@ -345,6 +606,11 @@ label.list-group-item {
 #hierarchyTreeHolder {
   border-right: 1px solid #eeeeee;
   overflow-x: hidden;
+}
+#hierarchyTree .currentHierarchy > a,
+#hierarchyTree .currentRecord a {
+  color: #000;
+  font-weight: bold;
 }
 /* --- Search --- */
 .bulkActionButtons label {
@@ -360,6 +626,9 @@ label.list-group-item {
 }
 .result a.title {
   font-weight: bold;
+}
+.result .left {
+  text-align: center;
 }
 .result .left img {
   max-width: 100%;
@@ -390,7 +659,12 @@ label.list-group-item {
 .search-controls .alert {
   margin-bottom: 0;
 }
-/* --- Sidebar rounded corners --- */
+.title-in-heading {
+  font-size: inherit;
+  font-style: italic;
+}
+/* --- Sidebar --- */
+/* Sidebar rounded corners */
 .sidebar .list-group:not(.filters) .title {
   cursor: pointer;
 }
@@ -418,39 +692,54 @@ label.list-group-item {
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
 }
-.list-group-item.active i.fa,
+.list-group-item i.fa,
 .badge i.fa {
   cursor: inherit;
 }
+.sidebar .facet a {
+  text-decoration: none;
+}
+.top-row .applied {
+  font-weight: bold;
+}
+.top-row .applied:hover {
+  color: #a94442;
+}
+.top-row .applied:hover .fa.fa-check:before {
+  content: "\f00d";
+}
 /* --- Slider accessibility --- */
 .slider-container {
-  padding: 4px 0;
+  padding: 4px 10px;
   text-align: center;
 }
-.slider-container .slider .slider-track {
+.slider-container .slider.slider-horizontal {
+  width: 100%;
+}
+.slider-container .slider-track {
   background: #777777;
   box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.4);
 }
-.slider-container .slider .slider-track .slider-handle {
+.slider-container .slider-handle {
   background: #265680;
   background-image: none;
   border: 1px solid #265680;
   box-shadow: none;
   opacity: .9;
 }
-.slider-container .slider .slider-track .slider-handle:hover,
-.slider-container .slider .slider-track .slider-handle:active,
-.slider-container .slider .slider-track .slider-handle:focus {
+.slider-container .slider-handle:hover,
+.slider-container .slider-handle:active,
+.slider-container .slider-handle:focus {
   opacity: 1;
   background: #FFF;
   border-color: #777777;
 }
-.slider-container .slider .slider-track .slider-handle:active,
-.slider-container .slider .slider-track .slider-handle:focus {
+.slider-container .slider-handle:active,
+.slider-container .slider-handle:focus {
   border-color: #265680;
 }
-.slider-container .slider .slider-track .slider-selection {
-  background: #eeeeee;
+.slider-container .slider-selection {
+  background: #CCC;
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.3);
 }
 /* --- Table wrapping to prevent horizontal overflow --- */
@@ -490,4 +779,140 @@ label.list-group-item {
 }
 #viz-instructions {
   padding-top: 600px;
+}
+/* ----- HOVER OVERLAY ------ */
+/* - similar items carousel - */
+#similar-items-carousel .carousel-indicators {
+  bottom: 0px;
+}
+#similar-items-carousel .carousel-indicators li {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: #222222;
+  margin: 2px;
+  width: 8px;
+  height: 8px;
+}
+#similar-items-carousel .hover-overlay {
+  display: block;
+  position: relative;
+  text-align: center;
+  margin: auto;
+  min-width: 150px;
+  min-height: 200px;
+}
+#similar-items-carousel .hover-overlay img {
+  margin: 10px 0;
+  max-width: 100%;
+}
+#similar-items-carousel .hover-overlay .content {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  color: #FFF;
+  padding: .5em .5em 0;
+}
+#similar-items-carousel .hover-overlay:hover .content {
+  display: block;
+}
+#similar-items-carousel .item {
+  padding: 0 4em;
+}
+/* --- Hierarchical facets --- */
+/* jsTree arrows */
+.facet .jstree-ocl:before {
+  font-family: 'FontAwesome';
+  float: left;
+  speak: none;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  cursor: pointer;
+  padding: 0;
+  width: 10px;
+  margin-left: -10px;
+}
+.facet .jstree-default .jstree-open > .jstree-ocl:before {
+  content: "\f0d7";
+}
+.facet .jstree-default .jstree-closed > .jstree-ocl:before {
+  content: "\f0da";
+}
+.facet .jstree-default .jstree-leaf > .jstree-ocl:before {
+  content: " ";
+}
+/* facet list styling */
+li.jstree-facet ul {
+  padding-left: 20px;
+}
+.jstree-facet li span.main {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-left: 1px;
+  /* Fix Firefox cutting the checkboxes */
+}
+li.jstree-facet,
+li.jstree-node {
+  list-style: none;
+}
+.jstree-facet .jstree-container-ul {
+  padding: 0;
+}
+.jstree-facet .jstree-container-ul > li.active,
+.jstree-facet .jstree-container-ul > li.active a.jstree-anchor {
+  background-color: #265680;
+  color: #fff;
+}
+li.jstree-facet .badge {
+  cursor: text;
+}
+/* --- Hierarchy tree --- */
+/* jsTree arrows */
+.hierarchy-tree .jstree-ocl:before {
+  font-family: 'FontAwesome';
+  float: left;
+  speak: none;
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: inherit;
+  cursor: pointer;
+  padding: 0;
+  width: 10px;
+  margin-left: -10px;
+}
+.hierarchy-tree .jstree-open > .jstree-ocl:before {
+  content: "\f0d7";
+}
+.hierarchy-tree .jstree-closed > .jstree-ocl:before {
+  content: "\f0da";
+}
+.hierarchy-tree .jstree-leaf > .jstree-ocl:before {
+  content: " ";
+}
+.hierarchy-tree .jstree-icon {
+  color: #000;
+  width: 16px;
+}
+.hierarchy-tree .jstree-anchor {
+  white-space: nowrap;
+  padding: 2px 5px;
+}
+.hierarchy-tree .jstree-container-ul,
+.hierarchy-tree .jstree-children {
+  padding-left: 16px;
+}
+.hierarchy-tree .jstree-initial-node {
+  display: none;
+}
+.hierarchy-tree .jstree-clicked {
+  color: #ffffff;
+  background-color: #265680;
+}
+.hierarchy-tree .jstree-clicked .jstree-icon {
+  color: #FFF;
 }

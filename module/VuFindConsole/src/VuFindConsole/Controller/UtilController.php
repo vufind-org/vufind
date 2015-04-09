@@ -235,11 +235,33 @@ class UtilController extends AbstractBase
     }
 
     /**
+     * Commit the Solr index.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function commitAction()
+    {
+        return $this->performCommit();
+    }
+
+    /**
      * Optimize the Solr index.
      *
      * @return \Zend\Console\Response
      */
     public function optimizeAction()
+    {
+        return $this->performCommit(true);
+    }
+
+    /**
+     * Commit (and possibly optimize) the Solr index.
+     *
+     * @param bool $optimize Should we optimize?
+     *
+     * @return \Zend\Console\Response
+     */
+    protected function performCommit($optimize = false)
     {
         ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
@@ -252,7 +274,9 @@ class UtilController extends AbstractBase
         // Commit and Optimize the Solr Index
         $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
         $solr->commit($core);
-        $solr->optimize($core);
+        if ($optimize) {
+            $solr->optimize($core);
+        }
         return $this->getSuccessResponse();
     }
 
@@ -367,6 +391,26 @@ class UtilController extends AbstractBase
      */
     public function expiresearchesAction()
     {
+        $this->consoleOpts->addRules(
+            [
+                'h|help' => 'Get help',
+            ]
+        );
+
+        if ($this->consoleOpts->getOption('h')
+            || $this->consoleOpts->getOption('help')
+        ) {
+            Console::writeLine('Expire old searches in the database.');
+            Console::writeLine('');
+            Console::writeLine(
+                'Optional parameter: the age (in days) of searches to expire;'
+            );
+            Console::writeLine(
+                'by default, searches more than 2 days old will be removed.'
+            );
+            return $this->getFailureResponse();
+        }
+
         return $this->expire(
             'Search',
             '%%count%% expired searches deleted.',
@@ -382,6 +426,26 @@ class UtilController extends AbstractBase
      */
     public function expiresessionsAction()
     {
+        $this->consoleOpts->addRules(
+            [
+                'h|help' => 'Get help',
+            ]
+        );
+
+        if ($this->consoleOpts->getOption('h')
+            || $this->consoleOpts->getOption('help')
+        ) {
+            Console::writeLine('Expire old sessions in the database.');
+            Console::writeLine('');
+            Console::writeLine(
+                'Optional parameter: the age (in days) of sessions to expire;'
+            );
+            Console::writeLine(
+                'by default, sessions more than 2 days old will be removed.'
+            );
+            return $this->getFailureResponse();
+        }
+
         return $this->expire(
             'Session',
             '%%count%% expired sessions deleted.',

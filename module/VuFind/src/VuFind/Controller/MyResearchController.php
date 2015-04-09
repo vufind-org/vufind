@@ -357,8 +357,13 @@ class MyResearchController extends AbstractBase
      */
     public function catalogloginAction()
     {
-        // No special action needed -- just display form
-        return $this->createViewModel();
+        // Connect to the ILS and check if multiple target support is available:
+        $targets = null;
+        $catalog = $this->getILS();
+        if ($catalog->checkCapability('getLoginDrivers')) {
+            $targets = $catalog->getLoginDrivers();
+        }
+        return $this->createViewModel(['targets' => $targets]);
     }
 
     /**
@@ -748,6 +753,11 @@ class MyResearchController extends AbstractBase
         $table = $this->getTable('UserList');
         $newList = ($id == 'NEW');
         $list = $newList ? $table->getNew($user) : $table->getExisting($id);
+
+        // Make sure the user isn't fishing for other people's lists:
+        if (!$newList && !$list->editAllowed($user)) {
+            throw new ListPermissionException('Access denied.');
+        }
 
         // Process form submission:
         if ($this->formWasSubmitted('submit')) {

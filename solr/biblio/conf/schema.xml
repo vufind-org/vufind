@@ -93,6 +93,14 @@
         <filter class="solr.LengthFilterFactory" min="1" max="100" />
       </analyzer>
     </fieldType>
+    <!-- case-insensitive/whitespace-agnostic field type for callnumber searching -->
+    <fieldType name="callnumberSearch" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+      <analyzer>
+        <charFilter class="solr.PatternReplaceCharFilterFactory" pattern="(\s)" replacement=""/>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <filter class="solr.ICUFoldingFilterFactory"/>
+      </analyzer>
+    </fieldType>
     <fieldType name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
     <fieldType name="random" class="solr.RandomSortField" indexed="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
@@ -144,19 +152,19 @@
    <field name="isbn" type="isn" indexed="true" stored="true" multiValued="true"/>
    <field name="issn" type="isn" indexed="true" stored="true" multiValued="true"/>
    <field name="oclc_num" type="string" indexed="true" stored="true" multiValued="true" />
-   <field name="callnumber" type="string" indexed="true" stored="true"/>
-   <field name="callnumber-a" type="string" indexed="true" stored="true"/>
    <field name="callnumber-first" type="string" indexed="true" stored="true"/>
-   <field name="callnumber-first-code" type="string" indexed="true" stored="true"/>
    <field name="callnumber-subject" type="string" indexed="true" stored="true"/>
-   <field name="callnumber-subject-code" type="string" indexed="true" stored="true"/>
    <field name="callnumber-label" type="string" indexed="true" stored="true"/>
+   <field name="callnumber-sort" type="string" indexed="true" stored="true"/>
+   <field name="callnumber-raw" type="string" indexed="true" stored="true" multiValued="true" />
+   <field name="callnumber-search" type="callnumberSearch" indexed="true" stored="true" multiValued="true" />
    <field name="dewey-hundreds" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-tens" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-ones" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-full" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-sort" type="string" indexed="true" stored="true" />
    <field name="dewey-raw" type="string" indexed="true" stored="true" multiValued="true" />
+   <field name="dewey-search" type="callnumberSearch" indexed="true" stored="true" multiValued="true" />
    <field name="author2" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author2Str" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author2-role" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -248,6 +256,9 @@
  <!-- CopyFields for All Fields -->
  <copyField source="format"    dest="allfields"/>
  <copyField source="format"    dest="allfields_unstemmed"/>
+ <!-- CopyFields for call numbers -->
+ <copyField source="dewey-raw" dest="dewey-search"/>
+ <copyField source="callnumber-raw" dest="callnumber-search"/>
  <!-- Default Boolean Operator -->
  <solrQueryParser defaultOperator="AND"/>
 </schema>
