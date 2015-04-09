@@ -1,23 +1,41 @@
 <?php
 /**
- * Zend Framework (http://framework.zend.com/)
+ * Response object for the VuFind NoCAPTCHA ReCaptcha.
  *
- * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Service
+ * PHP version 5
+ *
+ * Copyright (C) Villanova University 2015.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  Service
+ * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-
 namespace VuFind\Service\ReCaptcha;
-
 use Zend\Http\Response as HTTPResponse;
 
 /**
- * Zend_Service_ReCaptcha_Response
+ * Response object for the VuFind NoCAPTCHA ReCaptcha.
  *
- * @category   Zend
- * @package    Zend_Service
- * @subpackage ReCaptcha
+ * @category VuFind2
+ * @package  Service
+ * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class Response
 {
@@ -33,8 +51,8 @@ class Response
     /**
      * Error code
      *
-     * The error code if the status is false. The different error codes can be found in the
-     * recaptcha API docs.
+     * The error code if the status is false. The different error codes
+     * can be found in the recaptcha API docs.
      *
      * @var string
      */
@@ -43,12 +61,14 @@ class Response
     /**
      * Class constructor used to construct a response
      *
-     * @param string $status
-     * @param string $errorCode
-     * @param \Zend\Http\Response $httpResponse If this is set the content will override $status and $errorCode
+     * @param string              $status       Response status string
+     * @param string              $errorCode    Error description
+     * @param \Zend\Http\Response $httpResponse If this is set,
+     * the content will override $status and $errorCode
      */
-    public function __construct($status = null, $errorCode = null, HTTPResponse $httpResponse = null)
-    {
+    public function __construct($status = null, $errorCode = null,
+        HTTPResponse $httpResponse = null
+    ) {
         if ($status !== null) {
             $this->setStatus($status);
         }
@@ -65,7 +85,8 @@ class Response
     /**
      * Set the status
      *
-     * @param string $status
+     * @param string $status Response status string
+     *
      * @return \ZendService\ReCaptcha\Response
      */
     public function setStatus($status)
@@ -98,7 +119,8 @@ class Response
     /**
      * Set the error code
      *
-     * @param string $errorCode
+     * @param string $errorCode Error description
+     *
      * @return \ZendService\ReCaptcha\Response
      */
     public function setErrorCode($errorCode)
@@ -121,7 +143,9 @@ class Response
     /**
      * Populate this instance based on a Zend_Http_Response object
      *
-     * @param \Zend\Http\Response $response
+     * @param \Zend\Http\Response $response HTTP Response object, if set
+     * the content will override $status and $errorCode
+     *
      * @return \ZendService\ReCaptcha\Response
      */
     public function setFromHttpResponse(HTTPResponse $response)
@@ -132,7 +156,7 @@ class Response
 
         $this->setStatus($parse->success);
         if (!$parse->success) {
-            $this->setErrorCode($parse->error-codes);
+            $this->setErrorCode($parse->{'error-codes'});
         }
 
         return $this;

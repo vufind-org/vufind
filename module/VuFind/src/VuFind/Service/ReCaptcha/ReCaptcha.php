@@ -1,27 +1,44 @@
 <?php
 /**
- * Zend Framework (http://framework.zend.com/)
+ * Recaptcha object for the VuFind NoCAPTCHA ReCaptcha.
  *
- * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Service
+ * PHP version 5
+ *
+ * Copyright (C) Villanova University 2015.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  Service
+ * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-
 namespace VuFind\Service\ReCaptcha;
-
-use Traversable;
-use Zend\Http\Client as HttpClient;
-use Zend\Http\Request as HttpRequest;
-use Zend\Stdlib\ArrayUtils;
-
+use Traversable,
+    Zend\Http\Client as HttpClient,
+    Zend\Http\Request as HttpRequest,
+    Zend\Stdlib\ArrayUtils;
 
 /**
- * Zend_Service_ReCaptcha
+ * Recaptcha object for the VuFind NoCAPTCHA ReCaptcha.
  *
- * @category   Zend
- * @package    Zend_Service
- * @subpackage ReCaptcha
+ * @category VuFind2
+ * @package  Service
+ * @author   Chris Hallberg <crhallberg@gmail.com>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class ReCaptcha
 {
@@ -97,23 +114,18 @@ class ReCaptcha
     protected $httpClient = null;
 
     /**
-     * Response from the verify server
-     *
-     * @var \ZendService\ReCaptcha\Response
-     */
-    protected $_response = null;
-
-    /**
      * Class constructor
      *
-     * @param string $siteKey
-     * @param string $secretKey
-     * @param array|Traversable $params
-     * @param array|Traversable $options
-     * @param string $ip
+     * @param string            $siteKey    Public key from Google
+     * @param string            $secretKey  Private key from Google
+     * @param array|Traversable $params     Parameter array
+     * @param array|Traversable $options    Configuration settings
+     * @param string            $ip         IP Address
+     * @param Zend\Http\Client  $httpClient HTTP Client object
      */
-    public function __construct($siteKey = null, $secretKey = null, $params = null, $options = null, $ip = null, HttpClient $httpClient = null)
-    {
+    public function __construct($siteKey = null, $secretKey = null,
+        $params = null, $options = null, $ip = null, HttpClient $httpClient = null
+    ) {
         if ($siteKey !== null) {
             $this->setSiteKey($siteKey);
         }
@@ -139,12 +151,24 @@ class ReCaptcha
         $this->setHttpClient($httpClient ?: new HttpClient);
     }
 
+    /**
+     * Set the HttpClient object
+     *
+     * @param Zend\Http\Client $httpClient HTTP Client object
+     *
+     * @return \VuFind\Service\ReCaptcha\ReCaptcha
+     */
     public function setHttpClient(HttpClient $httpClient)
     {
         $this->httpClient = $httpClient;
         return $this;
     }
 
+    /**
+     * Get the HttpClient object
+     *
+     * @return Zend\Http\Client
+     */
     public function getHttpClient()
     {
         return $this->httpClient;
@@ -174,8 +198,9 @@ class ReCaptcha
     /**
      * Set the ip property
      *
-     * @param string $ip
-     * @return \ZendService\ReCaptcha\ReCaptcha
+     * @param string $ip IP Address
+     *
+     * @return \VuFind\Service\ReCaptcha\ReCaptcha
      */
     public function setIp($ip)
     {
@@ -197,9 +222,10 @@ class ReCaptcha
     /**
      * Set a single parameter
      *
-     * @param string $key
-     * @param string $value
-     * @return \ZendService\ReCaptcha\ReCaptcha
+     * @param string $key   Array index
+     * @param string $value Value to set
+     *
+     * @return \VuFind\Service\ReCaptcha\ReCaptcha
      */
     public function setParam($key, $value)
     {
@@ -211,8 +237,9 @@ class ReCaptcha
     /**
      * Set parameters
      *
-     * @param  array|Traversable $params
-     * @return \ZendService\ReCaptcha\ReCaptcha
+     * @param array|Traversable $params Parameter array
+     *
+     * @return \VuFind\Service\ReCaptcha\ReCaptcha
      * @throws \ZendService\ReCaptcha\Exception
      */
     public function setParams($params)
@@ -222,11 +249,13 @@ class ReCaptcha
         }
 
         if (!is_array($params)) {
-            throw new Exception(sprintf(
-                '%s expects an array or Traversable set of params; received "%s"',
-                __METHOD__,
-                (is_object($params) ? get_class($params) : gettype($params))
-            ));
+            throw new Exception(
+                sprintf(
+                    '%s expects an array/Traversable set of params; received "%s"',
+                    __METHOD__,
+                    (is_object($params) ? get_class($params) : gettype($params))
+                )
+            );
         }
 
         foreach ($params as $k => $v) {
@@ -249,7 +278,8 @@ class ReCaptcha
     /**
      * Get a single parameter
      *
-     * @param string $key
+     * @param string $key Array key for parameter array
+     *
      * @return mixed
      */
     public function getParam($key)
@@ -260,9 +290,10 @@ class ReCaptcha
     /**
      * Set a single option
      *
-     * @param string $key
-     * @param string $value
-     * @return \ZendService\ReCaptcha\ReCaptcha
+     * @param string $key   Array index
+     * @param string $value Value to set
+     *
+     * @return \VuFind\Service\ReCaptcha\ReCaptcha
      */
     public function setOption($key, $value)
     {
@@ -274,8 +305,9 @@ class ReCaptcha
     /**
      * Set options
      *
-     * @param  array|Traversable $options
-     * @return \ZendService\ReCaptcha\ReCaptcha
+     * @param array|Traversable $options Configuration object
+     *
+     * @return \VuFind\Service\ReCaptcha\ReCaptcha
      * @throws \ZendService\ReCaptcha\Exception
      */
     public function setOptions($options)
@@ -310,7 +342,8 @@ class ReCaptcha
     /**
      * Get a single option
      *
-     * @param string $key
+     * @param string $key Array index
+     *
      * @return mixed
      */
     public function getOption($key)
@@ -331,8 +364,9 @@ class ReCaptcha
     /**
      * Set the public key
      *
-     * @param string $siteKey
-     * @return \ZendService\ReCaptcha\ReCaptcha
+     * @param string $siteKey Public key from Google
+     *
+     * @return \VuFind\Service\ReCaptcha\ReCaptcha
      */
     public function setSiteKey($siteKey)
     {
@@ -354,8 +388,9 @@ class ReCaptcha
     /**
      * Set the private key
      *
-     * @param string $secretKey
-     * @return \ZendService\ReCaptcha\ReCaptcha
+     * @param string $secretKey Private key from Google
+     *
+     * @return \VuFind\Service\ReCaptcha\ReCaptcha
      */
     public function setSecretKey($secretKey)
     {
@@ -390,6 +425,7 @@ class ReCaptcha
             $jsSrcOptions .= '&onload=' . $this->options['callback'];
         }
 
+        // @codingStandardsIgnoreStart
         return <<<HTML
 <div id="recaptcha_widget" class="g-recaptcha" data-sitekey="{$this->siteKey}" data-theme="{$this->options['theme']}" data-type="{$this->options['type']}"></div>
 <noscript>
@@ -406,13 +442,14 @@ class ReCaptcha
 </noscript>
 <script type="text/javascript" src="{$host}.js{$jsSrcOptions}" async defer></script>
 HTML;
+        // @codingStandardsIgnoreEnd
     }
 
     /**
      * Post a solution to the verify server
      *
-     * @param string $challengeField
-     * @param string $responseField
+     * @param string $responseField Form value
+     *
      * @return \Zend\Http\Response
      * @throws \ZendService\ReCaptcha\Exception
      */
@@ -455,8 +492,8 @@ HTML;
      * This method calls up the post method and returns a
      * Zend_Service_ReCaptcha_Response object.
      *
-     * @param string $challengeField
-     * @param string $responseField
+     * @param string $responseField Form value
+     *
      * @return \ZendService\ReCaptcha\Response
      */
     public function verify($responseField)
