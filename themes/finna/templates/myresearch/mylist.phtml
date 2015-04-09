@@ -83,7 +83,7 @@
   </div>
   <div class="<?=$this->layoutClass('sidebar')?> mylist-bar">
   <? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>
-  <?= $this->partial('myresearch/mylist-navi.phtml', array('user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists)); ?>
+  <?= $this->partial('myresearch/mylist-navi.phtml', array('user' => $user, 'isDefaultList' => $isDefaultList, 'activeId' => $activeId, 'activePublic' => $activePublic, 'lists' => $lists, 'numOfResources' => $numOfResources)); ?>
   <? endif ?>
   </div>
 </div>

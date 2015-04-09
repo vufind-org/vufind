@@ -3,11 +3,7 @@
     <li>
       <a href="<?=$this->url('myresearch-favorites')?>" class="list-group-item<?=!$activeId ? ' active' : ''?>">
         <?=$this->transEsc('All')?>
-        <? $count = 0 ;?>
-        <? foreach ($lists as $list): ?>
-          <? $count += $list->cnt;?>
-        <? endforeach; ?>
-        <span> (<?=$count; ?>)</span>
+        <span> (<?=$numOfResources; ?>)</span>
       </a>
     </li>
     <? foreach ($lists as $list): ?>

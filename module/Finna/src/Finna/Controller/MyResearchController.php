@@ -64,6 +64,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $sortList['saved']['selected'] = true;
         }
         $view->sortList = $sortList;
+
+        // Number of distinct user resources in all lists
+        $user = $this->getUser();
+        $resource = $this->getTable('Resource');
+        $userResources = $resource->getFavorites(
+            $user->id, null, null, null
+        );
+        $view->numOfResources = count($userResources);
+
         return $view;
     }
 }
