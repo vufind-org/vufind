@@ -29,8 +29,9 @@
   // Convenience variable:
   $account = $this->auth()->getManager();
   $user = $this->auth()->isLoggedIn();
-
-  $lists = $user->getLists();
+  if ($user) {
+    $lists = $user->getLists();
+  }
 ?>
 <? foreach ($this->results->getRecommendations('side') as $current): ?>
   <?=$this->recommend($current)?>

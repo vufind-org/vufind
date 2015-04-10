@@ -47,6 +47,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     public function mylistAction()
     {
         $view = parent::mylistAction();
+        if (!$user = $this->getUser()) {
+            return $view;
+        }
+
         $params = $view->params->getSortList();
         $sort = isset($_GET['sort']) ? $_GET['sort'] : false;
 
@@ -66,7 +70,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view->sortList = $sortList;
 
         // Number of distinct user resources in all lists
-        $user = $this->getUser();
         $resource = $this->getTable('Resource');
         $userResources = $resource->getFavorites(
             $user->id, null, null, null
