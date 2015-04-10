@@ -322,9 +322,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
 
         list($source, $id) = explode('.', $params['id'], 2);
-        if ($source !== 'Primo') {
-            $source = 'VuFind';
-        }
+        $source = $source === 'pci' ? 'Primo' : 'VuFind';
 
         $listId = $params['listId'];
         $notes = $params['notes'];
