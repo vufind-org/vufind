@@ -88,3 +88,13 @@
   <? endif ?>
   </div>
 </div>
+
+<? if ($list): ?>
+  <form class="pull-left delete-list" action="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&confirm=1" method="post">
+    <ul class="dropdown-menu">
+      <li class="disabled"><a><?=$this->transEsc('confirm_delete_list_text')?></a></li>
+      <li class="confirm"><a href="#"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+      <li class="cancel"><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+    </ul>
+  </form>
+<? endif; ?>

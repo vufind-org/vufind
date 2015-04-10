@@ -16,7 +16,7 @@
         <?=$this->escapeHtml($list['title'])?>
         <span> (<?=$list->cnt?>)</span>
         <? if ($active): ?>
-        <span class="pull-right"><i data-src="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>" class="fa fa-times remove"></i></span>
+        <span class="pull-right"><i class="fa fa-button fa-times remove"></i></span>
         <? endif; ?>
       </a>
       <? if ($active): ?>

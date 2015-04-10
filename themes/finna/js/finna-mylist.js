@@ -233,7 +233,36 @@ finna.myList = (function() {
             // delete list
             var active = $('.mylist-bar').find('a.active');
             active.find('.remove').on('click', function(e) {
-                window.location = $(this).data('src');
+                var target = $(this);
+                var id = target.data('id');
+                var form = $('.delete-list');
+                var prompt = form.find('.dropdown-menu');
+
+                var initRepositionListener = function() {
+                    $(window).resize(repositionPrompt);
+                };
+
+                var repositionPrompt = function() {
+                    var pos = target.offset();
+                    prompt.css({
+                        'left': pos.left-prompt.width()+target.width(),
+                        'top': pos.top+30
+                    });
+                };
+
+                prompt.find('.confirm').unbind('click').on('click', function(e) {
+                    form.submit();
+                    e.preventDefault();
+                });
+                prompt.find('.cancel').unbind('click').on('click', function(e) {
+                    $(window).off('resize', repositionPrompt);
+                    prompt.hide();
+                    e.preventDefault();
+                });
+
+                repositionPrompt();
+                initRepositionListener();
+                prompt.show();
                 e.preventDefault();
             });
         }

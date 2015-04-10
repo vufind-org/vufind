@@ -154,7 +154,7 @@
     }
 
     & .mylist-bar {
-        margin-top: 20px;  
+        margin-top: 20px;
     }
     .mylist-nav {
         & li > a:not(.add-new-list) {
@@ -307,4 +307,18 @@
         }
     }
 
+    & .delete-list li {
+        border-bottom: none;
+        &:not(.disabled) {
+            float: left;
+            width: 45%;
+            padding: 10px;
+            text-align: center;
+            & a {
+                border-radius: @border-radius-base;
+                background: @link-color;
+                color: @body-bg;
+            }
+        }
+    }
 }
