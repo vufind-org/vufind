@@ -19,6 +19,7 @@
     <? if ((!is_null($this->list) && $this->list->editAllowed($user)) || is_null($this->list) && $user): ?>
       <input class="btn btn-primary" id="<?=$this->idPrefix?>delete_list_items_<?=!is_null($this->list) ? $this->escapeHtmlAttr($this->list->id) : ''?>" type="submit" name="delete" value="<?=$this->transEsc('Delete')?>" title="<?=$this->transEsc('delete_selected')?>"/>
     <? endif; ?>
+      <? if ($lists): ?>
       <span class="jump-menu-style controls fa-arrow-down">
         <select id="add-to-list" class="form-control" autocomplete="off">
           <option><?= $this->translate('Add to List'); ?>&hellip;</option>
@@ -28,6 +29,7 @@
           <? endforeach; ?>
         </select>
       </span>
+      <? endif; ?>
     <? if ($this->cart()->isActive()): ?>
       <input class="btn btn-default" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
     <? endif; ?>
