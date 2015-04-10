@@ -69,13 +69,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
         $view->sortList = $sortList;
 
-        // Number of distinct user resources in all lists
-        $resource = $this->getTable('Resource');
-        $userResources = $resource->getFavorites(
-            $user->id, null, null, null
-        );
-        $view->numOfResources = count($userResources);
-
         return $view;
     }
 }

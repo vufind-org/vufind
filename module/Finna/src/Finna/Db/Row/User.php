@@ -56,4 +56,18 @@ class User extends \VuFind\Db\Row\User
         
         return array_values($listsSorted);
     }
+
+    /**
+     * Get number of distinct user resources in all lists.
+     *
+     * @return int
+     */
+    public function getNumOfResources()
+    {
+        $resource = $this->getDbTable('Resource');
+        $userResources = $resource->getFavorites(
+            $this->id, null, null, null
+        );
+        return count($userResources);
+    }
 }
