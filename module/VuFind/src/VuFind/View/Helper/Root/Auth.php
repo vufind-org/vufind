@@ -75,15 +75,16 @@ class Auth extends \Zend\View\Helper\AbstractHelper
         // template.
         $className = $this->getManager()->getAuthClassForTemplateRendering();
         $topClassName = $className; // for error message
+        $resolver = $this->getView()->resolver();
         while (true) {
             // Guess the template name for the current class:
             $template = 'Auth/' . $this->getBriefClass($className) . '/' . $name;
-            try {
+            if ($resolver->resolve($template)) {
                 // Try to render the template....
                 $html = $this->getView()->render($template);
                 $contextHelper($this->getView())->restore($oldContext);
                 return $html;
-            } catch (RuntimeException $e) {
+            } else {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent class:
                 $className = get_parent_class($className);

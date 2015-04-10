@@ -120,6 +120,8 @@ class Amazon extends \VuFind\Content\AbstractAmazon
                 // CSS for iframe (explicit dimensions needed for IE
                 // compatibility -- using 100% has bad results there):
                 $css = "width: 700px; height: 500px;";
+                // Replacement for http/https compatibility
+                $iframe = str_replace('http://', '//', $iframe);
                 $result[] = [
                     'Rating' => '',
                     'Summary' => '',

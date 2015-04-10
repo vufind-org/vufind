@@ -18,6 +18,7 @@
       </div>
     </div>
   <? endforeach; ?>
+  <div id="dateVisColorSettings"><!-- do not delete! used for passing CSS to Javascript --></div>
   <?
     $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
         . $this->recommend->getSearchParams() . "', path, "
