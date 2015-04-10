@@ -178,7 +178,7 @@ $(document).ready(function() {
   }
   $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
 
-  // Setup lightbox behavior
+  /*/ Setup lightbox behavior
   // Cart lightbox
   $('#cartItems').click(function() {
     return Lightbox.get('Cart','Cart');
@@ -225,5 +225,5 @@ $(document).ready(function() {
       }
       cartCount.html(cart.length);
     }
-  });
+  }); */
 });

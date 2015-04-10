@@ -116,6 +116,11 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
+        if ('lightbox' === $this->params()->fromPost(
+            'layout', $this->params()->fromQuery('layout', false)
+        )) {
+            $this->layout()->setTemplate('layout/lightbox');
+        }
         return new ViewModel($params);
     }
 
@@ -417,11 +422,6 @@ class AbstractBase extends AbstractActionController
         if (($username = $this->params()->fromPost('cat_username', false))
             && ($password = $this->params()->fromPost('cat_password', false))
         ) {
-            // Check for multiple ILS target selection
-            $target = $this->params()->fromPost('target', false);
-            if ($target) {
-                $username = "$target.$username";
-            }
             $patron = $ilsAuth->newCatalogLogin($username, $password);
 
             // If login failed, store a warning message:

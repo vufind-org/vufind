@@ -8,7 +8,8 @@
       . '<li class="active">' . $this->transEsc('Add Tag') . '</li>';
 ?>
 <div class="record">
-  <form action="" method="post" name="tagRecord" class="form-horizontal">
+  <p class="lead"><?=$this->transEsc('Add Tags') ?></p>
+  <form action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" method="post" name="tagRecord" class="form-horizontal" data-lightbox-close>
     <input type="hidden" name="submit" value="1" />
     <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
     <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />

@@ -196,7 +196,7 @@ $(document).ready(function(){
     }
   });
 
-  /* --- LIGHTBOX --- */
+  /* --- LIGHTBOX --- /
   // Cite lightbox
   $('#cite-record').click(function() {
     var params = extractClassParams(this);
@@ -271,5 +271,5 @@ $(document).ready(function(){
   });
   Lightbox.addFormCallback('placeILLRequest', function() {
     document.location.href = path+'/MyResearch/ILLRequests';
-  });
+  });*/
 });

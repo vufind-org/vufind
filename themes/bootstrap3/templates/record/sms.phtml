@@ -12,6 +12,7 @@
   }
 ?>
 <?=$this->flashmessages()?>
+<p class="lead"><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></p>
 <form method="post" action="" name="smsRecord" class="form-horizontal">
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />

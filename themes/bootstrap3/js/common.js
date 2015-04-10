@@ -106,7 +106,7 @@ function bulkActionSubmit($form) {
   }
   return false;
 }
-function registerLightboxEvents() {
+function registerLightboxEvents() { /*
   var modal = $("#modal");
   // New list
   $('#make-list').click(function() {
@@ -393,7 +393,7 @@ $(document).ready(function() {
 
   /******************************
    * LIGHTBOX DEFAULT BEHAVIOUR *
-   ******************************/
+   ****************************** /
   Lightbox.addOpenAction(registerLightboxEvents);
 
   Lightbox.addFormCallback('newList', Lightbox.changeContent);
@@ -484,4 +484,5 @@ $(document).ready(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
   });
+  // */
 });

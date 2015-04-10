@@ -7,6 +7,7 @@
     . '<li class="active">' . $this->transEsc('Book Bag') . '</li>';
 ?>
 <?=$this->flashmessages()?>
+<p class="lead"><?=$this->transEsc('Book Bag') ?></p>
 <form class="form-inline" action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
   <? if (!$this->cart()->isEmpty()): ?>
     <div class="checkbox">
