@@ -7,7 +7,7 @@
 var lightboxShown = false;
 $(document).ready(function() {
   if(lightboxShown) {
-    $('#modal .modal-body').clear();
+    $('#modal .modal-body').html('');
     $('#modal').modal('hide');
   } else {
     $('.modal-link').on('click', constrainLink);
@@ -90,7 +90,6 @@ function constrainLink(event) {
       success: updateLightbox
     };
     if('undefined' !== typeof this.dataset.lightboxPost) {
-      console.log(this.dataset.lightboxPost);
       ajaxObj.method = 'POST';
       ajaxObj.data = this.dataset.lightboxPost;
     }
