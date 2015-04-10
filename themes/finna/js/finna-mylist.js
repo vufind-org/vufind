@@ -51,7 +51,7 @@ finna.myList = (function() {
             url: path + '/AJAX/JSON?method=editList',
             data: {'params': listParams},
             success: function(data, status, jqXHR) {
-                if (spinner) {
+                if (type != 'add-list' && spinner) {
                     toggleSpinner(spinner, false);
                 }
                 if (status == 'success' && data.status == 'OK') {
