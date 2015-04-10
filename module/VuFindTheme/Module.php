@@ -100,6 +100,6 @@ class Module
      */
     public static function getThemeInfo()
     {
-        return new ThemeInfo(realpath(__DIR__ . '/../../themes'), 'blueprint');
+        return new ThemeInfo(realpath(__DIR__ . '/../../themes'), 'bootprint3');
     }
 }

@@ -18,6 +18,22 @@ function PadDigits(n, totalDigits)
 }
 
 function loadVis(facetFields, searchParams, baseURL, zooming) {
+  // Get colors from CSS
+  var cssColorSettings = {
+    'background-color': '#fff', // background of box
+    'fill': '#eee',             // box fill color
+    'stroke': '#265680',        // box outline color
+    'outline-color': '#e8cfac'  // selection color
+  };
+  var $dateVisColorSettings = $('#dateVisColorSettings');
+  for(var rule in cssColorSettings) {
+    if($dateVisColorSettings.css(rule)) {
+      var match = $dateVisColorSettings.css(rule).match(/rgb[a]?\([^\)]+\)|#[a-fA-F0-9]+/);
+      if(null != match) {
+        cssColorSettings[rule] = match[0];
+      }
+    }
+  }
   // options for the graph, TODO: make configurable
   var options = {
     series: {
@@ -25,15 +41,15 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
         show: true,
         align: "center",
         fill: true,
-        fillColor: "rgb(234,234,234)"
+        fillColor: cssColorSettings['fill']
       }
     },
-    colors: ["#265680"],
+    colors: [cssColorSettings['stroke']],
     legend: { noColumns: 2 },
     xaxis: { tickDecimals: 0 },
     yaxis: { min: 0, ticks: [] },
-    selection: {mode: "x"},
-    grid: { backgroundColor: null /*"#ffffff"*/ }
+    selection: {mode: "x", color: cssColorSettings['outline-color']},
+    grid: { backgroundColor: cssColorSettings['background-color'] }
   };
 
   // AJAX call

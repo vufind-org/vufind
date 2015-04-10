@@ -317,4 +317,29 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
             'a:([b TO c] OR [B TO C])', $lh->normalizeSearchString('a:[b to c]')
         );
     }
+
+    /**
+     * Test colon normalization
+     *
+     * @return void
+     */
+    public function testColonNormalization()
+    {
+        $lh = new LuceneSyntaxHelper(false, false);
+        $tests = [
+            'this : that' => 'this  that',
+            'this: that' => 'this that',
+            'this that:' => 'this that',
+            ':this that' => 'this that',
+            'this :that' => 'this that',
+            'this:that' => 'this:that',
+            'this::::::that' => 'this:that',
+            '"this : that"' => '"this : that"',
+            '::::::::::::::::::::' => '',
+         ];
+        foreach ($tests as $input => $expected)
+        $this->assertEquals(
+            $expected, $lh->normalizeSearchString($input)
+        );
+    }
 }

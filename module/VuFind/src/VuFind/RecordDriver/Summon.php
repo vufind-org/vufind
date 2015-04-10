@@ -92,15 +92,16 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Get the call number associated with the record (empty string if none).
+     * Get the call numbers associated with the record (empty string if none).
      *
-     * @return string
+     * @return array
      */
-    public function getCallNumber()
+    public function getCallNumbers()
     {
         // Summon calls this LCCNum even though it may be Dewey
-        return isset($this->fields['LCCCallnum']) ?
-            $this->fields['LCCCallnum'] : '';
+        return isset($this->fields['LCCCallnum'])
+            && !empty($this->fields['LCCCallnum'])
+            ? [$this->fields['LCCCallnum']] : [];
     }
 
     /**

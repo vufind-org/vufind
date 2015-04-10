@@ -481,10 +481,31 @@ class Koha extends AbstractBase
         $patron = [];
         $row = '';
 
-        // Koha uses MD5_BASE64 encoding to save borrowers' passwords, function
-        // 'rtrim' is used to discard trailing '=' signs, suitable for pushing
-        // into MySQL database
-        $db_pwd = rtrim(base64_encode(pack('H*', md5($password))), '=');
+        $stored_hash = '';
+        try {
+            $sql = "select password from borrowers where userid = :username";
+            $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->execute([':username' => $username]);
+            $row = $sqlStmt->fetch();
+            if ($row) {
+                $stored_hash = $row['password'];
+            } else {
+                return null;
+            }
+        }
+        catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        if ("$2a$" == substr($stored_hash, 0, 4)) {
+            // Newer Koha version that uses bcrypt
+            $db_pwd = crypt($password, $stored_hash);
+        } else {
+            // Koha used to use MD5_BASE64 encoding to save borrowers' passwords,
+            // function 'rtrim' is used to discard trailing '=' signs, suitable for
+            // pushing into MySQL database
+            $db_pwd = rtrim(base64_encode(pack('H*', md5($password))), '=');
+        }
 
         $sql = "select borrowernumber as ID, firstname as FNAME, " .
             "surname as LNAME, email as EMAIL from borrowers " .

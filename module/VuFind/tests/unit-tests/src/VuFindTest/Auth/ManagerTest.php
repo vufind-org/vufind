@@ -195,7 +195,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test security features of switching between auth options (part 2).
      *
      * @return void
-     * @expectedException \Exception
+     *
+     * @expectedException        \Exception
      * @expectedExceptionMessage Illegal authentication method: MultiILS
      */
     public function testSwitchingFailure()
@@ -332,7 +333,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful login (\VuFind\Exception\PasswordSecurity)
      *
      * @return void
-     * @expectedException \VuFind\Exception\PasswordSecurity
+     *
+     * @expectedException        \VuFind\Exception\PasswordSecurity
      * @expectedExceptionMessage Boom
      */
     public function testPasswordSecurityException()
@@ -350,7 +352,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test unsuccessful login (\VuFind\Exception\Auth)
      *
      * @return void
-     * @expectedException \VuFind\Exception\Auth
+     *
+     * @expectedException        \VuFind\Exception\Auth
      * @expectedExceptionMessage Blam
      */
     public function testAuthException()
@@ -368,7 +371,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
      * Test that unexpected exceptions get mapped to technical errors.
      *
      * @return void
-     * @expectedException \VuFind\Exception\Auth
+     *
+     * @expectedException        \VuFind\Exception\Auth
      * @expectedExceptionMessage authentication_error_technical
      */
     public function testUnanticipatedException()
@@ -461,7 +465,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
         if (null === $pm) {
             $pm = $this->getMockPluginManager();
         }
-        return new Manager($config, $userTable, $sessionManager, $pm);
+        $cookies = new \VuFind\Cookie\CookieManager([]);
+        return new Manager($config, $userTable, $sessionManager, $pm, $cookies);
     }
 
     /**
@@ -472,8 +477,8 @@ class ManagerTest extends \VuFindTest\Unit\TestCase
     protected function getMockUserTable()
     {
         return $this->getMockBuilder('VuFind\Db\Table\User')
-                ->disableOriginalConstructor()
-                ->getMock();
+            ->disableOriginalConstructor()
+            ->getMock();
     }
 
     /**
