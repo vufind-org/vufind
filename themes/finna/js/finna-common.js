@@ -24,7 +24,7 @@ finna.common = (function() {
         });
 
         // Modal window focus set to username input field.
-        $('#modal').on('shown.bs.modal', function (e) {
+        $('#modal').on('shown.bs.modal', function(e) {
             $('#login_username').focus();
         });
         // Set focus to username at login page

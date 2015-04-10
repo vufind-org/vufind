@@ -58,7 +58,8 @@ $config = array(
             'my-research' => 'Finna\Controller\MyResearchController',
             'primo' => 'Finna\Controller\PrimoController',
             'primorecord' => 'Finna\Controller\PrimorecordController',
-            'search' => 'Finna\Controller\SearchController'
+            'search' => 'Finna\Controller\SearchController',
+            'list' => 'Finna\Controller\ListController',
         ),
     ),
     'service_manager' => array(
@@ -181,5 +182,12 @@ $config = array(
         ),
     )
 );
+
+// Define dynamic routes -- controller => [route name => action]
+$dynamicRoutes = [
+    'List' => ['publicList' => 'Show/[:lid]'],
+];
+$routeGenerator = new \VuFind\Route\RouteGenerator();
+$routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 
 return $config;

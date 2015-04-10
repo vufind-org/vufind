@@ -1,0 +1,132 @@
+<?php
+/**
+ * List Controller
+ *
+ * PHP version 5
+ *
+ * Copyright (C) The National Library of Finland 2015.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  Controller
+ * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org   Main Site
+ */
+namespace Finna\Controller;
+
+use //VuFind\Exception\Auth as AuthException,
+    //VuFind\Exception\Mail as MailException,
+    VuFind\Exception\ListPermission as ListPermissionException,
+    //VuFind\Exception\RecordMissing as RecordMissingException,
+    Zend\Stdlib\Parameters;
+
+/**
+ * Controller for the user account area.
+ *
+ * @category VuFind2
+ * @package  Controller
+ * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org   Main Site
+ */
+class ListController extends \VuFind\Controller\AbstractBase
+{
+    /**
+     * Send user's saved favorites from a particular list to the view
+     *
+     * @return mixed
+     */
+    public function showAction()
+    {
+        $lid = $this->params()->fromRoute('lid');
+        if ($lid === null) {
+            return $this->notFoundAction();
+        }
+
+        try {
+            $results = $this->getServiceLocator()
+                ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
+            $params = $results->getParams();
+            $params->setAuthManager($this->getAuthManager());
+
+            // We want to merge together GET, POST and route parameters to
+            // initialize our search object:
+            $params->initFromRequest(
+                new Parameters(
+                    $this->getRequest()->getQuery()->toArray()
+                    + $this->getRequest()->getPost()->toArray()
+                    + ['id' => $this->params()->fromRoute('lid')]
+                )
+            );
+
+            $results->performAndProcessSearch();
+
+            if (!$results->getListObject()->isPublic()) {
+                return $this->createNoAccessView();
+            }
+
+            $username = $this->getListUsername($results->getListObject()->user_id);
+
+            return $this->createViewModel(
+                ['params' => $params, 'results' => $results,
+                    'list_username' => $username]
+            );
+        } catch (ListPermissionException $e) {
+            return $this->createNoAccessView();
+        }
+    }
+
+    /**
+     * Return list owners username without institution and email domain part.
+     *
+     * @param int $listUserId lists owners user id
+     *
+     * @return string username
+     */
+    protected function getListUsername($listUserId)
+    {
+        $user = $this->getUser();
+        if ($user && $user->id == $listUserId) {
+            $username = $user->username;
+        } else {
+            $table = $this->getTable('User');
+            $listUser = $table->getById($listUserId);
+            if ($listUser) {
+                $username = $listUser->username;
+            } else {
+                $username = '-';
+            }
+        }
+        list(,$username) = explode(':', $username, 2);
+        list($username) = explode('@', $username);
+
+        return $username;
+    }
+
+    /**
+     * Create simple error page for no access error.
+     *
+     * @return type
+     */
+    protected function createNoAccessView()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $view = $this->createViewModel();
+        $view->setTemplate('list/no_access');
+        $view->email = $config->Site->email;
+        return $view;
+    }
+}
