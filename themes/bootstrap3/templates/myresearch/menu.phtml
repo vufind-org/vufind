@@ -43,6 +43,12 @@
         <span class="pull-right"><i class="fa fa-user"></i></span>
       </a>
     <? endif; ?>
+    <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
+      <a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
+        <?=$this->transEsc('Library Cards')?>
+        <span class="pull-right"><i class="fa fa-barcode"></i></span>
+      </a>
+    <? endif; ?>
   <? endif; ?>
   <a href="<?=$this->url('search-history')?>?require_login" class="list-group-item<?=$this->active == 'history' ? ' active' : ''?>">
     <?=$this->transEsc('history_saved_searches')?>
