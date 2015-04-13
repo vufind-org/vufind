@@ -1260,7 +1260,7 @@ class Voyager extends AbstractBase
             "MAX(MFHD_ITEM.YEAR) AS YEAR",
             "MAX(BIB_TEXT.TITLE_BRIEF) AS TITLE_BRIEF",
             "MAX(BIB_TEXT.TITLE) AS TITLE",
-            "LISTAGG(ITEM_STATUS_DESC, '|') "
+            "LISTAGG(ITEM_STATUS_DESC, CHR(9)) "
             . "WITHIN GROUP (ORDER BY ITEM_STATUS_DESC) as status",
             "MAX(CIRC_TRANSACTIONS.RENEWAL_COUNT) AS RENEWAL_COUNT",
             "MAX(CIRC_POLICY_MATRIX.RENEWAL_COUNT) as RENEWAL_LIMIT",
@@ -1295,7 +1295,7 @@ class Voyager extends AbstractBase
         ];
 
         // Order
-        $sqlOrder = ["FULLDATE ASC"];
+        $sqlOrder = ["FULLDATE ASC", "TITLE ASC"];
 
         // Bind
         $sqlBind = [':id' => $patron['id']];
@@ -1322,12 +1322,16 @@ class Voyager extends AbstractBase
      */
     protected function pickTransactionStatus($statuses)
     {
+        $regex = isset($this->config['Loans']['show_statuses'])
+            ? $this->config['Loans']['show_statuses']
+            : '/lost|missing|claim/i';
+        $retVal = [];
         foreach ($statuses as $status) {
-            if (stristr($status, 'lost')) {
-                return $status;
+            if (preg_match($regex, $status)) {
+                $retVal[] = $status;
             }
         }
-        return false;
+        return empty($retVal) ? false : implode(', ', $retVal);
     }
 
     /**
@@ -1379,7 +1383,7 @@ class Voyager extends AbstractBase
             'renew' => $sqlRow['RENEWAL_COUNT'],
             'renewLimit' => $sqlRow['RENEWAL_LIMIT'],
             'message' =>
-                $this->pickTransactionStatus(explode('|', $sqlRow['STATUS'])),
+                $this->pickTransactionStatus(explode(chr(9), $sqlRow['STATUS'])),
         ];
         if (isset($this->config['Loans']['display_borrowing_location'])
             && $this->config['Loans']['display_borrowing_location']
