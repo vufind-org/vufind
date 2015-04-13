@@ -100,18 +100,20 @@ class ListController extends \VuFind\Controller\AbstractBase
     {
         $user = $this->getUser();
         if ($user && $user->id == $listUserId) {
-            $username = $user->username;
+            $listUser = $user;
         } else {
             $table = $this->getTable('User');
             $listUser = $table->getById($listUserId);
-            if ($listUser) {
-                $username = $listUser->username;
-            } else {
-                $username = '-';
-            }
         }
-        list(,$username) = explode(':', $username, 2);
-        list($username) = explode('@', $username);
+        if ($listUser) {
+            if (empty($listUser->firstname) && empty($listUser->lastname)) {
+                list($username) = explode('@', $listUser->email);
+            } else {
+                $username = trim($listUser->firstname . ' ' . $listUser->lastname);
+            }
+        } else {
+            $username = '-';
+        }
 
         return $username;
     }
