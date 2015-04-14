@@ -52,10 +52,9 @@ function addSearch(group, fieldValues)
 
 function deleteSearch(group, sindex)
 {
-  var searches = $('#group'+group).find('.search');
   for(var i=sindex;i<groupLength[group]-1;i++) {
-    var $search0 = $(searches[i]);
-    var $search1 = $(searches[i+1]);
+    var $search0 = $('#search'+group+'_'+i);
+    var $search1 = $('#search'+group+'_'+(i+1));
     $search0.find('input').val($search1.find('input').val());
     var select0 = $search0.find('select')[0];
     var select1 = $search1.find('select')[0];
