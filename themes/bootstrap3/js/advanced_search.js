@@ -17,7 +17,7 @@ function addSearch(group, fieldValues)
   $newSearch.find('select.type')
     .attr('id', 'search_type'+inputID)
     .attr('name', 'type'+group+'[]');
-  $newSearch.find('.close')
+  $newSearch.find('.close a')
     .attr('onClick', 'deleteSearch('+group+','+groupLength[group]+')');
   // Preset Values
   if(typeof fieldValues.term !== "undefined") {
