@@ -397,6 +397,23 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Render a cover for the current record.
+     *
+     * @param string $size the size of the cover
+     * @param string $link the link for the anchor
+     *
+     * @return string
+     */
+    public function getCover($size = 'small', $link = '')
+    {
+        $context
+            = ['size' => $size, 'link' => $link];
+        return $this->contextHelper->renderInContext(
+            'record/cover.phtml', $context
+        );
+    }
+
+    /**
      * Generate a qrcode URL (return false if unsupported).
      *
      * @param string $context Context of code being generated (core or results)
