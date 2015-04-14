@@ -182,6 +182,9 @@
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
       <? endif; ?>
+      <? if ($this->layout()->templateDir === 'list'): ?>
+        <?=$this->render('list/list-notes.phtml')?>
+      <? endif; ?>
   </div>
   <div class="col-xs-1 hidden-print">
       <? /* Display qrcode if appropriate: */ ?>

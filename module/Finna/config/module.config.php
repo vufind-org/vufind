@@ -45,6 +45,19 @@ $config = array(
                     )
                 ),
             ),
+            'list-page' => array(
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'options' => array(
+                    'route'    => '/List[/:lid]',
+                    'constraints' => array(
+                        'lid'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        'controller' => 'Listpage',
+                        'action'     => 'List',
+                    )
+                ),
+            ),
         )
     ),
     'controllers' => array(
@@ -59,7 +72,7 @@ $config = array(
             'primo' => 'Finna\Controller\PrimoController',
             'primorecord' => 'Finna\Controller\PrimorecordController',
             'search' => 'Finna\Controller\SearchController',
-            'list' => 'Finna\Controller\ListController',
+            'listpage' => 'Finna\Controller\ListController',
         ),
     ),
     'service_manager' => array(
@@ -104,6 +117,9 @@ $config = array(
                     'biblio' => 'Solr',
                 )
             ),
+            'search_options' => [
+                'abstract_factories' => ['Finna\Search\Options\PluginFactory'],
+            ],
             'search_params' => [
                 'abstract_factories' => ['Finna\Search\Params\PluginFactory'],
             ],
@@ -185,12 +201,5 @@ $config = array(
         ),
     )
 );
-
-// Define dynamic routes -- controller => [route name => action]
-$dynamicRoutes = [
-    'List' => ['publicList' => 'Show/[:lid]'],
-];
-$routeGenerator = new \VuFind\Route\RouteGenerator();
-$routeGenerator->addDynamicRoutes($config, $dynamicRoutes);
 
 return $config;

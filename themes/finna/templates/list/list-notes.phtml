@@ -1,0 +1,17 @@
+<? $notes = $this->driver->getListNotes(); if (!empty($notes)): ?>
+  <div class="notes">
+    <p>
+      <span class="heading"><?=$this->transEsc('Kuvaus')?></span>
+      (<?= $this->escapeHtml($this->list_username) ?>):
+    </p>
+    <p class="<?=$this->params->getView() == 'list' ? 'note-rows' : 'note-row'; ?>">
+      <?
+      $note = implode('', $notes);
+      if ($this->params->getView() == 'list') {
+        $note = preg_replace("/\r\n|\r|\n/",'<br />', $this->escapeHtml($note));
+      }
+      echo $note
+      ?>
+    </p>
+  </div>
+<? endif; ?>

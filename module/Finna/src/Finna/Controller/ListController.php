@@ -27,10 +27,8 @@
  */
 namespace Finna\Controller;
 
-use //VuFind\Exception\Auth as AuthException,
-    //VuFind\Exception\Mail as MailException,
-    VuFind\Exception\ListPermission as ListPermissionException,
-    //VuFind\Exception\RecordMissing as RecordMissingException,
+use VuFind\Exception\ListPermission as ListPermissionException,
+    VuFind\Exception\RecordMissing as RecordMissingException,
     Zend\Stdlib\Parameters;
 
 /**
@@ -49,10 +47,15 @@ class ListController extends \VuFind\Controller\AbstractBase
      *
      * @return mixed
      */
-    public function showAction()
+    public function listAction()
     {
         $lid = $this->params()->fromRoute('lid');
         if ($lid === null) {
+            return $this->notFoundAction();
+        }
+        try {
+            $this->getTable('UserList')->getExisting($lid);
+        } catch (RecordMissingException $e) {
             return $this->notFoundAction();
         }
 
