@@ -50,13 +50,15 @@ function addSearch(group, fieldValues)
   groupLength[group]++;
 }
 
-function deleteSearch(group, eq)
+function deleteSearch(group, sindex)
 {
   var searches = $('#group'+group+' .search');
-  for(var i=eq;i<searches.length-1;i++) {
-    $(searches[i]).find('input').val($(searches[i+1]).find('input').val());
-    var select0 = $(searches[i]).find('select')[0];
-    var select1 = $(searches[i+1]).find('select')[0];
+  for(var i=sindex;i<searches.length-1;i++) {
+    var $search0 = $(searches[i]);
+    var $search1 = $(searches[i+1]);
+    $search0.find('input').val($search1.find('input').val());
+    var select0 = $search0.find('select')[0];
+    var select1 = $search1.find('select')[0];
     select0.selectedIndex = select1.selectedIndex;
   }
   if(groupLength[group] > 0) {
