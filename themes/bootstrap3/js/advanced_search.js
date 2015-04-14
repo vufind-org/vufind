@@ -59,9 +59,9 @@ function deleteSearch(group, eq)
     var select1 = $(searches[i+1]).find('select')[0];
     select0.selectedIndex = select1.selectedIndex;
   }
-  groupLength[group]--;
   if(groupLength[group] > 0) {
-    $('#group'+group+' .search:last').remove();
+    groupLength[group]--;
+    $('#search'+group+'_'+groupLength[group]).remove();
     if(groupLength[group] == 1) {
       $('#group'+group+' .search .close').addClass('hidden'); // Hide x
     }
