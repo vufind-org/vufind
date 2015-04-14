@@ -52,7 +52,7 @@ function addSearch(group, fieldValues)
 
 function deleteSearch(group, sindex)
 {
-  var searches = $('#group'+group+' .search');
+  var searches = $('#group'+group).find('.search');
   for(var i=sindex;i<groupLength[group]-1;i++) {
     var $search0 = $(searches[i]);
     var $search1 = $(searches[i+1]);
@@ -61,7 +61,7 @@ function deleteSearch(group, sindex)
     var select1 = $search1.find('select')[0];
     select0.selectedIndex = select1.selectedIndex;
   }
-  if(groupLength[group] > 0) {
+  if(groupLength[group] > 1) {
     groupLength[group]--;
     $('#search'+group+'_'+groupLength[group]).remove();
     if(groupLength[group] == 1) {
