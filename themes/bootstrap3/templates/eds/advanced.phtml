@@ -24,19 +24,24 @@
           </select>
         </div>
         <div class="col-sm-9">
-          <div class="col-sm-6">
-            <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="form-control" type="text" value=""/>
+          <div class="row">
+            <div class="col-sm-6">
+              <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="form-control" type="text" value=""/>
+            </div>
+            <span class="col-sm-1 help-block hidden-xs"><?=$this->transEsc("in")?></span>
+            <div class="col-sm-4 middle">
+              <select id="search_type0_<?=$search ?>" name="type0[]" class="type form-control">
+                <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                  <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
+                <? endforeach; ?>
+              </select>
+            </div>
+            <div class="close">
+              <a href="#" class="help-block">&times;</a>
+            </div>
           </div>
-          <span class="col-sm-1 help-block"><?=$this->transEsc("in")?></span>
-          <div class="col-sm-4">
-            <select id="search_type0_<?=$search ?>" name="type0[]" class="type form-control">
-              <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
-              <? endforeach; ?>
-            </select>
-          </div>
-          <a href="#" class="col-sm-1 help-block delete hidden">&times;</a>
         </div>
+        <br class="hidden-lg"/>
       </div>
       <? if ($search == 0): ?>
         </div>

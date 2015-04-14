@@ -53,20 +53,45 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Advanced Search --- */
 .group {
+  position: relative;
   background: @gray-lighter;
   border-radius: @border-radius-base;
   border: 1px solid darken(@gray-lighter, 15%);
-  margin: 0 0 6px;
-  padding: 10px 10px 10px 25px;
+  margin-top: 0;
+  margin-bottom: .5em !important;
   .add_search_link {
     display: inline-block;
     margin-top: 4px;
   }
-  [class^=col-] {
-    padding-left: 0;
+  & .group-close {
+    &:extend(.close);
+    position: absolute;
+    top: .3em;
+    right: .5em;
+    opacity: .4;
+    z-index: 2;
   }
   .search {
-    margin-bottom:2px;
+    margin-bottom: 2px;
+    .close {opacity: .8;}
+  }
+  @media (min-width: 768px) {
+    padding: 10px 10px 10px 25px;
+    [class^=col-] {padding-left: 0;}
+  }
+  @media (max-width: 767px) {
+    .search  .middle {
+      float: left;
+      width: 90%;
+    }
+    & .group-close {
+      top: .5em;
+      right: 1em;
+      opacity: .6;
+    }
+  }
+  @media (max-width: 991px) {
+    .form-control {max-width: none;}
   }
 }
 #groupPlaceHolder {
@@ -77,6 +102,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .template-dir-eds.template-name-advanced {
   legend {margin-bottom: 0;}
   .no-js .group:nth-child(n+3) {display: none;}
+  .search .close a {margin-left: -2em;}
 }
 
 /* --- Alphabrowse --- */

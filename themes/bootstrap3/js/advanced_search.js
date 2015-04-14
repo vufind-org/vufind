@@ -17,7 +17,7 @@ function addSearch(group, fieldValues)
   $newSearch.find('select.type')
     .attr('id', 'search_type'+inputID)
     .attr('name', 'type'+group+'[]');
-  $newSearch.find('a.delete')
+  $newSearch.find('.close')
     .attr('onClick', 'deleteSearch('+group+','+inputIndex+')');
   // Preset Values
   if(typeof fieldValues.term !== "undefined") {
@@ -45,7 +45,7 @@ function addSearch(group, fieldValues)
     $newSearch.find('.first-op').remove();
     $newSearch.find('label').remove();
     // Show x if we have more than one search inputs
-    $('#group'+group+' .search .delete').removeClass('hidden');
+    $('#group'+group+' .search .close').removeClass('hidden');
   }
 }
 
@@ -63,7 +63,7 @@ function deleteSearch(group, eq)
   }
   // Hide x
   if($('#group'+group+' .search').length == 1) {
-    $('#group'+group+' .search .delete').addClass('hidden');
+    $('#group'+group+' .search .close').addClass('hidden');
   }
 }
 
@@ -82,7 +82,7 @@ function addGroup(firstTerm, firstField, join)
     .attr('id', 'add_search_link_'+nextGroup)
     .attr('onClick', 'addSearch('+nextGroup+')')
     .removeClass('hidden');
-  $newGroup.find('.close')
+  $newGroup.find('.group-close')
     .attr('onClick', 'deleteGroup('+nextGroup+')');
   $newGroup.find('select.form-control')
     .attr('id', 'search_bool'+nextGroup)
@@ -100,7 +100,7 @@ function addGroup(firstTerm, firstField, join)
   if(nextGroup > 0) {
     $('#groupJoin').removeClass('hidden');
     // Show x
-    $('.group .close').removeClass('hidden');
+    $('.group .group-close').removeClass('hidden');
   }
   return nextGroup++;
 }
@@ -115,7 +115,7 @@ function deleteGroup(group)
   } else if($('#advSearchForm .group').length == 1) { // Hide join menu
     $('#groupJoin').addClass('hidden');
     // Hide x
-    $('.group .close').addClass('hidden');
+    $('.group .group-close').addClass('hidden');
   }
 }
 

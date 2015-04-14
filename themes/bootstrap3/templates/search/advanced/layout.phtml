@@ -88,30 +88,31 @@
               <div id="new_group_template">
             <? endif; ?>
             <div id="group<?=$group ?>" class="group row">
-              <div class="col-md-9">
+              <a href="#" class="group-close hidden" title="<?=$this->transEsc("del_search")?>">&times;</a>
+              <div class="col-sm-9">
                 <div class="row">
-                  <div class="col-md-3">
+                  <div class="col-sm-3">
                     <label class="help-block"><?=$this->transEsc("adv_search_label")?>:</label>
                   </div>
-                  <div class="col-md-9">
+                  <div class="col-sm-9">
                     <? for($search=0;$search<3;$search++): ?>
                       <? if($group == 0 && $search == 0): ?>
                         <div id="new_search_template">
                       <? endif; ?>
                       <div id="search<?=$group.'_'.$search ?>" class="search">
                         <div class="row">
-                          <div class="col-md-7">
+                          <div class="col-sm-7 left">
                             <input name="lookfor<?=$group ?>[]" id="search_lookfor<?=$group.'_'.$search ?>" class="form-control" type="text"<?if(isset($setQueries[$group][$search])):?> value="<?=$this->escapeHtml($setQueries[$group][$search]->getString())?>"<?endif;?>>
                           </div>
-                          <div class="col-md-4">
+                          <div class="col-sm-4 middle">
                             <select class="type form-control" name="type<?=$group ?>[]">
                               <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                                 <option value="<?=$this->escapeHtml($searchVal)?>"<?if(isset($setQueries[$group][$search]) && $searchVal == $setQueries[$group][$search]->getHandler()):?> selected<?endif;?>><?=$this->transEsc($searchDesc)?></option>
                               <? endforeach; ?>
                             </select>
                           </div>
-                          <div class="col-md-1">
-                            <a onclick="deleteSearch(<?=$group.','.$search ?>)" class="help-block delete hidden" href="#">&times;</a>
+                          <div class="col-sm-1 close hidden">
+                            <a class="help-block" href="#">&times;</a>
                           </div>
                         </div>
                       </div>
@@ -123,9 +124,8 @@
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
+              <div class="col-sm-3 match">
                 <label class="search_bool"><?=$this->transEsc("search_match")?>:&nbsp;</label>
-                <a href="#" class="close hidden" title="<?=$this->transEsc("del_search")?>">&times;</a>
                 <select name="bool<?=$group ?>[]" id="search_bool<?=$group ?>" class="form-control">
                   <option value="AND"<? if(isset($setSearchGroups[$group]) && 'AND' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_AND")?></option>
                   <option value="OR"<? if(isset($setSearchGroups[$group]) && 'OR' == $setSearchGroups[$group]):?> selected<?endif;?>><?=$this->transEsc("search_OR")?></option>
@@ -139,6 +139,7 @@
           <? endfor; ?>
         <? endif; ?>
       </div>
+      <span class="clearfix"></span>
       <input class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>">
       <? if (isset($this->extraAdvancedControls)): ?>
         <?=$this->extraAdvancedControls ?>
