@@ -53,7 +53,7 @@ function addSearch(group, fieldValues)
 function deleteSearch(group, sindex)
 {
   var searches = $('#group'+group+' .search');
-  for(var i=sindex;i<searches.length-1;i++) {
+  for(var i=sindex;i<groupLength[group]-1;i++) {
     var $search0 = $(searches[i]);
     var $search1 = $(searches[i+1]);
     $search0.find('input').val($search1.find('input').val());
@@ -116,10 +116,9 @@ function deleteGroup(group)
   // If the last group was removed, add an empty group
   if($('.group').length == 0) {
     addGroup();
-  } else if($('#advSearchForm .group').length == 1) { // Hide join menu
-    $('#groupJoin').addClass('hidden');
-    // Hide x
-    $('.group .group-close').addClass('hidden');
+  } else if($('#advSearchForm .group').length == 1) {
+    $('#groupJoin').addClass('hidden'); // Hide join menu
+    $('.group .group-close').addClass('hidden'); // Hide x
   }
 }
 
