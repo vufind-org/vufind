@@ -1053,8 +1053,19 @@ class MyResearchController extends AbstractBase
 
         // Get checked out item details:
         $result = $catalog->getMyTransactions($patron);
+
+        // Build paginator:
+        $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
+        $paginator = new \Zend\Paginator\Paginator($adapter);
+        $limit = 20;
+        $paginator->setItemCountPerPage($limit);
+        $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
+
         $transactions = [];
-        foreach ($result as $current) {
+
+        $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+        $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        foreach ($result as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
                 $catalog, $current, $renewStatus
@@ -1066,15 +1077,19 @@ class MyResearchController extends AbstractBase
                 $renewForm = true;
             }
 
-            // Build record driver:
-            $transactions[] = $this->getDriverForILSRecord($current);
+            // Build record driver (only for the current visible page):
+            if ($i >= $pageStart && $i <= $pageEnd) {
+                $transactions[] = $this->getDriverForILSRecord($current);
+            } else {
+                $hiddenTransactions[] = $current;
+            }
         }
 
         return $this->createViewModel(
-            [
-                'transactions' => $transactions, 'renewForm' => $renewForm,
-                'renewResult' => $renewResult
-            ]
+            compact(
+                'transactions', 'renewForm', 'renewResult', 'paginator',
+                'hiddenTransactions'
+            )
         );
     }
 
