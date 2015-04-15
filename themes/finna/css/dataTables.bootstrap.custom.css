@@ -1,8 +1,8 @@
-table.dataTable thead .sorting { background: url('../images/datatables/sort_both.png') no-repeat center right; }
-table.dataTable thead .sorting_asc { background: url('../images/datatables/sort_asc.png') no-repeat center right; }
-table.dataTable thead .sorting_desc { background: url('../images/datatables/sort_desc.png') no-repeat center right; }
+table.dataTable thead .sorting { background: url('../images/datatables/sort_both.png') no-repeat center right; padding-left: 8px; }
+table.dataTable thead .sorting_asc { background: url('../images/datatables/sort_asc.png') no-repeat center right; padding-left: 8px; }
+table.dataTable thead .sorting_desc { background: url('../images/datatables/sort_desc.png') no-repeat center right; padding-left: 8px; }
 
-table.dataTable thead .sorting_asc_disabled { background: url('../images/datatables/sort_asc_disabled.png') no-repeat center right; }
-table.dataTable thead .sorting_desc_disabled { background: url('../images/datatables/sort_desc_disabled.png') no-repeat center right; }
+table.dataTable thead .sorting_asc_disabled { background: url('../images/datatables/sort_asc_disabled.png') no-repeat center right; padding-left: 8px; }
+table.dataTable thead .sorting_desc_disabled { background: url('../images/datatables/sort_desc_disabled.png') no-repeat center right; padding-left: 8px; }
 
 table.dataTable { table-layout: auto; }

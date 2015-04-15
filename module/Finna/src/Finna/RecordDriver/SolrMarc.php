@@ -332,6 +332,64 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
                 'otherAuthors' => $partOtherAuthors,
             ];
         }
+
+            // Try field 700 if 979 is empty
+        if (!$componentParts) {
+            foreach ($this->marcRecord->getFields('700') as $field) {
+                if (!$field->getSubfield('t')) {
+                    continue;
+                }
+                $partOrderCounter++;
+
+                $partTitle = $this->getSubfieldArray(
+                    $field,
+                    ['t', 'm', 'n', 'r', 'h', 'i', 'g', 'n', 'p', 's', 'l', 'o', 'k']
+                );
+                $partTitle = reset($partTitle);
+                $partAuthors = $this->getSubfieldArray(
+                    $field, ['a', 'q', 'b', 'c', 'd', 'e']
+                );
+
+                $partPresenters = [];
+                $partArrangers = [];
+                $partOtherAuthors = [];
+                foreach ($partAuthors as $author) {
+                    if (isset($configArray['Record']['presenter_roles'])) {
+                        foreach ($configArray['Record']['presenter_roles']
+                            as $role
+                        ) {
+                            $author = trim($author);
+                            if (substr($author, -strlen($role) - 2) == ", $role") {
+                                $partPresenters[] = $author;
+                                continue 2;
+                            }
+                        }
+                    }
+                    if (isset($configArray['Record']['arranger_roles'])) {
+                        foreach ($configArray['Record']['arranger_roles'] as $role) {
+                            if (substr($author, -strlen($role) - 2) == ", $role") {
+                                $partArrangers[] = $author;
+                                continue 2;
+                            }
+                        }
+                    }
+                    $partOtherAuthors[] = $author;
+                }
+
+                $componentParts[] = [
+                    'number' => $partOrderCounter,
+                    'title' => $partTitle,
+                    'link' => null,
+                    'authors' => $partAuthors,
+                    'uniformTitle' => '',
+                    'duration' => '',
+                    'presenters' => $partPresenters,
+                    'arrangers' => $partArrangers,
+                    'otherAuthors' => $partOtherAuthors,
+                ];
+            }
+        }
+
         return $componentParts;
     }
 
@@ -473,6 +531,12 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $fields = $this->marcRecord->getFields($fieldCode);
             if (is_array($fields)) {
                 foreach ($fields as $field) {
+                    // Leave out 700 fields containing subfield 't' (these go to the
+                    // contents list)
+                    if ($fieldCode == '700' && $field->getSubfield('t')) {
+                        continue;
+                    }
+
                     $role = $this->getSubfieldArray($field, ['e']);
                     $role = empty($role) ? '' : mb_strtolower($role[0], 'UTF-8');
                     if ($role
@@ -558,6 +622,12 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             $fields = $this->marcRecord->getFields($fieldCode);
             if (is_array($fields)) {
                 foreach ($fields as $field) {
+                    // Leave out 700 fields containing subfield 't' (these go to the
+                    // contents list)
+                    if ($fieldCode == '700' && $field->getSubfield('t')) {
+                        continue;
+                    }
+
                     $role = $this->getSubfieldArray($field, ['e']);
                     $role = empty($role) ? '' : mb_strtolower($role[0], 'UTF-8');
                     if (!$role
@@ -683,6 +753,25 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Get uniform titles.
+     *
+     * @return array
+     */
+    protected function getUniformTitles()
+    {
+        $results = [];
+        foreach (array('130', '240') as $fieldCode) {
+            foreach ($this->marcRecord->getFields($fieldCode) as $field) {
+                foreach ($field->getSubfields() as $subfield) {
+                    $subfields[] = $subfield->getData();
+                }
+                $results[] = implode(' ', $subfields);
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *
@@ -751,7 +840,16 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      */
     public function hasEmbeddedComponentParts()
     {
-        return $this->marcRecord->getFields('979') ? true : false;
+        if ($this->marcRecord->getFields('979')) {
+            return true;
+        }
+        // Alternatively, are there titles in 700 fields?
+        foreach ($this->marcRecord->getFields('700') as $field) {
+            if ($field->getSubfield('t')) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
