@@ -26,14 +26,14 @@
     <div class="btn-group" id="cartDelete">
       <button type="submit" name="delete" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-delete-label"><?=$this->transEsc('bookbag_delete_selected')?></button>
       <ul class="dropdown-menu" role="menu" aria-labelledby="cart-delete-label">
-        <li><a onClick="submitFormWithIds(this, {'delete':'delete'})" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a id="cart-confirm-delete" onClick="submitFormWithIds(this, {'delete':'delete'})" title="<?=$this->transEsc('confirm_delete')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
     </div>
     <div class="btn-group">
       <input type="submit" name="empty" class="btn btn-default dropdown-toggle" data-toggle="dropdown" id="cart-empty-label" value="<?=$this->transEsc('Empty Book Bag')?>"/>
       <ul class="dropdown-menu" role="menu" aria-labelledby="cart-empty-label">
-        <li><a onClick="submitCartForm(this, {'empty':'empty'})" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a id="cart-confirm-empty" onClick="submitCartForm(this, {'empty':'empty'})" title="<?=$this->transEsc('bookbag_confirm_empty')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a onClick="$('.fa.fa-spinner').remove()"><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
     </div>
