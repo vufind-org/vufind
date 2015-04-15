@@ -221,10 +221,13 @@
     </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
+    <delete dir="${srcdir}/solr/logs" includeemptydirs="true" failonerror="false" />
     <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/authority/conf" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/biblio/conf" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/tlog" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
