@@ -33,11 +33,9 @@ finna.myList = (function() {
         } else if (type == 'add-list') {
             spinner = $('.add-new-list .fa');
         } else if (type == 'visibility') {
-            $(".list-visibility input[type='radio']").attr('disabled', true);
-            var radio = $(".list-visibility input[type='radio']:checked");
-            var id = radio.attr('id');
-            radio.replaceWith(
-                '<i id=' + id + ' class="fa fa-spinner fa-spin"></i>'
+            var holder = $(".list-visibility > div:first");
+            holder.hide().after(
+                '<i class="fa fa-spinner fa-spin"></i>'
             );
         }
 

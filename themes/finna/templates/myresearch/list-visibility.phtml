@@ -1,8 +1,8 @@
 <div class="list-visibility">
   <?= $this->translate('Public List Visibility'); ?>
   <div>
-    <input autocomplete="off" id="visibility-public" type="radio" name="visibility" value="1"<?= $public ? ' checked="checked"' : '' ?>> <label for="visibility-public"><?= $this->translate('Public'); ?></label>
-    <input autocomplete="off" id="visibility-hidden" type="radio" name="visibility" value="0"<?= !$public ? ' checked="checked"' : '' ?>> <label for="visibility-hidden"><?= $this->translate('Private'); ?></label>
+    <input id="visibility-public" type="radio" name="visibility" value="1"<?= $public ? ' checked="checked"' : '' ?>> <label for="visibility-public"><?= $this->translate('Public'); ?></label>
+    <input id="visibility-hidden" type="radio" name="visibility" value="0"<?= !$public ? ' checked="checked"' : '' ?>> <label for="visibility-hidden"><?= $this->translate('Private'); ?></label>
   </div>
   <? if ($public): ?>
   <div class="list-url">
