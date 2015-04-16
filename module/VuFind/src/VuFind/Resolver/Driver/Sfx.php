@@ -115,7 +115,7 @@ class Sfx implements DriverInterface
                 $coverageText = & $target->coverage->coverage_text;
                 $record['coverage'] = (string)$coverageText
                     ->threshold_text->coverage_statement;
-                if (isset($coverageText->embargo_text->embargo_statement) {
+                if (isset($coverageText->embargo_text->embargo_statement)) {
                     $record['coverage'] .= ' ' . (string)$coverageText
                         ->embargo_text->embargo_statement;
                 }
