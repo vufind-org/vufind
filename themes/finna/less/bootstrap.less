@@ -311,14 +311,14 @@ mark, .highlight {
 }
 /* Carousel styling */
 .carousel {
-  background: @carousel-background;   
+    background: @carousel-background;   
 }
 .carousel .carouselHeader {
-  background: @carousel-header-background;
-  display: inline-block;
-  padding: 10px;
-  color: @carousel-header-color;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    background: @carousel-header-background;
+    display: inline-block;
+    padding: 10px;
+    color: @carousel-header-color;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 .carousel .carouselSlideHeader p {
     position: absolute;
@@ -340,17 +340,17 @@ mark, .highlight {
     transition: all 0.5s ease;
     bottom: 10px;
     padding: 0px 10px;
- & p {
-    z-index: 1;
-    position: relative;
-    margin: 0;
-    opacity: 0;
-    padding: 10px 0px;
-    text-shadow: @finna-text-shadow;
-    transition: all 0.5s ease;
-    transition-delay: 0.2s;
-    border-top: 1px solid @carousel-slide-text-color;
- }
+    & p {
+        z-index: 1;
+        position: relative;
+        margin: 0;
+        opacity: 0;
+        padding: 10px 0px;
+        text-shadow: @finna-text-shadow;
+        transition: all 0.5s ease;
+        transition-delay: 0.2s;
+        border-top: 1px solid @carousel-slide-text-color;
+    }
 }
 .carousel .slick-slider.slick-vertical .carouselText {
     padding: 10px;   
@@ -369,8 +369,8 @@ mark, .highlight {
  }
 .carousel .slick-slider:not(.slick-vertical) .slick-slide.slick-active:hover .carouselText p {
     opacity: 1;
-     transform: translate(0px, -10px);
-     transition-delay: 0s;
+    transform: translate(0px, -10px);
+    transition-delay: 0s;
 }
 .carousel .slick-slide.slick-active img {
     -webkit-filter: blur(0px);
@@ -387,7 +387,7 @@ mark, .highlight {
 .fa {cursor:default}
 
 
-/* --- Image prosessing --- */
+/* --- Image processing --- */
 
 .group [class^=col-] {padding-left:0}
 .highlight{&:extend(mark);}
@@ -398,11 +398,17 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 #modal .modal-body > h2:first-child {display:none}
 .tab-content {padding:4px}
 
-/* --- Finna local records ... */
+/* --- Finna local records --- */
 .template-name-view #record .record-title {
-       margin:0;
-       margin-bottom: 3px;
-       font-size: @record-title-font-size;
+    margin:0;
+    margin-bottom: 3px;
+    font-size: @record-title-font-size;
+}
+
+/* --- Record View --- */
+.record-uniform-titles {
+    font-size: 1.05em;
+    margin: 0 0 3px;
 }
 .record-authors {
     .date-and-year();
@@ -412,7 +418,11 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         width: 30%;    
     }
 }
-
+.summary {
+    color: @gray-light;
+    font-size: 1.05em;
+    margin-bottom: 0px;
+}
 .show-details-button {
     margin-bottom: 5px;
     cursor: pointer;
@@ -442,6 +452,12 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         vertical-align: middle;
     }
 }
+.dataTables_wrapper {
+	  width: 100%;
+}
+.part-authors-padded {
+	  padding-left: 10px;
+}
 
 @media(max-width:@screen-xs-max) {
     .cover-wrapper {
@@ -451,6 +467,8 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         margin-top: 10px;   
     }
 }
+
+
 /* --- Auto Complete Dropdown --- */ 
 .tt-dropdown-menu {
     .list-group;
@@ -976,14 +994,9 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
   cursor: pointer;
   text-decoration: line-through;
 }
-//== PCI
+/* --- PCI --- */
 .template-dir-primo.template-name-search .row.result, .sourcePrimo {
     border-bottom: 1px solid @gray-lighter;
-}
-.summary {
-        color: @gray-light;
-        font-size: 1.05em;
-        margin-bottom: 0px;
 }
 
 .primo-available-online {

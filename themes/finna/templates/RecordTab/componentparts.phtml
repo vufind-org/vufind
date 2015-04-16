@@ -3,29 +3,58 @@
     $this->headTitle($this->translate('Contents/Parts') . ': ' . $this->driver->getBreadcrumb());
 
     $componentParts = $this->driver->tryMethod('getEmbeddedComponentParts');
+
+    $havePresenters = false;
+    $haveDuration = false;
+    foreach ($componentParts as $part) {
+        if ($part['presenters']) {
+            $havePresenters = true;
+        }
+        if ($part['duration']) {
+            $haveDuration = true;
+        }
+    }
 ?>
 <table id="componentparts" class="display table">
   <thead>
     <tr>
       <th><?=$this->translate('No.') ?></th>
       <th><?=$this->translate('Title and Authors') ?></th>
-      <th><?=$this->translate('Presenters') ?></th>
-      <th><?=$this->translate('Playing Time') ?></th>
+      <? if ($havePresenters): ?>
+        <th><?=$this->translate('Presenters') ?></th>
+      <? endif; ?>
+      <? if ($haveDuration): ?>
+        <th><?=$this->translate('Playing Time') ?></th>
+      <? endif; ?>
     </tr>
   </thead>
   <tbody>
   <? foreach ($componentParts as $part): ?>
     <tr>
-      <td><?=$this->escapeHtml($part['number']) ?></td>
-      <td><a href="<?=$this->recordLink()->getUrl($part['id']) ?>"><?=$this->escapeHtml($part['title']) ?></a><br/>
-	      <span title="<?=$this->escapeHtmlAttr(implode(' ; ', $part['otherAuthors'])) ?>">
+      <td style="width: 10%"><?=$this->escapeHtml($part['number']) ?></td>
+      <td>
+        <? if (!empty($part['id'])): ?>
+          <a href="<?=$this->recordLink()->getUrl($part['id']) ?>"><?=$this->escapeHtml($part['title']) ?></a>
+        <? else: ?>
+          <?=$this->escapeHtml($part['title']) ?>
+        <? endif; ?>
+        <br/>
+        <? if (!empty($part['uniformTitle'])): ?>
+          <?=$this->escapeHtml($part['uniformTitle']) ?>
+          <br/>
+        <? endif; ?>
+        <div class="part-authors<?=empty($part['id']) || !empty($part['uniformTitle']) ? '-padded' : '' ?>" title="<?=$this->escapeHtmlAttr(implode(' ; ', $part['otherAuthors'])) ?>">
 	        <?=$this->escapeHtml(implode(' ; ', array_slice($part['otherAuthors'], 0, 3)) . (count($part['otherAuthors']) > 3 ? '...' : '')) ?>
-	      </span>
+	      </div>
 	    </td>
-      <td title="<?=$this->escapeHtmlAttr(implode(' ; ', $part['presenters'])) ?>">
+	    <? if ($havePresenters): ?>
+        <td title="<?=$this->escapeHtmlAttr(implode(' ; ', $part['presenters'])) ?>">
 	        <?=$this->escapeHtml(implode(' ; ', array_slice($part['presenters'], 0, 3)) . (count($part['presenters']) > 3 ? '...' : '')) ?>
-      </td>
-      <td><?=$this->escapeHtml($part['duration']) ?></td>
+        </td>
+      <? endif; ?>
+      <? if ($haveDuration): ?>
+        <td><?=$this->escapeHtml($part['duration']) ?></td>
+      <? endif; ?>
     </tr>
   <? endforeach; ?>
   </tbody>
@@ -47,14 +76,6 @@ $script = <<<JS
 $(document).ready(function() {
   $('table#componentparts').dataTable({
     "iDisplayLength": 50,
-    "bStateSave": true,
-    "fnStateSave": function (oSettings, oData) {
-      localStorage.setItem('DataTables_'+window.location.pathname, JSON.stringify(oData));
-    },
-    "fnStateLoad": function (oSettings) {
-      var data = localStorage.getItem('DataTables_'+window.location.pathname);
-      return JSON.parse(data);
-    },
     "oLanguage": {$translations},
   });
 });

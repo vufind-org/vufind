@@ -21,8 +21,15 @@
 
   <div class="col-sm-10 record-information">
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle())?></h1>
+    <? if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
+      <div class="record-uniform-titles">
+        <? foreach ($uniformTitles as $uniformTitle): ?>
+          <?=$this->escapeHtml($uniformTitle) ?><br/>
+        <? endforeach; ?>
+      </div>
+    <? endif; ?>
     <div class="record-authors" property="author">
-     <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
+      <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
         <div class="truncate-field">
           <span class="recordAuthors">
           <? foreach($results as $index => $author): ?>
