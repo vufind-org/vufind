@@ -644,7 +644,7 @@ class AjaxController extends AbstractBase
             }
         } catch (\Exception $e) {
             return $this->output(
-                $this->translate('Failed'),
+                $this->translate($e->getMessage()),
                 self::STATUS_ERROR
             );
         }
