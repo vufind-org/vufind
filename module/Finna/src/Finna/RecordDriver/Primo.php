@@ -158,6 +158,50 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
+     * Return record format.
+     *
+     * @return string.
+     */
+    public function getRecordType()
+    {
+        return $this->fields['format'];
+    }
+
+    /**
+     * Return building from index.
+     *
+     * @return string
+     */
+    public function getBuilding()
+    {
+        return null;
+    }
+
+    /**
+     * Like getFormat() but takes into account __unprocessed_format field.
+     *
+     * @return array Formats
+     */
+    public function getUnprocessedFormats()
+    {
+        return [$this->getRecordType()];
+    }
+
+    /**
+     * Return image rights.
+     *
+     * @return mixed array with keys:
+     *   'copyright'  Copyright (e.g. 'CC BY 4.0') (optional)
+     *   'description Human readable description (array)
+     *   'link'       Link to copyright info
+     *   or false if the record contains no images
+     */
+    public function getImageRights()
+    {
+        return false;
+    }
+
+    /**
      * Returns an array of parameter to send to Finna's cover generator.
      * Fallbacks to VuFind's getThumbnail if no record image with the
      * given index was found.

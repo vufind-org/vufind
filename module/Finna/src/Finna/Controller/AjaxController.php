@@ -135,7 +135,13 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $id = $this->params()->fromQuery('id');
         $index = $this->params()->fromQuery('index');
-        $driver = $this->getRecordLoader()->load($id, 'Solr');
+        list($source, $recId) = explode('.', $id, 2);
+        if ($source == 'pci') {
+            $source = 'Primo';
+        } else {
+            $source = 'Solr';
+        }
+        $driver = $this->getRecordLoader()->load($id, $source);
 
         $view = $this->createViewModel(array());
         $view->setTemplate('RecordDriver/SolrDefault/record-image-popup.phtml');
@@ -204,6 +210,198 @@ class AjaxController extends \VuFind\Controller\AjaxController
             }
         }
         return $this->output('', self::STATUS_ERROR);
+    }
+
+    /**
+     * Return rendered HTML for my lists navigation.
+     *
+     * @return mixed \Zend\Http\Response
+     */
+    public function getMyListsAjax()
+    {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            return $this->output('Lists disabled', self::STATUS_ERROR);
+        }
+
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        $activeId = (int)$this->getRequest()->getPost('active', null);
+        $lists = $user->getLists();
+        $html = $this->getViewRenderer()->partial(
+            'myresearch/mylist-navi.phtml',
+            ['user' => $user, 'activeId' => $activeId, 'lists' => $lists]
+        );
+        return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
+     * Update or create a list object.
+     *
+     * @return mixed \Zend\Http\Response
+     */
+    public function editListAjax()
+    {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            return $this->output('Lists disabled', self::STATUS_ERROR);
+        }
+
+        // User must be logged in to edit list:
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        $params = $this->getRequest()->getPost('params', null);
+        $required = ['id', 'title'];
+        foreach ($required as $param) {
+            if (!isset($params[$param])) {
+                return $this->output(
+                    "Missing parameter '$param'", self::STATUS_ERROR
+                );
+            }
+        }
+        $id = $params['id'];
+
+        // Is this a new list or an existing list?  Handle the special 'NEW' value
+        // of the ID parameter:
+        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+            ->get('UserList');
+
+        $newList = ($id == 'NEW');
+        $list = $newList ? $table->getNew($user) : $table->getExisting($id);
+
+        $finalId = $list->updateFromRequest(
+            $user, new \Zend\Stdlib\Parameters($params)
+        );
+
+        $params['id'] = $finalId;
+        return $this->output($params, self::STATUS_OK);
+    }
+
+    /**
+     * Update list resource note.
+     *
+     * @return mixed \Zend\Http\Response
+     */
+    public function editListResourceAjax()
+    {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            return $this->output('Lists disabled', self::STATUS_ERROR);
+        }
+
+        // User must be logged in to edit list:
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        $params = $this->getRequest()->getPost('params', null);
+
+        $required = ['listId', 'notes'];
+        foreach ($required as $param) {
+            if (!isset($params[$param])) {
+                return $this->output(
+                    "Missing parameter '$param'", self::STATUS_ERROR
+                );
+            }
+        }
+
+        list($source, $id) = explode('.', $params['id'], 2);
+        $source = $source === 'pci' ? 'Primo' : 'VuFind';
+
+        $listId = $params['listId'];
+        $notes = $params['notes'];
+
+        $resources = $user->getSavedData($params['id'], $listId, $source);
+        if (empty($resources)) {
+            return $this->output("User resource not found", self::STATUS_ERROR);
+        }
+
+        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+            ->get('UserResource');
+
+        foreach ($resources as $res) {
+            $row = $table->select(['id' => $res->id])->current();
+            $row->notes = $notes;
+            $row->save();
+        }
+
+        return $this->output('', self::STATUS_OK);
+    }
+
+    /**
+     * Add resources to a list.
+     *
+     * @return mixed \Zend\Http\Response
+     */
+    public function addToListAjax()
+    {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            return $this->output('Lists disabled', self::STATUS_ERROR);
+        }
+
+        // User must be logged in to edit list:
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
+        $params = $this->getRequest()->getPost('params', null);
+        $required = ['listId', 'ids'];
+        foreach ($required as $param) {
+            if (!isset($params[$param])) {
+                return $this->output(
+                    "Missing parameter '$param'", self::STATUS_ERROR
+                );
+            }
+        }
+
+        $listId = $params['listId'];
+        $ids = $params['ids'];
+
+        $table = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+            ->get('UserList');
+        $list = $table->getExisting($listId);
+        if ($list->user_id !== $user->id) {
+            return $this->output(
+                "Invalid list id", self::STATUS_ERROR
+            );
+        }
+
+        foreach ($ids as $id) {
+            $source = $id[0];
+            $recId = $id[1];
+            try {
+                $driver = $this->getRecordLoader()->load($recId, $source);
+                $driver->saveToFavorites(['list' => $listId], $user);
+            } catch (\Exception $e) {
+                return $this->output(
+                    $this->translate('Failed'),
+                    self::STATUS_ERROR
+                );
+            }
+        }
+
+        return $this->output('', self::STATUS_OK);
     }
 
     /**

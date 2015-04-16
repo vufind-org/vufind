@@ -1,0 +1,13 @@
+<div class="list-visibility">
+  <?= $this->translate('Public List Visibility'); ?>
+  <div>
+    <input id="visibility-public" type="radio" name="visibility" value="1"<?= $public ? ' checked="checked"' : '' ?>> <label for="visibility-public"><?= $this->translate('Public'); ?></label>
+    <input id="visibility-hidden" type="radio" name="visibility" value="0"<?= !$public ? ' checked="checked"' : '' ?>> <label for="visibility-hidden"><?= $this->translate('Private'); ?></label>
+  </div>
+  <? if ($public): ?>
+  <div class="list-url">
+    <?= $this->translate('Public List URL'); ?>
+    <div><a href="<?= $this->listUrl; ?>"><?= $this->listUrl; ?></a></div>
+   </div>
+   <? endif; ?>
+</div>

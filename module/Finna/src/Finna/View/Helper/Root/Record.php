@@ -67,4 +67,16 @@ class Record extends \VuFind\View\Helper\Root\Record
         $images = $this->driver->trymethod('getAllThumbnails', array($size));
         return count($images);
     }
+
+    /**
+     * Render online URLs
+     *
+     * @return string
+     */
+    public function getOnlineUrls()
+    {
+        return $this->renderTemplate(
+            'result-online-urls.phtml', ['driver' => $this->driver]
+        );
+    }
 }

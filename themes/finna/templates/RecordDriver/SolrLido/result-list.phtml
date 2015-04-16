@@ -53,13 +53,8 @@
           <? endif; ?>
         <? endif; ?>
       <? endif; ?>
+      <?=$this->record($this->driver)->getOnlineUrls()?>
 
-      <?=$this->context($this)->renderInContext(
-        'RecordDriver/SolrDefault/result-online-urls.phtml',
-        array(
-          'driver' => $this->driver
-        )
-      );?>
       <? /* Saved lists */ ?>
       <div class="savedLists alert alert-info hidden">
         <strong><?=$this->transEsc("Saved in")?>:</strong>

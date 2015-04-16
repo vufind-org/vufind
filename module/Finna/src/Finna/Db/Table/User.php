@@ -38,6 +38,18 @@ namespace Finna\Db\Table;
  */
 class User extends \VuFind\Db\Table\User
 {
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     */
+    public function __construct(\Zend\Config\Config $config)
+    {
+        parent::__construct($config);
+        $this->rowClass = 'Finna\Db\Row\User';
+    }
+
     /**
      * Create a row for the specified username.
      *

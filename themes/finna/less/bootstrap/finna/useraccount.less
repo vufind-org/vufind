@@ -83,10 +83,34 @@
     }
     .bulk-action-buttons-col {
         padding: 10px 0;
-        border-top: 3px solid @gray-lighter;
-        border-bottom: 3px solid @gray-lighter;
+        border-right: 10px solid #ffffff;
         & input.btn {
-              margin-right: 3px;   
+              margin-right: 3px;
+        }
+        & .mylist-functions {
+            & .jump-menu-style.controls {
+                border-radius: 0 10px 10px 0;
+                height: inherit;
+            }
+            & i#add-to-list {
+                position: absolute;
+                top: 8px;
+            }
+            & select#add-to-list {
+                width: 200px;
+            }
+        }
+        &.fixed {
+            background-color: @gray-lighter;
+            position: fixed;
+            top: 0px;
+            padding: 10px 0 2px 10px;
+            z-index: 11;
+            background: rgba(77,77,77,0.95);
+            box-shadow: 0px 19px 15px -13px grey;
+            & .checkbox span {
+                color: #ffffff;
+            }
         }
     }
     .finna-main-header {
@@ -102,7 +126,7 @@
     & .list-title {
          margin-bottom: 0px;   
     }
-    & .list-title, .list-description {
+    & .list-title, .list-description, .resource-note, .add-new-list {
              border: 1px solid transparent;
              display: inline-block;
              padding: 5px;
@@ -118,14 +142,41 @@
             color: @gray-light;   
         }
     }
+    & .list-title.no-edit {
+        border: 0;
+        &:hover {
+            border: 0;
+        }
+    }
+
+    & .resource-note {
+        margin-left: -5px;
+    }
+
     & .mylist-bar {
-        margin-top: 20px;  
+        margin-top: 20px;
     }
     .mylist-nav {
         & li > a:not(.add-new-list) {
             background: @gray;
             color: #fff;
             margin-bottom: 5px;
+        }
+        & li > a.active {
+            background: @brand-primary;
+        }
+
+        & .add-new-list {
+            display: block;
+        }
+        & .add-new-list .name {
+            width: 100%;
+        }
+        & .add-new-list .icon {
+            cursor: pointer;
+            position: absolute;
+            top: 0.7em;
+            right: 0.7em;
         }
     }
     .toolbar {
@@ -241,6 +292,36 @@
         }
         & td {
             width: 75%;   
+        }
+    }
+}
+
+.main.template-dir-myresearch.template-name-mylist {
+    & i.fa.fa-pen {
+        margin-left: 10px;
+    }
+    & .mylist-nav .list-visibility {
+        padding: 10px;
+        & .list-url {
+            font-weight: bold;
+        }
+        & #visibility-hidden {
+            margin-left: 10px;
+        }
+    }
+
+    & .delete-list li {
+        border-bottom: none;
+        &:not(.disabled) {
+            float: left;
+            width: 45%;
+            padding: 10px;
+            text-align: center;
+            & a {
+                border-radius: @border-radius-base;
+                background: @link-color;
+                color: @body-bg;
+            }
         }
     }
 }

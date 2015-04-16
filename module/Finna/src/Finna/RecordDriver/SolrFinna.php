@@ -167,7 +167,7 @@ trait SolrFinna
         return isset($this->fields['local_ids_str_mv'])
             ? $this->fields['local_ids_str_mv'] : [];
     }
-
+    
     /**
      * Get all authors apart from presenters
      *
@@ -306,6 +306,18 @@ trait SolrFinna
         }
         return $this->getFormats();
     }
+
+    /**
+     * Return main year.
+     *
+     * @return string|false
+     */
+    public function getYear()
+    {
+        return isset($this->fields['main_date_str'])
+            ? $this->fields['main_date_str'] : false;
+    }
+
 
     /**
      * A helper function that merges an array of JSON-encoded URLs

@@ -55,6 +55,7 @@ $config = array(
             'ajax' => 'Finna\Controller\AjaxController',
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
+            'my-research' => 'Finna\Controller\MyResearchController',
             'primo' => 'Finna\Controller\PrimoController',
             'primorecord' => 'Finna\Controller\PrimorecordController',
             'search' => 'Finna\Controller\SearchController'
@@ -65,6 +66,7 @@ $config = array(
         'factories' => array(
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
+            'VuFind\DbTablePluginManager' => 'Finna\Service\Factory::getDbTablePluginManager',
             'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
         )
     ),
@@ -79,6 +81,7 @@ $config = array(
             ),
             'db_table' => [
                 'factories' => [
+                    'resource' => 'Finna\Db\Table\Factory::getResource',
                     'user' => 'Finna\Db\Table\Factory::getUser',
                 ],
             ],

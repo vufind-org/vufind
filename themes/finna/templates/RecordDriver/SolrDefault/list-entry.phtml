@@ -21,13 +21,8 @@
     <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
   </div>
   <div class="col-xs-2 col-sm-2 text-center">
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-      <? else: ?>
-        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-      <? endif; ?>
-    </a>
+    <? $img = $this->recordImage($this->record($this->driver))?>
+    <?= $img->render('list', array('medium' => array('w' => 250))) ?>
   </div>
   <div class="col-xs-8 col-sm-9">
     <div class="resultItemLine1">
@@ -59,7 +54,11 @@
         ?></a>
         <? endif; ?>
 
-        <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
+        <?
+          $journalTitle = $this->driver->getContainerTitle();
+          $summDate = $this->driver->getPublicationDates();
+          $dates = $this->driver->tryMethod('getResultDateRange', []);
+        ?>
         <? if (!empty($journalTitle)): ?>
           <?=!empty($summAuthor) ? '' : ''?>
           <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)) . '">' . $this->highlight($journalTitle) . '</a>';?>
@@ -67,6 +66,8 @@
         <? elseif (!empty($summDate)): ?>
           <?=!empty($summAuthor) ? '' : ''?>
             <?=$this->escapeHtml($summDate[0])?>
+        <? elseif ($dates): ?>
+            <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
         <? endif; ?>
         <? $summInCollection = $this->driver->getContainingCollections(); if (false && !empty($summInCollection)): ?>
           <? foreach ($summInCollection as $collId => $collText): ?>
@@ -104,7 +105,7 @@
       <br/>
     <? endif; ?>
 
-    <div class="holding-details">
+      <div class="holding-details">
       <?
       /* Display information on duplicate records if available */
       $dedupData = $this->driver->getDedupData();
@@ -126,13 +127,12 @@
           }
         ?>
         <? if ($source): ?>
-          <div class="dedupInformation">
-            <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
-          </div>
+        <div class="dedupInformation">
+          <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
+        </div>
         <? endif; ?>
       <? endif; ?>
-
-      <div class="callnumAndLocation">
+        <div class="callnumAndLocation">
         <? if ($this->driver->supportsAjaxStatus()): ?>
           <strong class="hideIfDetailed"></strong>
           <span class="callnumber ajax-availability hidden">
@@ -147,29 +147,35 @@
             <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
           <? endif; ?>
         <? endif; ?>
+        </div>
       </div>
-    </div>
-    <?=$this->context($this)->renderInContext(
-        'RecordDriver/SolrDefault/result-online-urls.phtml',
-        array(
-          'driver' => $this->driver
-        )
-    );?>
-
+      <?=$this->record($this->driver)->getOnlineUrls()?>
       <?=$this->record($this->driver)->getPreviews()?>
-
     </div>
     <div class="myresearch-notes">
-    <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
-    <? if (count($listNotes) > 0): ?>
-      <strong>TODO edit note <?=$this->transEsc('Notes')?>:</strong>
-      <? if (count($listNotes) > 1): ?><br/><? endif; ?>
-      <? foreach ($listNotes as $note): ?>
-        <?=$this->escapeHtml($note)?><br/>
-      <? endforeach; ?>
-    <? else: ?>
-      TODO <span class="text-right"><a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Add note')?> <i class="fa fa-pen"></i></a></span>
-    <? endif; ?>
+    <?
+      $hasNote = false;
+      $notes = false;
+      $listNotes = $list_id != null ? $this->driver->getListNotes($list_id, $user_id) : false;
+      if ($listNotes) {
+        $notes = implode('', $listNotes);
+        $notes = preg_replace("/\r\n|\r|\n/",'<br class="newline">', $this->escapeHtml($notes));
+        $hasNote = strlen($notes) > 0;
+      }
+    ?>
+      <div class="note-info <?= $hasNote ? '' : ' hide' ?>"><strong><?=$this->transEsc('Notes')?>:</strong></div>
+      <div class="resource-note">
+        <span data-empty="<?= $hasNote ? '0' : '1' ?>">
+          <? if (count($listNotes) > 0): ?>
+            <?= $notes; ?>
+          <? else: ?>
+            <?=$this->transEsc('Add note')?>
+          <? endif; ?>
+        </span>
+        <? if ($list_id): ?>
+          <i class="fa fa-pen icon"></i>
+        <? endif; ?>
+      </div>
     </div>
   </div>
 
