@@ -51,24 +51,41 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $view;
         }
 
-        $params = $view->params->getSortList();
-        $sort = isset($_GET['sort']) ? $_GET['sort'] : false;
-
-        $sortList = [
-            'saved' => ['desc' => 'sort_saved'],
-            'title' => ['desc' => 'sort_title'],
-            'author' => ['desc' => 'sort_author'],
-            'date' => ['desc' => 'sort_year asc'],
-            'format' => ['desc' => 'sort_format']
-        ];
-        foreach ($sortList as $key => &$data) {
-            $data['selected'] = $key === $sort;
-        }
-        if (!$sort) {
-            $sortList['saved']['selected'] = true;
-        }
-        $view->sortList = $sortList;
+        $view->sortList = $this->createSortList();
 
         return $view;
     }
+
+    /**
+     * Create sort list for public list page
+     *
+     * @return array
+     */
+    protected function createSortList()
+    {
+        $sort = isset($_GET['sort']) ? $_GET['sort'] : false;
+
+        $config = $this->getServiceLocator()->get('VuFind\Config');
+        $searchSettings = $config->get('searches');
+
+        $sortList = [];
+        if (isset($searchSettings->FavoritesSort)) {
+            foreach ($searchSettings->FavoritesSort as $key => $value) {
+                $sortList[$key] = [
+                    'desc' => $value,
+                    'selected' => $key === $sort,
+                ];
+            }
+
+            if (!$sort) {
+                if (isset($searchSettings->General->favorites_default_sort)) {
+                    $sortList[$searchSettings->General->favorites_default_sort]
+                        ['selected'] = true;
+                }
+            }
+        }
+
+        return $sortList;
+    }
+
 }

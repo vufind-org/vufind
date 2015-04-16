@@ -66,6 +66,14 @@ class Options extends \VuFind\Search\Favorites\Options
             $this->viewOptions = ['list' => 'List'];
         }
 
+        if (isset($searchSettings->FavoritesSort)) {
+            foreach ($searchSettings->FavoritesSort as $key => $value) {
+                $this->sortOptions[$key] = $value;
+            }
+        }
+        if (isset($searchSettings->General->favorites_default_sort)) {
+            $this->defaultSort = $searchSettings->General->favorites_default_sort;
+        }
     }
 
 }

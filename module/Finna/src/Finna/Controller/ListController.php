@@ -40,7 +40,7 @@ use VuFind\Exception\ListPermission as ListPermissionException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class ListController extends \VuFind\Controller\AbstractBase
+class ListController extends \Finna\Controller\MyResearchController
 {
     /**
      * Send user's saved favorites from a particular list to the view
@@ -83,10 +83,13 @@ class ListController extends \VuFind\Controller\AbstractBase
 
             $username = $this->getListUsername($results->getListObject()->user_id);
 
-            return $this->createViewModel(
-                ['params' => $params, 'results' => $results,
-                    'list_username' => $username]
+            $view = $this->createViewModel(
+                ['params' => $params,
+                    'results' => $results,
+                    'list_username' => $username,
+                    'sortList' => $this->createSortList()]
             );
+            return $view;
         } catch (ListPermissionException $e) {
             return $this->createNoAccessView();
         }
@@ -134,4 +137,5 @@ class ListController extends \VuFind\Controller\AbstractBase
         $view->email = $config->Site->email;
         return $view;
     }
+
 }

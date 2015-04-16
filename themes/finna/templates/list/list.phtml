@@ -8,10 +8,9 @@ $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
     'lookfor' => $list->title,
     )
 );
+$this->headScript()->appendFile("check_item_statuses.js");
 ?>
-
 <?= $this->flashmessages() ?>
-
 <div class="clearfix hidden-print">
     <div class="row public-list-row">
         <div class="public-list-desc col-xs-7">
@@ -24,7 +23,6 @@ $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
         </div>
     </div>
 </div>
-
 <div class="row">
     <div class="col-xs-12">
         <div class="pull-left">
@@ -37,11 +35,17 @@ $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
         </div>
     </div>
 </div>
-
 <div class="row public-list-view">
     <form class="form-inline col-xs-12" method="post" name="bulkActionForm" action="<?= $this->url('cart-home') ?>">
         <?= $this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => '')) ?>
         <?= $this->render('search/list-' . $this->params->getView() . '.phtml') ?>
         <?= $this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_')) ?>
     </form>
+</div>
+</div>
+<div class="container-fluid pagination-background">
+  <div class="container">
+    <div class="col-xs-12 text-center">
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+    </div>
 </div>
