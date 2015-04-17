@@ -94,6 +94,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $basicHandlers = [];
 
     /**
+     * Advanced Filters (they allow complex filters mapped on virtual Solr-Fields)
+     *
+     * @var array
+     */
+    protected $advancedFilters = [];
+
+    /**
      * Special advanced facet settings
      *
      * @var string
