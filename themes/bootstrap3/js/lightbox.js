@@ -16,44 +16,65 @@ $(document).ready(function() {
   $('#modal').on('hide.bs.modal', function() {
     $('#modal .modal-body').html(vufindString.loading+'...');
     lightboxShown = false;
-    updatePageForLogin();
     refreshTags();
   });
 });
 
-function updateLightbox(html) {
+function updateLightbox(html, link) {
   $('#modal .modal-body').html(html);
   $('#modal').modal('handleUpdate');
   $('#modal .modal-body').on('click', 'a', constrainLink);
+  console.log(link);
+  if("undefined" !== typeof link
+  && "undefined" !== typeof link.dataset
+  && "undefined" !== typeof link.dataset.lightboxClose) {
+    console.log("add close");
+    var forms = $('#modal .modal-body form');
+    for(var i=0;i<forms.length;i++) {
+      forms[i].dataset.lightboxClose = 1;
+    }
+  }
   constrainForms();
 }
 
-function lightboxAllowedPath(url) {
-  var illegal = ['MyResearch/Home', 'Record/View'];
-  for(var i=illegal.length;i--;) {
-    if(url.match(illegal[i])) {
-      return false;
-    }
-  }
-  return true;
-}
+/**
+ * Form data options
+ *
+ * data-lightbox-close   = close after success (present to close, set to function name to run)
+ * data-lightbox-success = on success, run named function
+ */
 function constrainForms() {
-  var forms = $('.modal form');
+  var forms = $('#modal form');
   for(var i=forms.length;i--;) {
-    if('undefined' === typeof this.action) {
-      this.action = path;
+    if('undefined' === typeof forms[i].action) {
+      forms[i].action = path;
     }
-    if(this.action.length > 1 && lightboxAllowedPath(this.action)) {
+    if(forms[i].action.length > 1) {
       forms[i].innerHTML += '<input type="hidden" name="layout" value="lightbox"/>';
       $(forms[i]).unbind('submit').bind('submit', function(event) {
         event.preventDefault();
         $.ajax({
-          url: this.action || path,
-          method: this.method || 'GET',
-          data: $(this).serialize(),
-          success: 'undefined' === typeof this.dataset.lightboxClose
-            ? updateLightbox
-            : function() { $('#modal').modal('hide'); },
+          url: event.target.action || path,
+          method: event.target.method || 'GET',
+          data: $(event.target).serialize(),
+          success: function(html, status) {
+            var dataset = 'undefined' !== typeof event.target.dataset;
+            if(dataset && 'undefined' !== typeof event.target.dataset.lightboxClose) {
+              $('#modal').modal('hide');
+              if("function" === typeof window[event.target.dataset.lightboxSuccess]) {
+                window[event.target.dataset.lightboxSuccess](html, status);
+              }
+              if("function" === typeof window[event.target.dataset.lightboxClose]) {
+                window[event.target.dataset.lightboxClose](html, status);
+              }
+            } else {
+              if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess
+                && "function" === typeof window[event.target.dataset.lightboxSuccess]) {
+                window[event.target.dataset.lightboxSuccess](html, status);
+              }
+              updateLightbox(html, status);
+            }
+          },
           error: function(e) {
             $('body').removeClass('modal-open').html('<div>'+e.responseText+'</div>');
             $('#modal').addClass('hidden');
@@ -69,6 +90,15 @@ function constrainForms() {
     }
   }
 }
+
+/**
+ * Modal link data options
+ *
+ * data-lightbox-close  = close lightbox after form success
+ * data-lightbox-href   = overwrite href with this value in lightbox
+ * data-lightbox-ignore = do not open this link in lightbox
+ * data-lightbox-post   = post json for link ajax
+ */
 function constrainLink(event) {
   if('undefined' !== typeof this.dataset.lightboxIgnore) {
     return true;
@@ -79,7 +109,7 @@ function constrainLink(event) {
   if('undefined' === typeof this.href) {
     this.href = path;
   }
-  if(this.href.length > 1 && lightboxAllowedPath(this.href)) {
+  if(this.href.length > 1) {
     event.preventDefault();
     var parts = this.href.split('#');
     parts[1] = parts.length < 2 ? '' : '#'+parts[1];
@@ -87,7 +117,7 @@ function constrainLink(event) {
       url: parts[0].indexOf('?') < 0
         ? parts[0]+'?layout=lightbox'+parts[1]
         : parts[0]+'&layout=lightbox'+parts[1],
-      success: updateLightbox
+      success: function(d){updateLightbox(d, event.target);}
     };
     if('undefined' !== typeof this.dataset.lightboxPost) {
       ajaxObj.method = 'POST';
@@ -99,32 +129,5 @@ function constrainLink(event) {
       lightboxShown = true;
     }
     return false;
-  }
-}
-
-function refreshTags() {
-  var recordId = $('#record_id').val();
-  var recordSource = $('.hiddenSource').val();
-
-  // Update tag list (add tag)
-  var tagList = $('#tagList');
-  if (tagList.length > 0) {
-    tagList.empty();
-    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
-    $.ajax({
-      dataType: 'json',
-      url: url,
-      success: function(response) {
-        if (response.status == 'OK') {
-          $.each(response.data, function(i, tag) {
-            var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-            var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
-            tagList.append(html);
-          });
-        } else if (response.data && response.data.length > 0) {
-          tagList.append(response.data);
-        }
-      }
-    });
   }
 }

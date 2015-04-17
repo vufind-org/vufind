@@ -202,6 +202,32 @@ function newAccountHandler(html) {
     Lightbox.close();
   }
 }
+function refreshTags() {
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+
+  // Update tag list (add tag)
+  var tagList = $('#tagList');
+  if (tagList.length > 0) {
+    tagList.empty();
+    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    $.ajax({
+      dataType: 'json',
+      url: url,
+      success: function(response) {
+        if (response.status == 'OK') {
+          $.each(response.data, function(i, tag) {
+            var href = path + '/Tag?' + $.param({lookfor:tag.tag});
+            var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
+            tagList.append(html);
+          });
+        } else if (response.data && response.data.length > 0) {
+          tagList.append(response.data);
+        }
+      }
+    });
+  }
+}
 
 // This is a full handler for the login form
 function ajaxLogin(form) {
