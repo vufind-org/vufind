@@ -40,6 +40,24 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 {
 
     /**
+     * Send list of checked out books to view.
+     * Added profile to view, so borrow blocks can be shown.
+     *
+     * @return mixed
+     */
+    public function checkedoutAction()
+    {
+        $view = parent::checkedoutAction();
+
+        $patron = $this->catalogLogin();
+        $catalog = $this->getILS();
+        $profile = $catalog->getMyProfile($patron);
+        $view->profile = $profile;
+
+        return $view;
+    }
+
+    /**
      * Send user's saved favorites from a particular list to the view
      *
      * @return mixed
