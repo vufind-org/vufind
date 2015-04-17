@@ -644,7 +644,7 @@ class AjaxController extends AbstractBase
             }
         } catch (\Exception $e) {
             return $this->output(
-                $this->translate($e->getMessage()),
+                ('development' == APPLICATION_ENV) ? $e->getMessage() : 'Failed',
                 self::STATUS_ERROR
             );
         }
