@@ -5,11 +5,7 @@
   <? foreach ($comments as $comment): ?>
     <div class="comment row">
       <div class="col-sm-3 name">
-        <? if (empty($comment->firstname) && empty($comment->lastname)): list($email) = explode('@', $comment->email); ?>
-          <strong><?=$this->escapeHtml(trim($email))?></strong><br/>
-        <? else: ?>
-          <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong><br/>
-        <? endif; ?>
+        <strong><?=$this->escapeHtml(trim($this->userPublicName($comment)))?></strong><br/>
         <small>
           <?=$this->escapeHtml($comment->created)?>
           <? if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>

@@ -111,17 +111,8 @@ class ListController extends \Finna\Controller\MyResearchController
             $table = $this->getTable('User');
             $listUser = $table->getById($listUserId);
         }
-        if ($listUser) {
-            if (empty($listUser->firstname) && empty($listUser->lastname)) {
-                list($username) = explode('@', $listUser->email);
-            } else {
-                $username = trim($listUser->firstname . ' ' . $listUser->lastname);
-            }
-        } else {
-            $username = '-';
-        }
 
-        return $username;
+        return $listUser;
     }
 
     /**
