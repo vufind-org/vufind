@@ -312,8 +312,8 @@ class Server
             }
         }
 
-        // Headers should be returned only if the metadata format matching 
-        // the supplied metadataPrefix is available. 
+        // Headers should be returned only if the metadata format matching
+        // the supplied metadataPrefix is available.
         // If RecordDriver returns nothing, skip this record.
         if (empty($xml)) {
             return true;
