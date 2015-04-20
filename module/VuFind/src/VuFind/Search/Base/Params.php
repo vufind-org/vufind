@@ -844,7 +844,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function parseFilter($filter)
     {
-        if ($this->isAdvancedFilter($filter) == true) return ['#', substr($filter,1)];
+        if ($this->isAdvancedFilter($filter) == true) return ['#', $filter];
         // Split the string and assign the parts to $field and $value
         $temp = explode(':', $filter, 2);
         $field = array_shift($temp);
@@ -905,7 +905,7 @@ class Params implements ServiceLocatorAwareInterface
 
     public function isAdvancedFilter($filter)
     {
-        if (substr($filter, 0, 1) == '#') return true;
+        if (substr($filter, 0, 1) == '(') return true;
         return false;
     }
 
