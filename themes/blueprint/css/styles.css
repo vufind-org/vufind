@@ -142,6 +142,8 @@ div.bulkActionButtons input.button:hover {
 div.bulkActionButtons input.button {
     width: 0;  /* IE table-cell margin fix */
     overflow: visible;
+    margin-left: .5em;
+    margin-right: .25em;
 }
 
 div.bulkActionButtons input.button[class] {  /* IE < 7 ignores [class] */
