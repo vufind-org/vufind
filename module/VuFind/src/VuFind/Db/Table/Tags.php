@@ -129,11 +129,9 @@ class Tags extends Gateway
                         )
                     ]
                 );
-                // Convert record_id to resource_id
                 $select->join(
                     ['rt' => 'resource_tags'], 'rt.tag_id = tags.id', []
                 );
-                // Convert record_id to resource_id
                 $select->join(
                     ['r' => 'resource'], 'rt.resource_id = r.id', []
                 );
