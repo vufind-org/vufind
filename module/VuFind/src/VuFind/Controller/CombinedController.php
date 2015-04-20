@@ -261,8 +261,15 @@ class CombinedController extends AbstractSearch
         $query = $this->getRequest()->getQuery();
         $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
 
-        // Disable top/side recommendations but leave noresults active:
-        $query->noRecommend = 'top,side';
+        // Always leave noresults active (useful for 0-hit searches) and
+        // side inactive (no room to display) but display or hide top based
+        // on include_recommendations setting.
+        if (isset($settings['include_recommendations'])
+            && $settings['include_recommendations']
+        ) {
+            $query->noRecommend = 'side';
+        } else {
+            $query->noRecommend = 'top,side';
+        }
     }
 }
-
