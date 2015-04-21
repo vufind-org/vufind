@@ -13,6 +13,7 @@ $(document).ready(function() {
     $('.modal-link').on('click', constrainLink);
     lightboxShown = false;
   }
+  constrainForms('form[data-lightbox]');
   $('#modal').on('hide.bs.modal', function() {
     $('#modal .modal-body').html(vufindString.loading+'...');
     lightboxShown = false;
@@ -21,10 +22,10 @@ $(document).ready(function() {
 });
 
 function updateLightbox(html, link) {
-  console.log('updateLightbox');
+  //console.log('updateLightbox');
   $('#modal .modal-body').html(html);
   $('#modal').modal('handleUpdate');
-  $('#modal .modal-body').on('click', '.modal-link', constrainLink);
+  $('#modal .modal-body').on('click', 'a', constrainLink);
   if("undefined" !== typeof link
   && "undefined" !== typeof link.dataset
   && "undefined" !== typeof link.dataset.lightboxClose) {
@@ -33,7 +34,7 @@ function updateLightbox(html, link) {
       forms[i].dataset.lightboxClose = 1;
     }
   }
-  constrainForms();
+  constrainForms('#modal form');
   // Select all checkboxes
   $('#modal').find('.checkbox-select-all').change(function() {
     $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
@@ -46,6 +47,7 @@ function updateLightbox(html, link) {
 /**
  * Form data options
  *
+ * data-lightbox         = looked for at page ready, handles form response in Lightbox
  * data-lightbox-close   = close after success (present to close, set to function name to run)
  * data-lightbox-success = on success, run named function
  *
@@ -53,8 +55,8 @@ function updateLightbox(html, link) {
  *
  * data-lightbox-ignore = show form return outside lightbox
  */
-function constrainForms() {
-  var forms = $('#modal form');
+function constrainForms(selector) {
+  var forms = $(selector);
   for(var i=forms.length;i--;) {
     if('undefined' === typeof forms[i].action) {
       forms[i].action = path;
@@ -72,13 +74,11 @@ function constrainForms() {
                 .attr('name', clicked.attr('name'))
                 .val(clicked.attr('value') || 1)
             );
-            console.log($(event.target).serializeArray());
             return true;
           }
           data[data.length] = {'name':clicked.attr('name'), 'value':clicked.attr('value') || 1};
         }
         event.preventDefault();
-        console.log(data);
         $.ajax({
           url: event.target.action || path,
           method: event.target.method || 'GET',

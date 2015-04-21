@@ -10,7 +10,7 @@
 
 <?=$this->flashmessages()?>
 
-<h2><?=$this->transEsc($pageTitle); ?></h2>
+<p class="lead"><?=$this->transEsc($pageTitle); ?></p>
 
 <form class="form-horizontal edit-list-form" method="post" name="<?=empty($this->list->id) ? 'newList' : 'editListForm'?>" action="">
   <input type="hidden" name="id" value="<?=empty($this->list->id) ? 'NEW' : $this->list->id ?>"/>

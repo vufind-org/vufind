@@ -405,9 +405,10 @@ $(document).ready(function() {
     window.location.assign($(this).attr('href'));
   });
 
+  /*
   $('[name=bulkActionForm]').submit(function() {
     return bulkActionSubmit($(this));
-  });
+  }); */
   $('[name=bulkActionForm]').find("[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .fa-spinner').remove();
