@@ -844,6 +844,9 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function parseFilter($filter)
     {
+        if ($this->isAdvancedFilter($filter) == true) {
+            return ['#', $filter];
+        }
         // Split the string and assign the parts to $field and $value
         $temp = explode(':', $filter, 2);
         $field = array_shift($temp);
@@ -899,6 +902,21 @@ class Params implements ServiceLocatorAwareInterface
             list($field, $value) = $this->parseFilter($newFilter);
             $this->filterList[$field][] = $value;
         }
+    }
+
+    /**
+     * Detects if a filter is advanced (true) or simple (false)
+     *
+     * @param string $filter A filter string
+     *
+     * @return bool
+     */
+    public function isAdvancedFilter($filter)
+    {
+        if (substr($filter, 0, 1) == '(') {
+            return true;
+        }
+        return false;
     }
 
     /**
