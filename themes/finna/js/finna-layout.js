@@ -63,8 +63,8 @@ finna.layout = (function() {
           }
 
           // get the line-height of first element to determine each text line height
-          truncation[index] = rowHeight[index] * rowCount ;
-          // don't truncate, if one line for truncation
+          truncation[index] = rowHeight[index] * rowCount;
+          // truncate only if there's more than one line to hide
           if ($(this).height() > (truncation[index] + rowHeight[index] + 1)) {
             $(this).css('height', truncation[index] - 1 + 'px');
             if ($( this ).hasClass("wide")) { // generate different truncate styles according to class

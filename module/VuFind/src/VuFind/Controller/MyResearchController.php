@@ -455,7 +455,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Perform delete and send appropriate flash message:
-        if (!is_null($listID)) {
+        if (null !== $listID) {
             // ...Specific List
             $table = $this->getTable('UserList');
             $list = $table->getExisting($listID);
