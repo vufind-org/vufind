@@ -21,20 +21,26 @@ $(document).ready(function() {
 });
 
 function updateLightbox(html, link) {
+  console.log('updateLightbox');
   $('#modal .modal-body').html(html);
   $('#modal').modal('handleUpdate');
-  $('#modal .modal-body').on('click', 'a', constrainLink);
-  console.log(link);
+  $('#modal .modal-body').on('click', '.modal-link', constrainLink);
   if("undefined" !== typeof link
   && "undefined" !== typeof link.dataset
   && "undefined" !== typeof link.dataset.lightboxClose) {
-    console.log("add close");
     var forms = $('#modal .modal-body form');
     for(var i=0;i<forms.length;i++) {
       forms[i].dataset.lightboxClose = 1;
     }
   }
   constrainForms();
+  // Select all checkboxes
+  $('#modal').find('.checkbox-select-all').change(function() {
+    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
+  });
+  $('#modal').find('.checkbox-select-item').change(function() {
+    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
+  });
 }
 
 /**
@@ -53,11 +59,26 @@ function constrainForms() {
       forms[i].innerHTML += '<input type="hidden" name="layout" value="lightbox"/>';
       $(forms[i]).unbind('submit').bind('submit', function(event) {
         event.preventDefault();
+        var data = $(event.target).serializeArray();
+        var clicked = $(event.target).find('[clicked]');
+        console.log(clicked);
+        if(clicked.length > 0 && clicked.attr('name')) {
+          data[data.length] = {'name':clicked.attr('name'), 'value':clicked.attr('value') || 1};
+          if(clicked.data('lightbox-ignore')) {
+            return true;
+          }
+        }
+        console.log("Submit", {
+          url: event.target.action || path,
+          method: event.target.method || 'GET',
+          data: data
+        });
         $.ajax({
           url: event.target.action || path,
           method: event.target.method || 'GET',
-          data: $(event.target).serialize(),
+          data: data,
           success: function(html, status) {
+            console.log('success');
             var dataset = 'undefined' !== typeof event.target.dataset;
             if(dataset && 'undefined' !== typeof event.target.dataset.lightboxClose) {
               $('#modal').modal('hide');
@@ -88,6 +109,16 @@ function constrainForms() {
         return false;
       });
     }
+    // Highlight which submit button clicked
+    $(forms[i]).find("input[type=submit]").click(function() {
+      // Remove other clicks
+      $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
+      // Add useful information
+      $(this).attr("clicked", "true");
+      // Add prettiness
+      $('#modal .fa-spinner').remove();
+      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    });
   }
 }
 

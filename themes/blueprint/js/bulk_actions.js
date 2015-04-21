@@ -59,7 +59,7 @@ function registerBulkActions() {
     // Support delete item from list button:
     $('.delete.tool').unbind('click').click(function(){
         var recordID = this.href.substring(this.href.indexOf('delete=')+'delete='.length);
-        recordID = decodeURIComponent(recordID.split('&')[0]);
+        recordID = decodeURIComponent(recordID.split('&')[0].replace(/\+/g, ' '));
         var listID = this.href.substring(this.href.lastIndexOf('/')+1);
         listID = decodeURIComponent(listID.split('?')[0]);
         if (listID == 'Favorites') {
