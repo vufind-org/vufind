@@ -48,6 +48,10 @@ function updateLightbox(html, link) {
  *
  * data-lightbox-close   = close after success (present to close, set to function name to run)
  * data-lightbox-success = on success, run named function
+ *
+ * Submit button data options
+ *
+ * data-lightbox-ignore = show form return outside lightbox
  */
 function constrainForms() {
   var forms = $('#modal form');
@@ -58,41 +62,35 @@ function constrainForms() {
     if(forms[i].action.length > 1) {
       forms[i].innerHTML += '<input type="hidden" name="layout" value="lightbox"/>';
       $(forms[i]).unbind('submit').bind('submit', function(event) {
-        event.preventDefault();
         var data = $(event.target).serializeArray();
-        var clicked = $(event.target).find('[clicked]');
-        console.log(clicked);
+        var clicked = $(event.target).find('[type=submit]:focus');
         if(clicked.length > 0 && clicked.attr('name')) {
-          data[data.length] = {'name':clicked.attr('name'), 'value':clicked.attr('value') || 1};
-          if(clicked.data('lightbox-ignore')) {
+          if('undefined' !== typeof clicked.data('lightbox-ignore')) {
+            $(event.target).find('[name="layout"]').remove();
+            event.target.innerHTML += '<input type="hidden" name="' + clicked.attr('name') + '" value="' + (clicked.attr('value') || 1) + '"/>';
+            console.log($(event.target).serialize());
             return true;
           }
+          data[data.length] = {'name':clicked.attr('name'), 'value':clicked.attr('value') || 1};
         }
-        console.log("Submit", {
-          url: event.target.action || path,
-          method: event.target.method || 'GET',
-          data: data
-        });
+        event.preventDefault();
+        console.log(data);
         $.ajax({
           url: event.target.action || path,
           method: event.target.method || 'GET',
           data: data,
           success: function(html, status) {
-            console.log('success');
             var dataset = 'undefined' !== typeof event.target.dataset;
+            if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess
+              && "function" === typeof window[event.target.dataset.lightboxSuccess]) {
+              window[event.target.dataset.lightboxSuccess](html, status);
+            }
             if(dataset && 'undefined' !== typeof event.target.dataset.lightboxClose) {
               $('#modal').modal('hide');
-              if("function" === typeof window[event.target.dataset.lightboxSuccess]) {
-                window[event.target.dataset.lightboxSuccess](html, status);
-              }
               if("function" === typeof window[event.target.dataset.lightboxClose]) {
                 window[event.target.dataset.lightboxClose](html, status);
               }
             } else {
-              if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess
-                && "function" === typeof window[event.target.dataset.lightboxSuccess]) {
-                window[event.target.dataset.lightboxSuccess](html, status);
-              }
               updateLightbox(html, status);
             }
           },
@@ -110,9 +108,9 @@ function constrainForms() {
       });
     }
     // Highlight which submit button clicked
-    $(forms[i]).find("input[type=submit]").click(function() {
+    $(forms[i]).find("[type=submit]").click(function() {
       // Remove other clicks
-      $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
+      $('#modal').find('[type="submit"][clicked=true]').attr('clicked', false);
       // Add useful information
       $(this).attr("clicked", "true");
       // Add prettiness
