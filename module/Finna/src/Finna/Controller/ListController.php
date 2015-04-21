@@ -54,7 +54,11 @@ class ListController extends \Finna\Controller\MyResearchController
             return $this->notFoundAction();
         }
         try {
-            $this->getTable('UserList')->getExisting($lid);
+            $list = $this->getTable('UserList')->getExisting($lid);
+            if (!$list->isPublic()) {
+                return $this->createNoAccessView();
+            }
+
         } catch (RecordMissingException $e) {
             return $this->notFoundAction();
         }
@@ -71,23 +75,21 @@ class ListController extends \Finna\Controller\MyResearchController
                 new Parameters(
                     $this->getRequest()->getQuery()->toArray()
                     + $this->getRequest()->getPost()->toArray()
-                    + ['id' => $this->params()->fromRoute('lid')]
+                    + ['id' => $lid]
                 )
             );
 
             $results->performAndProcessSearch();
 
-            if (!$results->getListObject()->isPublic()) {
-                return $this->createNoAccessView();
-            }
-
             $username = $this->getListUsername($results->getListObject()->user_id);
 
             $view = $this->createViewModel(
-                ['params' => $params,
+                [
+                    'params' => $params,
                     'results' => $results,
                     'list_username' => $username,
-                    'sortList' => $this->createSortList()]
+                    'sortList' => $this->createSortList()
+                ]
             );
             return $view;
         } catch (ListPermissionException $e) {

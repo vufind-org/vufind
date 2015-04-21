@@ -47,10 +47,10 @@ class UserPublicName extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($user)
     {
-        $username = null;
+        $username = '';
         if ($user) {
             if ($user->email 
-                && ($pos = strpos($user->email, '@'))!== false
+                && ($pos = strpos($user->email, '@')) !== false
             ) {
                 $username = substr($user->email, 0, $pos);                   
             } else if ($user->firstname && $user->lastname) {

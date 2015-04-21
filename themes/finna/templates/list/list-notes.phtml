@@ -4,7 +4,7 @@
       <span class="heading"><?=$this->transEsc('Kuvaus')?></span>
       (<?=$this->escapeHtml(trim($this->userPublicName($this->list_username)))?>):
     </p>
-    <p class="<?=$this->params->getView() == 'list' ? 'note-rows' : 'note-row'; ?>">
+    <p class="note-rows">
       <?
       $note = implode('', $notes);
       if ($this->params->getView() == 'list') {

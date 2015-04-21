@@ -1,5 +1,5 @@
 <? $comments = $this->driver->getComments(); ?>
-<? if (empty($comments) || count($comments) == 0): ?>
+<? if (empty($comments)): ?>
   <div class="alert alert-info"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
 <? else: ?>
   <? foreach ($comments as $comment): ?>

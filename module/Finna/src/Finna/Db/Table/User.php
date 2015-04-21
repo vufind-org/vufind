@@ -93,7 +93,9 @@ class User extends \VuFind\Db\Table\User
 
     /**
      * Get user from database by id.
+     *
      * @param type $id user id
+     *
      * @return boolean
      */
     public function getById($id)

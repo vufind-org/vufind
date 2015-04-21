@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Search\Favorites;
+use Finna\Controller\MyResearchController;
 
 /**
  * Search Favorites Options
@@ -66,13 +67,13 @@ class Options extends \VuFind\Search\Favorites\Options
             $this->viewOptions = ['list' => 'List'];
         }
 
-        if (isset($searchSettings->FavoritesSort)) {
-            foreach ($searchSettings->FavoritesSort as $key => $value) {
-                $this->sortOptions[$key] = $value;
+        $this->sortOptions = [];
+        $this->defaultSort = '';
+        foreach (MyResearchController::getFavoritesSortList() as $key => $value) {
+            if (empty($this->defaultSort)) {
+                $this->defaultSort = $key;
             }
-        }
-        if (isset($searchSettings->General->favorites_default_sort)) {
-            $this->defaultSort = $searchSettings->General->favorites_default_sort;
+            $this->sortOptions[$key] = $value;
         }
     }
 

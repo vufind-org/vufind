@@ -70,9 +70,6 @@ snippets = true
 ; controls its default state: on (true) or off (false).
 retain_filters_by_default = false
 
-; Default sort option for Favorites lists sorting.
-favorites_default_sort = 'saved'
-
 [Cache]
 ; This controls whether the parsed searchspecs.yaml file will be stored to
 ; improve search performance; legal options are APC (use APC cache), File (store
@@ -143,14 +140,6 @@ callnumber = sort_callnumber
 author = sort_author
 title = sort_title
 last_indexed desc = sort_last_indexed
-
-; Favorites list sort options.
-[FavoritesSort]
-saved = 'sort_saved'
-title = 'sort_title'
-author = 'sort_author'
-date = 'sort_year asc'
-format = 'sort_format'
 
 ; This section allows you to specify the default sort order for specific types of
 ; searches.  Each key in this section should correspond with a key in the
