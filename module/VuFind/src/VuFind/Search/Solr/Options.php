@@ -113,11 +113,6 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
         }
-        if (isset($searchSettings->AdvancedFilters)) {
-            foreach ($searchSettings->AdvancedFilters as $key => $value) {
-                $this->advancedFilters[$key] = $value;
-            }
-        }
         if (isset($searchSettings->Basic_Searches)) {
             foreach ($searchSettings->Basic_Searches as $key => $value) {
                 $this->basicHandlers[$key] = $value;
