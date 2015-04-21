@@ -7,6 +7,7 @@
     . '<li><a href="' .$this->url('cart-home'). '">' .$this->transEsc('Cart'). '</a></li> '
     . '<li class="active">' . $this->transEsc('email_selected_favorites') . '</li>';
 ?>
+<p class="lead"><?=$this->transEsc('bookbag_email_selected') ?></p>
 <?=$this->flashmessages()?>
 <form class="form-horizontal" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
   <? foreach ($this->records as $current): ?>

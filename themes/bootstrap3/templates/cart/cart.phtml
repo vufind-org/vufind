@@ -6,8 +6,8 @@
   $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
     . '<li class="active">' . $this->transEsc('Book Bag') . '</li>';
 ?>
-<?=$this->flashmessages()?>
 <p class="lead"><?=$this->transEsc('Book Bag') ?></p>
+<?=$this->flashmessages()?>
 <form class="form-inline" action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
   <? if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls clearfix">
