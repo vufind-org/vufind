@@ -844,6 +844,13 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function parseFilter($filter)
     {
+        // Special case: complex filters cannot be split into field/value
+        // since they have multiple parts (e.g. field1:a OR field2:b). Use
+        // a fake "#" field to collect these types of filters.
+        if ($this->isAdvancedFilter($filter) == true) {
+            return ['#', $filter];
+        }
+
         // Split the string and assign the parts to $field and $value
         $temp = explode(':', $filter, 2);
         $field = array_shift($temp);
@@ -899,6 +906,25 @@ class Params implements ServiceLocatorAwareInterface
             list($field, $value) = $this->parseFilter($newFilter);
             $this->filterList[$field][] = $value;
         }
+    }
+
+    /**
+     * Detects if a filter is advanced (true) or simple (false). An advanced
+     * filter is currently defined as one surrounded by parentheses, while a
+     * simple filter is of the form field:value. Advanced filters are used to
+     * express more complex queries, such as combining multiple values from
+     * multiple fields using boolean operators.
+     *
+     * @param string $filter A filter string
+     *
+     * @return bool
+     */
+    public function isAdvancedFilter($filter)
+    {
+        if (substr($filter, 0, 1) == '(') {
+            return true;
+        }
+        return false;
     }
 
     /**
