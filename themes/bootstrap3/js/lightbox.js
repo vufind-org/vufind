@@ -65,56 +65,57 @@ function constrainForms(selector) {
       forms[i].action = path;
     }
     if(forms[i].action.length > 1) {
-      $(forms[i]).unbind('submit').bind('submit', function(event) {
-        var data = $(event.target).serializeArray();
-        data[data.length] = {'name':'layout', 'value':'lightbox'};
-        var clicked = $(event.target).find('[type=submit]:focus');
-        if(clicked.length > 0 && clicked.attr('name')) {
-          if('undefined' !== typeof clicked.data('lightbox-ignore')) {
-            $(event.target).append(
-              $('<input>')
-                .attr('type', 'hidden')
-                .attr('name', clicked.attr('name'))
-                .val(clicked.attr('value') || 1)
-            );
-            return true;
-          }
-          data[data.length] = {'name':clicked.attr('name'), 'value':clicked.attr('value') || 1};
-        }
-        event.preventDefault();
-        $.ajax({
-          url: event.target.action || path,
-          method: event.target.method || 'GET',
-          data: data,
-          success: function(html, status) {
-            var dataset = 'undefined' !== typeof event.target.dataset;
-            if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess
-              && "function" === typeof window[event.target.dataset.lightboxSuccess]) {
-              window[event.target.dataset.lightboxSuccess](html, status);
-            }
-            if(dataset && 'undefined' !== typeof event.target.dataset.lightboxClose) {
-              $('#modal').modal('hide');
-              if("function" === typeof window[event.target.dataset.lightboxClose]) {
-                window[event.target.dataset.lightboxClose](html, status);
-              }
-            } else {
-              updateLightbox(html, status);
-            }
-          },
-          error: function(e) {
-            $('body').removeClass('modal-open').html('<div>'+e.responseText+'</div>');
-            $('#modal').addClass('hidden');
-            $('.modal-link').on('click', constrainLink);
-          }
-        });
-        if(!lightboxShown) {
-          $('#modal').modal('show');
-          lightboxShown = true;
-        }
-        return false;
-      });
+      $(forms[i]).unbind('submit').bind('submit', lightboxFormSubmit);
     }
   }
+}
+function lightboxFormSubmit(event) {
+  var data = $(event.target).serializeArray();
+  data[data.length] = {'name':'layout', 'value':'lightbox'};
+  var clicked = $(event.target).find('[type=submit]:focus');
+  if(clicked.length > 0 && clicked.attr('name')) {
+    if('undefined' !== typeof clicked.data('lightbox-ignore')) {
+      $(event.target).append(
+        $('<input>')
+          .attr('type', 'hidden')
+          .attr('name', clicked.attr('name'))
+          .val(clicked.attr('value') || 1)
+      );
+      return true;
+    }
+    data[data.length] = {'name':clicked.attr('name'), 'value':clicked.attr('value') || 1};
+  }
+  event.preventDefault();
+  $.ajax({
+    url: event.target.action || path,
+    method: event.target.method || 'GET',
+    data: data,
+    success: function(html, status) {
+      var dataset = 'undefined' !== typeof event.target.dataset;
+      if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess
+        && "function" === typeof window[event.target.dataset.lightboxSuccess]) {
+        window[event.target.dataset.lightboxSuccess](html, status);
+      }
+      if(dataset && 'undefined' !== typeof event.target.dataset.lightboxClose) {
+        $('#modal').modal('hide');
+        if("function" === typeof window[event.target.dataset.lightboxClose]) {
+          window[event.target.dataset.lightboxClose](html, status);
+        }
+      } else {
+        updateLightbox(html, status);
+      }
+    },
+    error: function(e) {
+      $('body').removeClass('modal-open').html('<div>'+e.responseText+'</div>');
+      $('#modal').addClass('hidden');
+      $('.modal-link').on('click', constrainLink);
+    }
+  });
+  if(!lightboxShown) {
+    $('#modal').modal('show');
+    lightboxShown = true;
+  }
+  return false;
 }
 
 /**
