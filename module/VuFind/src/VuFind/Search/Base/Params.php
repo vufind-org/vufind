@@ -893,11 +893,10 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function addFilter($newFilter)
     {
-        // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($newFilter);
-
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasFilter($newFilter)) {
+            // Extract field and value from filter string:
+            list($field, $value) = $this->parseFilter($newFilter);
             $this->filterList[$field][] = $value;
         }
     }
