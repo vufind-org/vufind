@@ -23,6 +23,9 @@ $(document).ready(function() {
 
 function updateLightbox(html, link) {
   //console.log('updateLightbox');
+  if(html.match('<!DOCTYPE html>')) {
+    html = $('<div>'+html+'</div>').find('.main > .container').html();
+  }
   $('#modal .modal-body').html(html);
   $('#modal').modal('handleUpdate');
   $('#modal .modal-body').on('click', 'a', constrainLink);
