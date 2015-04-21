@@ -60,15 +60,19 @@ function constrainForms() {
       forms[i].action = path;
     }
     if(forms[i].action.length > 1) {
-      forms[i].innerHTML += '<input type="hidden" name="layout" value="lightbox"/>';
       $(forms[i]).unbind('submit').bind('submit', function(event) {
         var data = $(event.target).serializeArray();
+        data[data.length] = {'name':'layout', 'value':'lightbox'};
         var clicked = $(event.target).find('[type=submit]:focus');
         if(clicked.length > 0 && clicked.attr('name')) {
           if('undefined' !== typeof clicked.data('lightbox-ignore')) {
-            $(event.target).find('[name="layout"]').remove();
-            event.target.innerHTML += '<input type="hidden" name="' + clicked.attr('name') + '" value="' + (clicked.attr('value') || 1) + '"/>';
-            console.log($(event.target).serialize());
+            $(event.target).append(
+              $('<input>')
+                .attr('type', 'hidden')
+                .attr('name', clicked.attr('name'))
+                .val(clicked.attr('value') || 1)
+            );
+            console.log($(event.target).serializeArray());
             return true;
           }
           data[data.length] = {'name':clicked.attr('name'), 'value':clicked.attr('value') || 1};
@@ -107,16 +111,6 @@ function constrainForms() {
         return false;
       });
     }
-    // Highlight which submit button clicked
-    $(forms[i]).find("[type=submit]").click(function() {
-      // Remove other clicks
-      $('#modal').find('[type="submit"][clicked=true]').attr('clicked', false);
-      // Add useful information
-      $(this).attr("clicked", "true");
-      // Add prettiness
-      $('#modal .fa-spinner').remove();
-      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
-    });
   }
 }
 
