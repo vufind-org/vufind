@@ -64,13 +64,13 @@ class InjectConditionalFilterListener
     /**
      * Constructor.
      *
-     * @param Config $searchConf Search configuration parameters
+     * @param array $searchConf Search configuration parameters
      *
      * @return void
      */
     public function __construct($searchConf)
     {
-        $this->filters = $searchConf->toArray();
+        $this->filters = $searchConf;
         $this->filterList = array();
     }
 
