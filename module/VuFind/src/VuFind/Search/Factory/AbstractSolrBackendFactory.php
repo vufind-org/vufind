@@ -403,7 +403,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Get a Conditional Filter Listener
      *
-     * @param Config           $search  Search configuration
+     * @param Config $search Search configuration
      *
      * @return InjectConditionalFilterListener
      */

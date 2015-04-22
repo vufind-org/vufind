@@ -71,16 +71,17 @@ class InjectConditionalFilterListener
     /**
      * Constructor.
      *
-     * @param Config           $searchConf      Search configuration parameters
-     * @param ServiceLocator   $serviceLocator  Service Locator
+     * @param Config $searchConf Search configuration parameters
+     * @param ServiceLocator $serviceLocator Service Locator
      *
      * @return void
      */
     public function __construct($searchConf, $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
-        $this->setAuthorizationService($this->serviceLocator
-            ->get('ZfcRbac\Service\AuthorizationService'));
+        $this->setAuthorizationService(
+            $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+        );
         $this->filters = $searchConf->toArray();
         $this->filterList = array();
     }
@@ -117,7 +118,8 @@ class InjectConditionalFilterListener
             // So we have to check existance of the filter condition first
             if ($this->_permissionExists(substr($filterCondition, 1))) {
                 if (!$this->getAuthorizationService()
-                    ->isGranted(substr($filterCondition, 1))) {
+                    ->isGranted(substr($filterCondition, 1))
+                ) {
                     $this->filterList[] = $filter;
                 }
             }
