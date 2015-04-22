@@ -161,7 +161,8 @@ class JSTree extends AbstractBase
         $html .= '><i class="fa fa-li fa-' . $icon . '"></i> '
             . '<a name="tree-' . $escaper->escapeHtmlAttr($node->id) . '" href="'
             . $escaper->escapeHtmlAttr($node->a_attr->href) . '" title="'
-            . $node->text . '">' . $escaper->escapeHtml($name) . '</a>';
+            . $escaper->escapeHtmlAttr($node->text) . '">'
+            . $escaper->escapeHtml($name) . '</a>';
         if (isset($node->children)) {
             $html .= '<ul class="fa-ul">';
             foreach ($node->children as $child) {
