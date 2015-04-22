@@ -188,6 +188,8 @@ class AbstractRecord extends AbstractBase
         if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
+            $this->flashMessenger()->setNamespace('info')
+                ->addMessage(['msg' => 'add_tag_success']);
             return $this->redirectToRecord();
         }
 
