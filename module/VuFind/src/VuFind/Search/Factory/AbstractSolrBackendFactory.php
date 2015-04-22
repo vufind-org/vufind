@@ -179,7 +179,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
 
         // Conditional Filters
-        $this->getInjectConditionalFilterListener($search)->attach($events);
+        if (isset($search->ConditionalHiddenFilters)
+            && $search->ConditionalHiddenFilters->count() > 0
+        ) {
+            $this->getInjectConditionalFilterListener($search)->attach($events);
+        }
 
         // Spellcheck
         if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
@@ -409,8 +413,10 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function getInjectConditionalFilterListener(Config $search)
     {
-        $chf = isset($search->ConditionalHiddenFilters)
-            ? $search->ConditionalHiddenFilters : array();
-        return new InjectConditionalFilterListener($chf, $this->serviceLocator);
+        $listener = new InjectConditionalFilterListener($search->ConditionalHiddenFilters);
+        $listener->setAuthorizationService(
+            $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+        );
+        return $listener;
     }
 }
