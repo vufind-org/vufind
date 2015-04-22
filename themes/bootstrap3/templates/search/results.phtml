@@ -114,9 +114,9 @@
         &mdash;
         <? if (is_numeric($this->results->getSearchId())): ?>
           <? if ($this->results->isSavedSearch()): ?>
-            <i class="fa fa-minus-square"></i> <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
+            <i class="fa fa-remove"></i> <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
           <? else: ?>
-            <i class="fa fa-plus-square"></i> <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
+            <i class="fa fa-save"></i> <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
           <? endif; ?>
         <? endif; ?>
       </div>
