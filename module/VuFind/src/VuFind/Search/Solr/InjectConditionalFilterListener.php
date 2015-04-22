@@ -64,7 +64,7 @@ class InjectConditionalFilterListener
     /**
      * Constructor.
      *
-     * @param Config         $searchConf     Search configuration parameters
+     * @param Config $searchConf Search configuration parameters
      *
      * @return void
      */
