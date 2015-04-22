@@ -404,8 +404,9 @@ class Record extends AbstractHelper
      *
      * @return string
      */
-    public function getCover($size = 'small', $link = '')
+    public function getCover($size = 'small', $link = false)
     {
+        // ToDo: get configuration for list/grid and full result from config
         $context
             = ['size' => $size, 'link' => $link];
         return $this->contextHelper->renderInContext(
