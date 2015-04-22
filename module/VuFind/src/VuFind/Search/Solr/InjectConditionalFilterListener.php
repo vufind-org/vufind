@@ -110,6 +110,7 @@ class InjectConditionalFilterListener
         $filterArr = explode('|', $configOption);
         $filterCondition = $filterArr[0];
         $filter = $filterArr[1];
+        $authService = $this->getAuthorizationService();
 
         // if the filter condition starts with a minus (-), it should not match
         // to get the filter applied
@@ -117,13 +118,13 @@ class InjectConditionalFilterListener
             // isGranted on a non existing rule will always return false
             // So we have to check existance of the filter condition first
             if ($this->_permissionExists(substr($filterCondition, 1))) {
-                if (!$this->getAuthorizationService()->isGranted(substr($filterCondition, 1))) {
+                if (!$authService->isGranted(substr($filterCondition, 1))) {
                     $this->filterList[] = $filter;
                 }
             }
         } else {
             // otherwise the condition should match to apply the filter
-            if ($this->getAuthorizationService()->isGranted($filterCondition)) {
+            if ($authService->isGranted($filterCondition)) {
                 $this->filterList[] = $filter;
             }
         }
