@@ -71,7 +71,7 @@ class InjectConditionalFilterListener
     /**
      * Constructor.
      *
-     * @param Config $searchConf Search configuration parameters
+     * @param Config         $searchConf     Search configuration parameters
      * @param ServiceLocator $serviceLocator Service Locator
      *
      * @return void
@@ -117,7 +117,8 @@ class InjectConditionalFilterListener
             // isGranted on a non existing rule will always return false
             // So we have to check existance of the filter condition first
             if ($this->_permissionExists(substr($filterCondition, 1))) {
-                if (!$this->getAuthorizationService()
+                if (
+                    !$this->getAuthorizationService()
                     ->isGranted(substr($filterCondition, 1))
                 ) {
                     $this->filterList[] = $filter;
