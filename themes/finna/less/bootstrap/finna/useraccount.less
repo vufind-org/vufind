@@ -98,6 +98,9 @@
                 position: absolute;
                 top: 8px;
             }
+            & select#add-to-list {
+                max-width: 140px;
+            }
         }
         &.fixed {
             background-color: @gray-lighter;
@@ -156,13 +159,24 @@
         margin-top: 20px;
     }
     .mylist-nav {
+        & li > a {
+            word-wrap: break-word;   
+        }
         & li > a:not(.add-new-list) {
-            background: @gray;
+            background: @gray-light;
             color: #fff;
             margin-bottom: 5px;
         }
         & li > a.active {
-            background: @brand-primary;
+            background: @gray;
+            & .favorite-list-name {
+                max-width: 85%;
+            }
+            & .remove-favorite-list {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+            }
         }
 
         & .add-new-list {

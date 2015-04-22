@@ -12,12 +12,14 @@
     <li>
       <a href="<?= $active ? '#' : $this->url('userList', array('id' => $list['id']))?>" class="list-group-item<?=$list && $active ? ' active' : ''?>">
         <? if ($list['public']): ?>
-        <i class="fa fa-user"></i>
+        <i class="fa fa-public public-favorite-list pull-left"></i>
         <? endif; ?>
-        <?=$this->escapeHtml($list['title'])?>
-        <span> (<?=$list->cnt?>)</span>
+        <div class="favorite-list-name">
+          <?=$this->escapeHtml($list['title'])?>
+          <span> (<?=$list->cnt?>)</span>
+        </div>
         <? if ($active): ?>
-        <span class="pull-right"><i class="fa fa-button fa-times remove"></i></span>
+        <span class="pull-right remove-favorite-list"><i class="fa fa-button fa-times remove"></i></span>
         <? endif; ?>
       </a>
       <? if ($active): ?>
