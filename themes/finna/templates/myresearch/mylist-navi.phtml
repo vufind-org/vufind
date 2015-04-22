@@ -12,7 +12,7 @@
     <li>
       <a href="<?= $active ? '#' : $this->url('userList', array('id' => $list['id']))?>" class="list-group-item<?=$list && $active ? ' active' : ''?>">
         <? if ($list['public']): ?>
-        <i class="fa fa-user"></i>
+        <i class="fa fa-public"></i>
         <? endif; ?>
         <?=$this->escapeHtml($list['title'])?>
         <span> (<?=$list->cnt?>)</span>

@@ -45,6 +45,19 @@ $config = array(
                     )
                 ),
             ),
+            'list-page' => array(
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'options' => array(
+                    'route'    => '/List[/:lid]',
+                    'constraints' => array(
+                        'lid'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        'controller' => 'Listpage',
+                        'action'     => 'List',
+                    )
+                ),
+            ),
         )
     ),
     'controllers' => array(
@@ -58,7 +71,8 @@ $config = array(
             'my-research' => 'Finna\Controller\MyResearchController',
             'primo' => 'Finna\Controller\PrimoController',
             'primorecord' => 'Finna\Controller\PrimorecordController',
-            'search' => 'Finna\Controller\SearchController'
+            'search' => 'Finna\Controller\SearchController',
+            'listpage' => 'Finna\Controller\ListController',
         ),
     ),
     'service_manager' => array(
@@ -84,6 +98,9 @@ $config = array(
                     'resource' => 'Finna\Db\Table\Factory::getResource',
                     'user' => 'Finna\Db\Table\Factory::getUser',
                 ],
+                'invokables' => array(
+                    'comments' => 'Finna\Db\Table\Comments',
+                ),
             ],
             'ils_driver' => [
                 'factories' => [
@@ -100,6 +117,9 @@ $config = array(
                     'biblio' => 'Solr',
                 )
             ),
+            'search_options' => [
+                'abstract_factories' => ['Finna\Search\Options\PluginFactory'],
+            ],
             'search_params' => [
                 'abstract_factories' => ['Finna\Search\Params\PluginFactory'],
             ],
