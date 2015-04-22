@@ -7,9 +7,7 @@
       <? /* Display qrcode if appropriate: */ ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>
-        <span class="hidden-xs">
-          <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
-        </span>
+        <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
       <? endif; ?>
     </div>
 
@@ -22,7 +20,7 @@
 
   <div class="col-sm-10">
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
-    
+
       <? foreach ($this->driver->getServiceURLs() as $current): ?>
           <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate($this->driver->getDataSource() . '_' . $current['desc'], array(), $this->translate($current['desc'])))?></a>
       <? endforeach; ?>
@@ -37,7 +35,7 @@
             </div>
           </div>
       <? endif; ?>
-    
+
     <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
     <div class="truncate-field wide">
       <p class="summary">
@@ -47,7 +45,7 @@
       </p>
     </div>
     <? endif; ?>
-    
+
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
       <div class="savedLists hidden alert alert-info" id="savedLists">
@@ -56,8 +54,8 @@
     <? endif; ?>
 
     <?/* Display Main Details */?>
-    <table class="table table-finna-record record-details" summary="<?=$this->transEsc('Bibliographic Details')?>">
-    
+    <table class="table table-finna-record record-details">
+
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
       <tr>
         <td colspan="2">
@@ -225,7 +223,7 @@
         </td>
       </tr>
       <? endif; ?>
-      
+
       <? $dateSpan = $this->driver->getDateSpan(); if (!empty($dateSpan)): ?>
     <? $contentDisplayed = true; ?>
     <tr>

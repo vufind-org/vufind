@@ -6,7 +6,7 @@
   if ($type === 'list') {
      $content = $ind === 4 ? '&hellip;' : $ind+1;
   } else {
-     $content = '<img data-src="' . str_replace('&', '&amp;', $img['small']) . '" alt="" />';
+     $content = '<span data-src="' . $this->escapeHtmlAttr($img['small']) . '">IMG</span>';
   }
 ?>
 <a href="<?=str_replace('&', '&amp;', $img['medium']) ?>" class="image-popup image-popup-navi<?= ($type === 'list' && $ind > 4) ? ' hide' : '' ?><?= $type === 'record' ? ' truncate-change' : ''?>"><?= $content ?></a>

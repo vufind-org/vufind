@@ -67,7 +67,7 @@ trait RecordControllerTrait
             $parts = parse_url($last);
             // Do not overwrite existing hash
             if (!isset($parts['fragment'])) {
-                $escaper = new Escaper();
+                $escaper = new Escaper('utf-8');
                 $id = $this->driver->getUniqueId();
                 $id = $escaper->escapeUrl($id);
                 $last .= "#$id";
