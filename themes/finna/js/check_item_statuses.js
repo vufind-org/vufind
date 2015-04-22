@@ -33,8 +33,11 @@ function checkItemStatus(id) {
             && item.find('.callnumAndLocation').length > 0
           ) {
             // Full status mode is on -- display the HTML:
-            item.find('.locationDetails').empty().append(result.full_status);
-            item.find('.locationDetails').removeClass('hidden');
+            var details = item.find('.locationDetails');
+            details.empty().append(result.full_status);
+            details.wrapInner('<div class="truncate-field" data-rows="5"></div>');
+            details.removeClass('hidden');
+            finna.layout.initTruncate(details);
           } else if (typeof(result.missing_data) != 'undefined'
             && result.missing_data
           ) {
@@ -52,14 +55,18 @@ function checkItemStatus(id) {
                 locationListHTML += '<i class="fa fa-remove text-error"></i> <span class="text-error"">'
                   + result.locationList[x].location + '</span> ';
               }
-              locationListHTML += '</div>';
-              locationListHTML += '<div class="groupCallnumber">';
-              locationListHTML += (result.locationList[x].callnumbers)
-                   ?  result.locationList[x].callnumbers : '';
+              if (result.locationList[x].callnumbers) {
+                locationListHTML += '<span class="groupCallnumber">';
+                locationListHTML += '(' + result.locationList[x].callnumbers + ')';
+                locationListHTML += '</span>';
+              }
               locationListHTML += '</div>';
             }
-            item.find('.locationDetails').empty().append(locationListHTML);
-            item.find('.locationDetails').removeClass('hidden');
+            var details = item.find('.locationDetails');
+            details.empty().append(locationListHTML);
+            details.wrapInner('<div class="truncate-field" data-rows="5"></div>');
+            details.removeClass('hidden');
+            finna.layout.initTruncate(details);
           } else {
             // Default case -- load call number and location into appropriate containers:
             item.find('.callnumber').empty().append(result.callnumber+'<br/>');

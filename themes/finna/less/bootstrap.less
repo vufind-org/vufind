@@ -273,24 +273,18 @@ mark, .highlight {
         }
     }
 }
-.groupLocation, .groupCallnumber {
+.groupLocation {
     font-size: @font-size-icon-small;
     letter-spacing: 0.2px;
     padding: 0;
-    display: inline-block;
-}
-.groupLocation {
-    width: 75%;   
 }
 .groupCallnumber {
-    width: 25%;
+    margin-left: 10px;
     color: @gray-light;
     font-size: 0.92em;
-    line-height: 21px;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
-    vertical-align: middle;
 }
 .groupLocation span.text-success {
     color: inherit;   
@@ -897,7 +891,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   content: " ";
 }
 /* facet list styling */
-li.jstree-facet ul {
+.jstree-facet ul {
   padding-left: 14px;
 }
 .jstree-facet li span.main {
@@ -907,7 +901,7 @@ li.jstree-facet ul {
   white-space: nowrap;
   padding-left: 1px; /* Fix Firefox cutting the checkboxes */
 }
-li.jstree-facet, li.jstree-node {
+div.jstree-facet, li.jstree-node {
   list-style: none;
 }
 ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(.title) {

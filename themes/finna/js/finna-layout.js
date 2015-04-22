@@ -39,7 +39,7 @@ finna.layout = (function() {
       }
 
       var notifyTruncateChange = function(field) {
-          field.find('.truncate-change img').each(function(ind,e) {
+          field.find('.truncate-change span').each(function(ind, e) {
               var visible = $(e).position().top <= field.height();
               $(e).trigger('truncate-change', [visible]);
           });
@@ -47,7 +47,7 @@ finna.layout = (function() {
 
       var truncation = [];
       var rowHeight = [];
-      holder.find(".truncate-field").not('.truncate-done').each(function( index ) {
+      holder.find(".truncate-field").not('.truncate-done').each(function(index) {
         $(this).addClass('truncate-done');
         // check that truncate-field has children, where we can count line-height
         if ($(this).children().length > 0) {
@@ -63,8 +63,8 @@ finna.layout = (function() {
           }
 
           // get the line-height of first element to determine each text line height
-          truncation[index] = rowHeight[index] * rowCount ;
-          // don't truncate, if one line for truncation
+          truncation[index] = rowHeight[index] * rowCount;
+          // truncate only if there's more than one line to hide
           if ($(this).height() > (truncation[index] + rowHeight[index] + 1)) {
             $(this).css('height', truncation[index] - 1 + 'px');
             if ($( this ).hasClass("wide")) { // generate different truncate styles according to class
@@ -98,24 +98,26 @@ finna.layout = (function() {
     };
 
     var initTruncatedRecordImageNavi = function() {
-        var displayTruncatedImage = function(img) {
-            img.attr('src', img.data('src'));
-            img.parent().removeClass('truncate-change');
+        var displayTruncatedImage = function(placeholder) {
+            var img = $('<img/>');
+            img.append($('<i class="fa fa-spinner fa-spin"/>')).one('load', function() {
+                $(this).empty();
+            })
+            img.attr('src', placeholder.data('src'));
+            img.attr('alt', '');
+            placeholder.parent().removeClass('truncate-change');
+            placeholder.replaceWith(img);
         };
 
         // Load truncated record images lazily when parent container is opened
-        $('.recordcovers .truncate-change img').each(function(ind,img) {
+        $('.recordcovers .truncate-change span').each(function() {
             $(this).bind('truncate-change', function(e, visible) {
                 if (visible) {
                     $(this).unbind('truncate-change');
-                    if (typeof($(this).attr('src')) === 'undefined'
-                        && typeof($(this).data('src')) !== 'undefined'
-                    ) {
-                        // Postpone loading until image is scrolled into viewport
-                        $(this).unbind('inview').one('inview', function() {
-                            displayTruncatedImage($(this));
-                        });
-                    }
+                    // Postpone loading until the image placeholder is scrolled into viewport
+                    $(this).unbind('inview').one('inview', function() {
+                        displayTruncatedImage($(this));
+                    });
                 }
             });
         });

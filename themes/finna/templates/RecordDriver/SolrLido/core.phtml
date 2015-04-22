@@ -14,12 +14,10 @@
           <? endforeach; ?>
           </div>
         </div>
-  <? endif; ?>
+      <? endif; ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>
-        <div class="hidden-xs">
-          <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
-        </div>
+        <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
       <? endif; ?>
     </div>
 
@@ -62,7 +60,7 @@
     <? endif; ?>
 
     <?/* Display Main Details */?>
-    <table class="table table-finna-record record-details" summary="<?=$this->transEsc('Bibliographic Details')?>">
+    <table class="table table-finna-record record-details">
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
       <tr>
         <td colspan="2"><?=$this->record($this->driver)->getFormatList()?></td>
@@ -130,7 +128,7 @@
       </tr>
       <? endif; ?>
 
-      
+
 
       <? if ($results = $this->driver->getInstitutions()): ?>
       <tr>
