@@ -413,7 +413,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function getInjectConditionalFilterListener(Config $search)
     {
-        $listener = new InjectConditionalFilterListener($search->ConditionalHiddenFilters);
+        $listener = new InjectConditionalFilterListener(
+            $search->ConditionalHiddenFilters
+        );
         $listener->setAuthorizationService(
             $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
         );
