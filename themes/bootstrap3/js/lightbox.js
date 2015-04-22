@@ -121,8 +121,12 @@ function lightboxAJAX(event, data) {
         if("function" === typeof window[event.target.dataset.lightboxClose]) {
           window[event.target.dataset.lightboxClose](html, status);
         }
+      } else if(dataset && 'string' === typeof event.target.dataset.lightboxConfirm) {
+        console.log($('<div>').html(event.target.dataset.lightboxConfirm).addClass('alert alert-info')+"");
+        console.log($('<div>').html(event.target.dataset.lightboxConfirm).addClass('alert alert-info').toString());
+        updateLightbox('<div class="alert alert-info">'+event.target.dataset.lightboxConfirm+'</div>');
       } else {
-        updateLightbox(html, status);
+        updateLightbox(html);
       }
     },
     error: function(e) {
