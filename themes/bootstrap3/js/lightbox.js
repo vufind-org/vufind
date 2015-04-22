@@ -69,12 +69,17 @@ function constrainForms(selector) {
     }
   }
 }
+
 function lightboxFormSubmit(event) {
+  $('#modal .modal-body').prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
+  var dataset = 'undefined' !== typeof event.target.dataset;
+  // Gather data
   var data = $(event.target).serializeArray();
-  data[data.length] = {'name':'layout', 'value':'lightbox'};
+  data[data.length] = {'name':'layout', 'value':'lightbox'}; // Return in lightbox, please
   var clicked = $(event.target).find('[type=submit]:focus');
+  // Add clicked button name and value to form data
   if(clicked.length > 0 && clicked.attr('name')) {
-    if('undefined' !== typeof clicked.data('lightbox-ignore')) {
+    if('undefined' !== typeof clicked.data('lightbox-ignore')) { // Ignore escape
       $(event.target).append(
         $('<input>')
           .attr('type', 'hidden')
@@ -86,12 +91,26 @@ function lightboxFormSubmit(event) {
     data[data.length] = {'name':clicked.attr('name'), 'value':clicked.attr('value') || 1};
   }
   event.preventDefault();
+  // Overwritten behavior
+  if(dataset && "string" === typeof event.target.dataset.lightboxSubmit
+    && "function" === typeof window[event.target.dataset.lightboxSubmit]) {
+    console.log(event.target.dataset.lightboxSubmit+"(event, data)");
+    return window[event.target.dataset.lightboxSubmit](event, data);
+  }
+  lightboxAJAX(event, data);
+  if(!lightboxShown) {
+    $('#modal').modal('show');
+    lightboxShown = true;
+  }
+  return false;
+}
+function lightboxAJAX(event, data) {
+  var dataset = 'undefined' !== typeof event.target.dataset;
   $.ajax({
     url: event.target.action || path,
     method: event.target.method || 'GET',
     data: data,
     success: function(html, status) {
-      var dataset = 'undefined' !== typeof event.target.dataset;
       if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess
         && "function" === typeof window[event.target.dataset.lightboxSuccess]) {
         window[event.target.dataset.lightboxSuccess](html, status);
@@ -111,11 +130,6 @@ function lightboxFormSubmit(event) {
       $('.modal-link').on('click', constrainLink);
     }
   });
-  if(!lightboxShown) {
-    $('#modal').modal('show');
-    lightboxShown = true;
-  }
-  return false;
 }
 
 /**

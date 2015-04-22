@@ -106,58 +106,6 @@ function bulkActionSubmit($form) {
   }
   return false;
 }
-function registerLightboxEvents() { /*
-  var modal = $("#modal");
-  // New list
-  $('#make-list').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
-    get['id'] = 'NEW';
-    return Lightbox.get('MyResearch', 'EditList', get);
-  });
-  // New account link handler
-  $('.createAccountLink').click(function() {
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
-    return Lightbox.get('MyResearch', 'Account', get);
-  });
-  $('.back-to-login').click(function() {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    return false;
-  });
-  // Select all checkboxes
-  $(modal).find('.checkbox-select-all').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-item').prop('checked', this.checked);
-  });
-  $(modal).find('.checkbox-select-item').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
-  });
-  // Highlight which submit button clicked
-  $(modal).find("form [type=submit]").click(function() {
-    // Abort requests triggered by the lightbox
-    $('#modal .fa-spinner').remove();
-    // Remove other clicks
-    $(modal).find('[type="submit"][clicked=true]').attr('clicked', false);
-    // Add useful information
-    $(this).attr("clicked", "true");
-    // Add prettiness
-    $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
-  });
-  /**
-   * Hide the header in the lightbox content
-   * if it matches the title bar of the lightbox
-   */
-  var header = $('#modal .modal-title').html();
-  var contentHeader = $('#modal .modal-body .lead');
-  if(contentHeader.length == 0) {
-    contentHeader = $('#modal .modal-body h2');
-  }
-  contentHeader.each(function(i,op) {
-    if (op.innerHTML == header) {
-      $(op).hide();
-    }
-  });
-}
 function updatePageForLogin() {
   // Hide "log in" options and show "log out" options:
   $('#loginOptions').addClass('hidden');
@@ -230,14 +178,15 @@ function refreshTags() {
 }
 
 // This is a full handler for the login form
-function ajaxLogin(form) {
-  Lightbox.ajax({
+function ajaxLogin(event, data) {
+  var form = event.target;
+  $.ajax({
     url: path + '/AJAX/JSON?method=getSalt',
     dataType: 'json',
     success: function(response) {
       if (response.status == 'OK') {
         var salt = response.data;
-
+console.log(salt);
         // get the user entered password
         var password = form.password.value;
 
@@ -259,7 +208,7 @@ function ajaxLogin(form) {
         }
 
         // login via ajax
-        Lightbox.ajax({
+        $.ajax({
           type: 'POST',
           url: path + '/AJAX/JSON?method=login',
           dataType: 'json',
@@ -267,24 +216,14 @@ function ajaxLogin(form) {
           success: function(response) {
             if (response.status == 'OK') {
               updatePageForLogin();
-              // and we update the modal
-              var params = deparam(Lightbox.lastURL);
-              if (params['subaction'] == 'UserLogin') {
-                Lightbox.close();
-              } else {
-                Lightbox.getByUrl(
-                  Lightbox.lastURL,
-                  Lightbox.lastPOST,
-                  Lightbox.changeContent
-                );
-              }
+              lightboxAJAX(event, data);
             } else {
-              Lightbox.displayError(response.data);
+              updateLightbox(response.data);
             }
           }
         });
       } else {
-        Lightbox.displayError(response.data);
+        updateLightbox(response.data);
       }
     }
   });
@@ -404,112 +343,4 @@ $(document).ready(function() {
     $(this).closest('.collapse').html('<div class="list-group-item">'+vufindString.loading+'...</div>');
     window.location.assign($(this).attr('href'));
   });
-
-  /*
-  $('[name=bulkActionForm]').submit(function() {
-    return bulkActionSubmit($(this));
-  }); */
-  $('[name=bulkActionForm]').find("[type=submit]").click(function() {
-    // Abort requests triggered by the lightbox
-    $('#modal .fa-spinner').remove();
-    // Remove other clicks
-    $(this).closest('form').find('[type="submit"][clicked=true]').attr('clicked', false);
-    // Add useful information
-    $(this).attr("clicked", "true");
-  });
-
-  /******************************
-   * LIGHTBOX DEFAULT BEHAVIOUR *
-   ****************************** /
-  Lightbox.addOpenAction(registerLightboxEvents);
-
-  Lightbox.addFormCallback('newList', Lightbox.changeContent);
-  Lightbox.addFormCallback('accountForm', newAccountHandler);
-  Lightbox.addFormCallback('bulkDelete', function(html) {
-    location.reload();
-  });
-  Lightbox.addFormCallback('bulkRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
-  });
-  Lightbox.addFormCallback('emailSearch', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
-  });
-  Lightbox.addFormCallback('saveRecord', function(html) {
-    Lightbox.close();
-    checkSaveStatuses();
-  });
-
-  Lightbox.addFormHandler('exportForm', function(evt) {
-    $.ajax({
-      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
-      type:'POST',
-      dataType:'json',
-      data:Lightbox.getFormData($(evt.target)),
-      success:function(data) {
-        if(data.data.needs_redirect) {
-          document.location.href = data.data.result_url;
-        } else {
-          Lightbox.changeContent(data.data.result_additional);
-        }
-      },
-      error:function(d,e) {
-        //console.log(d,e); // Error reporting
-      }
-    });
-    return false;
-  });
-  Lightbox.addFormHandler('feedback', function(evt) {
-    var $form = $(evt.target);
-    // Grabs hidden inputs
-    var formSuccess     = $form.find("input#formSuccess").val();
-    var feedbackFailure = $form.find("input#feedbackFailure").val();
-    var feedbackSuccess = $form.find("input#feedbackSuccess").val();
-    // validate and process form here
-    var name  = $form.find("input#name").val();
-    var email = $form.find("input#email").val();
-    var comments = $form.find("textarea#comments").val();
-    if (name.length == 0 || comments.length == 0) {
-      Lightbox.displayError(feedbackFailure);
-    } else {
-      Lightbox.get('Feedback', 'Email', {}, {'name':name,'email':email,'comments':comments}, function() {
-        Lightbox.changeContent('<div class="alert alert-info">'+formSuccess+'</div>');
-      });
-    }
-    return false;
-  });
-  Lightbox.addFormHandler('loginForm', function(evt) {
-    ajaxLogin(evt.target);
-    return false;
-  });
-
-  // Feedback
-  $('#feedbackLink').click(function() {
-    return Lightbox.get('Feedback', 'Home');
-  });
-  // Help links
-  $('.help-link').click(function() {
-    var split = this.href.split('=');
-    return Lightbox.get('Help','Home',{topic:split[1]});
-  });
-  // Hierarchy links
-  $('.hierarchyTreeLink a').click(function() {
-    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
-    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
-    return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
-  });
-  // Login link
-  $('#loginOptions a.modal-link').click(function() {
-    return Lightbox.get('MyResearch','UserLogin');
-  });
-  // Email search link
-  $('.mailSearch').click(function() {
-    return Lightbox.get('Search','Email',{url:document.URL});
-  });
-  // Save record links
-  $('.save-record').click(function() {
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
-  });
-  // */
 });
