@@ -71,15 +71,16 @@ class InjectConditionalFilterListener
     /**
      * Constructor.
      *
-     * @param BackendInterface $backend    Backend
-     * @param Config           $searchConf Field(s) to highlight (hl.fl param)
+     * @param Config           $searchConf      Search configuration parameters
+     * @param ServiceLocator   $serviceLocator  Service Locator
      *
      * @return void
      */
     public function __construct($searchConf, $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
-        $this->setAuthorizationService($this->serviceLocator->get('ZfcRbac\Service\AuthorizationService'));
+        $this->setAuthorizationService($this->serviceLocator
+            ->get('ZfcRbac\Service\AuthorizationService'));
         $this->filters = $searchConf->toArray();
         $this->filterList = array();
     }
@@ -103,7 +104,7 @@ class InjectConditionalFilterListener
      *
      * @return void
      */
-    private function addConditionalFilter($configOption)
+    private function _addConditionalFilter($configOption)
     {
         $filterArr = explode('|', $configOption);
         $filterCondition = $filterArr[0];
@@ -114,8 +115,9 @@ class InjectConditionalFilterListener
         if (substr($filterCondition, 0, 1) == '-') {
             // isGranted on a non existing rule will always return false
             // So we have to check existance of the filter condition first
-            if ($this->permissionExists(substr($filterCondition, 1))) {
-                if (!$this->getAuthorizationService()->isGranted(substr($filterCondition, 1))) {
+            if ($this->_permissionExists(substr($filterCondition, 1))) {
+                if (!$this->getAuthorizationService()
+                    ->isGranted(substr($filterCondition, 1))) {
                     $this->filterList[] = $filter;
                 }
             }
@@ -134,7 +136,8 @@ class InjectConditionalFilterListener
      *
      * @return bool
      */
-    private function permissionExists($name) {
+    private function _permissionExists($name)
+    {
         $configLoader = $this->serviceLocator->get('VuFind\Config');
         $permissions = $configLoader->get('permissions')->toArray();
         if (array_key_exists($name, $permissions)) {
@@ -154,7 +157,7 @@ class InjectConditionalFilterListener
     {
         // Add conditional filters
         foreach ($this->filters as $fc) {
-            $this->addConditionalFilter($fc);
+            $this->_addConditionalFilter($fc);
         }
 
         $params = $event->getParam('params');

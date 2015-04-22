@@ -177,6 +177,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
 
         // Highlighting
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
+
+        // Conditional Filters
         $this->getInjectConditionalFilterListener($search)->attach($events);
 
         // Spellcheck
@@ -399,11 +401,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
-     * Get a hierarchical facet listener for the backend
+     * Get a Conditional Filter Listener
      *
-     * @param BackendInterface $backend Search backend
+     * @param Config           $search  Search configuration
      *
-     * @return HierarchicalFacetListener
+     * @return InjectConditionalFilterListener
      */
     protected function getInjectConditionalFilterListener(Config $search)
     {
