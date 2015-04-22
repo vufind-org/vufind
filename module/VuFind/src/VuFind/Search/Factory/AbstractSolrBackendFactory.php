@@ -29,6 +29,7 @@
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\InjectHighlightingListener;
+use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
@@ -176,6 +177,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
 
         // Highlighting
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
+        $this->getInjectConditionalFilterListener($search)->attach($events);
 
         // Spellcheck
         if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
@@ -394,5 +396,19 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $fl = isset($search->General->highlighting_fields)
             ? $search->General->highlighting_fields : '*';
         return new InjectHighlightingListener($backend, $fl);
+    }
+
+    /**
+     * Get a hierarchical facet listener for the backend
+     *
+     * @param BackendInterface $backend Search backend
+     *
+     * @return HierarchicalFacetListener
+     */
+    protected function getInjectConditionalFilterListener(Config $search)
+    {
+        $chf = isset($search->ConditionalHiddenFilters)
+            ? $search->ConditionalHiddenFilters : array();
+        return new InjectConditionalFilterListener($chf, $this->serviceLocator);
     }
 }
