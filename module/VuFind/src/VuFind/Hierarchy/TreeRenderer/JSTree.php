@@ -143,6 +143,7 @@ class JSTree extends AbstractBase
      */
     public function jsonToHTML($node, $recordID = false)
     {
+        $escaper = new \Zend\Escaper\Escaper('utf-8');
         $name = strlen($node->text) > 100
             ? substr($node->text, 0, 100) . '...'
             : $node->text;
@@ -158,9 +159,9 @@ class JSTree extends AbstractBase
             $html .= ' class="currentRecord"';
         }
         $html .= '><i class="fa fa-li fa-' . $icon . '"></i> '
-            . '<a name="tree-' . $node->id . '" href="' . $node->a_attr->href
-            . '" title="' . $node->text . '">'
-            . $name . '</a>';
+            . '<a name="tree-' . $escaper->escapeHtmlAttr($node->id) . '" href="'
+            . $escaper->escapeHtmlAttr($node->a_attr->href) . '" title="'
+            . $node->text . '">' . $escaper->escapeHtml($name) . '</a>';
         if (isset($node->children)) {
             $html .= '<ul class="fa-ul">';
             foreach ($node->children as $child) {
