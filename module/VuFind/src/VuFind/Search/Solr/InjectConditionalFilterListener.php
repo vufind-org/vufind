@@ -117,10 +117,7 @@ class InjectConditionalFilterListener
             // isGranted on a non existing rule will always return false
             // So we have to check existance of the filter condition first
             if ($this->_permissionExists(substr($filterCondition, 1))) {
-                if (
-                    !$this->getAuthorizationService()
-                    ->isGranted(substr($filterCondition, 1))
-                ) {
+                if (!$this->getAuthorizationService()->isGranted(substr($filterCondition, 1))) {
                     $this->filterList[] = $filter;
                 }
             }
