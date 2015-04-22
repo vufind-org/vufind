@@ -111,6 +111,7 @@ function lightboxAJAX(event, data) {
     method: event.target.method || 'GET',
     data: data,
     success: function(html, status) {
+      console.log(status);
       if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess
         && "function" === typeof window[event.target.dataset.lightboxSuccess]) {
         window[event.target.dataset.lightboxSuccess](html, status);

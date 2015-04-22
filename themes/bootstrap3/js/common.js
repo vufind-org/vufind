@@ -186,7 +186,6 @@ function ajaxLogin(event, data) {
     success: function(response) {
       if (response.status == 'OK') {
         var salt = response.data;
-console.log(salt);
         // get the user entered password
         var password = form.password.value;
 
@@ -218,12 +217,14 @@ console.log(salt);
               updatePageForLogin();
               lightboxAJAX(event, data);
             } else {
-              updateLightbox(response.data);
+              $('#modal .modal-body .alert,.fa.fa-spinner').remove();
+              $('#modal .modal-body p.lead').after($('<div>').html(response.data).addClass('alert alert-danger'));
             }
           }
         });
       } else {
-        updateLightbox(response.data);
+        $('#modal .modal-body .alert,.fa.fa-spinner').remove();
+        $('#modal .modal-body p.lead').after($('<div>').html(response.data).addClass('alert alert-danger'));
       }
     }
   });
