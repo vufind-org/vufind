@@ -1,4 +1,4 @@
-<!-- start of result-list.phtml -->
+<!-- start of Primo result-list.phtml -->
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
     <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
@@ -22,7 +22,7 @@
 
       </div>
       <div class="dateyeartype">
-        <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList()). '<br />'?>
+        <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
         <? if($this->driver->isCollection()): ?>
           <?=implode('<br>', $this->driver->getSummary()); ?>
         <? else: ?>
@@ -159,8 +159,8 @@
         <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <i class="fa fa-sitemap"></i>
             <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+              <i class="fa fa-sitemap"></i>  
               <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
             </a>
           </div>

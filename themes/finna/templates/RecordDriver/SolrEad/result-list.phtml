@@ -24,7 +24,7 @@
       </div>
 
       <div class="dateyeartype">
-         <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList()).'<br/>'?>
+        <div class="resultItemFormat"><?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?></div>
         <? if($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
         <? else: ?>
@@ -42,7 +42,7 @@
             <? if ($this->transEsc('Archive Repository') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><span class="small"><?=$this->transEsc('Archive Repository')?>:</span><? endif; ?>
             <?=implode(', ', array_map(function($str) { return $this->escapeHtml($this->translate("source_$str", array(), $str)); }, $this->driver->getInstitutions())); ?>
             <? if ($origination = $this->driver->getOrigination()): ?>
-              <br/><span class="small"><?=$this->transEsc('Archive Origination')?>:</span>
+              <br/><span class="archive-label"><?=$this->transEsc('Archive Origination')?>:</span>
               <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($origination)?>%22&amp;type=Author"><?=$this->escapeHtml($origination)?></a>
             <? endif; ?>
             <? if (!($fondsOrCollection = in_array('Document/ArchiveFonds', $this->driver->getFormats()) || in_array('Document/ArchiveCollection', $this->driver->getFormats()))): ?>
@@ -51,13 +51,13 @@
               <? else: ?>
                 <? $topIds = $this->driver->getHierarchyParentId(); $topTitles = $this->driver->getHierarchyParentTitle(); ?>
               <? endif; ?>
-              <br/><span class="small"><?=$this->transEsc('Archive')?>:</span>
+              <br/><span class="archive-label"><?=$this->transEsc('Archive')?>:</span>
               <? foreach($topIds as $index => $parentId): ?>
                 <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
               <? endforeach; ?>
             <? endif; ?>
             <? if (!$fondsOrCollection && $this->driver->isPartOfArchiveSeries()): ?>
-              <br/><span class="small"><?=$this->transEsc('Archive Series')?>:</span>
+              <br/><span class="archive-label"><?=$this->transEsc('Archive Series')?>:</span>
               <? $parentIds = $this->driver->getHierarchyParentId(); $parentTitles = $this->driver->getHierarchyParentTitle(); ?>
               <? foreach ($parentIds as $index => $parentId): ?>
                 <a href="<?=$this->recordLink()->getUrl("VuFind|$parentId")?>"><?=isset($parentTitles[$index]) ? $this->truncate($parentTitles[$index], 180) : ''?></a><?=($index < count($parentIds) - 1 ? ', ' : '')?>
@@ -129,8 +129,8 @@
         <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
           <div class="hierarchyTreeLink">
             <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId" />
-            <i class="fa fa-sitemap"></i>
             <a class="hierarchyTreeLinkText modal-link" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+              <i class="fa fa-sitemap"></i>
               <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
             </a>
           </div>

@@ -1,4 +1,4 @@
-@import "a11y";
+ @import "a11y";
 @import "bootstrap/bootstrap";
 
 body {
@@ -165,14 +165,16 @@ i.fa.fa-search.backgrounding:before {
 .searchtools-background {
   background: @brand-fourth;   
 }
-.searchtools a {
-   margin-right: 15px; 
-}
-.searchtools, .searchtools a {
-  color: #464646;
-  font-size: 1.2em;
-  padding: 20px 0px;
+.searchtools {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  & a {
+  color: @gray;
+  font-size: 1.1em;
   font-weight: bold;
+  margin-right: 15px;
+  display: inline-block;
+  }
 }
 footer {
  background: @footer-background; 
@@ -186,13 +188,14 @@ footer a, footer p {
  color: @body-bg;   
 }
 footer p {
- font-size: 1.1em;   
+ font-size: 1 em;   
 }
 footer li {
     list-style-type:none;   
 }
 .sidebar {
     margin-bottom: 30px;
+    padding-right: 20px;
 }
 /* Results */
 .resultListLabeling {
@@ -208,13 +211,13 @@ mark, .highlight {
     margin-top: 30px;
 }
 .resultListBanner h2 {
-    margin:15px 0px;   
+    margin: 15px 0px;   
 }
 .resultListBanner .alert {
-    padding:0px;
-    margin:0px;
-    background:none;
-    border:none;
+    padding: 0px;
+    margin: 0px;
+    background: none;
+    border: none;
     margin-bottom: 15px;
 }
 .row.result {
@@ -231,11 +234,9 @@ mark, .highlight {
 }
 
 .row.result .status .label {
-    visibility:hidden;   
+    visibility: hidden;   
 }
-.result a.title {
 
-}
 .add-to-favorites {
     @media(max-width: 400px) {
         padding-right: 5px;   
@@ -263,7 +264,6 @@ mark, .highlight {
 /* Holdings styling */
 .holding-details {
     margin-top: 10px;
-    font-size: 1.08em;
     @media(max-width: 400px) {
         .template-name-results & {
             .mobileMargin();   
@@ -274,20 +274,28 @@ mark, .highlight {
     }
 }
 .groupLocation {
-    font-size: @font-size-icon-small;
     letter-spacing: 0.2px;
     padding: 0;
+    & i {
+        vertical-align: middle;
+    }       
 }
 .groupCallnumber {
     margin-left: 10px;
-    color: @gray-light;
+    color: @gray-mid-light;
     font-size: 0.92em;
+    line-height: 1.4em; 
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
 }
 .groupLocation span.text-success {
-    color: inherit;   
+    color: inherit;
+    vertical-align: middle;
+}
+
+.groupLocation span.text-error {
+    vertical-align: middle;
 }
 
 /* Home custom styles */
@@ -649,7 +657,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .result {
   a.title {    
         font-size: 1.333em;
-        line-height: 1.2em;
+        line-height: 1.1em;
         font-weight: 400;
   }
   .left img {max-width:100%; height:auto;}
@@ -666,7 +674,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .search-controls {
   margin-bottom: 15px;
   .alert {
-    margin-bottom:0;
+    margin-bottom: 0;
   }
 }
 
@@ -988,11 +996,16 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
   cursor: pointer;
   text-decoration: line-through;
 }
-/* --- PCI --- */
+//== PCI
 .template-dir-primo.template-name-search .row.result, .sourcePrimo {
     border-bottom: 1px solid @gray-lighter;
 }
-
+.summary {
+    color: @gray-light; 
+    font-size: 1.05em; 
+    line-height: 1.35em;
+    margin-bottom: 0px;
+}
 .primo-available-online {
     & p {
         margin: 0px;   
@@ -1105,6 +1118,10 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         color: @gray-light;
     }
 }
+.less-link i {
+    padding-top: 2px;
+    vertical-align: middle;
+}    
 .record .recordcover-holder .more-link {
     width: 100%;
 }
@@ -1113,5 +1130,5 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     padding: 0px;
 }
 .mobileMargin {
-    margin: 15px -8.333% 15px -23%;   
+    margin: 15px -8.333% 0px -23%;   
 }
