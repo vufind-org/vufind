@@ -72,6 +72,11 @@ class InjectConditionalFilterListener
     {
         $this->filters = $searchConf;
         $this->filterList = array();
+        // Set default AuthorizationService
+        $this->setAuthorizationService(
+            $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+        );
+
     }
 
     /**
