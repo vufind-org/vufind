@@ -139,53 +139,6 @@ class JSTree extends AbstractBase
     }
 
     /**
-     * Convert JSTree JSON structure to HTML
-     *
-     * @param object $node        JSON object of a the JSTree
-     * @param string $context     Record or Collection
-     * @param string $hierarchyID Collection ID
-     * @param string $recordID    The currently active record
-     *
-     * @return string
-     */
-    protected function jsonToHTML($node, $context, $hierarchyID, $recordID = false)
-    {
-        $escaper = new \Zend\Escaper\Escaper('utf-8');
-
-        $name = strlen($node->title) > 100
-            ? substr($node->title, 0, 100) . '...'
-            : $node->title;
-        $href = $this->getContextualUrl($node, $context, $hierarchyID);
-        $icon = $node->type == 'record' ? 'file-o' : 'folder-open';
-
-        $html = '<li';
-        if ($node->type == 'collection') {
-            $html .= ' class="hierarchy';
-            if ($recordID && $recordID == $node->id) {
-                $html .= ' currentHierarchy';
-            }
-            $html .= '"';
-        } elseif ($recordID && $recordID == $node->id) {
-            $html .= ' class="currentRecord"';
-        }
-        $html .= '><i class="fa fa-li fa-' . $icon . '"></i> '
-            . '<a name="tree-' . $escaper->escapeHtmlAttr($node->id) . '" href="'
-            . $escaper->escapeHtmlAttr($href) . '" title="'
-            . $escaper->escapeHtml($node->title) . '">'
-            . $escaper->escapeHtml($name) . '</a>';
-        if (isset($node->children)) {
-            $html .= '<ul class="fa-ul">';
-            foreach ($node->children as $child) {
-                $html .= $this->jsonToHTML(
-                    $child, $context, $hierarchyID, $recordID
-                );
-            }
-            $html .= '</ul>';
-        }
-        return $html . '</li>';
-    }
-
-    /**
      * Render the Hierarchy Tree
      *
      * @param string $hierarchyID The hierarchy ID of the tree to fetch
@@ -268,6 +221,53 @@ class JSTree extends AbstractBase
                 ? $url . '#tabnav'
                 : $url . '#tree-' . preg_replace('/\W/', '-', $node->id);
         }
+    }
+
+    /**
+     * Convert JSTree JSON structure to HTML
+     *
+     * @param object $node        JSON object of a the JSTree
+     * @param string $context     Record or Collection
+     * @param string $hierarchyID Collection ID
+     * @param string $recordID    The currently active record
+     *
+     * @return string
+     */
+    protected function jsonToHTML($node, $context, $hierarchyID, $recordID = false)
+    {
+        $escaper = new \Zend\Escaper\Escaper('utf-8');
+
+        $name = strlen($node->title) > 100
+            ? substr($node->title, 0, 100) . '...'
+            : $node->title;
+        $href = $this->getContextualUrl($node, $context, $hierarchyID);
+        $icon = $node->type == 'record' ? 'file-o' : 'folder-open';
+
+        $html = '<li';
+        if ($node->type == 'collection') {
+            $html .= ' class="hierarchy';
+            if ($recordID && $recordID == $node->id) {
+                $html .= ' currentHierarchy';
+            }
+            $html .= '"';
+        } elseif ($recordID && $recordID == $node->id) {
+            $html .= ' class="currentRecord"';
+        }
+        $html .= '><i class="fa fa-li fa-' . $icon . '"></i> '
+            . '<a name="tree-' . $escaper->escapeHtmlAttr($node->id) . '" href="'
+            . $escaper->escapeHtmlAttr($href) . '" title="'
+            . $escaper->escapeHtml($node->title) . '">'
+            . $escaper->escapeHtml($name) . '</a>';
+        if (isset($node->children)) {
+            $html .= '<ul class="fa-ul">';
+            foreach ($node->children as $child) {
+                $html .= $this->jsonToHTML(
+                    $child, $context, $hierarchyID, $recordID
+                );
+            }
+            $html .= '</ul>';
+        }
+        return $html . '</li>';
     }
 
     /**
