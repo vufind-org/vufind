@@ -35,6 +35,15 @@ label.list-group-item {
 .list-group-item.title {font-weight: bold;}
 #modal .modal-body > h2:first-child {display: none;}
 .popover {width: 250px;}
+p.lead {
+  @media (min-width: 768px) {
+    font-size: 23px;
+    font-weight: normal;
+  }
+  @media (max-width: 767px) {
+    font-size: 20px;
+  }
+}
 .recordcover {max-height: 300px;}
 .sub-breadcrumb {
   padding: 5px 10px;
@@ -294,6 +303,7 @@ label.list-group-item {
   }
 }
 .search-controls .alert {margin-bottom: 0;}
+.searchtools a {padding: 0 .5em;}
 .title-in-heading {
   font-size: inherit;
   font-style: italic;
