@@ -120,10 +120,15 @@ class JSTree extends AbstractBase
     {
         if (!empty($context) && !empty($mode)) {
             if ($mode == 'List') {
-                return $this->jsonToHTML(
-                    json_decode($this->getJSON($hierarchyID, $context)),
-                    $this->recordDriver->getUniqueId()
-                );
+                $json = $this->getDataSource()->getJSON($hierarchyID);
+                if (!empty($json)) {
+                    return $this->jsonToHTML(
+                        json_decode($json),
+                        $context,
+                        $hierarchyID,
+                        $this->recordDriver->getUniqueId()
+                    );
+                }
             } else {
                 return $this->transformCollectionXML(
                     $context, $mode, $hierarchyID, $recordID
@@ -136,35 +141,44 @@ class JSTree extends AbstractBase
     /**
      * Convert JSTree JSON structure to HTML
      *
-     * @param object $node     JSON object of a the JSTree
-     * @param string $recordID The currently active record
+     * @param object $node        JSON object of a the JSTree
+     * @param string $context     Record or Collection
+     * @param string $hierarchyID Collection ID
+     * @param string $recordID    The currently active record
      *
      * @return string
      */
-    public function jsonToHTML($node, $recordID = false)
+    protected function jsonToHTML($node, $context, $hierarchyID, $recordID = false)
     {
-        $name = strlen($node->text) > 100
-            ? substr($node->text, 0, 100) . '...'
-            : $node->text;
+        $escaper = new \Zend\Escaper\Escaper('utf-8');
+
+        $name = strlen($node->title) > 100
+            ? substr($node->title, 0, 100) . '...'
+            : $node->title;
+        $href = $this->getContextualUrl($node, $context, $hierarchyID);
         $icon = $node->type == 'record' ? 'file-o' : 'folder-open';
+
         $html = '<li';
         if ($node->type == 'collection') {
             $html .= ' class="hierarchy';
-            if ($recordID && $recordID == $node->li_attr->recordid) {
+            if ($recordID && $recordID == $node->id) {
                 $html .= ' currentHierarchy';
             }
             $html .= '"';
-        } elseif ($recordID && $recordID == $node->li_attr->recordid) {
+        } elseif ($recordID && $recordID == $node->id) {
             $html .= ' class="currentRecord"';
         }
         $html .= '><i class="fa fa-li fa-' . $icon . '"></i> '
-            . '<a name="tree-' . $node->id . '" href="' . $node->a_attr->href
-            . '" title="' . $node->text . '">'
-            . $name . '</a>';
+            . '<a name="tree-' . $escaper->escapeHtmlAttr($node->id) . '" href="'
+            . $escaper->escapeHtmlAttr($href) . '" title="'
+            . $escaper->escapeHtml($node->title) . '">'
+            . $escaper->escapeHtml($name) . '</a>';
         if (isset($node->children)) {
             $html .= '<ul class="fa-ul">';
             foreach ($node->children as $child) {
-                $html .= $this->jsonToHTML($child, $recordID);
+                $html .= $this->jsonToHTML(
+                    $child, $context, $hierarchyID, $recordID
+                );
             }
             $html .= '</ul>';
         }
@@ -186,7 +200,7 @@ class JSTree extends AbstractBase
             return false;
         }
         return json_encode(
-            $this->formatJSON(json_decode($json), $context, $hierarchyID)
+            $this->buildNodeArray(json_decode($json), $context, $hierarchyID)
         );
     }
 
@@ -197,13 +211,14 @@ class JSTree extends AbstractBase
      * @param string $context     Record or Collection
      * @param string $hierarchyID Collection ID
      *
-     * @return array/object
+     * @return array
      */
-    protected function formatJSON($node, $context, $hierarchyID)
+    protected function buildNodeArray($node, $context, $hierarchyID)
     {
+        $escaper = new \Zend\Escaper\Escaper('utf-8');
         $ret = [
             'id' => preg_replace('/\W/', '-', $node->id),
-            'text' => $node->title,
+            'text' => $escaper->escapeHtml($node->title),
             'li_attr' => [
                 'recordid' => $node->id
             ],
@@ -217,7 +232,7 @@ class JSTree extends AbstractBase
             $ret['children'] = [];
             for ($i = 0;$i<count($node->children);$i++) {
                 $ret['children'][$i] = $this
-                    ->formatJSON($node->children[$i], $context, $hierarchyID);
+                    ->buildNodeArray($node->children[$i], $context, $hierarchyID);
             }
         }
         return $ret;
