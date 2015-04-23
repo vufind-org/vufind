@@ -34,7 +34,7 @@ function updateLightbox(html, link) {
   && "undefined" !== typeof link.dataset.lightboxClose) {
     var forms = $('#modal .modal-body form');
     for(var i=0;i<forms.length;i++) {
-      forms[i].dataset.lightboxClose = 1;
+      forms[i].dataset.lightboxClose = link.dataset.lightboxClose;
     }
   }
   constrainForms('#modal form');
@@ -72,7 +72,6 @@ function constrainForms(selector) {
 
 function lightboxFormSubmit(event) {
   $('#modal .modal-body').prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
-  var dataset = 'undefined' !== typeof event.target.dataset;
   // Gather data
   var data = $(event.target).serializeArray();
   data[data.length] = {'name':'layout', 'value':'lightbox'}; // Return in lightbox, please
@@ -92,6 +91,7 @@ function lightboxFormSubmit(event) {
   }
   event.preventDefault();
   // Overwritten behavior
+  var dataset = 'undefined' !== typeof event.target.dataset;
   if(dataset && "string" === typeof event.target.dataset.lightboxSubmit
     && "function" === typeof window[event.target.dataset.lightboxSubmit]) {
     console.log(event.target.dataset.lightboxSubmit+"(event, data)");
@@ -122,8 +122,6 @@ function lightboxAJAX(event, data) {
           window[event.target.dataset.lightboxClose](html, status);
         }
       } else if(dataset && 'string' === typeof event.target.dataset.lightboxConfirm) {
-        console.log($('<div>').html(event.target.dataset.lightboxConfirm).addClass('alert alert-info')+"");
-        console.log($('<div>').html(event.target.dataset.lightboxConfirm).addClass('alert alert-info').toString());
         updateLightbox('<div class="alert alert-info">'+event.target.dataset.lightboxConfirm+'</div>');
       } else {
         updateLightbox(html);

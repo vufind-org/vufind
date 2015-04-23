@@ -9,7 +9,7 @@
 ?>
 <p class="lead"><?=$this->transEsc('bookbag_email_selected') ?></p>
 <?=$this->flashmessages()?>
-<form class="form-horizontal" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
+<form class="form-horizontal" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail" data-lightbox-confirm="<?=$this->transEsc('bulk_email_success') ?>">
   <? foreach ($this->records as $current): ?>
     <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
   <? endforeach; ?>
