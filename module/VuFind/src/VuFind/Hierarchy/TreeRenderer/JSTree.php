@@ -195,10 +195,10 @@ class JSTree extends AbstractBase
     /**
      * Convert JSTree JSON structure to HTML
      *
-     * @param object $node         JSON object of a the JSTree
-     * @param string $context      Record or Collection
-     * @param string $hierarchyID  Collection ID
-     * @param string $recordID The currently active record
+     * @param object $node        JSON object of a the JSTree
+     * @param string $context     Record or Collection
+     * @param string $hierarchyID Collection ID
+     * @param string $recordID    The currently active record
      *
      * @return string
      */
