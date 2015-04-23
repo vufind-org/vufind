@@ -133,7 +133,9 @@ class UserResource extends Gateway
      * unlink (null for ALL matching resources)
      * @param string       $user_id     ID of user removing links
      * @param string       $list_id     ID of list to unlink
-     *                                  (null for ALL matching lists)
+     * (null for ALL matching lists, with the destruction of all tags associated
+     * with the $resource_id value; true for ALL matching lists, but retaining
+     * any tags associated with the $resource_id independently of lists)
      *
      * @return void
      */
