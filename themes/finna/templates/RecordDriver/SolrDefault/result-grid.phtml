@@ -8,7 +8,7 @@ $openUrlActive = $this->driver->openURLActive('results');
 $urls = $this->record($this->driver)->getLinkDetails();
 ?>
 
-<div class="result<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
+<div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
     <?=$this->record($this->driver)->getCheckbox() ?></br>

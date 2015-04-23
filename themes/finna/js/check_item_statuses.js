@@ -2,7 +2,7 @@
 
 function checkItemStatus(id) {
   var safeId = jqEscape(id);
-  var item = $('.hiddenId[value="' + safeId + '"]').closest('.result');
+  var item = $('.hiddenId[value="' + safeId + '"]').closest('.record-container');
   item.find(".ajax-availability").removeClass('hidden');
   item.find(".availability-load-indicator").removeClass('hidden');
 
