@@ -7,7 +7,9 @@
     .finna-main-header .form-inline {
         margin-left: 20px;
     }
-
+    & select#library_card {
+        display: inline-block;   
+    }
     & .useraccount-table {
         margin-bottom: 40px;
         border: 1px solid @gray-lighter;
@@ -97,7 +99,7 @@
                 top: 8px;
             }
             & select#add-to-list {
-                width: 200px;
+                max-width: 140px;
             }
         }
         &.fixed {
@@ -157,13 +159,24 @@
         margin-top: 20px;
     }
     .mylist-nav {
+        & li > a {
+            word-wrap: break-word;   
+        }
         & li > a:not(.add-new-list) {
-            background: @gray;
+            background: @gray-light;
             color: #fff;
             margin-bottom: 5px;
         }
         & li > a.active {
-            background: @brand-primary;
+            background: @gray;
+            & .favorite-list-name {
+                max-width: 85%;
+            }
+            & .remove-favorite-list {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+            }
         }
 
         & .add-new-list {
