@@ -159,7 +159,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function getSortTitle()
     {
         // Child classes should override this with smarter behavior, and the "strip
-        // articles" logic probably belongs in a more appropriate place, but for now,
+        // articles" logic probably belongs in a more appropriate place, but for now
         // in the absence of a better plan, we'll just use the XSLT Importer's strip
         // articles functionality.
         return ArticleStripper::stripArticles($this->getBreadcrumb());
@@ -171,15 +171,18 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param int    $list_id ID of list to load tags from (null for all lists)
      * @param int    $user_id ID of user to load tags from (null for all users)
      * @param string $sort    Sort type ('count' or 'tag')
+     * @param int    $ownerId ID of user to check for ownership
      *
      * @return array
      */
-    public function getTags($list_id = null, $user_id = null, $sort = 'count')
-    {
+    public function getTags($list_id = null, $user_id = null, $sort = 'count',
+        $ownerId = null
+    ) {
         $tags = $this->getDbTable('Tags');
         return $tags->getForResource(
-            $this->getUniqueId(), $this->getResourceSource(), 0, $list_id, $user_id,
-            $sort
+            $this->getUniqueId(),
+            $this->getResourceSource(),
+            0, $list_id, $user_id, $sort, $ownerId
         );
     }
 
@@ -199,6 +202,25 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         );
         foreach ($tags as $tag) {
             $resource->addTag($tag, $user);
+        }
+    }
+
+    /**
+     * Remove tags from the record.
+     *
+     * @param \VuFind\Db\Row\User $user The user posting the tag
+     * @param array               $tags The user-provided tags
+     *
+     * @return void
+     */
+    public function deleteTags($user, $tags)
+    {
+        $resources = $this->getDbTable('Resource');
+        $resource = $resources->findResource(
+            $this->getUniqueId(), $this->getResourceSource()
+        );
+        foreach ($tags as $tag) {
+            $resource->deleteTag($tag, $user);
         }
     }
 

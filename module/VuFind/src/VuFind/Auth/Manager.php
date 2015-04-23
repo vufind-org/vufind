@@ -409,7 +409,7 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function getIdentity()
     {
-        return ($user = $this->isLoggedIn()) ?: null;
+        return $this->isLoggedIn() ?: null;
     }
 
     /**

@@ -111,8 +111,15 @@ class Sfx implements DriverInterface
             $record['title'] = (string)$target->target_public_name;
             $record['href'] = (string)$target->target_url;
             $record['service_type'] = (string)$target->service_type;
-            $record['coverage'] = (string)$target->coverage->coverage_text
-                ->threshold_text->coverage_statement;
+            if (isset($target->coverage->coverage_text)) {
+                $coverageText = & $target->coverage->coverage_text;
+                $record['coverage'] = (string)$coverageText
+                    ->threshold_text->coverage_statement;
+                if (isset($coverageText->embargo_text->embargo_statement)) {
+                    $record['coverage'] .= ' ' . (string)$coverageText
+                        ->embargo_text->embargo_statement;
+                }
+            }
             array_push($records, $record);
         }
         return $records;
