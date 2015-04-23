@@ -155,9 +155,9 @@
         <? endif; ?>
       <? endif; ?>
 
-      <div class="callnumAndLocation ajax-availability hidden">
+      <div class="callnumAndLocation ajax-availability<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
+        <span class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></span>
         <? if ($this->driver->supportsAjaxStatus()): ?>
-          <span class="availability-load-indicator hidden"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc('Loading')?>...<br/></span>
           <strong class="hideIfDetailed"></strong>
           <span class="callnumber ajax-availability hidden">
           </span>
@@ -169,7 +169,7 @@
             <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
           <? endif; ?>
         <? endif; ?>
-        <div class="no-holdings hidden">
+        <div class="no-holdings<?=$this->driver->supportsAjaxStatus() ? ' hidden' : ''?>">
           <?=$this->transEsc('No Holdings Available')?>
         </div>
       </div>
