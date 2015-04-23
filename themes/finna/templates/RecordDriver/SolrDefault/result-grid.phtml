@@ -45,6 +45,9 @@ $urls = $this->record($this->driver)->getLinkDetails();
         <br/>
       <? endforeach; ?>
     <? endif; ?>
+      <? if ($this->layout()->templateDir === 'list'): ?>
+        <?=$this->render('list/list-notes.phtml')?>
+      <? endif; ?>
   </div>
 </div>
 

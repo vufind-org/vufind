@@ -20,6 +20,7 @@ return array(
             'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
             'checkboxFacetAvailables' =>
                 'Finna\View\Helper\Root\CheckboxFacetAvailables',
+            'userPublicName' => 'Finna\View\Helper\Root\UserPublicName',
         )
     ),
     'css' => array(
