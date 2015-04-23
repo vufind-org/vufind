@@ -141,7 +141,9 @@ function registerLightboxEvents() {
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
-    $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    if(!$(this).hasClass('dropdown-toggle')) {
+      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    }
   });
   /**
    * Hide the header in the lightbox content
