@@ -1,6 +1,7 @@
 <?
   $topFacetSet = $this->recommend->getTopFacetSet();
   $topFacetSettings = $this->recommend->getTopFacetSettings();
+  $results = $this->recommend->getResults();
 ?>
 <? if (isset($topFacetSet)): ?>
   <? foreach($topFacetSet as $title => $cluster): ?>
@@ -28,7 +29,7 @@
               <?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
             </a>
           <? else: ?>
-            <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->localizedNumber($thisFacet['count']) ?>)
+            <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->localizedNumber($thisFacet['count']) ?>)
             <? if ($allowExclude): ?>
               <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>"><?=$this->transEsc('exclude_facet')?></a>
             <? endif; ?>

@@ -327,7 +327,7 @@ function registerAjaxSaveRecord() {
 
         $('a.listEdit').unbind('click').click(function(){
             var id = this.href.substring(this.href.indexOf('?')+'recordId='.length+1);
-            id = decodeURIComponent(id.split('&')[0]);
+            id = decodeURIComponent(id.split('&')[0].replace(/\+/g, ' '));
             var controller = extractController(this);
             hideLightbox();
             getLightbox('MyResearch', 'EditList', 'NEW', null, this.title, controller, 'Save', id);
@@ -553,7 +553,7 @@ function registerAjaxBulkSave() {
         $('a.listEdit').unbind('click').click(function(){
             var $form = $('#modalDialog form[name="bulkSave"]');
             var id = this.href.substring(this.href.indexOf('?')+'recordId='.length+1);
-            id = decodeURIComponent(id.split('&')[0]);
+            id = decodeURIComponent(id.split('&')[0].replace(/\+/g, ' '));
             var ids = $("input[name='ids[]']", $form);
             var postParams = [];
             $.each(ids, function(i) {

@@ -108,10 +108,13 @@ class Params extends \VuFind\Search\Base\Params
                 $field = substr($field, 1);
             }
             foreach ($filter as $value) {
-                // Special case -- allow trailing wildcards and ranges:
-                if (substr($value, -1) == '*'
+                // Special case -- complex filter, that should be taken as-is:
+                if ($field == '#') {
+                    $q = $value;
+                } else if (substr($value, -1) == '*'
                     || preg_match('/\[[^\]]+\s+TO\s+[^\]]+\]/', $value)
                 ) {
+                    // Special case -- allow trailing wildcards and ranges
                     $q = $field . ':' . $value;
                 } else {
                     $q = $field . ':"' . addcslashes($value, '"\\') . '"';
