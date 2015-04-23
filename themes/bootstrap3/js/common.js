@@ -99,7 +99,6 @@ function phoneNumberFormHandler(numID, regionCode) {
       $(phoneInput).siblings('.help-block.with-errors').html(valid);
     }
     $(phoneInput).closest('.form-group').addClass('sms-error');
-    $('.fa.fa-spinner').remove();
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
