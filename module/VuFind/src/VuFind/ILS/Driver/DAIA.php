@@ -530,7 +530,7 @@ class DAIA extends AbstractBase implements
             foreach ($daiaArray["item"] as $item) {
                 $result_item = [];
                 $result_item["id"] = $id;
-                $result_item["item_id"] = $id;
+                $result_item["item_id"] = $item["id"];
                 $result_item["ilslink"] = $doc_href;
                 $number++; // count items
                 $result_item["number"] = $number;
