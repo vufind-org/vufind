@@ -1251,24 +1251,29 @@ class Voyager extends AbstractBase
     {
         // Expressions
         $sqlExpressions = [
-            "to_char(CIRC_TRANSACTIONS.CURRENT_DUE_DATE, 'MM-DD-YY HH24:MI')" .
+            "to_char(MAX(CIRC_TRANSACTIONS.CURRENT_DUE_DATE), 'MM-DD-YY HH24:MI')" .
             " as DUEDATE",
-            "to_char(CURRENT_DUE_DATE, 'YYYYMMDD HH24:MI') as FULLDATE",
-            "BIB_ITEM.BIB_ID",
-            "CIRC_TRANSACTIONS.ITEM_ID as ITEM_ID",
-            "MFHD_ITEM.ITEM_ENUM",
-            "MFHD_ITEM.YEAR",
-            "BIB_TEXT.TITLE_BRIEF",
-            "BIB_TEXT.TITLE",
-            "CIRC_TRANSACTIONS.RENEWAL_COUNT",
-            "CIRC_POLICY_MATRIX.RENEWAL_COUNT as RENEWAL_LIMIT",
-            "LOCATION.LOCATION_DISPLAY_NAME as BORROWING_LOCATION"
+            "to_char(MAX(CURRENT_DUE_DATE), 'YYYYMMDD HH24:MI') as FULLDATE",
+            "MAX(BIB_ITEM.BIB_ID) AS BIB_ID",
+            "MAX(CIRC_TRANSACTIONS.ITEM_ID) as ITEM_ID",
+            "MAX(MFHD_ITEM.ITEM_ENUM) AS ITEM_ENUM",
+            "MAX(MFHD_ITEM.YEAR) AS YEAR",
+            "MAX(BIB_TEXT.TITLE_BRIEF) AS TITLE_BRIEF",
+            "MAX(BIB_TEXT.TITLE) AS TITLE",
+            "LISTAGG(ITEM_STATUS_DESC, CHR(9)) "
+            . "WITHIN GROUP (ORDER BY ITEM_STATUS_DESC) as status",
+            "MAX(CIRC_TRANSACTIONS.RENEWAL_COUNT) AS RENEWAL_COUNT",
+            "MAX(CIRC_POLICY_MATRIX.RENEWAL_COUNT) as RENEWAL_LIMIT",
+            "MAX(LOCATION.LOCATION_DISPLAY_NAME) as BORROWING_LOCATION"
         ];
 
         // From
         $sqlFrom = [
             $this->dbName . ".CIRC_TRANSACTIONS",
             $this->dbName . ".BIB_ITEM",
+            $this->dbName . ".ITEM",
+            $this->dbName . ".ITEM_STATUS",
+            $this->dbName . ".ITEM_STATUS_TYPE",
             $this->dbName . ".MFHD_ITEM",
             $this->dbName . ".BIB_TEXT",
             $this->dbName . ".CIRC_POLICY_MATRIX",
@@ -1283,11 +1288,14 @@ class Voyager extends AbstractBase
             "BIB_TEXT.BIB_ID = BIB_ITEM.BIB_ID",
             "CIRC_TRANSACTIONS.CIRC_POLICY_MATRIX_ID = " .
             "CIRC_POLICY_MATRIX.CIRC_POLICY_MATRIX_ID",
-            "CIRC_TRANSACTIONS.CHARGE_LOCATION = LOCATION.LOCATION_ID"
+            "CIRC_TRANSACTIONS.CHARGE_LOCATION = LOCATION.LOCATION_ID",
+            "BIB_ITEM.ITEM_ID = ITEM.ITEM_ID",
+            "ITEM.ITEM_ID = ITEM_STATUS.ITEM_ID",
+            "ITEM_STATUS.ITEM_STATUS = ITEM_STATUS_TYPE.ITEM_STATUS_TYPE",
         ];
 
         // Order
-        $sqlOrder = ["FULLDATE ASC"];
+        $sqlOrder = ["FULLDATE ASC", "TITLE ASC"];
 
         // Bind
         $sqlBind = [':id' => $patron['id']];
@@ -1297,10 +1305,33 @@ class Voyager extends AbstractBase
             'from' => $sqlFrom,
             'where' => $sqlWhere,
             'order' => $sqlOrder,
-            'bind' => $sqlBind
+            'bind' => $sqlBind,
+            'group' => ['CIRC_TRANSACTIONS.ITEM_ID']
         ];
 
         return $sqlArray;
+    }
+
+    /**
+     * Pick a transaction status worth displaying to the user (or return false
+     * if nothing important is found).
+     *
+     * @param array $statuses Status strings
+     *
+     * @return string|bool
+     */
+    protected function pickTransactionStatus($statuses)
+    {
+        $regex = isset($this->config['Loans']['show_statuses'])
+            ? $this->config['Loans']['show_statuses']
+            : '/lost|missing|claim/i';
+        $retVal = [];
+        foreach ($statuses as $status) {
+            if (preg_match($regex, $status)) {
+                $retVal[] = $status;
+            }
+        }
+        return empty($retVal) ? false : implode(', ', $retVal);
     }
 
     /**
@@ -1350,7 +1381,9 @@ class Voyager extends AbstractBase
             'title' => empty($sqlRow['TITLE_BRIEF'])
                 ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
             'renew' => $sqlRow['RENEWAL_COUNT'],
-            'renewLimit' => $sqlRow['RENEWAL_LIMIT']
+            'renewLimit' => $sqlRow['RENEWAL_LIMIT'],
+            'message' =>
+                $this->pickTransactionStatus(explode(chr(9), $sqlRow['STATUS'])),
         ];
         if (isset($this->config['Loans']['display_borrowing_location'])
             && $this->config['Loans']['display_borrowing_location']
