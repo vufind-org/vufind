@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, refreshTagList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -163,7 +163,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
  * is called and the 'shown' lightbox event is triggered
  */
 function bulkActionSubmit($form) {
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
+  var submit = $form.find('[type="submit"][clicked=true]').attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
     return Lightbox.displayError(vufindString['bulk_noitems_advice']);
@@ -207,11 +207,11 @@ function registerLightboxEvents() {
     $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
   });
   // Highlight which submit button clicked
-  $(modal).find("form input[type=submit]").click(function() {
+  $(modal).find("form [type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .fa-spinner').remove();
     // Remove other clicks
-    $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
+    $(modal).find('[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
@@ -268,6 +268,10 @@ function updatePageForLogin() {
   if(typeof ajaxFLLoadTab == "function") {
     var $activeTab = $('.search_tabs .recordTabs li.active a');
     ajaxFLLoadTab($activeTab.attr('id'), true);
+  }
+  // Refresh tag list
+  if(typeof refreshTagList === "function") {
+    refreshTagList(true);
   }
 }
 function newAccountHandler(html) {
@@ -460,11 +464,11 @@ $(document).ready(function() {
   $('[name=bulkActionForm]').submit(function() {
     return bulkActionSubmit($(this));
   });
-  $('[name=bulkActionForm]').find("input[type=submit]").click(function() {
+  $('[name=bulkActionForm]').find("[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .fa-spinner').remove();
     // Remove other clicks
-    $(this).closest('form').find('input[type="submit"][clicked=true]').attr('clicked', false);
+    $(this).closest('form').find('[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
   });
