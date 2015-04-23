@@ -258,6 +258,7 @@ CREATE TABLE record
   user_id integer,
   session_id varchar,
   source varchar,
+  version integer NOT NULL DEFAULT 1,
   data text,
   resource_id integer,
   updated timestamp without time zone,

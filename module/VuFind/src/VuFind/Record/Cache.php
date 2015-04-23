@@ -118,8 +118,8 @@ class Cache implements \Zend\Log\LoggerAwareInterface
                 ' , cId: ' . $cId
             );
             $this->recordTable->updateRecord(
-                $cId, $source, $rawData, $recordId, $userId, $sessionId, $resourceId
-            );
+                 $cId, $source, $rawData, $recordId, $userId, $sessionId, $resourceId
+             );
         }
     }
 
@@ -275,13 +275,14 @@ class Cache implements \Zend\Log\LoggerAwareInterface
      *
      * @return string
      */
-    protected function getCacheId($recordId, $source = null, $userId = null)
+    protected function getCacheId($recordId, $source = null, $userId = null, $version=1)
     {
-        $source = ($source == 'Solr') ? 'VuFind' : $source;
+        $source = ($source == 'VuFind') ? 'Solr' : $source;
 
         $cIdHelper = [];
         $cIdHelper['recordId'] = $recordId;
         $cIdHelper['source']   = $source;
+        $cIdHelper['version']   = $version;
 
         if (in_array('userId', $this->cachableSources[$source]['cacheIdComponents'])) {
             $cIdHelper['userId']   = $userId;
@@ -302,6 +303,7 @@ class Cache implements \Zend\Log\LoggerAwareInterface
     protected function getVuFindRecord($cachedRecord)
     {
         $source = $cachedRecord['source'];
+        $version = $cachedRecord['version'];
         $doc = json_decode($cachedRecord['data'], true);
 
         // Solr records are loaded in special-case fashion:
