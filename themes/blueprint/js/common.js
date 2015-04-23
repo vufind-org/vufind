@@ -11,14 +11,6 @@ $.validator.setDefaults({
     errorClass: 'invalid'
 });
 
-// add a modified version of the original phoneUS rule
-// to accept only 10-digit phone numbers
-$.validator.addMethod("phoneUS", function(phone_number, element) {
-    phone_number = phone_number.replace(/[\-\s().]+/g, "");
-    return this.optional(element) || phone_number.length > 9 &&
-        phone_number.match(/^(\([2-9]\d{2}\)|[2-9]\d{2})[2-9]\d{2}\d{4}$/);
-}, 'Please specify a valid phone number');
-
 function toggleMenu(elemId) {
     var elem = $("#"+elemId);
     if (elem.hasClass("offscreen")) {
@@ -308,12 +300,14 @@ function phoneNumberFormHandler(numID, regionCode) {
   if(valid !== true) {
     if(typeof valid === 'string') {
       for(var i=libphoneErrorStrings.length;i--;) {
-        valid.replace(libphoneErrorStrings[i], vufindString[libphoneTranslateCodes[i]]);
+        if(valid.match(libphoneErrorStrings[i])) {
+          valid = vufindString[libphoneTranslateCodes[i]];
+        }
       }
-      $(phoneInput).siblings('.phone-error').html(valid);
     } else {
-      $(phoneInput).siblings('.phone-error').html(vufindString['libphonenumber_invalid']);
+      valid = vufindString['libphonenumber_invalid'];
     }
+    $(phoneInput).siblings('.phone-error').html(valid);
   } else {
     $(phoneInput).siblings('.phone-error').html('');
   }

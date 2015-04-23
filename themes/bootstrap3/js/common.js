@@ -89,15 +89,16 @@ function phoneNumberFormHandler(numID, regionCode) {
   var number = phoneInput.value;
   var valid = isPhoneNumberValid(number, regionCode);
   if(valid != true) {
-    var error = "";
-    if(typeof valid !== 'string') {
-      $(phoneInput).siblings('.help-block.with-errors').html(vufindString['libphonenumber_invalid']);
-    } else {
+    if(typeof valid === 'string') {
       for(var i=libphoneErrorStrings.length;i--;) {
-        valid.replace(libphoneErrorStrings[i], vufindString[libphoneTranslateCodes[i]]);
+        if(valid.match(libphoneErrorStrings[i])) {
+          valid = vufindString[libphoneTranslateCodes[i]];
+        }
       }
-      $(phoneInput).siblings('.help-block.with-errors').html(valid);
+    } else {
+      valid = vufindString['libphonenumber_invalid'];
     }
+    $(phoneInput).siblings('.help-block.with-errors').html(valid);
     $(phoneInput).closest('.form-group').addClass('sms-error');
   } else {
     $(phoneInput).closest('.form-group').removeClass('sms-error');
