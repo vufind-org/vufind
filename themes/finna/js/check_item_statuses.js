@@ -97,7 +97,7 @@ function initDedupRecordSelection()
     var source = $(this).find('option:selected').data('source');
     $.cookie('preferredRecordSource', source);
 
-    var recordContainer = $(this).closest('.result');
+    var recordContainer = $(this).closest('.record-container');
     var oldRecordId = recordContainer.find('.hiddenId')[0].value;
 
     // Update IDs of elements
