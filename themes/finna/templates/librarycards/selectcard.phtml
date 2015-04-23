@@ -1,7 +1,7 @@
 <? if ($this->user): ?>
   <?$cards = $this->user->getLibraryCards(); if ($cards->count() > 1): ?>
     <form class="form-inline" action="<?=$this->url('librarycards-selectcard')?>" method="get">
-      <label for="library_card"><?=$this->transEsc(isset($this->label) ? $this->label : 'For Library Card')?>: </label>
+      <label for="library_card"><?=$this->transEsc(isset($this->label) ? $this->label : 'For Library Card')?></label>
       <select id="library_card" name="cardID" class="jumpMenu form-control">
         <? foreach ($cards as $card): ?>
           <?

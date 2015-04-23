@@ -35,11 +35,11 @@
               <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
             </ul>
           </div>
-          <span class="myresearch-count"><?=$this->transEsc('Call Slips')?> (<?=count($this->recordList);?>)</span>
+          <span class="myresearch-count"><?=$this->transEsc('Total')?>:  <?=count($this->recordList);?></span>
         </div>
         <? else: ?>
         <div class="toolbar">
-          <p><?=$this->transEsc('cannot cancel any interlibrary loan requests')?><span class="myresearch-count no-buttons"><?=$this->transEsc('Call Slips')?> (<?=count($this->recordList);?>)</span></p>
+          <p><?=$this->transEsc('cannot cancel any interlibrary loan requests')?><span class="myresearch-count no-buttons"><?=$this->transEsc('Total')?>:  <?=count($this->recordList);?></span></p>
         </div>
         <? endif; ?>
 
