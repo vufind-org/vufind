@@ -98,10 +98,10 @@ function phoneNumberFormHandler(numID, regionCode) {
       }
       $(phoneInput).siblings('.help-block.with-errors').html(valid);
     }
-    $(phoneInput).closest('.form-group').addClass('has-error');
+    $(phoneInput).closest('.form-group').addClass('sms-error');
     $('.fa.fa-spinner').remove();
   } else {
-    $(phoneInput).closest('.form-group').removeClass('has-error');
+    $(phoneInput).closest('.form-group').removeClass('sms-error');
     $(phoneInput).siblings('.help-block.with-errors').html('');
   }
   return valid == true;
@@ -167,7 +167,9 @@ function registerLightboxEvents() {
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
-    $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    if($(modal).find('.has-error,.sms-error').length == 0) {
+      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    }
   });
   /**
    * Hide the header in the lightbox content
