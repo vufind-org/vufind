@@ -1,0 +1,30 @@
+<form method="post" action="&#32;" class="profile_form" id="messaging_form">
+  <h3><?= $this->transEsc('messaging_settings_title') ?></h3>
+  <table class="table useraccount-table">
+    <? foreach ($profile['messagingServices'] as $service): ?>
+      <tr>
+        <td>
+          <?
+          echo $service['type'] . ': ';
+          $notFound = true;
+          foreach ($service['sendMethods'] as $method) {
+            if ($method['active']) {
+              echo $method['method'];
+              $notFound = false;
+              break;
+            }
+          }
+          if ($notFound) {
+              echo $this->transEsc('messaging_settings_method_none');
+          }
+          ?>
+        </td>
+      </tr>
+    <? endforeach; ?>
+    <tr>
+      <td>
+        <a class="" href="#"><?= $this->transEsc('request_messaging_settings_change') ?></a>
+      </td>
+    </tr>
+  </table>
+</form>

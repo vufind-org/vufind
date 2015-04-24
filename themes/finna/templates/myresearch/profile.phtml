@@ -10,36 +10,62 @@
     $showHomeLibForm = (isset($this->pickup) && count($this->pickup) > 1);
 
     // Template for use by the renderArray helper:
-    $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
+    $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td><td></td></tr>';
+    $arrNoticeTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td><td>%%NOTICE%%</td></tr>';
+    $arrTelTemplate = '<tr><th>%%LABEL%%:</th><td><input type="tel" name="profile_tel" value="%%VALUE%%"/></td><td></td></tr>';
+    $arrMailTemplate = '<tr><th>%%LABEL%%:</th><td><input type="email" name="profile_email" value="%%VALUE%%"/></td><td></td></tr>';
+
+    $user = $this->auth()->isLoggedIn();
+    $cards = $user->getLibraryCards();
+    foreach ($cards as $card) {
+      if ($user->cat_username == $card->cat_username) {
+        $accountName = $card->card_name . ' (' . $card->cat_username . ')';
+        break;
+      }
+    }
 ?>
 <div class="row">
   <div class="col-md-9">
     <?=$this->flashmessages();?>
-    <h2><?=$this->transEsc('Library Card Settings')?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
-    <table class="table">
-      <? if ($showHomeLibForm): ?>
-        <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
-        <?
-          $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
-              ? $this->profile['home_library'] : $this->defaultPickupLocation
-        ?>
-        <td>
-          <form id="profile_form" class="form-inline" action="" method="post">
-            <select id="home_library" name="home_library" class="form-control">
-              <? foreach ($this->pickup as $lib): ?>
-                <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
-              <? endforeach; ?>
-            </select>
-            <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>" />
-          </form>
-        </td>
-        </tr>
-      <? endif; ?>
-    </table>
+    <p class="no-content-message"><?=trim($this->transEsc('profile_instructions'))?></p>
+    <?= $this->partial('myresearch/profile-my-information.phtml', array('user' => $user, 'cards' => $cards)); ?>
+    <? if (isset($this->profile)): ?>
+    <h2><?=$this->transEsc('Library Card Settings');?>: <?=$accountName ?></h2>
+
+    <? if ($showHomeLibForm): ?>
+      <form id="profile_form" class="form-inline" action="" method="post">
+        <table class="table useraccount-table">
+          <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
+            <?
+              $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
+                  ? $this->profile['home_library'] : $this->defaultPickupLocation
+            ?>
+            <td>
+              <select id="home_library" name="home_library" class="form-control">
+                <? foreach ($this->pickup as $lib): ?>
+                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
+                <? endforeach; ?>
+              </select>
+            </td>
+          <tr>
+            <td colspan="2">
+              <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>" />
+            </td>
+          </tr>
+        </table>
+      </form>
+    <? endif; ?>
+
+    <? if (count($profile['messagingServices'])): ?>
+      <?= $this->partial('myresearch/profile-messaging.phtml', array('profile' => $profile)); ?>
+    <? endif; ?>
+
+    <? if ($changePassword): ?>
+      <?= $this->partial('myresearch/profile-change-password.phtml', array('user' => $user)); ?>
+    <? endif; ?>
+
+    <h3><?= $this->transEsc('Personal details maintained by the library') ?></h3>
     <table class="table table-striped useraccount-table">
-        <tr class="headers">
-          <th colspan="2"><h4><?=$this->transEsc('Personal details maintained by the library');?></h4></th>
-        </tr>
       <?
         echo $this->renderArray(
           $arrTemplate, $this->profile,
@@ -50,19 +76,77 @@
         );
        ?>
       <?
+        if ($axiellWebServices) {
+            echo str_replace(
+            ['%%LABEL%%', '%%VALUE%%', '%%NOTICE%%'],
+            [
+                $this->transEsc('Address'),
+                $this->profile['address1'],
+                'Osoitetta ei voi vaihtaa itse. <a class="editAddress" href="#">' . $this->transEsc('request_address_change') . '</a>'
+            ],
+            $arrNoticeTemplate
+          );
+        } else {
+            echo $this->renderArray(
+              $arrTemplate, $this->profile,
+              array(
+                $this->transEsc('Address') . ' 1' => 'address1',
+                $this->transEsc('Address') . ' 2' => 'address2',
+              )
+            );
+        }
         echo $this->renderArray(
           $arrTemplate, $this->profile,
           array(
-            $this->transEsc('Address') . ' 1' => 'address1',
-            $this->transEsc('Address') . ' 2' => 'address2',
             $this->transEsc('Zip') => 'zip',
-            $this->transEsc('City') => 'city',
-            $this->transEsc('Country') => 'country',
+          )
+        );
+        if (!$axiellWebServices) {
+          $arrTelTemplate = $arrTemplate;
+        }
+        echo $this->renderArray(
+          $arrTelTemplate, $this->profile,
+          array(
             $this->transEsc('Phone Number') => 'phone',
+          )
+        );
+        if (!$axiellWebServices) {
+            $arrMailTemplate = $arrTemplate;
+        }
+        echo $this->renderArray(
+          $arrMailTemplate, $this->profile,
+          array(
+            $this->transEsc('Email') => 'email',
+          )
+        );
+        echo $this->renderArray(
+          $arrTemplate, $this->profile,
+          array(
             $this->transEsc('Group') => 'group'
           )
         );
+        if ($this->profile['blocks']) {
+          $data = '';
+          foreach ($profile['blocks'] as $block) {
+            $data .= '<p class="borrowing-block">' . $this->transEsc($block) . '</p>';
+          }
+          echo str_replace(
+            ['%%LABEL%%', '%%VALUE%%'],
+            [$this->transEsc('Borrowing Blocks'), $data],
+            $arrTemplate
+          );
+        }
       ?>
     </table>
+    <? if ($axiellWebServices): ?>
+      <input id="saveLibaryProfile" name="saveLibaryProfile" type="submit" value="<?=$this->transEsc("save_my_profile") ?>" class="btn btn-primary" />
+      <p>
+        <a class="edit editAddress" href="#"><?=$this->transEsc('request_address_change') ?></a>
+      </p>
+    <? endif; ?>
+    <? endif; ?>
+    <div id="delete-account">
+      <button class="btn btn-primary"><?=$this->transEsc('delete_account_title') ?></button>
+    </div>
   </div>
 </div>

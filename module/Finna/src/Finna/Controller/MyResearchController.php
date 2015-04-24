@@ -77,6 +77,41 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Gather user profile data
+     *
+     * @return mixed
+     */
+    public function profileAction()
+    {
+        $values = $this->getRequest()->getPost();
+        if (!empty($values['saveMyProfile'])) {
+            $validator = new \Zend\Validator\EmailAddress();
+            if ($validator->isValid($values->email)) {
+                $user = $this->getUser();
+                $user->email = $values->email;
+                if (isset($values->dueDateReminder)) {
+                    // Todo: due date reminder save
+                }
+                $user->save();
+                $this->flashMessenger()->setNamespace('info')
+                    ->addMessage(profile_update);
+            } else {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage(profile_update_failed);
+            }
+        }
+
+        if (is_array(parent::catalogLogin())) {
+            $view = parent::profileAction();
+            $profile = $view->profile;
+            $view->profile = $profile;
+        } else {
+            $view = $this->createViewModel();
+        }
+        return $view;
+    }
+
+    /**
      * Return the Favorites sort list options.
      *
      * @return array

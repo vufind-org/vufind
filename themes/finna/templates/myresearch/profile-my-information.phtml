@@ -1,0 +1,38 @@
+<? if ($user): ?>
+<div>
+  <h2><?=$this->transEsc('my_profile')?></h2>
+  <form name="myProfileForm" class="inline" action="&#32;" method="post" id="cancelHold">
+        
+    <table class="table useraccount-table">
+      <tr>
+        <th><?=$this->transEsc("Email") ?>:</th>
+        <td><input id="email" type="email" name="email" value="<?=$user->email?>"/></td>
+        <td><?=$this->transEsc("notif_email") ?></td>
+      </tr>
+      <? if (!empty($user->cat_username)): ?>
+      <tr>
+        <th><?=$this->transEsc("due_date_reminder") ?>:</th>
+        <td>
+          <select id="dueDateReminder" name="dueDateReminder">
+            <option value="0" <?= $val == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
+            <option value="1" <?= $val == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
+            <option value="2" <?= $val == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_two_days") ?></option>
+            <option value="3" <?= $val == 3 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_three_days") ?></option>
+          </select>
+        </td>
+        <td>
+          <? if ($cards->count() > 1): ?>
+            <?=$this->transEsc("notif_duedate") ?>
+          <? endif; ?>
+        </td>
+      </tr>
+      <? endif; ?>
+      <tr>
+          <td colspan="3">
+            <input id="saveMyProfile" name="saveMyProfile" type="submit" value="<?=$this->transEsc("Save") ?>" class="btn btn-primary" />
+          </td>
+      </tr>
+    </table>
+  </form>
+</div>
+<? endif; ?>
