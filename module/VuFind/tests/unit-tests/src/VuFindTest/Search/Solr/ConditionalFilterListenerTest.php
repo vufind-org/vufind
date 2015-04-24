@@ -33,7 +33,6 @@ use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\HandlerMap;
 
-
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
