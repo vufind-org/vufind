@@ -167,7 +167,7 @@ function registerLightboxEvents() {
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
-    if($(modal).find('.has-error,.sms-error').length == 0) {
+    if($(modal).find('.has-error,.sms-error').length == 0 && !$(this).hasClass('dropdown-toggle')) {
       $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
     }
   });

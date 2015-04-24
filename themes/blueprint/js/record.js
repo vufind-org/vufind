@@ -1,4 +1,4 @@
-/*global __dialogHandle, displayFormError, extractController, extractSource, getLightbox, path, toggleMenu*/
+/*global console, __dialogHandle, displayFormError, extractController, extractSource, getLightbox, path, refreshTagList, toggleMenu*/
 
 /**
  * Functions and event handlers specific to record pages.

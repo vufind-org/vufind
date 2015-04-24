@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, vufindString */
+/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, userIsLoggedIn, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -173,24 +173,6 @@ function ajaxLoadTab(tabid) {
   return false;
 }
 
-function ajaxTagUpdate(tag, remove) {
-  if(typeof remove === "undefined") {
-    remove = false;
-  }
-  var recordId = $('#record_id').val();
-  var recordSource = $('.hiddenSource').val();
-  $.ajax({
-    url:path+'/AJAX/JSON?method=tagRecord',
-    method:'POST',
-    data:{
-      tag:'"'+tag.replace(/\+/g, ' ')+'"',
-      id:recordId,
-      source:recordSource,
-      remove:remove
-    },
-    complete:refreshTagList
-  });
-}
 function refreshTagList(loggedin) {
   loggedin = !!loggedin || userIsLoggedIn;
   var recordId = $('#record_id').val();
@@ -214,6 +196,25 @@ function refreshTagList(loggedin) {
       }
     });
   }
+}
+
+function ajaxTagUpdate(tag, remove) {
+  if(typeof remove === "undefined") {
+    remove = false;
+  }
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+  $.ajax({
+    url:path+'/AJAX/JSON?method=tagRecord',
+    method:'POST',
+    data:{
+      tag:'"'+tag.replace(/\+/g, ' ')+'"',
+      id:recordId,
+      source:recordSource,
+      remove:remove
+    },
+    complete:refreshTagList
+  });
 }
 
 $(document).ready(function(){
