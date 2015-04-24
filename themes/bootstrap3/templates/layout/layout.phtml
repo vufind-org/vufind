@@ -63,14 +63,8 @@
           );
         }
         $this->headScript()->appendScript($this->jsTranslations()->getScript());
-        if($loggedin = $this->auth()->isLoggedIn()) {
-          $user_id = $loggedin->id;
-          $loggedin = true;
-        } else {
-          $user_id = false;
-        }
         $this->headScript()->appendScript(
-          'var userIsLoggedIn = ' . ($loggedin ? 'true' : 'false') . ';'
+          'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
         );
       }
 
