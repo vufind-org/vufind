@@ -1,4 +1,4 @@
-/*global console, __dialogHandle, displayFormError, extractController, extractSource, getLightbox, path, refreshTagList, toggleMenu*/
+/*global __dialogHandle, displayFormError, extractController, extractSource, getLightbox, path, refreshTagList, toggleMenu*/
 
 /**
  * Functions and event handlers specific to record pages.
@@ -135,12 +135,6 @@ function ajaxTagUpdate(tag, remove) {
   }
   var recordId = $('#record_id').val();
   var recordSource = $('.hiddenSource').val();
-  console.log({
-      tag:'"'+tag.replace(/\+/g, ' ')+'"',
-      id:recordId,
-      source:recordSource,
-      remove:remove
-    });
   $.ajax({
     url:path+'/AJAX/JSON?method=tagRecord',
     type:'POST',
