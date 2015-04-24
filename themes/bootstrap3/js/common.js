@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, refreshTagList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -81,6 +81,32 @@ function lessFacets(id) {
   $('#more-'+id).removeClass('hidden');
 }
 
+// Phone number validation
+var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"]
+var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
+function phoneNumberFormHandler(numID, regionCode) {
+  var phoneInput = document.getElementById(numID);
+  var number = phoneInput.value;
+  var valid = isPhoneNumberValid(number, regionCode);
+  if(valid != true) {
+    if(typeof valid === 'string') {
+      for(var i=libphoneErrorStrings.length;i--;) {
+        if(valid.match(libphoneErrorStrings[i])) {
+          valid = vufindString[libphoneTranslateCodes[i]];
+        }
+      }
+    } else {
+      valid = vufindString['libphonenumber_invalid'];
+    }
+    $(phoneInput).siblings('.help-block.with-errors').html(valid);
+    $(phoneInput).closest('.form-group').addClass('sms-error');
+  } else {
+    $(phoneInput).closest('.form-group').removeClass('sms-error');
+    $(phoneInput).siblings('.help-block.with-errors').html('');
+  }
+  return valid == true;
+}
+
 // Lightbox
 /*
  * This function adds jQuery events to elements in the lightbox
@@ -89,7 +115,7 @@ function lessFacets(id) {
  * is called and the 'shown' lightbox event is triggered
  */
 function bulkActionSubmit($form) {
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
+  var submit = $form.find('[type="submit"][clicked=true]').attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
     return Lightbox.displayError(vufindString['bulk_noitems_advice']);
@@ -133,15 +159,17 @@ function registerLightboxEvents() {
     $(this).closest('.modal-body').find('.checkbox-select-all').prop('checked', false);
   });
   // Highlight which submit button clicked
-  $(modal).find("form input[type=submit]").click(function() {
+  $(modal).find("form [type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .fa-spinner').remove();
     // Remove other clicks
-    $(modal).find('input[type="submit"][clicked=true]').attr('clicked', false);
+    $(modal).find('[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
-    $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    if($(modal).find('.has-error,.sms-error').length == 0 && !$(this).hasClass('dropdown-toggle')) {
+      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    }
   });
   /**
    * Hide the header in the lightbox content
@@ -190,6 +218,11 @@ function updatePageForLogin() {
   if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
     var tab = recordTabs.find('.active a').attr('id');
     ajaxLoadTab(tab);
+  }
+
+  // Refresh tag list
+  if(typeof refreshTagList === "function") {
+    refreshTagList(true);
   }
 }
 function newAccountHandler(html) {
@@ -382,11 +415,11 @@ $(document).ready(function() {
   $('[name=bulkActionForm]').submit(function() {
     return bulkActionSubmit($(this));
   });
-  $('[name=bulkActionForm]').find("input[type=submit]").click(function() {
+  $('[name=bulkActionForm]').find("[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     $('#modal .fa-spinner').remove();
     // Remove other clicks
-    $(this).closest('form').find('input[type="submit"][clicked=true]').attr('clicked', false);
+    $(this).closest('form').find('[type="submit"][clicked=true]').attr('clicked', false);
     // Add useful information
     $(this).attr("clicked", "true");
   });

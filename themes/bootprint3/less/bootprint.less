@@ -234,6 +234,14 @@ footer {
   ul {padding-left:30px}
 }
 
+/* --- PubDateVis --- */
+#dateVisColorSettings {
+  background-color: #fff; // background of box
+  fill: rgb(234,234,234); // fillColor
+  outline-color: #e8cfac; // selection color
+  stroke: @brand-primary; // color
+}
+
 /* --- Record --- */
 #commentList {
   .comment {
@@ -247,7 +255,6 @@ footer {
 /* --- Search --- */
 .alert {padding:8px}
 .bulkActionButtons {margin-bottom:6px}
-.left {text-align:center}
 .result {
   & > .col-xs-1.checkbox {
     width:auto;
@@ -256,6 +263,7 @@ footer {
     display:inline-block;
     margin-bottom:4px;
   }
+  .left {text-align:center}
   .savedLists {
     margin:0 0 4px 0;
     padding:4px 0 4px 6px;
@@ -293,6 +301,7 @@ footer {
 
 /* --- Advanced Search --- */
 #advSearchForm .search {margin:0}
+.group .match {margin-top: .5em;}
 
 /* --- Sidebar --- */
 @active-orange: #E70;

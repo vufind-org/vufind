@@ -312,6 +312,13 @@ class Server
             }
         }
 
+        // Headers should be returned only if the metadata format matching
+        // the supplied metadataPrefix is available.
+        // If RecordDriver returns nothing, skip this record.
+        if (empty($xml)) {
+            return true;
+        }
+
         // Check for sets:
         $fields = $record->getRawData();
         if (!is_null($this->setField) && !empty($fields[$this->setField])) {
@@ -592,7 +599,7 @@ class Server
             $from, $until, $solrOffset, $solrLimit, $params['set']
         );
         $nonDeletedCount = $result->getResultTotal();
-        $format = $verb == 'ListIdentifiers' ? false : $params['metadataPrefix'];
+        $format = $params['metadataPrefix'];
         foreach ($result->getResults() as $doc) {
             if (!$this->attachNonDeleted($xml, $doc, $format, $headersOnly)) {
                 $this->unexpectedError('Cannot load document');
@@ -722,7 +729,9 @@ class Server
         // Apply filters as needed.
         if (!empty($set)) {
             if (isset($this->setQueries[$set])) {
-                $params->addFilter($this->setQueries[$set]);
+                // use hidden filter here to allow for complex queries;
+                // plain old addFilter expects simple field:value queries.
+                $params->getOptions()->addHiddenFilter($this->setQueries[$set]);
             } else if (null !== $this->setField) {
                 $params->addFilter(
                     $this->setField . ':"' . addcslashes($set, '"') . '"'

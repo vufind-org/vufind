@@ -97,7 +97,7 @@
 
         </form>
       </div>
-      <?=$this->paginationControl($this->results, 'Sliding', 'admin/tags/pagination.phtml', array('params' => $this->params))?>
+      <?=$this->paginationControl($this->results, 'Sliding', 'Helpers/pagination.phtml', array('params' => $this->params))?>
     <? else:?>
       <p><?=$this->translate('tag_filter_empty')?></p>
     <? endif;?>

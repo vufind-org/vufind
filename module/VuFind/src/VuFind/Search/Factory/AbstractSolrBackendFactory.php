@@ -29,6 +29,7 @@
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\InjectHighlightingListener;
+use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
@@ -176,6 +177,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
 
         // Highlighting
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
+
+        // Conditional Filters
+        if (isset($search->ConditionalHiddenFilters)
+            && $search->ConditionalHiddenFilters->count() > 0
+        ) {
+            $this->getInjectConditionalFilterListener($search)->attach($events);
+        }
 
         // Spellcheck
         if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
@@ -394,5 +402,23 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $fl = isset($search->General->highlighting_fields)
             ? $search->General->highlighting_fields : '*';
         return new InjectHighlightingListener($backend, $fl);
+    }
+
+    /**
+     * Get a Conditional Filter Listener
+     *
+     * @param Config $search Search configuration
+     *
+     * @return InjectConditionalFilterListener
+     */
+    protected function getInjectConditionalFilterListener(Config $search)
+    {
+        $listener = new InjectConditionalFilterListener(
+            $search->ConditionalHiddenFilters->toArray()
+        );
+        $listener->setAuthorizationService(
+            $this->serviceLocator->get('ZfcRbac\Service\AuthorizationService')
+        );
+        return $listener;
     }
 }
