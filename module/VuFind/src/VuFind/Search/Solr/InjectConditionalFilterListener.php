@@ -100,6 +100,11 @@ class InjectConditionalFilterListener
         $filter = $filterArr[1];
         $authService = $this->getAuthorizationService();
 
+        // if no authorization service is available, don't do anything
+        if (!$authService) {
+            return;
+        }
+
         // if the filter condition starts with a minus (-), it should not match
         // to get the filter applied
         if (substr($filterCondition, 0, 1) == '-') {
@@ -130,6 +135,9 @@ class InjectConditionalFilterListener
 
         $params = $event->getParam('params');
         $fq = $params->get('fq');
+        if (!is_array($fq)) {
+            $fq = array();
+        }
         $new_fq = array_merge($fq, $this->filterList);
         $params->set('fq', $new_fq);
 
