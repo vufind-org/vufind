@@ -58,6 +58,15 @@
                 );
             }
             $this->headScript()->appendScript($this->jsTranslations()->getScript());
+            if($loggedin = $this->auth()->isLoggedIn()) {
+                $user_id = $loggedin->id;
+                $loggedin = true;
+            } else {
+                $user_id = false;
+            }
+            $this->headScript()->appendScript(
+                'var userIsLoggedIn = ' . ($loggedin ? 'true' : 'false') . ';'
+            );
         }
         if ($feedback) {
             $this->headScript()->appendFile("jquery.tabSlideOut.v2.0.js");
