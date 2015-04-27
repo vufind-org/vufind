@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -167,7 +167,7 @@ trait SolrFinna
         return isset($this->fields['local_ids_str_mv'])
             ? $this->fields['local_ids_str_mv'] : [];
     }
-    
+
     /**
      * Get all authors apart from presenters
      *

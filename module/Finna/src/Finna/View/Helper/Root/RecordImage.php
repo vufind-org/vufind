@@ -58,7 +58,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
      *
      * @param \Finna\View\Helper\Root\Record $record Record helper.
      *
-     * @return FInna\View\Helper\Root\Header
+     * @return Finna\View\Helper\Root\Header
      */
     public function __invoke(\Finna\View\Helper\Root\Record $record)
     {
