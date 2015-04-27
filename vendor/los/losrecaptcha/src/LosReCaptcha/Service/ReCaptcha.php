@@ -50,14 +50,14 @@ class ReCaptcha
      *
      * @var string
      */
-    protected $publicKey = null;
+    protected $siteKey = null;
 
     /**
      * Private key used when verifying user input
      *
      * @var string
      */
-    protected $privateKey = null;
+    protected $secretKey = null;
 
     /**
      * Ip address used when verifying user input
@@ -105,20 +105,20 @@ class ReCaptcha
     /**
      * Class constructor
      *
-     * @param string $publicKey
-     * @param string $privateKey
+     * @param string $siteKey
+     * @param string $secretKey
      * @param array|Traversable $params
      * @param array|Traversable $options
      * @param string $ip
      */
-    public function __construct($publicKey = null, $privateKey = null, $params = null, $options = null, $ip = null, HttpClient $httpClient = null)
+    public function __construct($siteKey = null, $secretKey = null, $params = null, $options = null, $ip = null, HttpClient $httpClient = null)
     {
-        if ($publicKey !== null) {
-            $this->setPublicKey($publicKey);
+        if ($siteKey !== null) {
+            $this->setPublicKey($siteKey);
         }
 
-        if ($privateKey !== null) {
-            $this->setPrivateKey($privateKey);
+        if ($secretKey !== null) {
+            $this->setPrivateKey($secretKey);
         }
 
         if ($ip !== null) {
@@ -318,13 +318,59 @@ class ReCaptcha
     }
 
     /**
+     * Get the site key
+     *
+     * @return string
+     */
+    public function getSiteKey()
+    {
+        return $this->siteKey;
+    }
+
+    /**
+     * Set the site key
+     *
+     * @param string $siteKey
+     * @return \ZendService\ReCaptcha\ReCaptcha
+     */
+    public function setSiteKey($siteKey)
+    {
+        $this->siteKey = $siteKey;
+
+        return $this;
+    }
+
+    /**
+     * Get the secret key
+     *
+     * @return string
+     */
+    public function getSecretKey()
+    {
+        return $this->secretKey;
+    }
+
+    /**
+     * Set the secret key
+     *
+     * @param string $secreteKey
+     * @return \ZendService\ReCaptcha\ReCaptcha
+     */
+    public function setSecretKey($secretKey)
+    {
+        $this->secretKey = $secretKey;
+
+        return $this;
+    }
+
+    /**
      * Get the public key
      *
      * @return string
      */
     public function getPublicKey()
     {
-        return $this->publicKey;
+        return $this->getSiteKey();
     }
 
     /**
@@ -335,9 +381,7 @@ class ReCaptcha
      */
     public function setPublicKey($publicKey)
     {
-        $this->publicKey = $publicKey;
-
-        return $this;
+        return $this->setSiteKey($publicKey);
     }
 
     /**
@@ -347,7 +391,7 @@ class ReCaptcha
      */
     public function getPrivateKey()
     {
-        return $this->privateKey;
+        return $this->getSecretKey();
     }
 
     /**
@@ -358,9 +402,7 @@ class ReCaptcha
      */
     public function setPrivateKey($privateKey)
     {
-        $this->privateKey = $privateKey;
-
-        return $this;
+        return $this->setSecretKey($privateKey);
     }
 
     /**
@@ -374,7 +416,7 @@ class ReCaptcha
      */
     public function getHtml($name = null)
     {
-        if ($this->publicKey === null) {
+        if ($this->siteKey === null) {
             throw new Exception('Missing public key');
         }
 
@@ -399,12 +441,12 @@ class ReCaptcha
         }
 
         $return = <<<HTML
-<div id="recaptcha_widget" class="g-recaptcha" data-sitekey="{$this->publicKey}" data-theme="{$this->options['theme']}"></div>
+<div id="recaptcha_widget" class="g-recaptcha" data-sitekey="{$this->siteKey}" data-theme="{$this->options['theme']}"></div>
 <noscript>
     <div style="width: 302px; height: 352px;">
         <div style="width: 302px; height: 352px; position: relative;">
             <div style="width: 302px; height: 352px; position: absolute;">
-                <iframe src="{$host}/fallback?k={$this->publicKey}>" frameborder="0" scrolling="no" style="width: 302px; height:352px; border-style: none;"></iframe>
+                <iframe src="{$host}/fallback?k={$this->siteKey}>" frameborder="0" scrolling="no" style="width: 302px; height:352px; border-style: none;"></iframe>
             </div>
             <div style="width: 250px; height: 80px; position: absolute; border-style: none; bottom: 21px; left: 25px; margin: 0px; padding: 0px; right: 25px;">
                 <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" style="width: 250px; height: 80px; border: 1px solid #c1c1c1; margin: 0px; padding: 0px; resize: none;" value=""></textarea>
@@ -427,7 +469,7 @@ HTML;
      */
     protected function query($responseField)
     {
-        if ($this->privateKey === null) {
+        if ($this->secretKey === null) {
             throw new Exception('Missing private key');
         }
 
@@ -445,7 +487,7 @@ HTML;
         );
 
 
-        $queryParams = array('secret' => $this->privateKey,
+        $queryParams = array('secret' => $this->secretKey,
                             'remoteip'   => $this->ip,
                             'response'   => $responseField);
 
