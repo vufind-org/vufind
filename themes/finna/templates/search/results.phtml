@@ -123,17 +123,21 @@
   <? /* End Narrow Search Options */ ?>
 </div>
 </div>
+<? $pagination = $this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results)); if (trim($pagination)): ?>
 <div class="container-fluid pagination-background">
   <div class="container">
-    <div class="col-xs-12 text-center">
-      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
-    </div>
+    <div class="row">
+      <div class="col-xs-12 text-center">
+        <?=$pagination ?>
+      </div>
+    </div>        
   </div>
 </div>
+<? endif; ?>
 <div class="container-fluid searchtools-background">
   <div class="container">
     <div class="row">
-      <div class="searchtools hidden-print">
+      <div class="searchtools hidden-print col-xs-12">
         <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><i class="fa fa-bell"></i> <?=$this->transEsc('Get RSS Feed')?></a>
 
         <a href="<?=$this->url('search-email')?>" class="mailSearch modal-link" id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><i class="fa fa-envelope"></i> <?=$this->transEsc('Email this Search')?></a>

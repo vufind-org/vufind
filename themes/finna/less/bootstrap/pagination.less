@@ -2,7 +2,10 @@
 // Pagination (multiple pages)
 // --------------------------------------------------
 .pagination-background {
-    background: @pagination-background;   
+    background: @pagination-background;
+    & .container {
+      padding-left: 0;     
+    }     
 }
 .paginationSimple {
     font-size: 1.2em;
@@ -17,8 +20,13 @@
         text-align: center;
         color: #fff;
         font-size: 1.05em;
-        margin: 0px 5px;
     }
+        & .fa-arrow-left {
+            margin: 0px 5px 0px 0px;
+        }
+        & .fa-arrow-right {
+            margin: 0px 0px 0px 5px;
+        }
     @media(max-width: @screen-xs-max) {
         margin: 0px;
         margin-top: 10px;
