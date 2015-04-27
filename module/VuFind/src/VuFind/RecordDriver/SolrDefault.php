@@ -919,8 +919,19 @@ class SolrDefault extends AbstractBase
      */
     public function getPrimaryAuthor()
     {
+        $authors = $this->getPrimaryAuthors();
+        return isset($authors[0]) ? $authors[0] : '';
+    }
+
+    /**
+     * Get the main authors of the record.
+     *
+     * @return array
+     */
+    public function getPrimaryAuthors()
+    {
         return isset($this->fields['author']) ?
-            $this->fields['author'] : '';
+            $this->fields['author'] : [];
     }
 
     /**
