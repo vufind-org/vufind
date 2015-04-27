@@ -1,5 +1,5 @@
 <? /* Display thumbnail if appropriate: */ ?>
-<?=$this->record($this->driver)->getCover()?>
+<?=$this->record($this->driver)->getCover("core","medium")?>
 
 <h3><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
 

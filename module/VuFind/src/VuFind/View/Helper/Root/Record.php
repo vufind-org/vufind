@@ -399,18 +399,22 @@ class Record extends AbstractHelper
     /**
      * Render a cover for the current record.
      *
-     * @param string $size the size of the cover
-     * @param string $link the link for the anchor
+     * @param string $context Context of code being genarated
+     * @param string $default The default size of the cover
+     * @param string $link    The link for the anchor
      *
      * @return string
      */
-    public function getCover($size = 'small', $link = false)
+    public function getCover($context, $default, $link = false)
     {
         // ToDo: get configuration for list/grid and full result from config
-        $context
+        $size = isset($this->config->Content->coversize[$context]) ? 
+              $this->config->Content->coversize[$context] : $default;
+        if (empty($size)) return false;
+        $newcontext
             = ['size' => $size, 'link' => $link];
         return $this->contextHelper->renderInContext(
-            'record/cover.phtml', $context
+            'record/cover.phtml', $newcontext
         );
     }
 
