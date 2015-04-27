@@ -312,6 +312,34 @@
     line-height: 33px;
     margin-right: 5px;
 }
+
+.swipe-arrow-navigation {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    background: @link-color;
+    top: 50%;
+    color: @body-bg;
+    border-radius: 50%;
+    &.arrow-navigation-left {
+        left: 0px; 
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+    }
+    &.arrow-navigation-right {
+        right: 0px;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px
+    }
+    & .fa-arrow-right, .fa-arrow-left {
+        color: @body-bg;
+        top: 10px;
+        left: 8px;
+        position: absolute;
+        font-size: 30px;
+    }
+}
+
 .btn-default {
   .button-variant(@btn-default-color; @btn-default-bg; @btn-default-border);
 }

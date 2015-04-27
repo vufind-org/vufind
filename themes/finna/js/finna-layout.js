@@ -172,6 +172,43 @@ finna.layout = (function() {
         });
       }
     };
+    
+    var initRecordSwipe = function () {
+      if ($('#view-pager').length && isTouchDevice()) {
+        $('section.main').append("<div class='swipe-arrow-navigation arrow-navigation-left'><i class='fa fa-arrow-left'></i></div>");
+        $('section.main').append("<div class='swipe-arrow-navigation arrow-navigation-right'><i class='fa fa-arrow-right'></i></div>");
+        $('.swipe-arrow-navigation').hide();
+        $(".template-dir-record #record").swipe( {
+        allowPageScroll:"vertical",
+        swipeLeft:function(event, phase, direction, distance, duration) {
+          if ($('#view-pager .pager-previous-record a').length) {
+            var prevRecordUrl =  $('#view-pager .pager-previous-record a').attr('href');
+            window.location.href = prevRecordUrl;
+          }
+        },
+        swipeRight:function(event, direction, distance, duration) {
+          if ($('#view-pager .pager-next-record a').length) {
+            var nextRecordUrl = $('#view-pager .pager-next-record a').attr('href');
+            window.location.href = nextRecordUrl;
+          }  
+        },
+        swipeStatus:function(event, phase, direction, distance, duration, fingers) {
+              if ((phase != "cancel") && (phase == "move") && (direction == "left") && (distance > 75) && ($('#view-pager .pager-previous-record a').length)) {
+                $('.arrow-navigation-left').show('fast');
+              }
+              if ((phase != "cancel") && (phase == "move") && (direction == "right") && (distance > 75) && ($('#view-pager .pager-next-record a').length)) {
+                 $('.arrow-navigation-right').show('fast');
+              }
+              if (phase == "cancel") {
+                $('.swipe-arrow-navigation').hide('fast');
+              }
+        },
+        //Default is 75px, set to 0 for demo so any distance triggers swipe
+        threshold: 125,
+        cancelThreshold:20,
+        });   
+      }
+    };
 
     var my = {
         isTouchDevice: isTouchDevice,
@@ -188,6 +225,7 @@ finna.layout = (function() {
             initTruncatedRecordImageNavi();
             initTruncate();
             initContentNavigation();
+            initRecordSwipe();
         },
     };
 
