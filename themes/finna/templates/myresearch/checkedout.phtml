@@ -19,11 +19,11 @@
         <div class="toolbar">
           <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
           <input type="submit" class="btn btn-primary" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
-          <span class="myresearch-count"><?=$this->transEsc('Total')?>: <?=count($this->transactions);?></span>
+          <span class="myresearch-count"><?=$this->transEsc('total_loaned_items', ['%%count%%' => count($this->transactions)]);?></span>
         </div>
         <? else: ?>
         <div class="toolbar">
-          <p><?=$this->transEsc('cannot renew any checked out items')?> <span class="myresearch-count no-buttons"><?=$this->transEsc('Total')?>: <?=count($this->transactions);?></span></p>
+          <p><?=$this->transEsc('cannot renew any checked out items')?> <span class="myresearch-count no-buttons"><?=$this->transEsc('total_loaned_items', ['%%count%%' => count($this->transactions)]);?></span></p>
         </div>
       <? endif; ?>
       <? $i = 0; foreach ($this->transactions as $resource): ?>
