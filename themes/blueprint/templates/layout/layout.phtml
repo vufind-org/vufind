@@ -29,7 +29,14 @@
 
         $this->jsTranslations()->addStrings(
           array(
-            'loading'=>'Loading'
+            'loading' => 'Loading',
+            'libphonenumber_invalid' => 'libphonenumber_invalid',
+            'libphonenumber_invalidcountry' => 'libphonenumber_invalidcountry',
+            'libphonenumber_invalidregion' => 'libphonenumber_invalidregion',
+            'libphonenumber_notanumber' => 'libphonenumber_notanumber',
+            'libphonenumber_toolong' => 'libphonenumber_toolong',
+            'libphonenumber_tooshort' => 'libphonenumber_tooshort',
+            'libphonenumber_tooshortidd' => 'libphonenumber_tooshortidd',
           )
         );
         // Deal with cart stuff:
@@ -58,6 +65,9 @@
                 );
             }
             $this->headScript()->appendScript($this->jsTranslations()->getScript());
+            $this->headScript()->appendScript(
+                'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+            );
         }
         if ($feedback) {
             $this->headScript()->appendFile("jquery.tabSlideOut.v2.0.js");

@@ -58,9 +58,9 @@ class RouteGenerator
     {
         if (null === $nonTabRecordActions) {
             $this->nonTabRecordActions = [
-                'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS',
-                'Cite', 'Export', 'RDF', 'Hold', 'BlockedHold', 'Home',
-                'StorageRetrievalRequest', 'AjaxTab',
+                'AddComment', 'DeleteComment', 'AddTag', 'DeleteTag', 'Save',
+                'Email', 'SMS', 'Cite', 'Export', 'RDF', 'Hold', 'BlockedHold',
+                'Home', 'StorageRetrievalRequest', 'AjaxTab',
                 'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest',
                 'PDF',
             ];
