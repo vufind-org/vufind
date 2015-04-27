@@ -108,7 +108,20 @@ finna.imagePopup = (function(finna) {
                         
                         // Prevent navigation button CSS-transitions on touch-devices
                         if (finna.layout.isTouchDevice()) {
-                            $(".mfp-container .mfp-arrow-right, .mfp-container .mfp-arrow-left").addClass('touch-device');
+                            $(".mfp-container .mfp-close").addClass('touch-device');
+                            
+                            $(".mfp-container").swipe( {
+                              allowPageScroll:"vertical",
+                              //Generic swipe handler for all directions
+                              swipeLeft:function(event, phase, direction, distance, duration) {
+                                $(".mfp-container .mfp-arrow-left").click();
+                              },
+                              swipeRight:function(event, direction, distance, duration) {
+                                $(".mfp-container .mfp-arrow-right").click();
+                              },
+                            threshold: 75,
+                            cancelThreshold:20,
+                            });   
                         }                        
 
                         // Image copyright information
