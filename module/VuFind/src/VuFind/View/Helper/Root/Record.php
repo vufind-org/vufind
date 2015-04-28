@@ -411,6 +411,9 @@ class Record extends AbstractHelper
         $size = isset($this->config->Content->coversize[$context]) ? 
               $this->config->Content->coversize[$context] : $default;
         if (empty($size)) return false;
+        if ($link==="image-large") {
+            $link = $this->getThumbnail("large");
+        }
         $newcontext
             = ['size' => $size, 'link' => $link];
         return $this->contextHelper->renderInContext(

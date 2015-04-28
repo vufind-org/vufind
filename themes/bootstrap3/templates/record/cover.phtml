@@ -1,10 +1,9 @@
 <? /* Display thumbnail if appropriate: */ ?>
-<? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
-<? if ($mediumThumb): ?>
-  <? if ($largeThumb): ?><a href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
-    <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
-  <? if ($largeThumb): ?></a><? endif; ?>
+<? $cover = $this->record($this->driver)->getThumbnail($this->size); ?>
+<? if ($cover): ?>
+  <? if ($this->link): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><? endif; ?>
+  <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($cover); ?>"/>
+  <? if ($this->link): ?></a><? endif; ?>
 <? else: ?>
   <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-<?=$this->size?>
 <? endif; ?>

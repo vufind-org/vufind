@@ -1,6 +1,6 @@
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <? $QRCode = $this->record($this->driver)->getQRCode("core"); 
-     $Cover = $this->record($this->driver)->getCover("core","medium");
+     $Cover = $this->record($this->driver)->getCover("core","medium","image-large");
      $Preview = $this->record($this->driver)->getPreviews(); ?>
   <? if (($QRCode) || ($Cover) || ($Preview)): ?>
   <div class="col-sm-3">
