@@ -24,11 +24,11 @@
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="info">
-        <a href="<?=$this->currentPath()?>?login=true&amp;catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+        <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'Holdings')?>?login=true&amp;catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
       </div>
     <? elseif (!$user->cat_username): ?>
       <div class="info">
-        <?=str_replace('href="', 'rel="external" href="', $this->translate("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true')))?>
+        <?=str_replace('href="', 'rel="external" href="', $this->translate("hold_profile_html", array('%%url%%' => $this->recordLink()->getTabUrl($this->driver, 'Holdings') . '?catalogLogin=true')))?>
       </div>
     <? endif; ?>
   <? endif; ?>
