@@ -369,6 +369,7 @@ $(document).ready(function() {
     var query = $('#searchForm_lookfor').val();
     $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
   });
+
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
     $(this).closest('form').find('.checkbox-select-item').prop('checked', this.checked);
