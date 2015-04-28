@@ -55,14 +55,14 @@ class Results extends \VuFind\Search\Solr\Results
         $this->responseFacets = $collection->getFacets();
 
         // Get the facets from which we will build our results:
-        $facets = $this->getFacetList(['authorStr' => null]);
-        if (isset($facets['authorStr'])) {
+        $facets = $this->getFacetList(['author_facet' => null]);
+        if (isset($facets['author_facet'])) {
             $params = $this->getParams();
             $this->resultTotal
                 = (($params->getPage() - 1) * $params->getLimit())
-                + count($facets['authorStr']['list']);
+                + count($facets['author_facet']['list']);
             $this->results = array_slice(
-                $facets['authorStr']['list'], 0, $params->getLimit()
+                $facets['author_facet']['list'], 0, $params->getLimit()
             );
         }
     }

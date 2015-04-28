@@ -660,7 +660,7 @@ class BrowseController extends AbstractBase
         case 'lcc':
             return 'callnumber-first';
         case 'author':
-            return 'authorStr';
+            return 'author_facet';
         case 'topic':
             return 'topic_facet';
         case 'genre':

@@ -76,7 +76,7 @@ class DPLATerms implements RecommendInterface
      * @var array
      */
     protected $formatMap = [
-        'authorStr'           => 'sourceResource.creator',
+        'author_facet'        => 'sourceResource.creator',
         'building'            => 'provider.name',
         'format'              => 'sourceResource.format',
         'geographic_facet'    => 'sourceResource.spatial.region',

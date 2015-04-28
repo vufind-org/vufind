@@ -126,7 +126,7 @@
    <field name="language" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="format" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author" type="textProper" indexed="true" stored="true" multiValued="true" termVectors="true"/>
-   <field name="authorStr" type="textFacet" indexed="true" stored="false" multiValued="true"/>
+   <field name="author_facet" type="textFacet" indexed="true" stored="false" multiValued="true"/>
    <field name="author_sort" type="string" indexed="true" stored="true"/>
    <field name="title" type="text" indexed="true" stored="true"/>
    <field name="title_sort" type="string" indexed="true" stored="true"/>
@@ -239,8 +239,8 @@
  <!-- CopyFields for Faceting on Text -->
  <copyField source="title_full" dest="title_fullStr"/>
  <copyField source="title_full" dest="title_full_unstemmed"/>
- <copyField source="author" dest="authorStr"/>
- <copyField source="author2" dest="authorStr"/>
+ <copyField source="author" dest="author_facet"/>
+ <copyField source="author2" dest="author_facet"/>
  <copyField source="publisher" dest="publisherStr"/>
  <copyField source="topic" dest="topic_unstemmed"/>
  <copyField source="allfields" dest="allfields_unstemmed"/>
