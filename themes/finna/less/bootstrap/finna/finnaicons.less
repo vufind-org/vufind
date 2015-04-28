@@ -90,13 +90,7 @@
         cursor: pointer;    
     }
 }
-.iconlabel.ekirja:before, .iconlabel.ekirjanosa:before, .iconlabel.elektroninen:before {
-    content: "\e617";
-}
-.iconlabel.format-1bookbook:before {
-    content: "\e616";
-}
-.fa-www-link:before, .iconlabel.electronic:before, .fa-external-link:before, .openUrlEmbed:before {
+.fa-www-link:before, .iconlabel.format-electronic:before, .fa-external-link:before, .openUrlEmbed:before {
     content: "\e615";
 }
 .fa-handle-left:before, .slick-prev:before {
@@ -147,12 +141,6 @@
 }
 .fa-heart:before, .fa-plus:before, .fa-plus-square:before {
     content: "\e60c";
-}
-.iconlabel.ekausijulkaisu:before, .iconlabel.eartikkeli:before, .iconlabel.eaikakauslehti:before, .iconlabel.esanomalehti:before {
-    content: "\e60d";
-}
-.iconlabel.paikka:before, .iconlabel.rakennus:before, .iconlabel.arkeologinenkohde:before {
-    content: "\e60e";
 }
 .fa-ratenone:before {
     content: "\e60f";
@@ -347,44 +335,56 @@
 .fa-user:before {
     content: "\e00e";
 }
-.iconlabel.muu:before, .iconlabel.kooste:before, .iconlabel.ksikirjoitus:before, .iconlabel.teksti:before {
+.iconlabel.format-1bookebook:before, .iconlabel.format-1bookebooksection:before {
+    content: "\e617";
+}
+.iconlabel.format-book:before, .iconlabel.format-1bookbook:before, .iconlabel.kirja:before, .iconlabel.format-1bookbooksection:before, .iconlabel.format-1bookbraille:before {
+    content: "\e616";
+}
+.iconlabel.lehtiartikkeli:before, .iconlabel.format-1journalarticle:before, .iconlabel.format-1journaljournal:before, .iconlabel.format-1journalserial:before, .iconlabel.format-1journalnewspaper:before, .iconlabel.format-1journalappendix:before, .iconlabel.format-1journalnewspaperarticle:before, .iconlabel.format-journal:before, .iconlabel.format-newspaper:before {
+    content: "\e001";
+}
+.iconlabel.format-1journaleserial:before, .iconlabel.format-1journalearticle:before, .iconlabel.format-1journalejournal:before, .iconlabel.format-1journalenewspaper:before {
+    content: "\e60d";
+}
+.iconlabel.format-1placebuilding:before, .iconlabel.format-1placeplace:before, .iconlabel.format-1placearchaeologicalsite:before {
+    content: "\e60e";
+}
+.iconlabel.format-1otherother:before, .iconlabel.format-1otherkit:before, .iconlabel.format-1othermanuscript:before, .iconlabel.format-1othertext:before {
     content: "\e00d";
 }
-.iconlabel.opinnyte:before, .iconlabel.progradu:before, .iconlabel.vitskirja:before, .iconlabel.amk:before, .iconlabel.diplomity:before, .iconlabel.amkopinnytety:before, .iconlabel.kandity:before, .iconlabel.ylempiamkopinnytety:before, .iconlabel.yamk:before, .iconlabel.lisensiaatinty:before, .iconlabel.tutkimusdata:before {
+.iconlabel.opinnyte:before, .iconlabel.format-1thesisother:before, .iconlabel.format-1thesisgradu:before, .iconlabel.format-1thesisthesis:before, .iconlabel.format-1thesislaudatur:before, .iconlabel.format-1thesismasters:before, .iconlabel.format-1thesisbachelorspolytechnic:before, .iconlabel.format-1thesisbachelors:before, .iconlabel.format-1thesismasterspolytechnic:before, .iconlabel.yamk:before, .iconlabel.format-1thesislicentiate:before, .iconlabel.format-1otherresearchdata:before {
     content: "\e00c";
 }
-.iconlabel.taideteos:before, .iconlabel.maalaus:before, .iconlabel.piirros:before, .iconlabel.grafiikka:before, .iconlabel.veistos:before, .iconlabel.taideteollinen:before {
+.iconlabel.format-0workofart:before, .iconlabel.format-1workofartpainting:before, .iconlabel.format-1workofartinstallation:before, .iconlabel.format-1workofartdrawing:before, .iconlabel.format-1workofartgraphic:before, .iconlabel.format-1workofartscuplture:before, .iconlabel.format-1workofartartindustry:before, .iconlabel.format-1workofartphysical:before {
     content: "\e00b";
 }
-.iconlabel.video:before, .iconlabel.dvd:before, .iconlabel.bluray:before {
+.iconlabel.format-1videovideo:before, .iconlabel.format-1videodvd:before, .iconlabel.format-1videobluray:before, .iconlabel.format-1videovideodisc:before, .iconlabel.format-1videovideocassette:before, .iconlabel.format-1videomotionpicture:before {
     content: "\e00a";
 }
-.iconlabel.nite:before, .iconlabel.cd:before, .iconlabel.nilevy:before, .iconlabel.nitallenne:before, .iconlabel.nikasetti:before, .iconlabel.musiikkitallenne:before {
+.iconlabel.format-1soundrecord:before, .iconlabel.format-1soundcd:before, .iconlabel.format-1soundsounddisc:before, .iconlabel.format-1soundsoundrecording:before, .iconlabel.format-1soundsoundcassette:before, .iconlabel.format-1soundmusicrecording:before {
     content: "\e009";
 }
-.iconlabel.kuva:before, .iconlabel.valokuva:before, .iconlabel.dia:before, .iconlabel.piirros:before, .iconlabel.kalvo:before {
+.iconlabel.format-1imageimage:before, .iconlabel.format-1imagephotograph:before, .iconlabel.format-1imageslide:before, .iconlabel.format-1imagedrawing:before, .iconlabel.format-1imagetransparency:before {
     content: "\e008";
 }
 .icon-smallpress:before {
     content: "\e007";
 }
-.iconlabel.asiakirja:before, .iconlabel.arkisto:before, .iconlabel.arkistomateriaali:before, .iconlabel.arkistoyksikk:before, .iconlabel.arkistosarja:before, .iconlabel.arkistokokoelma:before, .iconlabel.digitoituarkistoyksikk:before {
+.iconlabel.format-1document:before, .iconlabel.format-1documentarchive:before, .iconlabel.format-1documentarchivematerial:before, .iconlabel.format-1documentarchiveitem:before, .iconlabel.format-1documentarchivefonds:before, .iconlabel.format-1documentarchiveseries:before, .iconlabel.format-1documentarchivecollection:before, .iconlabel.format-1documentdigitizedarchiveitem:before {
     content: "\e006";
 }
-.iconlabel.nuotti:before, .iconlabel.manuscript:before, .iconlabel.musicalscore:before {
+.iconlabel.format-0note:before, .iconlabel.format-0manuscript:before, .iconlabel.format-0musicalscore:before {
     content: "\e005";
 }
-.iconlabel.tietokanta:before {
+.iconlabel.format-0database:before {
     content: "\e004";
 }
-.iconlabel.esine:before, .iconlabel.muuesine:before, .iconlabel.kulttuurihistesine:before {
+.iconlabel.esine:before, .iconlabel.format-1physicalobjectother:before, .iconlabel.format-1physicalobjectculturehistoricalobject:before {
     content: "\e003";
 }
-.iconlabel.kartta:before, .iconlabel.atlas:before, .iconlabel.karttapallo:before {
+.iconlabel.format-1mapmap:before, .iconlabel.format-1mapatlas:before, .iconlabel.karttapallo:before {
     content: "\e002";
-}
-.iconlabel.lehtiartikkeli:before, .iconlabel.artikkeli:before, .iconlabel.aikakauslehti:before, .iconlabel.kausijulkaisu:before, .iconlabel.sanomalehti:before, .iconlabel.lehtiliite:before, .iconlabel.sanomalehtiartikkeli:before, .iconlabel.journal:before, .iconlabel.newspaper:before {
-    content: "\e001";
 }
 
 .fa-first-page:before {
