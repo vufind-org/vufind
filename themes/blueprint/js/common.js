@@ -1,4 +1,4 @@
-/*global getLightbox, path, vufindString*/
+/*global getLightbox, isPhoneNumberValid, path, vufindString*/
 
 /**
  * Initialize common functions and event handlers.
@@ -291,7 +291,7 @@ function setupOrFacets() {
 }
 
 // Phone number validation
-var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"]
+var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
 var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
