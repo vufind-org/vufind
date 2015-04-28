@@ -65,7 +65,21 @@
         
     } 
     .myresearch-grid-list {
-        margin-bottom: 20px;   
+        margin-bottom: 20px;
+        > h2 {
+            margin-top: 0;
+            border-bottom: none;
+            padding: 10px;
+            padding-bottom: 0px;
+            margin-bottom: 0px;
+            
+        }
+        > h4 {
+            margin-left: 10px;   
+        }
+        & .myresearch-row:last-child {
+          box-shadow: 0 15px 30px -25px @gray;       
+        }
     }
     .checkboxFilter.mylist-select-all {
         float: left;
@@ -81,7 +95,10 @@
         color: @gray-light;  
     }
     .bulk-action-buttons-row {
-        margin: 0;   
+        margin: 0;
+        @media(max-width:@screen-xs-max) {
+           .row();    
+        }
     }
     .bulk-action-buttons-col {
         padding: 10px 0;
@@ -115,6 +132,16 @@
             }
         }
     }
+    &.template-name-mylist .bulk-action-buttons-col {
+        padding: 15px;
+        padding-bottom: 0px;
+        border-right: none;
+        border-bottom: 1px solid @gray-lighter;
+    }
+    .row.record-container.ajaxItem.myresearch-row:last-child {
+        margin-bottom: 20px;
+        box-shadow: 0px 15px 30px -25px @gray;
+    }
     .finna-main-header {
         background: @myresearch-header-background;
         & h1 {
@@ -123,7 +150,7 @@
         }
     }
     .finna-main-tabs {
-         background: @myresearch-header-background;
+         background: darken(@myresearch-header-background, 12%);
     }
     & .list-title {
          margin-bottom: 0px;   
@@ -193,9 +220,11 @@
         }
     }
     .toolbar {
-        margin: 10px 0px;
+        margin: 0px;
+        margin-top: 5px;
         padding-bottom: 10px;
         border-bottom: 1px solid @gray-lighter;
+        padding: 10px 15px;
         .status-text {
             float: right;
             line-height: 38px;   
@@ -203,7 +232,14 @@
     }
     .myresearch-row {
         padding: 10px 0px;
-        border-bottom: 1px solid @gray-lighter;
+        margin: 0px;
+        word-wrap: break-word;
+        @media(max-width:@screen-xs-max) {
+           .row();    
+        }
+        &:nth-child(odd) {
+            background: @table-bg-accent;   
+        }
         & h3 {
             margin: 0;
             font-size: 1.3em;
@@ -262,22 +298,30 @@
         & li {
             float:left;
             margin:0;
+            &:first-child {
+                border-left: 2px solid @myresearch-header-background;  
+            }
             .list-group-item {
                 padding: 10px;
                 margin:0;
-                margin-right: 3px;
-                background: @link-color;
-                color: @body-bg;
-                font-weight: bold;
-                @media(max-width:@screen-md-max) {
+                border-right: 2px solid @myresearch-header-background;
+                background: darken(@myresearch-header-background, 12%);
+                color: @gray-dark;
+                font-weight: normal;
+                transition: background 0.1s linear; 
+                &:hover {
+                    background: darken(@myresearch-header-background, 16%);   
+                }
+                @media(max-width: @screen-md-max) {
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
                     max-width: 160px;
                 }
-                @media(max-width:@screen-sm-max) {
-                    max-width: 100px;
-                    font-size: 0.85em;
+                @media(max-width: @screen-sm-max) {
+                    max-width: 95px;
+                    font-size: 0.9em;
+                    padding: 10px 8px;
                 }
                 &.active {
                     background: @body-bg;
