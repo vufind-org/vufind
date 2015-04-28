@@ -332,6 +332,10 @@ $(document).ready(function() {
       }
     }
   );
+  $('#searchForm_type').change(function() {
+    var query = $('#searchForm_lookfor').val();
+    $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
+  });
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
