@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  Authentication
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -34,6 +35,7 @@ use Zend\ServiceManager\ServiceManager;
  * @category VuFind2
  * @package  Authentication
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  *
@@ -41,6 +43,21 @@ use Zend\ServiceManager\ServiceManager;
  */
 class Factory extends \VuFind\Auth\Factory
 {
+    /**
+     * Construct the ILS plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ILS
+     */
+    public static function getILS(ServiceManager $sm)
+    {
+        return new ILS(
+            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+        );
+    }
+
     /**
      * Construct the authentication manager.
      *
@@ -80,4 +97,15 @@ class Factory extends \VuFind\Auth\Factory
         );
     }
 
+    /**
+     * Construct the Shibboleth plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Shibboleth
+     */
+    public static function getShibboleth(ServiceManager $sm)
+    {
+        return new Shibboleth($sm->get('VuFind\SessionManager'));
+    }
 }
