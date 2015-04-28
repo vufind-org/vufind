@@ -1,0 +1,26 @@
+<div id="tagList"<?=$loggedin ? ' class="loggedin"' : ''?>>
+  <? if (count($tagList) > 0): ?>
+    <? foreach ($tagList as $tag): ?>
+      <? $is_me = isset($tag['is_me']) && !is_null($tag['is_me']) ? $tag['is_me'] : false; ?>
+      <div class="tag<?=$is_me ? ' selected' : ''?>">
+        <a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag['tag'])?>"><?=$this->escapeHtml($tag['tag'])?></a>
+        <? if($loggedin): ?>
+          <form method="POST" action="<?=$this->recordLink()->getActionUrl($this->driver, $is_me ? 'DeleteTag' : 'AddTag') ?>" class="tag-form">
+            <input type="hidden" name="tag" value="<?=$this->escapeHtmlAttr($tag['tag'])?>"/>
+            <button type="submit" class="badge" onClick="ajaxTagUpdate('<?=$this->escapeHtmlAttr($tag['tag'])?>', <?=$is_me ? 'true' : 'false' ?>);return false;"><?=$this->escapeHtml($tag['cnt']) ?>
+            <? if($is_me): ?>
+              <i class="fa fa-close"></i>
+            <? else: ?>
+              <i class="fa fa-plus"></i>
+            <? endif; ?>
+            </button>
+          </form>
+        <? else: ?>
+          <span class="badge"><?=$this->escapeHtml($tag['cnt'])?></span>
+        <? endif; ?>
+      </div>
+    <? endforeach; ?>
+  <? else: ?>
+    <?=$this->transEsc('No Tags')?>, <?=$this->transEsc('Be the first to tag this record')?>!
+  <? endif; ?>
+</div>
