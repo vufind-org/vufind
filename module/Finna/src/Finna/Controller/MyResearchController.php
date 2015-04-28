@@ -50,9 +50,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view = parent::checkedoutAction();
 
         $patron = $this->catalogLogin();
-        $catalog = $this->getILS();
-        $profile = $catalog->getMyProfile($patron);
-        $view->profile = $profile;
+        if (is_array($patron)) {
+            $catalog = $this->getILS();
+            $profile = $catalog->getMyProfile($patron);
+            $view->profile = $profile;
+        }
 
         return $view;
     }
@@ -163,7 +165,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $availableRecordList = [];
         $recordListBasic = [];
         foreach ($recordList as $item) {
-            if ($item->getExtraDetail('ils_details')['available']) {
+            if (isset($item->getExtraDetail('ils_details')['available'])
+                && $item->getExtraDetail('ils_details')['available']
+            ) {
                 $availableRecordList[] = $item;
             } else {
                 $recordListBasic[] = $item;
