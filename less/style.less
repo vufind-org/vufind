@@ -1,8 +1,14 @@
 @font-face {
-  font-family: 'Questrial';
+  font-family: 'Roboto';
   font-style: normal;
   font-weight: 400;
-  src: local('Questrial'), local('Questrial-Regular'), url('/vufind/questrial.woff') format('woff'), url(http://fonts.gstatic.com/s/questrial/v5/MYWJ4lYm5dbZ1UBuYox79D8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+  src: local('Roboto'), local('Roboto-Regular'), url(http://fonts.gstatic.com/s/roboto/v15/2UX7WLTfW3W8TclTUvlFyQ.woff) format('woff');
+}
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Roboto Medium'), local('Roboto-Medium'), url(http://fonts.gstatic.com/s/roboto/v15/RxZJdnzeo3R5zSexge8UUT8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
 }
 
 @import "_bootstrap/bootstrap";
@@ -10,7 +16,7 @@
 
 body {
   background:@lgrey;
-  font:16px "Questrial",Arial;
+  font:16px "Roboto",Arial;
 }
 h1,h2 {color:@dgrey}
 h1 {font-size:40px}
@@ -76,7 +82,11 @@ p {line-height:22px;text-align:left;text-indent:2em}
     text-decoration:underline;
     &:hover {color:#FFF}
   }
-  h1,h2,h4,h5 {color:#FFF;text-shadow:0 1px 0 @dgrey}
+  h1,h2,h3,h4,h5 {
+    color:#FFF;
+    font-weight: 500;
+    text-shadow:0 1px 0 @dgrey;
+  }
   .demo-button {
     .orange;
     .t-white;
@@ -164,6 +174,7 @@ quote {
   b {
     color:#FFF;
     display:block;
+    font-weight: 500;
     margin-bottom:7px;
     text-align:justify;
   }
