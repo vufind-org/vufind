@@ -33,7 +33,7 @@
       <a href="<?=$this->record($this->driver)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
     <? endif; ?>
     <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
-        $list_id, // get tags for all lists if no single list is selected
+        null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
         $user_id, 'tag'
        ) : array();
     ?>
@@ -50,7 +50,7 @@
         <?=$this->escapeHtml($note)?><br/>
       <? endforeach; ?>
     <? endif; ?>
-    
+
     <? if (count($this->lists) > 0): ?>
         <strong><?=$this->transEsc('Saved in')?>:</strong>
         <? $i=0;foreach($this->lists as $current): ?>
@@ -108,7 +108,7 @@
      if ((isset($list) && $list->editAllowed($this->user)) || (!isset($list) && $this->user)): ?>
     <div class="floatright">
       <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a>
-      <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */ 
+      <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
         $deleteUrl = is_null($list_id)
             ? $this->url('myresearch-favorites')
             : $this->url('userList', array('id' => $list_id));

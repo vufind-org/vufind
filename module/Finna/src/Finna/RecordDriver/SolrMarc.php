@@ -483,7 +483,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         // If local_ids_str_mv is set, we already have all
         if (isset($this->fields['local_ids_str_mv'])) {
             return [
-                'local_ids_str_mv' => $this->fields['local_ids_str_mv'],
+                'dedupData' => $this->fields['dedup_data'],
                 'urls' => isset($this->fields['online_urls_str_mv'])
                     ? $this->mergeURLArray(
                         $this->fields['online_urls_str_mv'],
@@ -506,8 +506,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             return [];
         }
         $results = [];
-        if ($localIds = $records[0]->getLocalIds()) {
-            $results['local_ids_str_mv'] = $localIds;
+        if ($dedupData = $records[0]->getDedupData()) {
+            $results['dedupData'] = $dedupData;
         }
         if ($onlineURLs = $records[0]->getOnlineURLs(true)) {
             $results['urls'] = $this->mergeURLArray(
