@@ -103,6 +103,11 @@ public Set getAuthorsFilteredByRelator(Record record, String tagList,
             if (authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig)) {
                 for (String subfields : parsedTagList.get(authorField.getTag())) {
                     String current = indexer.getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
+                    // TODO: we may eventually be able to use this line instead,
+                    // but right now it's not handling separation between the
+                    // subfields correctly, so it's commented out until that is
+                    // fixed.
+                    //String current = authorField.getSubfieldsAsString(subfields);
                     if (null != current) {
                         result.add(current);
                         if (firstOnly) {
