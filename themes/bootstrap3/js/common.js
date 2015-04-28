@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, refreshTagList, unescape, vufindString */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, path, rc4Encrypt, refreshCommentList, refreshTagList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -153,6 +153,31 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
       }
     }
   });
+
+// Phone number validation
+var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
+var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
+function phoneNumberFormHandler(numID, regionCode) {
+  var phoneInput = document.getElementById(numID);
+  var number = phoneInput.value;
+  var valid = isPhoneNumberValid(number, regionCode);
+  if(valid != true) {
+    if(typeof valid === 'string') {
+      for(var i=libphoneErrorStrings.length;i--;) {
+        if(valid.match(libphoneErrorStrings[i])) {
+          valid = vufindString[libphoneTranslateCodes[i]];
+        }
+      }
+    } else {
+      valid = vufindString['libphonenumber_invalid'];
+    }
+    $(phoneInput).siblings('.help-block.with-errors').html(valid);
+    $(phoneInput).closest('.form-group').addClass('sms-error');
+  } else {
+    $(phoneInput).closest('.form-group').removeClass('sms-error');
+    $(phoneInput).siblings('.help-block.with-errors').html('');
+  }
+  return valid == true;
 }
 
 // Lightbox
@@ -215,7 +240,9 @@ function registerLightboxEvents() {
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
-    $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    if($(modal).find('.has-error,.sms-error').length == 0 && !$(this).hasClass('dropdown-toggle')) {
+      $(this).after(' <i class="fa fa-spinner fa-spin"></i> ');
+    }
   });
   /**
    * Hide the header in the lightbox content

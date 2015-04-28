@@ -1028,6 +1028,10 @@ div.record img.qrcode {
 .holdsMessage {
     margin-top: 1em;
 }
+.phone-error {
+    color:red;
+    margin-left:80px;
+}
 #tagRecord {
     display: inline-block;
     padding-top: 4px;
