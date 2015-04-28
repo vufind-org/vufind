@@ -44,8 +44,36 @@ public Boolean authorHasAppropriateRelator(DataField authorField,
         }
     }
     return false;
-
 }
+
+/**
+ * Parse a SolrMarc fieldspec into a map of tag name to set of subfield strings
+ * (note that we need to map to a set rather than a single string, because the
+ * same tag may repeat with different subfields to extract different sections
+ * of the same field into distinct values).
+ *
+ * @param tagList The field specification to parse
+ * @returns HashMap
+ */
+public HashMap getParsedTagList(String tagList)
+{
+    String[] tags = tagList.split(":");//convert string input to array
+    HashMap tagMap = new HashMap();
+    //cut tags array up into key/value pairs in hash map
+    Set currentSet;
+    for(int i = 0; i < tags.length; i++){
+        String tag = tags[i].substring(0, 3);
+        if (!tagMap.containsKey(tag)) {
+            currentSet = new LinkedHashSet();
+            tagMap.put(tag, currentSet);
+        } else {
+            currentSet = tagMap.get(tag);
+        }
+        currentSet.add(tags[i].substring(3));
+    }
+    return tagMap;
+}
+
 /**
  * Filter values retrieved using tagList to include only those whose relator
  * values are acceptable. Used for separating different types of authors.
@@ -63,40 +91,24 @@ public Set getAuthorsFilteredByRelator(Record record, String tagList,
     String acceptWithoutRelator, String relatorConfig, Boolean firstOnly
 ) {
     Set result = new LinkedHashSet();
-    String[] tags = tagList.split(":");//convert string input to array
     String[] noRelatorAllowed = acceptWithoutRelator.split(":");
-    String[] fieldTags = new String[tags.length];
-    HashMap tagMap = new HashMap();
-    //cut tags array up into key/value pairs in hash map
-    for(int i = 0; i < tags.length; i++){
-        tagMap.put(tags[i].substring(0,3), tags[i].substring(3));
-        fieldTags[i] = tags[i].substring(0,3);
-    }
-    List fields = record.getVariableFields(fieldTags);
+    HashMap parsedTagList = getParsedTagList(tagList);
+    List fields = indexer.getFieldSetMatchingTagList(record, tagList);
     Iterator fieldsIter = fields.iterator();
-    if(fields != null){
+    if (fields != null){
         DataField authorField;
         while (fieldsIter.hasNext()){
             authorField = (DataField) fieldsIter.next();
             //add all author types to the result set
             if (authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig)) {
-                //retrieve the correct char codes for this field number
-                char[] subFields = tagMap.get(authorField.getTag()).toCharArray();
-                List subFieldData = new ArrayList();
-                //for each char in subFields, get subfield data
-                for(char x : subFields){
-                    if (authorField.getSubfield(x) != null){
-                        subFieldData.add(authorField.getSubfield(x).getData());
+                for (String subfields : parsedTagList.get(authorField.getTag())) {
+                    String current = indexer.getDataFromVariableField(authorField, "["+subfields+"]", " ", false);
+                    if (null != current) {
+                        result.add(current);
+                        if (firstOnly) {
+                            return result;
+                        }
                     }
-                }
-                //cast elements to string before adding to resultset
-                String dataString = "";
-                for(String datum : subFieldData){
-                    dataString += datum + " ";
-                }
-                result.add(dataString.trim());
-                if (firstOnly) {
-                    return result;
                 }
             }
         }
