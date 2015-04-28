@@ -9,11 +9,11 @@
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Library Cards') . '</li>';
 ?>
 <div class="row">
-  <div class="col-md-10 col-lg-9 myresearch-grid-list">
+  <div class="col-md-10 col-lg-9">
     <?=$this->flashmessages()?>
     <h2><?=$this->transEsc('Library Cards Connected To My Account')?></h2>
     <? if ($this->libraryCards->count() == 0): ?>
-      <div><?=$this->transEsc('You do not have any library cards')?></div>
+      <h4><?=$this->transEsc('You do not have any library cards')?></h4>
     <? else: ?>
       <table class="table table-striped useraccount-table" summary="<?=$this->transEsc('Library Cards')?>">
       <tr class="headers">
@@ -56,8 +56,10 @@
       </table>
     <? endif; ?>
 
-    <div class="btn-group">
+    <div>
       <a href="<?=$this->url('editLibraryCard') ?>NEW" class="btn btn-primary" title="<?=$this->transEsc('Connect Library Card')?>"><?=$this->transEsc('Connect Library Card')?>...</a>
+      <br>
+      <br>
     </div>
   </div>
 
