@@ -14,7 +14,7 @@
     . '<li class="active">' . $this->transEsc('History') . '</li>';
 ?>
 <div class="row">
-  <div class="col-xs-12 myresearch-grid-list">
+  <div class="col-xs-12">
     <?=$this->flashmessages();?>
     <? if (!empty($this->saved)): ?>
       <h2><?=$this->transEsc("history_saved_searches")?></h2>
@@ -25,7 +25,8 @@
     <? if (!empty($this->unsaved)): ?>
       <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => false));?>
     <? else: ?>
-      <?=$this->transEsc("history_no_searches")?>
+      <h4><?=$this->transEsc("history_no_searches")?></h4>
+      <br>
     <? endif; ?>
   </div>
 </div>
