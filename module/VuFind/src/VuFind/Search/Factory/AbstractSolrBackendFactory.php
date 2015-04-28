@@ -28,6 +28,7 @@
  */
 namespace VuFind\Search\Factory;
 
+use VuFind\Search\Solr\FilterFieldConversionListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectSpellingListener;
@@ -220,6 +221,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
 
         // Attach hierarchical facet listener:
         $this->getHierarchicalFacetListener($backend)->attach($events);
+
+        $filterFieldConversionListener = new FilterFieldConversionListener();
+        $filterFieldConversionListener->attach($events);
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
