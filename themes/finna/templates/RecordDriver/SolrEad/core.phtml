@@ -3,7 +3,7 @@
     <div class="cover-wrapper">
       <? /* Display thumbnail if appropriate: */ ?>
       <? $img = $this->recordImage($this->record($this->driver))?>
-      <?= $img->render('record', array('small' => array('w' => 40, 'h' => 50), 'medium' => array('w' => 189, 'h' => 300)))  ?>
+      <?= $img->render('record', ['small' => ['w' => 40, 'h' => 50], 'medium' => ['w' => 189, 'h' => 300]])  ?>
       <? /* Display qrcode if appropriate: */ ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>
@@ -21,19 +21,27 @@
   <div class="col-sm-10">
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getTitle())?></h1>
 
+      <? if ($institutions = $this->driver->getInstitutions()): ?>
+        <div class="recordInstitution">
+        <? foreach ($institutions as $i => $institution): ?>
+          <?=$i > 0 ? ', ' : '' ?><?=$this->transEsc('source_' . $institution, null, $institution) ?>
+        <? endforeach; ?>
+        </div>
+      <? endif; ?>
+
       <? foreach ($this->driver->getServiceURLs() as $current): ?>
-          <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate($this->driver->getDataSource() . '_' . $current['desc'], array(), $this->translate($current['desc'])))?></a>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate($this->driver->getDataSource() . '_' . $current['desc'], null, $this->translate($current['desc'])))?></a>
       <? endforeach; ?>
 
       <? $urls = $this->record($this->driver)->getLinkDetails(); ?>
       <? if (!empty($urls)): ?>
-          <div class="local-available-online-record">
-            <div class="truncate-field">
-            <? foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate('link_' . $current['desc'], array(), $current['desc']))?></a><br/>
-            <? endforeach; ?>
-            </div>
+        <div class="local-available-online-record">
+          <div class="truncate-field">
+          <? foreach ($urls as $current): ?>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($this->translate('link_' . $current['desc'], null, $current['desc']))?></a><br/>
+          <? endforeach; ?>
           </div>
+        </div>
       <? endif; ?>
 
     <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
@@ -60,7 +68,12 @@
       <tr>
         <td colspan="2">
           <?=$this->record($this->driver)->getFormatList()?>
-         </td>
+          <? $physical = $this->driver->getPhysicalDescriptions(); if (!empty($physical)): ?>
+            <? foreach ($physical as $field): ?>
+              <br/><?=$this->escapeHtml($field)?>
+            <? endforeach; ?>
+          <? endif; ?>
+        </td>
       </tr>
       <? endif; ?>
 
@@ -248,18 +261,6 @@
     </tr>
   <? endif; ?>
 
-  <? $physical = $this->driver->getPhysicalDescriptions(); if (!empty($physical)): ?>
-    <? $contentDisplayed = true; ?>
-    <tr>
-      <th><?=$this->transEsc('Physical Description')?>: </th>
-      <td>
-        <? foreach ($physical as $field): ?>
-          <?=$this->escapeHtml($field)?><br/>
-        <? endforeach; ?>
-      </td>
-    </tr>
-  <? endif; ?>
-
   <? $freq = $this->driver->getPublicationFrequency(); if (!empty($freq)): ?>
     <? $contentDisplayed = true; ?>
     <tr>
@@ -391,7 +392,7 @@
   <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
     <? $contentDisplayed = true; ?>
     <tr>
-      <th><?=$this->transEsc('Access')?>: </th>
+      <th><?=$this->transEsc('Access Restrictions')?>: </th>
       <td>
         <? foreach ($access as $field): ?>
           <?=$this->escapeHtml($field)?><br/>
@@ -424,7 +425,7 @@
     </tr>
   <? endif; ?>
 
-  <? $authorNotes = empty($isbn) ? array() : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
+  <? $authorNotes = empty($isbn) ? [] : $this->authorNotes($isbn); if (!empty($authorNotes)): ?>
     <? $contentDisplayed = true; ?>
     <tr>
       <th><?=$this->transEsc('Author Notes')?>: </th>
@@ -433,6 +434,17 @@
           <? foreach ($list as $field): ?>
             <?=$field['Content']?><br/>
           <? endforeach; ?>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
+
+  <? if ($locations = $this->driver->getPhysicalLocations()): ?>
+    <tr>
+      <th><?=$this->transEsc('Location'); ?>: </th>
+      <td>
+        <? foreach ($locations as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
