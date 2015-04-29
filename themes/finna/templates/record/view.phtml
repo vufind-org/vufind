@@ -37,7 +37,7 @@
     <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
       <ul class="pager hidden-print" id="view-pager">
       <? if ($this->scrollData['previousRecord']): ?>
-        <li>
+        <li class="pager-previous-record">
           <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>#searchForm" title="<?=$this->transEsc('Previous Record')?>"><i class="fa fa-arrow-left"></i></a>
         </li>
         <? else: ?>
@@ -45,7 +45,7 @@
       <? endif; ?>
         <li class="pager-text"><?=$this->localizedNumber($this->scrollData['currentPosition']) . ' / ' . $this->localizedNumber($this->scrollData['resultTotal']) ?></li>
       <? if ($this->scrollData['nextRecord']): ?>
-        <li>
+        <li class="pager-next-record">
           <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>#searchForm" title="<?=$this->transEsc('Next Record')?>"><i class="fa fa-arrow-right"></i></a>
         </li>
       <? else: ?>

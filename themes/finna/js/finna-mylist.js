@@ -179,7 +179,7 @@ finna.myList = (function() {
     };
 
     var initEditComponents = function() {
-        addNewListLabel = $('.add-new-list span').text();
+        addNewListLabel = $('.add-new-list div').text();
         var isDefaultList = typeof(getActiveListId()) == 'undefined';
 
         // bulk actions
@@ -279,7 +279,7 @@ finna.myList = (function() {
             },
             'finish': function(e) {
                 if (e.value == '' || e.cancel) {
-                    $('.add-new-list span.name').text(addNewListLabel);
+                    $('.add-new-list .name').text(addNewListLabel);
                     return;
                 }
 

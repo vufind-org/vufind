@@ -9,6 +9,7 @@
   $account = $this->auth()->getManager();
   $hideLogin = !(is_object($account) && $account->loginEnabled());
   $offlineMode = $this->ils()->getOfflineMode();
+  $lightbox = $this->layout()->getTemplate() == 'layout/lightbox';
 ?>
 
 <? if ($offlineMode == "ils-offline"): ?>
@@ -21,11 +22,19 @@
   </div>
 <? endif; ?>
 
-<p class="lead lightbox-header"><?=$this->transEsc('Login')?></p>
+<? if (!$lightbox): ?>
+  <div class="col-md-10 col-lg-8">
+<? endif; ?>
+
+<h2 class="lightbox-header"><?=$this->transEsc('Login')?></h2>
 <?=$this->flashmessages()?>
 
 <? if ($hideLogin): ?>
   <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
 <? else: ?>
-  <?=$this->auth()->getLogin()?>
+    <?=$this->auth()->getLogin()?>
+<? endif; ?>
+
+<? if (!$lightbox): ?>
+  </div>
 <? endif; ?>

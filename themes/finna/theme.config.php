@@ -41,7 +41,8 @@ return array(
         'vendor/jquery.inview.min.js',
         'vendor/jquery.magnific-popup.min.js',
         'vendor/jquery.cookie-1.4.1.min.js',
-        'vendor/slick.min.js'
+        'vendor/slick.min.js',
+        'vendor/jquery.touchSwipe.min.js'
     ),
     'less' => array(
         'active' => false

@@ -9,6 +9,20 @@
     $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
     $holdsAllowed = $this->driver->tryMethod('getHoldsAllowed');
 
+    $illRequestLink = false;
+    $holdLinks = false;
+
+    foreach ($holdings as $holding) {
+        foreach ($holding['items'] as $row) {
+            if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']) {
+                $illRequestLink = $row['ILLRequestLink'];
+            }
+            if (isset($row['link']) && $row['link']) {
+                $holdLinks = true;
+            }
+        }
+    }
+
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
@@ -48,6 +62,9 @@
 <? if ($holdsAllowed): ?>
   <div class="place-hold-wrapper text-right">
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn(), 'label' => 'Library Card')); ?>
+  <? if ($illRequestLink): ?>
+    <a class="CheckILLRequest modal-link placeILLRequest btn btn-primary" href="<?=$this->recordLink()->getRequestUrl($illRequestLink)?>"  title="<?=$this->transEsc("ill_request_check_text")?>"><?=$this->transEsc("ill_request_check_text")?></a>
+  <? endif; ?>
   <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
     <a class="placehold modal-link btn btn-primary" title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"> <?=$this->transEsc('title_hold_place')?></a>
   <? elseif ($user): ?>
@@ -55,6 +72,8 @@
       <? if ($profile = $this->ils()->getMyProfile($patron)): ?>
         <? if (!empty($profile['blocks'])): ?>
           <?=$this->transEsc('hold_error_blocked'); ?>
+        <? elseif (!$illRequestLink && !$holdLinks): ?>
+          <?=$this->transEsc('title_cant_place_hold'); ?>
         <? endif; ?>
       <? endif; ?>
     <? endif; ?>
@@ -63,15 +82,38 @@
 <? endif; ?>
 
 <table class="table record-holdings-table">
-  <? if ($results = $this->driver->getInstitutions()): ?>
-    <tr>
+  <tr>
     <th colspan="5" class="headers">
-      <? foreach($results as $index => $institution): ?>
-        <h4><?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?></h4>
-      <? endforeach; ?>
+      <? if ($mergedData = $this->driver->tryMethod('getMergedRecordData')): ?>
+        <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
+        <? if (count($mergedData['dedupData']) > 1): ?>
+        <div class="dedup-information">
+          <select class="dedup-select form-control jumpMenuUrl" role="listbox" aria-haspopup="true">
+          <? foreach ($mergedData['dedupData'] as $source => $current): ?>
+            <option value="<?=$this->escapeHtmlAttr($this->recordLink()->getUrl($current['id'])) ?>" role="option"<?=$currentSource == $source ? ' selected="selected"' : '' ?>><?=$this->transEsc("source_$source", null, $source) ?></option>
+          <? endforeach; ?>
+          </select>
+        </div>
+      <? else: ?>
+        <?
+          if (!empty($dedupData)) {
+            reset($dedupData);
+            $source = key($dedupData);
+          } else {
+            $source = $this->driver->tryMethod('getDataSource');
+          }
+        ?>
+        <? if ($source): ?>
+          <div class="dedup-information">
+            <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
+          </div>
+        <? endif; ?>
+      <? endif; ?>
       </th>
     </tr>
-  <? endif; ?>
+    <? endif; ?>
+    </th>
+  </tr>
 <? $holdingsGroup = 0; ?>
 <? foreach ($holdings as $holding): ?>
   <?

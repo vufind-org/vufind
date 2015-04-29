@@ -1,9 +1,11 @@
-<div class="col-sm-12 persona-auth-login">
-  <div class="col-sm-3 persona-auth-fields">
-      <a id="persona-login" class="persona-auth-link" href="" ><span class="persona-caption"><?=$this->transEsc('Mozilla Persona')?></span></a>
+<div class="row persona-auth-login">
+  <div class="col-sm-6 persona-auth-fields">
+    <a id="persona-login" class="persona-auth-link" href="" ><span class="persona-caption"><?=$this->transEsc('Mozilla Persona')?></span></a>
   </div>
-  <div class="col-sm-5">
-      <p><?=$this->transEsc('login_desc_persona')?></p>
-      <p><?=$this->transEsc('login_card_info_persona')?></p>
+  <div class="col-sm-6">
+    <div class="login-description">
+      <p class="login-info"><?=$this->translate('login_desc_mozilla_persona_html')?></p>
+      <p class="login-info"><?=$this->translate('login_desc_connect_card_html')?></p>
+    </div>
   </div>
 </div>
