@@ -82,7 +82,9 @@ class FilterFieldConversionListenerTest extends TestCase
                 ]
             ]
         );
-        $listener = new FilterFieldConversionListener(['foo' => 'bar']);
+        $listener = new FilterFieldConversionListener(
+            ['foo' => 'bar', 'baz' => 'boo']
+        );
 
         $backend = $this->getMockBuilder('VuFindSearch\Backend\Solr\Backend')
             ->disableOriginalConstructor()->getMock();
@@ -92,10 +94,10 @@ class FilterFieldConversionListenerTest extends TestCase
         $fq   = $params->get('fq');
         $expected = [
             'bar:value',
-            'baz:"foo:value"',
+            'boo:"foo:value"',
             'foofoo:value',
             "foo\\:value",
-            'baz:value OR bar:value',
+            'boo:value OR bar:value',
             '(bar:value)',
         ];
         $this->assertEquals($expected, $fq);
