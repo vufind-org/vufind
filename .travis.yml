@@ -6,7 +6,7 @@ env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
 
 before_script:
-  - pyrus install pear/PHP_CodeSniffer
+  - pear install pear/PHP_CodeSniffer
   - phpenv rehash
 
 script:
