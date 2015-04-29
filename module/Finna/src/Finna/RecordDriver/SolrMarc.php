@@ -757,7 +757,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      *
      * @return array
      */
-    protected function getUniformTitles()
+    public function getUniformTitles()
     {
         $results = [];
         foreach (array('130', '240') as $fieldCode) {
