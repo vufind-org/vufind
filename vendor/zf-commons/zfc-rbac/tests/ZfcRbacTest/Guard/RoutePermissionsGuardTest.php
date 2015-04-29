@@ -326,6 +326,26 @@ class RoutePermissionsGuardTest extends \PHPUnit_Framework_TestCase
                 'isGranted'           => true,
                 'policy'              => GuardInterface::POLICY_DENY
             ],
+            [
+                'rules'               => ['route' => [
+                    'permissions' => ['post.edit', 'post.read'],
+                    'condition'   => GuardInterface::CONDITION_OR
+                ]],
+                'matchedRouteName'    => 'route',
+                'identityPermissions' => [['post.edit', null, true]],
+                'isGranted'           => true,
+                'policy'              => GuardInterface::POLICY_DENY
+            ],
+            [
+                'rules'               => ['route' => [
+                    'permissions' => ['post.edit', 'post.read'],
+                    'condition'   => GuardInterface::CONDITION_AND
+                ]],
+                'matchedRouteName'    => 'route',
+                'identityPermissions' => [['post.edit', null, true]],
+                'isGranted'           => false,
+                'policy'              => GuardInterface::POLICY_DENY
+            ]
         ];
     }
 
