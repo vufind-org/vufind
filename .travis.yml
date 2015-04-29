@@ -6,9 +6,10 @@ env:
   - VUFIND_HOME=$PWD VUFIND_LOCAL_DIR=$PWD/local
 
 before_script:
-  - pyrus install pear/PHP_CodeSniffer
+  - pear install pear/PHP_CodeSniffer
   - phpenv rehash
 
 script:
   - phpunit --stderr --configuration module/VuFind/tests/phpunit.xml
   - phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php $PWD/module
+
