@@ -81,7 +81,7 @@ top_cols = 3
 ; Should we show "exclude" links for some or all of the facets? Set to * for
 ; all facets, use a comma-separated list to show for some of the facets, set
 ; to false or omit to disable "exclude" links
-exclude = *
+;exclude = *
 ; Should we OR together facets rather than ANDing them? Set to * for
 ; all facets, use a comma-separated list to apply to some of the facets, set
 ; to false or omit to disable ORed facets.
