@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Finna Module Configuration
+ * Finbna Module Configuration
  *
  * PHP version 5
  *
@@ -100,6 +100,7 @@ $config = array(
                 ],
                 'invokables' => array(
                     'comments' => 'Finna\Db\Table\Comments',
+                    'search' => 'Finna\Db\Table\Search'
                 ),
             ],
             'ils_driver' => [
