@@ -91,7 +91,7 @@ class FilterFieldConversionListener
             foreach ($fq as $currentFilter) {
                 foreach ($this->map as $oldField => $newField) {
                     $currentFilter = preg_replace(
-                        "/$oldField:$lookahead/", "$newField:", $currentFilter
+                        "/\b$oldField:$lookahead/", "$newField:", $currentFilter
                     );
                 }
                 $new_fq[] = $currentFilter;
