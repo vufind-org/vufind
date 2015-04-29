@@ -89,8 +89,12 @@ $config = array(
     'vufind' => array(
         'plugin_managers' => array(
             'auth' => array(
+                'factories' => [
+                    'ils' => 'Finna\Auth\Factory::getILS',
+                ],
                 'invokables' => array(
                     'mozillapersona' => 'Finna\Auth\MozillaPersona',
+                    'shibboleth' => 'Finna\Auth\Shibboleth',
                 ),
             ),
             'db_table' => [

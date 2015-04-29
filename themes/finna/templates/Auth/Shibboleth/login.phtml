@@ -1,0 +1,23 @@
+<? $account = $this->auth()->getManager(); ?>
+<? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
+<div class="row">
+  <div class="col-sm-6 shibboleth-login">
+    <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>">
+      <img src="<?=$this->imageLink('haka_landscape_medium.gif') ?>" alt="<?=$this->escapeHtmlAttr($this->translate("Haka Login")) ?>">
+    </a>
+  </div>
+  <div class="col-sm-6">
+    <div class="login-description">
+      <p class="login-info">
+       <?=$this->translate('login_desc_connect_card_html') ?>
+      </p>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="login-description shibboleth">
+      <?=$this->transEsc('login_desc_shibboleth_html')?>
+    </div>
+  </div>
+</div>
