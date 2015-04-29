@@ -407,13 +407,9 @@ class Record extends AbstractHelper
      */
     public function getCover($context, $default, $link = false)
     {
-        // ToDo: get configuration for list/grid and full result from config
         $size = isset($this->config->Content->coversize[$context]) ? 
               $this->config->Content->coversize[$context] : $default;
         if (empty($size)) return false;
-        if ($link==="image-large") {
-            $link = $this->getThumbnail("large");
-        }
         $newcontext
             = ['size' => $size, 'link' => $link];
         return $this->contextHelper->renderInContext(

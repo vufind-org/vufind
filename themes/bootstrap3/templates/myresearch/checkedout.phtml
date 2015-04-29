@@ -33,14 +33,21 @@
               <input class="pull-left" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
             <? endif; ?>
           <? endif; ?>
-          <div class="col-sm-2 text-center">
-            <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-              <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-            <? else: ?>
-              <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+
+          <? $Cover = $this->record($this->driver)->getCover("storageretrievalrequests","small");
+          <? if ($Cover): ?>
+            <div class="col-sm-2 text-center">
+            <? /* Display thumbnail if appropriate: */ ?>
+            <? if($Cover): ?>
+              <?=$Cover?>
             <? endif; ?>
-          </div>
-          <div class="col-sm-6">
+            </div>
+
+            <div class="col-sm-6">
+         <? else: ?>
+            <div class="col-sm-9">
+         <? endif; ?>
+
             <?
               // If this is a non-missing Solr record, we should display a link:
               if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
