@@ -56,7 +56,7 @@ class FilterFieldConversionListener
      *
      * @return void
      */
-    public function __construct(array $map = ['authorStr' => 'author_facet'])
+    public function __construct(array $map)
     {
         $this->map = $map;
     }

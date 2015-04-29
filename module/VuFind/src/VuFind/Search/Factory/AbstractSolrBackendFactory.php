@@ -222,8 +222,14 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Attach hierarchical facet listener:
         $this->getHierarchicalFacetListener($backend)->attach($events);
 
-        $filterFieldConversionListener = new FilterFieldConversionListener();
-        $filterFieldConversionListener->attach($events);
+        // Apply legacy filter conversion if necessary:
+        $facets = $this->config->get($this->facetConfig);
+        if (!empty($facets->LegacyFields)) {
+            $filterFieldConversionListener = new FilterFieldConversionListener(
+                $facets->LegacyFields->toArray()
+            );
+            $filterFieldConversionListener->attach($events);
+        }
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
