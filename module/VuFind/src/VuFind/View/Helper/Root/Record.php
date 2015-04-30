@@ -412,6 +412,18 @@ class Record extends AbstractHelper
         if (empty($size)) { 
             return false; 
         }
+        // check if more than one size is defined
+        // for example small:medium
+        if (strpos($size, ':')) {
+            $sizes=explode(':', $size);
+            // set size to first value
+            $size=$sizes[0];
+            foreach ($sizes as $check) {
+                if ($this->getThumbnail($check)) {
+                    $size = $check;
+                }
+            }
+        }
         $newcontext
             = ['size' => $size, 'link' => $link];
         return $this->contextHelper->renderInContext(
