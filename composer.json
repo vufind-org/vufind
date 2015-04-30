@@ -63,7 +63,6 @@
         "zendframework/zendframework": "2.3.7",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",
-        "zendframework/zendservice-recaptcha": "2.*",
         "zf-commons/zfc-rbac": "~2.4"
     },
     "require-dev": {

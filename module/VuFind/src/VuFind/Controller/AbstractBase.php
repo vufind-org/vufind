@@ -563,7 +563,8 @@ class AbstractBase extends AbstractActionController
     ) {
         // Fail if the expected submission element was missing from the POST:
         // Form was submitted; if CAPTCHA is expected, validate it now.
-        return $this->params()->fromPost($submitElement, false)
+        $postElement = $this->params()->fromPost($submitElement, false);
+        return !empty($postElement)
             && (!$useRecaptcha || $this->recaptcha()->validate());
     }
 
