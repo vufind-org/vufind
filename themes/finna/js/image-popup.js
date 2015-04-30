@@ -113,10 +113,10 @@ finna.imagePopup = (function(finna) {
                             $(".mfp-container").swipe( {
                               allowPageScroll:"vertical",
                               //Generic swipe handler for all directions
-                              swipeLeft:function(event, phase, direction, distance, duration) {
+                              swipeRight:function(event, phase, direction, distance, duration) {
                                 $(".mfp-container .mfp-arrow-left").click();
                               },
-                              swipeRight:function(event, direction, distance, duration) {
+                              swipeLeft:function(event, direction, distance, duration) {
                                 $(".mfp-container .mfp-arrow-right").click();
                               },
                             threshold: 75,
