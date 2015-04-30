@@ -675,7 +675,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
         // We'll verify renewability later in getMyTransactions
         $transactions['renewable'] = true;
-        $transactions['message'] = false;
 
         return $transactions;
     }
