@@ -11,7 +11,7 @@
   }
 ?>
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
-  <? $Cover=$this->record($this->driver)->getCover("list-entry","small",$this->recordLink()->getUrl($this->driver)); ?>
+  <? $Cover=$this->record($this->driver)->getCover("list-entry", "small", $this->recordLink()->getUrl($this->driver)); ?>
   <? if ($Cover): ?>
   <div class="col-xs-2 left">
   <? else: ?>

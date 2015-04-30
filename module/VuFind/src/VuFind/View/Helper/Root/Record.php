@@ -409,7 +409,9 @@ class Record extends AbstractHelper
     {
         $size = isset($this->config->Content->coversize[$context]) ? 
               $this->config->Content->coversize[$context] : $default;
-        if (empty($size)) return false;
+        if (empty($size)) { 
+            return false; 
+        }
         $newcontext
             = ['size' => $size, 'link' => $link];
         return $this->contextHelper->renderInContext(

@@ -1,7 +1,7 @@
 <? $this->headScript()->appendFile('collection_record.js'); ?>
 <div class="row">
   <? $QRCode = $this->record($this->driver)->getQRCode("core");
-     $Cover = $this->record($this->driver)->getCover("core","medium",$this->record($this->driver)->getThumbnail('large'));
+     $Cover = $this->record($this->driver)->getCover("core", "medium", $this->record($this->driver)->getThumbnail('large'));
      $Preview = $this->record($this->driver)->getPreviews(); ?>
   <? if (($QRCode) || ($Cover) || ($Preview)): ?>
   <div class="col-sm-3">

@@ -231,7 +231,7 @@
 
 <div class="span-4 last">
   <? /* Display thumbnail if appropriate: */ ?>
-  <?=$this->record($this->driver)->getCover("core","medium")?>
+  <?=$this->record($this->driver)->getCover("core", "medium"); ?>
 
   <? /* Display qrcode if appropriate: */ ?>
   <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
