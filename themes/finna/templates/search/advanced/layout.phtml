@@ -5,6 +5,11 @@
   // Disable top search box -- this page has a special layout.
   $this->layout()->searchbox = false;
 
+  // Search type and tabs
+  $this->searchType = 'advanced';
+  $this->layout()->finnaMainTabs = $this->render('search/searchTabs');
+  $this->layout()->finnaMainHeader = '<h1 class="content-header">' . $this->translate('Advanced Search') . '</h1>';
+
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li>';
   $lastSearchLink = $this->getLastSearchLink($this->transEsc('Search'));
@@ -65,7 +70,6 @@
     <div class="<?=$this->layoutClass('mainbody')?>">
       <input type="hidden" name="sort" value="relevance">
       <div class="clearfix">
-        <p class="lead pull-left"><?=$this->transEsc('Advanced Search')?></p>
         <div id="groupJoin" class="form-inline pull-right">
           <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
           <select id="groupJoinOptions" name="join" class="form-control">
@@ -95,7 +99,7 @@
                     <label class="help-block"><?=$this->transEsc("adv_search_label")?>:</label>
                   </div>
                   <div class="col-sm-9">
-                    <? for($search=0 ; $search<3 || $search<count($setQueries[$group]) ; $search++): ?>
+                    <? for($search=0 ; $search<3 || (isset($setQueries[$group]) && $search<count($setQueries[$group])) ; $search++): ?>
                       <? if($group == 0 && $search == 0): ?>
                         <div id="new_search_template">
                       <? endif; ?>
