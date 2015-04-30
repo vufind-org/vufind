@@ -1,6 +1,7 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('My Profile'));
+    $this->headScript()->appendFile("finna-myprofile.js");
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'profile'));
     // Set up breadcrumbs:
@@ -17,12 +18,9 @@
 
     $user = $this->auth()->isLoggedIn();
     $cards = $user->getLibraryCards();
-    foreach ($cards as $card) {
-      if ($user->cat_username == $card->cat_username) {
-        $accountName = $card->card_name . ' (' . $card->cat_username . ')';
-        break;
-      }
-    }
+
+    // Todo: get actual value for Axiell web services functions.
+    $axiellWebServices = false;
 ?>
 <div class="row">
   <div class="col-md-9">
@@ -30,10 +28,10 @@
     <p class="no-content-message"><?=trim($this->transEsc('profile_instructions'))?></p>
     <?= $this->partial('myresearch/profile-my-information.phtml', array('user' => $user, 'cards' => $cards)); ?>
     <? if (isset($this->profile)): ?>
-    <h2><?=$this->transEsc('Library Card Settings');?>: <?=$accountName ?></h2>
+      <h2><?=$this->transEsc('Library Card Settings');?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></h2>
 
     <? if ($showHomeLibForm): ?>
-      <form id="profile_form" class="form-inline" action="" method="post">
+      <form id="profile_form" class="inline" method="post">
         <table class="table useraccount-table">
           <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
             <?
@@ -49,104 +47,104 @@
             </td>
           <tr>
             <td colspan="2">
-              <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>" />
+              <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>" name="save_home_library" />
             </td>
           </tr>
         </table>
       </form>
     <? endif; ?>
 
-    <? if (count($profile['messagingServices'])): ?>
+    <? if (isset($profile['messagingServices']) && !empty($profile['messagingServices'])): ?>
       <?= $this->partial('myresearch/profile-messaging.phtml', array('profile' => $profile)); ?>
     <? endif; ?>
 
-    <? if ($changePassword): ?>
+    <? if ($this->changePassword): ?>
       <?= $this->partial('myresearch/profile-change-password.phtml', array('user' => $user)); ?>
     <? endif; ?>
 
     <h3><?= $this->transEsc('Personal details maintained by the library') ?></h3>
-    <table class="table table-striped useraccount-table">
-      <?
-        echo $this->renderArray(
-          $arrTemplate, $this->profile,
-          array(
-            $this->transEsc('First Name') => 'firstname',
-            $this->transEsc('Last Name') => 'lastname'
-          )
-        );
-       ?>
-      <?
-        if ($axiellWebServices) {
-            echo str_replace(
-            ['%%LABEL%%', '%%VALUE%%', '%%NOTICE%%'],
-            [
-                $this->transEsc('Address'),
-                $this->profile['address1'],
-                'Osoitetta ei voi vaihtaa itse. <a class="editAddress" href="#">' . $this->transEsc('request_address_change') . '</a>'
-            ],
-            $arrNoticeTemplate
-          );
-        } else {
+      <form id="profile_libary_form" class="inline" method="post">
+        <table class="table table-striped useraccount-table">
+          <?
             echo $this->renderArray(
               $arrTemplate, $this->profile,
               array(
-                $this->transEsc('Address') . ' 1' => 'address1',
-                $this->transEsc('Address') . ' 2' => 'address2',
+                $this->transEsc('First Name') => 'firstname',
+                $this->transEsc('Last Name') => 'lastname'
               )
             );
-        }
-        echo $this->renderArray(
-          $arrTemplate, $this->profile,
-          array(
-            $this->transEsc('Zip') => 'zip',
-          )
-        );
-        if (!$axiellWebServices) {
-          $arrTelTemplate = $arrTemplate;
-        }
-        echo $this->renderArray(
-          $arrTelTemplate, $this->profile,
-          array(
-            $this->transEsc('Phone Number') => 'phone',
-          )
-        );
-        if (!$axiellWebServices) {
-            $arrMailTemplate = $arrTemplate;
-        }
-        echo $this->renderArray(
-          $arrMailTemplate, $this->profile,
-          array(
-            $this->transEsc('Email') => 'email',
-          )
-        );
-        echo $this->renderArray(
-          $arrTemplate, $this->profile,
-          array(
-            $this->transEsc('Group') => 'group'
-          )
-        );
-        if ($this->profile['blocks']) {
-          $data = '';
-          foreach ($profile['blocks'] as $block) {
-            $data .= '<p class="borrowing-block">' . $this->transEsc($block) . '</p>';
-          }
-          echo str_replace(
-            ['%%LABEL%%', '%%VALUE%%'],
-            [$this->transEsc('Borrowing Blocks'), $data],
-            $arrTemplate
-          );
-        }
-      ?>
-    </table>
-    <? if ($axiellWebServices): ?>
-      <input id="saveLibaryProfile" name="saveLibaryProfile" type="submit" value="<?=$this->transEsc("save_my_profile") ?>" class="btn btn-primary" />
-      <p>
-        <a class="edit editAddress" href="#"><?=$this->transEsc('request_address_change') ?></a>
-      </p>
-    <? endif; ?>
+            if ($axiellWebServices) {
+            echo str_replace(
+                ['%%LABEL%%', '%%VALUE%%', '%%NOTICE%%'],
+                [
+                  $this->transEsc('Address'),
+                  $this->profile['address1'],
+                  'Osoitetta ei voi vaihtaa itse. <a class="modal-link controller:MyResearch profile-library-info-address-update" href="'. $this->url() . '">' . $this->transEsc('request_address_change') . '</a>'
+                ],
+                $arrNoticeTemplate
+              );
+            } else {
+              echo $this->renderArray(
+                $arrTemplate, $this->profile,
+                array(
+                  $this->transEsc('Address') . ' 1' => 'address1',
+                  $this->transEsc('Address') . ' 2' => 'address2',
+                )
+              );
+            }
+            echo $this->renderArray(
+              $arrTemplate, $this->profile,
+              array(
+                $this->transEsc('Zip') => 'zip',
+              )
+            );
+            if (!$axiellWebServices) {
+              $arrTelTemplate = $arrTemplate;
+            }
+            echo $this->renderArray(
+              $arrTelTemplate, $this->profile,
+              array(
+                $this->transEsc('Phone Number') => 'phone',
+              )
+            );
+            if (!$axiellWebServices) {
+                $arrMailTemplate = $arrTemplate;
+            }
+            echo $this->renderArray(
+              $arrMailTemplate, $this->profile,
+              array(
+                $this->transEsc('Email') => 'email',
+              )
+            );
+            echo $this->renderArray(
+              $arrTemplate, $this->profile,
+              array(
+                $this->transEsc('Group') => 'group'
+              )
+            );
+            if (isset($this->profile['blocks']) && !empty($this->profile['blocks'])) {
+              $data = '';
+              foreach ($profile['blocks'] as $block) {
+                $data .= '<p class="borrowing-block">' . $this->transEsc($block) . '</p>';
+              }
+              echo str_replace(
+                ['%%LABEL%%', '%%VALUE%%'],
+                [$this->transEsc('Borrowing Blocks'), $data],
+                $arrTemplate
+              );
+            }
+          ?>
+        </table>
+        <? if ($axiellWebServices): ?>
+          <input id="save-libary-profile" name="save_libary_profile" type="submit" value="<?=$this->transEsc("save_my_profile") ?>" class="btn btn-primary" />
+          <p>
+            <a class="modal-link controller:MyResearch profile-library-info-address-update" href="<?=$this->url() ?>"><?=$this->transEsc('request_address_change') ?></a>
+          </p>
+        <? endif; ?>
+      </form>
     <? endif; ?>
     <div id="delete-account">
-      <button class="btn btn-primary"><?=$this->transEsc('delete_account_title') ?></button>
+      <button class="btn btn-primary modal-link controller:MyResearch"><?=$this->transEsc('delete_account_title') ?></button>
     </div>
   </div>
 </div>

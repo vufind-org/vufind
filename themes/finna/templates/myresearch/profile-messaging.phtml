@@ -1,4 +1,4 @@
-<form method="post" action="&#32;" class="profile_form" id="messaging_form">
+<form method="post" class="inline" id="messaging-form">
   <h3><?= $this->transEsc('messaging_settings_title') ?></h3>
   <table class="table useraccount-table">
     <? foreach ($profile['messagingServices'] as $service): ?>
@@ -23,7 +23,7 @@
     <? endforeach; ?>
     <tr>
       <td>
-        <a class="" href="#"><?= $this->transEsc('request_messaging_settings_change') ?></a>
+        <a id="profile-messaging-update" class="modal-link controller:MyResearch" href="<?=$this->url()?>"><?= $this->transEsc('request_messaging_settings_change') ?></a>
       </td>
     </tr>
   </table>

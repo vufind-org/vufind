@@ -1,8 +1,8 @@
 <? if ($user): ?>
 <div>
   <h2><?=$this->transEsc('my_profile')?></h2>
-  <form name="myProfileForm" class="inline" action="&#32;" method="post" id="cancelHold">
-        
+  <form name="my_profile_form" class="inline" method="post">
+
     <table class="table useraccount-table">
       <tr>
         <th><?=$this->transEsc("Email") ?>:</th>
@@ -13,11 +13,11 @@
       <tr>
         <th><?=$this->transEsc("due_date_reminder") ?>:</th>
         <td>
-          <select id="dueDateReminder" name="dueDateReminder">
-            <option value="0" <?= $val == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
-            <option value="1" <?= $val == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
-            <option value="2" <?= $val == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_two_days") ?></option>
-            <option value="3" <?= $val == 3 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_three_days") ?></option>
+          <select id="due-date-reminder" name="due_date_reminder">
+            <option value="0" <?= $user->finna_due_date_reminder == 0 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_none") ?></option>
+            <option value="1" <?= $user->finna_due_date_reminder == 1 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_one_day") ?></option>
+            <option value="2" <?= $user->finna_due_date_reminder == 2 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_two_days") ?></option>
+            <option value="3" <?= $user->finna_due_date_reminder == 3 ? 'selected="selected"' : '' ?>><?=$this->transEsc("due_date_reminder_three_days") ?></option>
           </select>
         </td>
         <td>
@@ -29,7 +29,7 @@
       <? endif; ?>
       <tr>
           <td colspan="3">
-            <input id="saveMyProfile" name="saveMyProfile" type="submit" value="<?=$this->transEsc("Save") ?>" class="btn btn-primary" />
+            <input id="save-my-profile" name="save_my_profile" type="submit" value="<?=$this->transEsc("Save") ?>" class="btn btn-primary" />
           </td>
       </tr>
     </table>
