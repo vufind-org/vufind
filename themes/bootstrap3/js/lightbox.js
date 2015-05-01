@@ -14,7 +14,7 @@ $(document).ready(function() {
     lightboxShown = false;
   }
   constrainForms('form[data-lightbox]');
-  $('#modal').on('hide.bs.modal', function() {
+  $('#modal').on('hidden.bs.modal', function() {
     $('#modal .modal-body').html(vufindString.loading+'...');
     lightboxShown = false;
     refreshTags();
