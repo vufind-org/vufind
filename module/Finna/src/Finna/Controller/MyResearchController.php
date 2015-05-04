@@ -56,6 +56,31 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $view->profile = $profile;
         }
 
+        $renewResult = $view->renewResult;
+        if (isset($renewResult) && is_array($renewResult)) {
+            $renewedCount = 0;
+            $renewErrorCount = 0;
+            foreach ($renewResult as $renew) {
+                if ($renew['success']) {
+                    $renewedCount++;
+                } else {
+                    $renewErrorCount++;
+                }
+            }
+            $flashMsg = $this->flashMessenger();
+            if ($renewedCount > 0) {
+                $msg = $this->translate('renew_ok', ['%%count%%' => $renewedCount]);
+                $flashMsg->setNamespace('info')->addMessage($msg);
+            }
+            if ($renewErrorCount > 0) {
+                $msg = $this->translate(
+                    'renew_not_ok',
+                    ['%%count%%' => $renewErrorCount]
+                );
+                $flashMsg->setNamespace('error')->addMessage($msg);
+            }
+        }
+
         return $view;
     }
 
