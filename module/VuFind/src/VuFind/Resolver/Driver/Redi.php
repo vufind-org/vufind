@@ -100,9 +100,9 @@ class Redi implements DriverInterface
             return $retval;
         }
 
-        $this->parseDOI($xml, $retval);
-        $this->parseRediInfo($xml, $retval);
-        $this->parseRediOpenURLs($xml, $retval);
+        $retval = $this->parseDOI($xml, $retval);
+        $retval = $this->parseRediInfo($xml, $retval);
+        $retval = $this->parseRediOpenURLs($xml, $retval);
 
         return $retval;
     }
@@ -110,13 +110,12 @@ class Redi implements DriverInterface
     /**
      * Parse if the Redi xml snippet contains a DOI.
      *
-     * @param DOMDocument $xml     Loaded xml document
-     * @param array       &$retval Get back a array with title, URL and service_type
+     * @param DOMDocument $xml    Loaded xml document
+     * @param array       $retval Get back a array with title, URL and service_type
      *
-     * @return void
-     * @access private
+     * @return array Get back a array with title, URL and service_type
      */
-    protected function parseDOI ($xml, &$retval)
+    protected function parseDOI($xml, $retval)
     {
         $citation = $xml->getElementById('citation');
         if (is_object($citation->childNodes)) {
@@ -144,19 +143,20 @@ class Redi implements DriverInterface
                 }
             }
         }
+        return $retval;
     }
 
     /**
      * Parse if the Redi xml snippet contains information about the Redi offer.
      *
-     * @param DOMDocument $xml     Loaded xml document
-     * @param array       &$retval Return array with Redi catalogue information
-     *                             consisting of Text & Link.
+     * @param DOMDocument $xml    Loaded xml document
+     * @param array       $retval Return array with Redi catalogue information
+     *                            consisting of Text & Link.
      *
-     * @return void
-     * @access protected
+     * @return array Return array with Redi catalogue information consisting of
+     *               Text & Link.
      */
-    protected function parseRediInfo($xml, &$retval)
+    protected function parseRediInfo($xml, $retval)
     {
         if ($ezb = $xml->getElementById('t_ezb')) {
             if (is_object($ezb->childNodes)) {
@@ -197,19 +197,20 @@ class Redi implements DriverInterface
                 }
             }
         }
+        return $retval;
     }
 
     /**
      * Parse if the Redi xml snippet contains Redi urls.
      *
-     * @param DOMDocument $xml     Loaded xml document
-     * @param array       &$retval Get back Redi direct link to sources
-     *                             containing title, URL and service_type
+     * @param DOMDocument $xml    Loaded xml document
+     * @param array       $retval Get back Redi direct link to sources
+     *                            containing title, URL and service_type
      *
-     * @return void
-     * @access protected
+     * @return array Get back Redi direct link to sources containing title, URL and
+     *               service_type
      */
-    protected function parseRediOpenURLs($xml, &$retval)
+    protected function parseRediOpenURLs($xml, $retval)
     {
         if ($ezb = $xml->getElementById('t_ezb')) {
             if (is_object($ezb->childNodes)) {
@@ -250,6 +251,7 @@ class Redi implements DriverInterface
                 } // end foreach
             } // end if
         } // end if
+        return $retval;
     }
 
     /**
@@ -273,7 +275,7 @@ class Redi implements DriverInterface
                                         ['»',
                                             chr(194).chr(160)
                                         ],
-                                        ['',''],
+                                        ['', ''],
                                         $nodes->nodeValue
                                     )
                                 ); // hack to replace \u00a0
