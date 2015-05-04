@@ -52,6 +52,13 @@ class Options extends \VuFind\Search\Base\Options
             'title' => 'sort_title', 'author' => 'sort_author',
             'year DESC' => 'sort_year', 'year' => 'sort_year asc'
         ];
+
+        $searchSettings = $configLoader->get($this->searchIni);
+        // Load list view for result (full or tabs,accordion or something else)
+        if (isset($searchSettings->List->view)) {
+            $this->listviewOption = $searchSettings->List->view;
+        }
+
     }
 
     /**
