@@ -12,3 +12,4 @@ before_script:
 script:
   - phpunit --stderr --configuration module/VuFind/tests/phpunit.xml
   - phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php $PWD/module
+

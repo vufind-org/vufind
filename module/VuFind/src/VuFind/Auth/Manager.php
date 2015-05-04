@@ -248,7 +248,22 @@ class Manager implements \ZfcRbac\Identity\IdentityProviderInterface
      */
     public function getSessionInitiator($target)
     {
-        return $this->getAuth()->getSessionInitiator($target);
+        try {
+            return $this->getAuth()->getSessionInitiator($target);
+        } catch (InvalidArgumentException $e) {
+            // If the authentication is in an illegal state but there is an
+            // active user session, we should clear everything out so the user
+            // can try again. This is useful, for example, if a user is logged
+            // in at the same time that an administrator changes the [ChoiceAuth]
+            // settings in config.ini. However, if the user is not logged in,
+            // they are probably attempting something nasty and should be given
+            // an error message.
+            if (!$this->isLoggedIn()) {
+                throw $e;
+            }
+            $this->logout('');
+            return $this->getAuth()->getSessionInitiator($target);
+        }
     }
 
     /**
