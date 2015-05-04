@@ -58,6 +58,16 @@ $config = array(
                     )
                 ),
             ),
+            'myresearch-unsubscribe' => array(
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => array(
+                    'route'    => '/MyResearch/Unsubscribe',
+                    'defaults' => array(
+                        'controller' => 'MyResearch',
+                        'action'     => 'Unsubscribe',
+                    )
+                ),
+            )
         )
     ),
     'controllers' => array(

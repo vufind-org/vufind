@@ -154,6 +154,43 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Unsubscribe a scheduled alert for a saved search.
+     *
+     * @return mixed
+     */
+    public function unsubscribeAction()
+    {
+        $id = $this->params()->fromQuery('id', false);
+        $key = $this->params()->fromQuery('key', false);
+
+        if ($id === false || $key === false) {
+            throw new \Exception('Missing parameters.');
+        }
+
+        $view = $this->createViewModel();
+
+        if ($this->params()->fromQuery('confirm', false) == 1) {
+            $search = $this->getTable('Search')->select(['id' => $id])->current();
+            if (!$search) {
+                throw new \Exception('Invalid parameters.');
+            }
+            $user = $this->getTable('User')->getById($search->user_id);
+
+            if ($key !== $search->getUnsubscribeSecret(
+                $this->getServiceLocator()->get('VuFind\HMAC'), $user
+            )) {
+                throw new \Exception('Invalid parameters.');
+            }
+            $search->setSchedule(0);
+            $view->success = true;
+        } else {
+            $view->unsubscribeUrl
+                = $this->getRequest()->getRequestUri() . '&confirm=1';
+        }
+        return $view;
+    }
+
+    /**
      * Order available records to beginning of the record list
      *
      * @param type $recordList list to order

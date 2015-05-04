@@ -7,6 +7,11 @@ $config = [
             'util' => 'FinnaConsole\Controller\UtilController',
         ],
     ],
+    'service_manager' => [
+        'factories' => [
+            'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC'
+        ]
+    ]
 ];
 
 return $config;

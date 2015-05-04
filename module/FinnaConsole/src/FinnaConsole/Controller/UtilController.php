@@ -250,7 +250,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
 
         $this->iniReader = new IniReader();
         $this->iniReader->setNestSeparator(chr(0));
-        $this->hmac = $this->getServiceLocator()->get('VuFind\HMAC');
+        $hmac = $this->getServiceLocator()->get('VuFind\HMAC');
 
         $userTable = $this->getTable('User');
 
@@ -411,11 +411,12 @@ class UtilController extends \VuFindConsole\Controller\UtilController
             $searchUrl .=
                 str_replace('&amp;', '&', $urlQueryHelper->getParams());
 
-            $secret = $this->getSecret($user, $s->id);
+            $secret = $s->getUnsubscribeSecret($hmac, $user);
+
             $unsubscribeUrl = $s->finna_schedule_base_url;
             $unsubscribeUrl .=
-                $urlHelper->__invoke('myresearch-savesearch')
-                . "?unsubscribe={$s->id}&key=$secret";
+                $urlHelper->__invoke('myresearch-unsubscribe')
+                . "?id={$s->id}&key=$secret";
 
             $params->setServiceLocator($this->getServiceLocator());
             $filters = $this->processFilters($params->getFilterList());
@@ -562,24 +563,5 @@ For example:
   VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'
   php $appPath/util/scheduled_alerts.php /tmp/finna /tmp/NDL-VuFind2/local
 EOT;
-    }
-
-    /**
-     * Utility function for generating a token.
-     *
-     * @param object $user User object
-     * @param string $id   ID
-     *
-     * @return string token
-     * @access public
-     */
-    protected function getSecret($user, $id)
-    {
-        $data = [
-            'id' => $id,
-            'user_id' => $user->id,
-            'created' => $user->created
-        ];
-        return $this->hmac->generate(array_keys($data), $data);
     }
 }

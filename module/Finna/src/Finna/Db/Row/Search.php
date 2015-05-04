@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace Finna\Db\Row;
+use VuFind\Crypt\HMAC;
 
 /**
  * Row Definition for search
@@ -49,5 +50,38 @@ class Search extends \VuFind\Db\Row\Search
     {
         $this->finna_last_executed = $time;
         return $this->save();
+    }
+
+    /**
+     * Set schedule for scheduled alert.
+     *
+     * @param int $schedule Schedule.
+     *
+     * @return mixed
+     */
+    public function setSchedule($schedule)
+    {
+        $this->finna_schedule = $schedule;
+        return $this->save();
+    }
+
+    /**
+     * Utility function for generating a token for unsubscribing a
+     * saved search.
+     *
+     * @param VuFind\Crypt\HMAC $hmac HMAC hash generator
+     * @param object            $user User object
+     *
+     * @return string token
+     * @access public
+     */
+    public function getUnsubscribeSecret(HMAC $hmac, $user)
+    {
+        $data = [
+            'id' => $this->id,
+            'user_id' => $user->id,
+            'created' => $user->created
+        ];
+        return $hmac->generate(array_keys($data), $data);
     }
 }
