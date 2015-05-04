@@ -30,6 +30,7 @@
  */
 namespace Finna\Auth;
 
+use VuFind\Exception\Auth as AuthException;
 use Zend\Session\Container as SessionContainer;
 
 /**

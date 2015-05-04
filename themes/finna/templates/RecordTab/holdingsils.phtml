@@ -83,35 +83,25 @@
 
 <table class="table record-holdings-table">
   <tr>
-    <th colspan="5" class="headers">
-      <? if ($mergedData = $this->driver->tryMethod('getMergedRecordData')): ?>
-        <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
-        <? if (count($mergedData['dedupData']) > 1): ?>
+    <th colspan="3" class="headers">
+      <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
+      <? $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
+      <? if ($mergedData && count($mergedData['records']) > 1): ?>
         <div class="dedup-information">
           <select class="dedup-select form-control jumpMenuUrl" role="listbox" aria-haspopup="true">
-          <? foreach ($mergedData['dedupData'] as $source => $current): ?>
-            <option value="<?=$this->escapeHtmlAttr($this->recordLink()->getUrl($current['id'])) ?>" role="option"<?=$currentSource == $source ? ' selected="selected"' : '' ?>><?=$this->transEsc("source_$source", null, $source) ?></option>
+          <? foreach ($mergedData['records'] as $current): ?>
+            <option value="<?=$this->escapeHtmlAttr($this->recordLink()->getUrl($current['id'])) ?>" role="option"<?=$currentSource == $current['source'] ? ' selected="selected"' : '' ?>><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
           <? endforeach; ?>
           </select>
         </div>
       <? else: ?>
-        <?
-          if (!empty($dedupData)) {
-            reset($dedupData);
-            $source = key($dedupData);
-          } else {
-            $source = $this->driver->tryMethod('getDataSource');
-          }
-        ?>
-        <? if ($source): ?>
-          <div class="dedup-information">
-            <strong><?=$this->transEsc("source_$source", null, $source) ?></strong>
-          </div>
-        <? endif; ?>
+        <div class="dedup-information">
+          <strong><?=$this->transEsc("source_$currentSource", null, $currentSource) ?></strong>
+        </div>
       <? endif; ?>
-      </th>
-    </tr>
-    <? endif; ?>
+    </th>
+    <? // N.B. The division to 3 + 2 cols is required for the table to be valid HTML ?>
+    <th colspan="2" class="headers">
     </th>
   </tr>
 <? $holdingsGroup = 0; ?>
@@ -164,7 +154,7 @@
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr class="holdings-container-heading">
     <th colspan="2" class="location">
-      <h5><i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>"></i> <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?></h5>
+      <i class="fa fa-arrow-<?=$holdingsDetails == 'collapsed' ? 'right' : 'down'?>"></i> <?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?>
     </th>
     <th colspan="2" class="holdings-details"><?=$holdingSummary ?></th>
     <th class="location-link">
@@ -263,6 +253,13 @@
     </tr>
   <? endif; ?>
 <? endforeach; ?>
+<? if (empty($holdings)): ?>
+  <tr>
+    <td colspan="5">
+      <?=$this->transEsc('No Holdings Available'); ?>
+    </td>
+  </tr>
+<? endif; ?>
 </table>
 
 <? $history = $this->driver->getRealTimeHistory(); ?>
