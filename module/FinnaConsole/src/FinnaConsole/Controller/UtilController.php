@@ -353,6 +353,13 @@ class UtilController extends \VuFindConsole\Controller\UtilController
             $searchObject = $s->getSearchObject();
             $searchService = $this->getServiceLocator()->get('VuFind\Search');
 
+            if ($searchObject->cl != 'Solr') {
+                $this->err(
+                    'Unsupported search class ' . $s->cl . ' for search ' . $s->id
+                );
+                continue;
+            }
+
             $limit = 50;
             $options = new Options($configLoader);
             $params = new Params($options, $configLoader);
