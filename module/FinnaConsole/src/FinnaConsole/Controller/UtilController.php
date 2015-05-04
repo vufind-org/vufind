@@ -99,6 +99,13 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     protected $mainConfig = null;
 
     /**
+     * Facets
+     *
+     * @var array
+     */
+    protected $facets = null;
+
+    /**
      * Table for saved searches
      *
      * @var Finna\Db\Table\Search
@@ -134,6 +141,9 @@ class UtilController extends \VuFindConsole\Controller\UtilController
 
         $this->datasourceConfig
             = $this->getServiceLocator()->get('VuFind\Config')->get('datasources');
+
+        $facets = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
+        $this->facets = $facets->Results->toArray();
 
         $this->searchTable = $this->getTable('Search');
 
@@ -509,12 +519,16 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         $currentFilters = null;
         foreach ($filters as $key => $filterList) {
             foreach ($filterList as $f) {
-                if ($f['field'] != $currentField) {
+                $field = $f['field'];
+                if (isset($this->facets[$field])) {
+                    $field = $this->facets[$field];
+                }
+                if ($field != $currentField) {
                     if ($currentField) {
                         $result[ucfirst($currentField)] = $currentFilters;
                     }
 
-                    $currentField = $f['field'];
+                    $currentField = $field;
                     $currentFilters = [];
                 }
                 $currentFilters[] = [
@@ -522,7 +536,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
                     'operator' => $f['operator']
                 ];
             }
-            $result[ucfirst($currentField)] = $currentFilters;
+            $result[$currentField] = $currentFilters;
         }
         return $result;
     }
