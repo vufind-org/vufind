@@ -166,6 +166,13 @@ class Params implements ServiceLocatorAwareInterface
     protected $defaultsApplied = false;
 
     /**
+     * Map of facet field aliases.
+     *
+     * @var array
+     */
+    protected $facetAliases = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -882,10 +889,28 @@ class Params implements ServiceLocatorAwareInterface
         // Extract field and value from URL string:
         list($field, $value) = $this->parseFilter($filter);
 
-        if (isset($this->filterList[$field])
-            && in_array($value, $this->filterList[$field])
-        ) {
-            return true;
+        // Make a list of fields to check to account for aliasing.
+        $prefix = substr($field, 0, 1);
+        if ($prefix === '-' || $prefix === '~') {
+            $rawField = substr($field, 1);
+        } else {
+            $prefix = '';
+            $rawField = $field;
+        }
+        $fieldsToCheck = [$field];
+        foreach ($this->facetAliases as $k => $v) {
+            if ($v === $rawField) {
+                $fieldsToCheck[] = $prefix . $k;
+            }
+        }
+
+        // Check all of the relevant fields for matches:
+        foreach ($fieldsToCheck as $current) {
+            if (isset($this->filterList[$current])
+                && in_array($value, $this->filterList[$current])
+            ) {
+                return true;
+            }
         }
         return false;
     }
@@ -1040,6 +1065,11 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getFacetLabel($field)
     {
+        if (!isset($this->facetConfig[$field])
+            && isset($this->facetAliases[$field])
+        ) {
+            $field = $this->facetAliases[$field];
+        }
         return isset($this->facetConfig[$field])
             ? $this->facetConfig[$field] : 'unrecognized_facet_label';
     }
