@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Finbna Module Configuration
+ * Finna Module Configuration
  *
  * PHP version 5
  *

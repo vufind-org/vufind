@@ -142,10 +142,10 @@ class UtilController extends \VuFindConsole\Controller\UtilController
             $this->switchInstitution($this->baseDir);
         } else if (!$this->scheduleBaseUrl) {
             $this->processAlerts();
-            exit();
+            exit(0);
         } else {
             $this->processViewAlerts();
-            exit();
+            exit(0);
         }
 
         $this->msg('Scheduled alerts execution completed');
@@ -171,8 +171,8 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         $this->scheduleBaseUrl = isset($argv[2]) ? $argv[2] : false;
 
         if (!$this->viewBaseDir || !$this->baseDir) {
-            echo($this->usage());
-            exit();
+            echo $this->usage();
+            exit(1);
         }
     }
 
@@ -189,6 +189,10 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         foreach ($baseDirs as $url) {
             $parts = parse_url($url);
             list($institution, $rest) = explode('.', $parts['host']);
+            if ($institution == 'www') {
+                // Special case for www.finna.fi
+                $institution = 'national';
+            }
             $view = isset($parts['path']) ? substr($parts['path'], 1) : false;
 
             if (!$path = $this->resolveViewPath($institution, $view)) {
@@ -215,15 +219,14 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         $script = "$appDir/util/scheduled_alerts.php";
 
         $args = [];
-        //        $args[] = $this->errEmail;
         $args[] = $this->viewBaseDir;
         $args[] = $localDir;
         if ($scheduleBaseUrl) {
             $args[] = "'$scheduleBaseUrl'";
         }
 
-        $cmd = "export VUFIND_LOCAL_DIR='$localDir';";
-        $cmd .= " php $script " . implode(' ', $args);
+        $cmd = "VUFIND_LOCAL_DIR='$localDir'";
+        $cmd .= " php '$script' " . implode(' ', $args);
         $this->msg("  Switching to institution configuration $localDir");
         $this->msg("    $cmd");
         $res = system($cmd);
@@ -279,9 +282,9 @@ class UtilController extends \VuFindConsole\Controller\UtilController
                 // Daily
                 if ($todayTime->format('Y-m-d') == $lastTime->format('Y-m-d')) {
                     $this->msg(
-                        '      Bypassing search ' . $s->id .
-                        ': previous execution too recent (daily, ' .
-                        $lastTime->format($iso8601) . ')'
+                        '      Bypassing search ' . $s->id
+                        . ': previous execution too recent (daily, '
+                        . $lastTime->format($iso8601) . ')'
                     );
                     continue;
                 }
@@ -289,9 +292,9 @@ class UtilController extends \VuFindConsole\Controller\UtilController
                 $diff = $todayTime->diff($lastTime);
                 if ($diff->days < 6) {
                     $this->msg(
-                        '      Bypassing search ' . $s->id .
-                        ': previous execution too recent (weekly, ' .
-                        $lastTime->format($iso8601) . ')'
+                        '      Bypassing search ' . $s->id
+                        . ': previous execution too recent (weekly, '
+                        . $lastTime->format($iso8601) . ')'
                     );
                     continue;
                 }
@@ -306,8 +309,8 @@ class UtilController extends \VuFindConsole\Controller\UtilController
             if ($user === false || $s->user_id != $user->id) {
                 if (!$user = $userTable->getById($s->user_id)) {
                     $this->err(
-                        'Search ' . $s->id . ': user ' . $s->user_id .
-                        ' does not exist '
+                        'Search ' . $s->id . ': user ' . $s->user_id
+                        . ' does not exist '
                     );
                     continue;
                 }
@@ -315,8 +318,8 @@ class UtilController extends \VuFindConsole\Controller\UtilController
 
             if (!$user->email || trim($user->email) == '') {
                 $this->err(
-                    'User ' . $user->username .
-                    ' does not have an email address, bypassing alert ' . $s->id
+                    'User ' . $user->username
+                    . ' does not have an email address, bypassing alert ' . $s->id
                 );
                 continue;
             }
@@ -324,8 +327,8 @@ class UtilController extends \VuFindConsole\Controller\UtilController
             $scheduleUrl = parse_url($s->finna_schedule_base_url);
             if (!isset($scheduleUrl['host'])) {
                 $this->err(
-                    'Could not resolve institution for search ' . $s->id .
-                    ' with schedule_base_url: ' . var_export($scheduleUrl, true)
+                    'Could not resolve institution for search ' . $s->id
+                    . ' with schedule_base_url: ' . var_export($scheduleUrl, true)
                 );
                 continue;
             }
@@ -547,19 +550,18 @@ class UtilController extends \VuFindConsole\Controller\UtilController
      */
     protected function usage()
     {
-        return 'Usage: ' . PHP_EOL
-            . '  export '
-            . "VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole';"
-            . PHP_EOL
-            . '  php ' . APPLICATION_PATH . '/util/scheduled_alerts.php'
-            . ' [view base directory]'
-            . ' [VuFind local configuration directory]'. PHP_EOL . PHP_EOL
-            . 'For example:' . PHP_EOL
-            . '  export '
-            . "VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole';"
-            . PHP_EOL
-            . '  php ' . APPLICATION_PATH . '/util/scheduled_alerts.php'
-            . ' /tmp/finna /tmp/NDL-VuFind2/local';
+        $appPath = APPLICATION_PATH;
+        return <<<EOT
+Usage:
+  VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'
+  php $appPath/util/scheduled_alerts.php
+    [view base directory]
+    [VuFind local configuration directory]
+
+For example:
+  VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'
+  php $appPath/util/scheduled_alerts.php /tmp/finna /tmp/NDL-VuFind2/local
+EOT;
     }
 
     /**
@@ -573,10 +575,11 @@ class UtilController extends \VuFindConsole\Controller\UtilController
      */
     protected function getSecret($user, $id)
     {
-        $data = array('id' => $id,
-                      'user_id' => $user->id,
-                      'created' => $user->created
-                     );
+        $data = [
+            'id' => $id,
+            'user_id' => $user->id,
+            'created' => $user->created
+        ];
         return $this->hmac->generate(array_keys($data), $data);
     }
 }
