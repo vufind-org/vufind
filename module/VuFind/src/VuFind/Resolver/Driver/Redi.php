@@ -77,7 +77,7 @@ class Redi implements DriverInterface
      */
     public function fetchLinks($openURL)
     {
-        $url = $this->baseUrl.'&'.$openURL;
+        $url = $this->baseUrl.'?'.$openURL;
         $feed = $this->httpClient->setUri($url)->send()->getBody();
         return $feed;
     }
