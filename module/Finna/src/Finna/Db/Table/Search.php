@@ -54,7 +54,9 @@ class Search extends \VuFind\Db\Table\Search
      */
     public function getScheduleBaseUrls()
     {
-        $sql = "SELECT distinct finna_schedule_base_url as url from {$this->table};";
+        $sql
+            = "SELECT distinct finna_schedule_base_url as url FROM {$this->table}"
+            . " WHERE finna_schedule_base_url != '';";
 
         $result = $this->getAdapter()->query(
             $sql,
