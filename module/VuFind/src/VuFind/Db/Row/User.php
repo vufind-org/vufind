@@ -585,6 +585,13 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         $row->save();
+
+        // If this is the first library card or no credentials are currently set,
+        // activate the card now
+        if ($this->getLibraryCards()->count() == 1 || empty($this->cat_username)) {
+            $this->activateLibraryCard($row->id);
+        }
+
         return $row->id;
     }
 
