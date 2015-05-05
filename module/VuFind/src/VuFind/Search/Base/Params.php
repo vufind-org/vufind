@@ -878,18 +878,16 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Does the object already contain the specified filter?
+     * Given a facet field, return an array containing all aliases of that
+     * field.
      *
-     * @param string $filter A filter string from url : "field:value"
+     * @param string $field Field to look up
      *
-     * @return bool
+     * @return array
      */
-    public function hasFilter($filter)
+    public function getAliasesForFacetField($field)
     {
-        // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($filter);
-
-        // Make a list of fields to check to account for aliasing.
+        // Account for field prefixes used for Boolean logic:
         $prefix = substr($field, 0, 1);
         if ($prefix === '-' || $prefix === '~') {
             $rawField = substr($field, 1);
@@ -903,9 +901,23 @@ class Params implements ServiceLocatorAwareInterface
                 $fieldsToCheck[] = $prefix . $k;
             }
         }
+        return $fieldsToCheck;
+    }
+
+    /**
+     * Does the object already contain the specified filter?
+     *
+     * @param string $filter A filter string from url : "field:value"
+     *
+     * @return bool
+     */
+    public function hasFilter($filter)
+    {
+        // Extract field and value from URL string:
+        list($field, $value) = $this->parseFilter($filter);
 
         // Check all of the relevant fields for matches:
-        foreach ($fieldsToCheck as $current) {
+        foreach ($this->getAliasesForFacetField($field) as $current) {
             if (isset($this->filterList[$current])
                 && in_array($value, $this->filterList[$current])
             ) {
