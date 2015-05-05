@@ -264,17 +264,6 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Get the main author of the record.
-     *
-     * @return string
-     */
-    public function getPrimaryAuthor()
-    {
-        return isset($this->fields['Author_xml'][0]['fullname']) ?
-            $this->fields['Author_xml'][0]['fullname'] : '';
-    }
-
-    /**
      * Pass in a date converter
      *
      * @param \VuFind\Date\Converter $dc Date converter
@@ -345,15 +334,15 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
+     * Get an array of all primary authors.
      *
      * @return array
      */
-    public function getSecondaryAuthors()
+    public function getPrimaryAuthors()
     {
         $authors = [];
         if (isset($this->fields['Author_xml'])) {
-            for ($i = 1; $i < count($this->fields['Author_xml']); $i++) {
+            for ($i = 0; $i < count($this->fields['Author_xml']); $i++) {
                 if (isset($this->fields['Author_xml'][$i]['fullname'])) {
                     $authors[] = $this->fields['Author_xml'][$i]['fullname'];
                 }
