@@ -35,7 +35,7 @@
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
 
-    <a id="moreInfoToggle" href="#" style="display:none"><?=$this->transEsc('more_info_toggle')?></a>
+    <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
     <?/* Display Main Details */?>
     <table id="collectionInfo" class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
       <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
