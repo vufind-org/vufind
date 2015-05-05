@@ -49,12 +49,8 @@
         <? if (!empty($summAuthor)): ?>
           <a class="small text-right" href="<?=$this->record($driver)->getLink('author', $summAuthor)?>">
             <span><?=$this->transEsc('By')?></span>
-            <?
-            $summHighlightedAuthor = $driver->getHighlightedAuthor();
-            echo !empty($summHighlightedAuthor)
-                ? $this->highlight($summHighlightedAuthor)
-                : $this->escapeHtml($summAuthor);
-          ?></a>
+            <?=$this->escapeHtml($summAuthor)?>
+          </a>
         <? endif; ?>
       </li>
     <? endforeach; ?>
