@@ -80,6 +80,19 @@
     font-size: 1.2em;
     margin-top: 5px;
 }
+.navbar-form {
+     & .clear-input {
+        position: absolute;
+        height: 22px;
+        width: 22px;
+         top: 7px;
+        right: 38%;
+        vertical-align: middle;
+        border-radius: 50%;
+        padding: 3px 5px;
+        color: rgb(66, 66, 66);   
+    }
+}
 .nav.searchbox .btn.btn-link {
     color: @finna-searchbox-link-color; 
     font-size: 1em;
@@ -186,7 +199,7 @@
         color: @body-bg;
         display: block;
         font-size: 100%;
-        font-weight: 600;
+        font-weight: 500;
         line-height: 1em;
         margin: 0;
         padding: 0px 20px 0px 8px;
@@ -229,7 +242,7 @@
         border-top-right-radius: 10px;
         border-bottom-right-radius: 10px;
         margin-bottom: 10px;
-        height: 34px;
+        height: 33px;
         
         & option:checked {
             background: @btn-primary-bg;
@@ -245,7 +258,6 @@
     }
     &.prefilter-select {
         color: @gray;
-        font-weight: bold;
         display: inline-block;
         padding-right: 17px;
         position: relative;
@@ -253,9 +265,12 @@
         height: 39px;
         width: 25%;
         height: auto;
+        padding-top: 0px;
+        padding-bottom: 0px;
         & select {
           color: @gray;
           height: 39px;
+          font-weight: 500;
         }
     }   
     &.prefilter-select:before {
