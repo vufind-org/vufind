@@ -474,51 +474,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Get an array of dedup and link data associated with the record.
-     *
-     * @return array
-     */
-    public function getMergedRecordData()
-    {
-        // If local_ids_str_mv is set, we already have all
-        if (isset($this->fields['local_ids_str_mv'])) {
-            return [
-                'records' => $this->createSourceIdArray(
-                    $this->fields['local_ids_str_mv']
-                ),
-                'urls' => isset($this->fields['online_urls_str_mv'])
-                    ? $this->mergeURLArray(
-                        $this->fields['online_urls_str_mv'],
-                        true
-                    ) : []
-            ];
-        }
-
-        // Find the dedup record
-        if (null === $this->searchService) {
-            return [];
-        }
-
-        $safeId = addcslashes($this->getUniqueID(), '"');
-        $query = new \VuFindSearch\Query\Query(
-            'local_ids_str_mv:"' . $safeId . '"'
-        );
-        $records = $this->searchService->search('Solr', $query, 0, 1)->getRecords();
-        if (!isset($records[0])) {
-            return [];
-        }
-        $results = [];
-        $results['records'] = $this->createSourceIdArray($records[0]->getLocalIds());
-        if ($onlineURLs = $records[0]->getOnlineURLs(true)) {
-            $results['urls'] = $this->mergeURLArray(
-                $onlineURLs,
-                true
-            );
-        }
-        return $results;
-    }
-
-    /**
      * Get all authors apart from presenters
      *
      * @return array
@@ -868,26 +823,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             return false;
         }
         return true;
-    }
-
-    /**
-     * Extract source id from record ID's and create a nide array of them
-     *
-     * @param array $ids Record ID's
-     *
-     * @return array Formatted array
-     */
-    protected function createSourceIdArray($ids)
-    {
-        $results = [];
-        foreach ($ids as $id) {
-            list($source) = explode('.', $id);
-            $results[] = [
-                'source' => $source,
-                'id' => $id
-            ];
-        }
-        return $results;
     }
 
     /**
