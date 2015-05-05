@@ -136,13 +136,6 @@ a.list-group-item {
   margin-bottom: 0;
   line-height: 1.3;
 }
-.record-organisation-header {
-    margin-bottom: 0px;
-    & > span {
-        font-size: 0.9em;
-        display: block;
-    }   
-}
 .list-group {
     &.record-organisation {
         & h3 {
@@ -175,6 +168,9 @@ a.list-group-item {
             padding: 0px 10px;
             font-weight: bold;
             display: block;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
         }
         & h5 {
             margin-top: 0px;
