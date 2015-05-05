@@ -101,6 +101,9 @@ class InjectHighlightingListener
      */
     public function onSearchPre(EventInterface $event)
     {
+        if ($event->getParam('context') !== 'search') {
+            return $event;
+        }
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
