@@ -28,9 +28,11 @@
           echo $this->transEsc('Title not available');
       }
     ?></a><br/>
-    <? $listAuthor = $this->driver->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+    <? $listAuthors = $this->driver->getPrimaryAuthors(); if (!empty($listAuthors)): ?>
       <?=$this->transEsc('by')?>:
-      <a href="<?=$this->record($this->driver)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
+      <? $authorCount = count($listAuthors); foreach ($listAuthors as $i => $listAuthor): ?>
+        <a href="<?=$this->record($this->driver)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><?=($i + 1 < $authorCount ? ';' : '') ?>
+      <? endforeach; ?><br/>
     <? endif; ?>
     <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
         null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
