@@ -469,18 +469,41 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get a highlighted author string, if available.
+     * Get highlighted author data, if available.
      *
-     * @return string
+     * @return array
      */
-    public function getHighlightedAuthor()
+    public function getRawAuthorHighlights()
     {
         // Don't check for highlighted values if highlighting is disabled:
-        if (!$this->highlight) {
-            return '';
+        return ($this->highlight && isset($this->highlightDetails['author']))
+            ? $this->highlightDetails['author'] : [];
+    }
+
+    /**
+     * Get primary author information with highlights applied (if applicable)
+     *
+     * @return array
+     */
+    public function getPrimaryAuthorsWithHighlighting()
+    {
+        $highlights = [];
+        // Create a map of de-highlighted valeus => highlighted values.
+        foreach ($this->getRawAuthorHighlights() as $current) {
+            $dehighlighted = str_replace(
+                ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'], '', $current
+            );
+            $highlights[$dehighlighted] = $current;
         }
-        return (isset($this->highlightDetails['author'][0]))
-            ? $this->highlightDetails['author'][0] : '';
+
+        // replace unhighlighted authors with highlighted versions where
+        // applicable:
+        $authors = [];
+        foreach ($this->getPrimaryAuthors() as $author) {
+            $authors[] = isset($highlights[$author])
+                ? $highlights[$author] : $author;
+        }
+        return $authors;
     }
 
     /**
