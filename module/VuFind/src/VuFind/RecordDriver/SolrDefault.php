@@ -1066,7 +1066,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
+     * Get an array of all secondary authors (complementing getPrimaryAuthors()).
      *
      * @return array
      */
@@ -1571,16 +1571,11 @@ class SolrDefault extends AbstractBase
                 . 'http://www.openarchives.org/OAI/2.0/oai_dc.xsd" />'
             );
             $xml->addChild('title', htmlspecialchars($this->getTitle()), $dc);
-            $primary = $this->getPrimaryAuthor();
-            if (!empty($primary)) {
-                $xml->addChild('creator', htmlspecialchars($primary), $dc);
-            }
-            $corporate = $this->getCorporateAuthor();
-            if (!empty($corporate)) {
-                $xml->addChild('creator', htmlspecialchars($corporate), $dc);
-            }
-            foreach ($this->getSecondaryAuthors() as $current) {
-                $xml->addChild('creator', htmlspecialchars($current), $dc);
+            $authors = $this->getDeduplicatedAuthors();
+            foreach ($authors as $list) {
+                foreach ((array)$list as $author) {
+                    $xml->addChild('creator', htmlspecialchars($author), $dc);
+                }
             }
             foreach ($this->getLanguages() as $lang) {
                 $xml->addChild('language', htmlspecialchars($lang), $dc);
