@@ -67,32 +67,14 @@ class Primo extends SolrDefault
     }
 
     /**
-     * Get the main author of the record.
-     *
-     * @return string
-     */
-    public function getPrimaryAuthor()
-    {
-        return isset($this->fields['creator'][0]) ?
-            $this->fields['creator'][0] : '';
-    }
-
-    /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
+     * Get the main authors of the record.
      *
      * @return array
      */
-    public function getSecondaryAuthors()
+    public function getPrimaryAuthors()
     {
-        $authors = [];
-        if (isset($this->fields['creator'])) {
-            for ($i = 1; $i < count($this->fields['creator']); $i++) {
-                if (isset($this->fields['creator'][$i])) {
-                    $authors[] = $this->fields['creator'][$i];
-                }
-            }
-        }
-        return $authors;
+        return isset($this->fields['creator'])
+            ? array_map('trim', $this->fields['creator']) : [];
     }
 
     /**
