@@ -17,6 +17,7 @@
     '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> ';
 
   $this->layout()->title = $this->driver->getShortTitle();
+  $this->layout()->organisationmenu = true;
 ?>
 
 </div>
@@ -100,6 +101,9 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
+    <? if (isset($this->layout()->organisationmenu) && $this->resolver('record/record-organisation-menu.phtml') && $this->escapeHtmlAttr($this->driver->getResourceSource()) == 'VuFind' ): ?>
+      <?=$this->render('record/record-organisation-menu.phtml') ?>
+    <? endif; ?> 
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
