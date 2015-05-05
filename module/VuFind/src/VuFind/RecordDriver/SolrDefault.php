@@ -162,6 +162,16 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get highlighting details from the object.
+     *
+     * @return array
+     */
+    public function getHighlightDetails()
+    {
+        return $this->highlightDetails;
+    }
+
+    /**
      * Add highlighting details to the object.
      *
      * @param array $details Details to add
