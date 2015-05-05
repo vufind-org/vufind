@@ -555,7 +555,11 @@ li.jstree-facet ul {padding-left: 20px;}
       padding-left: 0;
       padding-right: 0;
       h4 {padding-left: @padding-base-horizontal;}
-      .list-group, .list-group * {border-radius: 0 !important;}
+      .list-group, .list-group * {
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0 !important;
+      }
     }
     &.offcanvas-left {
       & > .container {
