@@ -13,8 +13,10 @@
   <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
   <? if (isset($authors['main']) && !empty($authors['main'])): ?>
     <tr valign="top">
-      <th><?=$this->transEsc('Main Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></td>
+      <th><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </th>
+      <td>
+        <? $i = 0; foreach ($authors['main'] as $field): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a><? endforeach; ?>
+      </td>
     </tr>
   <? endif; ?>
 

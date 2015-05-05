@@ -52,8 +52,10 @@
 
   <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
   <? if (isset($authors['main']) && !empty($authors['main'])): ?>
-    <dt><?=$this->transEsc('Main Author')?>: </dt>
-    <dd><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></dd>
+    <dt><?=$this->transEsc(count($authors['main']) > 1 ? 'Main Authors' : 'Main Author')?>: </dt>
+    <dd>
+      <p><? $i = 0; foreach ($authors['main'] as $field): ?><?=($i++ == 0)?'':', '?><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a><? endforeach; ?></p>
+    </dd>
   <? endif; ?>
 
   <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>

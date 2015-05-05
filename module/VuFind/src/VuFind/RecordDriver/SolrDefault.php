@@ -401,7 +401,7 @@ class SolrDefault extends AbstractBase
     public function getDeduplicatedAuthors()
     {
         $authors = [
-            'main' => $this->getPrimaryAuthor(),
+            'main' => $this->getPrimaryAuthors(),
             'corporate' => $this->getCorporateAuthor(),
             'secondary' => $this->getSecondaryAuthors()
         ];
@@ -410,9 +410,12 @@ class SolrDefault extends AbstractBase
         // let's be sure we filter out duplicate values.
         $duplicates = [];
         if (!empty($authors['main'])) {
-            $duplicates[] = $authors['main'];
+            $duplicates = $authors['main'];
         }
         if (!empty($authors['corporate'])) {
+            // Remove duplicate corporate author from "main" section.
+            $authors['main']
+                = array_diff($authors['main'], [$authors['corporate']]);
             $duplicates[] = $authors['corporate'];
         }
         if (!empty($duplicates)) {
