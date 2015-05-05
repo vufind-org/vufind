@@ -133,16 +133,16 @@ class Pazpar2 extends SolrDefault
     }
 
     /**
-     * Get the main author of the record.
+     * Get the main authors of the record.
      *
-     * @return string
+     * @return array
      */
-    public function getPrimaryAuthor()
+    public function getPrimaryAuthors()
     {
-        $authors = isset($this->pz2fields['md-author']) ?
-            $this->pz2fields['md-author'] : '';
+        $authors = isset($this->pz2fields['md-author'])
+            ? $this->pz2fields['md-author'] : [];
 
-        return is_array($authors) ? $authors[0] : $authors;
+        return empty($authors) ? [] : (array)$authors;
     }
 
     /**
@@ -178,19 +178,6 @@ class Pazpar2 extends SolrDefault
     {
         return isset($this->pz2fields['md-date']) ?
             [$this->pz2fields['md-date']] : [];
-    }
-
-    /**
-     * Get an array of all secondary authors (complementing getPrimaryAuthor()).
-     *
-     * @return array
-     */
-    public function getSecondaryAuthors()
-    {
-        $authors = isset($this->pz2fields['md-author']) ?
-            $this->pz2fields['md-author'] : '';
-
-        return is_array($authors) ? array_slice($authors, 1) : [];
     }
 
     /**
