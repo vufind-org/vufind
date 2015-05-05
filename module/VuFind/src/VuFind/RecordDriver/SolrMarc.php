@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -36,13 +38,14 @@ use VuFind\Exception\ILS as ILSException,
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 class SolrMarc extends SolrDefault
 {
     /**
-     * MARC record
+     * MARC record. Access only via getMarcRecord() as this is initialized lazily.
      *
      * @var \File_MARC_Record
      */
@@ -84,25 +87,8 @@ class SolrMarc extends SolrDefault
         // Call the parent's set method...
         parent::setRawData($data);
 
-        // Also process the MARC record:
-        $marc = trim($data['fullrecord']);
-
-        // check if we are dealing with MARCXML
-        if (substr($marc, 0, 1) == '<') {
-            $marc = new \File_MARCXML($marc, \File_MARCXML::SOURCE_STRING);
-        } else {
-            // When indexing over HTTP, SolrMarc may use entities instead of certain
-            // control characters; we should normalize these:
-            $marc = str_replace(
-                ['#29;', '#30;', '#31;'], ["\x1D", "\x1E", "\x1F"], $marc
-            );
-            $marc = new \File_MARC($marc, \File_MARC::SOURCE_STRING);
-        }
-
-        $this->marcRecord = $marc->next();
-        if (!$this->marcRecord) {
-            throw new \File_MARC_Exception('Cannot Process MARC Record');
-        }
+        // Delay initialization of the MARC record until it's needed
+        $this->marcRecord = null;
     }
 
     /**
@@ -135,7 +121,7 @@ class SolrMarc extends SolrDefault
         // Try each MARC field one at a time:
         foreach ($fields as $field) {
             // Do we have any results for the current field?  If not, try the next.
-            $results = $this->marcRecord->getFields($field);
+            $results = $this->getMarcRecord()->getFields($field);
             if (!$results) {
                 continue;
             }
@@ -184,7 +170,7 @@ class SolrMarc extends SolrDefault
      */
     public function getBibliographicLevel()
     {
-        $leader = $this->marcRecord->getLeader();
+        $leader = $this->getMarcRecord()->getLeader();
         $biblioLevel = strtoupper($leader[7]);
 
         switch ($biblioLevel) {
@@ -255,7 +241,7 @@ class SolrMarc extends SolrDefault
 
         // Try to look up the specified field, return empty array if it doesn't
         // exist.
-        $fields = $this->marcRecord->getFields($field);
+        $fields = $this->getMarcRecord()->getFields($field);
         if (!is_array($fields)) {
             return $matches;
         }
@@ -348,7 +334,7 @@ class SolrMarc extends SolrDefault
         // consistent with default SolrMarc handling of names/dates.
         $pubResults = $copyResults = [];
 
-        $fields = $this->marcRecord->getFields('264');
+        $fields = $this->getMarcRecord()->getFields('264');
         if (is_array($fields)) {
             foreach ($fields as $currentField) {
                 $currentVal = $currentField->getSubfield($subfield);
@@ -496,7 +482,7 @@ class SolrMarc extends SolrDefault
         // Loop through the field specification....
         foreach ($fieldInfo as $field => $subfields) {
             // Did we find any matching fields?
-            $series = $this->marcRecord->getFields($field);
+            $series = $this->getMarcRecord()->getFields($field);
             if (is_array($series)) {
                 foreach ($series as $currentField) {
                     // Can we find a name using the specified subfield list?
@@ -634,7 +620,7 @@ class SolrMarc extends SolrDefault
     public function getTOC()
     {
         // Return empty array if we have no table of contents:
-        $fields = $this->marcRecord->getFields('505');
+        $fields = $this->getMarcRecord()->getFields('505');
         if (!$fields) {
             return [];
         }
@@ -663,7 +649,7 @@ class SolrMarc extends SolrDefault
     public function getHierarchicalPlaceNames()
     {
         $placeNames = [];
-        if ($fields = $this->marcRecord->getFields('752')) {
+        if ($fields = $this->getMarcRecord()->getFields('752')) {
             foreach ($fields as $field) {
                 $subfields = $field->getSubfields();
                 $current = [];
@@ -703,7 +689,7 @@ class SolrMarc extends SolrDefault
         ];
 
         foreach ($fieldsToCheck as $field => $subfields) {
-            $urls = $this->marcRecord->getFields($field);
+            $urls = $this->getMarcRecord()->getFields($field);
             if ($urls) {
                 foreach ($urls as $url) {
                     // Is there an address in the current field?
@@ -760,7 +746,7 @@ class SolrMarc extends SolrDefault
         $retVal = [];
         foreach ($fieldsNames as $value) {
             $value = trim($value);
-            $fields = $this->marcRecord->getFields($value);
+            $fields = $this->getMarcRecord()->getFields($value);
             if (!empty($fields)) {
                 foreach ($fields as $field) {
                     // Check to see if we should display at all
@@ -944,7 +930,7 @@ class SolrMarc extends SolrDefault
 
         // Try to look up the specified field, return empty array if it doesn't
         // exist.
-        $fields = $this->marcRecord->getFields($field);
+        $fields = $this->getMarcRecord()->getFields($field);
         if (!is_array($fields)) {
             return $matches;
         }
@@ -999,7 +985,7 @@ class SolrMarc extends SolrDefault
     {
         // Special case for MARC:
         if ($format == 'marc21') {
-            $xml = $this->marcRecord->toXML();
+            $xml = $this->getMarcRecord()->toXML();
             $xml = str_replace(
                 [chr(27), chr(28), chr(29), chr(30), chr(31)], ' ', $xml
             );
@@ -1120,6 +1106,25 @@ class SolrMarc extends SolrDefault
      */
     public function getMarcRecord()
     {
+        $marc = trim($this->fields['fullrecord']);
+
+        // check if we are dealing with MARCXML
+        if (substr($marc, 0, 1) == '<') {
+            $marc = new \File_MARCXML($marc, \File_MARCXML::SOURCE_STRING);
+        } else {
+            // When indexing over HTTP, SolrMarc may use entities instead of certain
+            // control characters; we should normalize these:
+            $marc = str_replace(
+                ['#29;', '#30;', '#31;'], ["\x1D", "\x1E", "\x1F"], $marc
+            );
+            $marc = new \File_MARC($marc, \File_MARC::SOURCE_STRING);
+        }
+
+        $this->marcRecord = $marc->next();
+        if (!$this->marcRecord) {
+            throw new \File_MARC_Exception('Cannot Process MARC Record');
+        }
+
         return $this->marcRecord;
     }
 
@@ -1131,7 +1136,7 @@ class SolrMarc extends SolrDefault
     public function getRDFXML()
     {
         return XSLTProcessor::process(
-            'record-rdf-mods.xsl', trim($this->marcRecord->toXML())
+            'record-rdf-mods.xsl', trim($this->getMarcRecord()->toXML())
         );
     }
 
