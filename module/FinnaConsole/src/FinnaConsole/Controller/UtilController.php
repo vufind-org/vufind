@@ -623,6 +623,7 @@ Usage:
 For example:
   VUFIND_LOCAL_MODULES='FinnaTheme,FinnaSearch,Finna,FinnaConsole'
   php $appPath/util/scheduled_alerts.php /tmp/finna /tmp/NDL-VuFind2/local
+
 EOT;
     }
 }
