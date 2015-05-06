@@ -256,7 +256,10 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         $cmd .= " php '$script' " . implode(' ', $args);
         $this->msg("  Switching to institution configuration $localDir");
         $this->msg("    $cmd");
-        $res = system($cmd);
+        $res = system($cmd, $retval);
+        if ($retval !== 0) {
+            $this->err("Error calling: $cmd");
+        }
     }
 
     /**
