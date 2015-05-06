@@ -12,6 +12,11 @@
   // Load Javascript dependencies into header:
   $this->headScript()->appendFile("check_item_statuses.js");
 
+  // Load Javascript only if list view parameter is NOT full:
+  if ($this->params->getOptions()->getListViewOption()!="full") {
+     $this->headScript()->appendFile("full_view.js");
+  }
+
   $recordTotal = $this->results->getResultTotal();
 
   // Convenience variable:
