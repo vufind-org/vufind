@@ -80,7 +80,8 @@ class Module
         if (!Console::isConsole()) {
             $em = StaticEventManager::getInstance();
             $em->attach(
-                'Zend\Mvc\Application', 'bootstrap', [$this, 'registerBaseUrl'], 100000
+                'Zend\Mvc\Application', 'bootstrap', [$this, 'registerBaseUrl'],
+                100000
             );
         }
     }
