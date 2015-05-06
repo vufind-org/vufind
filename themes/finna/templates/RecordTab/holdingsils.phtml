@@ -83,14 +83,15 @@
 
 <table class="table record-holdings-table">
   <tr>
-    <th colspan="3" class="headers">
+    <th <? if (!empty($holdings)): ?>colspan="3" <? endif; ?>class="headers">
       <? $currentSource = $this->driver->tryMethod('getDataSource'); ?>
       <? $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
       <? if ($mergedData && count($mergedData['records']) > 1): ?>
         <div class="dedup-information">
           <select class="dedup-select form-control jumpMenuUrl" role="listbox" aria-haspopup="true">
           <? foreach ($mergedData['records'] as $current): ?>
-            <option value="<?=$this->escapeHtmlAttr($this->recordLink()->getUrl($current['id'])) ?>" role="option"<?=$currentSource == $current['source'] ? ' selected="selected"' : '' ?>><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
+            <? // We should use RecordLink() helper below to create the record URL, but this is much faster. We can get away with it here, but this is not generally acceptable. ?>
+            <option value="<?=$this->escapeHtmlAttr($this->url('record') . urlencode($current['id'])) ?>" role="option"<?=$currentSource == $current['source'] ? ' selected="selected"' : '' ?>><?=$this->transEsc("source_{$current['source']}", null, $current['source']) ?></option>
           <? endforeach; ?>
           </select>
         </div>
@@ -100,9 +101,11 @@
         </div>
       <? endif; ?>
     </th>
-    <? // N.B. The division to 3 + 2 cols is required for the table to be valid HTML ?>
-    <th colspan="2" class="headers">
-    </th>
+    <? if (!empty($holdings)): ?>
+      <? // N.B. The division to 3 + 2 cols is required for the table to be valid HTML ?>
+      <th colspan="2" class="headers">
+      </th>
+    <? endif; ?>
   </tr>
 <? $holdingsGroup = 0; ?>
 <? foreach ($holdings as $holding): ?>
@@ -255,7 +258,7 @@
 <? endforeach; ?>
 <? if (empty($holdings)): ?>
   <tr>
-    <td colspan="5">
+    <td>
       <?=$this->transEsc('No Holdings Available'); ?>
     </td>
   </tr>

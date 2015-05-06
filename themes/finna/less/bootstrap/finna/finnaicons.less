@@ -42,6 +42,42 @@
   letter-spacing: 0px;
   font-size: 1em;
 }
+.image-popup-trigger {
+    @media (min-width:@screen-sm-min) {
+        & img {
+            box-shadow: 0px 0px 0px 4px @gray-lighter inset;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+    
+        & .iconlabel {
+            width: 100%;
+            color: @body-bg;
+            &:before {
+                padding-right: 3px;
+                position: absolute;
+                top: 26%;
+                left: 36%;
+                font-size: 3em;
+                color: @gray-lighter;
+                z-index: 0;
+                @media (min-width:@screen-md-min) and (max-width:@screen-md-max) {
+                    top: 20%;
+                    left: 35%;
+                }
+                @media (max-width:@screen-sm-max) {
+                    font-size: 2em;
+                }
+            }   
+        }
+    }
+    @media (max-width:@screen-xs-max) {
+        & .iconlabel {
+            display: none;   
+        }
+    }
+}
 .fa-spinner {
   margin-left: 5px;
   vertical-align: middle;   
@@ -335,10 +371,10 @@
 .fa-user:before {
     content: "\e00e";
 }
-.iconlabel.format-1bookebook:before, .iconlabel.format-1bookebooksection:before {
+.iconlabel.format-1bookebook:before, .iconlabel.format-1bookebooksection:before, .iconlabel.format-1otherelectronic:before {
     content: "\e617";
 }
-.iconlabel.format-book:before, .iconlabel.format-1bookbook:before, .iconlabel.kirja:before, .iconlabel.format-1bookbooksection:before, .iconlabel.format-1bookbraille:before {
+.iconlabel.format-kirja:before, .iconlabel.format-book:before, .iconlabel.format-1bookbook:before, .iconlabel.kirja:before, .iconlabel.format-1bookbooksection:before, .iconlabel.format-1bookbraille:before {
     content: "\e616";
 }
 .iconlabel.format-1journalarticle:before, .iconlabel.format-1journaljournal:before, .iconlabel.format-1journalserial:before, .iconlabel.format-1journalnewspaper:before, .iconlabel.format-1journalappendix:before, .iconlabel.format-1journalnewspaperarticle:before, .iconlabel.format-journal:before, .iconlabel.format-newspaper:before {
@@ -365,7 +401,7 @@
 .iconlabel.format-1soundrecord:before, .iconlabel.format-1soundcd:before, .iconlabel.format-1soundsounddisc:before, .iconlabel.format-1soundsoundrecording:before, .iconlabel.format-1soundsoundcassette:before, .iconlabel.format-1soundmusicrecording:before {
     content: "\e009";
 }
-.iconlabel.format-1imageimage:before, .iconlabel.format-1imagephotograph:before, .iconlabel.format-1imageslide:before, .iconlabel.format-1imagedrawing:before, .iconlabel.format-1imagetransparency:before {
+.iconlabel.format-1imagephoto:before, .iconlabel.format-1imageimage:before, .iconlabel.format-1imagephotograph:before, .iconlabel.format-1imageslide:before, .iconlabel.format-1imagedrawing:before, .iconlabel.format-1imagetransparency:before {
     content: "\e008";
 }
 .icon-smallpress:before {
@@ -471,6 +507,7 @@
     color: @body-bg;
     right: 16px;
     top: 1px;
+    z-index: 2;
     &:before {
         padding: 1px 3px 3px;
         background: rgba(1,1,1, 0.1);
@@ -558,4 +595,24 @@ i.brand-primary {
 }
 i.bigger {
     font-size: 1.3em;   
+}
+
+.fa-spin {
+    display: inline-block;
+    -moz-animation: spinner 2s infinite linear;
+    -o-animation: spinner 2s infinite linear;
+    -webkit-animation: spinner 2s infinite linear;
+    animation: spinner 2s infinite linear;
+}
+@-moz-keyframes spinner {
+    from { -moz-transform: rotate(0deg); }
+    to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spinner {
+    from { -webkit-transform: rotate(0deg); }
+    to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spinner {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
 }

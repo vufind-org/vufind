@@ -48,9 +48,32 @@
 	width: auto;
 	background: white;
 	padding-bottom: 5px;
-
+	& .image:not(.loaded):before {
+	    font-family:'Fontawesome';
+        content: "\f110";
+        color: gray;
+        top: 50px;
+        left: 14%;
+        font-size: 30px;
+        position: absolute;
+        .fa-spin;
+        @media (max-width: @screen-xs-max) {
+                left: 44%;
+        }
+    }
+    & .image.loaded:before {
+            display: block;
+            position: absolute;
+            top: 50px;
+            left: 14%;
+            color: @gray-lighter;
+            font-size: 3em;
+            @media (max-width: @screen-xs-max) {
+                left: 44%;
+            }
+    }
     & .content {
-	    padding: 15px 50px 0 15px;
+	    padding: 10px 50px 0 15px;
         text-align: left;
         background-color: @body-bg;
         clear: right;
@@ -160,6 +183,8 @@
     & h3.title {
 	    padding: 0px 0px 0px;
 	    letter-spacing: 0.2px;
+	    margin-top: 0px;
+	    margin-bottom: 10px;
     }
 
     & .building {
@@ -252,7 +277,6 @@
 @media(max-width:@screen-xs-max) {
 	.imagepopup-container {
 	    display: block;
-	    padding-top: 10px;
 	}
     .imagepopup-holder .image, 
     .imagepopup-holder.lido .image { 
@@ -278,6 +302,7 @@
         & h3.title {
             border:none;
         }
+
         & .image.loaded .noimage {
             display: inline-block;
             text-align: center;

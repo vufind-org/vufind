@@ -231,8 +231,9 @@ mark, .highlight {
     &:first-child {
       padding-top: 0px;   
     }
-    border-bottom: 1px solid @gray-lighter;
-
+    @media (max-width:@screen-xs-max) {
+        border-bottom: 1px solid @gray-lighter;
+    }
 }
 .dateyeartype {
     .date-and-year();  
@@ -430,8 +431,14 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     margin-bottom: 0px;
 }
 .show-details-button {
+    margin-top: 10px;
     margin-bottom: 5px;
     cursor: pointer;
+    background: #f5f5f5;
+    color: @link-color;
+    &:hover {
+        color: @link-color;   
+    }
 }
 .record-details {
     margin:10px 0px;  
@@ -926,6 +933,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Hierarchical facets --- */
 /* jsTree arrows */
+.facet a {
+    color: @link-color;   
+}
 .facet .jstree-ocl:before {
   font-family: 'icomoon';
   float: left;
@@ -970,7 +980,7 @@ div.jstree-facet, li.jstree-node {
 ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(.title) {
   padding: 3px 10px 3px 20px;
   background: whitesmoke;
-  border-bottom:2px solid @body-bg;
+  border-bottom:1px solid @body-bg;
   @media(max-width:@screen-xs-max) {
     font-size: 1.15em;   
   }
@@ -1077,10 +1087,10 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     }
 }
 .primo-available-online-record, .local-available-online-record {
-    margin: 10px 0px;
+    margin: 0px 0px 10px;
     font-size: 1.1em;
-
-    & .host {
+    padding-bottom: 10px;
+    & .online-source {
         font-size: 0.9em;
         color: @gray-light;
     }

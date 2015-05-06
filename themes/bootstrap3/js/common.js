@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, refreshTagList, unescape, vufindString */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, path, rc4Encrypt, refreshCommentList, refreshTagList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -82,7 +82,7 @@ function lessFacets(id) {
 }
 
 // Phone number validation
-var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"]
+var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
 var libphoneErrorStrings = ["Phone number invalid", "Invalid country calling code", "Invalid region code", "The string supplied did not seem to be a phone number", "The string supplied is too long to be a phone number", "The string supplied is too short to be a phone number", "Phone number too short after IDD"];
 function phoneNumberFormHandler(numID, regionCode) {
   var phoneInput = document.getElementById(numID);
@@ -365,6 +365,10 @@ $(document).ready(function() {
       }
     }
   );
+  $('#searchForm_type').change(function() {
+    var query = $('#searchForm_lookfor').val();
+    $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
+  });
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
