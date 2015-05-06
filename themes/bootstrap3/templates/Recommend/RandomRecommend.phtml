@@ -38,19 +38,19 @@
                 echo $this->transEsc('Title not available');
             }
           ?>
-          <? $summAuthor = $driver->getPrimaryAuthor(); ?>
-          <span class="small<? if (!empty($summAuthor)): ?> pull-right<? endif; ?>">
+          <? $summAuthors = $driver->getPrimaryAuthors(); ?>
+          <span class="small<? if (!empty($summAuthors)): ?> pull-right<? endif; ?>">
             <? $summDate = $driver->getPublicationDates(); ?>
             <? if (!empty($summDate)): ?>
               <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
             <? endif; ?>
           </span>
         </a>
-        <? if (!empty($summAuthor)): ?>
-          <a class="small text-right" href="<?=$this->record($driver)->getLink('author', $summAuthor)?>">
-            <span><?=$this->transEsc('By')?></span>
-            <?=$this->escapeHtml($summAuthor)?>
-          </a>
+        <? if (!empty($summAuthors)): ?>
+          <span class="small text-right">
+            <?=$this->transEsc('By')?>
+            <a href="<?=$this->record($driver)->getLink('author', $summAuthors[0])?>"><?=$this->escapeHtml($summAuthors[0])?></a><? if (count($summAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
+          </span>
         <? endif; ?>
       </li>
     <? endforeach; ?>

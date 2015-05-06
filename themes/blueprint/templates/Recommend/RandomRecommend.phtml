@@ -36,12 +36,10 @@
               }
             ?></a>
             </span>
-            <? $summAuthor = $driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+            <? $summAuthors = $driver->getPrimaryAuthors(); if (!empty($summAuthors)): ?>
             <br />
             <?=$this->transEsc('By')?>:
-            <a href="<?=$this->record($driver)->getLink('author', $summAuthor)?>">
-              <?=$this->escapeHtml($summAuthor)?>
-            </a>
+            <a href="<?=$this->record($driver)->getLink('author', $summAuthors[0])?>"><?=$this->escapeHtml($summAuthors[0])?></a><? if (count($summAuthors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><? endif; ?>
             <? endif; ?>
             <? $summDate = $driver->getPublicationDates(); if (!empty($summDate)): ?>
             <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
