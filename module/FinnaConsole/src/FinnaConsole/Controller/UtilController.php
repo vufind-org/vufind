@@ -253,7 +253,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
         }
 
         $cmd = "VUFIND_LOCAL_DIR='$localDir'";
-        $cmd .= " php '$script' " . implode(' ', $args);
+        $cmd .= " php -d short_open_tag=1 '$script' " . implode(' ', $args);
         $this->msg("  Switching to institution configuration $localDir");
         $this->msg("    $cmd");
         $res = system($cmd, $retval);
