@@ -28,6 +28,7 @@
 namespace FinnaConsole\Controller;
 use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
     Zend\Console\Console,
+    Zend\Log\Logger, Zend\Log\Writer\Stream,
     VuFind\Search\Solr\Options, VuFind\Search\Solr\Params,
     VuFind\Search\UrlQueryHelper;
 
@@ -42,6 +43,20 @@ use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader,
  */
 class UtilController extends \VuFindConsole\Controller\UtilController
 {
+    /**
+     * Logger
+     *
+     * @var Zend\Log\Logger
+     */
+    protected $logger = null;
+
+    /**
+     * Error logger
+     *
+     * @var Zend\Log\Logger
+     */
+    protected $errLogger = null;
+
     /**
      * Symbolic link name for institution default view
      *
@@ -132,6 +147,8 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     public function scheduledAlertsAction()
     {
         ini_set('display_errors', true);
+
+        $this->initLogging();
 
         $argv = $this->consoleOpts->getRemainingArgs();
         $this->collectScriptArguments($argv);
@@ -542,15 +559,38 @@ class UtilController extends \VuFindConsole\Controller\UtilController
     }
 
     /**
-     * Output a message with a timestamp
-     *
-     * @param string $msg Message
+     * Init logging.
      *
      * @return void
      */
-    protected function msg($msg)
+    protected function initLogging()
     {
-        Console::writeLine(date('Y-m-d H:i:s') . ' [' . getmypid() . "] $msg");
+        $writer = new Stream('php://output');
+        $this->logger = new Logger();
+        $this->logger->addWriter($writer);
+
+        $writer = new Stream('php://stderr');
+        $this->errLogger = new Logger();
+        $this->errLogger->addWriter($writer);
+    }
+
+    /**
+     * Output a message with a timestamp
+     *
+     * @param string  $msg   Message
+     * @param boolean $error Log as en error message?
+     *
+     * @return void
+     */
+    protected function msg($msg, $error = false)
+    {
+        $msg = '[' . getmypid() . "] $msg";
+        if ($error) {
+            $this->errLogger->err($msg);
+            $this->logger->err($msg);
+        } else {
+            $this->logger->info($msg);
+        }
     }
 
     /**
@@ -562,7 +602,7 @@ class UtilController extends \VuFindConsole\Controller\UtilController
      */
     protected function err($msg)
     {
-        $this->msg("ERROR: $msg");
+        $this->msg($msg, true);
     }
 
     /**
