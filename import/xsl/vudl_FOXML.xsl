@@ -393,9 +393,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
                                 <field name="author">
                                     <xsl:value-of select="normalize-space()"/>
                                 </field>
-                                <field name="author-letter">
-                                    <xsl:value-of select="normalize-space()"/>
-                                </field>
                             </xsl:if>
                             <xsl:if test="position()>1">
                                 <field name="author2">

@@ -142,9 +142,6 @@
                                 <field name="author">
                                     <xsl:value-of select="nlm:surname[normalize-space()]" />, <xsl:value-of select="nlm:given-names[normalize-space()]" />
                                 </field>
-                                <field name="author-letter">
-                                    <xsl:value-of select="nlm:surname[normalize-space()]" />, <xsl:value-of select="nlm:given-names[normalize-space()]" />
-                                </field>
                             </xsl:if>
                             <xsl:if test="position()>1">
                                 <field name="author2">
