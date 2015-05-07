@@ -10,8 +10,18 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `change_tracker`
+-- Additional columns for search
 --
+ALTER TABLE search ADD COLUMN `finna_schedule` int(1) NOT NULL DEFAULT '0';
+ALTER TABLE search ADD COLUMN `finna_last_executed` datetime NOT NULL DEFAULT '0000-00-00 00:00:00';
+ALTER TABLE search ADD COLUMN `finna_schedule_base_url` varchar(255) NOT NULL DEFAULT '';
+ALTER TABLE search ADD INDEX `finna_schedule` (`finna_schedule`);
+ALTER TABLE search ADD INDEX `finna_schedule_base_url` (`finna_schedule_base_url`);
+--
+-- Additional columns for user
+--
+ALTER TABLE user ADD COLUMN `finna_language` varchar(30) NOT NULL DEFAULT '';
+
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
@@ -56,20 +66,6 @@ CREATE TABLE `finna_comments_inappropriate` (
   KEY `user_id` (`user_id`),
   KEY `comment_id` (`comment_id`),
   CONSTRAINT `finna_comments_inappropriate_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `finna_search` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `search_id` int(11) DEFAULT NULL,
-  `schedule` int(1) NOT NULL DEFAULT '0',
-  `last_executed` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `schedule_base_url` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`),
-  KEY `search_id` (`search_id`),
-  CONSTRAINT `finna_search_ibfk_1` FOREIGN KEY (`search_id`) REFERENCES `search` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

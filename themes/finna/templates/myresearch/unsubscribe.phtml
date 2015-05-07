@@ -1,0 +1,12 @@
+<div class="row">
+  <div class="col-md-10 col-lg-9">
+    <div class="content unsubscribe">
+      <br>
+      <? if ($this->success == true): ?>
+      <?= $this->translate('unsubscribe_successful'); ?>
+  <? else: ?>
+      <p><?= $this->translate('unsubscribe_confirmation'); ?></p><br> <a class="btn btn-primary" href="<?= $this->escapeHtml($this->unsubscribeUrl); ?>"><?= $this->translate('confirm_dialog_yes'); ?></a> <a class="btn btn-primary" href="<?= $this->url('home'); ?>"><?= $this->translate('confirm_dialog_no'); ?></a>
+      <? endif; ?>
+    </div>
+  </div>
+</div>

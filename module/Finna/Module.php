@@ -28,7 +28,8 @@
 namespace Finna;
 use Zend\EventManager\StaticEventManager,
     Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
+    Zend\Mvc\MvcEvent,
+    Zend\Console\Console;
 
 /**
  * Module for storing local overrides for Finna.
@@ -76,10 +77,13 @@ class Module
      */
     public function init(ModuleManager $m)
     {
-        $em = StaticEventManager::getInstance();
-        $em->attach(
-            'Zend\Mvc\Application', 'bootstrap', [$this, 'registerBaseUrl'], 100000
-        );
+        if (!Console::isConsole()) {
+            $em = StaticEventManager::getInstance();
+            $em->attach(
+                'Zend\Mvc\Application', 'bootstrap', [$this, 'registerBaseUrl'],
+                100000
+            );
+        }
     }
 
     /**
@@ -91,7 +95,8 @@ class Module
      */
     public function onBootstrap(MvcEvent $e)
     {
-
+        $bootstrapper = new Bootstrapper($e);
+        $bootstrapper->bootstrap();
     }
 
     /**
