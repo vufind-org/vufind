@@ -329,6 +329,10 @@ EOT;
         $i = 0;
         foreach ($customVars as $key => $value) {
             ++$i;
+
+            //workaround to prevent that custom variables 4 and 5 get overwritten by trackSiteSearch, see http://forum.piwik.org/read.php?2,115537,115538
+            if ($i === 4) $i = 6;
+
             $value = $escape($value);
             $code .= <<<EOT
 _paq.push(['setCustomVariable', $i, '$key', '$value', 'page']);
