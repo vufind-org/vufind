@@ -1,11 +1,11 @@
 <?php
 /**
- * ILS authentication module.
+ * Multiple ILS authentication module that works with MultiBackend driver
  *
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2015.
+ * Copyright (C) The National Library of Finland 2013-2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -28,12 +28,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
  */
-namespace VuFind\Auth;
-
-use VuFind\Exception\Auth as AuthException;
+namespace Finna\Auth;
 
 /**
- * ILS authentication module.
+ * Multiple ILS authentication module that works with MultiBackend driver
  *
  * @category VuFind2
  * @package  Authentication
@@ -43,7 +41,7 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
  */
-class ILS extends \VuFind\Auth\ILS
+class MultiILS extends \VuFind\Auth\MultiILS
 {
     use ILSFinna;
 }

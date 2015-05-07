@@ -101,6 +101,7 @@ $config = array(
             'auth' => array(
                 'factories' => [
                     'ils' => 'Finna\Auth\Factory::getILS',
+                    'multiils' => 'Finna\Auth\Factory::getMultiILS',
                 ],
                 'invokables' => array(
                     'mozillapersona' => 'Finna\Auth\MozillaPersona',
