@@ -128,7 +128,7 @@ class Recaptcha extends AbstractPlugin
         if (!$captchaPassed) {
             if ($this->errorMode == 'flash') {
                 $this->getController()->flashMessenger()->setNamespace('error')
-                    ->addMessage($response->getErrorCode());
+                    ->addMessage('recaptcha_not_passed');
             } else {
                 throw new \Exception($response->getErrorCode());
             }
