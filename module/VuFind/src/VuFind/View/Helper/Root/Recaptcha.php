@@ -84,6 +84,9 @@ class Recaptcha extends AbstractHelper
      */
     public function html($useRecaptcha = true)
     {
+        if (!isset($useRecaptcha) || !$useRecaptcha) {
+            return false;
+        }
         return $this->recaptcha->getHtml();
     }
 
