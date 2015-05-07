@@ -117,7 +117,8 @@ class Tags extends Gateway
                         'tags.id = subq.tag_id',
                         [
                             'is_me' => new Expression(
-                                'MAX(?)', ['subq.is_me'], [Expression::TYPE_IDENTIFIER]
+                                'MAX(?)', ['subq.is_me'],
+                                [Expression::TYPE_IDENTIFIER]
                             )
                         ],
                         Select::JOIN_LEFT
