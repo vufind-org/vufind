@@ -458,10 +458,17 @@ class Factory
     public static function getRecaptcha(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config')->get('config');
-        $recaptcha = new \LosReCaptcha\Service\ReCaptcha(
-            isset($config->Captcha->siteKey)   ? $config->Captcha->siteKey   : '',
-            isset($config->Captcha->secretKey) ? $config->Captcha->secretKey : ''
-        );
+        $siteKey = isset($config->Captcha->siteKey)
+            ? $config->Captcha->siteKey
+            : (isset($config->Captcha->publicKey)
+                ? $config->Captcha->publicKey
+                : '');
+        $secretKey = isset($config->Captcha->secretKey)
+            ? $config->Captcha->secretKey
+            : (isset($config->Captcha->privateKey)
+                ? $config->Captcha->privateKey
+                : '');
+        $recaptcha = new \LosReCaptcha\Service\ReCaptcha($siteKey, $secretKey);
         if (isset($config->Captcha->theme)) {
             $recaptcha->setOption('theme', $config->Captcha->theme);
         }
