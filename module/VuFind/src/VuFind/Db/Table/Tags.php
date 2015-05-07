@@ -115,7 +115,11 @@ class Tags extends Gateway
                     $select->join(
                         ['subq' => $subq],
                         'tags.id = subq.tag_id',
-                        ['is_me' => 'subq.is_me'],
+                        [
+                            'is_me' => new Expression(
+                                'MAX(?)', ['subq.is_me'], [Expression::TYPE_IDENTIFIER]
+                            )
+                        ],
                         Select::JOIN_LEFT
                     );
                 }
