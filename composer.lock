@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "17e060af5c8424a9e99315284a8a3632",
+    "hash": "7dc0a66794da8ee8d1c821431143e8b9",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -121,21 +121,21 @@
         },
         {
             "name": "los/losrecaptcha",
-            "version": "0.9.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Lansoweb/LosReCaptcha.git",
-                "reference": "2aa837615917257023cec5694e9e4018538287d1"
+                "reference": "2e18af8d57286c28c1951c7305f8379e7304b203"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/2aa837615917257023cec5694e9e4018538287d1",
-                "reference": "2aa837615917257023cec5694e9e4018538287d1",
+                "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/2e18af8d57286c28c1951c7305f8379e7304b203",
+                "reference": "2e18af8d57286c28c1951c7305f8379e7304b203",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.4.0",
-                "zendframework/zendframework": "2.3.*"
+                "zendframework/zendframework": ">=2.3.2,<3.0.0"
             },
             "require-dev": {
                 "satooshi/php-coveralls": "dev-master"
@@ -177,7 +177,7 @@
                 "recaptcha",
                 "zf2"
             ],
-            "time": "2015-03-22 12:01:15"
+            "time": "2015-04-28 15:40:23"
         },
         {
             "name": "mobileesp/mdetect",
@@ -1344,6 +1344,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "johnwohlers/sip2": 20,
+        "los/losrecaptcha": 20,
         "mobileesp/mdetect": 20
     },
     "prefer-stable": false,

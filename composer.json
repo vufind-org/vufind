@@ -50,7 +50,7 @@
         "aferrandini/phpqrcode": "1.0.1",
         "jasig/phpcas": "*",
         "johnwohlers/sip2": "dev-master",
-        "los/losrecaptcha": "*",
+        "los/losrecaptcha": "dev-master",
         "mobileesp/mdetect": "dev-master",
         "ocramius/proxy-manager": "*",
         "oyejorge/less.php": "*",

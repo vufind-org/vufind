@@ -570,68 +570,6 @@
         }
     },
     {
-        "name": "los/losrecaptcha",
-        "version": "0.9.1",
-        "version_normalized": "0.9.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Lansoweb/LosReCaptcha.git",
-            "reference": "2aa837615917257023cec5694e9e4018538287d1"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/2aa837615917257023cec5694e9e4018538287d1",
-            "reference": "2aa837615917257023cec5694e9e4018538287d1",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4.0",
-            "zendframework/zendframework": "2.3.*"
-        },
-        "require-dev": {
-            "satooshi/php-coveralls": "dev-master"
-        },
-        "suggest": {
-            "los/losbase": "los/losbase for some abstract classes to speed development ",
-            "los/loslog": "los/loslog for logging",
-            "los/losui": "los/losui for twitter bootstrap 3 styling, jquery, chosen and other libraries"
-        },
-        "time": "2015-03-22 12:01:15",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "LosReCaptcha\\": "src/"
-            },
-            "psr-0": {
-                "LosReCaptcha\\": "src/"
-            },
-            "classmap": [
-                "./"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Leandro Silva",
-                "email": "leandro@leandrosilva.info",
-                "homepage": "http://leandrosilva.info"
-            }
-        ],
-        "description": "ZF2 module for integration with new ReCaptcha service form Google",
-        "homepage": "http://github.com/Lansoweb/LosReCaptcha",
-        "keywords": [
-            "captcha",
-            "los",
-            "module",
-            "recaptcha",
-            "zf2"
-        ]
-    },
-    {
         "name": "ocramius/proxy-manager",
         "version": "1.0.0",
         "version_normalized": "1.0.0.0",
@@ -1385,6 +1323,68 @@
             "module",
             "permissions",
             "rbac",
+            "zf2"
+        ]
+    },
+    {
+        "name": "los/losrecaptcha",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Lansoweb/LosReCaptcha.git",
+            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/2e18af8d57286c28c1951c7305f8379e7304b203",
+            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0",
+            "zendframework/zendframework": ">=2.3.2,<3.0.0"
+        },
+        "require-dev": {
+            "satooshi/php-coveralls": "dev-master"
+        },
+        "suggest": {
+            "los/losbase": "los/losbase for some abstract classes to speed development ",
+            "los/loslog": "los/loslog for logging",
+            "los/losui": "los/losui for twitter bootstrap 3 styling, jquery, chosen and other libraries"
+        },
+        "time": "2015-04-28 15:40:23",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "LosReCaptcha\\": "src/"
+            },
+            "psr-0": {
+                "LosReCaptcha\\": "src/"
+            },
+            "classmap": [
+                "./"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Leandro Silva",
+                "email": "leandro@leandrosilva.info",
+                "homepage": "http://leandrosilva.info"
+            }
+        ],
+        "description": "ZF2 module for integration with new ReCaptcha service form Google",
+        "homepage": "http://github.com/Lansoweb/LosReCaptcha",
+        "keywords": [
+            "captcha",
+            "los",
+            "module",
+            "recaptcha",
             "zf2"
         ]
     }
