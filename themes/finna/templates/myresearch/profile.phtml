@@ -20,9 +20,6 @@
 
     $user = $this->auth()->isLoggedIn();
     $cards = $user->getLibraryCards();
-    $profileInstructions = trim($this->transEsc('profile_instructions'));
-    // Remove zero-width non-joiner character, so blank line is not displayed.
-    $profileInstructions = str_replace("\xE2\x80\x8C", "", $profileInstructions);
 
     // Todo: get actual value for Axiell web services functions.
     $axiellWebServices = false;
@@ -30,9 +27,7 @@
 <div class="row">
   <div class="col-md-10 col-lg-9">
     <?=$this->flashmessages();?>
-    <? if (!empty($profileInstructions)): ?>
-      <div class="no-content-message"><?=$profileInstructions ?></div>
-    <? endif; ?>
+    <? if ($this->transEsc('profile_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><? endif; ?>
     <?= $this->partial('myresearch/profile-my-information.phtml', array('user' => $user, 'cards' => $cards)); ?>
     <? if (isset($this->profile)): ?>
     <div class="myresearch-profile-header"><?=$this->transEsc('Library Card Settings');?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
@@ -94,6 +89,9 @@
                   $this->transEsc('Address') . ' 2' => 'address2',
                 )
               );
+            }
+            if (!$axiellWebServices) {
+              $arrZipTemplate = $arrTemplate;
             }
             echo $this->renderArray(
               $arrZipTemplate, $this->profile,
