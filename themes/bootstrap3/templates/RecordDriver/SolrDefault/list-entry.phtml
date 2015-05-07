@@ -11,6 +11,29 @@
   }
 ?>
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
+<? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
+  <div class="col-xs-1 left">
+    <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
+    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+  </div>
+  <div class="col-xs-7 middle">
+   <div class="resultItemLine1">
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption()?>">
+      <?
+        $summHighlightedTitle = $this->driver->getHighlightedTitle();
+        $summTitle = $this->driver->getTitle();
+        if (!empty($summHighlightedTitle)) {
+            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+        } else if (!empty($summTitle)) {
+            echo $this->escapeHtml($this->truncate($summTitle, 180));
+        } else {
+            echo $this->transEsc('Title not available');
+        }
+      ?></a>
+    </div>
+<div id="loading_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"><p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p></div>
+<div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':'middle'?>"
+<? else: ?>
   <div class="col-xs-2 left">
     <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
     <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
@@ -37,8 +60,24 @@
         }
       ?></a>
     </div>
+<div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
+<? endif; ?>
 
     <div class="resultItemLine2">
+    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+    <? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
+    <div class="col-xs-4 left">
+    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+      <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
+        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
+      <? else: ?>
+        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      <? endif; ?>
+    </a>
+    </div>
+    <div class="col-xs-8 right">
+    <? endif; ?>
       <? if($this->driver->isCollection()): ?>
         <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
       <? else: ?>
@@ -69,7 +108,11 @@
       <? endif; ?>
     </div>
 
+   <? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
+    <div class="col-xs-8 right last">
+    <? else: ?>
     <div class="last">
+    <? endif; ?>
     <? if(!$this->driver->isCollection()) {
         if ($snippet = $this->driver->getHighlightedSnippet()) {
           if (!empty($snippet['caption'])) {
@@ -164,7 +207,10 @@
       <?=$this->record($this->driver)->getPreviews()?>
     </div>
   </div>
-
+<? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
+<div id="long_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"></div>
+<?endif?>
+</div>
   <div class="col-xs-2 right">
     <i class="fa fa-fw fa-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
     <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */

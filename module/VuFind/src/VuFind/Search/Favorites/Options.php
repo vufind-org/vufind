@@ -58,7 +58,6 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->List->view)) {
             $this->listviewOption = $searchSettings->List->view;
         }
-
     }
 
     /**
