@@ -364,6 +364,17 @@ trait SolrFinna
     }
 
     /**
+     * Get a string representing the first date that the record was indexed.
+     *
+     * @return string
+     */
+    public function getFirstIndexed()
+    {
+        return isset($this->fields['first_indexed'])
+            ? $this->fields['first_indexed'] : '';
+    }
+
+    /**
      * Extract sources from record IDs and create an array of sources and IDs
      *
      * @param array $ids Record ID's
@@ -382,7 +393,6 @@ trait SolrFinna
         }
         return $results;
     }
-
 
     /**
      * A helper function that merges an array of JSON-encoded URLs
