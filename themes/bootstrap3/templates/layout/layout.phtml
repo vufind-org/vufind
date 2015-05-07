@@ -83,7 +83,7 @@
     ?>
     <?=$this->headScript()?>
   </head>
-  <body>
+  <body class="<?=$this->layoutClass('offcanvas-row')?>">
     <? // Set up the search box -- there are three possible cases:
       // 1. No search box was set; we should default to the normal box
       // 2. It was set to false; we should display nothing
@@ -108,23 +108,23 @@
           && $this->layout()->breadcrumbs !== false
         ): ?>
           <ul class="breadcrumb hidden-print">
-          <? if(is_array($this->layout()->breadcrumbs)): ?>
-            <? if(count($this->layout()->breadcrumbs) > 1): ?>
-              <?=$this->render('breadcrumbs/multi.phtml', array(
-                  'parents' => $this->layout()->breadcrumbs,
-                  'title'   => $this->layout()->title,
-                  'end'     => $this->layout()->breadcrumbEnd,
-                  'from'    => $this->layout()->from
-                )) ?>
+            <? if(is_array($this->layout()->breadcrumbs)): ?>
+              <? if(count($this->layout()->breadcrumbs) > 1): ?>
+                <?=$this->render('breadcrumbs/multi.phtml', array(
+                    'parents' => $this->layout()->breadcrumbs,
+                    'title'   => $this->layout()->title,
+                    'end'     => $this->layout()->breadcrumbEnd,
+                    'from'    => $this->layout()->from
+                  )) ?>
+              <? else: ?>
+                <?=$this->render('breadcrumbs/default.phtml', array(
+                    'parents' => $this->layout()->breadcrumbs,
+                    'title'   => $this->layout()->title
+                  )) ?>
+              <? endif; ?>
             <? else: ?>
-              <?=$this->render('breadcrumbs/default.phtml', array(
-                  'parents' => $this->layout()->breadcrumbs,
-                  'title'   => $this->layout()->title
-                )) ?>
+              <?=$this->layout()->breadcrumbs ?>
             <? endif; ?>
-          <? else: ?>
-            <?=$this->layout()->breadcrumbs ?>
-          <? endif; ?>
           </ul>
         <? endif; ?>
       </div>
@@ -152,6 +152,8 @@
         </div>
       </div>
     </div>
+    <div class="offcanvas-toggle" data-toggle="offcanvas"><i class="fa"></i></div>
+    <div class="offcanvas-overlay" data-toggle="offcanvas"></div>
     <?=$this->googleanalytics()?>
     <?=$this->piwik()?>
   </body>

@@ -374,6 +374,23 @@ function ajaxLogin(form) {
 }
 
 $(document).ready(function() {
+  // Off canvas
+  if($('.sidebar').length > 0) {
+    $('[data-toggle="offcanvas"]').click(function () {
+      $('body.offcanvas').toggleClass('active');
+      var active = $('body.offcanvas').hasClass('active');
+      var right = $('body.offcanvas').hasClass('offcanvas-right');
+      if((active && !right) || (!active && right)) {
+        $('.offcanvas-toggle .fa').removeClass('fa-chevron-right').addClass('fa-chevron-left');
+      } else {
+        $('.offcanvas-toggle .fa').removeClass('fa-chevron-left').addClass('fa-chevron-right');
+      }
+    });
+    $('[data-toggle="offcanvas"]').click().click();
+  } else {
+    $('[data-toggle="offcanvas"]').addClass('hidden');
+  }
+
   // support "jump menu" dropdown boxes
   $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
 
@@ -441,6 +458,10 @@ $(document).ready(function() {
       }
     }
   );
+  $('#searchForm_type').change(function() {
+    var query = $('#searchForm_lookfor').val();
+    $('#searchForm_lookfor').focus().typeahead('val', '').typeahead('val', query);
+  });
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
