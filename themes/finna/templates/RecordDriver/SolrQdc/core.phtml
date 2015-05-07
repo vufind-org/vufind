@@ -21,38 +21,10 @@
 
   <div class="col-sm-10 record-information">
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
-    <div class="truncate-field">
-      <div class="record-authors">
-        <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
-        <span property="author">
-          <? foreach($results as $index => $author): ?>
-            <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
-          <? endforeach; ?>
-        </span>
-        <? endif; ?>
-
-        <div class="description">
-          <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
-            <i class="fa fa-spinner fa-spin"></i>
-          </span>
-        </div>
-
-        <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
-        <? foreach ($publications as $field): ?>
-            <span property="publisher" typeof="Organization">
-            <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
-              <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
-            <? endif; ?>
-            <? $pubName = $field->getName(); if (!empty($pubName)): ?>
-              <span property="name"><?=$this->escapeHtml($pubName)?></span>
-            <? endif; ?>
-            </span>
-            <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
-              <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
-            <? endif; ?>
-          <? endforeach; ?>
-        <? endif; ?>
-      </div>
+    <div class="description">
+      <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
+        <i class="fa fa-spinner fa-spin"></i>
+      </span>
     </div>
 
     <?
@@ -89,7 +61,39 @@
        </div>
        <? endif; ?>
     <? endif; ?>
-
+    
+    <div class="record-authors">     
+        <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+          <span><?=$this->record($this->driver)->getFormatList()?></span>
+        <? endif; ?>
+        
+        <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
+        <div class="truncate-field">
+          <span property="author">
+          <? foreach($results as $index => $author): ?>
+            <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
+          <? endforeach; ?>
+          </span>
+        </div>
+        <? endif; ?>
+        
+        <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
+        <? foreach ($publications as $field): ?>
+            <span property="publisher" typeof="Organization">
+            <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+              <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
+            <? endif; ?>
+            <? $pubName = $field->getName(); if (!empty($pubName)): ?>
+              <span property="name"><?=$this->escapeHtml($pubName)?></span>
+            <? endif; ?>
+            <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+              <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
+            <? endif; ?>
+            </span>
+          <? endforeach; ?>
+        <? endif; ?>
+    </div>
+    
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
       <div class="savedLists hidden alert alert-info" id="savedLists">
@@ -131,12 +135,6 @@
           <? endforeach; ?>
         </td>
       </tr>
-      <? endif; ?>
-
-      <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
-        <tr>
-          <td colspan="2"><?=$this->record($this->driver)->getFormatList()?></td>
-        </tr>
       <? endif; ?>
 
       <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>

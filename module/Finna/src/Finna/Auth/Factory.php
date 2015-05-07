@@ -98,6 +98,21 @@ class Factory extends \VuFind\Auth\Factory
     }
 
     /**
+     * Construct the MultiILS plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return MultiILS
+     */
+    public static function getMultiILS(ServiceManager $sm)
+    {
+        return new MultiILS(
+            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
+            $sm->getServiceLocator()->get('VuFind\ILSAuthenticator')
+        );
+    }
+
+    /**
      * Construct the Shibboleth plugin.
      *
      * @param ServiceManager $sm Service manager.

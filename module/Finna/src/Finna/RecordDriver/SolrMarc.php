@@ -89,7 +89,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         // Try each MARC field one at a time:
         foreach ($fields as $field) {
             // Do we have any results for the current field?  If not, try the next.
-            $results = $this->marcRecord->getFields($field);
+            $results = $this->getMarcRecord()->getFields($field);
             if (!$results) {
                 continue;
             }
@@ -134,7 +134,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         $urls = [];
         $url = '';
         $type = '';
-        foreach ($this->marcRecord->getFields('856') as $url) {
+        foreach ($this->getMarcRecord()->getFields('856') as $url) {
             $type = $url->getSubfield('q');
             if ($type) {
                 $type = $type->getData();
@@ -172,7 +172,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         $result = [];
 
         foreach (['050', '080', '084'] as $fieldCode) {
-            $fields = $this->marcRecord->getFields($fieldCode);
+            $fields = $this->getMarcRecord()->getFields($fieldCode);
             if (is_array($fields)) {
                 foreach ($fields as $field) {
                     switch ($fieldCode) {
@@ -214,7 +214,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     {
         $url = '';
         $type = '';
-        foreach ($this->marcRecord->getFields('856') as $url) {
+        foreach ($this->getMarcRecord()->getFields('856') as $url) {
             $type = $url->getSubfield('q');
             if ($type) {
                 $type = $type->getData();
@@ -258,7 +258,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     {
         $componentParts = [];
         $partOrderCounter = 0;
-        foreach ($this->marcRecord->getFields('979') as $field) {
+        foreach ($this->getMarcRecord()->getFields('979') as $field) {
             $partOrderCounter++;
             $partAuthors = [];
             $uniformTitle = '';
@@ -335,7 +335,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
 
             // Try field 700 if 979 is empty
         if (!$componentParts) {
-            foreach ($this->marcRecord->getFields('700') as $field) {
+            foreach ($this->getMarcRecord()->getFields('700') as $field) {
                 if (!$field->getSubfield('t')) {
                     continue;
                 }
@@ -474,51 +474,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
-     * Get an array of dedup and link data associated with the record.
-     *
-     * @return array
-     */
-    public function getMergedRecordData()
-    {
-        // If local_ids_str_mv is set, we already have all
-        if (isset($this->fields['local_ids_str_mv'])) {
-            return [
-                'records' => $this->createSourceIdArray(
-                    $this->fields['local_ids_str_mv']
-                ),
-                'urls' => isset($this->fields['online_urls_str_mv'])
-                    ? $this->mergeURLArray(
-                        $this->fields['online_urls_str_mv'],
-                        true
-                    ) : []
-            ];
-        }
-
-        // Find the dedup record
-        if (null === $this->searchService) {
-            return [];
-        }
-
-        $safeId = addcslashes($this->getUniqueID(), '"');
-        $query = new \VuFindSearch\Query\Query(
-            'local_ids_str_mv:"' . $safeId . '"'
-        );
-        $records = $this->searchService->search('Solr', $query, 0, 1)->getRecords();
-        if (!isset($records[0])) {
-            return [];
-        }
-        $results = [];
-        $results['records'] = $this->createSourceIdArray($records[0]->getLocalIds());
-        if ($onlineURLs = $records[0]->getOnlineURLs(true)) {
-            $results['urls'] = $this->mergeURLArray(
-                $onlineURLs,
-                true
-            );
-        }
-        return $results;
-    }
-
-    /**
      * Get all authors apart from presenters
      *
      * @return array
@@ -528,7 +483,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         $result = [];
 
         foreach (['100', '110', '700', '710'] as $fieldCode) {
-            $fields = $this->marcRecord->getFields($fieldCode);
+            $fields = $this->getMarcRecord()->getFields($fieldCode);
             if (is_array($fields)) {
                 foreach ($fields as $field) {
                     // Leave out 700 fields containing subfield 't' (these go to the
@@ -572,7 +527,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     public function getOtherLinks()
     {
         $results = [];
-        foreach ($this->marcRecord->getFields('787') as $link) {
+        foreach ($this->getMarcRecord()->getFields('787') as $link) {
             $heading = $link->getSubfield('i');
             if ($heading) {
                 $heading = $heading->getData();
@@ -619,7 +574,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         $result = ['presenters' => [], 'details' => []];
 
         foreach (['100', '110', '700', '710'] as $fieldCode) {
-            $fields = $this->marcRecord->getFields($fieldCode);
+            $fields = $this->getMarcRecord()->getFields($fieldCode);
             if (is_array($fields)) {
                 foreach ($fields as $field) {
                     // Leave out 700 fields containing subfield 't' (these go to the
@@ -697,7 +652,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      */
     public function getPublicationEndDate()
     {
-        $field = $this->marcRecord->getField('008');
+        $field = $this->getMarcRecord()->getField('008');
         if ($field) {
             $data = $field->getData();
             $year = substr($data, 11, 4);
@@ -761,7 +716,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     {
         $results = [];
         foreach (array('130', '240') as $fieldCode) {
-            foreach ($this->marcRecord->getFields($fieldCode) as $field) {
+            foreach ($this->getMarcRecord()->getFields($fieldCode) as $field) {
                 foreach ($field->getSubfields() as $subfield) {
                     $subfields[] = $subfield->getData();
                 }
@@ -796,7 +751,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         ];
 
         foreach ($fieldsToCheck as $field => $subfields) {
-            $urls = $this->marcRecord->getFields($field);
+            $urls = $this->getMarcRecord()->getFields($field);
             if ($urls) {
                 foreach ($urls as $url) {
                     // Is there an address in the current field?
@@ -840,11 +795,11 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
      */
     public function hasEmbeddedComponentParts()
     {
-        if ($this->marcRecord->getFields('979')) {
+        if ($this->getMarcRecord()->getFields('979')) {
             return true;
         }
         // Alternatively, are there titles in 700 fields?
-        foreach ($this->marcRecord->getFields('700') as $field) {
+        foreach ($this->getMarcRecord()->getFields('700') as $field) {
             if ($field->getSubfield('t')) {
                 return true;
             }
@@ -868,26 +823,6 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
             return false;
         }
         return true;
-    }
-
-    /**
-     * Extract source id from record ID's and create a nide array of them
-     *
-     * @param array $ids Record ID's
-     *
-     * @return array Formatted array
-     */
-    protected function createSourceIdArray($ids)
-    {
-        $results = [];
-        foreach ($ids as $id) {
-            list($source) = explode('.', $id);
-            $results[] = [
-                'source' => $source,
-                'id' => $id
-            ];
-        }
-        return $results;
     }
 
     /**
@@ -1009,7 +944,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
         // Loop through the field specification....
         foreach ($fieldInfo as $field => $subfields) {
             // Did we find any matching fields?
-            $series = $this->marcRecord->getFields($field);
+            $series = $this->getMarcRecord()->getFields($field);
             if (is_array($series)) {
                 foreach ($series as $currentField) {
                     // Can we find a name using the specified subfield list?

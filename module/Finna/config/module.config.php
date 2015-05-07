@@ -58,6 +58,16 @@ $config = array(
                     )
                 ),
             ),
+            'myresearch-unsubscribe' => array(
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => array(
+                    'route'    => '/MyResearch/Unsubscribe',
+                    'defaults' => array(
+                        'controller' => 'MyResearch',
+                        'action'     => 'Unsubscribe',
+                    )
+                ),
+            )
         )
     ),
     'controllers' => array(
@@ -91,6 +101,7 @@ $config = array(
             'auth' => array(
                 'factories' => [
                     'ils' => 'Finna\Auth\Factory::getILS',
+                    'multiils' => 'Finna\Auth\Factory::getMultiILS',
                 ],
                 'invokables' => array(
                     'mozillapersona' => 'Finna\Auth\MozillaPersona',
@@ -104,6 +115,7 @@ $config = array(
                 ],
                 'invokables' => array(
                     'comments' => 'Finna\Db\Table\Comments',
+                    'search' => 'Finna\Db\Table\Search'
                 ),
             ],
             'ils_driver' => [
