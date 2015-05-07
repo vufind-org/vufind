@@ -532,10 +532,27 @@ class Factory
     {
         return new \VuFind\Record\Loader(
             $sm->get('VuFind\Search'),
-            $sm->get('VuFind\RecordDriverPluginManager')
+            $sm->get('VuFind\RecordDriverPluginManager'),
+            $sm->get('VuFind\Record\Cache')
         );
     }
-
+    
+    /**
+     * Construct the record cache.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Record\Cache
+     */
+    public static function getRecordCache(ServiceManager $sm)
+    {
+        return new \VuFind\Record\Cache(
+            $sm->get('VuFind\RecordDriverPluginManager'),
+            $sm->get('VuFind\Config')->get('RecordCache'),
+            $sm->get('VuFind\DbTablePluginManager')
+        );
+    }
+    
     /**
      * Construct the record router.
      *
