@@ -472,6 +472,9 @@ class Factory
         if (isset($config->Captcha->theme)) {
             $recaptcha->setOption('theme', $config->Captcha->theme);
         }
+        $translator = $sm->get('VuFind\Translator');
+        $recaptcha->setOption('lang', $translator->getLocale());
+
         $httpClient = $sm->get('VuFind\Http')->createClient(); /*
         $httpClient = new \Zend\Http\Client(
             self::VERIFY_SERVER,
