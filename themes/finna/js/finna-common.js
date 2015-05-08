@@ -27,8 +27,6 @@ finna.common = (function() {
         $('#modal').on('shown.bs.modal', function(e) {
             $('#login_username').focus();
         });
-        // Set focus to username at login page
-        $('#login_username').focus();
 
     };
 
