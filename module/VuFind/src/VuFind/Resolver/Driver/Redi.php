@@ -131,15 +131,14 @@ class Redi implements DriverInterface
 
         if ($doiTerm->length == $doiDefinition->length) {
             for ($i=0; $i<$doiTerm->length; $i++) {
+                $href = $doiDefinitionURL->item($i)->attributes
+                    ->getNamedItem("href")->textContent;
                 $retval[] = [
-                    'title'        =>
-                        $doiTerm->item($i)->textContent .
-                        $this->_removeDoubleAngleQuotationMark(
+                    'title' => $doiTerm->item($i)->textContent
+                        . $this->_removeDoubleAngleQuotationMark(
                             $doiDefinition->item($i)->textContent
                         ),
-                    'href'         =>
-                        $doiDefinitionURL->item($i)
-                            ->attributes->getNamedItem("href")->textContent,
+                    'href' => $href,
                     'service_type' => 'getFullTxt',
                 ];
             }
@@ -201,24 +200,19 @@ class Redi implements DriverInterface
 
                 $itemInfo = '';
 
-                if ($xpath->evaluate("count(//div[@class='t_ezb_result']/p[{$i}]/sup)") == 1)
-                {
+                $expression = "count(//div[@class='t_ezb_result']/p[{$i}]/sup)";
+                if ($xpath->evaluate($expression) == 1) {
                     $itemInfo = $this->parseRediInfo(
-                        $xml,
-                        $xpath
-                            ->query("//div[@class='t_ezb_result']/p[{$i}]/sup")
-                            ->item(0)->textContent
+                        $xml, $xpath->query($expression)->item(0)->textContent
                     );
                 }
 
                 $retval[] = [
-                    'title'        =>
-                        $this->_removeDoubleAngleQuotationMark(
-                            $ezbResultsNodesText->item($i)->textContent
-                        ),
-                    'href'         =>
-                        $ezbResultsNodesURL->item($i)
-                            ->attributes->getNamedItem("href")->textContent,
+                    'title' => $this->_removeDoubleAngleQuotationMark(
+                        $ezbResultsNodesText->item($i)->textContent
+                    ),
+                    'href' => $ezbResultsNodesURL->item($i)
+                        ->attributes->getNamedItem("href")->textContent,
                     'coverage'     => $itemInfo,
                     'service_type' => 'getFullTxt',
                 ];
