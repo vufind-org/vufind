@@ -173,15 +173,15 @@ class Params extends \VuFind\Search\Base\Params
             }
             if ($this->facetSort != null) {
                 $facetSet['sort'] = $this->facetSort;
-            }
-            if ($this->facetSortedByIndex != null) {
-                $facetSet['sortedByIndex'] = $this->facetSortedByIndex;
             } else {
                 // No explicit setting? Set one based on the documented Solr behavior
                 // (index order for limit = -1, count order for limit > 0)
                 // Later Solr versions may have different defaults than earlier ones,
                 // so making this explicit ensures consistent behavior.
                 $facetSet['sort'] = ($this->facetLimit > 0) ? 'count' : 'index';
+            }
+            if ($this->facetSortedByIndex != null) {
+                $facetSet['sortedByIndex'] = $this->facetSortedByIndex;
             }
         }
         return $facetSet;
