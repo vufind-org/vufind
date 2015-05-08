@@ -68,6 +68,13 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetSort = null;
 
     /**
+     * Sorting order of single facet by index
+     *
+     * @var array
+     */
+    protected $facetSortedByIndex = null;
+
+    /**
      * Fields for visual faceting
      *
      * @var string
@@ -83,13 +90,18 @@ class Params extends \VuFind\Search\Base\Params
     public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($options, $configLoader);
-
         // Use basic facet limit by default, if set:
         $config = $configLoader->get('facets');
         if (isset($config->Results_Settings->facet_limit)
             && is_numeric($config->Results_Settings->facet_limit)
         ) {
             $this->setFacetLimit($config->Results_Settings->facet_limit);
+        }
+        if (isset($config->Results_Settings->sorted_by_index)
+            && is_array($config->Results_Settings->sorted_by_index->toArray())
+            && count($config->Results_Settings->sorted_by_index->toArray() > 0)
+        ) {
+            $this->setFacetSortedByIndex($config->Results_Settings->sorted_by_index->toArray());
         }
     }
 
@@ -144,6 +156,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         // Build a list of facets we want from the index
         $facetSet = [];
+
         if (!empty($this->facetConfig)) {
             $facetSet['limit'] = $this->facetLimit;
             foreach (array_keys($this->facetConfig) as $facetField) {
@@ -160,6 +173,9 @@ class Params extends \VuFind\Search\Base\Params
             }
             if ($this->facetSort != null) {
                 $facetSet['sort'] = $this->facetSort;
+            }
+            if ($this->facetSortedByIndex != null) {
+                $facetSet['sortedByIndex'] = $this->facetSortedByIndex;
             } else {
                 // No explicit setting? Set one based on the documented Solr behavior
                 // (index order for limit = -1, count order for limit > 0)
@@ -238,6 +254,19 @@ class Params extends \VuFind\Search\Base\Params
     {
         $this->facetSort = $s;
     }
+
+    /**
+     * Set Facet Sorting
+     *
+     * @param array $s the facets sorted by index
+     *
+     * @return void
+     */
+    public function setFacetSortedByIndex($s)
+    {
+        $this->facetSortedByIndex = $s;
+    }
+
 
     /**
      * Initialize facet settings for the specified configuration sections.
@@ -447,7 +476,13 @@ class Params extends \VuFind\Search\Base\Params
         if (!empty($facets)) {
             $backendParams->add('facet', 'true');
             foreach ($facets as $key => $value) {
-                $backendParams->add("facet.{$key}", $value);
+                if ($key == 'sortedByIndex') {
+                    foreach ($value as $field) {
+                        $backendParams->add("f.{$field}.facet.sort", "index");
+                    }
+                } else {
+                    $backendParams->add("facet.{$key}", $value);
+                }
             }
             $backendParams->add('facet.mincount', 1);
         }
