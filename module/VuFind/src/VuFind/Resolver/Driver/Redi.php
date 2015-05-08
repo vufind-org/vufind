@@ -201,7 +201,7 @@ class Redi implements DriverInterface
                 $itemInfo = '';
 
                 $expression = "count(//div[@class='t_ezb_result']/p[{$i}]/sup)";
-                if ($xpath->evaluate($expression) == 1) {
+                if ($xpath->evaluate("count({$expression})") == 1) {
                     $itemInfo = $this->parseRediInfo(
                         $xml, $xpath->query($expression)->item(0)->textContent
                     );
