@@ -26,8 +26,9 @@
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9">
-    <?=$this->flashmessages();?>
     <? if ($this->transEsc('profile_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><? endif; ?>
+    <?=$this->flashmessages();?>
+    <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
     <?= $this->partial('myresearch/profile-my-information.phtml', array('user' => $user, 'cards' => $cards)); ?>
     <? if (isset($this->profile)): ?>
     <div class="myresearch-profile-header"><?=$this->transEsc('Library Card Settings');?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
