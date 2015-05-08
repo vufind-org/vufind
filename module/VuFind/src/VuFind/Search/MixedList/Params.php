@@ -81,7 +81,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array associative: location (top/side) => search settings
      */
-    protected function getRecommendationSettings()
+    public function getRecommendationSettings($enabled)
     {
         // No recommendation modules in mixed list view currently:
         return [];

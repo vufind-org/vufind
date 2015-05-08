@@ -95,7 +95,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return array associative: location (top/side) => search settings
      */
-    protected function getRecommendationSettings()
+    public function getRecommendationSettings($enabled)
     {
         // No recommendations here:
         return [];
