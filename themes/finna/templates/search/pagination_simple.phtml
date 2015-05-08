@@ -4,7 +4,7 @@
     <? if (isset($this->previous)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><i class="fa fa-arrow-left"></i></a></li>
     <? endif; ?>
-    <li><span class="hidden-sm"><?=$this->transEsc('Showing')?></span> <strong><?=$this->results->getStartRecord() ?> - <?=$this->results->getEndRecord() ?></strong> / <?=$this->localizedNumber($this->results->getResultTotal())?></li> 
+    <li><span class="hidden-sm"><?=$this->transEsc('Showing')?></span> <strong><span class="index"><?=$this->results->getStartRecord() ?></span> - <?=$this->results->getEndRecord() ?></strong> / <span class="total"><?=$this->localizedNumber($this->results->getResultTotal())?></span></li> 
     <? if (isset($this->next)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><i class="fa fa-arrow-right"></i></a></li>
     <? endif; ?>

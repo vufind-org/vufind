@@ -901,8 +901,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         position: absolute;
         padding: 10px 0px;
         width: 91%;
-        bottom: 19px;
+        top: 70%;
+        overflow: hidden;
         opacity: 0;
+        max-height: 40px;
         filter: alpha(opacity=0);
         background: rgba(255,255,255,0.8);
         transition: all .2s ease-in-out;
@@ -910,7 +912,8 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         box-shadow: 0px 20px 20px -16px #000;
         .opacity(0);
         background: rgba(255, 255, 255, 0.9);
-        transition: all 0.2s ease-in-out;
+        transition: max-height .2s linear;
+        transition: opacity .2s linear;
     }
     & a.title {
         font-size: 1.15em;
@@ -927,8 +930,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
 }
 .grid:hover .grid-title {
-    height:auto;
+    max-height: 500px;
     .opacity(1);
+    transition: max-height 1s linear;
 }
 
 /* --- Hierarchical facets --- */

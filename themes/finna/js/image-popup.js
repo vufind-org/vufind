@@ -10,11 +10,22 @@ finna.imagePopup = (function(finna) {
     }
 
     var initThumbnailNavi = function() {
+        // Assign record indices
+        var recordIndex = null;
+        if ($(".paginationSimple").length) {
+            recordIndex = $(".paginationSimple .index").text();
+            $(".image-popup-trigger").each(function() {
+                $(this).data('recordInd', recordIndex++);
+            });
+        }
 
-        // Assign image indices to UI components. 
+        // Assign image indices
         var index = 0;
         $(".image-popup").each(function() {
             $(this).data('ind', index++);
+            if (recordIndex = $(this).closest('.recordcover-holder').find('.image-popup-trigger').data('recordInd')) {
+                $(this).data('recordInd', recordIndex);
+            }
         });
 
         // Assign image indices for individual images.
@@ -76,11 +87,17 @@ finna.imagePopup = (function(finna) {
 
                 var ind = $(this).data('ind');
                 var thumbInd = $(this).data('thumbInd');
-                var src = path + '/AJAX/JSON?method=getImagePopup&id=' + encodeURIComponent(id) + '&index=' + thumbInd;
+                var recordInd = $(this).data('recordInd');
+                var publicList = $(".main.template-dir-list.template-name-list").length;
+                var src =
+                    path + '/AJAX/JSON?method=getImagePopup&id=' + encodeURIComponent(id)
+                    + '&index=' + thumbInd + '&public-list=' + publicList
+                ;
                 return {
                     src: src,
                     href: $(this).attr('href'),
                     ind: ind,
+                    recordInd: recordInd
                 }
             } 
         ).toArray();
@@ -91,7 +108,10 @@ finna.imagePopup = (function(finna) {
                 items: urls,
                 index: $(this).data('ind'),
                 type: 'ajax',
-	            tLoading: vufindString.loading,
+	            tLoading: '',
+	            preloader: true,
+	            preload: [1,3],
+	            removalDelay: 200,
                 ajax: {
                     cursor: ''
                 },
@@ -101,6 +121,7 @@ finna.imagePopup = (function(finna) {
                         var popup = $(".imagepopup-holder");
                         var type = popup.data("type");
                         var id = popup.data("id");
+                        var recordIndex = $.magnificPopup.instance.currItem.data.recordInd;
 
                         $(".imagepopup-holder .image img").one("load", function() {
 				            $(".imagepopup-holder .image").addClass('loaded');
@@ -128,6 +149,15 @@ finna.imagePopup = (function(finna) {
                             });   
                         }                        
 
+                        // Record index
+                        if (recordIndex) {
+                            var recIndex = $('.imagepopup-holder .image-info .record-index');
+                            var recordCount = $(".paginationSimple .total").text();
+                            recIndex.find('.index').html(recordIndex);
+                            recIndex.find('.total').html(recordCount);
+                            recIndex.show();
+                        }
+
                         // Image copyright information
                         $(".imagepopup-holder .image-rights .copyright-link a").on("click", function() {
                             var mode = $(this).data("mode") == 1;                                      
@@ -144,13 +174,19 @@ finna.imagePopup = (function(finna) {
                         });
 
                         // Load book description                        
+                        var summaryHolder = $(".imagepopup-holder .summary");
                         if (type == 'marc') {
                             var url = path + '/AJAX/JSON?method=getDescription&id=' + id;
                             $.getJSON(url, function(response) {
                                 if (response.status === 'OK' && response.data.length > 0) {
-                                    $(".imagepopup-holder .summary > div").html(response.data);
+                                    summaryHolder.find("> div p").html(response.data);
+                                    finna.layout.initTruncate(summaryHolder);
+                                    summaryHolder.removeClass('loading');
                                 }
                             });
+                        } else {
+                            finna.layout.initTruncate(summaryHolder);
+                            summaryHolder.removeClass('loading');
                         }
                     },
                 },

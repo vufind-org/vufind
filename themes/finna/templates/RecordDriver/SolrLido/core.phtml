@@ -3,7 +3,7 @@
     <div class="cover-wrapper">
       <? /* Display thumbnail if appropriate: */ ?>
       <? $img = $this->recordImage($this->record($this->driver))?>
-      <?= $img->render('record', array('small' => array('w' => 189, 'h' => 300), 'medium' => array('w' => 258, 'maxh' => 100))) ?>
+      <?= $img->render('record', array('small' => array('w' => 50, 'h' => 50), 'medium' => array('w' => 1200, 'h' => 1200))) ?>
       <? /* Display qrcode if appropriate: */ ?>
       <? $access = $this->driver->getAccessRestrictions(); if (!empty($access)): ?>
         <div class="access-rights">

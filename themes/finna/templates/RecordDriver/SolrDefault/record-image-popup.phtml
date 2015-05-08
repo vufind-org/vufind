@@ -1,14 +1,21 @@
-<? $recordImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index) ?>
+<?
+$largeImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index, ['w' => 1200, 'h' => 1200, 'bg' => null]);
+$originalImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index, ['bg' => null]);
+$currentImage = $this->index+1;
+$numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
+?>
 <? $unprocessedFormats = $this->driver->tryMethod('getUnprocessedFormats'); ?>
 <? $format = $this->driver->getRecordType(); ?>
 <div class="imagepopup-holder <?= $format ?>" data-type="<?= $format ?>" data-id="<?= $this->driver->getUniqueID() ?>">
   <div class="imagepopup-container">
+    <div class="image-info">
+        <? if ($numOfImages > 1): ?>
+        <div class="image-index"><?= $this->translate('Image') . " $currentImage / $numOfImages" ?></div>
+        <? endif; ?> 
+        <div class="record-index"><span class="index"></span> / <span class="total"></span></div>
+    </div>
     <div class="image iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($unprocessedFormats))?>">
-      <!-- TODO <div class="functions">
-        <div class="image-number"><?= $this->translate('Image') ?> 1 / 4</div> 
-        <div class="open-link"><a><?= $this->translate('Open in a new window') ?><i class="fa fa-new-window"></i></a></div>   
-      </div> --> 
-      <img src="<?= $recordImage ?>" />
+      <img src="<?= $largeImage ?>" />
     </div>
     <div class="content">
       <h3 class="title"><?= $this->escapeHtml($this->driver->getTitle()) ?></h3>
@@ -17,28 +24,49 @@
           <? if ($author = $this->driver->getPrimaryAuthor()): ?>
           <?= $this->escapeHtml($author) ?>
           <? endif; ?>
+          <? if ($dates = $this->driver->trymethod('getResultDateRange')): ?>
+            <?=$this->escapeHtml($dates[0]);?><? if (isset($dates[1]) && $dates[1] != $dates[0]): ?>&ndash;<?=$this->escapeHtml($dates[1])?><? endif; ?>
+        <? else: ?>
           <? foreach ($this->driver->getPublicationDates() as $date): ?>
           <?= $this->escapeHtml($date) ?>
           <? endforeach ?>
+        <? endif; ?>
         </p>
       </div>
-      <? if ($building = $this->driver->getBuilding()): ?>
-      <div class="building"><?=$building[0] ?></div>
+      <? $results = $this->driver->getInstitutions(); ?>
+      <? if (count($results)): ?>
+      <div class="building">
+      <? foreach($results as $index => $institution): ?>
+          <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?>
+      <? endforeach; ?>
+      </div>
       <? endif ?>
-      <div class="summary">
+      <div class="summary loading">
+        <div data-rows="6" class="truncate-field">
         <? if ($format == 'marc'): ?>
-        <div>
-        </div>
+          <p></p>
         <? else: ?>
-           <? if ($summary = $this->driver->getSummary()): ?>
-             <? foreach ($this->driver->getSummary() as $item): ?>
-             <p><?= $this->escapeHtml($item) ?></p>
-             <? endforeach ?>
+          <? if ($summary = $this->driver->getSummary()): ?>
+          <? foreach ($this->driver->getSummary() as $item): ?>
+          <p><?= $this->escapeHtml($item) ?></p>
+          <? endforeach ?>
           <? endif ?>
         <? endif ?>
+        </div>
       </div>
+      <? if ($listNotes): ?>
+      <div class="list-notes">
+        <strong><?= $this->translate('Description'); ?></strong><? if ($listUser): ?><span class="notes-user"> (<?=$this->escapeHtml(trim($this->userPublicName($this->listUser)))?>)</span><? endif; ?>:
+        <ul>
+        <? foreach ($listNotes as $note): ?>
+          <li><?= preg_replace("/\r\n|\r|\n/",'<br>', $this->escapeHtml($note)) ?></li>
+        <? endforeach; ?>
+        </ul>
+      </div>
+      <? endif; ?>
       <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('To the record') ?></a></div>
       <? $rights = $this->driver->getImageRights($this->layout()->userLang) ?>
+      <div class="open-link"><a target="_blank" href="<?= $originalImage ?>"><i class="fa fa-new-window"></i> <?= $this->translate('Show image in new window') ?></a></div>
       <div class="image-rights">
         <div class="rights">
           <? $hasLink = isset($rights['link']); ?>

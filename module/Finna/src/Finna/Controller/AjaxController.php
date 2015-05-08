@@ -135,6 +135,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $id = $this->params()->fromQuery('id');
         $index = $this->params()->fromQuery('index');
+        $publicList = $this->params()->fromQuery('public-list') == '1';
+
         list($source, $recId) = explode('.', $id, 2);
         if ($source == 'pci') {
             $source = 'Primo';
@@ -148,6 +150,20 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $view->setTerminal(true);
         $view->driver = $driver;
         $view->index = $index;
+
+        $user = $this->getUser();
+        if ($data = $user->getSavedData($id, null)) {
+            $notes = [];
+            foreach ($data as $list) {
+                if ($list->notes && $list->notes != '') {
+                    $notes[] = $list->notes;
+                }
+            }
+            $view->listNotes = $notes;
+            if ($publicList) {
+                $view->listUser = $user;
+            }
+        }
 
         return $view;
     }
