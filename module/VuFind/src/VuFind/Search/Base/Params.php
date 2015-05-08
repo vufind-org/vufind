@@ -112,20 +112,6 @@ class Params implements ServiceLocatorAwareInterface
     protected $options;
 
     /**
-     * Recommendation settings
-     *
-     * @var array
-     */
-    protected $recommend = [];
-
-    /**
-     * Are recommendations turned on?
-     *
-     * @var bool
-     */
-    protected $recommendationEnabled = [];
-
-    /**
      * Main facet configuration
      *
      * @var array
@@ -251,10 +237,6 @@ class Params implements ServiceLocatorAwareInterface
         $this->initSearch($request);
         $this->initSort($request);
         $this->initFilters($request);
-
-        // Always initialize recommendations last (since they rely on knowing
-        // other search settings that were set above).
-        $this->initRecommendations($request);
 
         // Remember the user's settings for future reference (we only want to do
         // this in initFromRequest, since other code may call the set methods from
@@ -658,63 +640,18 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Get an array of recommendation objects for augmenting the results display.
-     *
-     * @param string $location Name of location to use as a filter (null to get
-     * associative array of all locations); legal non-null values: 'top', 'side'
-     *
-     * @return array
-     */
-    public function getRecommendations($location = 'top')
-    {
-        $enabled = $this->recommendationsEnabled();
-        if (null === $location) {
-            $active = [];
-            foreach ($enabled as $current) {
-                if (isset($this->recommend[$current])) {
-                    $active[$current] = $this->recommend[$current];
-                }
-            }
-            return $active;
-        }
-        return in_array($location, $enabled) && isset($this->recommend[$location])
-            ? $this->recommend[$location] : [];
-    }
-
-    /**
-     * Set the enabled status of recommendation modules -- it is often useful to turn
-     * off recommendations when retrieving results in a context other than standard
-     * display of results.
-     *
-     * @param bool|array $new New setting (true to enable all, false to disable all,
-     * array to set which areas are active, null to leave unchanged)
-     *
-     * @return array          Current active recommendation areas
-     */
-    public function recommendationsEnabled($new = null)
-    {
-        if (true === $new) {
-            $this->recommendationEnabled = ['top', 'side', 'noresults'];
-        } else if (false === $new) {
-            $this->recommendationEnabled = [];
-        } else if (null !== $new) {
-            $this->recommendationEnabled = $new;
-        }
-        return $this->recommendationEnabled;
-    }
-
-    /**
      * Load all recommendation settings from the relevant ini file.  Returns an
      * associative array where the key is the location of the recommendations (top
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
+     * @param array $enabled Array of enabled recommendation locations.
+     *
      * @return array associative: location (top/side) => search settings
      */
-    protected function getRecommendationSettings()
+    public function getRecommendationSettings($enabled)
     {
         // Bypass settings if recommendations are disabled.
-        $enabled = $this->recommendationsEnabled();
         if (empty($enabled)) {
             return [];
         }
@@ -774,65 +711,6 @@ class Params implements ServiceLocatorAwareInterface
         }
 
         return $recommend;
-    }
-
-    /**
-     * Initialize the recommendations modules.
-     *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request.
-     *
-     * @return void
-     */
-    protected function initRecommendations($request)
-    {
-        // If no settings were found, quit now:
-        $settings = $this->getRecommendationSettings();
-        if (empty($settings)) {
-            return;
-        }
-
-        // Get the plugin manager (skip recommendations if it is unavailable):
-        $sm = $this->getServiceLocator();
-        if (!is_object($sm) || !$sm->has('VuFind\RecommendPluginManager')) {
-            return;
-        }
-        $manager = $sm->get('VuFind\RecommendPluginManager');
-
-        // Process recommendations for each location:
-        $this->recommend = [
-            'top' => [], 'side' => [], 'noresults' => [],
-            'bottom' => [],
-        ];
-        foreach ($settings as $location => $currentSet) {
-            // If the current location is disabled, skip processing!
-            if (empty($currentSet)) {
-                continue;
-            }
-            // Make sure the current location's set of recommendations is an array;
-            // if it's a single string, this normalization will simplify processing.
-            if (!is_array($currentSet)) {
-                $currentSet = [$currentSet];
-            }
-            // Now loop through all recommendation settings for the location.
-            foreach ($currentSet as $current) {
-                // Break apart the setting into module name and extra parameters:
-                $current = explode(':', $current);
-                $module = array_shift($current);
-                $params = implode(':', $current);
-                if (!$manager->has($module)) {
-                    throw new \Exception(
-                        'Could not load recommendation module: ' . $module
-                    );
-                }
-
-                // Build a recommendation module with the provided settings.
-                $obj = $manager->get($module);
-                $obj->setConfig($params);
-                $obj->init($this, $request);
-                $this->recommend[$location][] = $obj;
-            }
-        }
     }
 
     /**

@@ -127,6 +127,13 @@ abstract class Results implements ServiceLocatorAwareInterface
     protected $suggestions = null;
 
     /**
+     * Recommendations
+     *
+     * @var array
+     */
+    protected $recommend = [];
+
+    /**
      * Search service.
      *
      * @var SearchService
@@ -233,16 +240,6 @@ abstract class Results implements ServiceLocatorAwareInterface
         $this->startQueryTimer();
         $this->performSearch();
         $this->stopQueryTimer();
-
-        // Process recommendations:
-        $recommendations = $this->getParams()->getRecommendations(null);
-        if (is_array($recommendations)) {
-            foreach ($recommendations as $currentSet) {
-                foreach ($currentSet as $current) {
-                    $current->process($this);
-                }
-            }
-        }
     }
 
     /**
@@ -493,6 +490,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         $this->resultTotal = $minified->r;
     }
 
+
     /**
      * Get an array of recommendation objects for augmenting the results display.
      *
@@ -503,11 +501,22 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function getRecommendations($location = 'top')
     {
-        // Proxy the params object's getRecommendations call -- we need to set up
-        // the recommendations in the params object since they need to be
-        // query-aware, but from a caller's perspective, it makes more sense to
-        // pull them from the results object.
-        return $this->getParams()->getRecommendations($location);
+        if (null === $location) {
+            return $this->recommend;
+        }
+        return isset($this->recommend[$location]) ? $this->recommend[$location] : [];
+    }
+
+    /**
+     * Set the recommendation objects (see \VuFind\Search\RecommendListener).
+     *
+     * @param array $recommend Recommendations
+     *
+     * @return void
+     */
+    public function setRecommendations($recommend)
+    {
+        $this->recommend = $recommend;
     }
 
     /**

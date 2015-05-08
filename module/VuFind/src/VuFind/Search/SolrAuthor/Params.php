@@ -82,9 +82,11 @@ class Params extends \VuFind\Search\Solr\Params
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
+     * @param array $enabled Array of enabled recommendation locations.
+     *
      * @return array associative: location (top/side) => search settings
      */
-    protected function getRecommendationSettings()
+    public function getRecommendationSettings($enabled)
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:

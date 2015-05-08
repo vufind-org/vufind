@@ -201,7 +201,7 @@ class AbstractSearch extends AbstractBase
     protected function getActiveRecommendationSettings()
     {
         // Enable recommendations unless explicitly told to disable them:
-        $all = ['top', 'side', 'noresults'];
+        $all = ['top', 'side', 'noresults', 'bottom'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
         if ($noRecommend === 1 || $noRecommend === '1'
             || $noRecommend === 'true' || $noRecommend === true
@@ -215,6 +215,28 @@ class AbstractSearch extends AbstractBase
         return array_diff(
             $all, array_map('trim', explode(',', strtolower($noRecommend)))
         );
+    }
+
+    /**
+     * Create a recommendation listener based on the provided search params.
+     * Return null if no recommendations are active (so we can avoid attaching
+     * a useless listener).
+     *
+     * @param \VuFind\Search\Base\Params $params Search parameters
+     *
+     * @return \VuFind\Search\RecommendListener
+     */
+    protected function getRecommendListener($params)
+    {
+        $active = $this->getActiveRecommendationSettings();
+        if (empty($active)) {
+            return null;
+        }
+        $listener = new \VuFind\Search\RecommendListener(
+            $this->getServiceLocator()->get('VuFind\RecommendPluginManager')
+        );
+        $listener->setConfig($params->getRecommendationSettings($active));
+        return $listener;
     }
 
     /**
@@ -234,15 +256,21 @@ class AbstractSearch extends AbstractBase
 
         $results = $this->getResultsManager()->get($this->searchClassId);
         $params = $results->getParams();
-        $params->recommendationsEnabled($this->getActiveRecommendationSettings());
 
         // Send both GET and POST variables to search class:
-        $params->initFromRequest(
-            new Parameters(
-                $this->getRequest()->getQuery()->toArray()
-                + $this->getRequest()->getPost()->toArray()
-            )
+        $request = new Parameters(
+            $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray()
         );
+        $params->initFromRequest($request);
+
+        // Hook up listener for recommendations.
+        if ($recommendListener = $this->getRecommendListener($params)) {
+            $recommendListener->attach($this->getEventManager()->getSharedManager());
+        }
+
+        $this->getEventManager()
+            ->trigger('vufind.searchParamsSet', $this, compact('params', 'request'));
 
         // Make parameters available to the view:
         $view->params = $params;
@@ -298,6 +326,10 @@ class AbstractSearch extends AbstractBase
                 throw $e;
             }
         }
+
+        $this->getEventManager()
+            ->trigger('vufind.searchComplete', $this, compact('results'));
+
         // Save statistics:
         if ($this->logStatistics) {
             $this->getServiceLocator()->get('VuFind\SearchStats')

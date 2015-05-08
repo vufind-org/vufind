@@ -133,7 +133,6 @@ class CombinedController extends AbstractSearch
         // Set up current request context:
         $results = $this->getResultsManager()->get('Combined');
         $params = $results->getParams();
-        $params->recommendationsEnabled(true);
         $params->initFromRequest(
             new Parameters(
                 $this->getRequest()->getQuery()->toArray()
