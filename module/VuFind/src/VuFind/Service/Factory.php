@@ -475,14 +475,7 @@ class Factory
         $translator = $sm->get('VuFind\Translator');
         $recaptcha->setOption('lang', $translator->getLocale());
 
-        $httpClient = $sm->get('VuFind\Http')->createClient(); /*
-        $httpClient = new \Zend\Http\Client(
-            self::VERIFY_SERVER,
-            array(
-                'adapter'   => 'Zend\Http\Client\Adapter\Socket',
-                'sslcapath' => '/etc/ssl/certs'
-            )
-        ); */
+        $httpClient = $sm->get('VuFind\Http')->createClient();
         $recaptcha->setHttpClient($httpClient);
         return $recaptcha;
     }
