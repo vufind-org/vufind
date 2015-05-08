@@ -1,6 +1,6 @@
 <?
-$largeImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index, ['w' => 1200, 'h' => 1200, 'bg' => null]);
-$originalImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index, ['bg' => null]);
+$largeImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index, ['w' => 1200, 'h' => 1200]);
+$originalImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index);
 $currentImage = $this->index+1;
 $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
 ?>
