@@ -607,8 +607,16 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   }
 }
 #hierarchyTreeHolder {
-  border-right:1px solid @gray-lighter;
-  overflow-x:hidden;
+    overflow-x:hidden;
+    & .hierarchy-tree .jstree-icon {
+        color: @gray-light;  
+    }
+    & .jstree-container-ul {
+        background: none;
+        & .jstree-node {
+            background: none;
+        }
+    }
 }
 
 /* --- Record images--- */
