@@ -28,7 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
  */
-namespace VuFind\Auth;
+namespace Finna\Auth;
 
 use VuFind\Exception\Auth as AuthException;
 
@@ -43,49 +43,7 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
  */
-class ILS extends AbstractBase
+class ILS extends \VuFind\Auth\ILS
 {
-    /**
-     * Update the database using details from the ILS, then return the User object.
-     *
-     * @param array $info User details returned by ILS driver.
-     *
-     * @throws AuthException
-     * @return \VuFind\Db\Row\User Processed User object.
-     */
-    protected function processILSUser($info)
-    {
-        // Figure out which field of the response to use as an identifier; fail
-        // if the expected field is missing or empty:
-        $config = $this->getConfig();
-        $usernameField = isset($config->Authentication->ILS_username_field)
-            ? $config->Authentication->ILS_username_field : 'cat_username';
-        if (!isset($info[$usernameField]) || empty($info[$usernameField])) {
-            throw new AuthException('authentication_error_technical');
-        }
-
-        // Check to see if we already have an account for this user:
-        $user = $this->getUserTable()->getByUsername($info[$usernameField]);
-
-        // No need to store the ILS password in VuFind's main password field:
-        $user->password = '';
-
-        // Update user information based on ILS data:
-        $fields = ['firstname', 'lastname', 'email', 'major', 'college'];
-        foreach ($fields as $field) {
-            // Special case: don't override existing email address:
-            if ($field == 'email' && !empty($user->email)) {
-                continue;
-            }
-            $user->$field = isset($info[$field]) ? $info[$field] : ' ';
-        }
-
-        // Update the user in the database, then return it to the caller:
-        $user->saveCredentials(
-            isset($info['cat_username']) ? $info['cat_username'] : ' ',
-            isset($info['cat_password']) ? $info['cat_password'] : ' '
-        );
-
-        return $user;
-    }
+    use ILSFinna;
 }

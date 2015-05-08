@@ -55,6 +55,7 @@ class Factory
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
+        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
         return $driver;
     }
 
@@ -132,6 +133,7 @@ class Factory
             null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
+        $driver->attachSearchService($sm->getServiceLocator()->get('VuFind\Search'));
         return $driver;
     }
 

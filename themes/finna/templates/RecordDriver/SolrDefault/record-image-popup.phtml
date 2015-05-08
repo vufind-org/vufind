@@ -1,9 +1,9 @@
 <? $recordImage = $this->recordImage($this->record($this->driver))->getLargeImage($this->index) ?>
-
+<? $unprocessedFormats = $this->driver->tryMethod('getUnprocessedFormats'); ?>
 <? $format = $this->driver->getRecordType(); ?>
 <div class="imagepopup-holder <?= $format ?>" data-type="<?= $format ?>" data-id="<?= $this->driver->getUniqueID() ?>">
   <div class="imagepopup-container">
-    <div class="image">
+    <div class="image iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($unprocessedFormats))?>">
       <!-- TODO <div class="functions">
         <div class="image-number"><?= $this->translate('Image') ?> 1 / 4</div> 
         <div class="open-link"><a><?= $this->translate('Open in a new window') ?><i class="fa fa-new-window"></i></a></div>   

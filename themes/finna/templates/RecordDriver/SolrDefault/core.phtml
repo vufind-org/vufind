@@ -28,27 +28,7 @@
         <? endforeach; ?>
       </div>
     <? endif; ?>
-    <div class="record-authors" property="author">
-      <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
-        <div class="truncate-field">
-          <span class="recordAuthors">
-          <? foreach($results as $index => $author): ?>
-            <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
-          <? endforeach; ?>
-          </span>
-          <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
-          <? $containerID = $this->driver->getContainerRecordID(); ?>
-            <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
-            <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
-          <? endif; ?>
-          <? $summDate = $this->driver->getPublicationDates(); ?>
-          <? if ((!empty($summDate)) AND (empty($ref))) : ?>
-            <?=$this->escapeHtml($summDate[0])?>
-          <? endif; ?>
-        </div>
-    <? endif; ?>
-    </div>
-
+    
     <? $urls = $this->driver->getURLs(); $openURL = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false; $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
     <? if (!empty($urls) || $openURL || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
       <div class="recordURLs local-available-online-record">
@@ -72,6 +52,48 @@
       <? endif; ?>
       </div>
     <? endif; ?>
+    
+    <div class="record-authors" property="author">
+      <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+        <?=$this->record($this->driver)->getFormatList()?><br>
+      <? endif; ?>
+      <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
+        <div class="truncate-field">
+          <span class="recordAuthors">
+          <? foreach($results as $index => $author): ?>
+            <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
+          <? endforeach; ?>
+          </span>
+          <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>
+          <? $containerID = $this->driver->getContainerRecordID(); ?>
+            <?=$this->transEsc('Published in')?> <a href="<?=($containerID ? $this->recordLink()->getUrl("VuFind|$containerID") : $this->record($this->driver)->getLink('journaltitle', $journalTitle))?>"><?=$this->escapeHtml($journalTitle)?></a>
+            <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
+          <? endif; ?>
+          <? $summDate = $this->driver->getPublicationDates(); ?>
+        </div>
+      <? endif; ?>
+      <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
+          <span class="recordPublications">
+            <? foreach ($publications as $field): ?>
+              <span property="publisher" typeof="Organization">
+              <? $pubName = $field->getName(); if (!empty($pubName)): ?>
+                <span property="name"><?=$this->escapeHtml($pubName)?></span>
+              <? endif; ?>
+              </span>
+              <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+                <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
+              <? endif; ?>
+            <? endforeach; ?>
+          </span>
+        <? endif; ?>
+      
+      <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
+          <span class="recordEdition">
+              <span property="bookEdition"><?=$this->escapeHtml($edition)?></span>
+          </span>
+      <? endif; ?>   
+    </div>
+    
     <div class="description">
       <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
         <i class="fa fa-spinner fa-spin"></i>
@@ -86,7 +108,7 @@
     <? endif; ?>
 
     <?/* Display Main Details */?>
-    <table class="table table-finna-record record-details" style="table-layout:initial;">
+    <table class="table table-finna-record record-details record-details-more" style="table-layout:initial;">
       <tbody>
       <? $nextTitles = $this->driver->getNewerTitles(); $prevTitles = $this->driver->getPreviousTitles(); ?>
       <? if (!empty($nextTitles)): ?>
@@ -109,27 +131,6 @@
           <? endforeach; ?>
         </td>
       </tr>
-      <? endif; ?>
-
-      <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
-        <tr class="recordFormat">
-          <th>
-            <?=$this->record($this->driver)->getFormatList()?>
-          </th>
-          <td>
-            <? if ($physicalDescriptions = $this->driver->getPhysicalDescriptions()): ?>
-              <? foreach ($physicalDescriptions as $description): ?>
-                <span><?=$this->escapeHtml($description) ?> </span>
-              <? endforeach; ?>
-            <? endif; ?>
-            <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
-            <span class="recordEdition">
-              <?=$this->transEsc('Edition')?>
-              <span property="bookEdition"><?=$this->escapeHtml($edition)?></span>
-            </span>
-            <? endif; ?>
-          </td>
-        </tr>
       <? endif; ?>
 
       <? if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
@@ -186,40 +187,17 @@
         </tr>
       <? endif; ?>
 
-      <? $notes = $this->driver->getGeneralNotes(); if (!empty($notes)): ?>
-      <? $contentDisplayed = true; ?>
-      <tr>
-        <th><?=$this->transEsc('Item Description')?>: </th>
-        <td>
-          <? foreach ($notes as $field): ?>
-          <?=$this->escapeHtml($field)?><br/>
+      <? if ($physicalDescriptions = $this->driver->getPhysicalDescriptions()): ?>
+        <tr class="physicalDescriptions">
+          <th><?=$this->transEsc('Physical Description')?>: </th>
+          <td>
+          <? foreach ($physicalDescriptions as $description): ?>
+            <span><?=$this->escapeHtml($description) ?> </span>
           <? endforeach; ?>
           </td>
         </tr>
       <? endif; ?>
-
-      <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
-      <tr class="recordPublications">
-        <th><?=$this->transEsc('Published')?>: </th>
-        <td>
-          <? foreach ($publications as $field): ?>
-            <span property="publisher" typeof="Organization">
-            <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
-              <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
-            <? endif; ?>
-            <? $pubName = $field->getName(); if (!empty($pubName)): ?>
-              <span property="name"><?=$this->escapeHtml($pubName)?></span>
-            <? endif; ?>
-            </span>
-            <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
-              <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
-            <? endif; ?>
-            <br/>
-          <? endforeach; ?>
-        </td>
-      </tr>
-      <? endif; ?>
-
+            
       <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
         <tr class="recordLanguage">
           <th><?=$this->transEsc('Language')?>: </th>
@@ -234,6 +212,39 @@
         </tr>
       <? endif; ?>
 
+      <? $notes = $this->driver->getGeneralNotes(); if (!empty($notes)): ?>
+      <? $contentDisplayed = true; ?>
+      <tr>
+        <th><?=$this->transEsc('Item Description')?>: </th>
+        <td>
+          <? foreach ($notes as $field): ?>
+          <?=$this->escapeHtml($field)?><br/>
+          <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+      
+      <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
+          <tr class="recordPublications">
+            <th><?=$this->transEsc('Publisher')?>: </th>
+            <td>
+            <? foreach ($publications as $field): ?>
+              <span property="publisher" typeof="Organization">
+                <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+                <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
+                <? endif; ?>
+                <? $pubName = $field->getName(); if (!empty($pubName)): ?>
+                <span property="name"><?=$this->escapeHtml($pubName)?></span>
+                <? endif; ?>
+                <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+                <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
+                <? endif; ?>
+              </span>
+            <? endforeach; ?>
+            </td>
+          </tr>
+      <? endif; ?>
+      
       <? $projectedDate = $this->driver->tryMethod('getProjectedPublicationDate'); if (!empty($projectedDate)): ?>
         <tr class="coreProjectedPublicationDate">
           <th><?=$this->transEsc('Projected Publication Date')?>: </th>
@@ -272,8 +283,6 @@
         </td>
       </tr>
       <? endif; ?>
-      </tbody>
-      <tbody class="record-details-more">
       <? $subjects = $this->driver->getAllSubjectHeadings(); if (!empty($subjects)): ?>
       <tr class="recordSubjects">
         <th><?=$this->transEsc('Subjects')?>: </th>
@@ -590,7 +599,7 @@
       <? endif; ?>
       </tbody>
     </table>
-    <button class="btn btn-primary show-details-button hidden" onClick="$('.record-details-more').toggleClass('hidden');$(this).toggleClass('hidden');$('.show-details-button i').toggleClass('fa-flip-vertical');return false;">Näytä kaikki tiedot <i class="fa fa-arrow-down"></i></button>
+    <button class="btn show-details-button hidden" onClick="$('.record-details-more').toggleClass('hidden');$(this).toggleClass('hidden');$('.show-details-button i').toggleClass('fa-flip-vertical');return false;">Näytä kaikki tiedot <i class="fa fa-arrow-down"></i></button>
     <?/* End Main Details */?>
   </div>
 </div>
