@@ -641,23 +641,20 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $results = $this->getServiceLocator()
-                ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
-            $params = $results->getParams();
+            $runner = \VuFind\Search\SearchRunner::factory(
+                $this->getServiceLocator(), 'Favorites', ['side']
+            );
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
-            $params->initFromRequest(
-                new Parameters(
-                    $this->getRequest()->getQuery()->toArray()
-                    + $this->getRequest()->getPost()->toArray()
-                    + ['id' => $this->params()->fromRoute('id')]
-                )
+            $request = new Parameters(
+                $this->getRequest()->getQuery()->toArray()
+                + $this->getRequest()->getPost()->toArray()
+                + ['id' => $this->params()->fromRoute('id')]
             );
-
-            $results->performAndProcessSearch();
+            $results = $runner->run($request);
             return $this->createViewModel(
-                ['params' => $params, 'results' => $results]
+                ['params' => $results->getParams(), 'results' => $results]
             );
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {

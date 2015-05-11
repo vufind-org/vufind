@@ -85,12 +85,12 @@ class RecommendListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'Zend\Mvc\Controller\AbstractController',
-            'vufind.searchParamsSet', [$this, 'onSearchParamsSet']
+            'VuFind\Search\SearchRunner', 'vufind.searchParamsSet',
+            [$this, 'onSearchParamsSet']
         );
         $manager->attach(
-            'Zend\Mvc\Controller\AbstractController',
-            'vufind.searchComplete', [$this, 'onSearchComplete']
+            'VuFind\Search\SearchRunner', 'vufind.searchComplete',
+            [$this, 'onSearchComplete']
         );
     }
 

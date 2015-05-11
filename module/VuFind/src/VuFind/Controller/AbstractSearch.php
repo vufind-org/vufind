@@ -218,28 +218,6 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Create a recommendation listener based on the provided search params.
-     * Return null if no recommendations are active (so we can avoid attaching
-     * a useless listener).
-     *
-     * @param \VuFind\Search\Base\Params $params Search parameters
-     *
-     * @return \VuFind\Search\RecommendListener
-     */
-    protected function getRecommendListener($params)
-    {
-        $active = $this->getActiveRecommendationSettings();
-        if (empty($active)) {
-            return null;
-        }
-        $listener = new \VuFind\Search\RecommendListener(
-            $this->getServiceLocator()->get('VuFind\RecommendPluginManager')
-        );
-        $listener->setConfig($params->getRecommendationSettings($active));
-        return $listener;
-    }
-
-    /**
      * Send search results to results view
      *
      * @return \Zend\View\Model\ViewModel
@@ -254,42 +232,29 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $results = $this->getResultsManager()->get($this->searchClassId);
-        $params = $results->getParams();
+        $runner = \VuFind\Search\SearchRunner::factory(
+            $this->getServiceLocator(), $this->searchClassId,
+            $this->getActiveRecommendationSettings()
+        );
 
         // Send both GET and POST variables to search class:
         $request = new Parameters(
             $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray()
         );
-        $params->initFromRequest($request);
-
-        // Hook up listener for recommendations.
-        if ($recommendListener = $this->getRecommendListener($params)) {
-            $recommendListener->attach($this->getEventManager()->getSharedManager());
-        }
-
-        $this->getEventManager()
-            ->trigger('vufind.searchParamsSet', $this, compact('params', 'request'));
-
-        // Make parameters available to the view:
-        $view->params = $params;
+        $view->results = $results = $runner->run($request);
+        $view->params = $results->getParams();
 
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
-        try {
-            // Explicitly execute search within controller -- this allows us to
-            // catch exceptions more reliably:
-            $results->performAndProcessSearch();
-
+        if (!$runner->encounteredParseError()) {
             // If a "jumpto" parameter is set, deal with that now:
             if ($jump = $this->processJumpTo($results)) {
                 return $jump;
             }
 
-            // Send results to the view and remember the current URL as the last
+            // Remember the current URL as the last
             // search.
-            $view->results = $results;
             $this->rememberSearch($results);
 
             // Add to search history:
@@ -310,25 +275,11 @@ class AbstractSearch extends AbstractBase
             if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
             }
-        } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
-            if ($e->hasTag('VuFind\Search\ParserError')) {
-                // If it's a parse error or the user specified an invalid field, we
-                // should display an appropriate message:
-                $view->parseError = true;
-
-                // We need to create and process an "empty results" object to
-                // ensure that recommendation modules and templates behave
-                // properly when displaying the error message.
-                $view->results = $this->getResultsManager()->get('EmptySet');
-                $view->results->setParams($params);
-                $view->results->performAndProcessSearch();
-            } else {
-                throw $e;
-            }
+        } else {
+            // If it's a parse error or the user specified an invalid field, we
+            // should display an appropriate message:
+            $view->parseError = true;
         }
-
-        $this->getEventManager()
-            ->trigger('vufind.searchComplete', $this, compact('results'));
 
         // Save statistics:
         if ($this->logStatistics) {
