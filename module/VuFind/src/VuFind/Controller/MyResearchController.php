@@ -641,9 +641,7 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $runner = \VuFind\Search\SearchRunner::factory(
-                $this->getServiceLocator(), 'Favorites', ['side']
-            );
+            $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -652,7 +650,7 @@ class MyResearchController extends AbstractBase
                 + $this->getRequest()->getPost()->toArray()
                 + ['id' => $this->params()->fromRoute('id')]
             );
-            $results = $runner->run($request);
+            $results = $runner->run($request, 'Favorites', ['side']);
             return $this->createViewModel(
                 ['params' => $results->getParams(), 'results' => $results]
             );

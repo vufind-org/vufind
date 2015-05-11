@@ -232,22 +232,25 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $runner = \VuFind\Search\SearchRunner::factory(
-            $this->getServiceLocator(), $this->searchClassId,
-            $this->getActiveRecommendationSettings()
-        );
+        $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
 
         // Send both GET and POST variables to search class:
         $request = new Parameters(
             $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray()
         );
-        $view->results = $results = $runner->run($request);
+        $view->results = $results = $runner->run(
+            $request, $this->searchClassId, $this->getActiveRecommendationSettings()
+        );
         $view->params = $results->getParams();
 
-        // Attempt to perform the search; if there is a problem, inspect any Solr
-        // exceptions to see if we should communicate to the user about them.
-        if (!$runner->encounteredParseError()) {
+        // If we received an EmptySet back, that indicates that the real search
+        // failed due to some kind of syntax error, and we should display a
+        // warning to the user; otherwise, we should proceed with normal post-search
+        // processing.
+        if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            $view->parseError = true;
+        } else {
             // If a "jumpto" parameter is set, deal with that now:
             if ($jump = $this->processJumpTo($results)) {
                 return $jump;
@@ -274,10 +277,6 @@ class AbstractSearch extends AbstractBase
             if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
             }
-        } else {
-            // If it's a parse error or the user specified an invalid field, we
-            // should display an appropriate message:
-            $view->parseError = true;
         }
 
         // Save statistics:

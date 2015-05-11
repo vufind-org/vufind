@@ -27,6 +27,7 @@
  */
 namespace VuFind\Search;
 use VuFind\Recommend\PluginManager as RecommendManager;
+use VuFind\Search\RecommendListener;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
@@ -52,13 +53,6 @@ class SearchRunner
     protected $events = null;
 
     /**
-     * Did we encounter a parse error?
-     *
-     * @var bool
-     */
-    protected $parseError = false;
-
-    /**
      * Recommendation module manager.
      *
      * @var RecommendManager
@@ -73,68 +67,41 @@ class SearchRunner
     protected $resultsManager;
 
     /**
-     * Search type.
-     *
-     * @var string
-     */
-    protected $searchClassId;
-
-    /**
-     * Active recommendation areas.
-     *
-     * @var array
-     */
-    protected $activeRecommendations;
-
-    /**
      * Constructor
      *
      * @param ResultsManager   $resultsManager        Results manager
      * @param RecommendManager $recommendManager      Recommendation module manager
-     * @param string           $searchClassId         Type of search to perform
-     * @param array            $activeRecommendations Array of active recommendation
-     * areas.
      */
     public function __construct(ResultsManager $resultsManager,
-        RecommendManager $recommendManager, $searchClassId = 'Solr',
-        array $activeRecommendations = []
+        RecommendManager $recommendManager
     ) {
         $this->resultsManager = $resultsManager;
         $this->recommendManager = $recommendManager;
-        $this->searchClassId = $searchClassId;
-        $this->activeRecommendations = $activeRecommendations;
-    }
-
-    /**
-     * Did we encounter a parse error during the last run?
-     *
-     * @return bool
-     */
-    public function encounteredParseError()
-    {
-        return $this->parseError;
     }
 
     /**
      * Run the search.
      *
-     * @param Parameters $request Incoming parameters for search.
+     * @param Parameters $request               Incoming parameters for search
+     * @param string     $searchClassId         Type of search to perform
+     * @param array      $activeRecommendations Array of active recommendation
+     * areas.
      *
      * @return \VuFind\Search\Base\Results
      *
      * @throws \VuFindSearch\Backend\Exception\BackendException
      */
-    public function run(Parameters $request)
-    {
-        $results = $this->resultsManager->get($this->searchClassId);
+    public function run(Parameters $request, $searchClassId = 'Solr',
+        array $activeRecommendations = []
+    ) {
+        $results = $this->resultsManager->get($searchClassId);
         $params = $results->getParams();
         $params->initFromRequest($request);
 
         // Hook up listener for recommendations.
-        if ($recommendListener = $this->getRecommendListener($params)) {
-            $recommendListener->attach($this->getEventManager()->getSharedManager());
-        }
+        $this->configureRecommendListener($params, $activeRecommendations);
 
+        // Trigger the "configuration done" event.
         $this->getEventManager()
             ->trigger('vufind.searchParamsSet', $this, compact('params', 'request'));
 
@@ -144,13 +111,8 @@ class SearchRunner
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
-            $this->parseError = false;
         } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
             if ($e->hasTag('VuFind\Search\ParserError')) {
-                // If it's a parse error or the user specified an invalid field, we
-                // should display an appropriate message:
-                $this->parseError = true;
-
                 // We need to create and process an "empty results" object to
                 // ensure that recommendation modules and templates behave
                 // properly when displaying the error message.
@@ -162,6 +124,7 @@ class SearchRunner
             }
         }
 
+        // Trigger the "search completed" event.
         $this->getEventManager()
             ->trigger('vufind.searchComplete', $this, compact('results'));
 
@@ -198,43 +161,21 @@ class SearchRunner
     }
 
     /**
-     * Create a recommendation listener based on the provided search params.
-     * Return null if no recommendations are active (so we can avoid attaching
-     * a useless listener).
+     * Create and attach a recommendation listener based on the provided search
+     * params.
      *
      * @param \VuFind\Search\Base\Params $params Search parameters
+     * @param array                      $active Active recommendation areas
      *
-     * @return \VuFind\Search\RecommendListener
+     * @return void
      */
-    protected function getRecommendListener($params)
+    protected function configureRecommendListener($params, $active)
     {
-        if (empty($this->activeRecommendations)) {
-            return null;
+        // Don't bother attaching a listener if no areas are active.
+        if (!empty($active)) {
+            $listener = new RecommendListener($this->recommendManager);
+            $listener->setConfig($params->getRecommendationSettings($active));
+            $listener->attach($this->getEventManager()->getSharedManager());
         }
-        $listener = new \VuFind\Search\RecommendListener($this->recommendManager);
-        $listener->setConfig(
-            $params->getRecommendationSettings($this->activeRecommendations)
-        );
-        return $listener;
-    }
-
-    /**
-     * Build a runner object.
-     *
-     * @param ServiceManager $sm                    Service manager
-     * @param string         $searchClassId         Search type to run
-     * @param array          $activeRecommendations Active recommendation areas
-     *
-     * @return SearchRunner
-     */
-    public static function factory(ServiceManager $sm, $searchClassId = 'Solr',
-        array $activeRecommendations = []
-    ) {
-        return new SearchRunner(
-            $sm->get('VuFind\SearchResultsPluginManager'),
-            $sm->get('VuFind\RecommendPluginManager'),
-            $searchClassId,
-            $activeRecommendations
-        );
     }
 }
