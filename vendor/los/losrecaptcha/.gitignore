@@ -1,9 +1,0 @@
-/.settings
-/.buildpath
-/.project
-/tests/TestConfiguration.php
-!*.gitadd
-!*.gitkeep
-/vendor
-/composer.lock
-/build

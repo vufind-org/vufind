@@ -173,18 +173,18 @@
     },
     {
         "name": "symfony/process",
-        "version": "v2.6.6",
-        "version_normalized": "2.6.6.0",
+        "version": "v2.6.7",
+        "version_normalized": "2.6.7.0",
         "target-dir": "Symfony/Component/Process",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/Process.git",
-            "reference": "a8bebaec1a9dc6cde53e0250e32917579b0be552"
+            "reference": "9f3c4baaf840ed849e1b1f7bfd5ae246e8509562"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Process/zipball/a8bebaec1a9dc6cde53e0250e32917579b0be552",
-            "reference": "a8bebaec1a9dc6cde53e0250e32917579b0be552",
+            "url": "https://api.github.com/repos/symfony/Process/zipball/9f3c4baaf840ed849e1b1f7bfd5ae246e8509562",
+            "reference": "9f3c4baaf840ed849e1b1f7bfd5ae246e8509562",
             "shasum": ""
         },
         "require": {
@@ -193,7 +193,7 @@
         "require-dev": {
             "symfony/phpunit-bridge": "~2.7"
         },
-        "time": "2015-03-30 15:54:10",
+        "time": "2015-05-02 15:18:45",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -212,31 +212,31 @@
         ],
         "authors": [
             {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            },
-            {
                 "name": "Fabien Potencier",
                 "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
             }
         ],
         "description": "Symfony Process Component",
-        "homepage": "http://symfony.com"
+        "homepage": "https://symfony.com"
     },
     {
         "name": "symfony/css-selector",
-        "version": "v2.6.6",
-        "version_normalized": "2.6.6.0",
+        "version": "v2.6.7",
+        "version_normalized": "2.6.7.0",
         "target-dir": "Symfony/Component/CssSelector",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/CssSelector.git",
-            "reference": "db2c48df9658423a8c168d89f7b971b73d3d74a4"
+            "reference": "189cf0f7f56d7c4be3b778df15a7f16a29f3680d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/db2c48df9658423a8c168d89f7b971b73d3d74a4",
-            "reference": "db2c48df9658423a8c168d89f7b971b73d3d74a4",
+            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/189cf0f7f56d7c4be3b778df15a7f16a29f3680d",
+            "reference": "189cf0f7f56d7c4be3b778df15a7f16a29f3680d",
             "shasum": ""
         },
         "require": {
@@ -245,7 +245,7 @@
         "require-dev": {
             "symfony/phpunit-bridge": "~2.7"
         },
-        "time": "2015-03-22 16:55:57",
+        "time": "2015-05-02 15:18:45",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -264,20 +264,20 @@
         ],
         "authors": [
             {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            },
-            {
                 "name": "Jean-François Simon",
                 "email": "jeanfrancois.simon@sensiolabs.com"
             },
             {
                 "name": "Fabien Potencier",
                 "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
             }
         ],
         "description": "Symfony CssSelector Component",
-        "homepage": "http://symfony.com"
+        "homepage": "https://symfony.com"
     },
     {
         "name": "behat/mink",
@@ -408,7 +408,7 @@
         "dist": {
             "type": "zip",
             "url": "https://packages.zendframework.com/composer/zendframework-zendxml-559b34f426d33a11c3db118e00ce14bb8dc64e5f-zip-6cf7a2.zip",
-            "reference": "1.0.0",
+            "reference": "559b34f426d33a11c3db118e00ce14bb8dc64e5f",
             "shasum": "39abc614b5c26bcbf8102e203c52dee73c4460a8"
         },
         "require": {
@@ -458,7 +458,7 @@
         "dist": {
             "type": "zip",
             "url": "https://packages.zendframework.com/composer/zendframework-zendframework-a1aae5fdd27a422beb32c56ddf5a197654a0f94a-zip-06d4c7.zip",
-            "reference": "2.3.7",
+            "reference": "a1aae5fdd27a422beb32c56ddf5a197654a0f94a",
             "shasum": "7033dd58d94b0c75fae8a00001f8a7275c218209"
         },
         "require": {
@@ -555,6 +555,11 @@
                 "Zend\\": "library/"
             }
         },
+        "autoload-dev": {
+            "psr-0": {
+                "ZendTest\\": "tests/"
+            }
+        },
         "license": [
             "BSD-3-Clause"
         ],
@@ -568,6 +573,68 @@
             "source": "https://github.com/zendframework/zf2/tree/release-2.3.7",
             "issues": "https://github.com/zendframework/zf2/issues"
         }
+    },
+    {
+        "name": "los/losrecaptcha",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Lansoweb/LosReCaptcha.git",
+            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/2e18af8d57286c28c1951c7305f8379e7304b203",
+            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4.0",
+            "zendframework/zendframework": ">=2.3.2,<3.0.0"
+        },
+        "require-dev": {
+            "satooshi/php-coveralls": "dev-master"
+        },
+        "suggest": {
+            "los/losbase": "los/losbase for some abstract classes to speed development ",
+            "los/loslog": "los/loslog for logging",
+            "los/losui": "los/losui for twitter bootstrap 3 styling, jquery, chosen and other libraries"
+        },
+        "time": "2015-04-28 15:40:23",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "LosReCaptcha\\": "src/"
+            },
+            "psr-0": {
+                "LosReCaptcha\\": "src/"
+            },
+            "classmap": [
+                "./"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Leandro Silva",
+                "email": "leandro@leandrosilva.info",
+                "homepage": "http://leandrosilva.info"
+            }
+        ],
+        "description": "ZF2 module for integration with new ReCaptcha service form Google",
+        "homepage": "http://github.com/Lansoweb/LosReCaptcha",
+        "keywords": [
+            "captcha",
+            "los",
+            "module",
+            "recaptcha",
+            "zf2"
+        ]
     },
     {
         "name": "ocramius/proxy-manager",
@@ -957,18 +1024,18 @@
     },
     {
         "name": "symfony/yaml",
-        "version": "v2.6.6",
-        "version_normalized": "2.6.6.0",
+        "version": "v2.6.7",
+        "version_normalized": "2.6.7.0",
         "target-dir": "Symfony/Component/Yaml",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/Yaml.git",
-            "reference": "174f009ed36379a801109955fc5a71a49fe62dd4"
+            "reference": "f157ab074e453ecd4c0fa775f721f6e67a99d9e2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Yaml/zipball/174f009ed36379a801109955fc5a71a49fe62dd4",
-            "reference": "174f009ed36379a801109955fc5a71a49fe62dd4",
+            "url": "https://api.github.com/repos/symfony/Yaml/zipball/f157ab074e453ecd4c0fa775f721f6e67a99d9e2",
+            "reference": "f157ab074e453ecd4c0fa775f721f6e67a99d9e2",
             "shasum": ""
         },
         "require": {
@@ -977,7 +1044,7 @@
         "require-dev": {
             "symfony/phpunit-bridge": "~2.7"
         },
-        "time": "2015-03-30 15:54:10",
+        "time": "2015-05-02 15:18:45",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -996,16 +1063,16 @@
         ],
         "authors": [
             {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            },
-            {
                 "name": "Fabien Potencier",
                 "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
             }
         ],
         "description": "Symfony Yaml Component",
-        "homepage": "http://symfony.com"
+        "homepage": "https://symfony.com"
     },
     {
         "name": "vufind-org/vufindcode",
@@ -1105,7 +1172,7 @@
         "dist": {
             "type": "zip",
             "url": "https://packages.zendframework.com/composer/zendframework-zendrest-7427d242b4546e5aef1206d2c97e402109d8843e-zip-da96cc.zip",
-            "reference": "2.0.2",
+            "reference": "7427d242b4546e5aef1206d2c97e402109d8843e",
             "shasum": "cd304d9e2fccccbd98348bfbead7d42b102e565a"
         },
         "require": {
@@ -1148,7 +1215,7 @@
         "dist": {
             "type": "zip",
             "url": "https://packages.zendframework.com/composer/zendframework-zendservice-amazon-f3d44e3488908323c34bf040c045ee71e1196796-zip-31bbc0.zip",
-            "reference": "2.0.3",
+            "reference": "f3d44e3488908323c34bf040c045ee71e1196796",
             "shasum": "b7f77cced220f6738248fc827952ab2c6604a08f"
         },
         "require": {
@@ -1323,68 +1390,6 @@
             "module",
             "permissions",
             "rbac",
-            "zf2"
-        ]
-    },
-    {
-        "name": "los/losrecaptcha",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/Lansoweb/LosReCaptcha.git",
-            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Lansoweb/LosReCaptcha/zipball/2e18af8d57286c28c1951c7305f8379e7304b203",
-            "reference": "2e18af8d57286c28c1951c7305f8379e7304b203",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4.0",
-            "zendframework/zendframework": ">=2.3.2,<3.0.0"
-        },
-        "require-dev": {
-            "satooshi/php-coveralls": "dev-master"
-        },
-        "suggest": {
-            "los/losbase": "los/losbase for some abstract classes to speed development ",
-            "los/loslog": "los/loslog for logging",
-            "los/losui": "los/losui for twitter bootstrap 3 styling, jquery, chosen and other libraries"
-        },
-        "time": "2015-04-28 15:40:23",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "LosReCaptcha\\": "src/"
-            },
-            "psr-0": {
-                "LosReCaptcha\\": "src/"
-            },
-            "classmap": [
-                "./"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Leandro Silva",
-                "email": "leandro@leandrosilva.info",
-                "homepage": "http://leandrosilva.info"
-            }
-        ],
-        "description": "ZF2 module for integration with new ReCaptcha service form Google",
-        "homepage": "http://github.com/Lansoweb/LosReCaptcha",
-        "keywords": [
-            "captcha",
-            "los",
-            "module",
-            "recaptcha",
             "zf2"
         ]
     }

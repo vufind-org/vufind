@@ -554,18 +554,21 @@ li.jstree-facet ul {padding-left: 20px;}
     overflow-x: hidden; /* Prevent scroll on narrow devices */
     .sidebar {
       position: fixed;
+      height: 100%;
       top: 0;
       width: @offcanvas-offset;
       padding-left: 0;
       padding-right: 0;
+      overflow-y: auto;
       h4 {padding-left: @padding-base-horizontal;}
       .checkbox {margin-left: 20px+@padding-base-horizontal;}
-      .list-group, .list-group * {
+      .list-group, .list-group-item {
         border-left: 0;
         border-right: 0;
         border-radius: 0 !important;
       }
     }
+    &.active {overflow-y: hidden;}
     &.offcanvas-left {
       & > .container {
         background: #FFF;
