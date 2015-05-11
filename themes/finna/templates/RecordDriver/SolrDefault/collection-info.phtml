@@ -1,0 +1,27 @@
+<? $this->headScript()->appendFile('collection_record.js'); ?>
+<div class="row">
+    <? // if you have a preview tab but want to move or remove the preview link
+       // from this area of the record view, this can be split into
+       // getPreviewData() (should stay here) and
+       // getPreviewLink() (can go in your desired tab) ?>
+    <?=$this->record($this->driver)->getPreviews()?>
+
+
+  <div class="col-sm-12 record-information">
+    <h2 class="collection-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h2>
+    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
+    <? if ($summary): ?>
+      <p><?=$this->escapeHtml($summary)?></p>
+    <? endif; ?>
+          <? /* Display qrcode if appropriate: */ ?>
+      <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
+      <? if ($QRCode): ?>
+        <div class="visible-print inline-block"><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/></div>
+      <? endif; ?>
+    <? /* Display the lists that this record is saved to */ ?>
+    <div class="savedLists hidden alert alert-info" id="savedLists">
+      <strong><?=$this->transEsc("Saved in")?>:</strong>
+    </div>
+
+  </div>
+</div>

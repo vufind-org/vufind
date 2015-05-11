@@ -1,0 +1,36 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Collection Items') . ': ' . $this->driver->getBreadcrumb());
+
+  // Get search results
+  $results = $this->tab->getResults();
+  $params = $this->tab->getParams();
+  $searchDetails = array('results' => $results, 'params' => $params, 'indexStart' => 1);
+?>
+<? if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+  <? foreach ($results->getRecommendations('top') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+  <div class="hidden-print search-controls row">
+    <div class="col-sm-7 col-sm-push-5 col-md-8 col-md-push-4 text-right">
+      <?=$this->render('search/controls/view.phtml', $searchDetails)?>
+      <?=$this->render('search/controls/sort.phtml', $searchDetails)?>
+    </div>
+    <div class="col-sm-5 col-md-4 col-sm-pull-7 col-md-pull-8">
+      <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination_simple.phtml', array('results' => $results))?>
+    </div>
+  </div>
+
+  <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + array('idPrefix' => ''))?>
+  </form>
+    <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
+    <div class="row">
+      <div class="col-xs-12 text-center">
+      <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>
+      </div>
+    </div>
+  
+<? else: ?>
+  <h4><?=$this->transEsc('collection_empty')?></h4><br><br>
+<? endif; ?>

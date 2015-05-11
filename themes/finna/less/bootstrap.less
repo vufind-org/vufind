@@ -16,7 +16,10 @@ body {
     background-repeat: no-repeat;
 }
 body > .main { 
-    background-color: @body-bg;
+    background: @body-bg;
+    &.template-name-home {
+        background: @home-content-background;   
+    }
 }
 header {
      @media(min-width:768px) {
@@ -199,6 +202,9 @@ footer li {
 .sidebar {
     margin-bottom: 30px;
     padding-right: 20px;
+    @media (max-width: @screen-xs-max) {
+        clear: both;   
+    }
 }
 .modal-body.in {
     /* These combat the bootstrap weirdness with trying to compensate for scrollbars */
@@ -317,7 +323,7 @@ mark, .highlight {
     padding-bottom: 20px;
 }
 .right-top {
-    background: @body-bg;
+    background: @home-right-top-background;
 }
 /* Carousel styling */
 .carousel {
@@ -484,6 +490,15 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
 }
 
+/* --- Collection view --- */
+.template-dir-collection.template-name-view {
+    & > .container {
+        margin-top: 20px;   
+    }
+    & .collection-title {
+        margin-top: 0;   
+    }
+}
 
 /* --- Auto Complete Dropdown --- */ 
 .tt-dropdown-menu {
