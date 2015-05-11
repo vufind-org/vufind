@@ -65,14 +65,27 @@ class RecommendListener
     protected $pluginManager;
 
     /**
+     * The ID of the search for which this listener should respond. Value is set
+     * by \VuFind\Search\SearchRunner and makes sure that each search run by the
+     * runner is handled by its own independent RecommendListener. Otherwise,
+     * the wrong recommendations might be injected into the wrong objects!
+     *
+     * @var int
+     */
+    protected $searchId;
+
+    /**
      * Constructor.
      *
      * @param PluginManager $pluginManager Plugin manager for recommendation
      * modules
+     * @param int           $searchId      The ID of the search for which this
+     * listener should respond
      */
-    public function __construct(PluginManager $pluginManager)
+    public function __construct(PluginManager $pluginManager, $searchId)
     {
         $this->pluginManager = $pluginManager;
+        $this->searchId = $searchId;
     }
 
     /**
@@ -115,6 +128,10 @@ class RecommendListener
      */
     public function onSearchParamsSet(EventInterface $event)
     {
+        // Make sure we're triggering in the appropriate context:
+        if ($this->searchId != $event->getParam('runningSearchId')) {
+            return;
+        }
         $params = $event->getParam('params');
         $request = $event->getParam('request');
 
@@ -160,6 +177,10 @@ class RecommendListener
      */
     public function onSearchComplete(EventInterface $event)
     {
+        // Make sure we're triggering in the appropriate context:
+        if ($this->searchId != $event->getParam('runningSearchId')) {
+            return;
+        }
         $results = $event->getParam('results');
         // Process recommendations:
         foreach ($this->objects as $currentSet) {

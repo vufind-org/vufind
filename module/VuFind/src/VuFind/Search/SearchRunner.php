@@ -67,6 +67,13 @@ class SearchRunner
     protected $resultsManager;
 
     /**
+     * Counter of how many searches we have run (for differentiating listeners).
+     *
+     * @var int
+     */
+    protected $searchId = 0;
+
+    /**
      * Constructor
      *
      * @param ResultsManager   $resultsManager        Results manager
@@ -94,16 +101,23 @@ class SearchRunner
     public function run(Parameters $request, $searchClassId = 'Solr',
         array $activeRecommendations = []
     ) {
+        $this->searchId++;
+        $runningSearchId = $this->searchId;
+
         $results = $this->resultsManager->get($searchClassId);
         $params = $results->getParams();
         $params->initFromRequest($request);
 
         // Hook up listener for recommendations.
-        $this->configureRecommendListener($params, $activeRecommendations);
+        $this->configureRecommendListener(
+            $params, $activeRecommendations, $runningSearchId
+        );
 
         // Trigger the "configuration done" event.
-        $this->getEventManager()
-            ->trigger('vufind.searchParamsSet', $this, compact('params', 'request'));
+        $this->getEventManager()->trigger(
+            'vufind.searchParamsSet', $this,
+            compact('params', 'request', 'runningSearchId')
+        );
 
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
@@ -125,8 +139,9 @@ class SearchRunner
         }
 
         // Trigger the "search completed" event.
-        $this->getEventManager()
-            ->trigger('vufind.searchComplete', $this, compact('results'));
+        $this->getEventManager()->trigger(
+            'vufind.searchComplete', $this, compact('results', 'runningSearchId')
+        );
 
         return $results;
     }
@@ -141,7 +156,7 @@ class SearchRunner
      */
     public function setEventManager(EventManagerInterface $events)
     {
-        $events->setIdentifiers(['VuFind\Search\SearchRunner']);
+        $events->setIdentifiers([__CLASS__]);
         $this->events = $events;
     }
 
@@ -164,16 +179,19 @@ class SearchRunner
      * Create and attach a recommendation listener based on the provided search
      * params.
      *
-     * @param \VuFind\Search\Base\Params $params Search parameters
-     * @param array                      $active Active recommendation areas
+     * @param \VuFind\Search\Base\Params $params   Search parameters
+     * @param array                      $active   Active recommendation areas
+     * @param int                        $searchId The ID of the running search
      *
      * @return void
      */
-    protected function configureRecommendListener($params, $active)
+    protected function configureRecommendListener($params, $active, $searchId)
     {
         // Don't bother attaching a listener if no areas are active.
         if (!empty($active)) {
-            $listener = new RecommendListener($this->recommendManager);
+            $listener = new RecommendListener(
+                $this->recommendManager, $searchId
+            );
             $listener->setConfig($params->getRecommendationSettings($active));
             $listener->attach($this->getEventManager()->getSharedManager());
         }
