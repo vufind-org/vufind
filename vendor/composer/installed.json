@@ -1094,58 +1094,6 @@
         }
     },
     {
-        "name": "symfony/yaml",
-        "version": "v2.6.6",
-        "version_normalized": "2.6.6.0",
-        "target-dir": "Symfony/Component/Yaml",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/Yaml.git",
-            "reference": "174f009ed36379a801109955fc5a71a49fe62dd4"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Yaml/zipball/174f009ed36379a801109955fc5a71a49fe62dd4",
-            "reference": "174f009ed36379a801109955fc5a71a49fe62dd4",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "require-dev": {
-            "symfony/phpunit-bridge": "~2.7"
-        },
-        "time": "2015-03-30 15:54:10",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.6-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Symfony\\Component\\Yaml\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            }
-        ],
-        "description": "Symfony Yaml Component",
-        "homepage": "http://symfony.com"
-    },
-    {
         "name": "zf-commons/zfc-rbac",
         "version": "v2.5.1",
         "version_normalized": "2.5.1.0",
@@ -1255,19 +1203,19 @@
         "description": "This class provides handling of tar files in PHP.\nIt supports creating, listing, extracting and adding to tar files.\nGzip support is available if PHP has the zlib extension built-in or\nloaded. Bz2 compression is also supported with the bz2 extension loaded."
     },
     {
-        "name": "symfony/process",
-        "version": "v2.6.6",
-        "version_normalized": "2.6.6.0",
-        "target-dir": "Symfony/Component/Process",
+        "name": "symfony/yaml",
+        "version": "v2.6.7",
+        "version_normalized": "2.6.7.0",
+        "target-dir": "Symfony/Component/Yaml",
         "source": {
             "type": "git",
-            "url": "https://github.com/symfony/Process.git",
-            "reference": "a8bebaec1a9dc6cde53e0250e32917579b0be552"
+            "url": "https://github.com/symfony/Yaml.git",
+            "reference": "f157ab074e453ecd4c0fa775f721f6e67a99d9e2"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Process/zipball/a8bebaec1a9dc6cde53e0250e32917579b0be552",
-            "reference": "a8bebaec1a9dc6cde53e0250e32917579b0be552",
+            "url": "https://api.github.com/repos/symfony/Yaml/zipball/f157ab074e453ecd4c0fa775f721f6e67a99d9e2",
+            "reference": "f157ab074e453ecd4c0fa775f721f6e67a99d9e2",
             "shasum": ""
         },
         "require": {
@@ -1276,7 +1224,59 @@
         "require-dev": {
             "symfony/phpunit-bridge": "~2.7"
         },
-        "time": "2015-03-30 15:54:10",
+        "time": "2015-05-02 15:18:45",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.6-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Symfony\\Component\\Yaml\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony Yaml Component",
+        "homepage": "https://symfony.com"
+    },
+    {
+        "name": "symfony/process",
+        "version": "v2.6.7",
+        "version_normalized": "2.6.7.0",
+        "target-dir": "Symfony/Component/Process",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/Process.git",
+            "reference": "9f3c4baaf840ed849e1b1f7bfd5ae246e8509562"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/Process/zipball/9f3c4baaf840ed849e1b1f7bfd5ae246e8509562",
+            "reference": "9f3c4baaf840ed849e1b1f7bfd5ae246e8509562",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "symfony/phpunit-bridge": "~2.7"
+        },
+        "time": "2015-05-02 15:18:45",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1295,31 +1295,31 @@
         ],
         "authors": [
             {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            },
-            {
                 "name": "Fabien Potencier",
                 "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
             }
         ],
         "description": "Symfony Process Component",
-        "homepage": "http://symfony.com"
+        "homepage": "https://symfony.com"
     },
     {
         "name": "symfony/css-selector",
-        "version": "v2.6.6",
-        "version_normalized": "2.6.6.0",
+        "version": "v2.6.7",
+        "version_normalized": "2.6.7.0",
         "target-dir": "Symfony/Component/CssSelector",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/CssSelector.git",
-            "reference": "db2c48df9658423a8c168d89f7b971b73d3d74a4"
+            "reference": "189cf0f7f56d7c4be3b778df15a7f16a29f3680d"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/db2c48df9658423a8c168d89f7b971b73d3d74a4",
-            "reference": "db2c48df9658423a8c168d89f7b971b73d3d74a4",
+            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/189cf0f7f56d7c4be3b778df15a7f16a29f3680d",
+            "reference": "189cf0f7f56d7c4be3b778df15a7f16a29f3680d",
             "shasum": ""
         },
         "require": {
@@ -1328,7 +1328,7 @@
         "require-dev": {
             "symfony/phpunit-bridge": "~2.7"
         },
-        "time": "2015-03-22 16:55:57",
+        "time": "2015-05-02 15:18:45",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1347,19 +1347,19 @@
         ],
         "authors": [
             {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            },
-            {
                 "name": "Jean-François Simon",
                 "email": "jeanfrancois.simon@sensiolabs.com"
             },
             {
                 "name": "Fabien Potencier",
                 "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
             }
         ],
         "description": "Symfony CssSelector Component",
-        "homepage": "http://symfony.com"
+        "homepage": "https://symfony.com"
     }
 ]
