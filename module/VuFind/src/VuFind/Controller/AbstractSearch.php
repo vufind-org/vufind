@@ -253,8 +253,7 @@ class AbstractSearch extends AbstractBase
                 return $jump;
             }
 
-            // Remember the current URL as the last
-            // search.
+            // Remember the current URL as the last search.
             $this->rememberSearch($results);
 
             // Add to search history:
