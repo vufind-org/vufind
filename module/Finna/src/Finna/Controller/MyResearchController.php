@@ -47,34 +47,38 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function checkedoutAction()
     {
-        $view = parent::checkedoutAction();
-        $view->profile = $this->getCatalogProfile();
+        $view = $this->checkSupport('getMyTransactions');
+        if (empty($view)) {
+            $view = parent::checkedoutAction();
+            $view->profile = $this->getCatalogProfile();
 
-        $renewResult = $view->renewResult;
-        if (isset($renewResult) && is_array($renewResult)) {
-            $renewedCount = 0;
-            $renewErrorCount = 0;
-            foreach ($renewResult as $renew) {
-                if ($renew['success']) {
-                    $renewedCount++;
-                } else {
-                    $renewErrorCount++;
+            $renewResult = $view->renewResult;
+            if (isset($renewResult) && is_array($renewResult)) {
+                $renewedCount = 0;
+                $renewErrorCount = 0;
+                foreach ($renewResult as $renew) {
+                    if ($renew['success']) {
+                        $renewedCount++;
+                    } else {
+                        $renewErrorCount++;
+                    }
+                }
+                $flashMsg = $this->flashMessenger();
+                if ($renewedCount > 0) {
+                    $msg = $this->translate(
+                        'renew_ok', ['%%count%%' => $renewedCount]
+                    );
+                    $flashMsg->setNamespace('info')->addMessage($msg);
+                }
+                if ($renewErrorCount > 0) {
+                    $msg = $this->translate(
+                        'renew_failed',
+                        ['%%count%%' => $renewErrorCount]
+                    );
+                    $flashMsg->setNamespace('error')->addMessage($msg);
                 }
             }
-            $flashMsg = $this->flashMessenger();
-            if ($renewedCount > 0) {
-                $msg = $this->translate('renew_ok', ['%%count%%' => $renewedCount]);
-                $flashMsg->setNamespace('info')->addMessage($msg);
-            }
-            if ($renewErrorCount > 0) {
-                $msg = $this->translate(
-                    'renew_failed',
-                    ['%%count%%' => $renewErrorCount]
-                );
-                $flashMsg->setNamespace('error')->addMessage($msg);
-            }
         }
-
         return $view;
     }
 
@@ -298,9 +302,12 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function holdsAction()
     {
-        $view = parent::holdsAction();
-        $view->recordList = $this->orderAvailability($view->recordList);
-        $view->profile = $this->getCatalogProfile();
+        $view = $this->checkSupport('getMyHolds');
+        if (empty($view)) {
+            $view = parent::holdsAction();
+            $view->recordList = $this->orderAvailability($view->recordList);
+            $view->profile = $this->getCatalogProfile();
+        }
         return $view;
     }
 
@@ -311,9 +318,12 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function storageRetrievalRequestsAction()
     {
-        $view = parent::storageRetrievalRequestsAction();
-        $view->recordList = $this->orderAvailability($view->recordList);
-        $view->profile = $this->getCatalogProfile();
+        $view = $this->checkSupport('StorageRetrievalRequests', true);
+        if (empty($view)) {
+            $view = parent::storageRetrievalRequestsAction();
+            $view->recordList = $this->orderAvailability($view->recordList);
+            $view->profile = $this->getCatalogProfile();
+        }
         return $view;
     }
 
@@ -324,9 +334,12 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function illRequestsAction()
     {
-        $view = parent::illRequestsAction();
-        $view->recordList = $this->orderAvailability($view->recordList);
-        $view->profile = $this->getCatalogProfile();
+        $view = $this->checkSupport('ILLRequests', true);
+        if (empty($view)) {
+            $view = parent::illRequestsAction();
+            $view->recordList = $this->orderAvailability($view->recordList);
+            $view->profile = $this->getCatalogProfile();
+        }
         return $view;
     }
 
@@ -337,8 +350,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function finesAction()
     {
-        $view = parent::finesAction();
-        $view->profile = $this->getCatalogProfile();
+        $view = $this->checkSupport('getMyFines');
+        if (empty($view)) {
+            $view = parent::finesAction();
+            $view->profile = $this->getCatalogProfile();
+        }
         return $view;
     }
 
@@ -489,6 +505,33 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $profile;
         }
         return null;
+    }
+
+    /**
+     * Check if current library card supports function. Show information if not
+     * supported. And a notice about the possibility to change library card.
+     *
+     * @param string  $param         function to check
+     * @param boolean $checkFunction function or capability check
+     *
+     * @return mixed
+     */
+    public function checkSupport($param, $checkFunction = false)
+    {
+        if ($checkFunction) {
+            $support = $this->getILS()->checkFunction($param);
+        } else {
+            $support = $this->getILS()->checkCapability($param);
+        }
+
+        if (!$support) {
+            $view = $this->createViewModel();
+            $view->noSupport = true;
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('no_ils_support_for_' . strtolower($param));
+            return $view;
+        }
+        return false;
     }
 
 }

@@ -8,13 +8,21 @@
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
 
+  $user = $this->auth()->isLoggedIn();
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <? if ($this->transEsc('storage_requests_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><p class="no-content-message"><?=$this->transEsc('storage_requests_instructions')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
-    <h2><?=$this->transEsc('Storage Retrieval Requests') ?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
+    <h2><?=$this->transEsc('Storage Retrieval Requests') ?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></h2>
+    <? if (isset($this->noSupport)): ?>
+      <? if ($user->getLibraryCards()->count() > 1): ?>
+        <div class="support-notice">
+          <p><?=$this->transEsc("no_ils_support_description") ?></p>
+        </div>
+      <? endif; ?>
+    <? else: ?>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
       <form name="cancelForm" class="inline" method="post" id="cancelStorageRetrievalRequest">
@@ -165,6 +173,7 @@
       <? if ($this->cancelForm): ?></form><? endif; ?>
     <? else: ?>
       <h4><?=$this->transEsc('You do not have any storage retrieval requests placed') ?>.</h4>
+    <? endif; ?>
     <? endif; ?>
   </div>
 </div>

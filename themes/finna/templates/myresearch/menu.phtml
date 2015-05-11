@@ -34,31 +34,21 @@
             <?=$this->transEsc('Profile')?>
             </a></li>
           <? endif; ?>
-          <? if ($this->ils()->checkCapability('getMyTransactions')): ?>
             <li><a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
             <?=$this->transEsc('Checked Out Items')?>
             </a></li>
-          <? endif; ?>
-          <? if ($this->ils()->checkCapability('getMyHolds')): ?>
             <li><a href="<?=$this->url('myresearch-holds')?>" class="list-group-item<?=$this->active == 'holds' ? ' active' : ''?>">
             <?=$this->transEsc('Holds and Recalls')?>
             </a></li>
-          <? endif; ?>
-          <? if ($this->ils()->checkFunction('StorageRetrievalRequests')): ?>
             <li><a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
             <?=$this->transEsc('Storage Retrieval Requests')?>
             </a></li>
-          <? endif; ?>
-          <? if ($this->ils()->checkFunction('ILLRequests')): ?>
             <li><a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
             <?=$this->transEsc('Interlibrary Loan Requests')?>
             </a></li>
-          <? endif; ?>
-          <? if ($this->ils()->checkCapability('getMyFines')): ?>
             <li><a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
             <?=$this->transEsc('Fines')?>
             </a></li>
-          <? endif; ?>
           <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
             <li><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
             <?=$this->transEsc('Library Cards')?>
@@ -83,31 +73,21 @@
         <?=$this->transEsc('Profile')?>
         </a></li>
       <? endif; ?>
-      <? if ($this->ils()->checkCapability('getMyTransactions')): ?>
        <li><a href="<?=$this->url('myresearch-checkedout')?>" class="list-group-item<?=$this->active == 'checkedout' ? ' active' : ''?>">
          <?=$this->transEsc('Checked Out Items')?>
         </a></li>
-      <? endif; ?>
-      <? if ($this->ils()->checkCapability('getMyHolds')): ?>
         <li><a href="<?=$this->url('myresearch-holds')?>" class="list-group-item<?=$this->active == 'holds' ? ' active' : ''?>">
         <?=$this->transEsc('Holds and Recalls')?>
         </a></li>
-      <? endif; ?>
-      <? if ($this->ils()->checkFunction('StorageRetrievalRequests')): ?>
         <li><a href="<?=$this->url('myresearch-storageretrievalrequests')?>" class="list-group-item<?=$this->active == 'storageRetrievalRequests' ? ' active' : ''?>">
         <?=$this->transEsc('Storage Retrieval Requests')?>
         </a></li>
-      <? endif; ?>
-      <? if ($this->ils()->checkFunction('ILLRequests')): ?>
         <li><a href="<?=$this->url('myresearch-illrequests')?>" class="list-group-item<?=$this->active == 'ILLRequests' ? ' active' : ''?>">
         <?=$this->transEsc('Interlibrary Loan Requests')?>
         </a></li>
-      <? endif; ?>
-      <? if ($this->ils()->checkCapability('getMyFines')): ?>
         <li><a href="<?=$this->url('myresearch-fines')?>" class="list-group-item<?=$this->active == 'fines' ? ' active' : ''?>">
         <?=$this->transEsc('Fines')?>
         </a></li>
-      <? endif; ?>
       <? $user = $this->auth()->isLoggedIn(); if ($user && $user->libraryCardsEnabled()): ?>
         <li><a href="<?=$this->url('librarycards-home')?>" class="list-group-item<?=$this->active == 'librarycards' ? ' active' : ''?>">
         <?=$this->transEsc('Library Cards')?>
