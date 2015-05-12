@@ -57,6 +57,13 @@ class Redi implements DriverInterface
     protected $baseUrl;
 
     /**
+     * Parsed resolver links
+     *
+     * @var array
+     */
+    protected $links;
+
+    /**
      * Constructor
      *
      * @param string            $baseUrl    Base URL for link resolver
@@ -101,10 +108,16 @@ class Redi implements DriverInterface
             return [];
         }
 
-        return array_merge(
+        // parse the raw resolver-data
+        $this->links = array_merge(
             $this->parseDOI($xml),
             $this->parseRediOpenURLs($xml)
         );
+
+        // perform (individual) postprocessing on parsed resolver-data
+        $this->postProcessing();
+
+        return $this->links;
     }
 
     /**
@@ -135,9 +148,7 @@ class Redi implements DriverInterface
                     ->getNamedItem("href")->textContent;
                 $retval[] = [
                     'title' => $doiTerm->item($i)->textContent
-                        . $this->_removeDoubleAngleQuotationMark(
-                            $doiDefinition->item($i)->textContent
-                        ),
+                        . $doiDefinition->item($i)->textContent,
                     'href' => $href,
                     'service_type' => 'getFullTxt',
                 ];
@@ -208,9 +219,7 @@ class Redi implements DriverInterface
                 }
 
                 $retval[] = [
-                    'title' => $this->_removeDoubleAngleQuotationMark(
-                        $ezbResultsNodesText->item($i)->textContent
-                    ),
+                    'title' => $ezbResultsNodesText->item($i)->textContent,
                     'href' => $ezbResultsNodesURL->item($i)
                         ->attributes->getNamedItem("href")->textContent,
                     'coverage'     => $itemInfo,
@@ -223,13 +232,29 @@ class Redi implements DriverInterface
     }
 
     /**
-     * Private helper function to remove hardcoded link-string "»" in Redi response
+     * Hook for post processing of the parsed resolver response (e.g. by removing any
+     * double angle quotation mark from each link['title']).
      *
-     * @param string $string String to search for "»" and substitute it by ""
+     * @return void
+     */
+    protected function postProcessing()
+    {
+        for ($i=0; $i < count($this->links); $i++) {
+            if (isset($this->links[$i]['title'])) {
+                $this->links[$i]['title'] = $this
+                    ->removeDoubleAngleQuotationMarks($this->links[$i]['title']);
+            }
+        }
+    }
+
+    /**
+     * Helper function to remove hardcoded link-string "»" in Redi response
+     *
+     * @param string $string String to be manipulated
      *
      * @return string
      */
-    private function _removeDoubleAngleQuotationMark($string)
+    protected function removeDoubleAngleQuotationMarks($string)
     {
         return trim(
             str_replace(
