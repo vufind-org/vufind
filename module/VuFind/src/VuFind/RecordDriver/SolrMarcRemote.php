@@ -58,21 +58,21 @@ class SolrMarcRemote extends SolrMarc implements
     protected $lazyMarcRecord = null;
 
     /**
-     * holds the URI-Pattern of the service that returns the marc binary blob by id
+     * Holds the URI-Pattern of the service that returns the marc binary blob by id
      *
      * @var string
      */
     protected $uriPattern = '';
 
     /**
-     * holds config.ini data
+     * Holds config.ini data
      *
      * @var array
      */
     protected $mainConfig;
 
     /**
-     * holds searches.ini data
+     * Holds searches.ini data
      *
      * @var array
      */
@@ -90,7 +90,7 @@ class SolrMarcRemote extends SolrMarc implements
      * @throws \Exception
      */
     public function __construct($mainConfig = null, $recordConfig = null,
-                                $searchSettings = null
+        $searchSettings = null
     ) {
         parent::__construct($mainConfig, $recordConfig, $searchSettings);
 
