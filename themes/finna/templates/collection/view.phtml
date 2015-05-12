@@ -1,0 +1,78 @@
+<?
+  // Set up standard record scripts:
+  $this->headScript()->appendFile("record.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+  // Activate Syndetics Plus if necessary:
+  if ($this->syndeticsPlus()->isActive()) {
+    echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
+  }
+
+  // Set main header
+  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">'.$this->transEsc('Collection').'</h1></div>';
+
+  // Add RDF header link if applicable:
+  if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
+      $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+  }
+
+  // Set flag for special cases relating to full-width hierarchy tree tab:
+  $tree = (strtolower($this->activeTab) == 'hierarchytree');
+
+  // Set up breadcrumbs:
+  $lastSearch = $this->getLastSearchLink($this->transEsc('Search'));
+  if (!empty($lastSearch)) {
+    $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
+  }
+  $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> '
+     . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
+?>
+
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody') ?>">
+    <div class="record">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <?=$this->flashmessages()?>
+      <?=$this->record($this->driver)->getCollectionMetadata()?>
+    </div>
+   <?=$this->record($this->driver)->getToolbar()?>
+    <? if (count($this->tabs) > 0): ?>
+      <a name="tabnav"></a>
+      <ul class="recordTabs nav nav-tabs">
+        <? foreach ($this->tabs as $tab => $obj): ?>
+        <? // add current tab to breadcrumbs if applicable:
+          $desc = $obj->getDescription();
+          $tab_classes = array();
+          if (0 === strcasecmp($this->activeTab, $tab)) {
+            $tab_classes[] = 'active';
+            $this->layout()->breadcrumbs .= ' <li class="active">' . $this->transEsc($desc) . '</li>';
+            $activeTabObj = $obj;
+          }
+          if (!$obj->isVisible()) { $tab_classes = 'hidden'; }
+          if (!$obj->supportsAjax()) { $tab_classes = 'noajax'; }
+        ?>
+        <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
+          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+        </li>
+        <? endforeach; ?>
+      </ul>
+    <? endif; ?>
+
+
+    <div class="collectionDetails<?=$tree ? 'Tree' : ''?> tab-content" id="record-tabs">
+      <div class="tab-pane active" id="<?=$this->activeTab ?>-tab">
+        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+      </div>
+    </div>
+
+    <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
+  </div>
+
+  <? if (isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
+    <div class="<?=$this->layoutClass('sidebar')?>">
+      <? foreach ($activeTabObj->getSideRecommendations() as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+    </div>
+  <? endif; ?>
+</div>
