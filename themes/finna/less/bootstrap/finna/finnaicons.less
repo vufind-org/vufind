@@ -36,6 +36,8 @@
   font-size: 1.0em;
   &:before {
       padding-right: 3px;
+      font-size: 1.3em;
+      vertical-align: text-bottom;
   }
 }
 .template-name-results .iconlabel {
@@ -43,7 +45,6 @@
   font-size: 1em;
 }
 .image-popup-trigger {
-    @media (min-width:@screen-sm-min) {
         & img {
             box-shadow: 0px 0px 0px 4px @gray-lighter inset;
             position: relative;
@@ -71,10 +72,24 @@
                 }
             }   
         }
+    @media (max-width:@screen-xs-max) {
+        & img {
+            box-shadow: none;
+        }
+        & .iconlabel:before {
+              top: 0px;
+        }
+    }
+}
+ & .grid-image .image-popup-trigger {
+    & .iconlabel:before {
+        top: 32%;
+        left: 43%;
     }
     @media (max-width:@screen-xs-max) {
-        & .iconlabel {
-            display: none;   
+        display: block;
+         & img {
+            box-shadow: 0px 0px 0px 4px @gray-lighter inset;
         }
     }
 }
@@ -125,6 +140,10 @@
     &:hover {
         cursor: pointer;    
     }
+}
+.fa-external-link:before, .openUrlEmbed:before {
+    font-size: 1.3em;
+    vertical-align: middle;
 }
 .fa-www-link:before, .iconlabel.format-electronic:before, .fa-external-link:before, .openUrlEmbed:before {
     content: "\e615";
@@ -392,7 +411,7 @@
 .iconlabel.format-manuscript:before, .iconlabel.format-1thesisother:before, .iconlabel.format-1thesisgradu:before, .iconlabel.format-1thesisthesis:before, .iconlabel.format-1thesislaudatur:before, .iconlabel.format-1thesismasters:before, .iconlabel.format-1thesisbachelorspolytechnic:before, .iconlabel.format-1thesisbachelors:before, .iconlabel.format-1thesismasterspolytechnic:before, .iconlabel.yamk:before, .iconlabel.format-1thesislicentiate:before, .iconlabel.format-1otherresearchdata:before {
     content: "\e00c";
 }
-.iconlabel.format-0workofart:before, .iconlabel.format-1workofartpainting:before, .iconlabel.format-1workofartinstallation:before, .iconlabel.format-1workofartdrawing:before, .iconlabel.format-1workofartgraphic:before, .iconlabel.format-1workofartscuplture:before, .iconlabel.format-1workofartartindustry:before, .iconlabel.format-1workofartphysical:before {
+.iconlabel.format-0workofart:before, .iconlabel.format-1workofartsculpture:before, .iconlabel.format-1workofartpainting:before, .iconlabel.format-1workofartinstallation:before, .iconlabel.format-1workofartdrawing:before, .iconlabel.format-1workofartgraphic:before, .iconlabel.format-1workofartscuplture:before, .iconlabel.format-1workofartartindustry:before, .iconlabel.format-1workofartphysical:before {
     content: "\e00b";
 }
 .iconlabel.format-1videovideo:before, .iconlabel.format-1videodvd:before, .iconlabel.format-1videobluray:before, .iconlabel.format-1videovideodisc:before, .iconlabel.format-1videovideocassette:before, .iconlabel.format-1videomotionpicture:before {
@@ -545,6 +564,9 @@
     padding: 3px 3px 3px 3.1px;
     border-radius: 50%;
     color: @body-bg;
+}
+.fa-file-o, .fa-folder {
+    display: none;
 }
 .sidebar .list-group-item i.fa.fa-square-o {
     display: none;

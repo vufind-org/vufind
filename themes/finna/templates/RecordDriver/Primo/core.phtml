@@ -18,7 +18,40 @@
       <? endif; ?>
     </div>
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+    
+    <?
+        $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
+        // Account for replace_other_urls setting
+        $urls = $this->record($this->driver)->getLinkDetails();
+      ?>
+    <? if (!empty($urls) || $openUrl): ?>
+    <div class="primo-available-online-record">
+      <? foreach ($urls as $current): ?>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc(end($this->driver->getFormats())) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
+      <? endforeach; ?>
+      <? if ($openUrl): ?>
+        <?=$this->openUrl($openUrl)?>
+      <? endif; ?>
+    </div>
+    <? endif; ?>
+    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+    <? if ($summary): ?>
+      <div class="truncate-field wide">
+        <p class="summary"><?=$summary;?></p>
+      </div>
+    <? endif; ?>
+
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <? /* Display the lists that this record is saved to */ ?>
+      <div class="savedLists hidden alert alert-info" id="savedLists">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <? endif; ?>
+    
     <div class="record-authors">
+      <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+        <div><?=$this->record($this->driver)->getFormatList()?></div>
+      <? endif; ?>
     <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
       <? if (isset($authors['main']) && !empty($authors['main'])): ?>
         <span property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></span>
@@ -48,40 +81,12 @@
           <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
       <? endif; ?>
       </div>
-    <?
-        $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
-        // Account for replace_other_urls setting
-        $urls = $this->record($this->driver)->getLinkDetails();
-      ?>
-    <? if (!empty($urls) || $openUrl): ?>
-    <div class="primo-available-online-record">
-      <? foreach ($urls as $current): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc(end($this->driver->getFormats())) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
-      <? endforeach; ?>
-      <? if ($openUrl): ?>
-        <?=$this->openUrl($openUrl)?>
-      <? endif; ?>
-    </div>
-    <? endif; ?>
-    <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
-    <? if ($summary): ?>
-      <div class="truncate-field wide">
-        <p class="summary"><?=$summary;?></p>
-      </div>
-    <? endif; ?>
-
-    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <? /* Display the lists that this record is saved to */ ?>
-      <div class="savedLists hidden alert alert-info" id="savedLists">
-        <strong><?=$this->transEsc("Saved in")?>:</strong>
-      </div>
-    <? endif; ?>
+    
 
     <?/* Display Main Details */?>
     <div class="record-details">
-    <table class="table table-condensed" summary="<?=$this->transEsc('Bibliographic Details')?>">
+    <table class="table table-condensed table-finna-record" summary="<?=$this->transEsc('Bibliographic Details')?>">
       
-
       <? $nextTitles = $this->driver->getNewerTitles(); $prevTitles = $this->driver->getPreviousTitles(); ?>
       <? if (!empty($nextTitles)): ?>
       <tr>
@@ -103,15 +108,6 @@
           <? endforeach; ?>
         </td>
       </tr>
-      <? endif; ?>
-
-      
-
-      <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
-        <tr>
-          <th><?=$this->transEsc('Format')?>: </th>
-          <td><?=$this->record($this->driver)->getFormatList()?></td>
-        </tr>
       <? endif; ?>
 
       <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
