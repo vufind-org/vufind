@@ -8,7 +8,7 @@
  * @package   Zend_Service
  */
 
-namespace ZendService\ReCaptcha;
+namespace LosReCaptcha\Service;
 
 /**
  * Zend_Service_ReCaptcha_Exception
