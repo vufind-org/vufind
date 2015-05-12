@@ -158,7 +158,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             // Public list view: fetch list owner
             $listTable = $this->getTable('UserList');
             $list = $listTable->select(['id' => $listId])->current();
-            if ($list) {
+            if ($list && $list->isPublic()) {
                 $userTable = $this->getTable('User');
                 $user = $userTable->getById($list->user_id);
             }
