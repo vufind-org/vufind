@@ -60,14 +60,17 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     public function mylistAction()
     {
         $view = parent::mylistAction();
-
-        $list = $view->results->getListObject();
         $user = $this->getUser();
 
-        // Redirect anonymous users and list visitors to public list URL
-        if ($list->isPublic() && (!$user || $user->id != $list->user_id)) {
-            $base = $this->url()->fromRoute('list-page');
-            return $this->redirect()->toUrl($base . "/{$list->id}");
+        if ($results = $view->results) {
+            $list = $results->getListObject();
+
+            // Redirect anonymous users and list visitors to public list URL
+            if ($list && $list->isPublic()
+                && (!$user || $user->id != $list->user_id)
+            ) {
+                return $this->redirect()->toRoute('list-page', ['lid' => $list->id]);
+            }
         }
 
         if (!$user) {
