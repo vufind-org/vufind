@@ -1,10 +1,11 @@
+
 <? if ($this->pageCount && (isset($this->previous) || isset($this->next))): ?>
+
   <ul class="pagination">
     <? if (isset($this->previous)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>"><i class="fa fa-first-page"></i></a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><i class="fa fa-arrow-left"></i><span class="sr-only"><?=$this->transEsc('Prev')?></span></a></li>
     <? endif; ?>
-
     <? if (count($this->pagesInRange) > 1): ?>
       <? foreach ($this->pagesInRange as $page): ?>
         <? if ($page != $this->current): ?>
@@ -14,10 +15,9 @@
         <? endif; ?>
       <? endforeach; ?>
     <? endif; ?>
-
     <? if (isset($this->next)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><i class="fa fa-arrow-right"></i><span class="sr-only"><?=$this->transEsc('Next');?></span></a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>"><i class="fa fa-last-page"></i> <?=$this->pageCount?></a></li>
     <? endif; ?>
   </ul>
 <? endif; ?>

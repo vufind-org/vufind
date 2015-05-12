@@ -16,7 +16,10 @@ body {
     background-repeat: no-repeat;
 }
 body > .main { 
-    background-color: @body-bg;
+    background: @body-bg;
+    &.template-name-home {
+        background: @home-content-background;   
+    }
 }
 header {
      @media(min-width:768px) {
@@ -90,9 +93,9 @@ section.main.template-dir-content.template-name-content .container-fluid.finna-m
     }
 }
 .introduction h1 {
-    font-size: 3em;
+    font-size: @introduction-header;
     @media(max-width:@screen-xs-max) {
-        font-size: 2em;   
+        font-size: @introduction-header/1.5;   
     }
 }
 h1.introductionText, h3.introductionText {
@@ -116,7 +119,10 @@ h3.introductionText > em {
 .document-types {
     li {
         font-size: 1.05em;
-        margin-bottom: 3px;   
+        margin-bottom: 10px;   
+    }
+    & a {
+        line-height: 1.3em;   
     }
     & a.iconlabel {
         color: @link-color;
@@ -196,6 +202,9 @@ footer li {
 .sidebar {
     margin-bottom: 30px;
     padding-right: 20px;
+    @media (max-width: @screen-xs-max) {
+        clear: both;   
+    }
 }
 .modal-body.in {
     /* These combat the bootstrap weirdness with trying to compensate for scrollbars */
@@ -314,7 +323,7 @@ mark, .highlight {
     padding-bottom: 20px;
 }
 .right-top {
-    background: @body-bg;
+    background: @home-right-top-background;
 }
 /* Carousel styling */
 .carousel {
@@ -481,6 +490,15 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
 }
 
+/* --- Collection view --- */
+.template-dir-collection.template-name-view {
+    & > .container {
+        margin-top: 20px;   
+    }
+    & .collection-title {
+        margin-top: 0;   
+    }
+}
 
 /* --- Auto Complete Dropdown --- */ 
 .tt-dropdown-menu {
@@ -604,8 +622,31 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   }
 }
 #hierarchyTreeHolder {
-  border-right:1px solid @gray-lighter;
-  overflow-x:hidden;
+    overflow-x: hidden;
+    margin-bottom: 20px;
+    & .jstree-container-ul {
+        padding-left: 0px;   
+    }
+    & .hierarchy-tree .jstree-icon {
+        color: @gray-light;
+        margin-right: 5px;
+        font-size: 1.15em;
+    }
+    & .hierarchy-tree .jstree-clicked {
+        color: @link-color;
+        font-weight: bold;
+        background: #f5f5f5;
+    }
+    & .jstree-container-ul {
+        background: none;
+        & .jstree-node {
+            background: none;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+            text-overflow: ellipsis;
+        }
+    }
 }
 
 /* --- Record images--- */
