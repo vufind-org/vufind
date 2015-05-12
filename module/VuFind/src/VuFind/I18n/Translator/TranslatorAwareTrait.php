@@ -100,7 +100,6 @@ trait TranslatorAwareTrait
     {
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
             $translated = $this->getTranslation((string)$str, $tokens, $default);
-            error_log((string)$str . " => $translated");
             if ($translated !== (string)$str) {
                 return $translated;
             }
