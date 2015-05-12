@@ -13,7 +13,7 @@
       </div>
       <div class="clearfix visible-xs"></div>
       <div class="col-sm-4"> 
-        <i class="fa fa-info-big"></i>  <?=$this->transEsc("notif_email") ?>
+        <i class="fa fa-info-big"></i>  <?=$this->transEsc("email_info") ?>
       </div>
       <div class="clearfix visible-xs"><br/></div>
       <? if (!empty($user->cat_username)): ?>
@@ -31,13 +31,13 @@
        <div class="clearfix visible-xs"></div>
        <div class="col-sm-4">
           <? if ($cards->count() > 1): ?>
-            <i class="fa fa-info-big"></i> <?=$this->transEsc("notif_duedate") ?>
+            <i class="fa fa-info-big"></i> <?=$this->transEsc("due_date_email_info") ?>
           <? endif; ?>
         </div>
         <div class="clearfix visible-xs"><br/></div>
       <? endif; ?>
         <div class="col-xs-12">
-            <input id="save-my-profile" name="save_my_profile" type="submit" value="<?=$this->transEsc("Save") ?>" class="btn btn-primary" />
+            <input id="save-user-profile" name="saveUserProfile" type="submit" value="<?=$this->transEsc("Save") ?>" class="btn btn-primary" />
         </div>
     </form>
   </div>

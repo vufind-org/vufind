@@ -1,5 +1,5 @@
 
-finna.myprofile = (function () {
+finna.userprofile = (function () {
 
     var deleteAccountLogout = function () {
         if ($('#delete-account-note').hasClass('process-logout')) {
@@ -22,7 +22,7 @@ finna.myprofile = (function () {
 })(finna);
 
 $(document).ready(function () {
-    // My profile messaging change
+    // My profile address change
     $('.profile-library-info-address-update').click(function () {
         var params = extractClassParams(this);
         return Lightbox.get(params.controller, 'ChangeProfileAddress');
@@ -34,7 +34,7 @@ $(document).ready(function () {
         return Lightbox.get(params.controller, 'ChangeMessagingSettings');
     });
 
-    // My profile delete own account
+    // My profile delete account
     $('#delete-account button').click(function () {
         var params = extractClassParams(this);
         Lightbox.addOpenAction(function () {
@@ -42,10 +42,10 @@ $(document).ready(function () {
                 Lightbox.close();
             });
         });
-        return Lightbox.get(params.controller, 'DeleteOwnAccount');
+        return Lightbox.get(params.controller, 'DeleteAccount');
     });
-    Lightbox.addFormCallback('delete_account', function (html) {
+    Lightbox.addFormCallback('deleteAccount', function (html) {
         Lightbox.changeContent(html);
-        finna.myprofile.deleteAccountLogout();
+        finna.userprofile.deleteAccountLogout();
     });
 });

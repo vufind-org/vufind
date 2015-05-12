@@ -1,9 +1,9 @@
 <form method="post" class="inline" id="messaging-form">
-    <div class="col-xs-12 col-sm-12">
+    <div class="col-xs-12">
         <span class="myresearch-profile-middle-header"><?= $this->transEsc('messaging_settings_title') ?></span>
     </div>
     <? foreach ($profile['messagingServices'] as $service): ?>
-        <div class="col-xs-12 col-sm-12">
+        <div class="col-xs-12">
             <?
             echo $service['type'] . ': ';
             $notFound = true;
@@ -20,7 +20,7 @@
             ?>
         </div>
     <? endforeach; ?>
-    <div class="col-xs-12 col-sm-12 messaging-last">
+    <div class="col-xs-12 messaging-last">
         <i class="fa fa-pen"></i> <a id="profile-messaging-update" class="modal-link controller:MyResearch" href="<?= $this->url() ?>"><?= $this->transEsc('request_messaging_settings_change') ?></a>
     </div>
 </form>

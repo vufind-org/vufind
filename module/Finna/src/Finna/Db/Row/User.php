@@ -132,9 +132,7 @@ class User extends \VuFind\Db\Row\User
             $connection->commit();
         }
         catch (\Exception $e) {
-            if ($connection instanceof \Zend\Db\Adapter\Driver\ConnectionInterface) {
-                $connection->rollback();
-            }
+            $connection->rollback();
             return false;
         }
         return true;

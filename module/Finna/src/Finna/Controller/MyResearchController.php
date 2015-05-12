@@ -89,7 +89,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
 
         $values = $this->getRequest()->getPost();
-        if ($this->formWasSubmitted('save_my_profile')) {
+        if ($this->formWasSubmitted('saveUserProfile')) {
             $validator = new \Zend\Validator\EmailAddress();
             if ($validator->isValid($values->email)) {
                 $user = $this->getUser();
@@ -106,23 +106,29 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
         }
 
-        if (is_array(parent::catalogLogin())) {
-            $view = parent::profileAction();
-            $profile = $view->profile;
+        $view = parent::profileAction();
+        $profile = $view->profile;
 
-            if ($this->formWasSubmitted('profile_password_change')) {
-                $this->processPasswordChange($profile, $values);
-            }
-            if ($this->formWasSubmitted('save_libary_profile')) {
-                $this->processLibraryDataUpdate($profile, $values);
-            }
-
-            $view->profile = $profile;
-            // Todo: get actual value for password change option
-            $view->changePassword = false;
-        } else {
-            $view = $this->createViewModel();
+        if ($this->formWasSubmitted('profilePasswordChange')) {
+            $this->processPasswordChange($profile, $values);
         }
+        if ($this->formWasSubmitted('saveLibaryProfile')) {
+            $this->processLibraryDataUpdate($profile, $values);
+        }
+
+        $parentTemplate = $view->getTemplate();
+        // If returned view is not profile view, show it below our profile part.
+        if ($parentTemplate != '' && $parentTemplate != 'myresearch/profile') {
+            $childView = $this->createViewModel();
+            $childView->setTemplate('myresearch/profile');
+
+            $compoundView = $this->createViewModel();
+            $compoundView->addChild($childView, 'child');
+            $compoundView->addChild($view, 'parent');
+
+            return $compoundView;
+        }
+
         return $view;
     }
 
@@ -140,9 +146,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $profile = $catalog->getMyProfile($patron);
 
         if ($this->formWasSubmitted('addess_change_request')) {
-            // ToDo: address request send
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('Address request send.');
+            // ToDo: address request sent
         }
 
         $view = $this->createViewModel();
@@ -163,27 +167,24 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         }
         $catalog = $this->getILS();
         $profile = $catalog->getMyProfile($patron);
-        $translator = $this->getServiceLocator()->get('translator');
 
         if ($this->formWasSubmitted('messaging_update_request')) {
             // ToDo: messaging update request send
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('Messaging update request send.');
         }
 
         $view = $this->createViewModel();
 
         if (isset($profile['messagingServices'])) {
             $view->services = $profile['messagingServices'];
-            $emailDays = array();
+            $emailDays = [];
             foreach (array(1, 2, 3, 4, 5) as $day) {
                 if ($day == 1) {
-                    $label = $translator
-                        ->translate("messaging_settings_num_of_days");
+                    $label = $this->translate('messaging_settings_num_of_days');
                 } else {
-                    $label = $translator
-                        ->translate("messaging_settings_num_of_days_plural");
-                    $label = str_replace('{1}', $day, $label);
+                    $label = $this->translate(
+                        'messaging_settings_num_of_days_plural',
+                        ['%%days%%' => $day]
+                    );
                 }
                 $emailDays[] = $label;
             }
@@ -196,11 +197,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Delete own account form
+     * Delete account form
      *
      * @return mixed
      */
-    public function deleteOwnAccountAction()
+    public function deleteAccountAction()
     {
         $user = $this->getUser();
         if ($user == false) {
@@ -209,13 +210,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $view = $this->createViewModel();
         if ($this->formWasSubmitted('submit')) {
-            $view->success = $this->processDeleteOwnAccount();
+            $view->success = $this->processDeleteAccount();
         } elseif ($this->formWasSubmitted('reset')) {
             return $this->redirect()->toRoute(
                 'default', ['controller'=> 'MyResearch', 'action' => 'Profile']
             );
         }
-        $view->setTemplate('myresearch/delete-own-account');
+        $view->setTemplate('myresearch/delete-account');
         $view->token = $this->getSecret($this->getUser());
         return $view;
     }
@@ -366,12 +367,13 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     protected function getSecret($user)
     {
-        $data = array('id' => $user->id,
-                      'firstname' => $user->firstname,
-                      'lastname' => $user->lastname,
-                      'email' => $user->email,
-                      'created' => $user->created,
-                     );
+        $data = [
+            'id' => $user->id,
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+            'created' => $user->created,
+        ];
         $token = new \VuFind\Crypt\HMAC('usersecret');
         return $token->generate(array_keys($data), $data);
     }
@@ -418,7 +420,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      *
      * @return boolean
      */
-    protected function processDeleteOwnAccount()
+    protected function processDeleteAccount()
     {
         $user = $this->getUser();
 
