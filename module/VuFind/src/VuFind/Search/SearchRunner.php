@@ -76,8 +76,8 @@ class SearchRunner
     /**
      * Constructor
      *
-     * @param ResultsManager   $resultsManager        Results manager
-     * @param RecommendManager $recommendManager      Recommendation module manager
+     * @param ResultsManager   $resultsManager   Results manager
+     * @param RecommendManager $recommendManager Recommendation module manager
      */
     public function __construct(ResultsManager $resultsManager,
         RecommendManager $recommendManager
@@ -101,6 +101,10 @@ class SearchRunner
     public function run(Parameters $request, $searchClassId = 'Solr',
         array $activeRecommendations = []
     ) {
+        // Increment the ID counter, then save the current value to a variable;
+        // since events within this run could theoretically trigger additional
+        // runs of the SearchRunner, we can't rely on the property value past
+        // this point!
         $this->searchId++;
         $runningSearchId = $this->searchId;
 
