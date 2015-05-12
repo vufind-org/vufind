@@ -183,21 +183,31 @@ i.fa.fa-search.backgrounding:before {
   }
 }
 footer {
- background: @footer-background; 
- margin-bottom: -10px;
- padding: 15px 0px;
-}
-footer hr {
-  display: none;   
-}
-footer a, footer p {
- color: @body-bg;   
-}
-footer p {
- font-size: 1 em;   
-}
-footer li {
-    list-style-type:none;   
+    background: @footer-background; 
+    margin-bottom: -10px;
+    padding: 15px 0px;
+    & hr {
+        border-top: none;
+    }
+    @media (max-width: @screen-xs-max) {
+        & hr {
+            display: block;
+            border-top: 1px solid @gray-light;
+        }
+    }
+    & a, p, h5 {
+        color: @body-bg;  
+    }
+    h5 {
+        font-size: 1.2em;   
+    }
+    & a:hover {
+        color: @body-bg;
+        text-decoration: underline;
+    }
+    & li {
+        list-style-type:none;   
+    }
 }
 .sidebar {
     margin-bottom: 30px;
