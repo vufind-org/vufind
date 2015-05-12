@@ -65,6 +65,8 @@ class Bootstrapper extends \VuFind\Bootstrapper
             $sm = $event->getApplication()->getServiceManager();
 
             if (!Console::isConsole()) {
+                $validBrowserLanguage = call_user_func($browserCallback);
+
                 // Setup Translator
                 $request = $event->getRequest();
                 $sm = $event->getApplication()->getServiceManager();
