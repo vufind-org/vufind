@@ -88,11 +88,18 @@ finna.imagePopup = (function(finna) {
                 var ind = $(this).data('ind');
                 var thumbInd = $(this).data('thumbInd');
                 var recordInd = $(this).data('recordInd');
-                var publicList = $(".main.template-dir-list.template-name-list").length;
                 var src =
                     path + '/AJAX/JSON?method=getImagePopup&id=' + encodeURIComponent(id)
-                    + '&index=' + thumbInd + '&public-list=' + publicList
-                ;
+                    + '&index=' + thumbInd;
+
+                if (typeof(publicList) != 'undefined') {
+                    src += '&publicList=1';
+                }
+
+                if (typeof(listId) != 'undefined') {
+                    src += '&listId=' + listId;
+                }
+
                 return {
                     src: src,
                     href: $(this).attr('href'),

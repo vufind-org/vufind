@@ -135,7 +135,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $id = $this->params()->fromQuery('id');
         $index = $this->params()->fromQuery('index');
-        $publicList = $this->params()->fromQuery('public-list') == '1';
+        $publicList = $this->params()->fromQuery('publicList') == '1';
+        $listId = $this->params()->fromQuery('listId');
 
         list($source, $recId) = explode('.', $id, 2);
         if ($source == 'pci') {
@@ -151,8 +152,22 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $view->driver = $driver;
         $view->index = $index;
 
-        $user = $this->getUser();
-        if ($data = $user->getSavedData($id, null)) {
+
+        $user = null;
+        if ($publicList) {
+            // Public list view: fetch list owner
+            $listTable = $this->getTable('UserList');
+            $list = $listTable->select(['id' => $listId])->current();
+            if ($list) {
+                $userTable = $this->getTable('User');
+                $user = $userTable->getById($list->user_id);
+            }
+        } else {
+            // otherwise, use logged-in user if available
+            $user = $this->getUser();
+        }
+
+        if ($user && $data = $user->getSavedData($id, $listId)) {
             $notes = [];
             foreach ($data as $list) {
                 if ($list->notes && $list->notes != '') {
