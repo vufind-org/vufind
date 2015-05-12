@@ -28,7 +28,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
  */
-namespace VuFind\Auth;
+namespace Finna\Auth;
 
 use VuFind\Exception\Auth as AuthException;
 

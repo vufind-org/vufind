@@ -1,5 +1,5 @@
 <? if (isset($profile['blocks']) && !empty($profile['blocks'])): ?>
   <? foreach ($profile['blocks'] as $block): ?>
-    <p class="borrowing-block"><strong><?=$this->transEsc($block)?></strong></p>
+    <p class="borrowing-block"><?=$this->transEsc($block)?></p>
   <? endforeach; ?>
 <? endif; ?>
