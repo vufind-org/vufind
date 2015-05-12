@@ -98,17 +98,19 @@ trait TranslatorAwareTrait
      */
     public function translate($str, $tokens = [], $default = null)
     {
+        // Special case: deal with objects with a designated display value:
         if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
-            $translated = $this->getTranslation((string)$str, $tokens, $default);
+            $translated = $this->translateString((string)$str, $tokens, $default);
             if ($translated !== (string)$str) {
                 return $translated;
             }
-            return $this->getTranslation(
+            return $this->translateString(
                 $str->getDisplayString(), $tokens, $default
             );
         }
 
-        return $this->getTranslation((string)$str, $tokens, $default);
+        // Default case: deal with ordinary strings (or string-castable objects):
+        return $this->translateString((string)$str, $tokens, $default);
     }
 
     /**
@@ -121,7 +123,7 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    protected function getTranslation($str, $tokens = [], $default = null)
+    protected function translateString($str, $tokens = [], $default = null)
     {
         $msg = null === $this->translator
             ? $str : $this->translator->translate($str);
