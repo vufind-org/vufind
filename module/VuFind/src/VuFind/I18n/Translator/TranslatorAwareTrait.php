@@ -87,7 +87,7 @@ trait TranslatorAwareTrait
     }
 
     /**
-     * Translate a string
+     * Translate a string (or string-castable object)
      *
      * @param string|object $str     String to translate
      * @param array         $tokens  Tokens to inject into the translated string
