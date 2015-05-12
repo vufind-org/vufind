@@ -170,7 +170,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         if ($user && $data = $user->getSavedData($id, $listId)) {
             $notes = [];
             foreach ($data as $list) {
-                if ($list->notes && $list->notes != '') {
+                if (!empty($list->notes)) {
                     $notes[] = $list->notes;
                 }
             }
