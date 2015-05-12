@@ -10,7 +10,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
   <div class="imagepopup-container">
     <div class="image-info">
         <? if ($numOfImages > 1): ?>
-        <div class="image-index"><?= $this->translate('Image') . " $currentImage / $numOfImages" ?></div>
+          <div class="image-index"><?= $this->translate('Image') . " $currentImage / $numOfImages" ?></div>
         <? endif; ?> 
         <div class="record-index"><span class="index"></span> / <span class="total"></span></div>
     </div>
@@ -35,11 +35,11 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
       </div>
       <? $results = $this->driver->getInstitutions(); ?>
       <? if (count($results)): ?>
-      <div class="building">
-      <? foreach($results as $index => $institution): ?>
+        <div class="building">
+        <? foreach($results as $index => $institution): ?>
           <?=($index > 0 ? '<br/>' : '')?><?=$this->transEsc("source_$institution", array(), $this->translate($institution))?>
-      <? endforeach; ?>
-      </div>
+        <? endforeach; ?>
+        </div>
       <? endif ?>
       <div class="summary loading">
         <div data-rows="6" class="truncate-field">
@@ -47,22 +47,22 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
           <p></p>
         <? else: ?>
           <? if ($summary = $this->driver->getSummary()): ?>
-          <? foreach ($this->driver->getSummary() as $item): ?>
-          <p><?= $this->escapeHtml($item) ?></p>
-          <? endforeach ?>
+            <? foreach ($this->driver->getSummary() as $item): ?>
+              <p><?= $this->escapeHtml($item) ?></p>
+            <? endforeach ?>
           <? endif ?>
         <? endif ?>
         </div>
       </div>
       <? if ($listNotes): ?>
-      <div class="list-notes">
-        <strong><?= $this->translate('Description'); ?></strong><? if ($listUser): ?><span class="notes-user"> (<?=$this->escapeHtml(trim($this->userPublicName($this->listUser)))?>)</span><? endif; ?>:
-        <ul>
-        <? foreach ($listNotes as $note): ?>
-          <li><?= preg_replace("/\r\n|\r|\n/",'<br>', $this->escapeHtml($note)) ?></li>
-        <? endforeach; ?>
-        </ul>
-      </div>
+        <div class="list-notes">
+          <strong><?= $this->translate('Description'); ?></strong><? if ($listUser): ?><span class="notes-user"> (<?=$this->escapeHtml(trim($this->userPublicName($this->listUser)))?>)</span><? endif; ?>:
+          <ul>
+          <? foreach ($listNotes as $note): ?>
+            <li><?= preg_replace("/\r\n|\r|\n/",'<br>', $this->escapeHtml($note)) ?></li>
+          <? endforeach; ?>
+          </ul>
+        </div>
       <? endif; ?>
       <div class="record-link"><a href="<?= $this->recordLink()->getUrl($this->driver) ?>"><i class="fa fa-arrow-right"></i><?= $this->translate('To the record') ?></a></div>
       <? $rights = $this->driver->getImageRights($this->layout()->userLang) ?>

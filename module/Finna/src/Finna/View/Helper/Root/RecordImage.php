@@ -64,8 +64,8 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
     {
         $this->params['small']
             = $this->params['medium']
-            = $this->params['large']
-            = [];
+                = $this->params['large']
+                    = [];
         $this->record = $record;
 
         return $this;
