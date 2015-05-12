@@ -215,12 +215,22 @@ class HierarchicalFacetHelperTest extends TestCase
             'Noisy'
         );
         $this->assertEquals(
-            $this->helper->formatDisplayText('1/Sound/Noisy/', true),
+            $this->helper->formatDisplayText('1/Sound/Noisy/', true)
+                ->getDisplayString(),
             'Sound/Noisy'
         );
         $this->assertEquals(
-            $this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
+            $this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - ')
+                ->getDisplayString(),
             'Sound - Noisy'
+        );
+        $this->assertEquals(
+            (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true),
+            '1/Sound/Noisy/'
+        );
+        $this->assertEquals(
+            (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
+            '1/Sound/Noisy/'
         );
     }
 

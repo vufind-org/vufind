@@ -53,13 +53,6 @@ class Translate extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($str, $tokens = [], $default = null)
     {
-        if ($str instanceof TranslatableStringInterface) {
-            $translated = $this->translate((string)$str, $tokens, $default);
-            if ($translated !== (string)$str) {
-                return $translated;
-            }
-            return $this->translate($str->getDisplayString(), $tokens, $default);
-        }
-        return $this->translate((string)$str, $tokens, $default);
+        return $this->translate($str, $tokens, $default);
     }
 }

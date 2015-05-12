@@ -89,6 +89,32 @@ trait TranslatorAwareTrait
     /**
      * Translate a string
      *
+     * @param string|object $str     String to translate
+     * @param array         $tokens  Tokens to inject into the translated string
+     * @param string        $default Default value to use if no translation is found
+     * (null for no default).
+     *
+     * @return string
+     */
+    public function translate($str, $tokens = [], $default = null)
+    {
+        if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
+            $translated = $this->getTranslation((string)$str, $tokens, $default);
+            error_log((string)$str . " => $translated");
+            if ($translated !== (string)$str) {
+                return $translated;
+            }
+            return $this->getTranslation(
+                $str->getDisplayString(), $tokens, $default
+            );
+        }
+
+        return $this->getTranslation((string)$str, $tokens, $default);
+    }
+
+    /**
+     * Get translation for a string
+     *
      * @param string $str     String to translate
      * @param array  $tokens  Tokens to inject into the translated string
      * @param string $default Default value to use if no translation is found (null
@@ -96,7 +122,7 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    public function translate($str, $tokens = [], $default = null)
+    protected function getTranslation($str, $tokens = [], $default = null)
     {
         $msg = null === $this->translator
             ? $str : $this->translator->translate($str);
