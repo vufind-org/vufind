@@ -74,7 +74,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
             if ($renewErrorCount > 0) {
                 $msg = $this->translate(
-                    'renew_not_ok',
+                    'renew_failed',
                     ['%%count%%' => $renewErrorCount]
                 );
                 $flashMsg->setNamespace('error')->addMessage($msg);
