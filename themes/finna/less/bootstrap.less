@@ -622,14 +622,29 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   }
 }
 #hierarchyTreeHolder {
-    overflow-x:hidden;
+    overflow-x: hidden;
+    margin-bottom: 20px;
+    & .jstree-container-ul {
+        padding-left: 0px;   
+    }
     & .hierarchy-tree .jstree-icon {
-        color: @gray-light;  
+        color: @gray-light;
+        margin-right: 5px;
+        font-size: 1.15em;
+    }
+    & .hierarchy-tree .jstree-clicked {
+        color: @link-color;
+        font-weight: bold;
+        background: #f5f5f5;
     }
     & .jstree-container-ul {
         background: none;
         & .jstree-node {
             background: none;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+            text-overflow: ellipsis;
         }
     }
 }
