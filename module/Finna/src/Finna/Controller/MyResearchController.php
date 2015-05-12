@@ -48,14 +48,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     public function checkedoutAction()
     {
         $view = parent::checkedoutAction();
-
-        $patron = $this->catalogLogin();
-        if (is_array($patron)) {
-            $catalog = $this->getILS();
-            $profile = $catalog->getMyProfile($patron);
-            $view->profile = $profile;
-        }
-
+        $view->profile = $this->getCatalogProfile();
         return $view;
     }
 
@@ -271,6 +264,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     {
         $view = parent::holdsAction();
         $view->recordList = $this->orderAvailability($view->recordList);
+        $view->profile = $this->getCatalogProfile();
         return $view;
     }
 
@@ -283,6 +277,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     {
         $view = parent::storageRetrievalRequestsAction();
         $view->recordList = $this->orderAvailability($view->recordList);
+        $view->profile = $this->getCatalogProfile();
         return $view;
     }
 
@@ -295,6 +290,19 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     {
         $view = parent::illRequestsAction();
         $view->recordList = $this->orderAvailability($view->recordList);
+        $view->profile = $this->getCatalogProfile();
+        return $view;
+    }
+
+    /**
+     * Send list of fines to view
+     *
+     * @return mixed
+     */
+    public function finesAction()
+    {
+        $view = parent::finesAction();
+        $view->profile = $this->getCatalogProfile();
         return $view;
     }
 
@@ -449,6 +457,22 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 ->addMessage('delete_account_failure');
         }
         return $success;
+    }
+
+    /**
+     * Get the current patron profile.
+     *
+     * @return mixed
+     */
+    protected function getCatalogProfile()
+    {
+        $patron = $this->catalogLogin();
+        if (is_array($patron)) {
+            $catalog = $this->getILS();
+            $profile = $catalog->getMyProfile($patron);
+            return $profile;
+        }
+        return null;
     }
 
 }
