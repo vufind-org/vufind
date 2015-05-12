@@ -90,9 +90,9 @@ section.main.template-dir-content.template-name-content .container-fluid.finna-m
     }
 }
 .introduction h1 {
-    font-size: 3em;
+    font-size: @introduction-header;
     @media(max-width:@screen-xs-max) {
-        font-size: 2em;   
+        font-size: @introduction-header/1.5;   
     }
 }
 h1.introductionText, h3.introductionText {
@@ -116,7 +116,10 @@ h3.introductionText > em {
 .document-types {
     li {
         font-size: 1.05em;
-        margin-bottom: 3px;   
+        margin-bottom: 10px;   
+    }
+    & a {
+        line-height: 1.3em;   
     }
     & a.iconlabel {
         color: @link-color;
@@ -604,8 +607,16 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   }
 }
 #hierarchyTreeHolder {
-  border-right:1px solid @gray-lighter;
-  overflow-x:hidden;
+    overflow-x:hidden;
+    & .hierarchy-tree .jstree-icon {
+        color: @gray-light;  
+    }
+    & .jstree-container-ul {
+        background: none;
+        & .jstree-node {
+            background: none;
+        }
+    }
 }
 
 /* --- Record images--- */
