@@ -516,7 +516,11 @@ class UtilController extends AbstractBase
         $hierarchies = $this->getServiceLocator()
             ->get('VuFind\SearchResultsPluginManager')->get('Solr')
             ->getFullFieldFacets(['hierarchy_top_id']);
-        foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
+        $list = array_reverse(
+            $hierarchies['hierarchy_top_id']['data']['list'],
+            true
+        );
+        foreach ($list as $hierarchy) {
             $recordid = $hierarchy['value'];
             $count = $hierarchy['count'];
             if (empty($recordid)) {

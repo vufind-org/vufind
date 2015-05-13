@@ -205,11 +205,6 @@ class Solr extends AbstractBase
      */
     public function getJSON($id, $options = [])
     {
-        $top = $this->searchService->retrieve('Solr', $id)->getRecords();
-        if (!isset($top[0])) {
-            return '';
-        }
-        $top = $top[0];
         $cacheFile = (null !== $this->cacheDir)
             ? $this->cacheDir . '/tree_' . urlencode($id) . '.json'
             : false;
@@ -225,17 +220,37 @@ class Solr extends AbstractBase
             return $json;
         } else {
             $starttime = microtime(true);
-            $json = [
-                'id' => $id,
-                'type' => $top->isCollection()
-                    ? 'collection'
-                    : 'record',
-                'title' => $top->getTitle()
-            ];
-            $children = $this->getChildrenJson($id, $count);
-            if (!empty($children)) {
-                $json['children'] = $children;
+            $query = new Query(
+                'hierarchy_top_id:"' . addcslashes($id, '"') . '"'
+            );
+            $results = $this->searchService->search(
+                'Solr', $query, 0, 1000000,
+                new ParamBag([
+                    'fq' => $this->filters,
+                    'hl' => 'false',
+                    'fl' => 'title, id, hierarchy_parent_id, hierarchy_top_id,'
+                        . 'is_hierarchy_id, is_hierarchy_title,'
+                        . 'hierarchy_sequence, title_in_hierarchy'
+                ])
+            );
+            if ($results->getTotal() < 1) {
+                return '';
             }
+            $map = [$id => []];
+            $this->debug('Making map... ' . abs(microtime(true) - $starttime));
+            foreach ($results->getRecords() as $current) {
+                $data = $current->getRawData();
+                $parentId = $data['hierarchy_parent_id'][0];
+                if (!isset($map[$parentId])) {
+                    $map[$parentId] = [$current];
+                } else {
+                    $map[$parentId][] = $current;
+                }
+            }
+            $this->debug('Done: ' . abs(microtime(true) - $starttime));
+            $count = 0;
+            $json = $this->mapToJSON($id, $id, $map, $count);
+
             if ($cacheFile) {
                 $encoded = json_encode($json);
                 // Write file
@@ -245,7 +260,7 @@ class Solr extends AbstractBase
                 file_put_contents($cacheFile, $encoded);
             }
             $this->debug(
-                "Hierarchy of $count records built in " .
+                "Hierarchy of {$count} records built in " .
                 abs(microtime(true) - $starttime)
             );
             return $encoded;
@@ -262,29 +277,18 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    protected function getChildrenJson($parentID, &$count)
+    protected function mapToJSON($id, $parentID, &$map, &$count)
     {
-        $query = new Query(
-            'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"'
-        );
-        $results = $this->searchService->search(
-            'Solr', $query, 0, 10000,
-            new ParamBag(['fq' => $this->filters, 'hl' => 'false'])
-        );
-        if ($results->getTotal() < 1) {
-            return '';
-        }
-        $json = [];
         $sorting = $this->getHierarchyDriver()->treeSorting();
 
-        foreach ($results->getRecords() as $current) {
+        foreach ($map[$id] as $current) {
             ++$count;
 
             $titles = $current->getTitlesInHierarchy();
             $title = isset($titles[$parentID])
                 ? $titles[$parentID] : $current->getTitle();
 
-            $this->debug("$parentID: " . $current->getUniqueID());
+            //$this->debug("$parentID: " . $current->getUniqueID());
             $childNode = [
                 'id' => $current->getUniqueID(),
                 'type' => $current->isCollection()
@@ -292,16 +296,15 @@ class Solr extends AbstractBase
                     : 'record',
                 'title' => htmlspecialchars($title)
             ];
-            if ($current->isCollection()) {
-                $children = $this->getChildrenJson(
-                    $current->getUniqueID(),
-                    $count
+            if (isset($map[$current->getUniqueId()])) {
+                $children = $this->mapToJSON(
+                    $current->getUniqueId(),
+                    $id, $map, $count
                 );
                 if (!empty($children)) {
                     $childNode['children'] = $children;
                 }
             }
-
             // If we're in sorting mode, we need to create key-value arrays;
             // otherwise, we can just collect flat values.
             if ($sorting) {
