@@ -15,7 +15,7 @@ $urls = $this->record($this->driver)->getLinkDetails();
   <? endif; ?>
   <div class="text-center grid-image">
     <? $img = $this->recordImage($this->record($this->driver))?>
-    <?=$img->render('list grid', array('medium' => array('w' => 210), 'large' => array('w' => 1980, 'h' => 1080))) ?>
+    <?=$img->render('list grid', array('medium' => array('w' => 600, 'h' => 600))) ?>
   </div>
   <? if (!$openUrlActive && empty($urls)): ?>
     <? if ($this->driver->supportsAjaxStatus()): ?>
@@ -40,10 +40,12 @@ $urls = $this->record($this->driver)->getLinkDetails();
         <?=$this->openUrl($openUrl)?><br />
         <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
       <? endif; ?>
+      <div class="truncate-field" data-rows="2">
       <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
         <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
         <br/>
       <? endforeach; ?>
+      </div>
     <? endif; ?>
       <? if ($this->layout()->templateDir === 'list'): ?>
         <?=$this->render('list/list-notes.phtml')?>

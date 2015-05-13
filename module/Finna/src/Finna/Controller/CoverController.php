@@ -46,13 +46,11 @@ class CoverController extends \VuFind\Controller\CoverController
      */
     public function showAction()
     {
-        $bgColor = $this->params()->fromQuery('bg');
         $width = $this->params()->fromQuery('w');
         $height = $this->params()->fromQuery('h');
-        $maxHeight = $this->params()->fromQuery('maxh');
 
         $loader = $this->getLoader();
-        $loader->setParams($width, $height, $maxHeight, $bgColor);
+        $loader->setParams($width, $height);
 
         if ($id = $this->params()->fromQuery('id')) {
             $driver = $this->getRecordLoader()->load($id, 'Solr');

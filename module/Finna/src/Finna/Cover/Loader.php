@@ -62,13 +62,6 @@ class Loader extends \VuFind\Cover\Loader
     protected $index;
 
     /**
-     * Image background color hex value
-     *
-     * @var string
-     */
-    protected $bgColor;
-
-    /**
      * Image width
      *
      * @var int
@@ -83,28 +76,17 @@ class Loader extends \VuFind\Cover\Loader
     protected $height;
 
     /**
-     * Image maximum height
-     *
-     * @var int
-     */
-    protected $maxHeight;
-
-    /**
      * Set image parameters.
      *
-     * @param int    $width     Image width
-     * @param int    $height    Image height
-     * @param int    $maxHeight Image maximum height
-     * @param string $bgColor   Image background color hex value
+     * @param int $width  Image width
+     * @param int $height Image height
      *
      * @return void
      */
-    public function setParams($width, $height, $maxHeight, $bgColor)
+    public function setParams($width, $height)
     {
         $this->width = $width;
         $this->height = $height;
-        $this->maxHeight = $maxHeight;
-        $this->bgColor = $bgColor;
     }
 
     /**
@@ -216,8 +198,7 @@ class Loader extends \VuFind\Cover\Loader
         $keys = array_merge(
             $keys,
             array(
-                  $this->index, $this->width, $this->height,
-                  $this->maxHeight, $this->bgColor
+                  $this->index, $this->width, $this->height
             )
         );
 
@@ -298,56 +279,23 @@ class Loader extends \VuFind\Cover\Loader
 
         $reqWidth = $this->width;
         $reqHeight = $this->height;
-        $maxHeight = $this->maxHeight ? $this->maxHeight : $reqHeight;
-        $bg = $this->bgColor;
 
-        if ($reqWidth && $reqHeight && $bg) {
-            if ($height > $maxHeight && $height > $width) {
-                $reqHeight = $reqWidth * $height / $width;
-                if ($reqHeight > $maxHeight) {
-                    $reqHeight = $maxHeight;
-                }
-            }
-            $imageGDResized = imagecreatetruecolor($reqWidth, $reqHeight);
-            $background = imagecolorallocate(
-                $imageGDResized, hexdec(substr($bg, 0, 2)),
-                hexdec(substr($bg, 2, 2)), hexdec(substr($bg, 4, 2))
-            );
-            imagefill($imageGDResized, 0, 0, $background);
-
+        if ($reqWidth && $reqHeight) {
             $quality = 90;
 
-            // If both dimensions are smaller than the new image,
-            // just copy to center. Otherwise resample to fit if necessary.
-            if ($width < $reqWidth && $height < $reqHeight) {
-                $imgX = floor(($reqWidth - $width) / 2);
-                $imgY = 0; // no centering here.. floor(($reqHeight - $height) / 2);
-                imagecopy(
-                    $imageGDResized, $imageGD, $imgX, $imgY, 0, 0, $width, $height
-                );
-                if (!@imagejpeg($imageGDResized, $finalFile, $quality)) {
-                    return false;
-                }
-            } elseif ($width > $reqWidth || $height > $reqHeight) {
-                if (($width / $height) * $reqHeight < $reqWidth) {
-                    $newHeight = $reqHeight;
-                    $newWidth = round($newHeight * ($width / $height));
-                    $imgY = 0;
-                    $imgX = round(($reqWidth - $newWidth) / 2);
-                    imagecopyresampled(
-                        $imageGDResized, $imageGD, $imgX, $imgY, 0, 0,
-                        $newWidth, $newHeight, $width, $height
-                    );
-                } else {
+            if ($width > $reqWidth || $height > $reqHeight) {
+                $newHeight = min($height, $reqHeight);
+                $newWidth = round($newHeight * ($width / $height));
+                if ($newWidth > $reqWidth) {
                     $newWidth = $reqWidth;
                     $newHeight = round($newWidth * ($height / $width));
-                    $imgX = 0;
-                    $imgY = 0;
-                    imagecopyresampled(
-                        $imageGDResized, $imageGD, $imgX, $imgY, 0, 0,
-                        $newWidth, $newHeight, $width, $height
-                    );
                 }
+
+                $imageGDResized = imagecreatetruecolor($newWidth, $newHeight);
+                imagecopyresampled(
+                    $imageGDResized, $imageGD, 0, 0, 0, 0,
+                    $newWidth, $newHeight, $width, $height
+                );
                 if (!@imagejpeg($imageGDResized, $finalFile, $quality)) {
                     return false;
                 }
