@@ -181,12 +181,17 @@ class RbacCollector implements CollectorInterface, Serializable
      */
     private function collectPermissions(RoleInterface $role)
     {
-        // Gather the permissions for the given role. We have to use reflection as
-        // the RoleInterface does not have "getPermissions" method
-        $reflectionProperty = new ReflectionProperty($role, 'permissions');
-        $reflectionProperty->setAccessible(true);
+        if (method_exists($role, 'getPermissions')) {
+            $permissions = $role->getPermissions();
+        } else {
 
-        $permissions = $reflectionProperty->getValue($role);
+            // Gather the permissions for the given role. We have to use reflection as
+            // the RoleInterface does not have "getPermissions" method
+            $reflectionProperty = new ReflectionProperty($role, 'permissions');
+            $reflectionProperty->setAccessible(true);
+
+            $permissions = $reflectionProperty->getValue($role);
+        }
 
         if ($permissions instanceof Traversable) {
             $permissions = iterator_to_array($permissions);

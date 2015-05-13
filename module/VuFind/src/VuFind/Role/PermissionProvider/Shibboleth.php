@@ -45,8 +45,6 @@ use VuFind\Role\PermissionProvider\ServerParam;
  */
 class Shibboleth extends ServerParam
 {
-    use \VuFind\Log\LoggerAwareTrait;
-
     /**
      * Request object
      *

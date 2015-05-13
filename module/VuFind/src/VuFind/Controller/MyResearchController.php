@@ -455,7 +455,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Perform delete and send appropriate flash message:
-        if (!is_null($listID)) {
+        if (null !== $listID) {
             // ...Specific List
             $table = $this->getTable('UserList');
             $list = $table->getExisting($listID);
@@ -644,7 +644,6 @@ class MyResearchController extends AbstractBase
             $results = $this->getServiceLocator()
                 ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
             $params = $results->getParams();
-            $params->setAuthManager($this->getAuthManager());
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
@@ -753,6 +752,11 @@ class MyResearchController extends AbstractBase
         $table = $this->getTable('UserList');
         $newList = ($id == 'NEW');
         $list = $newList ? $table->getNew($user) : $table->getExisting($id);
+
+        // Make sure the user isn't fishing for other people's lists:
+        if (!$newList && !$list->editAllowed($user)) {
+            throw new ListPermissionException('Access denied.');
+        }
 
         // Process form submission:
         if ($this->formWasSubmitted('submit')) {
