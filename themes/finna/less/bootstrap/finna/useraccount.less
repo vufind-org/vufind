@@ -1,11 +1,66 @@
 // Custom styles for user account functions
 
-.main.template-dir-myresearch, .main.template-dir-search.template-name-history, .main.template-dir-librarycards {
+.main.template-dir-myresearch, .main.template-dir-search.template-name-history, .main.template-dir-librarycards {   
     h1 {
         display: inline-block;
     }
     .finna-main-header .form-inline {
         margin-left: 20px;
+    }
+    & #delete-account {
+        margin-bottom: 20px;   
+    }
+    & .myresearch-profile-list {
+        padding: 0px 6px 20px;
+    }
+    & .myresearch-profile-header {
+        font-size: @font-size-h3;
+        font-weight: bold;
+        padding: 7px 10px;
+        margin: 0px;
+        background: linear-gradient( @gray-light, darken(@gray-light,8%));
+        color: @body-bg;
+    }
+    & .library-profile {
+        margin-bottom: 40px;
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 0;
+        border: 1px solid @gray-lighter;
+        box-shadow: 0px 15px 30px -25px @gray;
+        div {
+            padding: 8px;
+            &.profile-title {
+                line-height: 1.5;
+                font-weight: bold;
+                font-size: 1.1em;
+            }
+            &.profile-text-value {
+                line-height: 1.7;
+            }
+            &.profile-xs {
+                padding: 0;
+            }
+            &.profile-long {
+                padding-bottom: 0;
+            }
+            &.profile-after-long {
+                padding-top: 16px;
+            }
+            &.library-profile-after-long {
+                padding-top: 0;
+            }
+            &.profile-info {
+                padding-top: 3px;
+            }
+            &.messaging-last {
+                margin-bottom: 20px;
+            }
+        }
+    }
+    & .myresearch-profile-middle-header {
+        font-size: @font-size-h2;
+        font-weight: bold;   
     }
     & select#library_card {
         display: inline-block;   

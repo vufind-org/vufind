@@ -109,6 +109,148 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
+     * Gather user profile data
+     *
+     * @return mixed
+     */
+    public function profileAction()
+    {
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+
+        $values = $this->getRequest()->getPost();
+        if ($this->formWasSubmitted('saveUserProfile')) {
+            $validator = new \Zend\Validator\EmailAddress();
+            if ($validator->isValid($values->email)) {
+                $user = $this->getUser();
+                $user->email = $values->email;
+                if (isset($values->due_date_reminder)) {
+                    $user->finna_due_date_reminder = $values->due_date_reminder;
+                }
+                $user->save();
+                $this->flashMessenger()->setNamespace('info')
+                    ->addMessage('profile_update');
+            } else {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('profile_update_failed');
+            }
+        }
+
+        $view = parent::profileAction();
+        $profile = $view->profile;
+
+        if ($this->formWasSubmitted('saveLibraryProfile')) {
+            $this->processLibraryDataUpdate($profile, $values);
+        }
+
+        $parentTemplate = $view->getTemplate();
+        // If returned view is not profile view, show it below our profile part.
+        if ($parentTemplate != '' && $parentTemplate != 'myresearch/profile') {
+            $childView = $this->createViewModel();
+            $childView->setTemplate('myresearch/profile');
+
+            $compoundView = $this->createViewModel();
+            $compoundView->addChild($childView, 'child');
+            $compoundView->addChild($view, 'parent');
+
+            return $compoundView;
+        }
+
+        return $view;
+    }
+
+    /**
+     * Library information address change form
+     *
+     * @return mixed
+     */
+    public function changeProfileAddressAction()
+    {
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+        $catalog = $this->getILS();
+        $profile = $catalog->getMyProfile($patron);
+
+        if ($this->formWasSubmitted('addess_change_request')) {
+            // ToDo: address request sent
+        }
+
+        $view = $this->createViewModel();
+        $view->profile = $profile;
+        $view->setTemplate('myresearch/change-address-settings');
+        return $view;
+    }
+
+    /**
+     * Messaging settings change form
+     *
+     * @return mixed
+     */
+    public function changeMessagingSettingsAction()
+    {
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+        $catalog = $this->getILS();
+        $profile = $catalog->getMyProfile($patron);
+
+        if ($this->formWasSubmitted('messaging_update_request')) {
+            // ToDo: messaging update request send
+        }
+
+        $view = $this->createViewModel();
+
+        if (isset($profile['messagingServices'])) {
+            $view->services = $profile['messagingServices'];
+            $emailDays = [];
+            foreach (array(1, 2, 3, 4, 5) as $day) {
+                if ($day == 1) {
+                    $label = $this->translate('messaging_settings_num_of_days');
+                } else {
+                    $label = $this->translate(
+                        'messaging_settings_num_of_days_plural',
+                        ['%%days%%' => $day]
+                    );
+                }
+                $emailDays[] = $label;
+            }
+
+            $view->emailDays = $emailDays;
+            $view->days = [1, 2, 3, 4, 5];
+        }
+        $view->setTemplate('myresearch/change-messaging-settings');
+        return $view;
+    }
+
+    /**
+     * Delete account form
+     *
+     * @return mixed
+     */
+    public function deleteAccountAction()
+    {
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+
+        $view = $this->createViewModel();
+        if ($this->formWasSubmitted('submit')) {
+            $view->success = $this->processDeleteAccount();
+        } elseif ($this->formWasSubmitted('reset')) {
+            return $this->redirect()->toRoute(
+                'default', ['controller'=> 'MyResearch', 'action' => 'Profile']
+            );
+        }
+        $view->setTemplate('myresearch/delete-account');
+        $view->token = $this->getSecret($this->getUser());
+        return $view;
+    }
+
+    /**
      * Return the Favorites sort list options.
      *
      * @return array
@@ -258,6 +400,79 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             }
         }
         return array_merge($availableRecordList, $recordListBasic);
+    }
+
+    /**
+     * Utility function for generating a token.
+     *
+     * @param object $user current user
+     *
+     * @return string token
+     */
+    protected function getSecret($user)
+    {
+        $data = [
+            'id' => $user->id,
+            'firstname' => $user->firstname,
+            'lastname' => $user->lastname,
+            'email' => $user->email,
+            'created' => $user->created,
+        ];
+        $token = new \VuFind\Crypt\HMAC('usersecret');
+        return $token->generate(array_keys($data), $data);
+    }
+
+    /**
+     * Change phone number and email from library info.
+     *
+     * @param type $profile patron data
+     * @param type $values  form values
+     *
+     * @return type
+     */
+    protected function processLibraryDataUpdate($profile, $values)
+    {
+        $validator = new \Zend\Validator\EmailAddress();
+        if ($validator->isValid($values->profile_email)) {
+            // ToDo: Save mail
+        }
+        // ToDo: Save phone $values->profile_tel
+    }
+
+    /**
+     * Delete user account for MyResearch module
+     *
+     * @return boolean
+     */
+    protected function processDeleteAccount()
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('You must be logged in first');
+            return false;
+        }
+
+        $token = $this->getRequest()->getPost('token', null);
+        if (empty($token)) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('Missing token');
+            return false;
+        }
+        if ($token !== $this->getSecret($user)) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('Invalid token');
+            return false;
+        }
+
+        $success = $user->anonymizeAccount();
+
+        if (!$success) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('delete_account_failure');
+        }
+        return $success;
     }
 
     /**

@@ -36,6 +36,7 @@ return array(
         'finna-layout.js',
         'finna-persona.js',
         'finna-common.js',
+        'finna-user-profile.js',
         'vendor/jquery.dataTables.js',
         'vendor/dataTables.bootstrap.js',
         'vendor/jquery.inview.min.js',

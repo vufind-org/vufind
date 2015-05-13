@@ -1,0 +1,22 @@
+<?=$this->flashmessages()?>
+<form method="post" action="<?=$this->url('home') . ('MyResearch/ChangeProfileAddress')?>" class="address-form profile-form">
+    <table class="table useraccount-table">
+        <tr>
+            <th><?=$this->transEsc('Address') ?></th>
+            <td><input type="text" name="change_address_line_1" value="<?=$this->profile['address1'] ?>"></input></td>
+        </tr>
+        <tr>
+            <th><?=$this->transEsc('Zip') ?></th>
+            <td><input type="text" name="change_address_zip" value="<?=$this->profile['zip'] ?>"></input></td>
+        </tr>
+        <tr>
+            <th>
+                <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" name="addess_change_request" />
+            </th>
+            <td><td>
+        </tr>
+    </table>
+</form>
+<span class="address-change-description">
+  <?=$this->transEsc('request_change_description') ?>
+</span>

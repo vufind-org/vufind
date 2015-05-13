@@ -53,7 +53,7 @@ class User extends \VuFind\Db\Row\User
             $listsSorted[$l['id']] = $l;
         }
         ksort($listsSorted);
-        
+
         return array_values($listsSorted);
     }
 
@@ -70,4 +70,72 @@ class User extends \VuFind\Db\Row\User
         );
         return count($userResources);
     }
+
+    /**
+     * Anonymize user account by updating username to a random string
+     * and setting other user object fields (besides id) to their default values.
+     * User comments are preserved. Catalog accounts, due date reminders,
+     * saved searches and lists are deleted.
+     *
+     * @return boolean True on success
+     */
+    public function anonymizeAccount()
+    {
+        $connection = $this->sql->getAdapter()->getDriver()->getConnection();
+
+        if (!$connection) {
+            return false;
+        }
+
+        try {
+            $connection->beginTransaction();
+
+            // Delete library cards
+            $cards = $this->getLibraryCards();
+            foreach ($cards as $card) {
+                $card->delete();
+            }
+
+            // Todo: Delete due date reminders
+
+            // Delete lists (linked user_resource objects cascade)
+            $lists = $this->getLists();
+            foreach ($lists as $list) {
+                $list->delete($this);
+            }
+
+            // Delete saved searches
+            $searchTable = $this->getDbTable('Search');
+            $searches = $searchTable->getSearches(null, $this->id);
+            foreach ($searches as $search) {
+                $search->delete();
+            }
+
+            // Anonymize user object
+            $this->username = 'deleted:' . uniqid();
+            $this->password = '';
+            $this->firstname = '';
+            $this->lastname = '';
+            $this->email = '';
+
+            $this->cat_username = 'null';
+            $this->cat_password = 'null';
+
+            $this->college = '';
+            $this->major = '';
+            $this->home_library = '';
+
+            $this->finna_due_date_reminder = 0;
+
+            $this->save();
+
+            $connection->commit();
+        }
+        catch (\Exception $e) {
+            $connection->rollback();
+            return false;
+        }
+        return true;
+    }
+
 }

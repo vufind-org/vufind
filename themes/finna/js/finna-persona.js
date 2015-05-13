@@ -136,6 +136,7 @@ finna.persona = (function(finna) {
     var my = {
         setLogoutLink: setLogoutLink,
         setLoginLink: setLoginLink,
+        personaLogout: personaLogout,
         init: function() {
             initPersona();
         }
