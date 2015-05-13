@@ -14,7 +14,7 @@
 
 <?=$this->flashmessages()?>
 <div class="hold-form">
-  <form action="" class="form-horizontal" method="post" name="placeHold">
+  <form class="form-horizontal" method="post" name="placeHold">
     <? if (in_array("comments", $this->extraHoldFields)): ?>
       <div class="form-group">
         <label class="col-sm-3 control-label"><?=$this->transEsc("Comments")?>:</label>
