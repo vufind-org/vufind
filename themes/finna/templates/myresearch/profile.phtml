@@ -50,7 +50,7 @@
         <?= $this->partial('myresearch/profile-messaging.phtml', ['profile' => $profile]); ?>
       <? endif; ?>
 
-      <form id="profile_libary_form" class="inline" method="post">
+      <form id="profile_library_form" class="inline" method="post">
         <div class="col-xs-12">
           <span class="myresearch-profile-middle-header"><?= $this->transEsc('Personal details maintained by the library') ?></span>
         </div>
@@ -112,7 +112,7 @@
         <? endif; ?>
         <? if ($updatePhone || $updateEmail): ?>
           <div class="col-xs-12">
-            <input id="save-libary-profile" name="saveLibaryProfile" type="submit" value="<?=$this->transEsc("save_my_profile") ?>" class="btn btn-primary" />
+            <input id="save-library-profile" name="saveLibraryProfile" type="submit" value="<?=$this->transEsc("save_my_profile") ?>" class="btn btn-primary" />
           </div>
         <? endif; ?>
         <? if ($updateAddress): ?>

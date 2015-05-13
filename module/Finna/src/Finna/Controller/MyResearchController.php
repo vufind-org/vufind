@@ -128,7 +128,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view = parent::profileAction();
         $profile = $view->profile;
 
-        if ($this->formWasSubmitted('saveLibaryProfile')) {
+        if ($this->formWasSubmitted('saveLibraryProfile')) {
             $this->processLibraryDataUpdate($profile, $values);
         }
 
