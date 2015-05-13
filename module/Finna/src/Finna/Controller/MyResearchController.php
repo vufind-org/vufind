@@ -49,6 +49,32 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     {
         $view = parent::checkedoutAction();
         $view->profile = $this->getCatalogProfile();
+
+        $renewResult = $view->renewResult;
+        if (isset($renewResult) && is_array($renewResult)) {
+            $renewedCount = 0;
+            $renewErrorCount = 0;
+            foreach ($renewResult as $renew) {
+                if ($renew['success']) {
+                    $renewedCount++;
+                } else {
+                    $renewErrorCount++;
+                }
+            }
+            $flashMsg = $this->flashMessenger();
+            if ($renewedCount > 0) {
+                $msg = $this->translate('renew_ok', ['%%count%%' => $renewedCount]);
+                $flashMsg->setNamespace('info')->addMessage($msg);
+            }
+            if ($renewErrorCount > 0) {
+                $msg = $this->translate(
+                    'renew_failed',
+                    ['%%count%%' => $renewErrorCount]
+                );
+                $flashMsg->setNamespace('error')->addMessage($msg);
+            }
+        }
+
         return $view;
     }
 
@@ -60,7 +86,20 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     public function mylistAction()
     {
         $view = parent::mylistAction();
-        if (!$user = $this->getUser()) {
+        $user = $this->getUser();
+
+        if ($results = $view->results) {
+            $list = $results->getListObject();
+
+            // Redirect anonymous users and list visitors to public list URL
+            if ($list && $list->isPublic()
+                && (!$user || $user->id != $list->user_id)
+            ) {
+                return $this->redirect()->toRoute('list-page', ['lid' => $list->id]);
+            }
+        }
+
+        if (!$user) {
             return $view;
         }
 
