@@ -51,32 +51,11 @@ class SolrMarcRemote extends SolrMarc implements
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * MARC record. Access only via getMarcRecord() as this is initialized lazily.
-     *
-     * @var \File_MARC_Record
-     */
-    protected $lazyMarcRecord = null;
-
-    /**
      * Holds the URI-Pattern of the service that returns the marc binary blob by id
      *
      * @var string
      */
     protected $uriPattern = '';
-
-    /**
-     * Holds config.ini data
-     *
-     * @var array
-     */
-    protected $mainConfig;
-
-    /**
-     * Holds searches.ini data
-     *
-     * @var array
-     */
-    protected $searchesConfig;
 
     /**
      * Constructor
@@ -104,9 +83,6 @@ class SolrMarcRemote extends SolrMarc implements
         } else {
             $this->uriPattern = $recordConfig->General->get('baseUrl');
         }
-
-        $this->mainConfig = $mainConfig;
-        $this->searchesConfig = $searchSettings;
     }
 
     /**
@@ -118,58 +94,19 @@ class SolrMarcRemote extends SolrMarc implements
      */
     public function getMarcRecord()
     {
-        if (null === $this->lazyMarcRecord) {
-            // handle availability of fullrecord
-            if (isset($this->fields['fullrecord'])) {
-                // standard Vufind2-behaviour
-
-                // also process the MARC record:
-                $marc = trim($this->fields['fullrecord']);
-
-            } else {
-                // fallback: retrieve fullrecord from external source
-
-                if (! isset($this->fields['id'])) {
-                    throw new \Exception(
-                        'No unique id given for fullrecord retrieval'
-                    );
-                }
-
-                $marc = $this->getRemoteFullrecord($this->fields['id']);
-
-            }
-
-            if (isset($marc)) {
-                // continue with standard Vufind2-behaviour if marcrecord is present
-
-                // check if we are dealing with MARCXML
-                if (substr($marc, 0, 1) == '<') {
-                    $marc = new \File_MARCXML($marc, \File_MARCXML::SOURCE_STRING);
-                } else {
-                    // When indexing over HTTP, SolrMarc may use entities instead of
-                    // certain control characters; we should normalize these:
-                    $marc = str_replace(
-                        ['#29;', '#30;', '#31;'], ["\x1D", "\x1E", "\x1F"], $marc
-                    );
-                    $marc = new \File_MARC($marc, \File_MARC::SOURCE_STRING);
-                }
-
-                $this->lazyMarcRecord = $marc->next();
-                if (!$this->lazyMarcRecord) {
-                    throw new \File_MARC_Exception('Cannot Process MARC Record');
-                }
-
-            } else {
-                // no marcrecord was found
-
+        // handle availability of fullrecord
+        if (!isset($this->fields['fullrecord'])) {
+            // retrieve fullrecord from external source
+            if (! isset($this->fields['id'])) {
                 throw new \Exception(
-                    'no Marc was found neither on the marc server ' .
-                    'nor in the solr-record for id ' . $this->fields['id']
+                    'No unique id given for fullrecord retrieval'
                 );
             }
+            $this->fields['fullrecord']
+                = $this->getRemoteFullrecord($this->fields['id']);
         }
 
-        return $this->lazyMarcRecord;
+        return parent::getMarcRecord();
     }
 
     /**

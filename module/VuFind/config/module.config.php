@@ -642,18 +642,6 @@ $config = [
                 ],
                 'defaultTab' => null,
             ],
-            'VuFind\RecordDriver\SolrMarcRemote' => [
-                'tabs' => [
-                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
-                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                    'Preview' => 'preview',
-                    'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                    'Similar' => 'SimilarItemsCarousel',
-                    'Details' => 'StaffViewMARC',
-                ],
-                'defaultTab' => null,
-            ],
             'VuFind\RecordDriver\Summon' => [
                 'tabs' => [
                     'Description' => 'Description',
