@@ -49,9 +49,6 @@
       <? if (isset($profile['messagingServices']) && !empty($profile['messagingServices'])): ?>
         <?= $this->partial('myresearch/profile-messaging.phtml', ['profile' => $profile]); ?>
       <? endif; ?>
-      <? if (($config = $this->ils()->checkFunction('ChangePassword')) && $config['method'] == 'driver'): ?>
-        <?= $this->partial('myresearch/profile-change-password.phtml', ['user' => $user]); ?>
-      <? endif; ?>
 
       <form id="profile_libary_form" class="inline" method="post">
         <div class="col-xs-12">

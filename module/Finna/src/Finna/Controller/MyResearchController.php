@@ -102,9 +102,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $view = parent::profileAction();
         $profile = $view->profile;
 
-        if ($this->formWasSubmitted('profilePasswordChange')) {
-            $this->processPasswordChange($profile, $values);
-        }
         if ($this->formWasSubmitted('saveLibaryProfile')) {
             $this->processLibraryDataUpdate($profile, $values);
         }
@@ -384,26 +381,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         ];
         $token = new \VuFind\Crypt\HMAC('usersecret');
         return $token->generate(array_keys($data), $data);
-    }
-
-    /**
-     * Change patron's password (PIN code)
-     *
-     * @param type $profile patron data
-     * @param type $values  form values
-     *
-     * @return type
-     */
-    protected function processPasswordChange($profile, $values)
-    {
-        if ($values['new-password'] == $values['new-password-2']) {
-            // ToDo: Save password
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('Passwords ok');
-        } else {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('Passwords fail');
-        }
     }
 
     /**
