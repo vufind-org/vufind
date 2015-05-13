@@ -185,7 +185,7 @@ class Factory
     {
         $driver = new SolrMarcRemote(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-            $sm->getServiceLocator()->get('VuFind\Config')->get('SolrMarcRemote'),
+            null,
             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
         );
         $driver->attachILS(

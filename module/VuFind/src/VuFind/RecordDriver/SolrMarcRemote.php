@@ -78,10 +78,10 @@ class SolrMarcRemote extends SolrMarc implements
         }
 
         // get config values for remote fullrecord service
-        if (! $recordConfig->General->get('baseUrl')) {
+        if (! $mainConfig->Record->get('remote_marc_url')) {
             throw new \Exception('SolrMarcRemote baseUrl-setting missing.');
         } else {
-            $this->uriPattern = $recordConfig->General->get('baseUrl');
+            $this->uriPattern = $mainConfig->Record->get('remote_marc_url');
         }
     }
 
