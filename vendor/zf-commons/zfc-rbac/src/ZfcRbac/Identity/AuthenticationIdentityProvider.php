@@ -30,7 +30,7 @@ use ZfcRbac\Exception;
 class AuthenticationIdentityProvider implements IdentityProviderInterface
 {
     /**
-     * @var AuthenticationService
+     * @var AuthenticationServiceInterface
      */
     protected $authenticationService;
 
