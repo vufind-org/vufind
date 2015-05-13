@@ -21,60 +21,33 @@
 ?>
 <!--  Begin home.phtml and close page container for extra styling  -->
 </div>
-<div class="container-fluid home-top-content">
-    <div class="container">
-        <div class="row">
-            <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
-            <div class="alert alert-warning">
-                 <h2><?=$this->transEsc('ils_offline_title')?></h2>
-                <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
-                <p><?=$this->transEsc('ils_offline_home_message')?></p>
-                <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
-                <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
-            </div>
-            <? endif; ?>
-            <? if ($template = $this->content()->findTemplateForLng('search/homelefttop')): ?>
-            <div class="col-sm-7 left-top">
-                <?=$this->render($template)?>
-            </div>
-            <? endif; ?>
-            <? if ($template = $this->content()->findTemplateForLng('search/homerighttop')): ?>
-            <div class="col-sm-5 right-top">
-                <?=$this->render($template)?>
-             </div>
-            <? endif; ?>
-        </div>
-   </div>
-</div>
-<!-- Begin middle content -->
-<div class="container-fluid home-middle-content">
-    <div class="container">
-        <div class="row">
-          <? if ($template = $this->content()->findTemplateForLng('search/homemiddle')): ?>
-            <?=$this->render($template)?>
-          <? endif; ?>
-        </div>
-    </div>
-</div>
-<!-- End middle content -->
-<!-- Begin carousel -->
-<div class="container-fluid carousel">
-    <div class="container">
-          <? if ($this->resolver('search/carousel-template.phtml')): ?>
-            <?=$this->render('search/carousel-template.phtml')?>
-          <? endif; ?>
-    </div>
-</div>
-<!-- End carousel -->
-<div class="container-fluid home-bottom-content">
+<div class="container-fluid">
   <div class="container">
-  	<div class="row">
-    <? if ($template = $this->content()->findTemplateForLng('search/homebottom')): ?>
-      <?=$this->render($template)?>
-    <? endif; ?>
+    <div class="row">
+      <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
+      <div class="alert alert-warning">
+        <h2><?=$this->transEsc('ils_offline_title')?></h2>
+        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+        <p><?=$this->transEsc('ils_offline_home_message')?></p>
+        <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+      </div>
+      <? endif; ?>
     </div>
   </div>
 </div>
+<!-- Create different sections for home page (home-1 - home-10) -->
+<? for ($i=1; $i<=10; $i++): ?>
+<? if ($template = $this->content()->findTemplateForLng("search/home/home-$i")): ?>
+<div class="container-fluid home-<?=$i; ?>">
+    <div class="container">
+        <div class="row">          
+          <?=$this->render($template)?>
+        </div>
+    </div>
+</div>   
+<? endif; ?>
+<? endfor; ?>
 <!-- reopen container -->
 <div class="container">
 <!-- End Home.phtml -->
