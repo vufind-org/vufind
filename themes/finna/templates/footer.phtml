@@ -1,0 +1,39 @@
+<div class="row">
+  <div class="col-sm-3">
+    <h5><strong><?=$this->transEsc('About')?></strong></h5>
+    <ul>
+      <li><a href="<?=$this->url('content-page', ['page' => 'About'])?>"><?=$this->transEsc('About Finna')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'terms_conditions'])?>"><?=$this->transEsc('Privacy & Terms')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'register_details'])?>"><?=$this->transEsc('Register Details')?></a></li>
+    </ul>
+  </div>
+  <div class="col-sm-3">
+    <h5><strong><?=$this->transEsc('Find More')?></strong></h5>
+    <ul>
+      <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
+      <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
+      <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+      <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+    </ul>
+  </div>
+  <div class="col-sm-3">
+    <h5><strong><?=$this->transEsc('Need Help?')?></strong></h5>
+    <ul>
+      <li><a href="<?=$this->url('content-page', ['page' => 'Help'])?>" title="<?=$this->transEsc('Search Tips')?>"><?=$this->transEsc('Help')?></a></li>
+      <li><a class="modal-link" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a></li>
+    </ul>
+  </div>
+  <div class="col-sm-3"></div>
+</div>
+<hr>
+<div class="row">
+  <div class="col-sm-3"></div>
+  <div class="col-sm-3">
+    <a href="https://www.finna.fi/Content/about"><img src="<?=$this->imageLink('powered-by-finna_' . $this->layout()->userLang . '.png')?>" alt="Finna-logo" /></a><br><br>
+  </div>
+  <div class="col-sm-3">
+    <a href="http://www.vufind.org/"><img src="<?=$this->imageLink('vufind-logo.png')?>" alt="Vufind-logo" /></a>
+  </div>
+  <div class="col-sm-3">
+  </div>
+</div>
