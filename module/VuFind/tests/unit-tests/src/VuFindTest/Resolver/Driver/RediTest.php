@@ -67,14 +67,6 @@ class RediTest extends \VuFindTest\Unit\TestCase
     ];
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->driver = $this->createConnector();
-    }
-
-    /**
      * Test
      *
      * @return void
@@ -82,11 +74,7 @@ class RediTest extends \VuFindTest\Unit\TestCase
     public function testParseLinks()
     {
         $conn = $this->createConnector('redi.xhtml');
-        $conn->setConfig($this->openUrlConfig);
-        $conn->init();
-
         $openUrl = "url_ver=Z39.88-2004&ctx_ver=Z39.88-2004&ctx_enc=info%3Aofi%2Fenc%3AUTF-8&rfr_id=info%3Asid%2Fwww.ub.uni-leipzig.de%3Agenerator&rft.title=Are+ACOs+on+Uncertain+Ethical+Ground+and+a+Threat+to+the+Autonomy+of+Patients+and+Physicians%3F&rft.date=2014-07-03&genre=article&rft_id=info%3Adoi%2F10.1007%2Fs11606-014-2915-9&issn=1525-1497&volume=29&issue=10&spage=1319&epage=1321&pages=1319-1321&jtitle=J+GEN+INTERN+MED&atitle=Are+ACOs+on+Uncertain+Ethical+Ground+and+a+Threat+to+the+Autonomy+of+Patients+and+Physicians%3F&aulast=Lindsey&aufirst=Gene&rft.language%5B0%5D=eng";
-
         $result = $conn->parseLinks($conn->fetchLinks($openUrl));
 
         $testResult = [
@@ -104,9 +92,7 @@ class RediTest extends \VuFindTest\Unit\TestCase
             2 => [
                 'title' => "Zur Zeitschriftenhomepage* (via www.ncbi.nlm.nih.gov)",
                 'href' => "http://www-fr.redi-bw.de/links/?rl_site=ubl&rl_action=link&rl_link_target=ezb&rl_link_name=1.article&rl_citation=9443914d0e261c0c1f6a3fd8151213c1d4cec05f5d3053097da6fa5597bbb9d7",
-                'coverage' => "
-            *Es konnte nicht zuverlÃ¤ssig festgestellt werden, ob der gesuchte Aufsatz in den Zeitraum fÃ¤llt, fÃ¼r den bei diesem Anbieter der Volltext verfÃ¼gbar ist.
-           ",
+                'coverage' => "*Es konnte nicht zuverlÃ¤ssig festgestellt werden, ob der gesuchte Aufsatz in den Zeitraum fÃ¤llt, fÃ¼r den bei diesem Anbieter der Volltext verfÃ¼gbar ist.",
                 'service_type' =>"getFullTxt",
             ],
         ];
@@ -140,11 +126,10 @@ class RediTest extends \VuFindTest\Unit\TestCase
             $responseObj = HttpResponse::fromString($response);
             $adapter->setResponse($responseObj);
         }
-        $service = new \VuFindHttp\HttpService();
-        $service->setDefaultAdapter($adapter);
+        $client = new \Zend\Http\Client();
+        $client->setAdapter($adapter);
 
-        $conn = new Redi($this->openUrlConfig['url'], null);
-        $conn->setHttpService($service);
+        $conn = new Redi($this->openUrlConfig['OpenURL']['url'], $client);
         return $conn;
     }
 }

@@ -243,6 +243,10 @@ class Redi implements DriverInterface
             if (isset($this->links[$i]['title'])) {
                 $this->links[$i]['title'] = $this
                     ->removeDoubleAngleQuotationMarks($this->links[$i]['title']);
+                $this->links[$i]['title'] = trim($this->links[$i]['title']);
+            }
+            if (isset($this->links[$i]['coverage'])) {
+                $this->links[$i]['coverage'] = trim($this->links[$i]['coverage']);
             }
         }
     }
@@ -256,14 +260,10 @@ class Redi implements DriverInterface
      */
     protected function removeDoubleAngleQuotationMarks($string)
     {
-        return trim(
-            str_replace(
-                ['»',
-                    chr(194).chr(160)
-                ],
-                ['', ''],
-                $string
-            )
+        return str_replace(
+            ['»', chr(194).chr(160)],
+            ['', ''],
+            $string
         ); // hack to replace \u00a0
     }
 }
