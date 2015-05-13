@@ -43,6 +43,7 @@ use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface,
  * @author   Gregor Gawol <gawol@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     https://vufind.org/wiki/remote_marc_records
  */
 class SolrMarcRemote extends SolrMarc implements
     HttpServiceAwareInterface, LoggerAwareInterface
