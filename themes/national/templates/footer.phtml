@@ -19,7 +19,7 @@
   <div class="col-sm-3">
     <h5><strong><?=$this->transEsc('Need Help?')?></strong></h5>
     <ul>
-      <li><a href="<?=$this->url('content-help')?>" title="<?=$this->transEsc('Help')?>"><?=$this->transEsc('Help')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'Help'])?>" title="<?=$this->transEsc('Help')?>"><?=$this->transEsc('Help')?></a></li>
       <li><a class="modal-link" href="<?=$this->url('feedback-home') ?>"><?=$this->transEsc('Feedback')?></a></li>
     </ul>
   </div>
@@ -29,13 +29,13 @@
 <hr>
 <div class="row">
   <div class="col-sm-3">
-    <a href="https://www.finna.fi/Content/about"><img src="<?=$this->imageLink()?>finna-logo.png" alt="Finna-logo" /></a><br><br>
+    <a href="https://www.finna.fi/Content/about"><img src="<?=$this->imageLink('finna-logo.png')?>" alt="Finna-logo" /></a><br><br>
   </div>
   <div class="col-sm-3">
-     <a href="http://www.kdk.fi/"><img src="<?=$this->imageLink()?>kdk_logo_<?=$this->layout()->userLang; ?>.png" alt="KDK-logo" /></a><br><br>
+     <a href="http://www.kdk.fi/"><img src="<?=$this->imageLink('kdk_logo_' . $this->layout()->userLang . '.png')?>" alt="KDK-logo" /></a><br><br>
   </div>
   <div class="col-sm-3">
-    <a href="http://www.vufind.org/" title=""><img src="<?=$this->imageLink()?>vufind-logo.png" alt="Vufind-logo" /></a>
+    <a href="http://www.vufind.org/" title=""><img src="<?=$this->imageLink('vufind-logo.png')?>" alt="Vufind-logo" /></a>
   </div>
   <div class="col-sm-3">
   </div>
