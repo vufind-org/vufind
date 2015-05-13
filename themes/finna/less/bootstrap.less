@@ -482,6 +482,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .access-rights {
     color: @gray-light;
     margin-top: 5px;
+    padding-top: 5px;
 }
 .back-to-search a {
     margin: @line-height-computed 0;
@@ -687,7 +688,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         & a {
             background: @body-bg;
             text-decoration: none;
-            .opacity(@finna-tooltip-opacity);
+            .opacity(.5);
             font-size: 1em;
             display: inline-block;
             width: auto;
@@ -965,7 +966,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     & .grid-title {
         position: absolute;
         padding: 10px 0px;
-        width: 91%;
+        width: 93%;
         top: 70%;
         overflow: hidden;
         opacity: 0;
@@ -993,11 +994,19 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             box-shadow: -2px 2px 10px -2px black;
         }   
     }
+    @media (max-width: @screen-xs-max) {
+        & .recordcover {
+            width: 100%;   
+        }
+        & .iconlabel:before {
+            display: block;   
+        }
+    }
 }
 .grid:hover .grid-title {
-    max-height: 500px;
+    max-height: 300px;
     .opacity(1);
-    transition: max-height 1s linear;
+    transition: max-height .1s linear;
 }
 
 /* --- Hierarchical facets --- */
