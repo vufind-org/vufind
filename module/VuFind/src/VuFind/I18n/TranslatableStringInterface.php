@@ -39,7 +39,8 @@ namespace VuFind\I18n;
 interface TranslatableStringInterface
 {
     /**
-     * Return string for display (can be further translated)
+     * Return string for display if raw value has no translation available (can be
+     * further translated)
      *
      * @return string
      */
