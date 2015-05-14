@@ -59,12 +59,10 @@ class Params extends \VuFind\Search\Solr\Params
      * a record driver representing a collection.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver  Record driver
-     * @param \Zend\StdLib\Parameters           $request Parameter object
-     * representing user request.
      *
      * @return void
      */
-    public function initFromRecordDriver($driver, $request)
+    public function initFromRecordDriver($driver)
     {
         $this->collectionID = $driver->getUniqueID();
         if ($hierarchyDriver = $driver->getHierarchyDriver()) {
@@ -77,26 +75,13 @@ class Params extends \VuFind\Search\Solr\Params
                 break;
             }
         }
-        $this->initFromRequest($request);
-    }
 
-    /**
-     * Pull the search parameters
-     *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request.
-     *
-     * @return void
-     */
-    public function initFromRequest($request)
-    {
         if (null === $this->collectionID) {
             throw new \Exception('Collection ID missing');
         }
         if (null === $this->collectionField) {
             throw new \Exception('Collection field missing');
         }
-        parent::initFromRequest($request);
 
         // We don't spellcheck this screen; it's not for free user input anyway
         $options = $this->getOptions();
