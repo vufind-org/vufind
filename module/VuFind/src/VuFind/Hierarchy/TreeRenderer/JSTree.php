@@ -237,6 +237,8 @@ class JSTree extends AbstractBase
     {
         $escaper = new \Zend\Escaper\Escaper('utf-8');
 
+        var_dump($node);
+
         $name = strlen($node->title) > 100
             ? substr($node->title, 0, 100) . '...'
             : $node->title;
