@@ -111,4 +111,15 @@ class CollectionList extends AbstractBase
     {
         return $this->getResults()->getRecommendations('side');
     }
+
+    /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax()
+    {
+        // No, special sidebar needed.
+        return false;
+    }
 }
