@@ -97,8 +97,7 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
         }
 
         $inlineScript = $this->getView()->plugin('inlinescript');
-        return $inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $code, 'SET')
-            ->prependFile($this->url . 'piwik.js');
+        return $inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $code, 'SET');
     }
 
     /**
@@ -289,12 +288,14 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getOpeningTrackingCode()
     {
         return <<<EOT
-var VuFindPiwikTracker = Piwik.getTracker();
 
-VuFindPiwikTracker.setSiteId({$this->siteId});
-VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
-VuFindPiwikTracker.setCustomUrl(location.protocol + '//'
-     + location.host + location.pathname);
+function initVuFindPiwikTracker(){
+    var VuFindPiwikTracker = Piwik.getTracker();
+
+    VuFindPiwikTracker.setSiteId({$this->siteId});
+    VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
+    VuFindPiwikTracker.setCustomUrl(location.protocol + '//'
+        + location.host + location.pathname);
 
 EOT;
     }
@@ -307,8 +308,14 @@ EOT;
     protected function getClosingTrackingCode()
     {
         return <<<EOT
-VuFindPiwikTracker.enableLinkTracking();
-
+    VuFindPiwikTracker.enableLinkTracking();
+};
+(function(){
+var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.defer=true; g.async=true;
+    g.src='{$this->url}piwik.js';
+    g.onload=initVuFindPiwikTracker;
+s.parentNode.insertBefore(g,s); })();
 EOT;
     }
 
@@ -335,7 +342,7 @@ EOT;
 
             $value = $escape($value);
             $code .= <<<EOT
-VuFindPiwikTracker.setCustomVariable($i, '$key', '$value', 'page');
+    VuFindPiwikTracker.setCustomVariable($i, '$key', '$value', 'page');
 
 EOT;
         }
@@ -359,7 +366,7 @@ EOT;
 
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
-VuFindPiwikTracker.trackSiteSearch('$searchTerms', '$searchType', $resultCount);
+    VuFindPiwikTracker.trackSiteSearch('$searchTerms', '$searchType', $resultCount);
 
 EOT;
     }
@@ -372,7 +379,7 @@ EOT;
     protected function getTrackPageViewCode()
     {
         return <<<EOT
-VuFindPiwikTracker.trackPageView();
+    VuFindPiwikTracker.trackPageView();
 
 EOT;
     }
