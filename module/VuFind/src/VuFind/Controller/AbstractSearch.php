@@ -233,7 +233,15 @@ class AbstractSearch extends AbstractBase
         $rManager = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
         return function ($runner, $params, $searchId) use ($rManager, $activeRecs) {
             $listener = new RecommendListener($rManager, $searchId);
-            $listener->setConfig($params->getRecommendationSettings($activeRecs));
+            $config = [];
+            $rawConfig = $params->getOptions()
+                ->getRecommendationSettings($params->getSearchHandler());
+            foreach ($rawConfig as $key => $value) {
+                if (in_array($key, $activeRecs)) {
+                    $config[$key] = $value;
+                }
+            }
+            $listener->setConfig($config);
             $listener->attach($runner->getEventManager()->getSharedManager());
         };
     }

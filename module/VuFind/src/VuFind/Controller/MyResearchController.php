@@ -654,7 +654,9 @@ class MyResearchController extends AbstractBase
                 ->get('VuFind\RecommendPluginManager');
             $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
                 $listener = new RecommendListener($rManager, $searchId);
-                $listener->setConfig($params->getRecommendationSettings(['side']));
+                $listener->setConfig(
+                    $params->getOptions()->getRecommendationSettings()
+                );
                 $listener->attach($runner->getEventManager()->getSharedManager());
             };
 

@@ -108,7 +108,9 @@ class CollectionList extends AbstractBase
             $cb = function ($runner, $params, $searchId) use ($driver, $rManager) {
                 $params->initFromRecordDriver($driver);
                 $listener = new RecommendListener($rManager, $searchId);
-                $listener->setConfig($params->getRecommendationSettings(['side']));
+                $listener->setConfig(
+                    $params->getOptions()->getRecommendationSettings()
+                );
                 $listener->attach($runner->getEventManager()->getSharedManager());
             };
             $this->results
