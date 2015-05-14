@@ -26,8 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search;
-use VuFind\Recommend\PluginManager as RecommendManager;
-use VuFind\Search\RecommendListener;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
@@ -53,13 +51,6 @@ class SearchRunner
     protected $events = null;
 
     /**
-     * Recommendation module manager.
-     *
-     * @var RecommendManager
-     */
-    protected $recommendManager;
-
-    /**
      * Search results object manager.
      *
      * @var ResultsManager
@@ -76,31 +67,29 @@ class SearchRunner
     /**
      * Constructor
      *
-     * @param ResultsManager   $resultsManager   Results manager
-     * @param RecommendManager $recommendManager Recommendation module manager
+     * @param ResultsManager $resultsManager Results manager
      */
-    public function __construct(ResultsManager $resultsManager,
-        RecommendManager $recommendManager
-    ) {
+    public function __construct(ResultsManager $resultsManager)
+    {
         $this->resultsManager = $resultsManager;
-        $this->recommendManager = $recommendManager;
     }
 
     /**
      * Run the search.
      *
-     * @param Parameters $request               Incoming parameters for search
-     * @param string     $searchClassId         Type of search to perform
-     * @param array      $activeRecommendations Array of active recommendation
-     * areas.
+     * @param array|Parameters $rawRequest    Incoming parameters for search
+     * @param string           $searchClassId Type of search to perform
+     * @param mixed            $setupCallback Optional callback for setting up params
+     * and attaching listeners; if provided, will be passed three parameters:
+     * this object, the search parameters object, and a unique identifier for
+     * the current running search.
      *
      * @return \VuFind\Search\Base\Results
      *
      * @throws \VuFindSearch\Backend\Exception\BackendException
      */
-    public function run(Parameters $request, $searchClassId = 'Solr',
-        array $activeRecommendations = []
-    ) {
+    public function run($rawRequest, $searchClassId = 'Solr', $setupCallback = null)
+    {
         // Increment the ID counter, then save the current value to a variable;
         // since events within this run could theoretically trigger additional
         // runs of the SearchRunner, we can't rely on the property value past
@@ -108,14 +97,19 @@ class SearchRunner
         $this->searchId++;
         $runningSearchId = $this->searchId;
 
+        // Format the request object:
+        $request = $rawRequest instanceof Parameters
+            ? $rawRequest
+            : new Parameters(is_array($rawRequest) ? $rawRequest : []);
+
+        // Set up the search:
         $results = $this->resultsManager->get($searchClassId);
         $params = $results->getParams();
         $params->initFromRequest($request);
 
-        // Hook up listener for recommendations.
-        $this->configureRecommendListener(
-            $params, $activeRecommendations, $runningSearchId
-        );
+        if (is_callable($setupCallback)) {
+            $setupCallback($this, $params, $runningSearchId);
+        }
 
         // Trigger the "configuration done" event.
         $this->getEventManager()->trigger(
@@ -177,27 +171,5 @@ class SearchRunner
             $this->setEventManager(new EventManager());
         }
         return $this->events;
-    }
-
-    /**
-     * Create and attach a recommendation listener based on the provided search
-     * params.
-     *
-     * @param \VuFind\Search\Base\Params $params   Search parameters
-     * @param array                      $active   Active recommendation areas
-     * @param int                        $searchId The ID of the running search
-     *
-     * @return void
-     */
-    protected function configureRecommendListener($params, $active, $searchId)
-    {
-        // Don't bother attaching a listener if no areas are active.
-        if (!empty($active)) {
-            $listener = new RecommendListener(
-                $this->recommendManager, $searchId
-            );
-            $listener->setConfig($params->getRecommendationSettings($active));
-            $listener->attach($this->getEventManager()->getSharedManager());
-        }
     }
 }

@@ -652,8 +652,7 @@ class Factory
     public static function getSearchRunner(ServiceManager $sm)
     {
         return new \VuFind\Search\SearchRunner(
-            $sm->get('VuFind\SearchResultsPluginManager'),
-            $sm->get('VuFind\RecommendPluginManager')
+            $sm->get('VuFind\SearchResultsPluginManager')
         );
     }
 

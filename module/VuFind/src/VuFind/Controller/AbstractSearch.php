@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Solr\Utils as SolrUtils;
+use VuFind\Search\RecommendListener, VuFind\Solr\Utils as SolrUtils;
 use Zend\Stdlib\Parameters;
 
 /**
@@ -218,6 +218,27 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Get a callback for setting up a search (or null if callback is unnecessary).
+     *
+     * @return mixed
+     */
+    protected function getSearchSetupCallback()
+    {
+        // Setup callback to attach listener if appropriate:
+        $activeRecs = $this->getActiveRecommendationSettings();
+        if (empty($activeRecs)) {
+            return null;
+        }
+
+        $rManager = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs) {
+            $listener = new RecommendListener($rManager, $searchId);
+            $listener->setConfig($params->getRecommendationSettings($activeRecs));
+            $listener->attach($runner->getEventManager()->getSharedManager());
+        };
+    }
+
+    /**
      * Send search results to results view
      *
      * @return \Zend\View\Model\ViewModel
@@ -235,12 +256,11 @@ class AbstractSearch extends AbstractBase
         $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
 
         // Send both GET and POST variables to search class:
-        $request = new Parameters(
-            $this->getRequest()->getQuery()->toArray()
-            + $this->getRequest()->getPost()->toArray()
-        );
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+
         $view->results = $results = $runner->run(
-            $request, $this->searchClassId, $this->getActiveRecommendationSettings()
+            $request, $this->searchClassId, $this->getSearchSetupCallback()
         );
         $view->params = $results->getParams();
 

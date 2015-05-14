@@ -31,7 +31,7 @@ use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Stdlib\Parameters;
+    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters;
 
 /**
  * Controller for the user account area.
@@ -645,12 +645,20 @@ class MyResearchController extends AbstractBase
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
-            $request = new Parameters(
-                $this->getRequest()->getQuery()->toArray()
+            $request = $this->getRequest()->getQuery()->toArray()
                 + $this->getRequest()->getPost()->toArray()
-                + ['id' => $this->params()->fromRoute('id')]
-            );
-            $results = $runner->run($request, 'Favorites', ['side']);
+                + ['id' => $this->params()->fromRoute('id')];
+
+            // Set up listener for recommendations:
+            $rManager = $this->getServiceLocator()
+                ->get('VuFind\RecommendPluginManager');
+            $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
+                $listener = new RecommendListener($rManager, $searchId);
+                $listener->setConfig($params->getRecommendationSettings(['side']));
+                $listener->attach($runner->getEventManager()->getSharedManager());
+            };
+
+            $results = $runner->run($request, 'Favorites', $setupCallback);
             return $this->createViewModel(
                 ['params' => $results->getParams(), 'results' => $results]
             );
