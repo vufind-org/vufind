@@ -105,15 +105,14 @@ class CollectionList extends AbstractBase
             $request = $this->getRequest()->getQuery()->toArray()
                 + $this->getRequest()->getPost()->toArray();
             $rManager = $this->recommendManager;
-            $callback = function ($runner, $params, $searchId)
-                use ($driver, $rManager) {
+            $cb = function ($runner, $params, $searchId) use ($driver, $rManager) {
                 $params->initFromRecordDriver($driver);
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig($params->getRecommendationSettings(['side']));
                 $listener->attach($runner->getEventManager()->getSharedManager());
             };
             $this->results
-                = $this->runner->run($request, 'SolrCollection', $callback);
+                = $this->runner->run($request, 'SolrCollection', $cb);
         }
         return $this->results;
     }

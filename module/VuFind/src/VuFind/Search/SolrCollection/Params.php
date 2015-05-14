@@ -58,7 +58,7 @@ class Params extends \VuFind\Search\Solr\Params
      * Pull the search parameters from the query and set up additional options using
      * a record driver representing a collection.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver  Record driver
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
      * @return void
      */
