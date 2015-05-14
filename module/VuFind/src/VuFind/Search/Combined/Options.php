@@ -59,7 +59,7 @@ class Options extends \VuFind\Search\Base\Options
      * @return array associative: location (top/side/etc.) => search settings
      */
     public function getRecommendationSettings($handler = null)
-   {
+    {
         $recommend = [];
         $config = $this->configLoader->get('combined');
         foreach (['top', 'bottom'] as $location) {
