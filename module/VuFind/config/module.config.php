@@ -444,6 +444,7 @@ $config = [
                     'solrauth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
                     'solrdefault' => 'VuFind\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'VuFind\RecordDriver\Factory::getSolrMarc',
+                    'solrmarcremote' => 'VuFind\RecordDriver\Factory::getSolrMarcRemote',
                     'solrreserves' => 'VuFind\RecordDriver\Factory::getSolrReserves',
                     'solrweb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
                     'summon' => 'VuFind\RecordDriver\Factory::getSummon',
@@ -535,6 +536,7 @@ $config = [
             'search_results' => [
                 'abstract_factories' => ['VuFind\Search\Results\PluginFactory'],
                 'factories' => [
+                    'favorites' => 'VuFind\Search\Results\Factory::getFavorites',
                     'solr' => 'VuFind\Search\Results\Factory::getSolr',
                 ],
             ],

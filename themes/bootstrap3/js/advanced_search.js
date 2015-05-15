@@ -136,3 +136,11 @@ function addSearchJS(group)
   addSearch(groupNum);
   return false;
 }
+
+$(document).ready(function() {
+  $('.clear-btn').click(function() {
+    $('input[type="text"]').val('');
+    $("option:selected").removeAttr("selected");
+    $("#illustrated_-1").click();
+  });
+});

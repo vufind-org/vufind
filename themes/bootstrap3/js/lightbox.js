@@ -364,10 +364,10 @@ var Lightbox = {
    * The default, automatic form submission
    *
    * This function gleans all the information in a form from the function above
-   * Then it uses the action="" attribute of the form to figure out where to send the data
+   * Then it uses the action="..." attribute of the form to figure out where to send the data
    * and the method="" attribute to send it the proper way
    *
-   * In the wild, forms without an action="" are submitted to the current URL.
+   * Forms without an action="..." are submitted to the current URL.
    * In the case where we have a form with no action in the lightbox,
    * we emulate that behaviour by submitting the last URL loaded through
    * .getByUrl, stored in lastURL in the Lightbox object.
