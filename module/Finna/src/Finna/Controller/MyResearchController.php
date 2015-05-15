@@ -47,8 +47,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function checkedoutAction()
     {
-        $view = $this->checkSupport('getMyTransactions');
-        if (empty($view)) {
+        $view = $this->createViewIfUnsupported('getMyTransactions');
+        if ($view === false) {
             $view = parent::checkedoutAction();
             $view->profile = $this->getCatalogProfile();
 
@@ -302,8 +302,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function holdsAction()
     {
-        $view = $this->checkSupport('getMyHolds');
-        if (empty($view)) {
+        $view = $this->createViewIfUnsupported('getMyHolds');
+        if ($view === false) {
             $view = parent::holdsAction();
             $view->recordList = $this->orderAvailability($view->recordList);
             $view->profile = $this->getCatalogProfile();
@@ -318,8 +318,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function storageRetrievalRequestsAction()
     {
-        $view = $this->checkSupport('StorageRetrievalRequests', true);
-        if (empty($view)) {
+        $view = $this->createViewIfUnsupported('StorageRetrievalRequests', true);
+        if ($view === false) {
             $view = parent::storageRetrievalRequestsAction();
             $view->recordList = $this->orderAvailability($view->recordList);
             $view->profile = $this->getCatalogProfile();
@@ -334,8 +334,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function illRequestsAction()
     {
-        $view = $this->checkSupport('ILLRequests', true);
-        if (empty($view)) {
+        $view = $this->createViewIfUnsupported('ILLRequests', true);
+        if ($view === false) {
             $view = parent::illRequestsAction();
             $view->recordList = $this->orderAvailability($view->recordList);
             $view->profile = $this->getCatalogProfile();
@@ -350,8 +350,8 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function finesAction()
     {
-        $view = $this->checkSupport('getMyFines');
-        if (empty($view)) {
+        $view = $this->createViewIfUnsupported('getMyFines');
+        if ($view === false) {
             $view = parent::finesAction();
             $view->profile = $this->getCatalogProfile();
         }
@@ -516,7 +516,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      *
      * @return mixed
      */
-    public function checkSupport($param, $checkFunction = false)
+    public function createViewIfUnsupported($param, $checkFunction = false)
     {
         if ($checkFunction) {
             $support = $this->getILS()->checkFunction($param);
