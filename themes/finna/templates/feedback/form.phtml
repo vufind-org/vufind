@@ -33,11 +33,8 @@
        <input type="url" id="url" name="url" class="form-control" size="40" placeholder="http://..."/>
     </div>
   </div>
-  <div class="form-group">
-    <div class="col-sm-12 control-label">
-      <p><?=$this->transEsc("feedback_info");?></p>
-    </div>
-    <div class="col-sm-12"></div>
+  <div class="col-sm-12 feedback-info">
+    <p><?=$this->transEsc("feedback_info");?></p>
   </div>
   <div class="clear-col"></div>
   <div class="form-group">
@@ -53,7 +50,7 @@
     </div>
   </div>
   <div class="form-group">
-    <label class="col-sm-12 control-label" for="captcha">* <?=$this->transEsc("feedback_captcha_question");?>:</label>
+    <label class="col-sm-12 control-label captcha" for="captcha">* <?=$this->transEsc("feedback_captcha_question");?>:</label>
     <div class="col-sm-12">
       <input type="text" id="captcha" name="captcha" class="form-control" required aria-required="true" size="4"/>
     </div>
