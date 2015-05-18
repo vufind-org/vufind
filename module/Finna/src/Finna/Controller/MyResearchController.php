@@ -404,6 +404,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     protected function orderAvailability($recordList)
     {
+        if ($recordList === null) {
+            return [];
+        }
+
         $availableRecordList = [];
         $recordListBasic = [];
         foreach ($recordList as $item) {
