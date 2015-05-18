@@ -1,0 +1,110 @@
+<!-- redordDriver - eds - CORE.phtml -->
+<? $this->headLink()->appendStylesheet('EDS.css'); ?>
+<?
+    $items = $this->driver->getItems();
+    $dbLabel = $this->driver->getDbLabel();
+    $thumb = $this->driver->getThumbnail('medium');
+    $pubType = $this->driver->getPubType();
+    $customLinks = $this->driver->getCustomLinks();
+    $accessLevel = $this->driver->getAccessLevel();
+    $restrictedView = empty($accessLevel) ? false : true;
+?>
+<div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <div class="medium-3 columns">
+    <? if ($thumb): ?>
+        <img src="<?=$this->escapeHtmlAttr($thumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+    <? else: ?>
+      <div class="clearfix">
+        <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
+      </div>
+    <? endif; ?>
+    <? if ($pubType): ?>
+      <p><?=$this->escapeHtml($pubType)?></p>
+    <? endif; ?>
+
+    <div class="external-links">
+      <? $pLink = $this->driver->getPLink();
+          if($pLink): ?>
+        <span>
+          <a href="<?=$this->escapeHtmlAttr($pLink)?>">
+            <?=$this->transEsc('View in EDS')?>
+          </a>
+        </span><br />
+      <? endif; ?>
+      <? $pdfLink = $this->driver->getPdfLink();
+          if ($pdfLink): ?>
+        <span>
+          <a href="<?=$pdfLink?>" class="icon pdf fulltext">
+            <?=$this->transEsc('PDF Full Text')?>
+          </a>
+        </span><br />
+      <? endif; ?>
+      <? if ($this->driver->hasHTMLFullTextAvailable()): ?>
+        <span>
+          <a href="<?=$this->recordLink()->getUrl($this->driver, 'fulltext')?>#html" class="icon html fulltext">
+            <?=$this->transEsc('HTML Full Text')?>
+          </a>
+        </span><br />
+      <? endif; ?>
+      <? if (!empty($customLinks)): ?>
+        <span>
+          <div class="custom-links">
+            <? foreach ($customLinks as $customLink): ?>
+          <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
+              $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
+              $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
+              $name = isset($customLink['Name']) ? $customLink['Name'] : '';?>
+          <span>
+            <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
+              <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
+            </a>
+          </span><br />
+            <? endforeach; ?>
+          </div>
+        </span>
+      <? endif; ?>
+    </div>
+  </div>
+  <div class="medium-9 columns">
+    <h3 property="name"><?=$this->driver->getTitle()?></h3>
+
+    <table class="table" summary="<?=$this->transEsc('Bibliographic Details')?>">
+      <? foreach ($items as $key => $item): ?>
+        <? if (!empty($item['Data'])): ?>
+        <tr>
+          <th><?=$this->transEsc($item['Label'])?>:</th>
+          <td><?=$this->driver->linkUrls($item['Data'])?></td>
+        </tr>
+        <? endif; ?>
+      <? endforeach; ?>
+
+      <? if ($dbLabel): ?>
+        <tr>
+          <th><?=$this->transEsc('Database')?>:</th>
+          <td><?=$this->escapeHtml($dbLabel)?></td>
+        </tr>
+      <? endif; ?>
+
+      <?if ($this->driver->hasHTMLFullTextAvailable() && !$restrictedView):
+          $fullText = $this->driver->getHtmlFullText();?>
+        <tr id="html">
+          <td colspan="2">
+            <?=$fullText?>
+          </td>
+        </tr>
+      <? elseif ($this->driver->hasHTMLFullTextAvailable() && $restrictedView): ?>
+        <tr id="html">
+          <td>
+            <?=$this->transEsc('Full text is not displayed to guests')?>
+          </td>
+          <td>
+            <a class="login" href="<?=$this->url('myresearch-home')?>">
+              <strong><?=$this->transEsc('Login for full access')?></strong>
+            </a>
+          </td>
+        </tr>
+      <? endif; ?>
+    </table>
+  </div>
+</div>
+<!-- redordDriver - eds - CORE.phtml end -->

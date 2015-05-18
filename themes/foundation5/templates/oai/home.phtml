@@ -1,0 +1,202 @@
+<!-- oai - home.phtml -->
+<?
+  $this->headTitle($this->translate('OAI Server'));
+  $this->layout()->breadcrumbs = $this->transEsc('OAI Server');
+  $baseUrl = $this->url('oai-server');
+?>
+<div class="row">
+  <div class="medium-9 columns">
+<h2><?=$this->transEsc('OAI Server')?></h2>
+<p>
+  This OAI server is OAI 2.0 compliant.<br/>
+  The OAI Server URL is: <?=$this->serverUrl($baseUrl)?>
+</p>
+    <hr/>
+    <a name="Identify"></a>
+    <p class="lead">Identify</p>
+    <form method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="medium-8 columns">
+      <p class="help-block">Returns the Identification information of this OAI Server.</p>
+      <input type="hidden" name="verb" value="Identify"/>
+      <p class="help-block">Accepts no additional parameters.</p>
+        </div>
+        <div class="medium-4 columns">
+          <input class="button secondary tiny" type="submit" name="submit" value="<?=$this->transEsc('Go')?>" role="button" aria-label="submit form"/>
+        </div>
+      </div>
+    </form>
+    <hr/>
+    <a name="ListIdentifiers"></a>
+    <p class="lead">ListIdentifiers</p>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="medium-8 columns">
+          <input type="hidden" name="verb" value="ListIdentifiers"/>
+      <p class="help-block">Returns a listing of available identifiers</p>
+          <div class="form-group">
+            <label for="ListIdentifier_from" class="medium-3 columns control-label"><?=$this->transEsc('From')?>:</label>
+            <div class="medium-9 columns">
+              <input id="ListIdentifier_from" type="text" name="from" class="form-control"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ListIdentifier_until" class="medium-3 columns control-label"><?=$this->transEsc('Until')?>:</label>
+            <div class="medium-9 columns">
+              <input id="ListIdentifier_until" type="text" name="until" class="form-control"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ListIdentifier_set" class="medium-3 columns control-label"><?=$this->transEsc('Set')?>:</label>
+            <div class="medium-9 columns">
+              <input id="ListIdentifier_set" type="text" name="set" class="form-control"/>
+          </div>
+          </div>
+          <div class="form-group">
+            <label for="ListIdentifier_metadataPrefix" class="medium-3 columns control-label"><?=$this->transEsc('Metadata Prefix')?>:</label>
+            <div class="medium-9 columns">
+              <input id="ListIdentifier_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ListIdentifier_resumptionToken" class="medium-3 columns control-label"><?=$this->transEsc('Resumption Token')?>:</label>
+            <div class="medium-9 columns">
+              <input id="ListIdentifier_resumptionToken" type="text" name="resumptionToken" class="form-control"/>
+            </div>
+          </div>
+        </div>
+        <div class="medium-4 columns">
+          <input class="button secondary tiny" type="submit" name="submit" value="<?=$this->transEsc('Go')?>" role="button" aria-label="submit form"/>
+        </div>
+      </div>
+    </form>
+    <hr/>
+    <a name="ListMetadataFormats"></a>
+    <p class="lead">ListMetadataFormats</p>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="medium-8 columns">
+            <input type="hidden" name="verb" value="ListMetadataFormats"/>
+      <p class="help-block">Returns a listing of available metadata formats.</p>
+            <div class="form-group">
+              <label for="ListMetadataFormats_identifier" class="medium-3 columns control-label"><?=$this->transEsc('Identifier')?>:</label>
+              <div class="medium-9 columns">
+                <input id="ListMetadataFormats_identifier" type="text" name="identifier" class="form-control"/>
+              </div>
+            </div>
+        </div>
+        <div class="medium-4 columns">
+          <input class="button secondary tiny" type="submit" name="submit" value="<?=$this->transEsc('Go')?>" role="button" aria-label="submit form"/>
+        </div>
+      </div>
+    </form>
+    <hr/>
+    <a name="ListSets"></a>
+    <p class="lead">ListSets</p>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="medium-8 columns">
+            <input type="hidden" name="verb" value="ListSets"/>
+      <p class="help-block">Returns a listing of available sets.</p>
+            <div class="form-group">
+              <label for="ListSets_metadataPrefix" class="medium-3 columns control-label"><?=$this->transEsc('Metadata Prefix')?>:</label>
+              <div class="medium-9 columns">
+                <input id="ListSets_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ListSets_resumptionToken" class="medium-3 columns control-label"><?=$this->transEsc('Resumption Token')?>:</label>
+              <div class="medium-9 columns">
+                <input id="ListSets_resumptionToken" type="text" name="resumptionToken" class="form-control"/>
+              </div>
+            </div>
+        </div>
+        <div class="medium-4 columns">
+          <input class="button secondary tiny" type="submit" name="submit" value="<?=$this->transEsc('Go')?>" role="button" aria-label="submit form"/>
+        </div>
+      </div>
+    </form>
+    <hr/>
+    <a name="ListRecords"></a>
+    <p class="lead">ListRecords</p>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="medium-8 columns">
+            <input type="hidden" name="verb" value="ListRecords"/>
+      <p class="help-block">Returns a listing of available records.</p>
+            <div class="form-group">
+              <label for="ListRecord_from" class="medium-3 columns control-label"><?=$this->transEsc('From')?>:</label>
+              <div class="medium-9 columns">
+                <input id="ListRecord_from" type="text" name="from" class="form-control"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ListRecord_until" class="medium-3 columns control-label"><?=$this->transEsc('Until')?>:</label>
+              <div class="medium-9 columns">
+                <input id="ListRecord_until" type="text" name="until" class="form-control"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ListRecord_set" class="medium-3 columns control-label"><?=$this->transEsc('Set')?>:</label>
+              <div class="medium-9 columns">
+                <input id="ListRecord_set" type="text" name="set" class="form-control"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ListRecord_metadataPrefix" class="medium-3 columns control-label"><?=$this->transEsc('Metadata Prefix')?>:</label>
+              <div class="medium-9 columns">
+                <input id="ListRecord_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="ListRecord_resumptionToken" class="medium-3 columns control-label"><?=$this->transEsc('Resumption Token')?>:</label>
+              <div class="medium-9 columns">
+                <input id="ListRecord_resumptionToken" type="text" name="resumptionToken" class="form-control"/>
+              </div>
+            </div>
+        </div>
+        <div class="medium-4 columns">
+          <input class="button secondary tiny" type="submit" name="submit" value="<?=$this->transEsc('Go')?>" role="button" aria-label="submit form"/>
+        </div>
+      </div>
+    </form>
+    <hr/>
+    <a name="GetRecord"></a>
+    <p class="lead">GetRecord</p>
+    <form class="form-horizontal" method="get" action="<?=$baseUrl?>">
+      <div class="row">
+        <div class="medium-8 columns">
+            <input type="hidden" name="verb" value="GetRecord"/>
+      <p class="help-block">Returns a single record.</p>
+            <div class="form-group">
+              <label for="GetRecord_identifier" class="medium-3 columns control-label"><?=$this->transEsc('Identifier')?>:</label>
+              <div class="medium-9 columns">
+                <input id="GetRecord_identifier" type="text" name="identifier" class="form-control"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="GetRecord_metadataPrefix" class="medium-3 columns control-label"><?=$this->transEsc('Metadata Token')?>:</label>
+              <div class="medium-9 columns">
+                <input id="GetRecord_metadataPrefix" type="text" name="metadataPrefix" class="form-control"/>
+              </div>
+            </div>
+        </div>
+        <div class="medium-4 columns">
+          <input class="button secondary tiny" type="submit" name="submit" value="<?=$this->transEsc('Go')?>" role="button" aria-label="submit form"/>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="medium-3 columns">
+    <p class="lead"><?=$this->transEsc('Available Functionality') ?>:</p>
+    <div class="list-group">
+      <a href="#Identify" class="list-group-item active">Identify</a>
+      <a href="#ListIdentifiers" class="list-group-item">ListIdentifiers</a>
+      <a href="#ListMetadataFormats" class="list-group-item">ListMetadataFormats</a>
+      <a href="#ListSets" class="list-group-item">ListSets</a>
+      <a href="#ListRecords" class="list-group-item">ListRecords</a>
+      <a href="#GetRecord" class="list-group-item">GetRecord</a>
+    </div>
+  </div>
+</div>
+<!-- oai - home.phtml - END -->

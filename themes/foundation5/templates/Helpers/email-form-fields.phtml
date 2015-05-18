@@ -1,0 +1,54 @@
+<!-- helpers - email-form-fields.phtml -->
+<div class="form-group">
+  <label class="medium-3 columns control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
+  <div class="medium-9 columns">
+    <input type="<?=$this->maxRecipients != 1 ? 'text' : 'email'?>" id="email_to" class="form-control" oninvalid="$('#modal .fa-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+    <? if ($this->maxRecipients != 1): ?>
+      <br />
+      <?=$this->transEsc('email_multiple_recipients_note')?>
+      <? if ($this->maxRecipients > 1): ?>
+        <?=$this->transEsc('email_maximum_recipients_note', array('%%max%%' => $this->maxRecipients))?>
+      <? endif; ?>
+    <? endif; ?>
+  </div>
+</div>
+<? if (!$this->disableFrom): ?>
+  <div class="form-group">
+    <label class="medium-3 columns control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
+    <div class="medium-9 columns">
+      <input type="email" id="email_from" oninvalid="$('#modal .fa-spinner').remove()" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="form-control"/>
+    </div>
+  </div>
+<? endif; ?>
+<? if ($this->editableSubject): ?>
+  <div class="form-group">
+    <label class="medium-3 columns control-label" for="email_subject"><?=$this->transEsc('email_subject')?>:</label>
+    <div class="medium-9 columns">
+      <input type="text" id="email_subject" oninvalid="$('#modal .fa-spinner').remove()" name="subject" value="<?=isset($this->subject) ? $this->subject : ''?>" size="40" class="form-control"/>
+    </div>
+  </div>
+<? endif; ?>
+<div class="form-group">
+  <label class="medium-3 columns control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
+  <div class="medium-9 columns">
+    <textarea id="email_message" class="form-control" name="message" rows="4"><?=isset($this->message) ? $this->message : ''?></textarea>
+  </div>
+</div>
+<? if ($this->disableFrom && $this->userEmailInFrom): ?>
+  <div class="form-group">
+    <div class="medium-9 columns medium-offset-3">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="ccself"/> <?=$this->translate('send_email_copy_to_me'); ?>
+        </label>
+      </div>
+    </div>
+  </div>
+<? endif ?>
+<?=$this->recaptcha()->html($this->useRecaptcha) ?>
+<div class="form-group">
+  <div class="medium-9 columns medium-offset-3">
+    <input type="submit" class="button tiny" role="button" name="submit" value="<?=$this->transEsc('Send')?>"/>
+  </div>
+</div>
+<!-- helpers - email-form-fields.phtml - END -->

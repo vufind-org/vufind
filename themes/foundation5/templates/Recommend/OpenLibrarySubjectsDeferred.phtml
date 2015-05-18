@@ -1,0 +1,9 @@
+<?
+    // Set up Javascript for use below:
+    $loadJs = 'var url = path + "/AJAX/Recommend?' . $this->recommend->getUrlParams() . '";'
+        . "\$('#openLibraryDeferredRecommend').load(url);";
+?>
+<div id="openLibraryDeferredRecommend">
+    <p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
+</div>

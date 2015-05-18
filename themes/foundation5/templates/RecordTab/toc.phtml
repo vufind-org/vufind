@@ -1,0 +1,16 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Table of Contents') . ': ' . $this->driver->getBreadcrumb());
+
+    $toc = $this->driver->getTOC();
+?>
+<? if (!empty($toc)): ?>
+  <strong><?=$this->transEsc('Table of Contents')?>: </strong>
+  <ul class="toc">
+    <? foreach ($toc as $line): ?>
+      <li><?=$this->escapeHtml($line)?></li>
+    <? endforeach; ?>
+  </ul>
+<? else: ?>
+  <?=$this->transEsc("Table of Contents unavailable")?>.
+<? endif; ?>

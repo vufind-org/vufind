@@ -1,0 +1,19 @@
+<!-- auth - database - RECOVERY.phtml -->
+<div class="form-group">
+  <label class="medium-3 columns control-label"><?=$this->transEsc('recovery_by_username') ?>:</label>
+  <div class="medium-9 large-5 columns">
+    <input type="text" name="username" class="form-control"/>
+  </div>
+</div>
+<div class="form-group">
+  <label class="medium-3 columns control-label"><?=$this->transEsc('recovery_by_email') ?>:</label>
+  <div class="medium-9 large-5 columns">
+    <input type="email" name="email" class="form-control"/>
+  </div>
+</div>
+<?=$this->recaptcha()->html($this->useRecaptcha) ?>
+<div class="form-group">
+  <div class="medium-9 medium-offset-3 columns">
+  <input class="button secondary tiny" name="submit" type="submit" role="button" aria-label="submit form"  value="<?=$this->transEsc('Recover Account') ?>"/>
+</div>
+<!-- auth - database - RECOVERY.phtml end -->
