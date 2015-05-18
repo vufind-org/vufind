@@ -134,18 +134,15 @@ class Redi implements DriverInterface
         $xpath = new DOMXPath($xml);
 
         $doiTerm = $xpath
-            ->query("//div[@id='citation']/dl/dt[@class='doi_t']");
+            ->query("//dt[@class='doi_t']");
         $doiDefinition = $xpath
-            ->query("//div[@id='citation']/dl/dd[@class='doi_d']");
-        $doiDefinitionURL = $xpath
-            ->query(
-                "//div[@id='citation']/dl/dd[@class='doi_d']/span[@class='t_link']/a"
-            );
+            ->query("//dd[@class='doi_d']");
 
         if ($doiTerm->length == $doiDefinition->length) {
             for ($i=0; $i<$doiTerm->length; $i++) {
-                $href = $doiDefinitionURL->item($i)->attributes
-                    ->getNamedItem("href")->textContent;
+                $href = $xpath
+                    ->query(".//@href", $doiDefinition->item($i))
+                    ->item(0)->textContent;
                 $retval[] = [
                     'title' => $doiTerm->item($i)->textContent
                         . $doiDefinition->item($i)->textContent,
