@@ -86,7 +86,7 @@ class Redi implements DriverInterface
      */
     public function fetchLinks($openURL)
     {
-        $url = $this->baseUrl.'?'.$openURL;
+        $url = $this->baseUrl . '?' . $openURL;
         $feed = $this->httpClient->setUri($url)->send()->getBody();
         return $feed;
     }
@@ -139,7 +139,7 @@ class Redi implements DriverInterface
             ->query("//dd[@class='doi_d']");
 
         if ($doiTerm->length == $doiDefinition->length) {
-            for ($i=0; $i<$doiTerm->length; $i++) {
+            for ($i = 0; $i<$doiTerm->length; $i++) {
                 $href = $xpath
                     ->query(".//@href", $doiDefinition->item($i))
                     ->item(0)->textContent;
@@ -172,7 +172,7 @@ class Redi implements DriverInterface
         $infoTokenNodes = $xpath->query("//div[@id='t_ezb']/div[@class='t']/p/sup");
 
         if ($infoTokenNodes->length > 0) {
-            for ($i=0; $i<$infoTokenNodes->length; $i++) {
+            for ($i = 0; $i<$infoTokenNodes->length; $i++) {
                 if ($infoToken == $infoTokenNodes->item($i)->textContent) {
                     return $xpath
                         ->query("//div[@id='t_ezb']/div[@class='t']/p/sup/..")
@@ -204,7 +204,7 @@ class Redi implements DriverInterface
             ->query("//div[@class='t_ezb_result']/p/span[@class='t_link']/a");
 
         if ($ezbResultsNodesText->length == $ezbResultsNodesURL->length) {
-            for ($i=0; $i<$ezbResultsNodesText->length; $i++) {
+            for ($i = 0; $i<$ezbResultsNodesText->length; $i++) {
 
                 $itemInfo = '';
 
@@ -236,7 +236,7 @@ class Redi implements DriverInterface
      */
     protected function postProcessing()
     {
-        for ($i=0; $i < count($this->links); $i++) {
+        for ($i = 0; $i < count($this->links); $i++) {
             if (isset($this->links[$i]['title'])) {
                 $this->links[$i]['title'] = $this
                     ->removeDoubleAngleQuotationMarks($this->links[$i]['title']);
@@ -258,7 +258,7 @@ class Redi implements DriverInterface
     protected function removeDoubleAngleQuotationMarks($string)
     {
         return str_replace(
-            ['»', chr(194).chr(160)],
+            ['»', chr(194) . chr(160)],
             ['', ''],
             $string
         ); // hack to replace \u00a0
