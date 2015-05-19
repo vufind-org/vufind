@@ -9,6 +9,7 @@ $this->layout()->finnaMainHeader = $this->context($this)->renderInContext(
     )
 );
 $this->headScript()->appendFile("check_item_statuses.js");
+$this->headScript()->prependScript("var listId = {$list->id}; var publicList = 1");
 ?>
 <?= $this->flashmessages() ?>
 <div class="clearfix hidden-print">

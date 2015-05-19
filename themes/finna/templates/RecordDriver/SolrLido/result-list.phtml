@@ -4,7 +4,7 @@
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
       <? $img = $this->recordImage($this->record($this->driver))?>
-      <?= $img->render('list', array('medium' => array('w' => 300, 'h' => 300, 'maxh' => 400))) ?>
+      <?= $img->render('list', array('medium' => array('w' => 300, 'h' => 300))) ?>
     </div>
     <div class="col-xs-9">
       <div>

@@ -1,0 +1,34 @@
+<?=$this->flashmessages()?>
+<form method="post" action="<?=$this->url('home') . ('MyResearch/ChangeMessagingSettings')?>" class="messaging-settings-form profile-form">
+  <table class="table useraccount-table">
+    <? foreach ($this->services as $service=>$data): ?>
+    <tr>
+      <th><?=$data['type'] ?></th>
+      <td>
+        <select name="<?=$service ?>">
+          <? if ($service != 'overdueNotice'): ?>
+            <option value="none"><?=$this->transEsc('messaging_settings_method_none'); ?></option>
+          <? endif; ?>
+          <? if ($service == 'dueDateAlert'): ?>
+            <? foreach ($this->emailDays as $day=>$label): ?>
+              <option value="<? $day+1 ?>"<? if ($data['numOfDays'] == $day+1): ?> selected<? endif; ?>><?=$label ?></option>
+            <? endforeach; ?>
+          <? else: ?>
+            <? foreach ($data['sendMethods'] as $method=>$methodData): ?>
+              <option value="<?=$methodData['type'] ?>"<? if ($methodData['active']): ?> selected<? endif; ?>><?=$methodData['method'] ?></option>
+            <? endforeach; ?>
+          <? endif; ?>
+        </select>
+      </td>
+    </tr>
+    <? endforeach; ?>
+    <tr>
+      <th>
+        <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Send') ?>" name="messaging_update_request" />
+      </th>
+    </tr>
+  </table>
+</form>
+<span class="messaging-settings-change-description">
+  <?=$this->transEsc('request_change_description') ?>
+</span>

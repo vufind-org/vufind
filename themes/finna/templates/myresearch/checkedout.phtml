@@ -15,7 +15,7 @@
     <h2><?=$this->transEsc('Your Checked Out Items')?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
     <? if (!empty($this->transactions)): ?>
       <? if ($this->renewForm): ?>
-      <form name="renewals" action="" method="post" id="renewals">
+      <form name="renewals" method="post" id="renewals">
         <div class="toolbar">
           <input type="submit" class="btn btn-primary" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
           <input type="submit" class="btn btn-primary" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />

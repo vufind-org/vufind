@@ -1,68 +1,142 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('My Profile'));
+    $this->headScript()->appendFile("finna-user-profile.js");
     // Set up myresearch menu
-    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'profile'));
+    $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", ['active' => 'profile']);
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
 
     // Only display home library form if we have multiple pickup locations:
     $showHomeLibForm = (isset($this->pickup) && count($this->pickup) > 1);
 
-    // Template for use by the renderArray helper:
-    $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
+    $user = $this->auth()->isLoggedIn();
+    $cards = $user->getLibraryCards();
+
+    $updateAddress = ($config = $this->ils()->checkFunction('UpdateAddress')) && $config['method'] == 'email';
+    $updatePhone = ($config = $this->ils()->checkFunction('UpdatePhone')) && $config['method'] == 'driver';
+    $updateEmail = ($config = $this->ils()->checkFunction('UpdateEmail')) && $config['method'] == 'driver';
 ?>
 <div class="row">
-  <div class="col-md-9">
+  <div class="col-md-10 col-lg-9">
+    <? if ($this->transEsc('profile_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><? endif; ?>
     <?=$this->flashmessages();?>
-    <h2><?=$this->transEsc('Library Card Settings')?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
-    <table class="table">
+    <?=$this->partial('myresearch/borrowing-block.phtml', ['profile' => $this->profile]); ?>
+    <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards]); ?>
+    <? if (isset($this->profile)): ?>
+    <div class="myresearch-profile-header"><?=$this->transEsc('Library Card Settings');?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user])?></div>
+    <div class="col-xs-12 myresearch-profile-list library-profile">
       <? if ($showHomeLibForm): ?>
-        <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
-        <?
-          $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
-              ? $this->profile['home_library'] : $this->defaultPickupLocation
-        ?>
-        <td>
-          <form id="profile_form" class="form-inline" action="" method="post">
-            <select id="home_library" name="home_library" class="form-control">
-              <? foreach ($this->pickup as $lib): ?>
-                <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
-              <? endforeach; ?>
-            </select>
-            <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>" />
-          </form>
-        </td>
-        </tr>
+        <form id="profile_form" class="inline" method="post">
+          <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('Preferred Library')?>:</div>
+          <div class="col-xs-8 col-sm-8">
+              <?
+                $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
+                  ? $this->profile['home_library'] : $this->defaultPickupLocation
+              ?>
+              <select id="home_library" name="home_library" class="form-control">
+                <? foreach ($this->pickup as $lib): ?>
+                  <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
+                <? endforeach; ?>
+              </select>
+          </div>
+          <div class="col-xs-12">
+            <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save')?>" name="save_home_library" />
+          </div>
+        </form>
       <? endif; ?>
-    </table>
-    <table class="table table-striped useraccount-table">
-        <tr class="headers">
-          <th colspan="2"><h4><?=$this->transEsc('Personal details maintained by the library');?></h4></th>
-        </tr>
-      <?
-        echo $this->renderArray(
-          $arrTemplate, $this->profile,
-          array(
-            $this->transEsc('First Name') => 'firstname',
-            $this->transEsc('Last Name') => 'lastname'
-          )
-        );
-       ?>
-      <?
-        echo $this->renderArray(
-          $arrTemplate, $this->profile,
-          array(
-            $this->transEsc('Address') . ' 1' => 'address1',
-            $this->transEsc('Address') . ' 2' => 'address2',
-            $this->transEsc('Zip') => 'zip',
-            $this->transEsc('City') => 'city',
-            $this->transEsc('Country') => 'country',
-            $this->transEsc('Phone Number') => 'phone',
-            $this->transEsc('Group') => 'group'
-          )
-        );
-      ?>
-    </table>
+
+      <? if (isset($profile['messagingServices']) && !empty($profile['messagingServices'])): ?>
+        <?= $this->partial('myresearch/profile-messaging.phtml', ['profile' => $profile]); ?>
+      <? endif; ?>
+
+      <form id="profile_library_form" class="inline" method="post">
+        <div class="col-xs-12">
+          <span class="myresearch-profile-middle-header"><?= $this->transEsc('Personal details maintained by the library') ?></span>
+        </div>
+        <? if (isset($this->profile['firstname'])): ?>
+          <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('First Name') ?>:</div>
+          <div class="col-xs-8 col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['firstname']) ?></div>
+        <? endif; ?>
+        <? if (isset($this->profile['lastname'])): ?>
+          <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('Last Name') ?>:</div>
+          <div class="col-xs-8 col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['lastname']) ?></div>
+        <? endif; ?>
+        <? if (isset($this->profile['address1'])): ?>
+          <? if ($updateAddress): ?>
+            <div class="col-xs-4 col-sm-4 profile-title profile-long"><?=$this->transEsc('Address') ?> 1:</div>
+            <div class="col-xs-8 col-sm-4 profile-text-value profile-long"><?=$this->escapeHtml($this->profile['address1']) ?></div>
+            <div class="clearfix visible-xs profile-xs"></div>
+            <div class="col-sm-4 profile-long">
+              <i class="fa fa-info-big"></i> <?=$this->transEsc('request_address_change_title') ?>
+              <a class="modal-link controller:MyResearch profile-library-info-address-update" href="<?=$this->url() ?>"><?=$this->transEsc('request_address_change') ?></a>
+            </div>
+            <div class="clearfix visible-xs  profile-xs"><br/></div>
+          <? else: ?>
+            <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('Address') ?> 1:</div>
+            <div class="col-xs-8 col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['address1']) ?></div>
+          <? endif; ?>
+        <? endif; ?>
+        <? if (isset($this->profile['address2']) && !$updateAddress): ?>
+          <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('Address') ?> 2:</div>
+          <div class="col-xs-8 col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['address2']) ?></div>
+        <? endif; ?>
+        <? if (isset($this->profile['zip'])): ?>
+          <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('Zip') ?>:</div>
+          <div class="col-xs-8 col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['zip']) ?></div>
+        <? endif; ?>
+        <? if (isset($this->profile['phone'])): ?>
+          <? if ($updatePhone): ?>
+            <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('Phone') ?>:</div>
+            <div class="col-xs-8 col-sm-8">
+              <input class="form-control" type="tel" name="profile_tel" value="<?=$this->escapeHtml($this->profile['phone']) ?>"/>
+            </div>
+          <? else: ?>
+            <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('Phone') ?>:</div>
+            <div class="col-xs-8 col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['phone']) ?></div>
+          <? endif; ?>
+        <? endif; ?>
+        <? if (isset($this->profile['email'])): ?>
+          <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('Email') ?>:</div>
+          <? if ($updateEmail): ?>
+            <div class="col-xs-8 col-sm-8">
+              <input class="form-control" type="email" name="profile_email" value="<?=$this->escapeHtml($this->profile['email']) ?>"/>
+            </div>
+          <? else: ?>
+            <div class="col-xs-8 col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['email']) ?></div>
+          <? endif; ?>
+        <? endif; ?>
+        <? if (isset($this->profile['group'])): ?>
+          <div class="col-xs-4 col-sm-4 profile-title"><?=$this->transEsc('Group') ?>:</div>
+          <div class="col-xs-8 col-sm-8 profile-text-value"><?=$this->escapeHtml($this->profile['group']) ?></div>
+        <? endif; ?>
+        <? if ($updatePhone || $updateEmail): ?>
+          <div class="col-xs-12">
+            <input id="save-library-profile" name="saveLibraryProfile" type="submit" value="<?=$this->transEsc("save_my_profile") ?>" class="btn btn-primary" />
+          </div>
+        <? endif; ?>
+        <? if ($updateAddress): ?>
+          <div class="col-xs-12">
+            <i class="fa fa-pen"></i> <a class="modal-link controller:MyResearch profile-library-info-address-update" href="<?=$this->url() ?>"><?=$this->transEsc('request_address_change') ?></a>
+          </div>
+        <? endif; ?>
+      </form>
+    </div>
+    <? endif; ?>
   </div>
 </div>
+<div class="row">
+  <div class="col-md-10 col-lg-9">
+    <div id="delete-account" class="text-right">
+      <button class="btn btn-primary modal-link controller:MyResearch"><i class="fa fa-times"></i> <?=$this->transEsc('delete_account_title') ?></button>
+    </div>
+  </div>
+</div>
+
+<? if (isset($this->parent)): ?>
+<div class="row">
+  <div class="col-xs-12">
+      <?php echo $this->parent ?>
+  </div>
+</div>
+<? endif; ?>

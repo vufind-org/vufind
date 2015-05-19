@@ -1,0 +1,9 @@
+<div class="row">
+  <div class="col-md-10 col-lg-7">
+    <h1 class="introductionText"><!--<?=$this->translate('introduction_title_html')?> --> introductiontext.phtml</h1>
+    <? $cnt = $this->indexedTotal()->getTotalIndexedCount(); ?>
+    <? if ($cnt > 0): ?>
+        <h3 class="introductionText"><?=$this->translate('currently_indexed_html', ['%%total%%' => $this->localizedNumber($cnt)]); ?></h3>
+    <? endif; ?>
+  </div>
+</div>

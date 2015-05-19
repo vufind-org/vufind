@@ -1,7 +1,7 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('Interlibrary Loan Requests'));
-    
+
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'ILLRequests'));
 
@@ -11,11 +11,13 @@
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
+    <? if ($this->transEsc('ill_requests_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><p class="no-content-message"><?=$this->transEsc('ill_requests_instructions')?></p><? endif; ?>
     <?=$this->flashmessages()?>
+    <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
     <h2><?=$this->transEsc('Interlibrary Loan Requests') ?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
-      <form name="cancelForm" class="inline" action="" method="post" id="cancelILLRequest">
+      <form name="cancelForm" class="inline" method="post" id="cancelILLRequest">
         <div class="toolbar">
           <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
           <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>

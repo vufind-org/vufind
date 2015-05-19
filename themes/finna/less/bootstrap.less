@@ -16,7 +16,10 @@ body {
     background-repeat: no-repeat;
 }
 body > .main { 
-    background-color: @body-bg;
+    background: @body-bg;
+    &.template-name-home {
+        background: @home-content-background;   
+    }
 }
 header {
      @media(min-width:768px) {
@@ -90,9 +93,9 @@ section.main.template-dir-content.template-name-content .container-fluid.finna-m
     }
 }
 .introduction h1 {
-    font-size: 3em;
+    font-size: @introduction-header;
     @media(max-width:@screen-xs-max) {
-        font-size: 2em;   
+        font-size: @introduction-header/1.5;   
     }
 }
 h1.introductionText, h3.introductionText {
@@ -116,7 +119,10 @@ h3.introductionText > em {
 .document-types {
     li {
         font-size: 1.05em;
-        margin-bottom: 3px;   
+        margin-bottom: 10px;   
+    }
+    & a {
+        line-height: 1.3em;   
     }
     & a.iconlabel {
         color: @link-color;
@@ -177,25 +183,38 @@ i.fa.fa-search.backgrounding:before {
   }
 }
 footer {
- background: @footer-background; 
- margin-bottom: -10px;
- padding: 15px 0px;
-}
-footer hr {
-  display: none;   
-}
-footer a, footer p {
- color: @body-bg;   
-}
-footer p {
- font-size: 1 em;   
-}
-footer li {
-    list-style-type:none;   
+    background: @footer-background; 
+    margin-bottom: -10px;
+    padding: 15px 0px;
+    & hr {
+        border-top: none;
+    }
+    @media (max-width: @screen-xs-max) {
+        & hr {
+            display: block;
+            border-top: 1px solid @gray-light;
+        }
+    }
+    & a, p, h5 {
+        color: @body-bg;  
+    }
+    h5 {
+        font-size: 1.2em;   
+    }
+    & a:hover {
+        color: @body-bg;
+        text-decoration: underline;
+    }
+    & li {
+        list-style-type:none;   
+    }
 }
 .sidebar {
     margin-bottom: 30px;
     padding-right: 20px;
+    @media (max-width: @screen-xs-max) {
+        clear: both;   
+    }
 }
 .modal-body.in {
     /* These combat the bootstrap weirdness with trying to compensate for scrollbars */
@@ -314,7 +333,7 @@ mark, .highlight {
     padding-bottom: 20px;
 }
 .right-top {
-    background: @body-bg;
+    background: @home-right-top-background;
 }
 /* Carousel styling */
 .carousel {
@@ -481,6 +500,15 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
 }
 
+/* --- Collection view --- */
+.template-dir-collection.template-name-view {
+    & > .container {
+        margin-top: 20px;   
+    }
+    & .collection-title {
+        margin-top: 0;   
+    }
+}
 
 /* --- Auto Complete Dropdown --- */ 
 .tt-dropdown-menu {
@@ -604,8 +632,31 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   }
 }
 #hierarchyTreeHolder {
-  border-right:1px solid @gray-lighter;
-  overflow-x:hidden;
+    overflow-x: hidden;
+    margin-bottom: 20px;
+    & .jstree-container-ul {
+        padding-left: 0px;   
+    }
+    & .hierarchy-tree .jstree-icon {
+        color: @gray-light;
+        margin-right: 5px;
+        font-size: 1.15em;
+    }
+    & .hierarchy-tree .jstree-clicked {
+        color: @link-color;
+        font-weight: bold;
+        background: #f5f5f5;
+    }
+    & .jstree-container-ul {
+        background: none;
+        & .jstree-node {
+            background: none;
+            overflow: hidden;
+            white-space: nowrap;
+            display: block;
+            text-overflow: ellipsis;
+        }
+    }
 }
 
 /* --- Record images--- */
@@ -901,8 +952,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         position: absolute;
         padding: 10px 0px;
         width: 91%;
-        bottom: 19px;
+        top: 70%;
+        overflow: hidden;
         opacity: 0;
+        max-height: 40px;
         filter: alpha(opacity=0);
         background: rgba(255,255,255,0.8);
         transition: all .2s ease-in-out;
@@ -910,7 +963,8 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         box-shadow: 0px 20px 20px -16px #000;
         .opacity(0);
         background: rgba(255, 255, 255, 0.9);
-        transition: all 0.2s ease-in-out;
+        transition: max-height .2s linear;
+        transition: opacity .2s linear;
     }
     & a.title {
         font-size: 1.15em;
@@ -927,8 +981,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     }
 }
 .grid:hover .grid-title {
-    height:auto;
+    max-height: 500px;
     .opacity(1);
+    transition: max-height 1s linear;
 }
 
 /* --- Hierarchical facets --- */

@@ -18,6 +18,7 @@
 
 namespace ZfcRbacTest\Collector;
 
+use Rbac\Role\RoleInterface;
 use Zend\Mvc\MvcEvent;
 use Zend\Permissions\Rbac\Rbac;
 use Zend\Permissions\Rbac\Role;
@@ -25,8 +26,11 @@ use ZfcRbac\Collector\RbacCollector;
 use ZfcRbac\Guard\GuardInterface;
 use ZfcRbac\Options\ModuleOptions;
 use ZfcRbac\Role\InMemoryRoleProvider;
+use ZfcRbac\Role\RoleProviderInterface;
 use ZfcRbac\Service\RoleService;
 use Rbac\Traversal\Strategy\RecursiveRoleIteratorStrategy;
+use ZfcRbacTest\Asset\MockRoleWithPermissionMethod;
+use ZfcRbacTest\Asset\MockRoleWithPermissionProperty;
 
 /**
  * @covers \ZfcRbac\Collector\RbacCollector
@@ -176,4 +180,95 @@ class RbacCollectorTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expectedCollection, $collection);
     }
+
+    /**
+     * Tests the collectPermissions method when the role has a $permissions Property
+     */
+    public function testCollectPermissionsProperty()
+    {
+        $expectedCollection = [
+            'guards' => [],
+            'roles'  => ['role-with-permission-property'],
+            'permissions' => [
+                'role-with-permission-property' => ['permission-property-a', 'permission-property-b'],
+            ],
+            'options' => [
+                'guest_role' => 'guest',
+                'protection_policy' => GuardInterface::POLICY_ALLOW,
+            ],
+        ];
+
+        $collection = $this->collectPermissionsPropertyTestBase(new MockRoleWithPermissionProperty());
+        $this->assertEquals($expectedCollection, $collection);
+    }
+
+    /**
+     * Tests the collectPermissions method when the role has a getPermissions() method
+     */
+    public function testCollectPermissionsMethod()
+    {
+        $expectedCollection = [
+            'guards' => [],
+            'roles'  => ['role-with-permission-method'],
+            'permissions' => [
+                'role-with-permission-method' => ['permission-method-a', 'permission-method-b'],
+            ],
+            'options' => [
+                'guest_role' => 'guest',
+                'protection_policy' => GuardInterface::POLICY_ALLOW,
+            ],
+        ];
+
+        $collection = $this->collectPermissionsPropertyTestBase(new MockRoleWithPermissionMethod());
+        $this->assertEquals($expectedCollection, $collection);
+    }
+
+    /**
+     * Base method for the *collectPermissionProperty tests
+     * @param RoleInterface $role
+     * @return array|\string[]
+     */
+    private function collectPermissionsPropertyTestBase(RoleInterface $role)
+    {
+        $serviceManager = $this->getMock('Zend\ServiceManager\ServiceLocatorInterface');
+
+        $application = $this->getMock('Zend\Mvc\Application', [], [], '', false);
+        $application->expects($this->once())->method('getServiceManager')->will($this->returnValue($serviceManager));
+
+        $mvcEvent = new MvcEvent();
+        $mvcEvent->setApplication($application);
+
+        $identity = $this->getMock('ZfcRbac\Identity\IdentityInterface');
+        $identity->expects($this->once())
+            ->method('getRoles')
+            ->will($this->returnValue([$role]));
+
+        $identityProvider = $this->getMock('ZfcRbac\Identity\IdentityProviderInterface');
+        $identityProvider->expects($this->once())
+            ->method('getIdentity')
+            ->will($this->returnValue($identity));
+
+        $roleProvider = $this->getMock('ZfcRbac\Role\RoleProviderInterface');
+
+        $roleService = new RoleService($identityProvider,
+            $roleProvider,
+            new RecursiveRoleIteratorStrategy());
+
+        $serviceManager->expects($this->at(0))
+            ->method('get')
+            ->with('ZfcRbac\Service\RoleService')
+            ->will($this->returnValue($roleService));
+
+        $serviceManager->expects($this->at(1))
+            ->method('get')
+            ->with('ZfcRbac\Options\ModuleOptions')
+            ->will($this->returnValue(new ModuleOptions()));
+
+        $collector = new RbacCollector();
+        $collector->collect($mvcEvent);
+
+        $collector->unserialize($collector->serialize());
+        return $collector->getCollection();
+    }
+
 }
