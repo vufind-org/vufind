@@ -162,11 +162,12 @@ class HierarchicalFacetHelper
         $parts = explode('/', $displayText);
         if (count($parts) > 1 && is_numeric($parts[0])) {
             if (!$allLevels && isset($parts[$parts[0] + 1])) {
-                return $parts[$parts[0] + 1];
+                $displayText = $parts[$parts[0] + 1];
+            } else {
+                array_shift($parts);
+                array_pop($parts);
+                $displayText = implode($separator, $parts);
             }
-            array_shift($parts);
-            array_pop($parts);
-            $displayText = implode($separator, $parts);
         }
         return new TranslatableString($originalText, $displayText);
     }
