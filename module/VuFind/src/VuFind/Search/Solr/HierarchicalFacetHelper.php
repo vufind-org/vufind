@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\Solr;
 
+use \VuFind\I18n\TranslatableString;
+
 /**
  * Functions for manipulating facets
  *
@@ -151,11 +153,12 @@ class HierarchicalFacetHelper
      * the current one
      * @param string $separator   Separator string displayed between levels
      *
-     * @return string Formatted text
+     * @return TranslatableString Formatted text
      */
     public function formatDisplayText(
         $displayText, $allLevels = false, $separator = '/'
     ) {
+        $originalText = $displayText;
         $parts = explode('/', $displayText);
         if (count($parts) > 1 && is_numeric($parts[0])) {
             if (!$allLevels && isset($parts[$parts[0] + 1])) {
@@ -163,9 +166,9 @@ class HierarchicalFacetHelper
             }
             array_shift($parts);
             array_pop($parts);
-            return implode($separator, $parts);
+            $displayText = implode($separator, $parts);
         }
-        return $displayText;
+        return new TranslatableString($originalText, $displayText);
     }
 
     /**

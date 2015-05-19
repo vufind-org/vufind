@@ -725,6 +725,7 @@ class SolrDefault extends AbstractBase
 
         // Start an array of OpenURL parameters:
         return [
+            'url_ver' => 'Z39.88-2004',
             'ctx_ver' => 'Z39.88-2004',
             'ctx_enc' => 'info:ofi/enc:UTF-8',
             'rfr_id' => 'info:sid/' . $this->getCoinsID() . ':generator',

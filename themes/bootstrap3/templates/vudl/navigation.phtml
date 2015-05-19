@@ -47,7 +47,10 @@
     <? endif; ?>
     <li class="btn-group">
       <a href="javascript:prevPage()" class="turn-button btn btn-default<? if($this->outline['counts'][$this->initList] <= 1): ?> hidden<? endif; ?>">Prev Page</a>
-      <a href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>" class="grid-btn btn btn-default"><i class="fa fa-th"></i></a>
+      <a href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>" class="grid-btn btn btn-default">
+        <i class="fa fa-th hidden-xs"></i>
+        <span class="visible-xs-inline"><?=$this->transEsc('grid_view') ?></span>
+      </a>
       <a href="javascript:nextPage()" class="turn-button btn btn-default<? if($this->outline['counts'][$this->initList] <= 1): ?> hidden<? endif; ?>">Next Page</a>
     </li>
     <? if(count($uniqueParents) > 1): ?>

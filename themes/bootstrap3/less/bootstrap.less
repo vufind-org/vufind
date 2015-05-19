@@ -34,6 +34,7 @@ label.list-group-item {
   border-radius: 0;
 }
 .list-group-item.title {font-weight: bold;}
+#modal {background-color: rgba(0,0,0,.2);}
 #modal .modal-body > h2:first-child {display: none;}
 .popover {width: 250px;}
 p.lead {
@@ -110,7 +111,6 @@ p.lead {
   }
 }
 #groupPlaceHolder {
-  float:left;
   display:block;
   padding:6px;
 }
@@ -318,7 +318,7 @@ p.lead {
 /* --- Sidebar --- */
 /* Sidebar rounded corners */
 .sidebar {
-  label {margin-left: 20px;}
+  label:not(.list-group-item) {margin-left: 20px;}
   .list-group:not(.filters) .title {
     cursor: pointer;
     &.collapsed {
@@ -547,9 +547,11 @@ li.jstree-facet ul {padding-left: 20px;}
 /* --- Offcanvas --- */
 @offcanvas-offset: 75%;
 @offcanvas-padding: 25px;
+
+.offcanvas-overlay,
+.offcanvas-toggle {display: none;}
+
 @media screen and (max-width: 767px) {
-  .offcanvas-overlay,
-  .offcanvas-toggle {display: none;}
   body.offcanvas {
     overflow-x: hidden; /* Prevent scroll on narrow devices */
     .sidebar {
