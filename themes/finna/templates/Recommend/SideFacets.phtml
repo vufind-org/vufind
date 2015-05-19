@@ -35,7 +35,7 @@
     ?>
 <? if (!empty($filterList) || $queryHandler != 'AllFields'): ?>
   <div class="list-group filters">
-    <div class="list-group-item title"><?=$this->transEsc('Remove Filters')?></div>
+    <div class="list-group-item title"><?=$this->transEsc('Filters')?></div>
     <? // Finna query handler (type) remove link ?>
     <? if ($queryHandler != 'AllFields'): ?>
         <? $removeLink = $this->currentPath().$results->getUrlQuery()->setHandler('AllFields'); ?>
