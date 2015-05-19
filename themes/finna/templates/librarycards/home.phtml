@@ -15,7 +15,7 @@
     <? if ($this->libraryCards->count() == 0): ?>
       <h4><?=$this->transEsc('You do not have any library cards')?></h4>
     <? else: ?>
-      <table class="table table-striped useraccount-table" summary="<?=$this->transEsc('Library Cards')?>">
+      <table class="table table-striped useraccount-table">
       <tr class="headers">
         <th><?=$this->transEsc('Library Card Name')?></th>
         <? if ($this->multipleTargets): ?>
