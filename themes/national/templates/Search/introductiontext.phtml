@@ -6,4 +6,17 @@
         <h3 class="introductionText"><?=$this->translate('currently_indexed_html', ['%%total%%' => $this->localizedNumber($cnt)]); ?></h3>
     <? endif; ?>
   </div>
+  <? if ($this->resolver('content/headertexts_' . $this->layout()->userLang . '.phtml')): ?>
+    <div class="col-md-2 col-lg-5">
+      <div class="pull-right dropdown info-text">
+          <a class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+            <i class="fa fa-info open-btn"></i>
+            <i class="fa fa-times close-btn hide"></i>
+          </a>
+          <div class="dropdown-menu info-dropdown">
+            <?=$this->render('content/headertexts_' . $this->layout()->userLang . '.phtml') ?>
+          </div>
+      </div>
+    </div>
+  <? endif; ?>
 </div>
