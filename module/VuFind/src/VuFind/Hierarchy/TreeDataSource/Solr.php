@@ -247,13 +247,20 @@ class Solr extends AbstractBase
                     $map[$parentId][] = $current;
                 }
             }
-            $this->debug('Done: ' . abs(microtime(true) - $starttime));
-            $this->debug(print_r(array_keys($map)));
             $count = 0;
-            $json = $this->mapToJSON($id, $map, $count);
+            $record = $this->searchService->retrieve('Solr', $id)->getRecords();
+            if (!isset($record[0])) {
+                return '';
+            }
+            $record = $record[0];
+            $this->debug($record->getUniqueId());
+            $json = $this->formatNodeJson($record);
+            $json['children'] = $this->mapToJSON($id, $map, $count);
+            $encoded = json_encode($json, JSON_HEX_QUOT || JSON_HEX_APOS || JSON_HEX_AMP);
+
+            $this->debug('Done: ' . abs(microtime(true) - $starttime));
 
             if ($cacheFile) {
-                $encoded = json_encode($json[0]);
                 // Write file
                 if (!file_exists($this->cacheDir)) {
                     mkdir($this->cacheDir);
@@ -278,27 +285,42 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    protected function mapToJSON($parentID, &$map, &$count)
+    protected function formatNodeJson($recordDriver, $parentID = null)
     {
-        $json = [];
+        $titles = $recordDriver->getTitlesInHierarchy();
+        $title = null != $parentID && isset($titles[$parentID])
+            ? $titles[$parentID] : $recordDriver->getTitle();
+
+        return [
+            'id' => $recordDriver->getUniqueID(),
+            'type' => $recordDriver->isCollection()
+                ? 'collection'
+                : 'record',
+            'title' => htmlspecialchars($title)
+        ];
+    }
+
+    /**
+     * Get Solr Children for JSON
+     *
+     * @param string $parentID The starting point for the current recursion
+     * (equivlent to Solr field hierarchy_parent_id)
+     * @param string $count    The total count of items in the tree
+     * before this recursion
+     *
+     * @return string
+     */
+    protected function mapToJSON($parentID, $map, &$count)
+    {
         $sorting = $this->getHierarchyDriver()->treeSorting();
 
+        $json = [];
         foreach ($map[$parentID] as $current) {
             ++$count;
 
-            $titles = $current->getTitlesInHierarchy();
-            $title = isset($titles[$parentID])
-                ? $titles[$parentID] : $current->getTitle();
+            $childNode = $this->formatNodeJson($current, $parentID);
 
-            $childNode = [
-                'id' => $current->getUniqueID(),
-                'type' => $current->isCollection()
-                    ? 'collection'
-                    : 'record',
-                'title' => htmlspecialchars($title)
-            ];
-
-            if (isset($map[$current->getUniqueID()])) {
+            if (isset($map[$childNode['id']])) {
                 $children = $this->mapToJSON(
                     $current->getUniqueID(),
                     $map, $count
@@ -306,6 +328,8 @@ class Solr extends AbstractBase
                 if (!empty($children)) {
                     $childNode['children'] = $children;
                 }
+            } else {
+                return [];
             }
 
             // If we're in sorting mode, we need to create key-value arrays;
@@ -319,7 +343,6 @@ class Solr extends AbstractBase
             }
         }
 
-        $this->debug(count($sorting));
         return $sorting ? $this->sortNodes($json) : $json;
     }
 
