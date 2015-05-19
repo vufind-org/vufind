@@ -80,9 +80,10 @@
 
 
     <div class="collectionDetails<?=$tree ? 'Tree' : ''?> tabs-content" id="record-tabs">
-      <div class="content active" id="<?=$this->activeTab ?>-tab">
-	  <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
-	</div>
+		<div class="content active" id="<?=$this->activeTab ?>-tab">
+	        <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
+		</div>
+    </div>
 
 	<span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
   </div>
