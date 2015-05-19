@@ -78,6 +78,7 @@ $config = array(
             'ajax' => 'Finna\Controller\AjaxController',
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
+            'feedback' => 'Finna\Controller\FeedbackController',
             'my-research' => 'Finna\Controller\MyResearchController',
             'primo' => 'Finna\Controller\PrimoController',
             'primorecord' => 'Finna\Controller\PrimorecordController',

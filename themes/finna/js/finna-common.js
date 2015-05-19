@@ -30,9 +30,17 @@ finna.common = (function() {
 
     };
 
+    var initFeedbackForm = function() {
+        Lightbox.addFormCallback('finna_feedback', function(html) {
+            Lightbox.confirm(vufindString['feedback_success']);
+        });
+    };
+    
+    
     var my = {
         init: function() {
             loginSetup();
+            initFeedbackForm();
         }
     };
 
