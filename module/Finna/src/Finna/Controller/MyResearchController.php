@@ -512,13 +512,14 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     }
 
     /**
-     * Check if current library card supports function. Show information if not
-     * supported. And a notice about the possibility to change library card.
+     * Check if current library card supports a function. If not supported, show
+     * a message and a notice about the possibility to change library card.
      *
      * @param string  $param         function to check
-     * @param boolean $checkFunction function or capability check
+     * @param boolean $checkFunction Use checkFunction() if true,
+     * checkCapability() otherwise
      *
-     * @return mixed
+     * @return mixed \Zend\View if the function is not supported, false otherwise
      */
     public function createViewIfUnsupported($param, $checkFunction = false)
     {
