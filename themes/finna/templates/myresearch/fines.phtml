@@ -13,7 +13,8 @@
     <? if ($this->transEsc('fines_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><p class="no-content-message"><?=$this->transEsc('fines_instructions')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
-    <h2><?=$this->transEsc('Your Fines')?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
+    <div class="useraccount-header"><?=$this->transEsc('Your Fines')?>  <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></div>
+    <br>
     <? if (empty($this->fines)): ?>
     <h4><?=$this->transEsc('You do not have any fines')?></h4>
     <? else: ?>

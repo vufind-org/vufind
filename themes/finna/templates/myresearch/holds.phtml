@@ -13,7 +13,7 @@
     <? if ($this->transEsc('holds_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><p class="no-content-message"><?=$this->transEsc('holds_instructions')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
-    <h2><?=$this->transEsc('Your Holds and Recalls') ?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></h2>
+    <div class="useraccount-header"><?=$this->transEsc('Your Holds and Recalls') ?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn()))?></div>
     <? if (!empty($this->recordList)): ?>
       <? if ($this->cancelForm): ?>
       <form name="cancelForm" class="inline" action="&#32;" method="post" id="cancelHold">
