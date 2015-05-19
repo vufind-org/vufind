@@ -384,9 +384,13 @@ class AbstractSearch extends AbstractBase
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getParams()->getSearchType() != 'advanced') {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('advSearchError_notAdvanced');
-            return false;
+            try {
+                $savedSearch->getParams()->convertToAdvancedSearch();
+            } catch (\Exception $ex) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('advSearchError_notAdvanced');
+                return false;
+            }
         }
 
         // Activate facets so we get appropriate descriptions in the filter list:

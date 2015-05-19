@@ -63,7 +63,8 @@ class ShibbolethTest extends \VuFindTest\Unit\TestCase
     public function testMultivaluedOptionTrue()
     {
         $this->checkShibboleth(
-            ['affiliation' => 'student@example.org;member@example.org'],
+            ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp',
+             'affiliation' => 'student@example.org;member@example.org'],
             ['affiliation member@example.org'],
             ['loggedin']
         );
@@ -77,7 +78,8 @@ class ShibbolethTest extends \VuFindTest\Unit\TestCase
     public function testMultivaluedOptionFalse()
     {
         $this->checkShibboleth(
-            ['affiliation' => 'student@example.org;member@example.org'],
+            ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp',
+             'affiliation' => 'student@example.org;member@example.org'],
             ['affiliation staff@example.org'],
             []
         );

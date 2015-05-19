@@ -28,7 +28,8 @@
 namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
-use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
+    VuFindSearch\Query\QueryGroup;
 use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
 
 /**
@@ -419,6 +420,26 @@ class Params implements ServiceLocatorAwareInterface
         }
 
         $this->query = new Query($lookfor, $handler);
+    }
+
+    /**
+     * Convert a basic query into an advanced query:
+     *
+     * @return void
+     */
+    public function convertToAdvancedSearch()
+    {
+        if ($this->searchType === 'basic') {
+            $this->query = new QueryGroup(
+                'AND', [new QueryGroup('AND', [$this->query])]
+            );
+            $this->searchType = 'advanced';
+        }
+        if ($this->searchType !== 'advanced') {
+            throw new \Exception(
+                'Unsupported search type: ' . $this->searchType
+            );
+        }
     }
 
     /**
