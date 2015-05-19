@@ -14,7 +14,7 @@
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
-    <h2><?=$this->transEsc('Your Checked Out Items')?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></h2>
+    <div class="useraccount-header"><?=$this->transEsc('Your Checked Out Items')?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
     <? if (isset($this->noSupport)): ?>
       <? if ($user->getLibraryCards()->count() > 1): ?>
         <div class="support-notice">

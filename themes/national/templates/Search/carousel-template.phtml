@@ -1,0 +1,19 @@
+<div class="row">
+  <? if ($this->resolver('search/carousel-vertical-left.phtml')): ?>
+  <div class="col-sm-6">
+    <?=$this->render('search/carousel-vertical-left.phtml')?>
+  </div>
+  <? endif; ?>
+  <? if ($this->resolver('search/carousel-vertical-right.phtml')): ?>
+  <div class="col-sm-6">
+  <?=$this->render('search/carousel-vertical-right.phtml')?>
+</div>
+  <? endif; ?>
+</div>
+<div class="row">
+  <? if ($this->resolver('search/carousel-horizontal.phtml')): ?>
+  <div class="col-xs-12">
+    <?=$this->render('search/carousel-horizontal.phtml')?>
+  </div>
+  <? endif; ?>
+</div>

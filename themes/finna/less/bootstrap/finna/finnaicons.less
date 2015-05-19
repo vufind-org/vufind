@@ -75,9 +75,11 @@
     @media (max-width:@screen-xs-max) {
         & img {
             box-shadow: none;
+            width: auto;
         }
         & .iconlabel:before {
               top: 0px;
+              display: none;
         }
     }
 }
@@ -90,6 +92,12 @@
         display: block;
          & img {
             box-shadow: 0px 0px 0px 4px @gray-lighter inset;
+        }
+    }
+    @media (min-width:@screen-md-min) and (max-width: @screen-md-max) {
+        & .iconlabel:before {
+            top: 27%;
+            left: 40%;   
         }
     }
 }
@@ -226,6 +234,9 @@
 }
 .fa-sign-in:before {
     content: "\e042";
+}
+.fa-sign-in.fa-flip-horizontal:before {
+    vertical-align: middle;   
 }
 .fa-sign-out:before {
     vertical-align: middle;
@@ -521,20 +532,24 @@
 .fa-magnify {
     position: absolute;
     font-size: 1em;
-    opacity: 0.4;
+    opacity: 0;
     transition: opacity 0.2s linear;
     color: @body-bg;
-    right: 16px;
-    top: 1px;
+    right: 20px;
+    top: 6px;
     z-index: 2;
     &:before {
         padding: 1px 3px 3px;
         background: rgba(1,1,1, 0.1);
         font-size: 1.5em;
     }
+    @media (max-width: @screen-sm-max) {
+        .opacity(0.3);   
+    }
 }
 .grid .fa-magnify {
-    right: 11px;
+    right: 14px;
+    top: 5px;
 }
 .recordcover-holder:hover .fa-magnify {
     opacity: 1;
@@ -572,8 +587,9 @@
     display: none;
 }
 .list-group-item.active i.fa.fa-check-square-o, .sidebar .list-group-item .main.applied i.fa.fa-check-square-o, .sidebar .list-group.facet a.list-group-item.active i.fa.fa-check {
-    font-size: 15px;
-    margin-top: 2px;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-right: 5px;
     float: right;
     text-decoration: none;
     transition: all 0.2s ease-in-out;
