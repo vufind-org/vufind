@@ -183,4 +183,17 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         return new LogoutMessage($authManager);
     }
 
+    /**
+     * Construct the Organisations list view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\View\Helper\Root\OrganisationsList
+     */
+    public static function getOrganisationsList(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        return new OrganisationsList($locator);
+    }
+
 }
