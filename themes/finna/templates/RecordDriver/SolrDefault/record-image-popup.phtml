@@ -4,17 +4,17 @@ $originalImage = $this->recordImage($this->record($this->driver))->getLargeImage
 $currentImage = $this->index+1;
 $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
 ?>
-<? $unprocessedFormats = $this->driver->tryMethod('getUnprocessedFormats'); ?>
-<? $format = $this->driver->getRecordType(); ?>
-<div class="imagepopup-holder <?= $format ?>" data-type="<?= $format ?>" data-id="<?= $this->driver->getUniqueID() ?>">
+<? $formats = $this->driver->tryMethod('getFormats'); ?>
+<? $recordType = $this->driver->getRecordType(); ?>
+<div class="imagepopup-holder <?=$this->escapeHtmlAttr($recordType) ?>" data-type="<?=$this->escapeHtmlAttr($recordType) ?>" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID()) ?>">
   <div class="imagepopup-container">
     <div class="image-info">
         <? if ($numOfImages > 1): ?>
           <div class="image-index"><?= $this->translate('Image') . " $currentImage / $numOfImages" ?></div>
-        <? endif; ?> 
+        <? endif; ?>
         <div class="record-index"><span class="index"></span> / <span class="total"></span></div>
     </div>
-    <div class="image iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($unprocessedFormats))?>">
+    <div class="image iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>">
       <img src="<?= $largeImage ?>" />
     </div>
     <div class="content">
@@ -43,7 +43,7 @@ $numOfImages = $this->record($this->driver)->getNumOfRecordImages('large');
       <? endif ?>
       <div class="summary loading">
         <div data-rows="6" class="truncate-field">
-        <? if ($format == 'marc'): ?>
+        <? if ($recordType == 'marc'): ?>
           <p></p>
         <? else: ?>
           <? if ($summary = $this->driver->getSummary()): ?>

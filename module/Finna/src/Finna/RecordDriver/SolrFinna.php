@@ -340,19 +340,6 @@ trait SolrFinna
     }
 
     /**
-     * Like getFormats() but takes into account __unprocessed_format field.
-     *
-     * @return array Formats
-     */
-    public function getUnprocessedFormats()
-    {
-        if (isset($this->fields['__unprocessed_format'])) {
-            return $this->fields['__unprocessed_format'];
-        }
-        return $this->getFormats();
-    }
-
-    /**
      * Return main year.
      *
      * @return string|false

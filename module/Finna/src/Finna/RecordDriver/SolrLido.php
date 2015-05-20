@@ -404,7 +404,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
             return false;
         }
 
-        $rights = array();
+        $rights = [];
 
         if ($type = $this->getAccessRestrictionsType($language)) {
             $rights['copyright'] = $type['copyright'];
@@ -631,15 +631,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      */
     public function getMainFormat()
     {
-        $formats = array();
-        if (isset($this->fields['__unprocessed_format'])) {
-            $formats = $this->fields['__unprocessed_format'];
-        } else if (isset($this->fields['format'])) {
-            $formats = $this->fields['format'];
-        }
-        if (!$formats) {
+        if (!isset($this->fields['format'])) {
             return '';
         }
+        $formats = $this->fields['format'];
         $format = reset($formats);
         $format = preg_replace('/^\d+\/([^\/]+)\/.*/', '\1', $format);
         return $format;

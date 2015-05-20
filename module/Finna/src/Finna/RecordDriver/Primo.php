@@ -178,16 +178,6 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
-     * Like getFormat() but takes into account __unprocessed_format field.
-     *
-     * @return array Formats
-     */
-    public function getUnprocessedFormats()
-    {
-        return [$this->getRecordType()];
-    }
-
-    /**
      * Return image rights.
      *
      * @return mixed array with keys:
