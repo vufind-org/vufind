@@ -4,6 +4,7 @@
 
   $visualFacetSet = $this->recommend->getPivotFacetSet();
 
+  if (isset($visualFacetSet->children)) {
   $flarechildren = array();
 
   foreach ($visualFacetSet->children as $toplevelfacet) {
@@ -25,6 +26,7 @@
   }
 
   $visualFacetSet->children = $flarechildren;
+  }
 ?>
 
 <? if (isset($visualFacetSet)): ?>

@@ -3,9 +3,7 @@
 if (count($recommend) > 0): ?>
 	<ul class="accordion list-group random <?= $this->recommend->getDisplayMode() ?>" data-accordion>
 		<li class="accordion-navigation list-group-item title">
-			<a href="#side-collapse-randomrecommend">
-				<?= $this->transEsc("random_recommendation_title") ?>
-			</a>
+			<a href="#side-collapse-randomrecommend"><?= $this->transEsc("random_recommendation_title") ?></a>
 
 			<div id="side-collapse-randomrecommend" class="content <? if (!in_array('RandomRecommend', $collapsedFacets)): ?> active<? endif ?>">
 				<? foreach ($recommend as $driver): ?>
@@ -50,17 +48,12 @@ if (count($recommend) > 0): ?>
 										<?= $this->escapeHtml($summDate[0]) ?>
 										)
 									<? endif; ?>
-					</span> </a>
-							<? if (!empty($summAuthor)): ?>
-								<a class="small text-right" href="<?= $this->record($driver)->getLink('author', $summAuthor) ?>"> <span>
-					<?= $this->transEsc('By') ?>
 					</span>
-									<?
-									$summHighlightedAuthor = $driver->getHighlightedAuthor();
-									echo !empty($summHighlightedAuthor)
-										? $this->highlight($summHighlightedAuthor)
-										: $this->escapeHtml($summAuthor);
-									?>
+							</a>
+							<? if (!empty($summAuthor)): ?>
+								<a class="small text-right" href="<?= $this->record($driver)->getLink('author', $summAuthor) ?>">
+									<span><?= $this->transEsc('By') ?></span>
+									<?= $this->escapeHtml($summAuthor) ?>
 								</a>
 							<? endif; ?>
 						</li>

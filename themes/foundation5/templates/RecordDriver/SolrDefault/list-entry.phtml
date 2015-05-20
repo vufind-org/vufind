@@ -45,12 +45,7 @@
       <? else: ?>
         <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
         <?=$this->transEsc('by')?>
-        <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
-          $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-          echo !empty($summHighlightedAuthor)
-              ? $this->highlight($summHighlightedAuthor)
-              : $this->escapeHtml($summAuthor);
-        ?></a>
+          <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?=$this->escapeHtml($summAuthor)?></a>
         <? endif; ?>
 
         <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
