@@ -51,5 +51,33 @@ class SearchController extends \VuFind\Controller\SearchController
         $this->initSavedTabs();
         return $view;
     }
+
+    /**
+     * Sends search history and alert schedules for saved searches to view.
+     *
+     * @return mixed
+     */
+    public function historyAction()
+    {
+        $view = parent::historyAction();
+        $user = $this->getUser();
+
+        // Retrieve saved searches
+        $search = $this->getTable('Search');
+        $savedsearches = $search->getSavedSearches(is_object($user) ? $user->id : null);
+
+        $schedule = [];
+        foreach ($savedsearches as $current) {
+            $minSO = $current->getSearchObject();
+            // Only Solr searches allowed
+            if ($minSO->cl !== 'Solr') {
+                continue;
+            }
+            $minSO = $minSO->deminify($this->getResultsManager());
+            $schedule[$minSO->getSearchId()] = $current->finna_schedule;
+        }
+        $view->schedule = $schedule;
+        return $view;
+    }
 }
 

@@ -539,4 +539,30 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         return false;
     }
 
+    /**
+     * Save alert schedule for a saved search into DB
+     *
+     * @return mixed
+     */
+    public function savesearchAction()
+    {
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+        $schedule = $this->params()->fromQuery('schedule', false);
+        $sid = $this->params()->fromQuery('searchid', false);
+
+        if (($schedule !== false) && ($sid !== false)) {
+            $search = $this->getTable('Search');
+            $baseurl = rtrim($this->getServerUrl('home'), '/');
+            $row = $search->select(['id' => $sid, 'user_id' => $user->id])->current();
+            if ($row) {
+                $row->setSchedule($schedule, $baseurl);
+            }
+            return $this->redirect()->toRoute('search-history');
+        } else {
+            parent::savesearchAction();
+        }
+    }
 }
