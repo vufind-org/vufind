@@ -57,8 +57,8 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault
      */
     public function getAbstracts()
     {
-        $abstractValues = array();
-        $abstracts = array();
+        $abstractValues = [];
+        $abstracts = [];
         $abstract = '';
         $lang = '';
         foreach ($this->getSimpleXML()->xpath('/qualifieddc/abstract') as $node) {

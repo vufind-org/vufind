@@ -59,7 +59,7 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
         );
 
         if (isset($dedupRecordData['online_urls_str_mv'])) {
-            $localRecordData['online_urls_str_mv'] = array();
+            $localRecordData['online_urls_str_mv'] = [];
             foreach ($dedupRecordData['online_urls_str_mv'] as $onlineURL) {
                 $onlineURLArray = json_decode($onlineURL, true);
                 if (!$recordSources

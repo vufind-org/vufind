@@ -142,7 +142,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
         $view->largeImage = $urlHelper('cover-show') . '?' .
             http_build_query(array_merge($params, $this->params['large']));
 
-        $images = array();
+        $images = [];
         if ($numOfImages > 1) {
             for ($i=0; $i<$numOfImages; $i++) {
                 $params['index'] = $i;

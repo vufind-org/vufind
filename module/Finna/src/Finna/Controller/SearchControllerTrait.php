@@ -46,7 +46,7 @@ trait SearchControllerTrait
     protected function initSavedTabs()
     {
         if ($savedTabs = $this->getRequest()->getQuery()->get('search')) {
-            $saved = array();
+            $saved = [];
             foreach ($savedTabs as $tab) {
                 list($searchClass, $searchId) = explode(':', $tab);
                 $saved[$searchClass] = $searchId;

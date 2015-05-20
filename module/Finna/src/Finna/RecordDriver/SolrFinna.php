@@ -61,7 +61,7 @@ trait SolrFinna
     public function getAccessRestrictions()
     {
         // Not currently stored in the Solr index
-        return array();
+        return [];
     }
 
     /**
@@ -258,7 +258,7 @@ trait SolrFinna
     public function getOriginalLanguages()
     {
         return isset($this->fields['original_lng_str_mv'])
-            ? $this->fields['original_lng_str_mv'] : array();
+            ? $this->fields['original_lng_str_mv'] : [];
     }
 
     /**

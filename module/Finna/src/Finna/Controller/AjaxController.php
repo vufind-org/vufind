@@ -146,7 +146,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
         $driver = $this->getRecordLoader()->load($id, $source);
 
-        $view = $this->createViewModel(array());
+        $view = $this->createViewModel();
         $view->setTemplate('RecordDriver/SolrDefault/record-image-popup.phtml');
         $view->setTerminal(true);
         $view->driver = $driver;

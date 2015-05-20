@@ -179,7 +179,7 @@ class Loader extends \VuFind\Cover\Loader
      */
     protected function determineLocalFile($ids)
     {
-        $keys = array();
+        $keys = [];
 
         if (isset($this->url)) {
             $keys['id'] = $this->id;

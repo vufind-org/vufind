@@ -120,7 +120,7 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $locator = $sm->getServiceLocator();
         $config = $locator->get('VuFind\Config')->get('config');
         $config = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : array();
+            ? $config->SearchTabs->toArray() : [];
         return new SearchTabs(
             $locator->get('VuFind\SessionManager'),
             $locator->get('VuFind\DbTablePluginManager'),

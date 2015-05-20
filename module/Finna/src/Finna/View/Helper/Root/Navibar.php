@@ -49,14 +49,14 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      * Menu configuration
      *
      * @var \Zend\Config\Config
-     */    
+     */
     protected $config;
 
     /**
      * Menu items
      *
      * @var Array
-     */    
+     */
     protected $menuItems;
 
     /**
@@ -91,14 +91,14 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
      */
     public function render()
     {
-        return $this->getView()->render('navibar.phtml');    
+        return $this->getView()->render('navibar.phtml');
     }
 
     /**
      * Returns menu items as an associative array where each item consists of:
      *    string  $label       Label (untranslated)
      *    string  $url         Url
-     *    boolean $route       True if url is a route name. 
+     *    boolean $route       True if url is a route name.
      *                         False if url is a literal link.
      *    array   $routeParams Route parameters as a key-value pairs.
      *
@@ -132,22 +132,22 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
     /**
      * Returns a url for changing the site language.
      *
-     * The url is constructed by appending 'lng' query parameter 
+     * The url is constructed by appending 'lng' query parameter
      * to the current page url.
      * Note: the returned url does not include possible hash (anchor),
      * which is inserted on the client-side.
      * /themes/finna/js/finna.js::initAnchorNavigationLinks
      *
      * @param string $lng Language code
-     *   
+     *
      * @return string
-     */    
+     */
     public function getLanguageUrl($lng)
     {
         $url = $this->view->serverUrl(true);
         $parts = parse_url($url);
 
-        $params = array();
+        $params = [];
         if (isset($parts['query'])) {
             parse_str($parts['query'], $params);
             $url = substr($url, 0, strpos($url, '?'));
@@ -179,10 +179,10 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
 
             $needle = 'content-';
             if (($pos = strpos($url, $needle)) === 0) {
-                // Content pages do not have static routes, so we 
+                // Content pages do not have static routes, so we
                 // need to add required route parameters for url view helper.
                 $page = substr($url, $pos+strlen($needle));
-                $data['routeParams'] = array();
+                $data['routeParams'] = [];
                 $data['routeParams']['page'] = $page;
                 $url = 'content-page';
             }
@@ -191,7 +191,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
             return $data;
         };
 
-        $this->menuItems = array();
+        $this->menuItems = [];
         foreach ($this->config as $menuKey => $items) {
             if ($menuKey === 'Parent_Config') {
                 continue;
@@ -205,11 +205,11 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
             );
 
             $desc = 'menu_' . $menuKey . '_desc';
-            if ($translator->translate($desc, array(), false) !== false) {
+            if ($translator->translate($desc, null, false) !== false) {
                 $item['desc'] = $desc;
             }
 
-            $options = array();
+            $options = [];
             foreach ($items as $itemKey => $action) {
                 if (!$action) {
                     continue;
@@ -220,7 +220,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                 );
 
                 $desc = 'menu_' . $itemKey . '_desc';
-                if ($translator->translate($desc, array(), false) !== false) {
+                if ($translator->translate($desc, null, false) !== false) {
                     $option['desc'] = $desc;
                 }
                 $options[] = $option;
