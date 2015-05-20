@@ -402,8 +402,8 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     {
         return empty($this->mainConfig->Catalog->disable_driver_hold_actions)
             || !array_intersect(
-                $this->getUnprocessedFormats(),
-                $this->mainConfig->Catalog->disable_driver_hold_actions
+                $this->getFormats(),
+                $this->mainConfig->Catalog->disable_driver_hold_actions->toArray()
             );
     }
 

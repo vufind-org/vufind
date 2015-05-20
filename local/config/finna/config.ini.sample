@@ -167,6 +167,11 @@ loadNoILSOnFailure = true
 ; default is "all"
 holds_mode = "driver"
 
+; List of content types for which holds, title holds, 
+; call slips and UB requests are disallowed.
+; This setting is only used when holds_mode and/or title_level_holds_mode is "driver".
+disable_driver_hold_actions[] = "1/Book/eBook/"
+
 ; Set this to true if you want to allow your ILS driver to override your holds_mode
 ; setting on a record-by-record basis; this may be useful for local customizations,
 ; but in most cases you should leave this setting unchanged.  Overrides are ignored
