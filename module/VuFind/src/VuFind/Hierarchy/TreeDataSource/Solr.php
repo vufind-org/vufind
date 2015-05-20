@@ -237,8 +237,7 @@ class Solr extends AbstractBase
                 'fq' => $this->filters,
                 'hl' => ['false'],
                 'fl' => ['title, id, hierarchy_parent_id, hierarchy_top_id,'
-                    . 'is_hierarchy_id, is_hierarchy_title,'
-                    . 'hierarchy_sequence, title_in_hierarchy'],
+                    . 'is_hierarchy_id, hierarchy_sequence, title_in_hierarchy'],
                 'wt' => ['json'],
                 'json.nl' => ['arrarr'],
                 'rows' => [100000000],
@@ -261,8 +260,8 @@ class Solr extends AbstractBase
             }
             $count = 0;
             // Get top record's info
-            $params['q'] = ['id:"' . $id . '"'];
-            $params['rows'] = [1];
+            $params->set('q', ['id:"' . $id . '"']);
+            $params->set('rows', [1]);
             $response = $this->solrConnector->search($params);
             $results = json_decode($response, true);
             $record = $results['response']['docs'][0];
