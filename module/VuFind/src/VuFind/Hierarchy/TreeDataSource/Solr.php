@@ -28,6 +28,7 @@
 namespace VuFind\Hierarchy\TreeDataSource;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
+use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\ParamBag;
 
 /**
@@ -51,6 +52,13 @@ class Solr extends AbstractBase
     protected $searchService;
 
     /**
+     * Search service
+     *
+     * @var Connector
+     */
+    protected $solrConnector;
+
+    /**
      * Cache directory
      *
      * @var string
@@ -71,10 +79,11 @@ class Solr extends AbstractBase
      * @param string        $cacheDir Directory to hold cache results (optional)
      * @param array         $filters  Filters to apply to Solr tree queries
      */
-    public function __construct(SearchService $search, $cacheDir = null,
-        $filters = []
+    public function __construct(SearchService $search, Connector $connector,
+        $cacheDir = null, $filters = []
     ) {
         $this->searchService = $search;
+        $this->solrConnector = $connector;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');
         }
@@ -164,7 +173,7 @@ class Solr extends AbstractBase
         foreach ($results->getRecords() as $current) {
             ++$count;
 
-            $titles = $current->getTitlesInHierarchy();
+            $titles = $titles = $current->getTitlesInHierarchy();
             $title = isset($titles[$parentID])
                 ? $titles[$parentID] : $current->getTitle();
 
@@ -223,24 +232,27 @@ class Solr extends AbstractBase
             $query = new Query(
                 'hierarchy_top_id:"' . addcslashes($id, '"') . '"'
             );
-            $results = $this->searchService->search(
-                'Solr', $query, 0, 1000000,
-                new ParamBag([
-                    'fq' => $this->filters,
-                    'hl' => 'false',
-                    'fl' => 'title, id, hierarchy_parent_id, hierarchy_top_id,'
-                        . 'is_hierarchy_id, is_hierarchy_title,'
-                        . 'hierarchy_sequence, title_in_hierarchy'
-                ])
-            );
-            if ($results->getTotal() < 1) {
+            $params = new ParamBag([
+                'q'  => ['hierarchy_top_id:"' . $id . '"'],
+                'fq' => $this->filters,
+                'hl' => ['false'],
+                'fl' => ['title, id, hierarchy_parent_id, hierarchy_top_id,'
+                    . 'is_hierarchy_id, is_hierarchy_title,'
+                    . 'hierarchy_sequence, title_in_hierarchy'],
+                'wt' => ['json'],
+                'json.nl' => ['arrarr'],
+                'rows' => [100000000],
+                'start' => [0]
+            ]);
+            $response = $this->solrConnector->search($params);
+            $results = json_decode($response, true);
+            if ($results['response']['numFound'] < 1) {
                 return '';
             }
             $map = [$id => []];
             $this->debug('Making map... ' . abs(microtime(true) - $starttime));
-            foreach ($results->getRecords() as $current) {
-                $data = $current->getRawData();
-                $parentId = $data['hierarchy_parent_id'][0];
+            foreach ($results['response']['docs'] as $current) {
+                $parentId = $current['hierarchy_parent_id'][0];
                 if (!isset($map[$parentId])) {
                     $map[$parentId] = [$current];
                 } else {
@@ -248,13 +260,15 @@ class Solr extends AbstractBase
                 }
             }
             $count = 0;
-            $record = $this->searchService->retrieve('Solr', $id)->getRecords();
-            if (!isset($record[0])) {
-                return '';
-            }
-            $record = $record[0];
-            $this->debug($record->getUniqueId());
+            // Get top record's info
+            $params['q'] = ['id:"' . $id . '"'];
+            $params['rows'] = [1];
+            $response = $this->solrConnector->search($params);
+            $results = json_decode($response, true);
+            $record = $results['response']['docs'][0];
+            $this->debug($record['id']);
             $json = $this->formatNodeJson($record);
+            // Recursively build tree from hash
             $json['children'] = $this->mapToJSON($id, $map, $count);
             $encoded = json_encode($json, JSON_HEX_QUOT || JSON_HEX_APOS || JSON_HEX_AMP);
 
@@ -285,19 +299,62 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    protected function formatNodeJson($recordDriver, $parentID = null)
+    protected function formatNodeJson($record, $parentID = null)
     {
-        $titles = $recordDriver->getTitlesInHierarchy();
+        $titles = $this->getTitlesInHierarchy($record);
+        $title = isset($record['title']) ? $record['title'] : $record['id'];
         $title = null != $parentID && isset($titles[$parentID])
-            ? $titles[$parentID] : $recordDriver->getTitle();
+            ? $titles[$parentID] : $title;
 
         return [
-            'id' => $recordDriver->getUniqueID(),
-            'type' => $recordDriver->isCollection()
+            'id' => $record['id'],
+            'type' => isset($record['is_hierarchy_id'])
                 ? 'collection'
                 : 'record',
             'title' => htmlspecialchars($title)
         ];
+    }
+
+    /**
+     * Get the positions of this item within parent collections.  Returns an array
+     * of parent ID => sequence number.
+     *
+     * @return array
+     */
+    protected function getHierarchyPositionsInParents($fields)
+    {
+        $retVal = [];
+        if (isset($fields['hierarchy_parent_id'])
+            && isset($fields['hierarchy_sequence'])
+        ) {
+            foreach ($fields['hierarchy_parent_id'] as $key => $val) {
+                $retVal[$val] = $fields['hierarchy_sequence'][$key];
+            }
+        }
+        return $retVal;
+    }
+
+     /**
+     * Get the titles of this item within parent collections.  Returns an array
+     * of parent ID => sequence number.
+     *
+     * @return Array
+     */
+    protected function getTitlesInHierarchy($fields)
+    {
+        $retVal = [];
+        if (isset($fields['title_in_hierarchy'])
+            && is_array($fields['title_in_hierarchy'])
+        ) {
+            $titles = $fields['title_in_hierarchy'];
+            $parentIDs = $fields['hierarchy_parent_id'];
+            if (count($titles) === count($parentIDs)) {
+                foreach ($parentIDs as $key => $val) {
+                    $retVal[$val] = $titles[$key];
+                }
+            }
+        }
+        return $retVal;
     }
 
     /**
@@ -322,8 +379,7 @@ class Solr extends AbstractBase
 
             if (isset($map[$childNode['id']])) {
                 $children = $this->mapToJSON(
-                    $current->getUniqueID(),
-                    $map, $count
+                    $current['id'], $map, $count
                 );
                 if (!empty($children)) {
                     $childNode['children'] = $children;
@@ -335,7 +391,7 @@ class Solr extends AbstractBase
             // If we're in sorting mode, we need to create key-value arrays;
             // otherwise, we can just collect flat values.
             if ($sorting) {
-                $positions = $current->getHierarchyPositionsInParents();
+                $positions = $this->getHierarchyPositionsInParents($current);
                 $sequence = isset($positions[$parentID]) ? $positions[$parentID] : 0;
                 $json[] = [$sequence, $childNode];
             } else {
