@@ -44,12 +44,7 @@ use Zend\Session\Container;
  */
 class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
-    /**
-     * HTTP service
-     *
-     * @var \VuFindHttp\HttpServiceInterface
-     */
-    protected $httpService = null;
+	use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Date formatting object
@@ -70,18 +65,6 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $this->dateFormat = $dateConverter;
 
         $this->session = new Container('WorldCatDiscovery');
-    }
-
-    /**
-     * Set the HTTP service to be used for HTTP requests.
-     *
-     * @param HttpServiceInterface $service HTTP service
-     *
-     * @return void
-     */
-    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-    {
-        $this->httpService = $service;
     }
 
     /**
@@ -206,6 +189,23 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
         return $locations;
+    }
+    
+    /**
+     * hasHoldings
+     * This used to hide the holdings tab for records where holdings do not apply
+     * @param string $id     The Bib ID
+     *
+     * @return bool True if request is valid, false if not
+     */
+    public function hasHoldings($id)
+    {
+    	$record = $this->recordLoader->load($id, 'WorldCatDiscovery');
+    	if ($record->getOffer($this->institution) || $record->getUrls()){
+    		return true;
+    	} else {
+    		return false;
+    	}
     }
 
     /**
