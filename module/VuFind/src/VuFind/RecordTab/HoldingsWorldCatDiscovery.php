@@ -36,32 +36,14 @@ namespace VuFind\RecordTab;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
-class HoldingsWorldCatDiscovery extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
+class HoldingsWorldCatDiscovery extends AbstractBase
 {
-	/**
-	 * HTTP service
-	 *
-	 * @var \VuFindHttp\HttpServiceInterface
-	 */
-	protected $httpService = null;
 	
     /**
      * Constructor
      */
 	public function __construct($config){
 		$this->config = $config;
-	}
-	
-	/**
-	 * Set the HTTP service to be used for HTTP requests.
-	 *
-	 * @param HttpServiceInterface $service HTTP service
-	 *
-	 * @return void
-	 */
-	public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
-	{
-		$this->httpService = $service;
 	}
     
     /**
@@ -71,7 +53,7 @@ class HoldingsWorldCatDiscovery extends AbstractBase implements \VuFindHttp\Http
      */
     public function getDescription()
     {
-        return 'Holdings';
+        return 'Other Library Holdings';
     }
 
     /**
@@ -83,36 +65,6 @@ class HoldingsWorldCatDiscovery extends AbstractBase implements \VuFindHttp\Http
     {
         $offers = $this->getRecordDriver()->tryMethod('getOffers');
         return !empty($offers);
-    }
-    
-    /**
-     * Get the EHoldings
-     *
-     */
-    public function getEHoldings($openURLParameters)
-    {
-    	//if (isset($this->config->eHoldings->active) && $this->config->eHoldings->active) {
-    		$kbrequest = "http://worldcat.org/webservices/kb/openurl/resolve?";
-    		$kbrequest .= $openURLParameters;
-    		$kbrequest .= '&wskey=' . $this->config->General->wskey;
-			
-    		$client = $this->httpService
-    		->createClient($kbrequest);
-    		$adapter = new \Zend\Http\Client\Adapter\Curl();
-    		$client->setAdapter($adapter);
-    		$result = $client->setMethod('GET')->send();
-    		
-    		if ($result->isSuccess()){
-	    		$kbresponse = json_decode($result->getBody(), true);
-	    		if (isset($kbresponse[0]['url'])){
-	    			return $kbresponse[0]['url'];
-	    		}
-    		} else {
-    			throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
-    		}
-    		
-    		
-    	//}
     }
     
 }

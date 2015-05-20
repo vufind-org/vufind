@@ -36,9 +36,10 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class WorldCatDiscovery extends SolrDefault
+class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAwareInterface
 {
     use IlsAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Raw WorldCatDiscovery response object.
@@ -86,6 +87,18 @@ class WorldCatDiscovery extends SolrDefault
             return($offer->getSeller()->getURI() == 'http://worldcat.org/wcr/organization/resource/' . $id);
         });
         return $offersAtInstitution;
+    }
+    
+    public function getOtherLibraryOffers(){
+    	$id = $this->recordConfig->General->institution;
+    	$offers = $this->getOffers();
+    	
+    	$offersAtOtherInstitutions = array_filter($offers, function($offer) use ($id)
+    	{
+    	
+    		return($offer->getSeller()->getURI() != 'http://worldcat.org/wcr/organization/resource/' . $id);
+    	});
+    	return $offersAtOtherInstitutions;
     }
 
     /**
@@ -380,6 +393,30 @@ class WorldCatDiscovery extends SolrDefault
     /**
      * getUrls
      */
+    public function getUrls()
+    {
+    	$urls = array();
+    	$kbrequest = "http://worldcat.org/webservices/kb/openurl/resolve?";
+    	$kbrequest .= $this->getOpenURL();
+    	$kbrequest .= '&wskey=' . $this->recordConfig->General->wskey;
+    		
+    	$client = $this->httpService
+    	->createClient($kbrequest);
+    	$adapter = new \Zend\Http\Client\Adapter\Curl();
+    	$client->setAdapter($adapter);
+    	$result = $client->setMethod('GET')->send();
+    	
+    	if ($result->isSuccess()){
+    		$kbresponse = json_decode($result->getBody(), true);
+    		if (isset($kbresponse[0]['url'])){
+    			$urls[] = ['url' => $kbresponse[0]['url'], 'desc' => $kbresponse[0]['collection_name']];
+    		}
+    	} else {
+    		throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
+    	}
+    	
+    	return $urls;
+    }
 
     /**
      * Book specific metadata
