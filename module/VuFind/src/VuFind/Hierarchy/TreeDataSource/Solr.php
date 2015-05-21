@@ -240,18 +240,18 @@ class Solr extends AbstractBase
                     . 'is_hierarchy_id, hierarchy_sequence, title_in_hierarchy'],
                 'wt' => ['json'],
                 'json.nl' => ['arrarr'],
-                'rows' => [100000000],
+                'rows' => [2147483647], // Integer max
                 'start' => [0]
             ]);
             $response = $this->solrConnector->search($params);
-            $results = json_decode($response, true);
-            if ($results['response']['numFound'] < 1) {
+            $results = json_decode($response);
+            if ($results->response->numFound < 1) {
                 return '';
             }
             $map = [$id => []];
             $this->debug('Making map... ' . abs(microtime(true) - $starttime));
-            foreach ($results['response']['docs'] as $current) {
-                $parentId = $current['hierarchy_parent_id'][0];
+            foreach ($results->response->docs as $current) {
+                $parentId = $current->hierarchy_parent_id[0];
                 if (!isset($map[$parentId])) {
                     $map[$parentId] = [$current];
                 } else {
@@ -263,12 +263,12 @@ class Solr extends AbstractBase
             $params->set('q', ['id:"' . $id . '"']);
             $params->set('rows', [1]);
             $response = $this->solrConnector->search($params);
-            $results = json_decode($response, true);
-            $record = $results['response']['docs'][0];
-            $this->debug($record['id']);
+            $results = json_decode($response);
+            $record = $results->response->docs[0];
+            $this->debug($record->id);
             $json = $this->formatNodeJson($record);
             // Recursively build tree from hash
-            $json['children'] = $this->mapToJSON($id, $map, $count);
+            $json->children = $this->mapToJSON($id, $map, $count);
             $encoded = json_encode($json, JSON_HEX_QUOT || JSON_HEX_APOS || JSON_HEX_AMP);
 
             $this->debug('Done: ' . abs(microtime(true) - $starttime));
@@ -301,13 +301,13 @@ class Solr extends AbstractBase
     protected function formatNodeJson($record, $parentID = null)
     {
         $titles = $this->getTitlesInHierarchy($record);
-        $title = isset($record['title']) ? $record['title'] : $record['id'];
+        $title = isset($record->title) ? $record->title : $record->id;
         $title = null != $parentID && isset($titles[$parentID])
             ? $titles[$parentID] : $title;
 
-        return [
-            'id' => $record['id'],
-            'type' => isset($record['is_hierarchy_id'])
+        return (object) [
+            'id' => $record->id,
+            'type' => isset($record->is_hierarchy_id)
                 ? 'collection'
                 : 'record',
             'title' => htmlspecialchars($title)
@@ -323,11 +323,11 @@ class Solr extends AbstractBase
     protected function getHierarchyPositionsInParents($fields)
     {
         $retVal = [];
-        if (isset($fields['hierarchy_parent_id'])
-            && isset($fields['hierarchy_sequence'])
+        if (isset($fields->hierarchy_parent_id)
+            && isset($fields->hierarchy_sequence)
         ) {
-            foreach ($fields['hierarchy_parent_id'] as $key => $val) {
-                $retVal[$val] = $fields['hierarchy_sequence'][$key];
+            foreach ($fields->hierarchy_parent_id as $key => $val) {
+                $retVal[$val] = $fields->hierarchy_sequence[$key];
             }
         }
         return $retVal;
@@ -342,11 +342,11 @@ class Solr extends AbstractBase
     protected function getTitlesInHierarchy($fields)
     {
         $retVal = [];
-        if (isset($fields['title_in_hierarchy'])
-            && is_array($fields['title_in_hierarchy'])
+        if (isset($fields->title_in_hierarchy)
+            && is_array($fields->title_in_hierarchy)
         ) {
-            $titles = $fields['title_in_hierarchy'];
-            $parentIDs = $fields['hierarchy_parent_id'];
+            $titles = $fields->title_in_hierarchy;
+            $parentIDs = $fields->hierarchy_parent_id;
             if (count($titles) === count($parentIDs)) {
                 foreach ($parentIDs as $key => $val) {
                     $retVal[$val] = $titles[$key];
@@ -376,12 +376,12 @@ class Solr extends AbstractBase
 
             $childNode = $this->formatNodeJson($current, $parentID);
 
-            if (isset($map[$childNode['id']])) {
+            if (isset($map[$childNode->id])) {
                 $children = $this->mapToJSON(
-                    $current['id'], $map, $count
+                    $current->id, $map, $count
                 );
                 if (!empty($children)) {
-                    $childNode['children'] = $children;
+                    $childNode->children = $children;
                 }
             } else {
                 return [];
