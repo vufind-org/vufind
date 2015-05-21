@@ -207,7 +207,8 @@ class HierarchicalFacetHelper
         $displayText = $item['displayText'];
         if ($displayText == $item['value']) {
             // Only show the current level part
-            $displayText = $this->formatDisplayText($displayText);
+            $displayText = $this->formatDisplayText($displayText)
+                ->getDisplayString();
         }
 
         list($level, $value) = explode('/', $item['value'], 2);
