@@ -183,4 +183,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         return new LogoutMessage($authManager);
     }
 
+    /**
+     * Construct the ImageSrc helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ImageSrc
+     */
+    public static function getImageSrc(ServiceManager $sm)
+    {
+        return new ImageSrc(
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+        );
+    }
+
 }
