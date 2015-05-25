@@ -183,4 +183,17 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         return new LogoutMessage($authManager);
     }
 
+    /**
+     * Construct the Feed component helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Record
+     */
+    public static function getFeed(ServiceManager $sm)
+    {
+        return new Feed(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('rss')
+        );
+    }
 }
