@@ -65,7 +65,7 @@ class Feed extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($id)
     {
-        if (isset($this->config[$id]) && (boolean)$this->config[$id]['active']) {
+        if (isset($this->config[$id]) && $this->config[$id]['active']) {
             return $this->getView()->render('Helpers/feed.phtml', ['id' => $id]);
         }
     }

@@ -62,13 +62,13 @@ finna.feed = (function() {
 
     var loadFeed = function(holder) {
         var id = holder.data('feed');
-        if (typeof(id) == "undefined") {
+        if (typeof id == "undefined") {
             return;
         }
 
         // Append spinner
-        holder.append('<i class="fa fa-spin fa-spinner"></i>');
-        holder.find(".fa-spin").hide().delay(1000).fadeIn();
+        holder.append('<i class="fa fa-spin fa-spinner hide"></i>');
+        holder.find(".fa-spin").delay(1000).fadeIn();
 
         var url = path + '/AJAX/JSON?method=getFeed&id=' + id;
         url += "&touch-device=" + (finna.layout.isTouchDevice() ? 1 : 0);
@@ -82,7 +82,7 @@ finna.feed = (function() {
             if (response.status === 'OK' && response.data) {
                 holder.html(response.data.html);
                 var settings = response.data.settings;
-                if (typeof(settings['height']) == 'undefined') {
+                if (typeof settings['height'] == 'undefined') {
                     settings['height'] = 300;
                 }
                 var type = settings['type'];
@@ -98,7 +98,7 @@ finna.feed = (function() {
                         .slick(getCarouselSettings(settings));
 
                     var titleBottom =
-                        typeof(settings['titlePosition']) != 'undefined'
+                        typeof settings['titlePosition'] != 'undefined'
                         && settings['titlePosition'] == 'bottom'
                     ;
 
@@ -155,7 +155,7 @@ finna.feed = (function() {
 
                     // Text hover for touch devices
                     if (finna.layout.isTouchDevice()
-                        && typeof(settings['linkText'] == 'undefined')
+                        && typeof settings['linkText'] == 'undefined'
                     ) {
                         holder.find(".slick-slide a").click(function(event) {
                             if (!$(this).closest(".slick-slide").hasClass("clicked")) {

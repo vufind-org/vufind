@@ -518,7 +518,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
             ->getCache('feed')->getOptions()->getCacheDir();
 
-        $localFile = "$cacheDir/" . urlencode($id) . '.xml';
+        $localFile = "$cacheDir/" . md5(var_export($config, true)) . '.xml';
         
         $cacheConfig = $this->getServiceLocator()
             ->get('VuFind\Config')->get('config');
@@ -570,49 +570,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
             'date' => 'getDateCreated'
         ];
 
-        /**
-         * Extract image URL from a HTML snippet.
-         *
-         * @param string $html HTML snippet.
-         *
-         * @return mixed null|string
-         */
-        function extractImage($html)
-        {
-            if (empty($html)) {
-                return null;
-            }
-            $doc = new \DOMDocument();
-            // Silence errors caused by invalid HTML
-            libxml_use_internal_errors(true);
-            $doc->loadHTML($html);
-            libxml_clear_errors();
-
-            $img = null;
-
-            // Search for <a> elements with <img> children;
-            // they are likely links to full-size images
-            if ($links = iterator_to_array($doc->getElementsByTagName('a'))) {
-                foreach ($links as $link) {
-                    foreach ($link->childNodes as $child) {
-                        if ($child->nodeName == 'img') {
-                            $img = $child;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // Not found, return first <img> element if available
-            if (!$img) {
-                $imgs = iterator_to_array($doc->getElementsByTagName('img'));
-                if (!empty($imgs)) {
-                    $img = $imgs[0];
-                }
-            }
-            return $img ? $img->getAttribute('src') : null;
-        }
-
         $dateFormat = isset($config->dateFormat) ? $config->dateFormat : 'j.n.';
         $itemsCnt = isset($config->items) ? $config->items : null;
 
@@ -633,7 +590,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                             || stripos($tmp['type'], 'image') === false
                         ) {
                             // Attempt to parse image URL from content
-                            if ($tmp = extractImage($item->getContent())) {
+                            if ($tmp = $this->extractImage($item->getContent())) {
                                 $tmp = ['url' => $tmp];
                             }
                         }
@@ -737,5 +694,50 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $res = ['html' => $html, 'settings' => $settings];
         return $this->output($res, self::STATUS_OK);
+    }
+
+    /**
+     * Utility function for extracting an image URL from a HTML snippet.
+     *
+     * @param string $html HTML snippet.
+     *
+     * @return mixed null|string
+     */
+    protected function extractImage($html)
+    {
+        if (empty($html)) {
+            return null;
+        }
+        $doc = new \DOMDocument();
+        // Silence errors caused by invalid HTML
+        libxml_use_internal_errors(true);
+        if (!$doc->loadHTML($html)) {
+            return null;
+        }
+        libxml_clear_errors();
+
+        $img = null;
+
+        // Search for <a> elements with <img> children;
+        // they are likely links to full-size images
+        if ($links = iterator_to_array($doc->getElementsByTagName('a'))) {
+            foreach ($links as $link) {
+                foreach ($link->childNodes as $child) {
+                    if ($child->nodeName == 'img') {
+                        $img = $child;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Not found, return first <img> element if available
+        if (!$img) {
+            $imgs = iterator_to_array($doc->getElementsByTagName('img'));
+            if (!empty($imgs)) {
+                $img = $imgs[0];
+            }
+        }
+        return $img ? $img->getAttribute('src') : null;
     }
 }
