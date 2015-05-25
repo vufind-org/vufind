@@ -57,7 +57,7 @@ class Feed extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Returns rendered feed component.
+     * Returns HTML for embedding a feed component.
      *
      * @param string $id Feed id.
      *
