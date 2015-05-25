@@ -196,4 +196,18 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $sm->getServiceLocator()->get('VuFind\Config')->get('rss')
         );
     }
+
+    /**
+     * Construct the ImageSrc helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ImageSrc
+     */
+    public static function getImageSrc(ServiceManager $sm)
+    {
+        return new ImageSrc(
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+        );
+    }
 }

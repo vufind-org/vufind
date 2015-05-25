@@ -15,6 +15,7 @@ return array(
             'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
             'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
             'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
+            'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
         ),
         'invokables' => array(
             'search' => 'Finna\View\Helper\Root\Search',
