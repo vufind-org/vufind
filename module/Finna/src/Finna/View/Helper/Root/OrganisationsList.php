@@ -38,18 +38,28 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class OrganisationsList extends \Zend\View\Helper\AbstractHelper
+class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
+    \VuFind\I18n\Translator\TranslatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
-    protected $serviceLocator;
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use \VuFind\Log\LoggerAwareTrait;
+
+    protected $cache;
+    protected $facetHelper;
+    protected $resultsManager;
 
     /**
      * Constructor
      *
-     * @param type $serviceLocator Service locator
+     * @param type $cache          cache manager
+     * @param type $facetHelper    facet helper
+     * @param type $resultsManager search result manager
      */
-    public function __construct($serviceLocator)
+    public function __construct($cache, $facetHelper, $resultsManager)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->cache = $cache;
+        $this->facetHelper = $facetHelper;
+        $this->resultsManager = $resultsManager;
     }
 
     /**
@@ -59,23 +69,18 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke()
     {
-        $language = $this->serviceLocator->get('VuFind\Translator')->getLocale();
+        $language = $this->translator->getLocale();
         $cacheName = 'organisations_list_' . $language;
-        $cache = $this->serviceLocator->get('VuFind\CacheManager')
-            ->getCache('object');
-        $facetHelper = $this->serviceLocator->get('VuFind\HierarchicalFacetHelper');
-        $list = $cache->getItem($cacheName);
+        $list = $this->cache->getItem($cacheName);
 
         if (!$list) {
-            $resultsManager = $this->serviceLocator
-                ->get('VuFind\SearchResultsPluginManager');
-            $emptyResults = $resultsManager->get('EmptySet');
+            $emptyResults = $this->resultsManager->get('EmptySet');
 
             $sectors = ['arc', 'lib', 'mus'];
             try {
                 foreach ($sectors as $sector) {
                     $list[$sector] = [];
-                    $results = $resultsManager->get('Solr');
+                    $results = $this->resultsManager->get('Solr');
                     $params = $results->getParams();
                     $params->addFacet('building', 'Building', false);
                     $params->addFilter('sector_str_mv:0/' . $sector . '/');
@@ -90,7 +95,7 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper
                             ->addFacet('building', $item['value']);
                         $displayText = $item['displayText'];
                         if ($displayText == $item['value']) {
-                            $displayText = $facetHelper
+                            $displayText = $this->facetHelper
                                 ->formatDisplayText($displayText)
                                 ->getDisplayString();
                         }
@@ -106,11 +111,14 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper
                         }
                     );
                 }
-                $cache->setItem($cacheName, $list);
+                $this->cache->setItem($cacheName, $list);
             } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
                 foreach ($sectors as $sector) {
                     $list[$sector] = [];
                 }
+                $this->logError(
+                    'Error creating organisations list: ' . $e->getMessage()
+                );
             }
         }
 
