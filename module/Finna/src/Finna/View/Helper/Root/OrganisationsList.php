@@ -44,16 +44,33 @@ class OrganisationsList extends \Zend\View\Helper\AbstractHelper implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
+    /**
+     * Cache manager
+     *
+     * @var CacheManager
+     */
     protected $cache;
+
+    /**
+     * Hierarchial facet helper
+     *
+     * @var HierarchicalFacetHelper
+     */
     protected $facetHelper;
+
+    /**
+     * Search result plugin manager
+     *
+     * @var PluginManager
+     */
     protected $resultsManager;
 
     /**
      * Constructor
      *
-     * @param type $cache          cache manager
-     * @param type $facetHelper    facet helper
-     * @param type $resultsManager search result manager
+     * @param CacheManager            $cache          cache manager
+     * @param HierarchicalFacetHelper $facetHelper    facet helper
+     * @param PluginManager           $resultsManager search result manager
      */
     public function __construct($cache, $facetHelper, $resultsManager)
     {
