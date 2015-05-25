@@ -288,12 +288,14 @@ class Piwik extends \Zend\View\Helper\AbstractHelper
     protected function getOpeningTrackingCode()
     {
         return <<<EOT
-var _paq = _paq || [];
-(function(){
-_paq.push(['setSiteId', {$this->siteId}]);
-_paq.push(['setTrackerUrl', '{$this->url}piwik.php']);
-_paq.push(['setCustomUrl', location.protocol + '//'
-     + location.host + location.pathname]);
+
+function initVuFindPiwikTracker(){
+    var VuFindPiwikTracker = Piwik.getTracker();
+
+    VuFindPiwikTracker.setSiteId({$this->siteId});
+    VuFindPiwikTracker.setTrackerUrl('{$this->url}piwik.php');
+    VuFindPiwikTracker.setCustomUrl(location.protocol + '//'
+        + location.host + location.pathname);
 
 EOT;
     }
@@ -306,12 +308,14 @@ EOT;
     protected function getClosingTrackingCode()
     {
         return <<<EOT
-_paq.push(['enableLinkTracking']);
+    VuFindPiwikTracker.enableLinkTracking();
+};
+(function(){
 var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.type='text/javascript'; g.defer=true; g.async=true;
     g.src='{$this->url}piwik.js';
+    g.onload=initVuFindPiwikTracker;
 s.parentNode.insertBefore(g,s); })();
-
 EOT;
     }
 
@@ -338,7 +342,7 @@ EOT;
 
             $value = $escape($value);
             $code .= <<<EOT
-_paq.push(['setCustomVariable', $i, '$key', '$value', 'page']);
+    VuFindPiwikTracker.setCustomVariable($i, '$key', '$value', 'page');
 
 EOT;
         }
@@ -362,7 +366,7 @@ EOT;
 
         // Use trackSiteSearch *instead* of trackPageView in searches
         return <<<EOT
-_paq.push(['trackSiteSearch', '$searchTerms', '$searchType', $resultCount]);
+    VuFindPiwikTracker.trackSiteSearch('$searchTerms', '$searchType', $resultCount);
 
 EOT;
     }
@@ -375,7 +379,7 @@ EOT;
     protected function getTrackPageViewCode()
     {
         return <<<EOT
-_paq.push(['trackPageView']);
+    VuFindPiwikTracker.trackPageView();
 
 EOT;
     }

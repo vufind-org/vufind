@@ -16,6 +16,7 @@ return array(
             'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
             'organisationsList'
                 => 'Finna\View\Helper\Root\Factory::getOrganisationsList',
+            'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
         ),
         'invokables' => array(
             'search' => 'Finna\View\Helper\Root\Search',
