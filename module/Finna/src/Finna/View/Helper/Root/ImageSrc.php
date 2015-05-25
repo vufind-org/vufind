@@ -41,7 +41,6 @@ namespace Finna\View\Helper\Root;
 class ImageSrc extends \Zend\View\Helper\AbstractHelper
 {
     protected $themeInfo;
-    protected $currentTheme;
 
     /**
      * Constructor
@@ -51,7 +50,6 @@ class ImageSrc extends \Zend\View\Helper\AbstractHelper
     public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
     {
         $this->themeInfo = $themeInfo;
-        $this->currentTheme = $this->themeInfo->getTheme();
     }
 
     /**
@@ -64,18 +62,14 @@ class ImageSrc extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($source)
     {
-        $ret = '';
-        $svgUrl = $this->imageFromCurrentTheme($source . '.svg');
-        $pngUrl = $this->imageFromCurrentTheme($source . '.png');
-
-        if (isset($pngUrl)) {
-            $ret = $pngUrl;
+        if ($url = $this->imageFromCurrentTheme($source . '.svg')) {
+            return $url;
         }
-        if (isset($svgUrl)) {
-            $ret = $svgUrl;
+        if ($url = $this->imageFromCurrentTheme($source . '.png')) {
+            return $url;
         }
 
-        return $ret;
+        return '';
 
     }
 
@@ -88,14 +82,14 @@ class ImageSrc extends \Zend\View\Helper\AbstractHelper
      */
     protected function imageFromCurrentTheme($image)
     {
+        $currentTheme = $this->themeInfo->getTheme();
         $basePath = $this->themeInfo->getBaseDir();
         $relPath = 'images/' . $image;
 
-        $file = $basePath . '/' . $this->currentTheme . '/' . $relPath;
+        $file = $basePath . '/' . $currentTheme . '/' . $relPath;
         if (file_exists($file)) {
             $urlHelper = $this->getView()->plugin('url');
-            return $urlHelper('home') . 'themes/' .
-                $this->currentTheme . '/' . $relPath;
+            return $urlHelper('home') . 'themes/' . $currentTheme . '/' . $relPath;
         }
         return null;
     }
