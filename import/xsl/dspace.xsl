@@ -151,7 +151,7 @@
 
                 <!-- URL -->
                <xsl:for-each select="//dc:identifier">
-                   <xsl:if test="substring(., 1, 21) = &quot;http://hdl.handle.net&quot;">
+                   <xsl:if test="substring(., 1, 4) = &quot;http&quot;">
                        <field name="url">
                            <xsl:value-of select="." />
                        </field>
