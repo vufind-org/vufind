@@ -184,6 +184,23 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the Organisations list view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\View\Helper\Root\OrganisationsList
+     */
+    public static function getOrganisationsList(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        $cache = $locator->get('VuFind\CacheManager')->getCache('object');
+        $facetHelper = $locator->get('VuFind\HierarchicalFacetHelper');
+        $resultsManager = $locator->get('VuFind\SearchResultsPluginManager');
+
+        return new OrganisationsList($cache, $facetHelper, $resultsManager);
+    }
+
+    /**
      * Construct the ImageSrc helper.
      *
      * @param ServiceManager $sm Service manager.
