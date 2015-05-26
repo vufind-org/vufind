@@ -4,6 +4,7 @@ return array(
     'helpers' => array(
         'factories' => array(
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
+            'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'holdingsDetailsMode' => 'Finna\View\Helper\Root\Factory::getHoldingsDetailsMode',
             'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
@@ -36,6 +37,7 @@ return array(
     'js' => array(
         'finna.js',
         'image-popup.js',
+        'finna-feed.js',
         'finna-layout.js',
         'finna-persona.js',
         'finna-common.js',

@@ -57,7 +57,7 @@
 @introduction-header: 3em;
 @home-content-background: @body-bg; // Add custom background color for home main section
 @home-1-background: @brand-third;
-@home-2-background: @body-bg;
+@home-2-background: @gray-dark;
 @home-3-background: @gray-dark; // change the color of right column 
 @home-4-background: @brand-fourth;
 @home-left-column-background: none;
@@ -77,13 +77,19 @@
 @carousel-header-background: rgba(140, 140, 140, 0.8);
 @carousel-header-color: #fff;
    //== Styling the horizontal header of each slide
-@carousel-slide-header-background: rgba(140, 140, 140, 0.7);
+@carousel-slide-header-background: rgba(1, 1, 1, 0.6);
 @carousel-slide-header-color: @carousel-header-color;
     //== Vertical slider background
 @carousel-verticalslide-header-background: none;
    //== Styling the text color and background of each slide
-@carousel-text-background-color: rgba(1,1,1,0.33);
-@carousel-slide-text-color: rgb(252, 255, 217);
+@carousel-text-background-color: rgba(1,1,1,0.75);
+@carousel-slide-text-color: rgb(255, 255, 255);
+@carousel-slide-link-color: @link-color;
+
+//== List feed styles
+@list-feed-background: @body-bg;
+@list-feed-padding: 10px;
+@list-feed-header-color: red;
 
 //== Myreresearch custom styles
 @myresearch-header-background: #b0e9db;
@@ -119,8 +125,8 @@
 @font-size-base: 13px;
 @font-size-icon-small: 14px;
 @font-size-icon-large: 1.5em;
-@font-size-large: ceil(@font-size-base * 1.25);
-@font-size-small: ceil(@font-size-base * 0.85);
+@font-size-large: ceil((@font-size-base * 1.25));
+@font-size-small: ceil((@font-size-base * 0.85));
 @font-size-h1: floor((@font-size-base * 2.6));
 @font-size-h2: floor((@font-size-base * 1.76));
 @font-size-h3: floor((@font-size-base * 1.6));
@@ -128,7 +134,7 @@
 @font-size-h5: @font-size-base;
 @font-size-h6: floor((@font-size-base * 0.85));
 @line-height-base: 1.5;
-@line-height-computed: floor(@font-size-base * @line-height-base);
+@line-height-computed: floor((@font-size-base * @line-height-base));
 @headings-font-family: @font-family-base;
 @headings-font-weight: 500;
 @headings-line-height: 1.1;

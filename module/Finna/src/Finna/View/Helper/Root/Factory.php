@@ -184,6 +184,20 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct the Feed component helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Record
+     */
+    public static function getFeed(ServiceManager $sm)
+    {
+        return new Feed(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('rss')
+        );
+    }
+
+    /**
      * Construct the Organisations list view helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -213,5 +227,4 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
     }
-
 }

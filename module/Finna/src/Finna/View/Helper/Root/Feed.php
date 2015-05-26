@@ -1,6 +1,6 @@
 <?php
 /**
- * Finna Cache Manager
+ * Feed component view helper
  *
  * PHP version 5
  *
@@ -20,39 +20,53 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Cache
+ * @package  View_Helpers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org   Main Site
  */
-namespace Finna\Cache;
-use Zend\Config\Config;
+namespace Finna\View\Helper\Root;
 
 /**
- * Finna Cache Manager
+ * Feed component view helper
  *
  * @category VuFind2
- * @package  Cache
+ * @package  View_Helpers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org   Main Site
  */
-class Manager extends \VuFind\Cache\Manager
+class Feed extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Constructor.
+     * Feed configuration
      *
-     * Add file cache for record descriptions loaded from external sources.
-     *
-     * @param Config $config       Main VuFind configuration
-     * @param Config $searchConfig Search configuration
+     * @var \Zend\Config\Config
      */
-    public function __construct(Config $config, Config $searchConfig)
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param Zend\Config\Config $config Menu configuration
+     * custom variables
+     */
+    public function __construct(\Zend\Config\Config $config)
     {
-        $cacheBase = $this->getCacheDir();
-        foreach (['feed', 'description'] as $cache) {
-            $this->createFileCache($cache, $cacheBase . $cache . 's');
+        $this->config = $config;
+    }
+
+    /**
+     * Returns HTML for embedding a feed component.
+     *
+     * @param string $id Feed id.
+     *
+     * @return mixed null|string
+     */
+    public function __invoke($id)
+    {
+        if (isset($this->config[$id]) && $this->config[$id]['active']) {
+            return $this->getView()->render('Helpers/feed.phtml', ['id' => $id]);
         }
-        return parent::__construct($config, $searchConfig);
     }
 }
