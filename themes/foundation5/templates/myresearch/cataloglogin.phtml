@@ -1,0 +1,44 @@
+<!-- myresearch - CATALOGLOGIN.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Login'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Login') . '</li>';
+
+    // Convenience variable:
+    $offlineMode = $this->ils()->getOfflineMode();
+?>
+<? if ($offlineMode == "ils-offline"): ?>
+  <div data-alert class="alert-box warning" tabindex="0" aria-live="assertive" role="dialogalert">
+    <h2><?=$this->transEsc('ils_offline_title')?></h2>
+    <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+    <p><?=$this->transEsc('ils_offline_login_message')?></p>
+    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+    <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+  </div>
+<? else: ?>
+  <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+  <?=$this->flashmessages()?>
+  <p><?=$this->transEsc('cat_establish_account')?></p>
+  <form method="post" action="" class="form-horizontal">
+    <div class="form-group">
+      <label class="medium-2 columns control-label" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
+      <div class="medium-10 columns">
+        <input id="profile_cat_username" type="text" name="cat_username" value="" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="medium-2 columns control-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
+      <div class="medium-10 columns">
+        <input id="profile_cat_username" type="text" name="cat_password" value="" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="medium-10 columns medium-offset-2">
+        <input class="button tiny" type="submit" name="processLogin" role="button" value="<?=$this->transEsc('Login')?>">
+      </div>
+    </div>
+  </form>
+<? endif; ?>
+<!-- myresearch - CATALOGLOGIN.phtml end -->

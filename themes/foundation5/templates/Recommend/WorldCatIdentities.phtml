@@ -1,0 +1,29 @@
+<? $worldCatIdentities = $this->recommend->getIdentities(); if (!empty($worldCatIdentities)): ?>
+  <div>
+    <h3><?=$this->transEsc('Authors Related to Your Search')?></h3>
+    <dl>
+      <? $i = 0; foreach ($worldCatIdentities as $author => $subjects): ?>
+        <? if (++$i == 4): ?>
+          <dd id="moreWCIdents"><a href="#" onclick="moreFacets('WCIdents'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
+          <span class="hidden" id="narrowGroupHidden_WCIdents">
+        <? endif; ?>
+        <dd>
+        <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($author)?>%22&amp;type=Author"><?=$this->escapeHtml($author)?></a>
+        <? if (count($subjects) > 0): ?>
+          <dl>
+          <dd><?=$this->transEsc('Related Subjects')?>:</dd>
+          <? $j = 0; foreach ($subjects as $subj): ?>
+            <? if (++$j == 3): ?>
+              <dd id="moreWCIdents<?=$i?>"><a href="#" onclick="moreFacets('WCIdents<?=$i?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
+            <? endif; ?>
+            <dd>&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escapeHtml($subj)?></a></dd>
+          <? endforeach; ?>
+          <? if ($j > 2): ?><dd><a href="#" onclick="lessFacets('WCIdents<?=$i?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd></span><? endif; ?>
+          </dl>
+        <? endif; ?>
+        </dd>
+      <? endforeach; ?>
+      <? if ($i > 3): ?><dd><a href="#" onclick="lessFacets('WCIdents'); return false;"><?=$this->transEsc('less')?> ...</a></dd></span><? endif; ?>
+    </dl>
+  </div>
+<? endif; ?>

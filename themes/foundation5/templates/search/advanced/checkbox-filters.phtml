@@ -1,0 +1,12 @@
+<? if (isset($this->checkboxFacets) && count($this->checkboxFacets) > 0): ?>
+  <fieldset class="checkboxFilter">
+    <? foreach ($this->checkboxFacets as $current): ?>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>" id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"<? if ($current['selected']): ?> checked="checked"<? endif; ?>/>
+          <?=$this->transEsc($current['desc'])?>
+        </label>
+      </div>
+    <? endforeach; ?>
+  </fieldset>
+<?endif;?>

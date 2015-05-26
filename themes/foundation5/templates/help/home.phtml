@@ -1,0 +1,11 @@
+<!-- help - home.phtml -->
+<? $this->headTitle($this->translate('Help')); ?>
+<? if ($help = $this->helpText()->render($topic)): ?>
+  <? foreach ($this->helpText()->getWarnings() as $warning): ?>
+    <p class="alert-box warning"><?=$this->transEsc($warning)?></p>
+  <? endforeach; ?>
+  <?=$help?>
+<? else: ?>
+  <p class="alert-box alert"><?=$this->transEsc('help_page_missing')?></p>
+<? endif; ?>
+<!-- help - home.phtml - END -->
