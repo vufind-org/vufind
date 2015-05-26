@@ -556,7 +556,9 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if (($schedule !== false) && ($sid !== false)) {
             $search = $this->getTable('Search');
             $baseurl = rtrim($this->getServerUrl('home'), '/');
-            $row = $search->select(['id' => $sid, 'user_id' => $user->id])->current();
+            $row = $search->select(
+                ['id' => $sid, 'user_id' => $user->id]
+            )->current();
             if ($row) {
                 $row->setSchedule($schedule, $baseurl);
             }

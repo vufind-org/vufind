@@ -64,7 +64,8 @@ class SearchController extends \VuFind\Controller\SearchController
 
         // Retrieve saved searches
         $search = $this->getTable('Search');
-        $savedsearches = $search->getSavedSearches(is_object($user) ? $user->id : null);
+        $savedsearches
+            = $search->getSavedSearches(is_object($user) ? $user->id : null);
 
         $schedule = [];
         foreach ($savedsearches as $current) {
