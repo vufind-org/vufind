@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
+use VuFind\Connection\WorldCatKnowledgeBaseUrlService as UrlService;
 
 /**
  * Model for WorldCat Discovery records.
@@ -48,6 +49,13 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
      */
     protected $rawObject = null;
 
+    /**
+     * WorldCat Knowledge Base URL Service
+     *
+     * @var UrlService
+     */
+    protected $urlService = null;
+
     public function setRawData($data)
     {
         // Because we extend the SolrDefault driver, there is an expectation that
@@ -59,6 +67,16 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $this->rawObject = $data;
     }
     
+
+    public function setWorldCatKnowledgeBaseUrlService(UrlService $service)
+    {
+        $this->urlService = $service;
+    }
+
+    public function getWorldCatKnowledgeBaseUrlService()
+    {
+        return $this->urlService;
+    }
 
     public function getRawObject()
     {
@@ -396,7 +414,9 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     public function getUrls()
     {
     	$urls = array();
-    	if ($this->recordConfig->eHoldings->active == true) {
+    	if (isset($this->recordConfig->eHoldings->active)
+            && $this->recordConfig->eHoldings->active == true
+        ) {
 	    	$kbrequest = "http://worldcat.org/webservices/kb/openurl/resolve?";
 	    	$kbrequest .= $this->getOpenURL();
 	    	$kbrequest .= '&wskey=' . $this->recordConfig->General->wskey;
@@ -416,7 +436,10 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
 	    		throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
 	    	}
     	}
-    	
+    	if ($urlService = $this->getWorldCatKnowledgeBaseUrlService()) {
+            $moreUrls = $urlService->getUrls($this);
+            $urls = array_merge($urls, $moreUrls);
+        }
     	return $urls;
     }
 

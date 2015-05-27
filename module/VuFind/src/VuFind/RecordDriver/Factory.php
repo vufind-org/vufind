@@ -258,6 +258,9 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\ILSHoldLogic'),
             $sm->getServiceLocator()->get('VuFind\ILSTitleHoldLogic')
         );
+        $driver->setWorldCatKnowledgeBaseUrlService(
+            $sm->getServiceLocator()->get('VuFind\WorldCatKnowledgeBaseUrlService')
+        );
         return $driver;
     }
 }
