@@ -93,12 +93,21 @@ finna.record = (function() {
         });
     };
 
+    var initLinks = function() {
+        var id = $('.hiddenId')[0].value;
+        $('#feedback-record').click(function() {
+          var params = extractClassParams(this);
+          return Lightbox.get(params.controller, 'Feedback', {id:id});
+        });
+    };
+
     var my = {
         checkRequestsAreValid: checkRequestsAreValid,
         init: function() {
             initDescription();
             initHoldingsControls();
             setUpCheckRequest();
+            initLinks();
         },
     };
 

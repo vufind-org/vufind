@@ -36,11 +36,17 @@ finna.common = (function() {
         });
     };
     
+    var initRecordFeedbackForm = function() {
+        Lightbox.addFormCallback('feedbackRecord', function(html) {
+            Lightbox.confirm(vufindString['feedback_success']);
+        });
+    };
     
     var my = {
         init: function() {
             loginSetup();
             initFeedbackForm();
+            initRecordFeedbackForm();
         }
     };
 
