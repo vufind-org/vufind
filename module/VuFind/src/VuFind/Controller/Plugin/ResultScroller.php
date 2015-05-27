@@ -82,6 +82,25 @@ class ResultScroller extends AbstractPlugin
         if (!$this->enabled) {
             return false;
         }
+        
+        /*
+         * The AuthorController handles both SolrAuthor and SolrAuthorFacets
+         * searches. Because individual SolrAuthorFacets results are arrays
+         * (not objects that are subclassed from VuFind\RecordDriver\AbstractBase),
+         * we can't scroll through them, so we don't initiate a scroller here.
+         *
+         * But we only need to do this if author searches are saved in the session,
+         * which only happens if next/previous navigation is enabled.
+         */
+
+        $config = $this->getController()->getServiceLocator()
+            ->get('VuFind\Config')->get('config');
+
+        if (isset($config->Record->next_prev_navigation) &&
+            $config->Record->next_prev_navigation &&
+            is_a($searchObject, 'VuFind\Search\SolrAuthorFacets\Results')) {
+            return;
+        }
 
         // Save the details of this search in the session
         $this->data->searchId = $searchObject->getSearchId();
