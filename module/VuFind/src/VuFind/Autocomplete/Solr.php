@@ -207,7 +207,7 @@ class Solr implements AutocompleteInterface
         } catch (\Exception $e) {
             // Ignore errors -- just return empty results if we must.
         }
-        return array_unique($results);
+        return isset($results) ? array_unique($results) : [];
     }
 
     /**
