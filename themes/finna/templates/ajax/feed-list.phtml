@@ -18,7 +18,7 @@
 
     <? if ($this->moreLink): ?>
     <li class="more-link">
-      <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($this->moreLink); ?>"><?= $this->translate('More'); ?>&hellip;</a>
+      <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($this->moreLink); ?>"><?= $this->transEsc('More'); ?>&hellip;</a>
     </li>
     <? endif; ?>
   </ul>
