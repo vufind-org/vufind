@@ -405,6 +405,7 @@ $config = [
                     'authorityrecommend' => 'VuFind\Recommend\Factory::getAuthorityRecommend',
                     'catalogresults' => 'VuFind\Recommend\Factory::getCatalogResults',
                     'collectionsidefacets' => 'VuFind\Recommend\Factory::getCollectionSideFacets',
+                	'dbpediaauthorinfo' => 'VuFind\Recommend\Factory::getDBPediaAuthorInfo',
                     'dplaterms' => 'VuFind\Recommend\Factory::getDPLATerms',
                     'europeanaresults' => 'VuFind\Recommend\Factory::getEuropeanaResults',
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
@@ -500,6 +501,7 @@ $config = [
                     '360link' => 'VuFind\Resolver\Driver\Factory::getThreesixtylink',
                     'ezb' => 'VuFind\Resolver\Driver\Factory::getEzb',
                     'sfx' => 'VuFind\Resolver\Driver\Factory::getSfx',
+                	'wckb' => 'VuFind\Resolver\Driver\Factory::getWorldCatKnowledgeBase',
                 ],
                 'aliases' => [
                     'threesixtylink' => '360link',

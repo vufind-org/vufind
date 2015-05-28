@@ -580,4 +580,23 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     /**
      * getSameAs
      */
+    
+    /**
+     * Does the OpenURL configuration indicate that we should display OpenURLs in
+     * the specified context?
+     *
+     * @param string $area 'results', 'record' or 'holdings'
+     *
+     * @return bool
+     */
+    public function openURLActive($area)
+    {
+    	// Only display OpenURL link if the option is turned on and we have
+    	// an ISSN or ISBN.
+    	if ($this->getCleanISSN() || $this->getCleanISBN()) {
+			return true;
+    	}else {
+    		return false;
+    	}
+    }
 }

@@ -88,4 +88,20 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\Http')->createClient()
         );
     }
+    
+    /**
+     * Factory for WorldCat Knowledge base record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return WorldCatKnowledgeBase
+     */
+    public static function getWorldCatKnowledgeBase(ServiceManager $sm)
+    {
+    	$config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+    	return new WorldCatKnowledgeBase(
+    			$config->OpenURL,
+    			$sm->getServiceLocator()->get('VuFind\Http')->createClient()
+    	);
+    }
 }
