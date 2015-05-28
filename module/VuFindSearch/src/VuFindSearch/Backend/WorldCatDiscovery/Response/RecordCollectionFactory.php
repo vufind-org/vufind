@@ -28,6 +28,7 @@
  */
 namespace VuFindSearch\Backend\WorldCatDiscovery\Response;
 
+use VuFind\Connection\WorldCatKnowledgeBaseUrlService as UrlService;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
 
@@ -57,6 +58,13 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     protected $collectionClass;
 
     /**
+     * WorldCat Knowledge Base URL Service
+     *
+     * @var UrlService
+     */
+    protected $urlService;
+
+    /**
      * Constructor.
      *
      * @param Callable $recordFactory   Record factory function (null for default)
@@ -64,8 +72,9 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return void
      */
-    public function __construct($recordFactory = null, $collectionClass = null)
-    {
+    public function __construct($recordFactory = null, $collectionClass = null,
+        UrlService $urlService = null
+    ) {
         if (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
@@ -73,6 +82,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         $this->collectionClass = (null === $collectionClass)
             ? 'VuFindSearch\Backend\WorldCatDiscovery\Response\RecordCollection'
             : $collectionClass;
+        $this->urlService = $urlService;
     }
 
     /**
@@ -101,7 +111,11 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         
         foreach ($results as $doc) {
-            $collection->add(call_user_func($this->recordFactory, ['doc' => $doc, 'offers' => $offers]));
+            $record = call_user_func($this->recordFactory, ['doc' => $doc, 'offers' => $offers]);
+            $collection->add($record);
+            if ($this->urlService) {
+                $this->urlService->addToQueue($record);
+            }
         }
         return $collection;
     }

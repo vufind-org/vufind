@@ -183,6 +183,7 @@ $config = [
             'VuFind\StatisticsDriverPluginManager' => 'VuFind\Service\Factory::getStatisticsDriverPluginManager',
             'VuFind\Tags' => 'VuFind\Service\Factory::getTags',
             'VuFind\Translator' => 'VuFind\Service\Factory::getTranslator',
+            'VuFind\WorldCatKnowledgeBaseUrlService' => 'VuFind\Service\Factory::getWorldCatKnowledgeBaseUrlService',
             'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
         ],
         'invokables' => [

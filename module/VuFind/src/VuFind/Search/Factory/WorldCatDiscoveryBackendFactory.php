@@ -136,6 +136,8 @@ class WorldCatDiscoveryBackendFactory implements FactoryInterface
             $driver->setOffers($data['offers']);
             return $driver;
         };
-        return new RecordCollectionFactory($callback);
+        $urlService = $this->serviceLocator
+            ->get('VuFind\WorldCatKnowledgeBaseUrlService');
+        return new RecordCollectionFactory($callback, null, $urlService);
     }
 }
