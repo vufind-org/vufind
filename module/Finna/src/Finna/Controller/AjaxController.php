@@ -633,8 +633,17 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $moreLink = !isset($config->moreLink) || $config->moreLink
             ? $channel->getLink() : null;
+
+        $key = $touchDevice ? 'touch' : 'desktop';
+        $linkText = null;
+        if (isset($config->linkText[$key])) {
+            $linkText = $config->linkText[$key];
+        } else if (isset($config->linkText)) {
+            $linkText = $config->linkText;
+        }
+
         $feed = [
-            'linkText' => isset($config->linkText) ? $config->linkText : null,
+            'linkText' => $linkText,
             'moreLink' => $moreLink,
             'type' => $type,
             'items' => $items,
