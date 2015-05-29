@@ -638,7 +638,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $linkText = null;
         if (isset($config->linkText[$key])) {
             $linkText = $config->linkText[$key];
-        } else if (isset($config->linkText)) {
+        } else if (isset($config->linkText) && is_string($config->linkText)) {
             $linkText = $config->linkText;
         }
 
