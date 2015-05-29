@@ -5,7 +5,7 @@
     <li>
       <? if (isset($item['date'])): ?><span class="date"><?= $item['date']; ?></span> <? endif; ?>
       <? if (!isset($this->linkText) && isset($item['link'])):?>
-      <a<?= $this->linkTarget ? ' target="' . $this->escapeHtml($this->linkTarget) . '"' : '' ?> href="<?= $item['link']; ?>"><? endif; ?>
+      <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"><? endif; ?>
         <? if (isset($item['image']) && isset($item['image']['url'])): ?>
         <img src="<?= $item['image']['url']; ?>" />
         <? endif; ?>
@@ -18,7 +18,7 @@
 
     <? if ($this->moreLink): ?>
     <li class="more-link">
-      <a href="<?= $this->moreLink; ?>"><?= $this->translate('More'); ?>&hellip;</a>
+      <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($this->moreLink); ?>"><?= $this->transEsc('More'); ?>&hellip;</a>
     </li>
     <? endif; ?>
   </ul>
