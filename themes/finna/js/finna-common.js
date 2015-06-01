@@ -36,11 +36,23 @@ finna.common = (function() {
         });
     };
     
+    var initRecordFeedbackForm = function() {
+        var id = $('.hiddenId')[0].value;
+        $('#feedback-record').click(function() {
+          var params = extractClassParams(this);
+          return Lightbox.get(params.controller, 'Feedback', {id:id});
+        });
+
+        Lightbox.addFormCallback('feedbackRecord', function(html) {
+            Lightbox.confirm(vufindString['feedback_success']);
+        });
+    };
     
     var my = {
         init: function() {
             loginSetup();
             initFeedbackForm();
+            initRecordFeedbackForm();
         }
     };
 

@@ -97,6 +97,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct Primo view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Primo
+     */
+    public static function getPrimo(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('Primo');
+        return new Primo($config);
+    }
+
+    /**
      * Construct record image view helper.
      *
      * @param ServiceManager $sm Service manager.
