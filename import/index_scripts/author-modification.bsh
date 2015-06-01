@@ -22,8 +22,8 @@ public Boolean authorHasAppropriateRelator(DataField authorField,
 ) {
     // get tag number from Field
     String tag = authorField.getTag();
-    List subfieldE = authorField.getSubfields('e');
-    List subfield4 = authorField.getSubfields('4');
+    List subfieldE = normalizeRelatorSubfieldList(authorField.getSubfields('e'));
+    List subfield4 = normalizeRelatorSubfieldList(authorField.getSubfields('4'));
 
     // if no relator is found, check to see if the current tag is in the "no
     // relator allowed" list.
@@ -32,7 +32,7 @@ public Boolean authorHasAppropriateRelator(DataField authorField,
     }
 
     // If we got this far, we need to figure out what type of relation they have
-    List permittedRoles = Arrays.asList(loadRelatorConfig(relatorConfig));
+    List permittedRoles = normalizeRelatorStringList(Arrays.asList(loadRelatorConfig(relatorConfig)));
     for (int j = 0; j < subfield4.size(); j++) {
         if (permittedRoles.contains(subfield4.get(j).getData())) {
             return true;
@@ -176,4 +176,51 @@ public String[] loadRelatorConfig(String setting){
     return indexer
         .getConfigSetting("author-classification.ini", "AuthorRoles", setting)
         .split(",");
+}
+
+/**
+ * Normalizes the strings in a list.
+ *
+ * @param stringList List of strings to be normalized
+ * @returns stringList Normalized List of strings 
+ */
+public List normalizeRelatorStringList(List stringList)
+{
+    for (int j = 0; j < stringList.size(); j++) {
+        stringList.set(
+            j,
+            normalizeRelatorString(stringList.get(j))
+        );
+    }
+    return stringList;
+}
+
+/**
+ * Normalizes the strings in a list of subfields.
+ *
+ * @param subfieldList List of subfields to be normalized
+ * @returns subfieldList Normalized List of subfields
+ */
+public List normalizeRelatorSubfieldList(List subfieldList)
+{
+    for (int j = 0; j < subfieldList.size(); j++) {
+        subfieldList.get(j).setData(
+            normalizeRelatorString(subfieldList.get(j).getData())
+        );
+    }
+    return subfieldList;
+}
+
+/**
+ * Normalizes a string
+ *
+ * @param string String to be normalized
+ * @returns string
+ */
+public String normalizeRelatorString(String string)
+{
+    return string
+        .trim()
+        .toLowerCase()
+        .replaceAll("\\p{Punct}+", "");    //POSIX character class Punctuation: One of !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
 }
