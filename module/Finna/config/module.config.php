@@ -67,6 +67,20 @@ $config = array(
                         'action'     => 'Unsubscribe',
                     )
                 ),
+            ),
+            'record-feedback' => array(
+                'type'    => 'Zend\Mvc\Router\Http\Segment',
+                'options' => array(
+                    'route'    => '/Record/[:id]/Feedback',
+                    'constraints' => array(
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ),
+                    'defaults' => array(
+                        'controller' => 'Record',
+                        'action'     => 'Feedback',
+                    )
+                )
             )
         )
     ),
