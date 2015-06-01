@@ -177,8 +177,8 @@ stitle = sort_title
 ; IP addresses with institution codes.
 [Institutions]
 ; Simple example:
-regex[] = "/.*/"           ; match all IPs
-code[] = "MYINSTITUTION"
+;regex[] = "/.*/"           ; match all IPs
+;code[] = "MYINSTITUTION"
 ; Consortial example:
 ;regex[] = "/^1\.2\..*/"    ; match IPs starting with 1.2.
 ;code[] = "MEMBER1"
