@@ -32,6 +32,7 @@ return array(
         'vendor/magnific-popup.css',
         'dataTables.bootstrap.custom.css',
         'vendor/slick.css',
+        'vendor/bootstrap-multiselect.css',
         'finna.css'
     ),
     'js' => array(
@@ -48,7 +49,8 @@ return array(
         'vendor/jquery.magnific-popup.min.js',
         'vendor/jquery.cookie-1.4.1.min.js',
         'vendor/slick.min.js',
-        'vendor/jquery.touchSwipe.min.js'
+        'vendor/jquery.touchSwipe.min.js',
+        'vendor/bootstrap-multiselect.min.js'
     ),
     'less' => array(
         'active' => false

@@ -157,10 +157,16 @@
 }
 .logo .finnalogo {
     display: inline-block;
-    width: 200px;
+    width: 250px;
     height: 63px;
     background: url('../images/finna-logo.png'); // fallback if no svg support
     background: url('../images/finna-logo.svg');
+    background-repeat: no-repeat;
+    @media (max-width: @screen-xs-max) {
+        background-size: 100%;
+        width: (250px * 0.8);
+        height: (63px * 0.8);
+    }
     &:hover {
         cursor: pointer;    
     }
@@ -227,10 +233,10 @@
 .fa-google-plus:before {
     content: "\e50";
 }
-.icon-checked:before {
+.fa-checked:before {
     content: "\e49";
 }
-.icon-question:before {
+.fa-question:before {
     content: "\e610";
 }
 .fa-new-window:before {

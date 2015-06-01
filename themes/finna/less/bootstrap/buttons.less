@@ -100,17 +100,10 @@
     background: @finna-searchbox-link-background;
     border-radius: @finna-button-radius;
     margin-top: 9px;
-    margin-left: 10px;
     vertical-align: top;
     line-height: 25px;
     padding: 2px 5px 0px;
-    @media(max-width:@screen-xs-max) {
-        float:right;   
-    }
-    @media(min-width:@screen-sm-min) and (max-width:@screen-sm-max) {
-        float:right;
-        margin-right: 17%;
-    }
+    overflow: hidden;
 }
 .searchbox .checkbox {
     display: block;
@@ -126,7 +119,8 @@
     left: 0px;
     width: 206px;
     height: 35px;
-    box-shadow: 0px 15px 20px -12px #000;   
+    box-shadow: 0px 15px 20px -12px #000;
+    z-index: 1;
     @media (max-width: @screen-sm-min) {
         top: 41px;   
     }

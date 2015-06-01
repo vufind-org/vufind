@@ -8,6 +8,7 @@ body {
     background-position: 0% 0%;
     @media(max-width:@screen-sm-max) {
         background-size: 150% auto;
+        background-position: 50% 0;
     }
     @media(max-width:@screen-xs-max) {
          background-size: 350% auto;
@@ -466,6 +467,14 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
   text-overflow:ellipsis;
   white-space:nowrap;
   border-bottom: 2px solid @gray-lighter;
+  &:last-child {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+    &:first-child {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
   &:last-of-type {
     border: none;   
   }
@@ -676,54 +685,109 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 }
 
 /* --- Advanced Search --- */
-.template-dir-search.template-name-advanced {
-  .group {
-    position: relative;
-    background: @gray-lighter;
-    border-radius: @border-radius-base;
-    border: 1px solid darken(@gray-lighter, 15%);
-    margin-top: 0;
-    margin-bottom: .5em !important;
-    .add_search_link {
-      display: inline-block;
-      margin-top: 4px;
+.adv_search_links {
+    margin-top: 15px;
+    & a {
+        margin-right: 15px;
+        font-weight: bold;
+        font-size: 1.1em;
+        color: darken(@link-color, 5%);
+        @media (max-width:@screen-xs-max) {
+            display: block;
+        }
     }
-    & .group-close {
-      &:extend(.close);
-      position: absolute;
-      top: .3em;
-      right: .5em;
-      opacity: .4;
-      z-index: 2;
+}
+.template-name-advanced {
+    & ::-webkit-input-placeholder {
+        color: @gray-mid-light;
     }
-    .search {
-      margin-bottom: 2px;
-      .close {opacity: .8;}
+    & :-moz-placeholder { /* Firefox 18- */
+        color: @gray-mid-light;
     }
-    @media (min-width: 768px) {
-      padding: 10px 10px 10px 25px;
-      [class^=col-] {padding-left: 0;}
+    & ::-moz-placeholder {  /* Firefox 19+ */
+        color: @gray-mid-light;  
     }
-    @media (max-width: 767px) {
-      .search  .middle {
-        float: left;
-        width: 90%;
+    :-ms-input-placeholder {  
+        color: @gray-mid-light;  
+    }
+    #advSearchForm {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+    .group {
+        position: relative;
+        background: #f5f5f5;
+        border-radius: @border-radius-base;
+        border: 1px solid darken(@gray-lighter, 15%);
+        margin-top: 5px;
+        margin-bottom: .5em !important;
+        .add_search_link {
+          display: inline-block;
+          margin-top: 4px;
+        }
+        & .responsive-field {
+            max-width: 50%;   
+        }
+        & .match {
+            @media (max-width: @screen-xs-max) {
+                margin: 15px 0px 30px;
+                text-align: center;
+            }
+        }
+        & .group-close {
+          position: absolute;
+          bottom: 15px;
+          right: 15px;
+          z-index: 1;
+        }
+        .search {
+          margin-bottom: 2px;
+          .close {opacity: .8;}
+        }
+        [class^=col-] {padding-left: 15px;}
       }
-      & .group-close {
-        top: .5em;
-        right: 1em;
-        opacity: .6;
+      #groupPlaceHolder {
+        float:left;
+        display:block;
+        padding:6px;
+        margin-left: 15px;
       }
+      #groupJoin {
+        margin-right: 15px;   
+      }
+      & .slider.slider-horizontal {
+        margin-top: 6px;
+        width: 95%;
+        margin-left: 10px;
+        }
+      & .primo-advanced-search-fields {
+        margin-bottom: 10px; 
+        & label {
+            @media(max-width: @screen-xs-max) {
+                margin-top: 10px;
+                margin-bottom: 20px;
+            }
+        }
+      }
+      & .limit-to {
+        & .ranges-container, .limit-container {
+            margin-top: 25px;   
+        }
+        @media(max-width: @screen-xs-max) {
+            & .language-container, .format-container {
+                & label {
+                    display: block;
+                }
+                & .btn-group {
+                    width: 100%;
+                    text-align: left;
+                }
+            }
+            & .format-container {
+                margin-top: 15px;
+            }
+        }
     }
-    @media (max-width: 991px) {
-      .form-control {max-width: none;}
-    }
-  }
-  #groupPlaceHolder {
-    float:left;
-    display:block;
-    padding:6px;
-  }
 }
 
 /* --- Sidebar --- */

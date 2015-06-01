@@ -209,6 +209,16 @@ finna.layout = (function() {
         });   
       }
     };
+    
+    var initMultiSelect = function() {
+        $('.multi-select').multiselect({
+            enableCaseInsensitiveFiltering: true,
+            maxHeight: 310,
+            nonSelectedText: vufindString.none_selected,
+            nSelectedText: vufindString.selected,
+            buttonClass: "form-control",
+        });
+    };
 
     var my = {
         isTouchDevice: isTouchDevice,
@@ -226,6 +236,7 @@ finna.layout = (function() {
             initTruncate();
             initContentNavigation();
             initRecordSwipe();
+            initMultiSelect();
         },
     };
 
