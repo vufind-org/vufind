@@ -424,10 +424,8 @@ class Record extends AbstractHelper
                 }
             }
         }
-        $newcontext
-            = ['size' => $size, 'link' => $link, 'context' => $context];
         return $this->contextHelper->renderInContext(
-            'record/cover.phtml', $newcontext
+            'record/cover.phtml', compact('size', 'link', 'context'); 
         );
     }
 
