@@ -251,11 +251,14 @@ class Solr extends AbstractBase
             $map = [$id => []];
             $this->debug('Making map... ' . abs(microtime(true) - $starttime));
             foreach ($results->response->docs as $current) {
-                $parentId = $current->hierarchy_parent_id[0];
-                if (!isset($map[$parentId])) {
-                    $map[$parentId] = [$current];
-                } else {
-                    $map[$parentId][] = $current;
+                if (isset($current->hierarchy_parent_id)) {
+                    foreach ($current->hierarchy_parent_id as $parentId) {
+                        if (!isset($map[$parentId])) {
+                            $map[$parentId] = [$current];
+                        } else {
+                            $map[$parentId][] = $current;
+                        }
+                    }
                 }
             }
             $count = 0;
@@ -383,8 +386,6 @@ class Solr extends AbstractBase
                 if (!empty($children)) {
                     $childNode->children = $children;
                 }
-            } else {
-                return [];
             }
 
             // If we're in sorting mode, we need to create key-value arrays;
