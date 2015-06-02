@@ -1411,6 +1411,9 @@ class SolrDefault extends AbstractBase
     /**
      * Get the value of whether or not this is a collection level record
      *
+     * NOTE: \VuFind\Hierarchy\TreeDataFormatter\AbstractBase::isCollection()
+     * duplicates some of this logic.
+     *
      * @return bool
      */
     public function isCollection()

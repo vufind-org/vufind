@@ -155,6 +155,9 @@ abstract class AbstractBase
     /**
      * Identify whether the provided record is a collection.
      *
+     * NOTE: \VuFind\RecordDriver\SolrDefault::isCollection() duplicates some of\
+     * this logic.
+     *
      * @param object $fields Solr fields
      *
      * @return bool
