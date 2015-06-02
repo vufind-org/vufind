@@ -36,7 +36,6 @@ finna.common = (function() {
         });
     };
     
-    
     var my = {
         init: function() {
             loginSetup();

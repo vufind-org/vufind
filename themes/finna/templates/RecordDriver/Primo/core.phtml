@@ -1,5 +1,5 @@
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
-    
+
 
     <? // if you have a preview tab but want to move or remove the preview link
        // from this area of the record view, this can be split into
@@ -18,16 +18,17 @@
       <? endif; ?>
     </div>
     <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
-    
+
     <?
         $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
         // Account for replace_other_urls setting
         $urls = $this->record($this->driver)->getLinkDetails();
       ?>
     <? if (!empty($urls) || $openUrl): ?>
+      <? $formats = $this->driver->getFormats(); ?>
     <div class="primo-available-online-record">
       <? foreach ($urls as $current): ?>
-        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc(end($this->driver->getFormats())) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc(end($formats)) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
       <? endforeach; ?>
       <? if ($openUrl): ?>
         <?=$this->openUrl($openUrl)?>
@@ -47,7 +48,7 @@
         <strong><?=$this->transEsc("Saved in")?>:</strong>
       </div>
     <? endif; ?>
-    
+
     <div class="record-authors">
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <div><?=$this->record($this->driver)->getFormatList()?></div>
@@ -81,12 +82,12 @@
           <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
       <? endif; ?>
       </div>
-    
+
 
     <?/* Display Main Details */?>
     <div class="record-details">
     <table class="table table-condensed table-finna-record" summary="<?=$this->transEsc('Bibliographic Details')?>">
-      
+
       <? $nextTitles = $this->driver->getNewerTitles(); $prevTitles = $this->driver->getPreviousTitles(); ?>
       <? if (!empty($nextTitles)): ?>
       <tr>
@@ -195,7 +196,7 @@
             <? endforeach; ?>
           </div>
           <? endforeach; ?>
-          
+
         </td>
       </tr>
       <? endif; ?>
@@ -235,7 +236,7 @@
           </td>
         </tr>
       <? endif; ?>
-      
+
   <? // Grab clean ISBN for convenience:
         $isbn = $this->driver->getCleanISBN();
   ?>

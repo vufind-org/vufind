@@ -1,0 +1,45 @@
+<?
+  $institutions = $this->driver->tryMethod('getInstitutions');
+  $institutionTranslated = reset($institutions);
+  $institutionTranslated = $this->transEsc("0/$institutionTranslated/", null, $institutionTranslated);
+  $currentSource = $this->driver->tryMethod('getDataSource');
+  $sourceTranslated = $this->transEsc("source_$currentSource", null, $currentSource);
+  $user = $this->auth()->isLoggedIn();
+?>
+<h2><?= $this->transEsc('Send feedback on record'); ?></h2>
+
+<? if ($this->transEsc('record_feedback_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?>
+  <p><?=$this->transEsc("record_feedback_instructions"); ?></p>
+<? endif; ?>
+
+<?=$this->flashmessages()?>
+
+  <form class="form-inline feedback-form" method="post" name="feedbackRecord" action="<?= $this->recordLink()->getActionUrl($this->driver, 'Feedback') ?>">
+    <input type="hidden" name="id" value="<?= $this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" />
+    <div class="form-group">
+      <div class="col-sm-12 feedback-info">
+        <label for="feedback_from" class="control-label">
+          <?= $this->TransEsc('Send feedback on record'); ?>: <?= $institutionTranslated; if ($sourceTranslated != $institutionTranslated): ?> / <?= $sourceTranslated ?><? endif; ?>
+        </label>
+      </div>
+      <div class="clear-col"></div>
+    </div>
+    <div class="form-group">
+      <label for="feedback_from" class="col-sm-12 control-label">* <?= $this->TransEsc('email_from'); ?>:</label>
+      <div class="col-sm-12">
+        <input id="feedback_from" type="text" name="from" size="40" class="form-control" required aria-required="true" value="<?=isset($user->email) ? $user->email : '' ?>" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="feedback_message" class="col-sm-12 control-label">* <?= $this->TransEsc('feedback_message'); ?>:</label>
+      <div class="col-sm-12">
+        <textarea id="feedback_message" name="feedback_message" rows="3" cols="40" class="form-control" required aria-required="true"></textarea>
+      </div>
+    </div>
+    <div class="clear-col"></div>
+    <div class="form-group">
+      <div class="col-sm-12">
+          <input class="btn btn-primary" type="submit" name="submitFeedback" value="<?= $this->TransEsc('Send'); ?>"/>
+      </div>
+    </div>
+  </form>

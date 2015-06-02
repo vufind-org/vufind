@@ -1,0 +1,25 @@
+<div class="list-feed<?= $this->images ? ' with-image' : ''; ?>">
+<? if ($this->title || $this->translateTitle): ?><h2 class="feed-header"><?= $this->translateTitle ? $this->transEsc($this->translateTitle) : $this->title; ?></h2><? endif; ?>
+  <ul>
+    <? foreach($this->items as $item): ?>
+    <li>
+      <? if (isset($item['date'])): ?><span class="date"><?= $item['date']; ?></span> <? endif; ?>
+      <? if (!isset($this->linkText) && isset($item['link'])):?>
+      <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>"><? endif; ?>
+        <? if (isset($item['image']) && isset($item['image']['url'])): ?>
+        <img src="<?= $item['image']['url']; ?>" />
+        <? endif; ?>
+        <span class="title"><?= $item['title']; ?></span>
+        <? if (!isset($this->linkText) && isset($item['link'])):?>
+        <? if (isset($item['text'])): ?><span class="text"><?= $item['text']; ?></span><? endif; ?>
+      </a><? endif; ?>
+    </li>
+    <? endforeach; ?>
+
+    <? if ($this->moreLink): ?>
+    <li class="more-link">
+      <a<?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($this->moreLink); ?>"><?= $this->transEsc('More'); ?>&hellip;</a>
+    </li>
+    <? endif; ?>
+  </ul>
+</div>

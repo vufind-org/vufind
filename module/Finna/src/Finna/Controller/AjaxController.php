@@ -26,6 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace Finna\Controller;
+use Zend\Cache\StorageFactory,
+    Zend\Feed\Reader\Reader;
 
 /**
  * This controller handles Finna AJAX functionality
@@ -468,4 +470,283 @@ class AjaxController extends \VuFind\Controller\AjaxController
         return $this->output(true, self::STATUS_OK);
     }
 
+    /**
+     * Return feed content and settings in JSON format.
+     *
+     * @return mixed
+     */
+    public function getFeedAjax()
+    {
+        if (!$id = $this->params()->fromQuery('id')) {
+            return $this->output('Missing feed id', self::STATUS_ERROR);
+        }
+
+        $touchDevice = $this->params()->fromQuery('touch-device') !== null
+            ? $this->params()->fromQuery('touch-device') === '1'
+            : false
+        ;
+
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('rss');
+        if (!isset($config[$id])) {
+            return $this->output('Missing feed configuration', self::STATUS_ERROR);
+        }
+
+        $config = $config[$id];
+        if (!$config->active) {
+            return $this->output('Feed inactive', self::STATUS_ERROR);
+        }
+
+        if (!$url = $config->url) {
+            return $this->output('Missing feed URL', self::STATUS_ERROR);
+        }
+
+        $translator = $this->getServiceLocator()->get('VuFind\Translator');
+        $language   = $translator->getLocale();
+        if (isset($url[$language])) {
+            $url = trim($url[$language]);
+        } else if (isset($url['*'])) {
+            $url = trim($url['*']);
+        } else {
+            return $this->output('Missing feed URL', self::STATUS_ERROR);
+        }
+
+        $type = $config->type;
+        $channel = null;
+        
+        // Check for cached version
+        $cacheEnabled = false;
+        $cacheDir = $this->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCache('feed')->getOptions()->getCacheDir();
+
+        $localFile = "$cacheDir/" . md5(var_export($config, true)) . '.xml';
+        
+        $cacheConfig = $this->getServiceLocator()
+            ->get('VuFind\Config')->get('config');
+        $maxAge = isset($cacheConfig->Content->feedcachetime)
+            ? $cacheConfig->Content->feedcachetime : false;
+
+        if ($maxAge) {
+            $cacheEnabled = true;
+            if (is_readable($localFile)
+                && time() - filemtime($localFile) < $maxAge * 60
+            ) {
+                $channel = Reader::importFile($localFile);
+            }
+        }
+        
+        if (!$channel) {
+            // No cache available, read from source.
+            if (preg_match('/^http(s)?:\/\//', $url)) {
+                // Absolute URL
+                $channel = Reader::import($url);
+            } else if (substr($url, 0, 1) === '/') {
+                // Relative URL
+                $url = substr($this->getServerUrl('home'), 0, -1) . $url;
+                $channel = Reader::import($url);
+            } else {
+                // Local file
+                if (!is_file($url)) {
+                    return $this->output(
+                        "File $url could not be found", self::STATUS_ERROR
+                    );
+                }
+                $channel = Reader::importFile($url);
+            }
+        }
+
+        if (!$channel) {
+            return $this->output('Parsing failed', self::STATUS_ERROR);
+        }
+
+        if ($cacheEnabled) {
+            file_put_contents($localFile, $channel->saveXml());
+        }
+
+        $content = [
+            'title' => 'getTitle',
+            'text' => 'getContent',
+            'image' => 'getEnclosure',
+            'link' => 'getLink',
+            'date' => 'getDateCreated'
+        ];
+
+        $dateFormat = isset($config->dateFormat) ? $config->dateFormat : 'j.n.';
+        $itemsCnt = isset($config->items) ? $config->items : null;
+
+        $items = [];
+        foreach ($channel as $item) {
+            $data = [];
+            foreach ($content as $setting => $method) {
+                if (!isset($config->content[$setting])
+                    || $config->content[$setting] != 0
+                ) {
+                    $tmp = $item->{$method}();
+                    if (is_object($tmp)) {
+                        $tmp = get_object_vars($tmp);
+                    }
+
+                    if ($setting == 'image') {
+                        if (!$tmp
+                            || stripos($tmp['type'], 'image') === false
+                        ) {
+                            // Attempt to parse image URL from content
+                            if ($tmp = $this->extractImage($item->getContent())) {
+                                $tmp = ['url' => $tmp];
+                            }
+                        }
+                    } else if ($setting == 'date') {
+                        if (isset($tmp['date'])) {
+                            $tmp= new \DateTime(($tmp['date']));
+                            $tmp = $tmp->format($dateFormat);
+                        }
+                    } else {
+                        if (is_string($tmp)) {
+                            $tmp = strip_tags($tmp);
+                        }
+                    }
+                    if ($tmp) {
+                        $data[$setting] = $tmp;
+                    }
+                }
+            }
+
+            // Make sure that we have something to display
+            $accept = $data['title'] && trim($data['title']) != ''
+                || $data['text'] && trim($data['text']) != ''
+                || $data['image']
+            ;
+            if (!$accept) {
+                continue;
+            }
+
+            $items[] = $data;
+            if ($itemsCnt !== null) {
+                if (--$itemsCnt === 0) {
+                    break;
+                }
+            }
+        }
+
+        $images
+            = isset($config->content['image'])
+            ? $config->content['image'] : true;
+
+        $moreLink = !isset($config->moreLink) || $config->moreLink
+            ? $channel->getLink() : null;
+
+        $key = $touchDevice ? 'touch' : 'desktop';
+        $linkText = null;
+        if (isset($config->linkText[$key])) {
+            $linkText = $config->linkText[$key];
+        } else if (isset($config->linkText)) {
+            $linkText = $config->linkText;
+        }
+
+        $feed = [
+            'linkText' => $linkText,
+            'moreLink' => $moreLink,
+            'type' => $type,
+            'items' => $items,
+            'touchDevice' => $touchDevice,
+            'images' => $images
+        ];
+
+        if (isset($config->title)) {
+            if ($config->title == 'rss') {
+                $feed['title'] = $channel->getTitle();
+            } else {
+                $feed['translateTitle'] = $config->title;
+            }
+        }
+
+        if (isset($config->linkTarget)) {
+            $feed['linkTarget'] = $config->linkTarget;
+        }
+
+        $template = $type == 'list' ? 'list' : 'carousel';
+        $html = $this->getViewRenderer()->partial(
+            "ajax/feed-$template.phtml", $feed
+        );
+
+        $settings = [];
+        $settings['type'] = $type;
+        if (isset($config->height)) {
+            $settings['height'] = $config->height;
+        }
+
+        if ($type == 'carousel' || $type == 'carousel-vertical') {
+            $settings['images'] = $images;
+            $settings['autoplay']
+                = isset($config->autoplay) ? $config->autoplay : false;
+            $settings['dots']
+                = isset($config->dots) ? $config->dots == true : true;
+            $breakPoints
+                = ['desktop' => 4, 'desktop-small' => 3,
+                   'tablet' => 2, 'mobile' => 1];
+
+            foreach ($breakPoints as $breakPoint => $default) {
+                $settings['slidesToShow'][$breakPoint]
+                    = isset($config->itemsPerPage[$breakPoint])
+                    ? (int)$config->itemsPerPage[$breakPoint] : $default;
+
+                $settings['scrolledItems'][$breakPoint]
+                    = isset($config->scrolledItems[$breakPoint])
+                    ? (int)$config->scrolledItems[$breakPoint]
+                    : $settings['slidesToShow'][$breakPoint];
+            }
+
+            if ($type == 'carousel') {
+                $settings['titlePosition']
+                    = isset($config->titlePosition) ? $config->titlePosition : null;
+            }
+        }
+
+        $res = ['html' => $html, 'settings' => $settings];
+        return $this->output($res, self::STATUS_OK);
+    }
+
+    /**
+     * Utility function for extracting an image URL from a HTML snippet.
+     *
+     * @param string $html HTML snippet.
+     *
+     * @return mixed null|string
+     */
+    protected function extractImage($html)
+    {
+        if (empty($html)) {
+            return null;
+        }
+        $doc = new \DOMDocument();
+        // Silence errors caused by invalid HTML
+        libxml_use_internal_errors(true);
+        if (!$doc->loadHTML($html)) {
+            return null;
+        }
+        libxml_clear_errors();
+
+        $img = null;
+
+        // Search for <a> elements with <img> children;
+        // they are likely links to full-size images
+        if ($links = iterator_to_array($doc->getElementsByTagName('a'))) {
+            foreach ($links as $link) {
+                foreach ($link->childNodes as $child) {
+                    if ($child->nodeName == 'img') {
+                        $img = $child;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Not found, return first <img> element if available
+        if (!$img) {
+            $imgs = iterator_to_array($doc->getElementsByTagName('img'));
+            if (!empty($imgs)) {
+                $img = $imgs[0];
+            }
+        }
+        return $img ? $img->getAttribute('src') : null;
+    }
 }

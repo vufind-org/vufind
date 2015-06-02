@@ -48,7 +48,6 @@
         & img {
             box-shadow: 0px 0px 0px 4px @gray-lighter inset;
             position: relative;
-            z-index: 1;
             width: 100%;
         }
     
@@ -138,7 +137,24 @@
   background-position: 0px 2px;
   background-size: 340%;
 }
-
+.navbar-brand {
+  & div.navbar-lang-logo {
+    width: 30px;
+    height: 40px;
+    & div.logo-wrapper  {
+      position: absolute;
+      overflow: hidden;
+      width: 30px;
+      height: 40px;
+      & img {
+        position: relative;
+        top: -2px;
+        vertical-align: middle;
+        max-width: 340%;
+      }
+    }
+  }
+}
 .logo .finnalogo {
     display: inline-block;
     width: 200px;

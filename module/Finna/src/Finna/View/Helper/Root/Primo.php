@@ -1,6 +1,6 @@
 <?php
 /**
- * Finna Cache Manager
+ * Primo Central Index view helper
  *
  * PHP version 5
  *
@@ -20,39 +20,43 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Cache
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace Finna\Cache;
-use Zend\Config\Config;
+namespace Finna\View\Helper\Root;
 
 /**
- * Finna Cache Manager
+ * Primo Central Index view helper
  *
  * @category VuFind2
- * @package  Cache
- * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @package  View_Helpers
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Manager extends \VuFind\Cache\Manager
+class Primo extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Constructor.
+     * Constructor
      *
-     * Add file cache for record descriptions loaded from external sources.
-     *
-     * @param Config $config       Main VuFind configuration
-     * @param Config $searchConfig Search configuration
+     * @param \VuFind\Config\PluginManager $config Primo configuration
      */
-    public function __construct(Config $config, Config $searchConfig)
+    public function __construct($config)
     {
-        $cacheBase = $this->getCacheDir();
-        foreach (['feed', 'description'] as $cache) {
-            $this->createFileCache($cache, $cacheBase . $cache . 's');
-        }
-        return parent::__construct($config, $searchConfig);
+        $this->config = $config;
+    }
+
+    /**
+     * Check if PCI is available
+     *
+     * @return bool
+     */
+    public function isAvailable()
+    {
+        return !empty($this->config['Institutions']['code'])
+            && $this->config['Institutions']['code']->toArray()
+            !== ['MYINSTITUTION'];
     }
 }

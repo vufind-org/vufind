@@ -4,16 +4,21 @@ return array(
     'helpers' => array(
         'factories' => array(
             'content' => 'Finna\View\Helper\Root\Factory::getContent',
+            'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'holdingsDetailsMode' => 'Finna\View\Helper\Root\Factory::getHoldingsDetailsMode',
+            'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
+            'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
+            'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
+            'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
             'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
+            'primo' => 'Finna\View\Helper\Root\Factory::getPrimo',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
-            'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
-            'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
+            'organisationsList'
+                => 'Finna\View\Helper\Root\Factory::getOrganisationsList',
             'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
-            'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
         ),
         'invokables' => array(
             'search' => 'Finna\View\Helper\Root\Search',
@@ -33,6 +38,7 @@ return array(
     'js' => array(
         'finna.js',
         'image-popup.js',
+        'finna-feed.js',
         'finna-layout.js',
         'finna-persona.js',
         'finna-common.js',

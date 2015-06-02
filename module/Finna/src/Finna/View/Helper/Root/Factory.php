@@ -97,6 +97,19 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     }
 
     /**
+     * Construct Primo view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Primo
+     */
+    public static function getPrimo(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('Primo');
+        return new Primo($config);
+    }
+
+    /**
      * Construct record image view helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -183,4 +196,48 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         return new LogoutMessage($authManager);
     }
 
+    /**
+     * Construct the Feed component helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Record
+     */
+    public static function getFeed(ServiceManager $sm)
+    {
+        return new Feed(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('rss')
+        );
+    }
+
+    /**
+     * Construct the Organisations list view helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \Finna\View\Helper\Root\OrganisationsList
+     */
+    public static function getOrganisationsList(ServiceManager $sm)
+    {
+        $locator = $sm->getServiceLocator();
+        $cache = $locator->get('VuFind\CacheManager')->getCache('object');
+        $facetHelper = $locator->get('VuFind\HierarchicalFacetHelper');
+        $resultsManager = $locator->get('VuFind\SearchResultsPluginManager');
+
+        return new OrganisationsList($cache, $facetHelper, $resultsManager);
+    }
+
+    /**
+     * Construct the ImageSrc helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ImageSrc
+     */
+    public static function getImageSrc(ServiceManager $sm)
+    {
+        return new ImageSrc(
+            $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+        );
+    }
 }

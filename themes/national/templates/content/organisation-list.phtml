@@ -1,0 +1,13 @@
+<ul class="organisations">
+  <? foreach($list as $item): ?>
+    <li>
+        <? $name = $this->escapeHtml($item['name'])?>
+        <div class="name">
+            <?=$name; ?>
+        </div>
+        <div class="link">
+            <a title="<?=$this->TransEsc('Find')?>: <?=$name; ?>" href="<?=$this->url('home'); ?>Search/Results<?=$item['link'] ?>"><i class="fa fa-search"></i></a>
+        </div>
+    </li> 
+  <? endforeach; ?>
+</ul>

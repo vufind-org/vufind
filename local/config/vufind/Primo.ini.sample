@@ -3,3 +3,10 @@
 relative_path = ../finna/Primo.ini
 
 ; Add any overrides below
+
+; You can set regular expression / institution code pairs here to match up
+; IP addresses with institution codes.
+[Institutions]
+; Simple example:
+regex[] = "/.*/"           ; match all IPs
+code[] = "358FIN???"
