@@ -41,8 +41,7 @@ $(document).ready(function() {
        'min':{$min},
        'max':{$max},
        'handle':"square",
-       'tooltip':"hide",
-       'value':[{$low},{$high}]
+       'value':[{$low},{$high}],
     })
     .on('slide', fillTexts)
     .data('slider');
