@@ -2,23 +2,23 @@
 return array(
 	'extends' => 'root',
 	'css' => array(
-		'normalize.css',
-		'foundation.min.css',
+		'vendor/normalize.css',
+		'vendor/foundation.min.css',
 		'vendor/font-awesome.min.css',
 		'default.css',
 		'mqueries.css',
 	),
 	'js' => array(
 		'vendor/base64.js:lt IE 10', // btoa polyfill
-		'vendor/modernizr.js',
 		'vendor/jquery.min.js',
+		'vendor/modernizr.js',
+		'vendor/fastclick.js',
+		'vendor/rc4.js',
+		'vendor/bootstrap-modal.js',
 		'foundation.min.js',		// This includes all components
 	//	'foundation/foundation.js', 	// Activate this plus individual FNDTN component scripts below, if desired
 	//	'foundation/foundation.topbar.js',
-		'vendor/bootstrap-modal.js',
-		'vendor/fastclick.js',
 		'vendor/typeahead.js',
-		'vendor/rc4.js',
 		'common.js',
 		'lightbox.js',
 	),

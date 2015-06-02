@@ -73,12 +73,12 @@ function deparam(url) {
 
 // Sidebar
 function moreFacets(id) {
-  $('.'+id).removeClass('hidden');
-  $('#more-'+id).addClass('hidden');
+  $('.'+id).removeClass('hide');
+  $('#more-'+id).addClass('hide');
 }
 function lessFacets(id) {
-  $('.'+id).addClass('hidden');
-  $('#more-'+id).removeClass('hidden');
+  $('.'+id).addClass('hide');
+  $('#more-'+id).removeClass('hide');
 }
 
 // Lightbox

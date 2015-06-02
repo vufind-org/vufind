@@ -1,122 +1,114 @@
 @charset "utf-8";
 /* min-width:320 */
 @media only screen and (min-width: 20em) {
-	#searchForm .columns {padding:0 }
-	#searchForm input[type="text"]{margin-bottom: 0}
-	#searchForm select {margin-bottom: .5em}
+    #searchForm .columns {padding:0 }
+    #searchForm input[type="text"]{margin-bottom: 0}
+    #searchForm select {margin-bottom: .5em}
 
-	/* Shard selector checkboxes */
-	#shard-selector {color: #ccc; }
-	/* Shard selector checkboxes - end */
+    /* Shard selector checkboxes */
+    #shard-selector {color: #ccc; clear: both; }
+    /* Shard selector checkboxes - end */
 
-	/* Details tab */
-	table.citation tr th,
-	table.citation tr td {	font-size:80%;padding: .25em;}
-	/* Details tab - END */
+    /* Details tab */
+    table.citation tr th,
+    table.citation tr td {	font-size:80%;padding: .25em;}
+    /* Details tab - END */
 }
 
 @media (max-width: 767px){
-	.grid{min-height: 250px}
-	.twitter-typeahead { width: 100% } /* remove if typeahead not used - fixme  */
-	}
+    .grid{min-height: 250px}
+    .twitter-typeahead { width: 100% } /* remove if typeahead not used - fixme  */
+}
 
 /* min 720px wide */
 @media only screen and (min-width: 720px) {
-	/* Search form - distance between elements */
-	#searchForm .columns {padding-left: 1rem; padding-right: 1rem; }
-	.top-bar #searchForm .columns:first-of-type {padding-left: 0; }
-	.top-bar #searchForm .columns:last-of-type {padding-right: 0; }
-	/* Search form - distance between elements - end */
-	/* Shard selector checkboxes */
-	#shard-selector {padding:0; margin-right: 0;position: absolute;  top:2.5rem; font-size: .7rem; line-height: 1; float: left;}
-	/* Shard selector checkboxes - end */
-
-
-	}
+    /* Search form - distance between elements */
+    #searchForm .columns {padding-left: 1rem; padding-right: 1rem; }
+    .top-bar {height: auto}
+    .top-bar #searchForm .columns:first-of-type {padding-left: 0; }
+    .top-bar #searchForm .columns:last-of-type {padding-right: 0; }
+    /* Search form - distance between elements - end */
+    /* Shard selector checkboxes */
+    #shard-selector {padding:0; /*margin-right: 0;position: absolute;  top:2.5rem;*/ font-size: .7rem; line-height: 1; float: left;}
+    /* Shard selector checkboxes - end */
+}
 
 /* min 768px wide */
 @media only screen and (min-width: 768px) {
-	/* Top-bar height (important if shard selector is visible - otherwise you may delete this next entry */
-	.top-bar {min-height: 3.5rem}
-	/* Top-bar searchbox section placement */
-	#top-srchbx {/*min-width: 60%; max-width: 60%;*/ float: left;/* padding-right: 0; padding-left: 0*/}
-	#top-srchbx .has-form {padding-left: 0; padding-right: 0}
-		/* Shard selector checkboxes */
-		#shard-selector input[type="checkbox"] {}
-		.searchHomeContent #shard-selector {position: relative; top:0;}
-		/* Shard selector checkboxes - end */
-	/* Top-bar account etc buttons placement */
-	#top-acc-bttns {/*min-width:20%; max-width: 40%; float: right; */}
+    /* Top-bar height (important if shard selector is visible - otherwise you may delete this next entry
+    .top-bar {min-height: 3.5rem} */
+    /* Top-bar searchbox section placement */
+    #top-srchbx {/*min-width: 60%; max-width: 60%;*/ float: left;/* padding-right: 0; padding-left: 0*/}
+    #top-srchbx .has-form {padding-left: 0; padding-right: 0}
+        /* Shard selector checkboxes */
+        #shard-selector input[type="checkbox"] {}
+        .searchHomeContent #shard-selector {}
+        /* Shard selector checkboxes - end */
+    /* Top-bar account etc buttons placement */
+    #top-acc-bttns {/*min-width:20%; max-width: 40%; float: right; */}
 
-	/* MODALS */
-	/* legacy BS modals */ /* copied from BS compiles.css + adapted slightly - replace when FNDTN modal is ready */
-	.modal-dialog {width: 50%; max-width: 900px; margin: 2rem auto}
-	.modal-content {-webkit-box-shadow: 0 .25rem 1rem rgba(0,0,0,0.5);box-shadow: 0 .25rem 1rem rgba(0,0,0,0.5)}
-	.modal-sm { width: 30%; max-width: 300px }
-	/* legacy BS modals - end */
-	/* MODALS - end */
-	/* Details tab */
-	table.citation tr th,
-	table.citation tr td {font-size:0.875rem;	padding-left:1rem; padding-right:1rem;}
-	/* Details tab - END */
+    /* MODALS */
+    /* legacy BS modals */ /* copied from BS compiles.css + adapted slightly - replace when FNDTN modal is ready */
+    .modal-dialog {width: 50%; max-width: 900px; margin: 2rem auto}
+    .modal-content {-webkit-box-shadow: 0 .25rem 1rem rgba(0,0,0,0.5);box-shadow: 0 .25rem 1rem rgba(0,0,0,0.5)}
+    .modal-sm { width: 30%; max-width: 300px }
+    /* legacy BS modals - end */
+    /* MODALS - end */
+    /* Details tab */
+    table.citation tr th,
+    table.citation tr td {font-size:0.875rem;	padding-left:1rem; padding-right:1rem;}
+    /* Details tab - END */
 
-	/* Form elements such as select boxes */ /* copied from BS compiles.css + adapted in places */
-	.form-inline .form-group{display: inline-block;margin-bottom: 0;	vertical-align: middle	}
-	.form-inline .form-control{display: inline-block;width: auto;vertical-align: middle}
-	.form-inline .input-group > .form-control{width: 100%}
-	.form-inline .control-label{margin-bottom: 0;vertical-align: middle}
-	.form-inline .radio,
-	.form-inline .checkbox{display: inline-block;margin-top: 0;margin-bottom: 0;padding-left: 0;vertical-align: middle}
-	.form-inline .radio input[type="radio"],
-	.form-inline .checkbox input[type="checkbox"]{	float: none;	margin-left: 0; margin-top: .5rem}
-	.form-inline .has-feedback .form-control-feedback{top: 0}
-	.form-control {max-width: 25rem;}
+    /* Form elements such as select boxes */ /* copied from BS compiles.css + adapted in places */
+    .form-inline .form-group{display: inline-block;margin-bottom: 0;	vertical-align: middle	}
+    .form-inline .form-control{display: inline-block;width: auto;vertical-align: middle}
+    .form-inline .input-group > .form-control{width: 100%}
+    .form-inline .control-label{margin-bottom: 0;vertical-align: middle}
+    .form-inline .radio,
+    .form-inline .checkbox{display: inline-block;margin-top: 0;margin-bottom: 0;padding-left: 0;vertical-align: middle}
+    .form-inline .radio input[type="radio"],
+    .form-inline .checkbox input[type="checkbox"]{	float: none;	margin-left: 0; margin-top: .5rem}
+    .form-inline .has-feedback .form-control-feedback{top: 0}
+    .form-control {max-width: 25rem;}
 
-	.form-horizontal .control-label {text-align: right;}
-	/* Form elements such as select boxes - end */
+    .form-horizontal .control-label {text-align: right;}
+    /* Form elements such as select boxes - end */
 }
 
 @media (min-width: 992px) {
+    /* Breadcrumbs */
+    .breadcrumbs {max-width: 64rem; clear: both}	/* limit to max width of central column */
+    /* Breadcrumbs - end */
 
-	/* Breadcrumbs */
-	.breadcrumbs {max-width: 64rem; clear: both}	/* limit to max width of central column */
-	/* Breadcrumbs - end */
-
-	/* MODALS */
-	/* legacy BS modals */ /* copied from BS compiles.css + adapted slightly - replace when FNDTN modal is ready */
-	.modal-lg { width: 900px }
-	/* legacy BS modals - end */
-	/* MODALS - end */
-
+    /* MODALS */
+    /* legacy BS modals */ /* copied from BS compiles.css + adapted slightly - replace when FNDTN modal is ready */
+    .modal-lg { width: 900px }
+    /* legacy BS modals - end */
+    /* MODALS - end */
 }
 
 @media (min-width: 992px) {
-	/* Shard selector checkboxes */
-	#shard-selector { left: 1rem; top: 2.5rem; }
-	/* Shard selector checkboxes */
+    /* Shard selector checkboxes */
+    #shard-selector { }
+    /* Shard selector checkboxes */
 }
 
 @media (min-width: 1280px) {
-	/* Shard selector checkboxes */
-	#shard-selector { left: 0;  }
-	/* Shard selector checkboxes */
-	}
+    /* Shard selector checkboxes */
+    #shard-selector {  }
+    /* Shard selector checkboxes */
+}
 
 
 @media print {
-	.columns {width:auto} /* for similar layout as on screen */
-
-	/* Links */
-
-	/* Show verbose links for certain elements */
-	 /* It should be easier to list the elements where the link should be SHOWN and generally switch this feature off */
-	/* Turn verbose links off */
-	a[href]:after {content: "";}
-	a, a:visited {text-decoration: none;}
-	/* Show links for */
-	.XYZ a[href]:after {content: " (" attr(href) ")";text-decoration: underline}
-	a.fulltext[href]:after {content: " (" attr(href) ")";text-decoration: underline}
-
-
-
+    .columns {width:auto} /* for similar layout as on screen */
+    /* Links */
+    /* Show verbose links for certain elements */
+     /* It should be easier to list the elements where the link should be SHOWN and generally switch this feature off */
+    /* Turn verbose links off */
+    a[href]:after {content: "";}
+    a, a:visited {text-decoration: none;}
+    /* Show links for */
+    .XYZ a[href]:after {content: " (" attr(href) ")";text-decoration: underline}
+    a.fulltext[href]:after {content: " (" attr(href) ")";text-decoration: underline}
 }
