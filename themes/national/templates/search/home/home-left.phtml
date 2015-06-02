@@ -1,6 +1,11 @@
 <div class="introduction">
   <h2>Tietoa tarvitseville ja elämyksiä etsiville</h2>
-  <p>Finna on tiedonhakupalvelu, joka kokoaa yhteen aineistoja arkistoista, kirjastoista ja museoista. Sisältö täydentyy jatkuvasti uusilla aineistoilla.</p>
-  <p>Palvelun kautta pääset selaamaan ja lukemaan myös satoja tuhansia sähköisiä aineistoja.
+  <? $cnt = $this->indexedTotal()->getTotalIndexedCount(); ?>
+    <? if ($cnt > 0): ?>
+        <p>Finna.fi:stä löydät <?=$this->translate('currently_indexed_html', ['%%total%%' => $this->localizedNumber($cnt)]); ?><br>
+        <a href="<?=$this->url('content-page', ['page' => 'Organisations'])?>">Kenen aineistoja on finna.fi:ssä?</a></p>
+    <? endif; ?>
+  <p>Finnassa voit katsella verkossa saatavilla olevia sisältöjä, uusia lainoja, tilata aineistoja, ja paljon muuta.<br>
+  <a href="<?=$this->url('content-page', ['page' => 'About'])?>">Mikä Finna on?</a>
   </p>
 </div>

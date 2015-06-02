@@ -86,7 +86,6 @@ section.main.template-dir-content.template-name-content .container-fluid.finna-m
     padding: 0 5px 1px 7px;
     color: #fff;
     line-height: 1.4em;
-    display:inline-block;
     font-weight: bold;
     & .brand-third {
         color: @brand-third;
@@ -95,7 +94,7 @@ section.main.template-dir-content.template-name-content .container-fluid.finna-m
 .introduction h1 {
     font-size: @introduction-header;
     @media(max-width:@screen-xs-max) {
-        font-size: @introduction-header/1.5;   
+        font-size: (@introduction-header/1.5);   
     }
 }
 h1.introductionText, h3.introductionText {
