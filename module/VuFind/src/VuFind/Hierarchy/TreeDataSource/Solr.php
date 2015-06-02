@@ -109,17 +109,19 @@ class Solr extends AbstractBase
      */
     protected function searchSolr($q, $rows = 2147483647)
     {
-        $params = new ParamBag([
-            'q'  => [$q],
-            'fq' => $this->filters,
-            'hl' => ['false'],
-            'fl' => ['title, id, hierarchy_parent_id, hierarchy_top_id,'
-                . 'is_hierarchy_id, hierarchy_sequence, title_in_hierarchy'],
-            'wt' => ['json'],
-            'json.nl' => ['arrarr'],
-            'rows' => [$rows], // Integer max
-            'start' => [0]
-        ]);
+        $params = new ParamBag(
+            [
+                'q'  => [$q],
+                'fq' => $this->filters,
+                'hl' => ['false'],
+                'fl' => ['title,id,hierarchy_parent_id,hierarchy_top_id,'
+                    . 'is_hierarchy_id,hierarchy_sequence,title_in_hierarchy'],
+                'wt' => ['json'],
+                'json.nl' => ['arrarr'],
+                'rows' => [$rows], // Integer max
+                'start' => [0]
+            ]
+        );
         $response = $this->solrConnector->search($params);
         return json_decode($response);
     }

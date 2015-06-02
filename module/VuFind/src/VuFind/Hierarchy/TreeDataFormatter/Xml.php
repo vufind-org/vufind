@@ -63,10 +63,9 @@ class Xml extends AbstractBase
     /**
      * Get Solr Children for JSON
      *
+     * @param object $record   Solr record to format
      * @param string $parentID The starting point for the current recursion
      * (equivlent to Solr field hierarchy_parent_id)
-     * @param string $count    The total count of items in the tree
-     * before this recursion
      *
      * @return string
      */
@@ -91,9 +90,7 @@ class Xml extends AbstractBase
      * Get Solr Children for JSON
      *
      * @param string $parentID The starting point for the current recursion
-     * (equivlent to Solr field hierarchy_parent_id)
-     * @param string $count    The total count of items in the tree
-     * before this recursion
+     * (equivalent to Solr field hierarchy_parent_id)
      *
      * @return string
      */

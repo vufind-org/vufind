@@ -73,7 +73,7 @@ abstract class AbstractBase
      * @param array  $childMap Data map from index
      * @param bool   $sort     Is sorting enabled?
      */
-    public function  __construct($topNode, $childMap, $sort = false)
+    public function __construct($topNode, $childMap, $sort = false)
     {
         $this->topNode = $topNode;
         $this->childMap = $childMap;
@@ -105,8 +105,10 @@ abstract class AbstractBase
     abstract public function getData();
 
     /**
-     * Get the positions of this item within parent collections.  Returns an array
+     * Get the positions of this item within parent collections. Returns an array
      * of parent ID => sequence number.
+     *
+     * @param object $fields Solr fields
      *
      * @return array
      */
@@ -124,8 +126,10 @@ abstract class AbstractBase
     }
 
      /**
-     * Get the titles of this item within parent collections.  Returns an array
+     * Get the titles of this item within parent collections. Returns an array
      * of parent ID => sequence number.
+     *
+     * @param object $fields Solr fields
      *
      * @return Array
      */
