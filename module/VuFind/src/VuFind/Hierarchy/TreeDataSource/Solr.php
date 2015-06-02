@@ -202,6 +202,31 @@ class Solr extends AbstractBase
     }
 
     /**
+     * Search Solr.
+     *
+     * @param string $q    Search query
+     * @param int    $rows Max rows to retrieve (default = int max)
+     *
+     * @return array
+     */
+    protected function searchSolr($q, $rows = 2147483647)
+    {
+        $params = new ParamBag([
+            'q'  => [$q],
+            'fq' => $this->filters,
+            'hl' => ['false'],
+            'fl' => ['title, id, hierarchy_parent_id, hierarchy_top_id,'
+                . 'is_hierarchy_id, hierarchy_sequence, title_in_hierarchy'],
+            'wt' => ['json'],
+            'json.nl' => ['arrarr'],
+            'rows' => [$rows], // Integer max
+            'start' => [0]
+        ]);
+        $response = $this->solrConnector->search($params);
+        return json_decode($response);
+    }
+
+    /**
      * Get JSON for the specified hierarchy ID.
      *
      * Build the JSON file from the Solr fields
@@ -229,50 +254,37 @@ class Solr extends AbstractBase
             return $json;
         } else {
             $starttime = microtime(true);
-            $query = new Query(
-                'hierarchy_top_id:"' . addcslashes($id, '"') . '"'
-            );
-            $params = new ParamBag([
-                'q'  => ['hierarchy_top_id:"' . $id . '"'],
-                'fq' => $this->filters,
-                'hl' => ['false'],
-                'fl' => ['title, id, hierarchy_parent_id, hierarchy_top_id,'
-                    . 'is_hierarchy_id, hierarchy_sequence, title_in_hierarchy'],
-                'wt' => ['json'],
-                'json.nl' => ['arrarr'],
-                'rows' => [2147483647], // Integer max
-                'start' => [0]
-            ]);
-            $response = $this->solrConnector->search($params);
-            $results = json_decode($response);
+            $results = $this->searchSolr('hierarchy_top_id:"' . $id . '"');
             if ($results->response->numFound < 1) {
                 return '';
             }
             $map = [$id => []];
             $this->debug('Making map... ' . abs(microtime(true) - $starttime));
             foreach ($results->response->docs as $current) {
-                if (isset($current->hierarchy_parent_id)) {
-                    foreach ($current->hierarchy_parent_id as $parentId) {
-                        if (!isset($map[$parentId])) {
-                            $map[$parentId] = [$current];
-                        } else {
-                            $map[$parentId][] = $current;
-                        }
+                $parents = isset($current->hierarchy_parent_id)
+                    ? $current->hierarchy_parent_id : [];
+                foreach ($parents as $parentId) {
+                    if (!isset($map[$parentId])) {
+                        $map[$parentId] = [$current];
+                    } else {
+                        $map[$parentId][] = $current;
                     }
                 }
             }
             $count = 0;
             // Get top record's info
-            $params->set('q', ['id:"' . $id . '"']);
-            $params->set('rows', [1]);
-            $response = $this->solrConnector->search($params);
-            $results = json_decode($response);
-            $record = $results->response->docs[0];
+            $recordResults = $this->searchSolr('id:"' . $id . '"', 1);
+            $record = $recordResults->response->docs[0];
             $this->debug($record->id);
             $json = $this->formatNodeJson($record);
             // Recursively build tree from hash
-            $json->children = $this->mapToJSON($id, $map, $count);
-            $encoded = json_encode($json, JSON_HEX_QUOT || JSON_HEX_APOS || JSON_HEX_AMP);
+            $children = $this->mapToJSON($id, $map, $count);
+            if (!empty($children)) {
+                $json->children = $children;
+            }
+            $encoded = json_encode(
+                $json//, JSON_HEX_QUOT | JSON_HEX_APOS | JSON_HEX_AMP
+            );
 
             $this->debug('Done: ' . abs(microtime(true) - $starttime));
 
@@ -304,6 +316,7 @@ class Solr extends AbstractBase
     protected function formatNodeJson($record, $parentID = null)
     {
         $titles = $this->getTitlesInHierarchy($record);
+        // TODO: handle missing titles more gracefully (title not available?)
         $title = isset($record->title) ? $record->title : $record->id;
         $title = null != $parentID && isset($titles[$parentID])
             ? $titles[$parentID] : $title;
@@ -313,7 +326,7 @@ class Solr extends AbstractBase
             'type' => isset($record->is_hierarchy_id)
                 ? 'collection'
                 : 'record',
-            'title' => htmlspecialchars($title)
+            'title' => $title
         ];
     }
 
