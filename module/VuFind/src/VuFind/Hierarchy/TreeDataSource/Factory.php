@@ -62,7 +62,6 @@ class Factory
         $solr = $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
             ->get('Solr')->getConnector();
         return new Solr(
-            $sm->getServiceLocator()->get('VuFind\Search'),
             $solr,
             rtrim($cacheDir, '/') . '/hierarchy',
             $filters
