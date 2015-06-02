@@ -28,14 +28,14 @@
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
       <td class="history-schedule">
         <? if ($this->showSaved && isset($this->schedule[$info->getSearchId()])): ?>
-          <? $selected = $this->schedule[$info->getSearchId()]; ?>
+          <? $schedule = $this->schedule[$info->getSearchId()]; ?>
           <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
             <select name="schedule" class="jumpMenu form-control">
-              <option value="0"<?=($selected == 0) ? (" selected") : ("")?>><?=$this->transEsc("schedule_none")?></option>
-              <option value="1"<?=($selected == 1) ? (" selected") : ("")?>><?=$this->transEsc("schedule_daily")?></option>
-              <option value="2"<?=($selected == 2) ? (" selected") : ("")?>><?=$this->transEsc("schedule_weekly")?></option>
+              <option value="0"<?=($schedule == 0) ? (' selected') : ('')?>><?=$this->transEsc("schedule_none")?></option>
+              <option value="1"<?=($schedule == 1) ? (' selected') : ('')?>><?=$this->transEsc("schedule_daily")?></option>
+              <option value="2"<?=($schedule == 2) ? (' selected') : ('')?>><?=$this->transEsc("schedule_weekly")?></option>
             </select>
-            <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"></input>
+            <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"/>
           </form>
         <? endif; ?>
       </td>

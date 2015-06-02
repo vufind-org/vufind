@@ -553,7 +553,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $schedule = $this->params()->fromQuery('schedule', false);
         $sid = $this->params()->fromQuery('searchid', false);
 
-        if (($schedule !== false) && ($sid !== false)) {
+        if ($schedule !== false && $sid !== false) {
             $search = $this->getTable('Search');
             $baseurl = rtrim($this->getServerUrl('home'), '/');
             $row = $search->select(

@@ -53,7 +53,8 @@ class SearchController extends \VuFind\Controller\SearchController
     }
 
     /**
-     * Sends search history and alert schedules for saved searches to view.
+     * Sends search history, alert schedules for saved searches and user's
+     * email address to view.
      *
      * @return mixed
      */
@@ -61,6 +62,9 @@ class SearchController extends \VuFind\Controller\SearchController
     {
         $view = parent::historyAction();
         $user = $this->getUser();
+        if ($user) {
+            $view->alertemail = $user->email;
+        }
 
         // Retrieve saved searches
         $search = $this->getTable('Search');
