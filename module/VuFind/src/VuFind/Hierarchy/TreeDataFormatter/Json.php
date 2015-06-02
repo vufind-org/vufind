@@ -45,13 +45,7 @@ class Json extends AbstractBase
      */
     public function getData()
     {
-        $json = $this->formatNode($this->topNode);
-        // Recursively build tree from hash
-        $children = $this->mapChildren($this->topNode->id);
-        if (!empty($children)) {
-            $json->children = $children;
-        }
-        return json_encode($json);
+        return json_encode($this->formatNode($this->topNode));
     }
 
     /**
@@ -59,23 +53,26 @@ class Json extends AbstractBase
      *
      * @param object $record   Solr record to format
      * @param string $parentID The starting point for the current recursion
-     * (equivlent to Solr field hierarchy_parent_id)
+     * (equivalent to Solr field hierarchy_parent_id)
      *
      * @return string
      */
     protected function formatNode($record, $parentID = null)
     {
-        $titles = $this->getTitlesInHierarchy($record);
-        // TODO: handle missing titles more gracefully (title not available?)
-        $title = isset($record->title) ? $record->title : $record->id;
-        $title = null != $parentID && isset($titles[$parentID])
-            ? $titles[$parentID] : $title;
-
-        return (object) [
+        $raw = [
             'id' => $record->id,
             'type' => $this->isCollection($record) ? 'collection' : 'record',
-            'title' => $title
+            'title' => $this->pickTitle($record, $parentID)
         ];
+
+        if (isset($this->childMap[$record->id])) {
+            $children = $this->mapChildren($record->id);
+            if (!empty($children)) {
+                $raw['children'] = $children;
+            }
+        }
+
+        return (object)$raw;
     }
 
     /**
@@ -93,13 +90,6 @@ class Json extends AbstractBase
             ++$this->count;
 
             $childNode = $this->formatNode($current, $parentID);
-
-            if (isset($this->childMap[$childNode->id])) {
-                $children = $this->mapChildren($current->id);
-                if (!empty($children)) {
-                    $childNode->children = $children;
-                }
-            }
 
             // If we're in sorting mode, we need to create key-value arrays;
             // otherwise, we can just collect flat values.

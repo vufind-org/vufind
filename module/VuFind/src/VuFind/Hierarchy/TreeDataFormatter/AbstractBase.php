@@ -175,6 +175,24 @@ abstract class AbstractBase
     }
 
     /**
+     * Choose a title for the record.
+     *
+     * @param object $record   Solr record to format
+     * @param string $parentID The starting point for the current recursion
+     * (equivalent to Solr field hierarchy_parent_id)
+     *
+     * @return string
+     */
+    protected function pickTitle($record, $parentID)
+    {
+        $titles = $this->getTitlesInHierarchy($record);
+        // TODO: handle missing titles more gracefully (title not available?)
+        $title = isset($record->title) ? $record->title : $record->id;
+        return null != $parentID && isset($titles[$parentID])
+            ? $titles[$parentID] : $title;
+    }
+
+    /**
      * Sort Nodes
      * Convert an unsorted array of [ key, value ] pairs into a sorted array
      * of values.

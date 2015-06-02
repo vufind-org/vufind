@@ -55,22 +55,17 @@ class Xml extends AbstractBase
      *
      * @param object $record   Solr record to format
      * @param string $parentID The starting point for the current recursion
-     * (equivlent to Solr field hierarchy_parent_id)
+     * (equivalent to Solr field hierarchy_parent_id)
      *
      * @return string
      */
     protected function formatNode($record, $parentID = null)
     {
-        $titles = $this->getTitlesInHierarchy($record);
-        // TODO: handle missing titles more gracefully (title not available?)
-        $title = isset($record->title) ? $record->title : $record->id;
-        $title = null != $parentID && isset($titles[$parentID])
-            ? $titles[$parentID] : $title;
-
         $isCollection = $this->isCollection($record) ? "true" : "false";
         return '<item id="' . htmlspecialchars($record->id)
             . '" isCollection="' . $isCollection . '">'
-            . '<content><name>' . htmlspecialchars($title)
+            . '<content><name>'
+            . htmlspecialchars($this->pickTitle($record, $parentID))
             . '</name></content>'
             . $this->mapChildren($record->id)
             . '</item>';
