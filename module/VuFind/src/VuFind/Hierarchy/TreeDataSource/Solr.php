@@ -121,7 +121,6 @@ class Solr extends AbstractBase
             'start' => [0]
         ]);
         $response = $this->solrConnector->search($params);
-        echo "Solr hit\n";
         return json_decode($response);
     }
 
