@@ -1,9 +1,9 @@
 <div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-  <? $Cover = $this->record($this->driver)->getCover("result-list", "medium", $this->recordLink()->getUrl($this->driver)); ?>
-  <? if ($Cover): ?>
+  <? $cover = $this->record($this->driver)->getCover("result-list", "medium", $this->recordLink()->getUrl($this->driver)); ?>
+  <? if ($cover): ?>
    <div class="span-2">
-     <?=$Cover?>
+     <?=$cover?>
    </div>
   <div class="span-19">
   <? else: ?>

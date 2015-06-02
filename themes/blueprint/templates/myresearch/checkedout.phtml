@@ -38,10 +38,10 @@
           <? endif; ?>
         <? endif; ?>
         <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>">
-          <? $Cover = $this->record($this->driver)->getCover("checkedout", "small"); ?>
-          <? if ($Cover): ?>
+          <? $cover = $this->record($this->driver)->getCover("checkedout", "small"); ?>
+          <? if ($cover): ?>
           <div class="span-2">
-            <?=$Cover?>
+            <?=$cover?>
           </div>
           <div class="span-10">
          <? else: ?>

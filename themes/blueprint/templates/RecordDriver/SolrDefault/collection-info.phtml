@@ -1,9 +1,9 @@
 <? $this->headScript()->appendFile('collection_record.js'); ?>
 <? /* Display thumbnail if appropriate: */ ?>
-<? $Cover = $this->record($this->driver)->getCover("core", "medium", $this->record($this->driver)->getThumbnail('large')); ?>
-<? if ($Cover): ?>
+<? $cover = $this->record($this->driver)->getCover("core", "medium", $this->record($this->driver)->getThumbnail('large')); ?>
+<? if ($cover): ?>
   <div class="floatright">
-     <?=$Cover?>
+     <?=$cover?>
   </div>
 <? endif; ?>
 <h1><?=$this->escapeHtml($this->driver->getShortTitle())?></h1>

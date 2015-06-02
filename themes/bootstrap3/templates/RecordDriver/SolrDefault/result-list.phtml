@@ -4,10 +4,10 @@
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
     </div>
-    <? $Cover = $this->record($this->driver)->getCover("result-list", "medium", $this->recordLink()->getUrl($this->driver)); ?>
-    <? if ($Cover): ?>
+    <? $cover = $this->record($this->driver)->getCover("result-list", "medium", $this->recordLink()->getUrl($this->driver)); ?>
+    <? if ($cover): ?>
     <div class="col-sm-2 col-xs-3 left">
-      <?=$Cover ?>
+      <?=$cover ?>
     </div>
     <div class="col-sm-7 col-xs-6 middle">
     <? else : ?>

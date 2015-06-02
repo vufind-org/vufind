@@ -51,12 +51,12 @@
               <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
             </div>
           <? endif; ?>
-          <? $Cover = $this->record($this->driver)->getCover("illrequests", "small"); ?>
-          <? if ($Cover): ?>
+          <? $cover = $this->record($this->driver)->getCover("illrequests", "small"); ?>
+          <? if ($cover): ?>
             <div class="col-sm-2 text-center">
             <? /* Display thumbnail if appropriate: */ ?>
-            <? if($Cover): ?>
-              <?=$Cover?>
+            <? if($cover): ?>
+              <?=$cover?>
             <? endif; ?>
             </div>
 

@@ -34,11 +34,11 @@
             <? endif; ?>
           <? endif; ?>
 
-          <? $Cover = $this->record($this->driver)->getCover("checkedout", "small"); ?>
-          <? if ($Cover): ?>
+          <? $cover = $this->record($this->driver)->getCover("checkedout", "small"); ?>
+          <? if ($cover): ?>
             <div class="col-sm-2 text-center">
             <? /* Display thumbnail if appropriate: */ ?>
-              <?=$Cover?>
+              <?=$cover?>
             </div>
 
             <div class="col-sm-6">

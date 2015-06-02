@@ -11,16 +11,16 @@
   }
 ?>
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
-  <? $Cover=$this->record($this->driver)->getCover("list-entry", "small", $this->recordLink()->getUrl($this->driver)); ?>
-  <? if ($Cover): ?>
+  <? $cover=$this->record($this->driver)->getCover("list-entry", "small", $this->recordLink()->getUrl($this->driver)); ?>
+  <? if ($cover): ?>
   <div class="col-xs-2 left">
   <? else: ?>
   <div class="col-xs-1 left">
   <? endif ?>
     <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
     <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
-  <? if ($Cover): ?>
-    <?=$Cover ?>
+  <? if ($cover): ?>
+    <?=$cover ?>
   </div>
   <div class="col-xs-6 middle">
   <? else: ?>
