@@ -91,13 +91,6 @@ abstract class AbstractBase
     }
 
     /**
-     * Get the extension to use for caching the metadata.
-     *
-     * @return string
-     */
-    abstract public static function getCacheExtension();
-
-    /**
      * Get the formatted metadata.
      *
      * @return string

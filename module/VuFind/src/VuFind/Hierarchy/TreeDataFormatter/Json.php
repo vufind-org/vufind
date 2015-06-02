@@ -39,16 +39,6 @@ namespace VuFind\Hierarchy\TreeDataFormatter;
 class Json extends AbstractBase
 {
     /**
-     * Get the extension to use for caching the metadata.
-     *
-     * @return string
-     */
-    public static function getCacheExtension()
-    {
-        return 'json';
-    }
-
-    /**
      * Get the formatted metadata.
      *
      * @return string

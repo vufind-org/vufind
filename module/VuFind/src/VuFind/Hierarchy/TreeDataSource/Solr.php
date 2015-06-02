@@ -95,7 +95,8 @@ class Solr extends AbstractBase
     public function getXML($id, $options = [])
     {
         return $this->getFormattedData(
-            $id, 'VuFind\Hierarchy\TreeDataFormatter\Xml', $options, 'hierarchyTree'
+            $id, 'VuFind\Hierarchy\TreeDataFormatter\Xml', $options,
+            'hierarchyTree_%s.xml'
         );
     }
 
@@ -203,31 +204,29 @@ class Solr extends AbstractBase
     public function getJSON($id, $options = [])
     {
         return $this->getFormattedData(
-            $id, 'VuFind\Hierarchy\TreeDataFormatter\Json', $options
+            $id, 'VuFind\Hierarchy\TreeDataFormatter\Json', $options,
+            'tree_%s.json'
         );
     }
 
     /**
      * Get formatted data for the specified hierarchy ID.
      *
-     * @param string $id          Hierarchy ID.
-     * @param string $formatClass Class for formatting data
-     * @param array  $options     Additional options for JSON generation.
+     * @param string $id            Hierarchy ID.
+     * @param string $formatClass   Class for formatting data
+     * @param array  $options       Additional options for JSON generation.
      * (Currently one option is supported: 'refresh' may be set to true to
      * bypass caching).
-     * @param string $cachePrefix Prefix to put on cache files.
+     * @param string $cacheTemplate Template for cache filenames
      *
      * @return string
      */
     public function getFormattedData($id, $formatClass, $options = [],
-        $cachePrefix = 'tree'
+        $cacheTemplate = 'tree_%s'
     ) {
-        if (null !== $this->cacheDir) {
-            $cacheFile = $this->cacheDir . '/' . $cachePrefix . '_'
-                . urlencode($id) . '.' . $formatClass::getCacheExtension();
-        } else {
-            $cacheFile = false;
-        }
+        $cacheFile = (null !== $this->cacheDir)
+            ? $this->cacheDir . '/' . sprintf($cacheTemplate, urlencode($id))
+            : false;
 
         $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
         $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
