@@ -248,8 +248,8 @@ class Solr extends AbstractBase
             $record = $this->getRecord($id);
             $sorting = $this->getHierarchyDriver()->treeSorting();
             $formatter = new $formatClass($record, $map, $sorting);
-            $count = $formatter->getCount();
             $encoded = $formatter->getData();
+            $count = $formatter->getCount();
 
             $this->debug('Done: ' . abs(microtime(true) - $starttime));
 
