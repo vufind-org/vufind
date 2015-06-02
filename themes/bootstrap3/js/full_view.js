@@ -7,31 +7,31 @@ function showhideTabs(tabid) {
   $('#'+tabid).tab('show');
 }
 
-function registerFLLightbox(div_html_id, div_id) {
+function registerFLLightbox(longNode, div_id) {
   // Cite lightbox
-  $('#long_'+div_html_id+' #cite-record').click(function() {
+  $(longNode).find('#cite-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Cite', {id:div_id});
   });
   // Mail lightbox
-  $('#long_'+div_html_id+' #mail-record').click(function() {
+  $(longNode).find('#mail-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Email', {id:div_id});
   });
   // Save lightbox
-  $('#long_'+div_html_id+' #save-record').click(function() {
+  $(longNode).find('#save-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Save', {id:div_id});
   });
   // SMS lightbox
-  $('#long_'+div_html_id+' #sms-record').click(function() {
+  $(longNode).find('#sms-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'SMS', {id:div_id});
   });
   // Form handlers
-  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
-  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
-  Lightbox.addFormCallback('emailRecord', function(){Lightbox.confirm(vufindString['bulk_email_success']);});
+  Lightbox.addFormCallback('saveRecord',  function() { Lightbox.confirm(vufindString['bulk_save_success']); });
+  Lightbox.addFormCallback('smsRecord',   function() { Lightbox.confirm(vufindString['sms_success']); });
+  Lightbox.addFormCallback('emailRecord', function() { Lightbox.confirm(vufindString['bulk_email_success']); });
 }
 
 function ajaxFLLoadTab(tabid, reload) {
@@ -73,14 +73,14 @@ function ajaxFLLoadTab(tabid, reload) {
 
 $(document).ready(function() {
   $('.getFull').click(function(type) {
-    var div_id = $(this).parent().parent().find(".hiddenId")[0].value;
-    var div_source = $(this).parent().parent().find(".hiddenSource")[0].value;
+    var mainNode = $(this).closest('.result');
+    var div_id = mainNode.find(".hiddenId")[0].value;
+    var div_source = mainNode.find(".hiddenSource")[0].value;
     var div_html_id = div_id.replace(/\W/g, "_");
     var viewType = $(this).attr("data-view");
-    var shortNode = jQuery('#short_'+div_html_id);
-    var loadingNode = jQuery('#loading_'+div_html_id);
-    var mainNode = shortNode.parent();
-    var longNode = jQuery('#long_'+div_html_id);
+    var shortNode = mainNode.find('.short-view');
+    var loadingNode = mainNode.find('.loading');
+    var longNode = mainNode.find('.long-view');
     if (longNode.is(':empty')) {
       loadingNode.removeClass("hidden");
       var url = path + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
@@ -89,12 +89,11 @@ $(document).ready(function() {
         url: url,
         success: function(response) {
           if (response.status == 'OK') {
-            shortNode.addClass("hidden");
             longNode.html(response.data);
-            longNode.addClass("ajaxItem");
+            shortNode.addClass("hidden");
             loadingNode.addClass("hidden");
             longNode.removeClass("hidden");
-            registerFLLightbox(div_html_id, div_id);
+            registerFLLightbox(longNode, div_id);
             $('.search_tabs .recordTabs a').unbind('click').click(function() {
               return ajaxFLLoadTab($(this).attr('id'));
             });

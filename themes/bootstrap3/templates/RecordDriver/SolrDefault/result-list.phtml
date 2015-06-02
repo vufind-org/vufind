@@ -1,35 +1,37 @@
-<? if ($this->params->getOptions()->getListViewOption()!="full"): ?>    
-    <div class="col-xs-11 middle">
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption()?>">
-        <?=$this->record($this->driver)->getTitleHtml()?>
-      </a>
-<div id="loading_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"><p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p></div>
-<div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
-<? else: ?>
-<div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
-<? endif; ?>
+<?
+  $dataView = $this->params->getOptions()->getListViewOption();
+?>
+
+<div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
+  <? if('full' != $dataView): ?>
+    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$dataView ?>">
+      <?=$this->record($this->driver)->getTitleHtml()?>
+    </a>
+    <div class="loading hidden">
+      <i class="fa fa-spin fa-spinner"></i> <?=$this->transEsc("Loading")?>...
+    </div>
+    <div class="short-view<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : '' ?>">
+  <? endif; ?>
   <div class="row">
     <div class="col-sm-2 col-xs-3 left">
-       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
-
-       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-          <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img class="recordcover" src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-      <? else: ?>
-        <img class="recordcover" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+        <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
+          <img class="recordcover" src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <? else: ?>
+          <img class="recordcover" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+        <? endif; ?>
+      </a>
+    </div>
+    <div class="col-sm-7 col-xs-6 middle">
+      <? if('full' == $dataView): ?>
+        <div>
+          <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+            <?=$this->record($this->driver)->getTitleHtml()?>
+          </a>
+        </div>
       <? endif; ?>
-    </a>
-  </div>
-  <div class="col-sm-7 col-xs-6 middle">
-<? if ($this->params->getOptions()->getListViewOption()=="full"): ?>
-      <div>
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-          <?=$this->record($this->driver)->getTitleHtml()?>
-        </a>
-      </div>
-<? endif; ?>
-
       <div>
         <? if($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
@@ -196,7 +198,8 @@
       <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
     </div>
   </div>
-</div><? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
-<div id="long_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"></div>
+  <? if('full' != $dataView): ?>
+    </div>
+    <div class="long-view hidden"></div>
+  <? endif; ?>
 </div>
-<?endif?>

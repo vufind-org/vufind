@@ -153,6 +153,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
       }
     }
   });
+}
 
 // Phone number validation
 var libphoneTranslateCodes = ["libphonenumber_invalid", "libphonenumber_invalidcountry", "libphonenumber_invalidregion", "libphonenumber_notanumber", "libphonenumber_toolong", "libphonenumber_tooshort", "libphonenumber_tooshortidd"];
