@@ -1,6 +1,6 @@
 <?php
 /**
- * Get available records when checkbox filter is active.
+ * Get record counts for checkbox filters.
  *
  * PHP version 5
  *
@@ -29,7 +29,7 @@
 namespace Finna\View\Helper\Root;
 
 /**
- * Get available records when checkbox filter is active.
+ * Get record counts for checkbox filters.
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -37,15 +37,15 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class CheckboxFacetAvailables extends \Zend\View\Helper\AbstractHelper
+class CheckboxFacetCounts extends \Zend\View\Helper\AbstractHelper
 {
     /**
      * Return the count of records when checkbox filter is activated.
      *
-     * @param type $checkboxFilter current checkbox filter
-     * @param type $results        search result set
+     * @param array                       $checkboxFilter Checkbox filter
+     * @param \VuFind\Search\Base\Results $results        Search result set
      *
-     * @return int record count
+     * @return int Record count
      */
     public function __invoke($checkboxFilter, $results)
     {
@@ -53,8 +53,7 @@ class CheckboxFacetAvailables extends \Zend\View\Helper\AbstractHelper
 
         list($field, $value) = $results->getParams()
             ->parseFilter($checkboxFilter['filter']);
-        $facets = $results->
-            getFacetList([$field => $value]);
+        $facets = $results->getFacetList([$field => $value]);
 
         if (isset($facets[$field])) {
             foreach ($facets[$field]['list'] as $item) {
