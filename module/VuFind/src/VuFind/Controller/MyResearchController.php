@@ -644,7 +644,6 @@ class MyResearchController extends AbstractBase
             $results = $this->getServiceLocator()
                 ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
             $params = $results->getParams();
-            $params->setAuthManager($this->getAuthManager());
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:

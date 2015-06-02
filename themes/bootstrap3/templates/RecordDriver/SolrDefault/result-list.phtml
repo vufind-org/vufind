@@ -1,21 +1,7 @@
-<? $displayTitle = "";
-   $summHighlightedTitle = $this->driver->getHighlightedTitle();
-   $summTitle = $this->driver->getTitle();
-   if (!empty($summHighlightedTitle)) {
-     $displayTitle .= $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-   } else if (!empty($summTitle)) {
-     $displayTitle .= $this->escapeHtml($this->truncate($summTitle, 180));
-   } else {
-     $displayTitle .= $this->transEsc('Title not available');
-   }
-?>
-
 <? if ($this->params->getOptions()->getListViewOption()!="full"): ?>    
     <div class="col-xs-11 middle">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption()?>">
-      <?
-        echo $displayTitle;
-      ?>
+        <?=$this->record($this->driver)->getTitleHtml()?>
       </a>
 <div id="loading_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"><p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p></div>
 <div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
@@ -39,9 +25,7 @@
 <? if ($this->params->getOptions()->getListViewOption()=="full"): ?>
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-        <?
-         echo $displayTitle;
-        ?>
+          <?=$this->record($this->driver)->getTitleHtml()?>
         </a>
       </div>
 <? endif; ?>

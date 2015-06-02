@@ -8,7 +8,7 @@
     . '<li class="active">' . $this->transEsc('Email Record') . '</li>';
 ?>
 <?=$this->flashmessages()?>
-<form class="form-horizontal" action="" method="post" name="emailRecord">
+<form class="form-horizontal" method="post" name="emailRecord">
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
   <?=$this->render('Helpers/email-form-fields.phtml')?>

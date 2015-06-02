@@ -8,7 +8,7 @@
  * @package   Zend_Service
  */
 
-namespace ZendService\ReCaptcha;
+namespace LosReCaptcha\Service;
 
 use Zend\Http\Response as HTTPResponse;
 
@@ -65,16 +65,12 @@ class Response
     /**
      * Set the status
      *
-     * @param string $status
+     * @param boolean $status
      * @return \ZendService\ReCaptcha\Response
      */
     public function setStatus($status)
     {
-        if ($status === 'true') {
-            $this->status = true;
-        } else {
-            $this->status = false;
-        }
+        $this->status = (bool) $status;
 
         return $this;
     }
@@ -132,13 +128,16 @@ class Response
     {
         $body = $response->getBody();
 
-        $parts = explode("\n", $body, 2);
+        $parts = json_decode($body, true);
 
-        if (count($parts) !== 2) {
-            $status = 'false';
-            $errorCode = '';
-        } else {
-            list($status, $errorCode) = $parts;
+        $status = false;
+        $errorCode = '';
+
+        if (is_array($parts) && array_key_exists('success', $parts)) {
+            $status = $parts['success'];
+            if (array_key_exists('error-codes', $parts)) {
+                $errorCode = implode(', ',$parts['error-codes']);
+            }
         }
 
         $this->setStatus($status);
