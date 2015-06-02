@@ -73,9 +73,7 @@ class Json extends AbstractBase
 
         return (object) [
             'id' => $record->id,
-            'type' => isset($record->is_hierarchy_id)
-                ? 'collection'
-                : 'record',
+            'type' => $this->isCollection($record) ? 'collection' : 'record',
             'title' => $title
         ];
     }

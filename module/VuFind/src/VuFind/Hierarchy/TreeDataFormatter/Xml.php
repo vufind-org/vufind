@@ -67,7 +67,7 @@ class Xml extends AbstractBase
         $title = null != $parentID && isset($titles[$parentID])
             ? $titles[$parentID] : $title;
 
-        $isCollection = isset($record->is_hierarchy_id) ? "true" : "false";
+        $isCollection = $this->isCollection($record) ? "true" : "false";
         return '<item id="' . htmlspecialchars($record->id)
             . '" isCollection="' . $isCollection . '">'
             . '<content><name>' . htmlspecialchars($title)

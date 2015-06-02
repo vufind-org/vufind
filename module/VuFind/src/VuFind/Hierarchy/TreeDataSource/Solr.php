@@ -244,9 +244,11 @@ class Solr extends AbstractBase
                 return '';
             }
             // Get top record's info
-            $record = $this->getRecord($id);
-            $sorting = $this->getHierarchyDriver()->treeSorting();
-            $formatter = new $formatClass($record, $map, $sorting);
+            $formatter = new $formatClass(
+                $this->getRecord($id), $map,
+                $this->getHierarchyDriver()->treeSorting(),
+                $this->getHierarchyDriver()->getCollectionLinkType()
+            );
             $encoded = $formatter->getData();
             $count = $formatter->getCount();
 

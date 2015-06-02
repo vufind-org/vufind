@@ -60,6 +60,13 @@ abstract class AbstractBase
     protected $sort;
 
     /**
+     * Collection mode
+     *
+     * @var string
+     */
+    protected $collectionType;
+
+    /**
      * How many nodes have we formatted?
      *
      * @var int;
@@ -72,12 +79,14 @@ abstract class AbstractBase
      * @param object $topNode  Full record for top node
      * @param array  $childMap Data map from index
      * @param bool   $sort     Is sorting enabled?
+     * @param string $ctype    Collection type
      */
-    public function __construct($topNode, $childMap, $sort = false)
+    public function __construct($topNode, $childMap, $sort = false, $cType = 'All')
     {
         $this->topNode = $topNode;
         $this->childMap = $childMap;
         $this->sort = $sort;
+        $this->collectionType = $cType;
     }
 
     /**
@@ -141,6 +150,28 @@ abstract class AbstractBase
             }
         }
         return $retVal;
+    }
+
+    /**
+     * Identify whether the provided record is a collection.
+     *
+     * @param object $fields Solr fields
+     *
+     * @return bool
+     */
+    protected function isCollection($fields)
+    {
+        // Check config setting for what constitutes a collection
+        switch ($this->collectionType) {
+        case 'All':
+            return (isset($fields->is_hierarchy_id));
+        case 'Top':
+            return isset($fields->is_hierarchy_id)
+                && in_array($fields->is_hierarchy_id, $fields->hierarchy_top_id);
+        default:
+            // Default to not be a collection level record
+            return false;
+        }
     }
 
     /**
