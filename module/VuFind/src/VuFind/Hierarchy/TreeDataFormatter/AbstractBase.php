@@ -79,7 +79,7 @@ abstract class AbstractBase
      * @param object $topNode  Full record for top node
      * @param array  $childMap Data map from index
      * @param bool   $sort     Is sorting enabled?
-     * @param string $ctype    Collection type
+     * @param string $cType    Collection type
      */
     public function __construct($topNode, $childMap, $sort = false, $cType = 'All')
     {
