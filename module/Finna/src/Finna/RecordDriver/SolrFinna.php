@@ -362,6 +362,60 @@ trait SolrFinna
     }
 
     /**
+     * Get OpenURL parameters for a book section.
+     *
+     * @return array
+     */
+    protected function getBookSectionOpenURLParams()
+    {
+        $params = $this->getBookOpenURLParams();
+        $params['rft.volume'] = $this->getContainerVolume();
+        $params['rft.issue'] = $this->getContainerIssue();
+        $params['rft.spage'] = $this->getContainerStartPage();
+        unset($params['rft.title']);
+        $params['rft.btitle'] = $this->getContainerTitle();
+        $params['rft.atitle'] = $this->getTitle();
+
+        return $params;
+    }
+
+    /**
+     * Support method for getOpenURL() -- pick the OpenURL format.
+     *
+     * @return string
+     */
+    protected function getOpenURLFormat()
+    {
+        // If we have multiple formats, Book, Journal and Article are most
+        // important...
+        $formats = $this->getFormats();
+        if (in_array('1/Book/BookSection/', $formats)
+            || in_array('1/Book/eBookSection/', $formats)
+        ) {
+            return 'BookSection';
+        } else if (in_array('0/Book/', $formats)) {
+            return 'Book';
+        } else if (in_array('1/Journal/Article/', $formats)
+            || in_array('1/Journal/eArticle/', $formats)
+        ) {
+            return 'Article';
+        } else if (in_array('0/Journal/', $formats)) {
+            return 'Journal';
+        } else if (isset($formats[0])) {
+            $format = explode('/', $formats[0]);
+            if (isset($format[1])) {
+                return $format[1];
+            }
+            if ($formats[0] instanceof \VuFind\I18n\TranslatableStringInterface) {
+                return $formats[0]->getDisplayString();
+            }
+        } else if (strlen($this->getCleanISSN()) > 0) {
+            return 'Journal';
+        }
+        return 'Book';
+    }
+
+    /**
      * Extract sources from record IDs and create an array of sources and IDs
      *
      * @param array $ids Record ID's

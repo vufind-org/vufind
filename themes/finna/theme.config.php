@@ -7,23 +7,24 @@ return array(
             'feed' => 'Finna\View\Helper\Root\Factory::getFeed',
             'header' => 'Finna\View\Helper\Root\Factory::getHeader',
             'holdingsDetailsMode' => 'Finna\View\Helper\Root\Factory::getHoldingsDetailsMode',
+            'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
+            'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
+            'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
+            'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
             'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
+            'primo' => 'Finna\View\Helper\Root\Factory::getPrimo',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
-            'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
-            'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
-            'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
-            'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
             'organisationsList'
                 => 'Finna\View\Helper\Root\Factory::getOrganisationsList',
-            'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
+            'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
         ),
         'invokables' => array(
             'search' => 'Finna\View\Helper\Root\Search',
             'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
-            'checkboxFacetAvailables' =>
-                'Finna\View\Helper\Root\CheckboxFacetAvailables',
+            'checkboxFacetCounts' =>
+                'Finna\View\Helper\Root\CheckboxFacetCounts',
             'userPublicName' => 'Finna\View\Helper\Root\UserPublicName',
         )
     ),
