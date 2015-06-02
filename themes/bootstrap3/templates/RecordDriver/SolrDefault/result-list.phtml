@@ -1,16 +1,20 @@
+<? $displayTitle = "";
+   $summHighlightedTitle = $this->driver->getHighlightedTitle();
+   $summTitle = $this->driver->getTitle();
+   if (!empty($summHighlightedTitle)) {
+     $displayTitle .= $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+   } else if (!empty($summTitle)) {
+     $displayTitle .= $this->escapeHtml($this->truncate($summTitle, 180));
+   } else {
+     $displayTitle ,= $this->transEsc('Title not available');
+   }
+?>
+
 <? if ($this->params->getOptions()->getListViewOption()!="full"): ?>    
     <div class="col-xs-11 middle">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption()?>">
       <?
-        $summHighlightedTitle = $this->driver->getHighlightedTitle();
-        $summTitle = $this->driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-          echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-          echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-          echo $this->transEsc('Title not available');
-        }
+        echo $displayTitle;
       ?>
       </a>
 <div id="loading_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"><p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p></div>
@@ -36,15 +40,7 @@
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
         <?
-          $summHighlightedTitle = $this->driver->getHighlightedTitle();
-          $summTitle = $this->driver->getTitle();
-          if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-          } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-          } else {
-            echo $this->transEsc('Title not available');
-          }
+         echo $displayTitle;
         ?>
         </a>
       </div>
