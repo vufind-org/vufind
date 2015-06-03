@@ -28,7 +28,7 @@
  */
 namespace VuFind\Search;
 
-use VuFind\Recommend\PluginManager;
+use VuFind\Recommend\PluginManager, VuFind\Search\SearchRunner;
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 
@@ -98,11 +98,11 @@ class RecommendListener
     public function attach(SharedEventManagerInterface $manager)
     {
         $manager->attach(
-            'VuFind\Search\SearchRunner', 'vufind.searchParamsSet',
-            [$this, 'onSearchParamsSet']
+            'VuFind\Search\SearchRunner', SearchRunner::EVENT_CONFIGURED,
+            [$this, 'onSearchConfigured']
         );
         $manager->attach(
-            'VuFind\Search\SearchRunner', 'vufind.searchComplete',
+            'VuFind\Search\SearchRunner', SearchRunner::EVENT_COMPLETE,
             [$this, 'onSearchComplete']
         );
     }
@@ -126,7 +126,7 @@ class RecommendListener
      *
      * @return EventInterface
      */
-    public function onSearchParamsSet(EventInterface $event)
+    public function onSearchConfigured(EventInterface $event)
     {
         // Make sure we're triggering in the appropriate context:
         if ($this->searchId != $event->getParam('runningSearchId')) {

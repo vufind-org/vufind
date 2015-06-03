@@ -44,6 +44,14 @@ use Zend\Stdlib\Parameters;
 class SearchRunner
 {
     /**
+     * Event identifiers.
+     *
+     * @var string
+     */
+    const EVENT_CONFIGURED = 'configured';
+    const EVENT_COMPLETE = 'complete';
+
+    /**
      * Event manager.
      *
      * @var EventManager
@@ -113,7 +121,7 @@ class SearchRunner
 
         // Trigger the "configuration done" event.
         $this->getEventManager()->trigger(
-            'vufind.searchParamsSet', $this,
+            self::EVENT_CONFIGURED, $this,
             compact('params', 'request', 'runningSearchId')
         );
 
@@ -138,7 +146,7 @@ class SearchRunner
 
         // Trigger the "search completed" event.
         $this->getEventManager()->trigger(
-            'vufind.searchComplete', $this, compact('results', 'runningSearchId')
+            self::EVENT_COMPLETE, $this, compact('results', 'runningSearchId')
         );
 
         return $results;
