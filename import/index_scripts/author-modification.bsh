@@ -14,7 +14,7 @@ org.solrmarc.index.SolrIndexer indexer = null;
  * @param noRelatorAllowed Array of tag names which are allowed to be used with
  * no declared relator.
  * @param relatorConfig    The setting in author-classification.ini which
- * defines which relator terms are acceptable
+ * defines which relator terms are acceptable (or a colon-delimited list)
  * @return Boolean
  */
 public Boolean authorHasAppropriateRelator(DataField authorField,
@@ -83,7 +83,7 @@ public HashMap getParsedTagList(String tagList)
  * @param acceptWithoutRelator Colon-delimited list of tags whose values should
  * be accepted even if no relator subfield is defined
  * @param relatorConfig        The setting in author-classification.ini which
- * defines which relator terms are acceptable
+ * defines which relator terms are acceptable (or a colon-delimited list)
  * @param firstOnly            Return first result only?
  * @returns Set result
  */
@@ -130,7 +130,7 @@ public Set getAuthorsFilteredByRelator(Record record, String tagList,
  * @param acceptWithoutRelator Colon-delimited list of tags whose values should
  * be accepted even if no relator subfield is defined
  * @param relatorConfig        The setting in author-classification.ini which
- * defines which relator terms are acceptable
+ * defines which relator terms are acceptable (or a colon-delimited list)
  * @returns Set result
  */
 public Set getAuthorsFilteredByRelator(Record record, String tagList,
@@ -151,7 +151,7 @@ public Set getAuthorsFilteredByRelator(Record record, String tagList,
  * @param acceptWithoutRelator Colon-delimited list of tags whose values should
  * be accepted even if no relator subfield is defined
  * @param relatorConfig        The setting in author-classification.ini which
- * defines which relator terms are acceptable
+ * defines which relator terms are acceptable (or a colon-delimited list)
  * @returns String
  */
 public String getFirstAuthorFilteredByRelator(Record record, String tagList,
@@ -168,11 +168,17 @@ public String getFirstAuthorFilteredByRelator(Record record, String tagList,
 
 /**
  * This method fetches relator definitions from ini file and casts them to an
- * array.
- * @param setting Setting to load
+ * array. If a colon-delimited string is passed in, this will be directly parsed
+ * instead of resorting to .ini loading.
+ *
+ * @param setting Setting to load from .ini or colon-delimited list.
  * @returns String[]
  */
 public String[] loadRelatorConfig(String setting){
+    String[] parts = setting.split(":");
+    if (parts.length > 1) {
+        return parts;
+    }
     return indexer
         .getConfigSetting("author-classification.ini", "AuthorRoles", setting)
         .split(",");
