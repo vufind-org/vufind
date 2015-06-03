@@ -53,7 +53,9 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
     {
         switch ($class) {
         case 'mainbody':
-            return $this->left ? 'medium-9 columns medium-push-3' : 'medium-9 columns';
+            return $this->left
+                ? 'medium-9 columns medium-push-3'
+                : 'medium-9 columns';
         case 'sidebar':
             return $this->left
                 ? 'sidebar medium-3 columns medium-pull-9 hide-for-print'
