@@ -18,11 +18,11 @@
   <div class="col-sm-7 middle">
     <div class="resultItemLine1">
     <?
-    $titlePrinted=false;
-    if ($this->driver->getTitle()!="") {
-      echo '<b><a href="'.$this->recordLink()->getUrl($this->driver).'" class="title _record_link" >'.$this->driver->getTitle().'</a></b>';
-      $titlePrinted=true;
-    }
+      $titlePrinted=false;
+      if ($this->driver->getTitle()!="") {
+        echo '<b><a href="'.$this->recordLink()->getUrl($this->driver).'" class="title _record_link" >'.$this->driver->getTitle().'</a></b>';
+        $titlePrinted=true;
+      }
     ?>
     </div>
   </div>
@@ -37,11 +37,11 @@
                 <?=$item['Data']?> </a>
               <?else:?>
               <p>
-        <?
-          if ($item['Label']!="Title") {
-            echo '<b>'.$this->transEsc($item['Label']).':</b>'.$item['Data'];
-          }
-        ?>
+                <?
+                  if ($item['Label']!="Title") {
+                    echo '<b>'.$this->transEsc($item['Label']).':</b>'.$item['Data'];
+                  }
+                ?>
               </p>
               <?endif;?>
             </div>
@@ -60,7 +60,6 @@
       <? endif; ?>
 
   <div class="resultItemLine4 custom-links">
-
     <? $customFTLinks = $this->driver->getFTCustomLinks();
     if (!empty($customFTLinks)): ?>
       <? foreach ($customFTLinks as $customLink): ?>
@@ -146,4 +145,4 @@
       <? endforeach; ?>
     <? endif; ?>
   </div>
- </div>
+</div>

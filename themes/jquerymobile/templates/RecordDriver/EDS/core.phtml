@@ -37,7 +37,6 @@
 
     <? $customFTLinks = $this->driver->getFTCustomLinks();
     if (!empty($customFTLinks)): ?>
-
       <? foreach ($customFTLinks as $customLink): ?>
       <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
           $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
