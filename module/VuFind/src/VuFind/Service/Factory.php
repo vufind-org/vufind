@@ -468,7 +468,9 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \LosReCaptcha\Service\ReCaptcha($siteKey, $secretKey);
+        $recaptcha = new \LosReCaptcha\Service\ReCaptcha(
+            $siteKey, $secretKey, ['ssl' => true]
+        );
         if (isset($config->Captcha->theme)) {
             $recaptcha->setOption('theme', $config->Captcha->theme);
         }
