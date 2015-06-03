@@ -67,6 +67,8 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $left = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
-        return new LayoutClass($left);
+        $offcanvas = !isset($config->Site->offcanvas)
+            ? false : $config->Site->offcanvas;
+        return new LayoutClass($left, $offcanvas);
     }
 }

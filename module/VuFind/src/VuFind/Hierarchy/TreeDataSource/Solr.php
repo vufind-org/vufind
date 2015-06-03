@@ -290,7 +290,7 @@ class Solr extends AbstractBase
                 'type' => $current->isCollection()
                     ? 'collection'
                     : 'record',
-                'title' => htmlspecialchars($title)
+                'title' => $title
             ];
             if ($current->isCollection()) {
                 $children = $this->getChildrenJson(

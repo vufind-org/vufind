@@ -39,13 +39,6 @@ namespace VuFind\Search\Favorites;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
-     * Auth manager
-     *
-     * @var \VuFind\Auth\Manager
-     */
-    protected $account;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -88,27 +81,5 @@ class Params extends \VuFind\Search\Base\Params
 
         // Otherwise use standard parent behavior:
         return parent::initFilters($request);
-    }
-
-    /**
-     * Get account manager.
-     *
-     * @return \VuFind\Auth\Manager
-     */
-    public function getAuthManager()
-    {
-        return $this->account;
-    }
-
-    /**
-     * Inject dependency: account manager.
-     *
-     * @param \VuFind\Auth\Manager $account Auth manager object.
-     *
-     * @return void
-     */
-    public function setAuthManager($account)
-    {
-        $this->account = $account;
     }
 }

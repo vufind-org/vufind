@@ -28,7 +28,8 @@
 namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
-use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper, VuFindSearch\Query\Query,
+    VuFindSearch\Query\QueryGroup;
 use VuFind\Search\QueryAdapter, VuFind\Solr\Utils as SolrUtils;
 
 /**
@@ -419,6 +420,26 @@ class Params implements ServiceLocatorAwareInterface
         }
 
         $this->query = new Query($lookfor, $handler);
+    }
+
+    /**
+     * Convert a basic query into an advanced query:
+     *
+     * @return void
+     */
+    public function convertToAdvancedSearch()
+    {
+        if ($this->searchType === 'basic') {
+            $this->query = new QueryGroup(
+                'AND', [new QueryGroup('AND', [$this->query])]
+            );
+            $this->searchType = 'advanced';
+        }
+        if ($this->searchType !== 'advanced') {
+            throw new \Exception(
+                'Unsupported search type: ' . $this->searchType
+            );
+        }
     }
 
     /**
@@ -844,6 +865,13 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function parseFilter($filter)
     {
+        // Special case: complex filters cannot be split into field/value
+        // since they have multiple parts (e.g. field1:a OR field2:b). Use
+        // a fake "#" field to collect these types of filters.
+        if ($this->isAdvancedFilter($filter) == true) {
+            return ['#', $filter];
+        }
+
         // Split the string and assign the parts to $field and $value
         $temp = explode(':', $filter, 2);
         $field = array_shift($temp);
@@ -893,13 +921,31 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function addFilter($newFilter)
     {
-        // Extract field and value from URL string:
-        list($field, $value) = $this->parseFilter($newFilter);
-
         // Check for duplicates -- if it's not in the array, we can add it
         if (!$this->hasFilter($newFilter)) {
+            // Extract field and value from filter string:
+            list($field, $value) = $this->parseFilter($newFilter);
             $this->filterList[$field][] = $value;
         }
+    }
+
+    /**
+     * Detects if a filter is advanced (true) or simple (false). An advanced
+     * filter is currently defined as one surrounded by parentheses, while a
+     * simple filter is of the form field:value. Advanced filters are used to
+     * express more complex queries, such as combining multiple values from
+     * multiple fields using boolean operators.
+     *
+     * @param string $filter A filter string
+     *
+     * @return bool
+     */
+    public function isAdvancedFilter($filter)
+    {
+        if (substr($filter, 0, 1) == '(') {
+            return true;
+        }
+        return false;
     }
 
     /**
