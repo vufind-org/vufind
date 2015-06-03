@@ -22,13 +22,15 @@
         </div>
       <? endif; ?>
 
-      <?=$this->transEsc("Showing")?>
-      <? $start = $paginator->getAbsoluteItemNumber(1);
-         $end = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
-         $total = $paginator->getTotalItemCount();
-      ?>
-      <strong><?=$this->localizedNumber($start)?></strong> - <strong><?=$this->localizedNumber($end > $total ? $total : $end)?></strong>
-      <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($total)?></strong>
+      <? if ($paginator): ?>
+        <?=$this->transEsc("Showing")?>
+        <? $start = $paginator->getAbsoluteItemNumber(1);
+           $end = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
+           $total = $paginator->getTotalItemCount();
+        ?>
+        <strong><?=$this->localizedNumber($start)?></strong> - <strong><?=$this->localizedNumber($end > $total ? $total : $end)?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($total)?></strong>
+      <? endif; ?>
 
       <? foreach ($hiddenTransactions as $ilsDetails): ?>
         <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
@@ -149,7 +151,7 @@
         </div>
       <? endforeach; ?>
       <? if ($this->renewForm): ?></form><? endif; ?>
-      <?=$this->paginationControl($this->paginator, 'Sliding', 'Helpers/pagination.phtml')?>
+      <?=$paginator ? $this->paginationControl($paginator, 'Sliding', 'Helpers/pagination.phtml') : ''?>
     <? else: ?>
       <?=$this->transEsc('You do not have any items checked out')?>.
     <? endif; ?>

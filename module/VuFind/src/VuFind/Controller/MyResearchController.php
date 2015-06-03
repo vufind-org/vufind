@@ -1053,17 +1053,26 @@ class MyResearchController extends AbstractBase
         // Get checked out item details:
         $result = $catalog->getMyTransactions($patron);
 
-        // Build paginator:
-        $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
-        $paginator = new \Zend\Paginator\Paginator($adapter);
-        $limit = 20;
-        $paginator->setItemCountPerPage($limit);
-        $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
+        // Get page size:
+        $config = $this->getConfig();
+        $limit = isset($config->Catalog->checked_out_page_size)
+            ? $config->Catalog->checked_out_page_size : 50;
 
-        $transactions = [];
+        // Build paginator if needed:
+        if ($limit > 0 && $limit < count($result)) {
+            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
+            $paginator = new \Zend\Paginator\Paginator($adapter);
+            $paginator->setItemCountPerPage($limit);
+            $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        } else {
+            $paginator = false;
+            $pageStart = 0;
+            $pageEnd = count($result);
+        }
 
-        $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
-        $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        $transactions = $hiddenTransactions = [];
         foreach ($result as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
