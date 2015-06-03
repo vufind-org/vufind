@@ -87,22 +87,20 @@
     <? endif; ?>
     <? $customFTLinks = $this->driver->getFTCustomLinks();
     if (!empty($customFTLinks)): ?>
-    
       <? foreach ($customFTLinks as $customLink): ?>
       <? $url = isset($customLink['Url']) ? $customLink['Url'] : '';
           $mot = isset($customLink['MouseOverText'])? $customLink['MouseOverText'] : '';
           $icon = isset ($customLink['Icon']) ? $customLink['Icon'] : '';
           $name = isset($customLink['Text']) ? $customLink['Text'] : '';
-		  ?>
+      ?>
       <span>
         <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
           <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
         </a>
       </span>
       <? endforeach; ?>
-  
     <? endif; ?>
-	
+
     <? if (!empty($customLinks)): ?>
       <span>
         <div class="custom-links">
@@ -113,7 +111,7 @@
             $name = isset($customLink['Name']) ? $customLink['Name'] : '';?>
         <span>
           <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$mot?>" class="custom-link">
-			<? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
+            <? if ($icon): ?><img src="<?=$icon?>" /> <? endif; ?><?=$name?>
           </a>
         </span><br />
           <? endforeach; ?>
