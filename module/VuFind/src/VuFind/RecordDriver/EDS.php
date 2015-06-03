@@ -392,7 +392,6 @@ class EDS extends SolrDefault
     {
         $authors = $this->getAuthors();
         return empty($authors) ? '' : $authors[0];
-        
     }
 
     /**

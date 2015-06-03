@@ -39,7 +39,6 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 
-
 use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 use Zend\Config\Config;
 use Zend\Session\Container as SessionContainer;
@@ -514,9 +513,8 @@ class Backend extends AbstractBackend
      *
      * @return string 'y'|'n'
      */
-    private function validAuthIP($listIPs) 
+    protected function validAuthIP($listIPs) 
     {
-
         try
         {
             if ($listIPs == "") {
@@ -545,7 +543,6 @@ class Backend extends AbstractBackend
             $this->debugPrint("validAuthIP ex: " . $e);
             return false;
         }
-      
     }
     
     protected function isAuthenticationIP()
@@ -557,7 +554,6 @@ class Backend extends AbstractBackend
         return $res;
     }
 
-    
     protected function isGuest()
     {
         // If the user is not logged in, then treat them as a guest. Unless they are
