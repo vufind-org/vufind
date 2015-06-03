@@ -27,17 +27,7 @@
 
         <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
         <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?> clearfix">
-          <?
-            $summHighlightedTitle = $driver->getHighlightedTitle();
-            $summTitle = $driver->getTitle();
-            if (!empty($summHighlightedTitle)) {
-                echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-            } else if (!empty($summTitle)) {
-                echo $this->escapeHtml($this->truncate($summTitle, 180));
-            } else {
-                echo $this->transEsc('Title not available');
-            }
-          ?>
+          <?=$this->record($driver)->getTitleHtml()?>
           <? $summAuthor = $driver->getPrimaryAuthor(); ?>
           <span class="small<? if (!empty($summAuthor)): ?> pull-right<? endif; ?>">
             <? $summDate = $driver->getPublicationDates(); ?>

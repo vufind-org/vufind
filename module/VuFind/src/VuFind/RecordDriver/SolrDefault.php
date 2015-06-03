@@ -860,19 +860,12 @@ class SolrDefault extends AbstractBase
     public function getOpenURL()
     {
         // Set up parameters based on the format of the record:
-        switch ($format = $this->getOpenURLFormat()) {
-        case 'Book':
-            $params = $this->getBookOpenURLParams();
-            break;
-        case 'Article':
-            $params = $this->getArticleOpenURLParams();
-            break;
-        case 'Journal':
-            $params = $this->getJournalOpenURLParams();
-            break;
-        default:
+        $format = $this->getOpenURLFormat();
+        $method = "get{$format}OpenURLParams";
+        if (method_exists($this, $method)) {
+            $params = $this->$method();
+        } else {
             $params = $this->getUnknownFormatOpenURLParams($format);
-            break;
         }
 
         // Assemble the URL:

@@ -304,6 +304,31 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Get HTML to render a title.
+     *
+     * @param int $maxLength Maximum length of non-highlighted title.
+     *
+     * @return string
+     */
+    public function getTitleHtml($maxLength = 180)
+    {
+        $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
+        $title = $this->driver->tryMethod('getTitle');
+        if (!empty($highlightedTitle)) {
+            $highlight = $this->getView()->plugin('highlight');
+            $addEllipsis = $this->getView()->plugin('addEllipsis');
+            return $highlight($addEllipsis($highlightedTitle, $title));
+        }
+        if (!empty($title)) {
+            $escapeHtml = $this->getView()->plugin('escapeHtml');
+            $truncate = $this->getView()->plugin('truncate');
+            return $escapeHtml($truncate($title, $maxLength));
+        }
+        $transEsc = $this->getView()->plugin('transEsc');
+        return $transEsc('Title not available');
+    }
+
+    /**
      * Get the name of the controller used by the record route.
      *
      * @return string
