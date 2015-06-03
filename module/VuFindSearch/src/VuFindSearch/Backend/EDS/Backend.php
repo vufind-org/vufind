@@ -39,9 +39,6 @@ use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\Exception\BackendException;
 
-use Zend\Log\LoggerInterface;
-use VuFindSearch\Backend\EDS\Response\RecordCollection;
-use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 
 use Zend\Cache\Storage\Adapter\AbstractAdapter as CacheAdapter;
 use Zend\Config\Config;
@@ -177,7 +174,7 @@ class Backend extends AbstractBackend
         }
         if (isset($config->EBSCO_Account->organization_id)) {
             $this->orgId = $config->EBSCO_Account->organization_id;
-        }        
+        }
 		if (isset($config->EBSCO_Account->local_ip_addresses)) {
             $this->localips = $config->EBSCO_Account->local_ip_addresses;
         }
@@ -213,7 +210,7 @@ class Backend extends AbstractBackend
 
         // create query parameters from VuFind data
         $queryString = !empty($query) ? $query->getAllTerms() : '';
-        $paramsStr = implode('&', null !== $params ? $params->request() : array());
+        $paramsStr = implode('&', null !== $params ? $params->request() : []);
         $this->debugPrint(
             "Query: $queryString, Limit: $limit, Offset: $offset, "
             . "Params: $paramsStr"
@@ -255,7 +252,7 @@ class Backend extends AbstractBackend
                 }
                 break;
             default:
-                $response = array();
+                $response = [];
                 break;
             }
         } catch(Exception $e) {
@@ -321,7 +318,7 @@ class Backend extends AbstractBackend
                 throw $e;
             }
         }
-        $collection = $this->createRecordCollection(array('Records'=> $response));
+        $collection = $this->createRecordCollection(['Records' => $response]);
         $this->injectSourceIdentifier($collection);
         return $collection;
     }
@@ -335,13 +332,13 @@ class Backend extends AbstractBackend
      */
     protected function paramBagToEBSCOSearchModel(ParamBag $params)
     {
-        $params= $params->getArrayCopy();
-        $options = array();
+        $params = $params->getArrayCopy();
+        $options = [];
         // Most parameters need to be flattened from array format, but a few
         // should remain as arrays:
-        $arraySettings = array(
+        $arraySettings = [
             'query', 'facets', 'filters', 'groupFilters', 'rangeFilters', 'limiters'
-        );
+        ];
         foreach ($params as $key => $param) {
             $options[$key] = in_array($key, $arraySettings)
                 ? $param : $param[0];
@@ -450,7 +447,7 @@ class Backend extends AbstractBackend
             $results = $this->client->authenticate($username, $password, $orgId);
             $token = $results['AuthToken'];
             $timeout = $results['AuthTimeout'] + time();
-            $authTokenData = array('token' => $token, 'expiration' => $timeout);
+            $authTokenData = ['token' => $token, 'expiration' => $timeout];
             $this->cache->setItem('edsAuthenticationToken', $authTokenData);
         }
         return $token;
@@ -518,25 +515,24 @@ class Backend extends AbstractBackend
      *
      * @return string 'y'|'n'
      */
-
 	private function validAuthIP($listIPs) {
 
-		try 
+		try
 		{
-			if ($listIPs=="") {
+			if ($listIPs == "") {
 				return false;
 			}
 			
 			$m = explode(",",$listIPs);
-			if (count(m)==0) {
+			if (count(m) == 0) {
 				return false;
 			}
 			
 			// get the ip address of the request
 			$ip_address = $_SERVER['REMOTE_ADDR'];
 			foreach($m as $ip) {
-			  $v=trim($ip);
-			  if ( strcmp(substr($ip_address,0,strlen($v)),$v)==0)   {
+			  $v = trim($ip);
+			  if (strcmp(substr($ip_address,0,strlen($v)),$v) == 0)   {
 				// inside of ip address range of customer
 				return true;
 			  }
@@ -546,7 +542,7 @@ class Backend extends AbstractBackend
 		}
 		catch(Exception $e)
 		{
-			$this->debugPrint("validAuthIP ex: ".$e);
+			$this->debugPrint("validAuthIP ex: " . $e);
 			return false;
 		}
 	  
@@ -554,12 +550,12 @@ class Backend extends AbstractBackend
 	
     protected function isAuthenticationIP()
     {
-		$listIPs="";
-		$this->debugPrint("isAuthenticationIP-0 : ".$this->localips);
-		$res=$this->validAuthIP($this->localips);
-		$this->debugPrint("isAuthenticationIP-1 : ".$res);
+		$listIPs = "";
+		$this->debugPrint("isAuthenticationIP-0 : " . $this->localips);
+		$res = $this->validAuthIP($this->localips);
+		$this->debugPrint("isAuthenticationIP-1 : " . $res);
 		return $res;
-    }		
+    }
 
 	
 	 protected function isGuest()
@@ -568,7 +564,7 @@ class Backend extends AbstractBackend
         // using IP Authentication.
         // If IP Authentication is used, then don't treat them as a guest.
 		
-		//RF : 2015/05/01 - deactivated 
+		//RF : 2015/05/01 - deactivated
         //if ($this->ipAuth) {
         //    return 'n';
         //}
@@ -592,7 +588,7 @@ class Backend extends AbstractBackend
      *
      * @return string
      */
-    public function createSession($isGuest, $profile='')
+    public function createSession($isGuest, $profile = '')
     {
         try {
             $authToken = $this->getAuthenticationToken();
@@ -654,7 +650,7 @@ class Backend extends AbstractBackend
 
                 }
             } else {
-                $response = array();
+                $response = [];
             }
         }
         return $response;

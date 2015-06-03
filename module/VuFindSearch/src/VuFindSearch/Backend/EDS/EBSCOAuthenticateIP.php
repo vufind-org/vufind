@@ -32,8 +32,8 @@
 		// get the ip address of the request
 		$ip_address = trim($_SERVER['REMOTE_ADDR']);
 		foreach($m as $ip) {
-		  $v=trim($ip);
-		  if ( strcmp(substr($ip_address,0,strlen($v)),$v)==0)   {
+		  $v = trim($ip);
+		  if (strcmp(substr($ip_address,0,strlen($v)),$v) == 0)   {
 			// inside of ip address range of customer
 			return true;
 		  }
@@ -42,6 +42,3 @@
 		return false;
 	  
 	}
-
-
-?>
