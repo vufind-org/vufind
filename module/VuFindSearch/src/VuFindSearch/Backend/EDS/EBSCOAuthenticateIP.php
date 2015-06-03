@@ -26,19 +26,20 @@
  * @license  http://www.apache.org/licenses/LICENSE-2.0.txt Apache license
  * @link     http://vufind.org   Main Site
  */
-	function validAuthIP($listIPs) {
+function validAuthIP($listIPs) 
+{
 
-		$m = explode(",",$listIPs);
-		// get the ip address of the request
-		$ip_address = trim($_SERVER['REMOTE_ADDR']);
-		foreach($m as $ip) {
-		  $v = trim($ip);
-		  if (strcmp(substr($ip_address,0,strlen($v)),$v) == 0)   {
-			// inside of ip address range of customer
-			return true;
-		  }
-		}
-		// if not found, return false, not authenticated by IP address
-		return false;
-	  
-	}
+    $m = explode(",", $listIPs);
+    // get the ip address of the request
+    $ip_address = trim($_SERVER['REMOTE_ADDR']);
+    foreach($m as $ip) {
+        $v = trim($ip);
+        if (strcmp(substr($ip_address, 0, strlen($v)), $v) == 0) {
+            // inside of ip address range of customer
+            return true;
+        }
+    }
+    // if not found, return false, not authenticated by IP address
+    return false;
+      
+}

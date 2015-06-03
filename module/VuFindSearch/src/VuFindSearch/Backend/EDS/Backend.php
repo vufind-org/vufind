@@ -132,7 +132,7 @@ class Backend extends AbstractBackend
      * @var SessionContainer
      */
     protected $session;
-	
+    
     /**
      * Session container
      *
@@ -175,7 +175,7 @@ class Backend extends AbstractBackend
         if (isset($config->EBSCO_Account->organization_id)) {
             $this->orgId = $config->EBSCO_Account->organization_id;
         }
-		if (isset($config->EBSCO_Account->local_ip_addresses)) {
+        if (isset($config->EBSCO_Account->local_ip_addresses)) {
             $this->localips = $config->EBSCO_Account->local_ip_addresses;
         }
 
@@ -379,7 +379,6 @@ class Backend extends AbstractBackend
      * @param QueryBuilder $queryBuilder Query builder
      *
      * @return void
-     *
      */
     public function setQueryBuilder(QueryBuilder $queryBuilder)
     {
@@ -515,63 +514,64 @@ class Backend extends AbstractBackend
      *
      * @return string 'y'|'n'
      */
-	private function validAuthIP($listIPs) {
+    private function validAuthIP($listIPs) 
+    {
 
-		try
-		{
-			if ($listIPs == "") {
-				return false;
-			}
-			
-			$m = explode(",",$listIPs);
-			if (count(m) == 0) {
-				return false;
-			}
-			
-			// get the ip address of the request
-			$ip_address = $_SERVER['REMOTE_ADDR'];
-			foreach($m as $ip) {
-			  $v = trim($ip);
-			  if (strcmp(substr($ip_address,0,strlen($v)),$v) == 0)   {
-				// inside of ip address range of customer
-				return true;
-			  }
-			}
-			// if not found, return false, not authenticated by IP address
-			return false;
-		}
-		catch(Exception $e)
-		{
-			$this->debugPrint("validAuthIP ex: " . $e);
-			return false;
-		}
-	  
-	}
-	
+        try
+        {
+            if ($listIPs == "") {
+                return false;
+            }
+            
+            $m = explode(",", $listIPs);
+            if (count(m) == 0) {
+                return false;
+            }
+            
+            // get the ip address of the request
+            $ip_address = $_SERVER['REMOTE_ADDR'];
+            foreach($m as $ip) {
+                $v = trim($ip);
+                if (strcmp(substr($ip_address, 0, strlen($v)), $v) == 0) {
+                    // inside of ip address range of customer
+                    return true;
+                }
+            }
+            // if not found, return false, not authenticated by IP address
+            return false;
+        }
+        catch(Exception $e)
+        {
+            $this->debugPrint("validAuthIP ex: " . $e);
+            return false;
+        }
+      
+    }
+    
     protected function isAuthenticationIP()
     {
-		$listIPs = "";
-		$this->debugPrint("isAuthenticationIP-0 : " . $this->localips);
-		$res = $this->validAuthIP($this->localips);
-		$this->debugPrint("isAuthenticationIP-1 : " . $res);
-		return $res;
+        $listIPs = "";
+        $this->debugPrint("isAuthenticationIP-0 : " . $this->localips);
+        $res = $this->validAuthIP($this->localips);
+        $this->debugPrint("isAuthenticationIP-1 : " . $res);
+        return $res;
     }
 
-	
-	 protected function isGuest()
+    
+    protected function isGuest()
     {
         // If the user is not logged in, then treat them as a guest. Unless they are
         // using IP Authentication.
         // If IP Authentication is used, then don't treat them as a guest.
-		
-		//RF : 2015/05/01 - deactivated
+        
+        //RF : 2015/05/01 - deactivated
         //if ($this->ipAuth) {
         //    return 'n';
         //}
-		
-		if ($this->isAuthenticationIP()) {
-			return 'n';
-		}
+        
+        if ($this->isAuthenticationIP()) {
+            return 'n';
+        }
         if (isset($this->authManager)) {
             return $this->authManager->isLoggedIn() ? 'n' : 'y';
         }

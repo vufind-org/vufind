@@ -109,7 +109,7 @@ class EDS extends SolrDefault
     }
 
     /**
-     * obtain an array or authors indicated on the record
+     * Obtain an array or authors indicated on the record
      *
      * @return array
      */
@@ -253,7 +253,7 @@ class EDS extends SolrDefault
                 if (isset($link['Type']) && 'pdflink' == $link['Type']) {
                     return true;
                 }
-				// 2015-05-10 RF - added support for pdf
+                // 2015-05-10 RF - added support for pdf
                 if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
                     return true;
                 }
@@ -276,7 +276,7 @@ class EDS extends SolrDefault
                 if (isset($link['Type']) && 'pdflink' == $link['Type']) {
                     return "pdflink"; // return PDF to call retrieve method after
                 }
-				if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
+                if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
                     return "pdflink"; // return PDF to call retrieve method after
                 }
             }
@@ -368,7 +368,8 @@ class EDS extends SolrDefault
     {
         $authors = [];
         if (isset($this->fields['RecordInfo']['BibRecord']['BibRelationships'])) {
-            $bibRels = & $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
+            $bibRels
+                = & $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
         }
         if (isset($bibRels['HasContributorRelationships'])
             && !empty($bibRels['HasContributorRelationships'])
@@ -391,7 +392,7 @@ class EDS extends SolrDefault
     {
         $authors = $this->getAuthors();
         return empty($authors) ? '' : $authors[0];
-		
+        
     }
 
     /**
@@ -579,6 +580,7 @@ class EDS extends SolrDefault
      * @param string $format Export format
      *
      * @return bool
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function exportDisabled($format)
