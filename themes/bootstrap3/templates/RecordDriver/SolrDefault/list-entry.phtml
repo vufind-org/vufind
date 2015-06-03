@@ -25,17 +25,8 @@
   <div class="col-xs-6 middle">
     <div class="resultItemLine1">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <?
-        $summHighlightedTitle = $this->driver->getHighlightedTitle();
-        $summTitle = $this->driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-            echo $this->transEsc('Title not available');
-        }
-      ?></a>
+        <?=$this->record($this->driver)->getTitleHtml()?>
+      </a>
     </div>
 
     <div class="resultItemLine2">

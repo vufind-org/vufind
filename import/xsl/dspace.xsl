@@ -8,6 +8,7 @@
     <xsl:output method="xml" indent="yes" encoding="utf-8"/>
     <xsl:param name="institution">My University</xsl:param>
     <xsl:param name="collection">DSpace</xsl:param>
+    <xsl:param name="urlPrefix">http</xsl:param>
     <xsl:template match="oai_dc:dc">
         <add>
             <doc>
@@ -138,7 +139,7 @@
 
                 <!-- URL -->
                <xsl:for-each select="//dc:identifier">
-                   <xsl:if test="substring(., 1, 21) = &quot;http://hdl.handle.net&quot;">
+                   <xsl:if test="substring(., 1, string-length($urlPrefix)) = $urlPrefix">
                        <field name="url">
                            <xsl:value-of select="." />
                        </field>

@@ -145,7 +145,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $feed->setOpensearchTotalResults($results->getResultTotal());
         $feed->setOpensearchItemsPerPage($params->getLimit());
         $feed->setOpensearchStartIndex($results->getStartRecord() - 1);
-        $feed->setOpensearchSearchTerms($params->getQuery()->getString());
+        $feed->setOpensearchSearchTerms($params->getQuery()->getAllTerms());
 
         $records = $results->getResults();
         foreach ($records as $current) {

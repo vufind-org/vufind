@@ -365,7 +365,7 @@ class Upgrade
         // If target file already exists, back it up:
         $outfile = $this->newDir . '/' . $filename;
         $bakfile = $outfile . '.bak.' . time();
-        if (!copy($outfile, $bakfile)) {
+        if (file_exists($outfile) && !copy($outfile, $bakfile)) {
             throw new FileAccessException(
                 "Error: Could not copy {$outfile} to {$bakfile}."
             );
