@@ -1,581 +1,404 @@
-@charset "utf-8";
-/* Note: replace #c60f13 with the standard alert color of your customized Foundation download */
+meta.foundation-version { font-family: "/{{VERSION}}/"; }
 
-html{overflow:-moz-scrollbars-vertical !important;} /* Avoid Mozilla horizontal jumps upon dropdown content extending past bottom of browser window */
+meta.foundation-mq-small { font-family: "/only screen/"; width: 0; }
 
-html {font-size: 16px} /* Avoid issues with users changing default browser font size */
+meta.foundation-mq-small-only { font-family: "/only screen and (max-width: 40em)/"; width: 0; }
 
-/* Basic settings taken over from BS3 */
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-main,
-nav,
-section,
-summary { display: block }
+meta.foundation-mq-medium { font-family: "/only screen and (min-width:40.0625em)/"; width: 40.0625em; }
 
-audio,
-canvas,
-progress,
-video { display: inline-block; vertical-align: baseline }
+meta.foundation-mq-medium-only { font-family: "/only screen and (min-width:40.0625em) and (max-width:64em)/"; width: 40.0625em; }
 
-audio:not([controls]) { display: none; height: 0 }
+meta.foundation-mq-large { font-family: "/only screen and (min-width:64.0625em)/"; width: 64.0625em; }
 
-[hidden],
-template { display: none }
+meta.foundation-mq-large-only { font-family: "/only screen and (min-width:64.0625em) and (max-width:90em)/"; width: 64.0625em; }
 
-mark,
-.highlight { background:#ff0; color:#000 }
+meta.foundation-mq-xlarge { font-family: "/only screen and (min-width:90.0625em)/"; width: 90.0625em; }
 
-label {margin-bottom: .3rem; display: inline-block}
+meta.foundation-mq-xlarge-only { font-family: "/only screen and (min-width:90.0625em) and (max-width:120em)/"; width: 90.0625em; }
 
-pre {display: block;	padding: .5rem;margin: 0 0 .75rem;font-size: .875rem;line-height: 1.42857;word-break: break-all;word-wrap: break-word;color: #333;background-color: #F5F5F5;	border: 1px solid #CCC; }
+meta.foundation-mq-xxlarge { font-family: "/only screen and (min-width:120.0625em)/"; width: 120.0625em; }
 
-/* Basic settings taken over from BS3 - end */
+meta.foundation-data-attribute-namespace { font-family: false; }
+
+/* Basic settings taken over from BS3 - REMOVED. Part of normalize.css */
+html { overflow: -moz-scrollbars-vertical !important; /* Avoid Mozilla horizontal jumps upon dropdown content extending past bottom of browser window */ }
+
+body { background-color: #F9F9F9; }
+
+.main.panel { background: #fff; }
+
+/* ICONS */
+.fa-grid::before { content: "\f00a"; }
+
+.fa-visual::before { content: "\f1fe"; }
 
 /* LISTS */
-    .list-unstyled{padding-left:0;list-style:none none;}
-/* LISTS end */
+.list-unstyled { list-style: none none; padding-left: 0; }
+ul.list-unstyled { margin-left:0; }
 
 /* TABLES */
-    table{border-collapse: collapse;border-spacing: 0; max-width: 100%}
-    .table {width:100%;word-wrap: break-word;margin-bottom: 1.25rem;border-spacing: 0;border-collapse: collapse !important;}
-    .alphabrowse.table {margin-bottom: 0;	table-layout: fixed;}
-    .citation .pace-car th,.citation .pace-car td{border: 0;padding: 0	}
-    .citation th{text-align: right}
+.alphabrowse.table { margin-bottom: 0; table-layout: fixed; }
+
+.citation .pace-car th, .citation .pace-car td { border: 0; padding: 0; }
+
+.citation th { text-align: right; }
 
 /*
-    table col[class*="col-"]{position: static;float: none;display: table-column}
-    table td[class*="col-"],table th[class*="col-"]{position: static;float: none;display: table-cell	}
+table col[class*="col-"]{position: static;float: none;display: table-column}
+table td[class*="col-"],table th[class*="col-"]{position: static;float: none;display: table-cell	}
 */
-/* TABLES - end */
+/* TABLES - END */
 
 /* MODALS */
-    /* legacy BS modals */ /* copied from BS compiles.css + adapted slightly - replace when FNDTN modal is ready */
-    .modal-open {overflow: hidden;}
-    .modal {display: none;overflow: auto;overflow-y: scroll;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 1050;-webkit-overflow-scrolling: touch;outline: 0}
-    .modal.fade .modal-dialog {-webkit-transform: translate(0, -25%);-ms-transform: translate(0, -25%);transform: translate(0, -25%);-webkit-transition: -webkit-transform 0.3s ease-out;-moz-transition: -moz-transform 0.3s ease-out;-o-transition: -o-transform 0.3s ease-out;transition: transform 0.3s ease-out	}
-    .modal.in .modal-dialog {-webkit-transform: translate(0, 0);-ms-transform: translate(0, 0);transform: translate(0, 0)}
-    .modal-dialog {position: relative;width: auto;margin: .75rem}
-    .modal-content {position: relative;background-color: #fff;border: 1px solid #999;border: 1px solid rgba(0,0,0,0.2);-webkit-box-shadow: 0 .25rem .5rem rgba(0,0,0,0.5);box-shadow: 0 .25rem .5rem rgba(0,0,0,0.5);background-clip: padding-box;outline: none}
-    .modal-backdrop {position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 1040;background-color: #000}
-    .modal-backdrop.fade {opacity: 0;filter: alpha(opacity=0)}
-    .modal-backdrop.in {opacity: .5;filter: alpha(opacity=50)}
-    .modal-header {padding: 1rem;border-bottom: 1px solid #e5e5e5;min-height: 16.25rem}
-    .modal-header .close { margin-top: -2px }
-    .modal-title {margin: 0;line-height: 1.42857143}
-    .modal-body {position: relative;padding: 1.25rem}
-    .modal-footer {margin-top: 15px;padding: 19px 20px 20px;text-align: right;border-top: 1px solid #e5e5e5}
-    .modal-footer .button + .button {	margin-left: 5px;margin-bottom: 0	}
-    .modal-footer .button-group .button + .button { margin-left: -1px }
-    .modal-footer .button-block + .button-block { margin-left: 0 }
-    .modal-footer:before, .modal-footer:after {content: " ";display: table}
-    .modal-footer:after { clear: both }
-    #modal .modal-body > h4:first-child { display: none }
-    #modal .alert-box {margin-right: 1rem}
-    #modal button.close {margin-right: 1rem}
-    /* legacy BS modals - end */
+#modal .close-reveal-modal { right: -2.5rem; color: #fff; }
 
-/* MODALS - end */
+/* MODALS - END */
+
 /*LIST GROUPS - do not exist in FNDTN */
-    .list-group {margin-left:0;padding-left:0;margin-bottom:1rem;}
-    .list-group-item {position: relative;display: block;padding: .75rem 1rem;margin-bottom: -1px;background-color: #fff;border: 1px solid #ddd;border-top: 0;}
-    .list-group-item:last-child {margin-bottom: 0;}
-    a.list-group-item {color: #555}
-    a.list-group-item .list-group-item-heading {color: #333}
-    a.list-group-item:hover,
-    a.list-group-item:focus {text-decoration: none;background-color: #f5f5f5}
-    a.list-group-item.active,
-    a.list-group-item.active:hover,
-    a.list-group-item.active:focus {z-index: 2;color: #fff !important;background-color: #2ba6cb;border-color: #2ba6cb}
-    a.list-group-item.active .list-group-item-heading,
-    a.list-group-item.active:hover .list-group-item-heading,
-    a.list-group-item.active:focus .list-group-item-heading {color: inherit}
-    a.list-group-item.active .list-group-item-text,
-    a.list-group-item.active:hover .list-group-item-text,
-    a.list-group-item.active:focus .list-group-item-text {color: #61b6d9}
-    .list-group-item-success {color: #5da423;background-color: #dff0d8}
-    a.list-group-item-success {color: #5da423}
-    a.list-group-item-success .list-group-item-heading {color: inherit}
-    a.list-group-item-success:hover,
-    a.list-group-item-success:focus {color: #5da423;background-color: #d0e9c6}
-    a.list-group-item-success.active,
-    a.list-group-item-success.active:hover,
-    a.list-group-item-success.active:focus {color: #fff;background-color: #5da423;border-color: #5da423}
-    .list-group-item-info {color: #a0d3e8;background-color: #d9edf7}
-    a.list-group-item-info {color: #a0d3e8}
-    a.list-group-item-info .list-group-item-heading {color: inherit}
-    a.list-group-item-info:hover,
-    a.list-group-item-info:focus {color: #a0d3e8;background-color: #c4e3f3}
-    a.list-group-item-info.active,
-    a.list-group-item-info.active:hover,
-    a.list-group-item-info.active:focus {color: #fff;background-color: #a0d3e8;border-color: #a0d3e8}
-    .list-group-item-warning {color: #f08a24;background-color: #fcf8e3}
-    a.list-group-item-warning {color: #f08a24}
-    a.list-group-item-warning .list-group-item-heading {color: inherit}
-    a.list-group-item-warning:hover,
-    a.list-group-item-warning:focus {color: #f08a24;background-color: #faf2cc}
-    a.list-group-item-warning.active,
-    a.list-group-item-warning.active:hover,
-    a.list-group-item-warning.active:focus {color: #fff;background-color: #f08a24;border-color: #f08a24}
-    .list-group-item-danger {color: #c60f13;background-color: #f2dede}
-    a.list-group-item-danger {color: #c60f13}
-    a.list-group-item-danger .list-group-item-heading {color: inherit}
-    a.list-group-item-danger:hover,
-    a.list-group-item-danger:focus {color: #c60f13;background-color: #ebcccc}
-    a.list-group-item-danger.active,
-    a.list-group-item-danger.active:hover,
-    a.list-group-item-danger.active:focus {color: #fff;background-color: #c60f13;border-color: #c60f13}
-    .list-group-item-heading {margin-top: 0;margin-bottom: .25rem}
-    .list-group-item-text {	margin-bottom: 0;line-height: 1.3}
-    .accordion {margin-bottom: 6px; margin-left: 0;}
-    .side-nav {padding: 0;}
-    .side-nav li {margin: 0;}
-    .sidebar .accordion-navigation.active > a {border-bottom: 1px solid #ddd;}
+/* -- Removed for Foundation features -- */
+.sidebar .accordion { margin-left: 0; }
 
-    /* CHECK relevance of the following - in use? - Fixme */
-    .panel > .list-group {margin-bottom: 0}
-    .panel > .list-group .list-group-item {border-width: 1px 0;}
-    .panel > .list-group:first-child .list-group-item:first-child {border-top: 0;}
-    .panel > .list-group:last-child .list-group-item:last-child {border-bottom: 0;}
-    .panel h1 + .list-group .list-group-item:first-child,
-    .panel h2 + .list-group .list-group-item:first-child,
-    .panel h3 + .list-group .list-group-item:first-child,
-    .panel h4 + .list-group .list-group-item:first-child,
-    .panel h5 + .list-group .list-group-item:first-child{border-top-width: 0}
+.sidebar .accordion .content { border: 1px solid #e8e8e8; border-bottom: 0; padding: 0; }
 
-    label.list-group-item {font-weight: normal;margin-top: 0;padding-left: 2rem}
-    .list-group-item.title {	font-weight: normal}
+.sidebar .accordion-navigation:not(.active), .sidebar .filters, .sidebar .side-nav { margin-bottom: 6px !important; }
 
-    .browse.list-group .list-group-item {word-wrap: break-word}
-    .browse.list-group .list-group-item.view-record {border-top: 0;font-size: .75rem;padding: .1rem .25rem;text-align: right}
+.sidebar .side-nav { padding: 0; }
 
-    .list-group-item.active i.fa,
-    .badge i.fa {cursor: inherit}
-    /* CHECK relevance 2 here - Fixme */
-/* List-groups - end */
+.sidebar .side-nav li { border-bottom: 1px solid #e8e8e8; margin: 0; }
 
-/* Badges = round labels = also used as blocks with number of items in facets - we take the roundness out */
-    .badge{padding:.25em .5em;display:inline-block;white-space:nowrap;color:#fff;background:#999;font-size:.85em;line-height:1.5;text-align:center;min-width:.75em;vertical-align:baseline;border-radius:0;}
-    .badge:empty {display: none}
-    .button .badge {position: relative;top: -1px; margin-left:.5rem;}
-    .button.small .badge {top: 0;padding: 1px 4px} /* Check if button.small exists - Fixme */
-    a.badge:hover,
-    a.badge:focus {	color: #fff;text-decoration: none;cursor: pointer}
-    a.list-group-item.active > .badge,
-    .sub-nav > .active > a > .badge {color: #2ba6cb;background-color: #fff}
-    .sub-nav > li > a > .badge {margin-left: 4px}
-    .badge a {color: #FFF}
-/* Badges - end */
+.sidebar .side-nav li .active {background-color: #008CBA; color: #fff !important; z-index: 2;  }
 
-/* Help blocks *//* short messages with hints such as eg. my account - favourites - edit: 'separate tags ... with comma' or advanced search - 'search for' */
-    .help-block{display: block;	color: #4D4D4D; font-size: .875rem}
-/* Help blocks - end */
+.sidebar .side-nav li .active:hover { background-color: #f08a24; }
+
+.sidebar .side-nav li .active:focus { background-color: #a0d3e8; }
+
+/* CHECK relevance of the following - in use? - Fixme */
+.panel > .list-group { margin-bottom: 0; }
+
+.panel > .list-group .list-group-item { border-width: 1px 0; }
+
+.panel > .list-group:first-child .list-group-item:first-child { border-top: 0; }
+
+.panel > .list-group:last-child .list-group-item:last-child { border-bottom: 0; }
+
+.panel h1 + .list-group .list-group-item:first-child, .panel h2 + .list-group .list-group-item:first-child, .panel h3 + .list-group .list-group-item:first-child, .panel h4 + .list-group .list-group-item:first-child, .panel h5 + .list-group .list-group-item:first-child { border-top-width: 0; }
+
+label.list-group-item { font-weight: normal; margin-top: 0; padding-left: 2rem; }
+
+.list-group-item.title { font-weight: normal; }
+
+.browse.list-group .list-group-item { word-wrap: break-word; }
+
+.browse.list-group .list-group-item.view-record { border-top: 0; font-size: .75rem; padding: 0.1rem 0.25rem; text-align: right; }
+
+.list-group-item.active i.fa, .badge i.fa { cursor: inherit; }
+/* CHECK relevance 2 here - in use? - Fixme */
+
+/* List-groups - END */
+
+/* Help blocks */
+/* short messages with hints such as eg. my account - favourites - edit: 'separate tags ... with comma' or advanced search - 'search for' */
+.help-block { color: #4D4D4D; display: block; font-size: .875rem; }
+
+/* Help blocks - END */
 
 /* Link button - a 'deemphasized' BS button that looks like a link but has button behavior, original btn-link, used only in auth/abstractbase/login.phtml. */
-.button.link {color: #008cba;font-weight: normal;cursor: pointer;margin:0; padding:0}
-.button.link,
-.button.link:active,
-.button.link[disabled],
-fieldset[disabled] .button.link {	background-color: transparent;-webkit-box-shadow: none;box-shadow: none	}
-.button.link,
-.button.link:hover,
-.button.link:focus,
-.button.link:active { border-color: transparent }
-.button.link:hover,
-.button.link:focus {	color: #0078a0;text-decoration: underline;background-color: transparent}
-.button.link[disabled]:hover,
-fieldset[disabled] .button.link:hover,
-.button.link[disabled]:focus,
-fieldset[disabled] .button.link:focus {color: #999;text-decoration: none}
-/* Link button - end */
+.button.link { -webkit-appearance: none; -moz-appearance: none; background-color: rgba(255, 255, 255, 0); border-color: rgba(204, 204, 204, 0); border-radius: 0; border-style: solid; border-width: 0; color: #333333; cursor: pointer; display: inline-block; font-family: "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif; font-size: 1rem; font-weight: normal; line-height: normal; margin: 0 0 1.25rem; padding: 1rem 2rem 1.0625rem 2rem; position: relative; text-align: center; text-decoration: none; transition: background-color 300ms ease-out; color: #008CBA; }
 
-/* SYMBOLS and ICONS */
-    /* Dropdown symbol (e.g. Language selection */
-        .caret{border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid;margin-left:2px;width:0;display:inline-block;height:0;vertical-align:middle;}
-    /* Dropdown symbol - end */
-    /* Close X */
-    .close {float: right;font-size: 2rem;font-weight: bold;line-height: 1;color: #000;text-shadow: 0px 1px 0px #FFF;opacity: 0.2;margin-top:-1rem; margin-right:0}
-    .close:hover, .close:focus {color: #000;text-decoration: none;cursor: pointer;opacity: 0.5;}
-    /* Close X - END */
-/* SYMBOLS and ICONS - end */
+.button.link:hover, .button.link:focus { background-color: rgba(204, 204, 204, 0); }
+
+.button.link:hover, .button.link:focus { color: #333333; }
+
+.button.link:active, .button.link:focus, .button.link:hover { text-decoration: underline; }
+
+/* Link button - END */
 
 /* SCREENREADER-specific (only 'visible' on screen readers) */
-    .sr-only{width:1px;margin:-1px;padding:0;border:0;position:absolute;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
-    .sr-only{width:auto;margin:0;padding:0;border:0;clip:rect(1px,1px,1px,1px);position:absolute;height:auto;overflow:hidden;}
-    .sr-only:focus{padding:15px 15px;width:auto;display:block;color:#132531;background:#ffffff;font-size:1rem;line-height:20px;text-decoration:none;text-transform:none;clip:auto;height:50px;position:absolute;left:5px;top:5px;z-index:100000;	border-radius:4px;}
-/* SCREENREADER-specific - end */
+.sr-only { border: 0; clip: rect(1px, 1px, 1px, 1px); height: auto; margin: 0; overflow: hidden; padding: 0;  position: absolute; width: auto;}
 
-/* HIDDEN elements, used for Login/-out, accordion-more-collapsibles (facets) etc., */
-    .hidden{display:none !important;visibility:hidden;}
-/* HIDDEN elements - end */
+.sr-only:focus { background: #ffffff;border-radius: 4px; clip: auto; color: #132531; display: block; font-size: 1rem; height: 50px; left: 5px;line-height: 20px; padding: 15px 15px; position: absolute;  text-decoration: none; text-transform: none; top: 5px;  width: auto; z-index: 100000;}
+
+/* SCREENREADER-specific - END */
 
 /* HEADER */
-header{/*min-height:3rem;*/}
+/* Sticky header, TopBar, searchbox, breadcrumbs */
+ /* Do not set height to auto on all or toggle wont work on small devices */
 
-    /* Sticky header, TopBar, searchbox, breadcrumbs */
-/*.top-bar {height: auto}*/ /* Do not set to auto on all or toggle wont work on small devices */
-    .top-bar .name {margin-left: 0}
-    .top-bar #searchForm {margin-left: 81px;}
-    .top-bar #searchForm li.has-form {padding-left: 2px; padding-right: 2px;}
-    .top-bar input,
-    .top-bar select,
-    .top-bar button,
-    .top-bar .button {height: 2rem; position: relative; top: .4rem;}
-    .top-bar button,
-    .top-bar .button {line-height: 1.3rem;}
-    .top-bar select {line-height: .8rem;}
-    .top-bar .has-form {height: auto;}
-    .top-bar.search {height: auto;}
-/*	.top-bar.search input,
-    .top-bar.search select,
-    .top-bar.search button,
-    .top-bar.search .button {top: 0;}*/
-    .top-bar.search .button {line-height: 1.25rem;}
-    .top-bar.search .has-form {height: 2.5rem;}
+.top-bar .name { margin-left: 0; }
 
-    .contain-to-grid .breadcrumbs { max-width: 62.5rem;margin: 0 auto; margin-bottom: 0; } /* max-width to prevent from going full width on scroll-down */
-/*	.contain-to-grid .breadcrumbs { max-width: 60.5rem; } max-width to prevent from going full width on scroll-down */
-    .breadcrumbs.columns {float: none}
-    .breadcrumbs {border-radius: 0; border:none;border-top: 1px solid #656565; background-color: inherit; color: #FFF}
-    .breadcrumbs > * {color:#FFF}
-    .breadcrumbs > * a {color: #d3d3d3}
-    /* Sticky header, TopBar, searchbox, breadcrumbs - end */
+.top-bar #searchForm { margin-left: 81px; }
 
-    /* Searchbox */ /* see also form-control below */
-    .twitter-typeahead{background: #fff;vertical-align: top;width:100%; border: none; padding-top: 0; margin-top: 0}/* is used in search and advanced search - css copied over - CK */
-    .top-bar .twitter-typeahead {line-height: 1.5; top:6px}
-    .top-bar .twitter-typeahead input {top:0}
-    .top-bar #searchForm .columns {top: 0.53125rem;}
-    .twitter-typeahead .tt-hint {display: none !important;}
-    .tt-dropdown-menu {margin-bottom: 1.25rem;padding-left: 0;}
+.top-bar #searchForm li.has-form { height: auto; padding-left: 2px; padding-right: 2px; }
 
-        /* Placement of Search and Advanced buttons */
-        #searchForm .button-group.even-2 li:nth-of-type(2) {float: right}
-        #searchForm .button-group.even-2 li {width:48.25%; }
-        /* Placement of Search and Advanced buttons - end */
+.top-bar input, .top-bar select, .top-bar button, .top-bar .button {height: 2rem; margin-bottom: .4rem; position: relative; top: .4rem; }
 
-        /* Keep filter checkbox */
-        #searchForm .checkbox label {font-size: .75rem; color: #FFF; line-height:0.2; margin-left: .75rem;}
-        /* Keep filter checkbox - end */
+.top-bar button, .top-bar .button { line-height: 1.3rem; }
 
-    .searchHomeContent .panel {padding-left:0; padding-right:0; padding-bottom: 0}
+.top-bar select { line-height: .8rem; }
 
-    .nav.searchbox.large-12.hide-for-large-up {background-color:#333 } /* Dark BG for searchbox when located directly under header */
+.top-bar .has-form, .top-bar.search { height: auto; }
 
-    /* Position of ai and devel checkboxes for developer machines */
-    #searchForm input[type="checkbox"] {margin-left: 1rem; }
-    .top-bar #searchForm input[type="checkbox"] {margin-left: 0; }
-    /* Position of ai and devel checkboxes for developer machines */
-    /* Searchbox - end */
+.top-bar .has-form input, .top-bar .has-form select, .top-bar .has-form button, .top-bar .has-form .button, .top-bar.search input, .top-bar.search select, .top-bar.search button, .top-bar.search .button { top: 0; }
 
-    /* Advanced Search: search term insert */
-    #top-srchbx .tabs-content {border: none;}
-    p.adv_search_terms {width:100%;padding: .35rem .5rem; margin-top:.25rem; margin-bottom: .25rem; background-color: #f1f1f1; border: 1px solid #ccc; font-size: .80rem }
-    ul.adv_search_links {list-style: none}
-    .top-bar-section .adv_search_links {float: left; margin-bottom: 1rem}
-    .adv_search_links li { border: 1px solid #ccc}
-    .top-bar-section .adv_search_links > a {font-size: .80rem}
+.top-bar .has-form .button, .top-bar.search .button { line-height: 1.25rem; }
 
-    /* Advanced Search: search term insert - END */
+.top-bar .has-form li.has-form, .top-bar.search li.has-form { height: 2.5rem; }
 
-/* HEADER end */
+.contain-to-grid .breadcrumbs { margin: 0 auto; margin-bottom: 0; max-width: 62.5rem; }/* max-width to prevent from going full width on scroll-down */
+
+.breadcrumbs.columns { float: none; }
+
+.breadcrumbs { background-color: inherit; border: none; border-radius: 0; border-top: 1px solid #666666; color: #fff; }
+
+.breadcrumbs > * { color: #fff; }
+
+.breadcrumbs > * a { color: #DDDDDD; }
+
+/* Sticky header, TopBar, searchbox, breadcrumbs - END */
+/* Searchbox */
+/* see also form-control below */
+.twitter-typeahead { background: #fff; border: none;  height: 32px; margin-top: 0; padding-top: 0; vertical-align: top; width: 100%; } /* Adjust height - Fixme CK */
+
+/* is used in search and advanced search - CK */
+.top-bar .twitter-typeahead { line-height: 1.5; }
+
+.top-bar .twitter-typeahead input { top: 0; }
+
+.top-bar .twitter-typeahead { top: 0; }
+
+.tt-hint { color: #CCCCCC; }
+
+.tt-dropdown-menu {background-color: #FFFFFF; border: 1px solid #CCCCCC; margin-top: 2px; width: 464px; } /* Adjust width - Fixme CK */
+
+.tt-suggestion { border-bottom: 1px solid #CCCCCC; line-height: 24px; padding: 6px 20px 4px; } /* Adjust padding + line height - Fixme CK */
+
+.tt-suggestion:last-child { border: 0; }
+
+.tt-suggestion.tt-cursor { background-color: #008CBA; color: #fff; cursor: pointer; }
+
+.tt-suggestion p { font-size: 85% !important; margin: 0; }
+
+/* Placement of Search and Advanced buttons */
+#searchForm .button-group.even-2 li:nth-of-type(2) { float: right; }
+
+#searchForm .button-group.even-2 li { width: 48.25%; }
+
+/* Placement of Search and Advanced buttons - END */
+
+/* Keep filter checkbox */
+#searchForm .checkbox label { color: #FFF; font-size: .75rem; line-height: 0.2; margin-left: .75rem; }
+
+/* Keep filter checkbox - END */
+
+.searchHomeContent .panel { padding-bottom: 0; padding-left: 0; padding-right: 0; }
+
+.nav.searchbox.large-12.hide-for-large-up { background-color: #333333; } /* Dark BG for searchbox when located directly under header */
+
+/* Position of shard checkboxes for developer machines */
+#searchForm input[type="checkbox"] { margin-left: 1rem; }
+
+.top-bar #searchForm input[type="checkbox"] { margin-left: 0; }
+
+/* Position of shard checkboxes for developer machines - END */
+/* Searchbox - END */
+
+/* Advanced Search: search term insert */
+#top-srchbx .tabs-content { border: none; }
+
+p.adv_search_terms { background-color: #f1f1f1; border: 1px solid #ccc; font-size: 0.8rem; margin-bottom: .25rem; margin-top: .25rem; padding: 0.35rem 0.5rem; width: 100%; }
+
+ul.adv_search_links { list-style: none; }
+
+.top-bar-section .adv_search_links { float: left; margin-bottom: 1rem; }
+
+.adv_search_links li { border: 1px solid #ccc; }
+
+.top-bar-section .adv_search_links > a { font-size: .80rem; }
+
+/* Advanced Search: search term insert - END */
+/* HEADER - END */
 
 /* NAVIGATION BAR */
-ul[role=navigation]{list-style:none;}
-/* NAVIGATION BAR end */
+ul[role=navigation] { list-style: none; }
+
+/* NAVIGATION BAR - END */
 
 /* MAIN content area */
-    /* for Searchbox see header, above, for Advanced Search fields see below */
-    #content.panel {padding:1rem}
+/* for Searchbox see header, above, for Advanced Search fields see below */
+#content.panel { padding: 1rem; }
 
-    /* Advanced Search: criterion remove button */
-    #advSearchForm .close {margin-top:-1.5rem; margin-right:-1.5rem; }
-    #advSearchForm .panel {margin-bottom: 1rem}
-    #advSearchForm #limit {margin-top:1.25rem} /* top-align the fields at the bottom of advanced search page */
-    /* Advanced Search: criterion remove button - END */
+/* Advanced Search: criterion remove button */
+#advSearchForm .close { margin-right: -1.5rem; margin-top: -1.5rem; }
 
-    /* List view */
-        /* Rows */
-        .row.result {padding-top: 1rem; padding-bottom: 1rem}
-        .row.result:first-of-type {padding-top: 0}
-        .row.result:nth-of-type(even) {background-color: #eaeaea}
-        /* Rows - end */
+#advSearchForm .panel { margin-bottom: 1rem; }
 
-        /* Limit, sort and select-boxes */
-        .search-controls label {vertical-align: middle; margin-bottom: .9rem}
-        .form-inline.sort label,
-        .form-inline.limit label {/*float: left; margin-right: .25em;*/ font-size: .875em; }
-        /*.form-inline .jumpMenu {max-width: 100%} */
-        .sort select,
-        .limit select { width:auto;}
-        /* Limit, sort and view selector dropdowns - end */
+#advSearchForm #limit { margin-top: 1.25rem; } /* top-align the fields at the bottom of advanced search page */
 
-        /* Bulk action buttons, e.g. favourites list */
-        .bulk-action-buttons {clear: both}
+/* Advanced Search: criterion remove button - END */
 
-        /* Images column */
-        form .row.result .row {margin-left: -1rem;}
-        form .row.result .row .columns,
-        form .row.result .row .column {padding-left: 0 !important;}
-        img.recordcover {height: 100%}
-        /* Images column - end */
+/* List view */
+/* Rows */
+.row.result { padding-bottom: 1rem; padding-top: 1rem; }
 
-        /* Full text links */
-        /* Full text links - end */
+.row.result:first-of-type { padding-top: 0; }
 
-        /* Favourites, Edit and Delete links */
-        .delete.tool,
-        .edit.tool,
-        .save-record,
-        .qrcodeLink,
-        .hierarchyTreeLinkText {font-size: .875rem}
-        /* Favourites and Delete links - end */
-    /* List view - end */
+.row.result:nth-of-type(even) { background-color: #EFEFEF; }
 
-    /* Detail view */
-        /* Page browser */
-        .pager {margin: 0 0 1rem 0; padding: 0; text-align: center; list-style: outside none none;}
-        .pager li {	display: inline;}
-        .pager li.disabled {	display: none;}
-        .pager li:first-of-type {float: left}
-        .pager li:last-of-type {float: right}
-        .pager li > a,
-        .pager li > span {display: inline-block;	padding: .25rem 1rem;}
-        .pager li > a:first-of-type {padding-left: .75rem;}
-        .pager li > a:last-of-type {padding-right: .75rem;}
-        .pager .button:first-of-type {margin-left: 0;}
-        .pager .button:last-of-type {margin-right: 0;}
-        /* Page browser - end */
+/* Rows - END */
 
-        /* Sub-nav with modal links */
-        .main .sub-nav {width: 100%;}
-        .sub-nav dd {margin-left: 0}
-        .sub-nav dd:first-of-type a {padding-left: 0}
-        .sub-nav dt a,
-        .sub-nav dd a {padding: 0.1875rem 1rem 0.1875rem 0}
-        .sub-nav .f-dropdown li a {padding: .35rem .75rem}
-        /* Sub-nav with modal links - END */
+/* Limit, sort and select-boxes */
+.form-inline.sort label, .form-inline.limit label { font-size: .875em; }
 
-        /* Book cover column */
-        .bookimgs {padding-top: .4rem}
-        .bookimgs img {width: 100%}
-        /* Book cover column - end */
+/*.form-inline .jumpMenu {max-width: 100%} */
+.sort select, .limit select { width: 100%; }
 
-        /* Clearing lightboxes for book images */
-        .bookimgs .clearing-blackout {background: none repeat scroll 0 0 rgba(0, 0, 0, 0.45); /*height: 80%; width:80%;margin: 2em 10%; */ }
-        .bookimgs .clearing-blackout .carousel {display: none} /* This is the container for the thumbnails - only useful for multiple images */
-        .bookimgs .clearing-container .visible-img { max-width: 90%; max-height: 70%, border: 2px solid #fff; margin: 2em auto }
-        .bookimgs .clearing-assembled .clearing-container .visible-img {background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7);}
-        .bookimgs .visible-img img {width: auto; height: 100%}
-        .bookimgs .clearing-main-prev,
-        .bookimgs .clearing-main-next {display: none} /* This is the container for the thumbnails - only useful for multiple images */
-        .bookimgs p.clearing-caption {color: #ccc; background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7);}
-        /* Clearing lightboxes - end */
+/* Limit, sort and view selector dropdowns - END */
+/* Bulk action buttons, e.g. favourites list */
+.bulk-action-buttons { clear: both; }
 
-        #content h2 {font-size: 1.6875rem}
+/* Images column */
+form .row.result .row { margin-left: -1rem; }
 
+form .row.result .row .columns, form .row.result .row .column { padding-left: 0 !important; }
 
-    /* Detail view - end */
+img.recordcover { height: 100%; }
 
-    /* Tabs */
-    .tabs {border: 1px solid #DDD; border-bottom: none}
-    .tabs dd > a,
-    .tabs .tab-title > a {padding: .5rem 1rem}
-    .tabs-content {border: 1px solid #DDD; border-top: none;}
-    .tabs-content > .content {padding-left: 1rem; padding-right: 1rem}
-    .tabs-content > .content.active {background:#fff}
+/* Images column - END */
 
-        /* Description, Details tab *//* Note: minimum width = small mobile landscape */
-        #description-tab.content,
-        #details-tab.content{padding:0; }
-        #description-tab table,
-        #details-tab table{padding:0; border:none}
-        .citation .pace-car th,
-        .citation .pace-car td{border: 0;padding: 0}
-        .citation th{text-align: right}
-        #description-tab table tr th,
-        #description-tab table tr td,
-        table.citation tr th,
-        table.citation tr td {padding-left:1rem; padding-right:1rem;vertical-align: top;border-top: 1px solid #DDD; word-wrap: break-word;-moz-hyphens: auto;	-o-hyphens: auto;	-webkit-hyphens: auto;-ms-hyphens: auto;hyphens: auto;}
+/* Favourites, Edit and Delete links */
+.delete.tool, .edit.tool, .save-record, .qrcodeLink, .hierarchyTreeLinkText { font-size: .875rem; }
 
-        /* Details tab - END */
+/* Favourites and Delete links - END */
+/* List view - END */
 
-        /* Hierarchy tab */
-        #hierarchyTreeHolder{border-right: 1px solid #eee;overflow-x: hidden}
-        /* Hierarchy tab - end */
+/* Detail view */
+/* Page browser */
+.pager { list-style: outside none none; margin: 0 0 1rem 0; padding: 0; text-align: center; }
 
-        /* Similar items tab carousel (with Slick carousel) */
-        #similar-items-carousel .hover-overlay {display: block;position: relative;text-align: center;margin: auto;min-width: 30%; min-height: 12rem }
-        #similar-items-carousel .hover-overlay .content { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); color: #FFF; padding: .5em .5em 0}
-        #similar-items-carousel .hover-overlay:hover .content {display: block}
+.pager li { display: inline; }
 
-        .slick-slide {margin: 0 .5rem .5rem.5rem; font-size: .875rem}
-        .slick-slide img {margin-bottom: .5rem;margin-left: auto; margin-right: auto; max-height:12rem; }
+.pager li.disabled { display: none; }
 
-        .slick-prev, .slick-next {background-color: rgba(0, 0, 0, 0.1);/*transparent*/;color: white;height: 3rem;line-height: 4rem;margin-top: -2.5rem;padding:0;position:absolute;text-indent: -9999px !important;top: 50%;width: 2rem;z-index: 10;}
-        .slick-prev {left: -1rem;}
-        .slick-next {right: -1rem;}
-        .slick-prev:hover, .slick-next:hover {background-color: rgba(0, 0, 0, 0.3);}
-        .slick-prev > span, .slick-next > span {border: 10px inset;display: block;height: 0;margin-top: -10px;position: absolute;top: 50%;width: 0;}
-        .slick-prev > span {border-color: transparent #ffffff transparent transparent;border-right-style: solid;}
-        .slick-next > span {border-color: transparent transparent transparent #ffffff;border-left-style: solid;left: 50%;margin-left: -4px;}
-        .slick-prev:hover > span {border-right-color: #ffffff;}
-        .slick-next:hover > span {border-left-color: #ffffff;}
+.pager li:first-of-type { float: left; }
 
-        @media only screen and (max-width: 35.5556em) {
-            .slick-next, .slick-prev {display: none; }
-        }
-        /* Similar items tab carousel - end */
+.pager li:last-of-type { float: right; }
 
-    /* Tabs - end */
+.pager li > a, .pager li > span { display: inline-block; padding: 0.25rem 1rem; }
+ 
+.pager li > a:first-of-type { padding-left: .75rem; }
 
-    /* Forms */
-    legend{display: block;width: 100%;padding: 0;margin-bottom: 1.5rem;line-height: inherit;color: #333;border: 0;border-bottom: 1px solid #e5e5e5	}
-    fieldset {border: none}
-    fieldset legend {background: none}
-    /* the following copied from BS compiles.css + adapted in places */
-    .form-group {margin-bottom: 1rem}
-    .form-horizontal .form-group { margin-bottom: 1em; display: inline-block; clear: both;width: 100%}
-    /*.form-horizontal .form-group:after {clear: both}*/
-    .form-horizontal .control-label,
-    .form-horizontal .radio,
-    .form-horizontal .checkbox,
-    .form-horizontal .radio-inline,
-    .form-horizontal .checkbox-inline { margin-top:0; margin-bottom:0; padding-top: .5em; }
-    .form-horizontal .radio,
-    .form-horizontal .checkbox{min-height: 1.5rem}
-    .form-horizontal .form-group{margin-left: -1rem;margin-right: -1rem}
-    .form-horizontal .form-control-static{padding-top: .5rem}
-    .form-horizontal .has-feedback .form-control-feedback{top: 0;right: 1rem}
-    .form-horizontal .form-group:before,
-    .form-horizontal .form-group:after {content: " ";display: table}
-    .form-horizontal .form-group:after{clear: both}
-    .navbar-form .form-control {display: inline-block;vertical-align: middle;}
+.pager li > a:last-of-type { padding-right: .75rem; }
 
-    .form-control {display: block;height: 2.3125rem;font-size: .875rem;line-height: 1.42857;color: #555;background-color: #FFF;background-image: none;border: 1px solid #CCC;}
-    .form-control:focus {border-color: #66afe9;outline: 0;}
-    .form-control::-moz-placeholder {color: #999;opacity: 1}
-    .form-control:-ms-input-placeholder {color: #999	}
-    .form-control::-webkit-input-placeholder {color: #999}
-    .form-control[disabled],
-    .form-control[readonly],
-    fieldset[disabled] .form-control {cursor: not-allowed;background-color: #eee;opacity: 1}
-    textarea.form-control {height: auto }
-    /* copied from BS compiles.css + adapted in places - end */
-    /* Forms end */
+.pager .button:first-of-type { margin-left: 0; }
 
-    /* Alert boxes */
-    .alert-box ul {font-size: inherit; margin-bottom: 0} /* same font size as alert box */
-    .alert-box.success a {color:#FFF} /* Link colour in alert boxes same as standard link color - fixed here ! */
-    .alert-box.success a:hover,
-    .alert-box.success a:focus {color:#CCC}
-    .alert-box.alert a,
-    .alert-box.alert a:hover,
-    .alert-box.alert a:focus {color: #FF9500}
-    /* Alert boxes - end */
+.pager .button:last-of-type { margin-right: 0; }
 
-    /* Text highlighting */
-    .text-success,
-    .text-error,
-    .text-muted {padding-left: .25em; padding-right: .25em}
-    .text-success {background-color: #43AC6A;border-color: #3A945B;color: #FFF; }
-    .text-alert,
-    .text-error,
-    .text-muted {background-color: #FFF;border-color: #FFF;color: #999}
-    .text-warning { color: #c09853 }
-    a.text-warning:hover,
-    a.text-warning:focus { color: #a47e3c }
-    .text-alert,
-    .text-error { color: #b94a48 }
-    a.text-alert:hover,
-    a.text-alert:focus,
-    a.text-error:hover,
-    a.text-error:focus { color: #953b39 }
-    .text-info { color: #3a87ad }
-    a.text-info:hover,
-    a.text-info:focus { color: #2d6987 }
-    .text-success { color: #468847 }
-    a.text-success:hover,
-    a.text-success:focus { color: #356635 }
-    /* Text highlighting - end */
+/* Page browser - END */
 
-/* MAIN content area - end */
+/* Sub-nav with modal links */
+.main .sub-nav { width: 100%; }
 
+.sub-nav dd { margin-left: 0; }
+
+.sub-nav dd:first-of-type a { padding-left: 0; }
+
+.sub-nav dt a, .sub-nav dd a { padding: 0.1875rem 1rem 0.1875rem 0; }
+
+.sub-nav .f-dropdown li a { padding: 0.35rem 0.75rem; }
+
+/* Sub-nav with modal links - END */
+
+/* Book cover column */
+.bookimgs { padding-top: .4rem; }
+
+.bookimgs img { width: 100%; }
+
+/* Book cover column - END */
+
+/* Clearing lightboxes for book images */
+.bookimgs .clearing-blackout { background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.45); }
+
+.bookimgs .clearing-blackout .carousel { display: none; }
+
+/* This is the container for the thumbnails - only useful for multiple images */
+.bookimgs .clearing-container .visible-img { border: 2px solid #fff; margin: 2em auto; max-height: 70%; max-width: 90%; }
+
+.bookimgs .clearing-assembled .clearing-container .visible-img { background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.7); }
+
+.bookimgs .visible-img img { height: 100%; width: auto; }
+
+.bookimgs .clearing-main-prev, .bookimgs .clearing-main-next { display: none; }
+
+/* This is the container for the thumbnails - only useful for multiple images */
+.bookimgs p.clearing-caption { background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7); color: #ccc; }
+
+/* Clearing lightboxes - END */
+
+#content h2 { font-size: 1.6875rem; }
+
+/* Detail view - END */
+/* Tabs */
+.tabs { border: 1px solid #DDD; border-bottom: none; }
+
+.tabs dd > a, .tabs .tab-title > a { padding: 0.5rem 1rem; }
+
+.tabs-content { border: 1px solid #DDD; border-top: none; }
+
+.tabs-content > .content { padding-left: 1rem; padding-right: 1rem; }
+
+.tabs-content > .content.active { background: #fff; }
+
+/* Hierarchy tab */
+#hierarchyTreeHolder { border-right: 1px solid #eee; overflow-x: hidden; }
+
+/* Hierarchy tab - END */
+
+/* Similar items tab carousel (with Slick carousel) */
+#similar-items-carousel .hover-overlay { display: block; margin: auto; min-height: 12rem; min-width: 30%; position: relative; text-align: center; }
+
+#similar-items-carousel .hover-overlay .content { background: rgba(0,0,0,0.5); color: #FFF; display: none; height: 100%;  left: 0; padding: .5em .5em 0; position: absolute; top: 0; width: 100%; }
+
+#similar-items-carousel .hover-overlay:hover .content { display: block }
+
+.slick-slide { font-size: .875rem; margin: 0 .5rem .5rem.5rem; }
+
+.slick-slide img { margin-bottom: .5rem;margin-left: auto; margin-right: auto; max-height:12rem; }
+
+.slick-prev, .slick-next {background-color: rgba(0, 0, 0, 0.1);color: white;height: 3rem;line-height: 4rem;margin-top: -2.5rem;padding:0;position:absolute;text-indent: -9999px !important;top: 50%;width: 2rem;z-index: 10;}
+
+.slick-prev {left: -1rem;}
+
+.slick-next {right: -1rem;}
+
+.slick-prev:hover, .slick-next:hover {background-color: rgba(0, 0, 0, 0.3);}
+
+.slick-prev > span, .slick-next > span {border: 10px inset;display: block;height: 0;margin-top: -10px;position: absolute;top: 50%;width: 0;}
+
+.slick-prev > span {border-color: transparent #ffffff transparent transparent;border-right-style: solid;}
+
+.slick-next > span {border-color: transparent transparent transparent #ffffff;border-left-style: solid;left: 50%;margin-left: -4px;}
+
+.slick-prev:hover > span {border-right-color: #ffffff;}
+
+.slick-next:hover > span {border-left-color: #ffffff;}
+
+@media only screen and (max-width: 35.5556em) { .slick-next, .slick-prev {display: none; }	}
+/* Similar items tab carousel - END */
+
+/* Tabs - END */
+/* -- Removed for Foundation features -- */
+/* Forms */
+/* Alert boxes */
+/* Text highlighting */
 /* FOOTER */
-footer.panel {padding:1rem}
+footer.panel { padding: 1rem; }
+
 /* FOOTER - end */
 
-/* SIDEBAR, FACETS ETC */ /* MOVE TO MQueries - FIXME */
-.sidebar.columns,
-.sidebar.column{/*padding-right:0;*/} /* use when no padding desired but check with Sidebar on left! */
-.sidebar h4 {font-size: 1rem; /*margin-top: 1.5em*/}
+.radio, .checkbox { display: block; margin-bottom: .7rem; margin-top: .7rem; position: relative; }
 
-        /* Facet header */
-        .sidebar .list-group:not(.filters) .title {cursor: pointer}
-        .sidebar .list-group:not(.filters) .title a.facet-hdr{border-bottom: 1px solid #dddddd}
-        .sidebar .list-group:not(.filters) .title.active a.facet-hdr{border-bottom: none}
-            /* Expand toggle icon */
-            .sidebar .list-group:not(.filters) .title.active a.facet-hdr:after{content: '\25BC'; color:#333}
-            .sidebar .list-group:not(.filters) .title a.facet-hdr:after {content: '\25B2';float: right;color:#333} /* Check float - FIXME */
-            /* Expand toggle icon - end */
-        /* Facet header - end */
+.radio label, .checkbox label { cursor: pointer;  font-weight: normal; line-height: .8rem; margin-bottom: 0; min-height: .8rem; padding-left: 20px; }
 
-        /* List items in sidebar and elsewhere */
-        .list-group-item{padding:.75em 1em;/*margin-bottom: -1px;*/ border-bottom:1px solid #dddddd;display:block;background:#ffffff;position:relative;}
-        li.list-group-item{padding:0;border:1px solid #dddddd;border-bottom:none;}
+.radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] { position: absolute; margin-left: -20px; margin-top: 4px \9; } /* What is \9 for? - Fixme - CK */
 
-        /* Remove-search-filters box */
-            /* Remove-search-filters header */
-            .filters .list-group-item.title {background: #e8e8e8;color: #222;padding: 1rem;display: block;font-size: 1rem; }
-            /* Remove-search-filters header - end */
-        .filters li.list-group-item {border-color: #dddddd;}
-        .filters a.list-group-item {border-left: 1px solid #dddddd; border-right: 1px solid #dddddd}
-        .filters a.list-group-item:last-of-type {border-bottom: 1px solid #dddddd;}
-        /* Remove-search-filters box - end */
-
-        /* Selected filters */
-        a.list-group-item.active,
-        a.list-group-item.active:hover,
-        a.list-group-item.active:focus {z-index: 2;color: #FFF;background-color: #2ba6cb;border-color: #2ba6cb;}
-        /* Selected filters - end */
-
-    .sidebar .accordion .list-group-item{}/*check if also relevant for other Lists in sidebar! - FIXME */
-    .sidebar > .accordion .accordion-navigation > .content{padding:0;}
-
-        /* Similar items */
-        .similar-items li.list-group-item,
-        .related-editions li.list-group-item {padding: 0.75em 1em}
-        /* Similar items - end */
-
-        /* Badges in sidebar */
-        .list-group-item > .badge{float:right;}
-        .list-group-item > .badge + .badge {	margin-right: .25em}/* CHECK relevance - FIXME */
-        /* Badges in sidebar - end */
-    /* List items in sidebar - end */
-
-    /* Publication year with range slider in Sidebar (other slider is in Adv. Srch.) */
-    ul.date-range-slider {margin-left:1rem;margin-right: 1rem}
-    /*ul.date-range-slider > .columns {padding-left: .75em; padding-right: .75em}*/
-    ul.date-range-slider .list-group-item {border: none;}
-    .slider-container{padding-left:0; padding-right:1rem; margin-bottom: 1rem}
-    /* Publication year with range slider - end */
-/* SIDEBAR, FACETS ETC - end */
-
-/* ICONS and SYMBOLS */
-    /* Favorites */
-    .fa-star:hover {color: #ffa500}
-    /* Close facet, close modal, close alert box etc */
-    .fa-times:hover {color:#c60f13}
-    /* RSS subscribe, send per mail, save search in central column */
-    .searchtools > .fa:hover {color:#c60f13}
-    /* Log-out button, Your Account button */
-    .top-bar-section ul li.logoutLink > a {color:#ff0000; }
-    .top-bar-section ul li.logoutOptions a:hover,
-    .top-bar-section ul li.logoutOptions a:focus{color: #ffa500}
-/* Icons and Symbols - end */
+.radio + .radio, .checkbox + .checkbox { margin-top: -5px; }

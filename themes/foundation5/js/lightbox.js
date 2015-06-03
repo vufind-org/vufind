@@ -92,25 +92,11 @@ var Lightbox = {
    */
   titleSet: false,
   changeContent: function(html) {
-    var header = $('#modal .modal-header');
-    if(!Lightbox.titleSet) {
-      var h4 = html.match(/<h4>([^<]*)<\/h4>/);
-      if(h4) {
-        header.find('.modal-title').html(h4[1]);
-      } else {
-        var pLead = html.match(/<p class="lead[^>]*>([^<]*)<\/p>/);
-        if(pLead) {
-          header.find('.modal-title').html(pLead[1]);
-        }
-      }
-      Lightbox.titleSet = false;
+    $('#modal .modal-body').html(html);
+    if (Lightbox.shown === false) {
+      $('#modal').foundation('reveal', 'open');
+      Lightbox.shown = true;
     }
-    if(header.find('.modal-title').html().length == 0) {
-      header.css('border-bottom-width', '0');
-    } else {
-      header.css('border-bottom-width', '1px');
-    }
-    $('#modal .modal-body').html(html).modal({'show':true,'backdrop':false});
     Lightbox.openActions();
   },
 
@@ -118,7 +104,7 @@ var Lightbox = {
    * This is the function you call to manually close the lightbox
    */
   close: function(evt) {
-    $('#modal').modal('hide'); // This event calls closeActions
+    $('#modal').foundation('reveal', 'close'); // This event calls closeActions
   },
   /**
    * This function is attached to the lightbox close event,
@@ -196,7 +182,7 @@ var Lightbox = {
     }
     // If the lightbox isn't visible, fix that
     if(this.shown == false) {
-      $('#modal').modal('show');
+      $('#modal').foundation('reveal', 'open');
       this.shown = true;
     }
   },
@@ -217,7 +203,7 @@ var Lightbox = {
     }
     // If the lightbox isn't visible, fix that
     if(this.shown == false) {
-      $('#modal').modal('show');
+      $('#modal').foundation('reveal', 'open');
       this.shown = true;
     }
     // Create our AJAX request, store it in case we need to cancel later
@@ -331,7 +317,7 @@ var Lightbox = {
    */
   registerForms: function() {
     var $form = $("#modal").find('form');
-    $form.validator();
+    //$form.validator();
     var name = $form.attr('name');
     // Assign form handler based on name
     if(typeof name !== "undefined" && typeof Lightbox.formHandlers[name] !== "undefined") {
@@ -413,7 +399,7 @@ $(document).ready(function() {
    *
    * Yes, the secret's out, our beloved Lightbox is a modal
    */
-  $('#modal').on('hidden.bs.modal', Lightbox.closeActions);
+  $('#modal').on('closed.fndtn.reveal', Lightbox.closeActions);
   /**
    * If a link with the class .modal-link triggers the lightbox,
    * look for a title="" to use as our lightbox title.

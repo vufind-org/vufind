@@ -134,16 +134,9 @@
     </footer>
 </div>
 <!-- MODAL IN CASE WE NEED ONE -->
-<div id="modal" class="modal fade hide-for-print" tabindex="-1" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
-		<div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                <a class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-                    <h4 id="modalTitle" class="modal-title"></h4>
-                </div>
-              <div class="modal-body"><?=$this->transEsc('Loading') ?>&nbsp;...</div>
-            </div>
-    </div>
+<div id="modal" class="reveal-modal medium" data-reveal aria-hidden="true" role="dialog">
+  <div class="modal-body"><?=$this->transEsc('loading') ?>...</div>
+  <a class="close-reveal-modal" aria-label="Close">&#215;</a>
 </div>
 <!-- MODAL IN CASE WE NEED ONE - END -->
 <?=$this->googleanalytics()?>

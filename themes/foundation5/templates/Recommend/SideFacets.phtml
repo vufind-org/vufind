@@ -8,15 +8,15 @@
   $html = '';
   $shown = 0;
   foreach ($checkboxFilters as $current) {
-    $html .= '<label class="checkbox';
+    $html .= '<div class="checkbox';
     if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
       $html .= ' hidden';
     } else {
       $shown ++;
     }
-    $html .= '"><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
+    $html .= '"><label><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
       '. ($current['selected'] ? 'checked="checked"' : '') .' id="'.$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])).'"
-      onclick="document.location.href=\''.($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).'</label>';
+      onclick="document.location.href=\''.($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).'</label></div>';
   }
 ?>
   <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
@@ -26,8 +26,8 @@
 <? $hierarchicalFacetSortOptions = $this->recommend->getHierarchicalFacetSortOptions() ?>
 <? $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
 <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); if (!empty($filterList)): ?>
-  <div class="list-group filters">
-    <div class="list-group-item title"><?=$this->transEsc('Remove Filters')?></div>
+  <div class="filters">
+    <div class="title"><?=$this->transEsc('Remove Filters')?></div>
     <ul class="side-nav">
       <? foreach ($filterList as $field => $filters): ?>
         <? foreach ($filters as $i => $filter): ?>
@@ -45,7 +45,7 @@
               $filter['displayText'] = $this->translate('filter_wildcard');
             }
           ?>
-          <li><a class="list-group-item active" href="<?=$removeLink?>">
+          <li><a class="active" href="<?=$removeLink?>">
             <span class="pull-right"><i class="fa fa-times"></i></span>
             <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?>
           </a></li>
@@ -65,7 +65,7 @@
         <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="content <? if(!in_array($title, $collapsedFacets)): ?> active<? endif ?>">
           <? if (isset($rangeFacets[$title])): ?>
             <ul class="date-range-slider">
-              <li class="list-group-item">
+              <li>
                 <form action="" name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">
                   <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
                   <input type="hidden" name="<?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>range[]" value="<?=$this->escapeHtmlAttr($title)?>"/>
@@ -166,11 +166,11 @@ JS;
             ?>
             <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hide'; ?>
             <? if ($i == 6): ?>
-              <li id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>"><a class="list-group-item" href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
+              <li id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>"><a href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
               <li<? if ($i>5): ?> class="<?=$moreClass ?>"<?endif ?>>
-                <a class="list-group-item active<? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
+                <a class="active<? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
                   <? if($thisFacet['operator'] == 'OR'): ?>
                     <i class="fa fa-check-square-o"></i>
                   <? else: ?>
@@ -182,9 +182,9 @@ JS;
             <? else: ?>
               <? $addURL = $this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator']); ?>
               <? if ($allowExclude): ?>
-                <li class="list-group-item facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
+                <li class="facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
               <? else: ?>
-                <li<? if ($i>5): ?> class="<?=$moreClass ?>"<?endif ?>><a href="<?=$addURL ?>" class="list-group-item facet<?=$thisFacet['operator'] ?>">
+                <li<? if ($i>5): ?> class="<?=$moreClass ?>"<?endif ?>><a href="<?=$addURL ?>" class="facet<?=$thisFacet['operator'] ?>">
               <? endif; ?>
               <span class="label pull-right">
                 <?=$this->localizedNumber($thisFacet['count'])?>
@@ -199,11 +199,11 @@ JS;
                 <i class="fa fa-square-o"></i>
               <? endif; ?>
               <?=$this->escapeHtml($thisFacet['displayText'])?>
-                 </a>
+                  </a>
                 </li>
-            <? endif; ?>
+              <? endif; ?>
           <? endforeach; ?>
-            <? if ($i > 5): ?><li class="<?=$moreClass ?>"><a class="list-group-item" href="javascript:lessFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
+            <? if ($i > 5): ?><li class="<?=$moreClass ?>"><a  href="javascript:lessFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
           <? endif; ?>
           <? if (in_array($title, $hierarchicalFacets)): ?>
             </noscript>

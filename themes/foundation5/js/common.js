@@ -361,7 +361,7 @@ $(document).ready(function() {
       holder.html(template);
     }
 
-    holder.toggleClass('hidden');
+    holder.toggleClass('hide');
 
     return false;
   });

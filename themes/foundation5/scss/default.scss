@@ -1,0 +1,602 @@
+$include-html-classes: false;
+@import "foundation";
+
+@charset "utf-8";
+
+/* Basic settings taken over from BS3 - REMOVED. Part of normalize.css */
+
+html {
+  overflow: -moz-scrollbars-vertical !important;
+  /* Avoid Mozilla horizontal jumps upon dropdown content extending past bottom of browser window */
+  //font-size: 16px; /* Avoid issues with users changing default browser font size */
+}
+
+body {background-color: $snow;}
+
+.main.panel {background: #fff;}
+
+/* ICONS */
+.fa-grid::before   {content: "\f00a";}
+.fa-visual::before {content: "\f1fe";}
+
+/* LISTS */
+.list-unstyled {
+  padding-left: 0;
+  list-style: none none;
+}
+
+/* LISTS end */
+
+/* TABLES */
+.alphabrowse.table {
+  margin-bottom: 0;
+  table-layout: fixed;
+}
+
+.citation .pace-car th,.citation .pace-car td {
+  border: 0;
+  padding: 0;
+}
+
+.citation th {text-align: right;}
+
+/*
+table col[class*="col-"]{position: static;float: none;display: table-column}
+table td[class*="col-"],table th[class*="col-"]{position: static;float: none;display: table-cell	}
+*/
+/* TABLES - end */
+
+/* MODALS */
+#modal .close-reveal-modal {
+  right: -2.5rem;
+  color: #fff;
+}
+/* legacy BS modals */
+
+/* copied from BS compiles.css + adapted slightly - replace when FNDTN modal is ready */
+/* -- Removed for Foundation features -- */
+/* legacy BS modals - end */
+
+/* MODALS - end */
+
+/*LIST GROUPS - do not exist in FNDTN */
+/* -- Removed for Foundation features -- */
+.sidebar {
+  .accordion {
+    margin-left: 0;
+    .content {
+      border: 1px solid $accordion-navigation-active-bg-color;
+      border-bottom: 0;
+      padding: 0;
+    }
+  }
+  .accordion-navigation:not(.active),
+  .filters,
+  .side-nav {margin-bottom: 6px !important;}
+  .side-nav {padding: 0;}
+  .side-nav li {
+    border-bottom: 1px solid $accordion-navigation-active-bg-color;
+    margin: 0;
+    .active {
+      z-index: 2;
+      color: #fff !important;
+      background-color: $primary-color;
+      &:hover {background-color: $warning-color;}
+      &:focus {background-color: $info-color;}
+    }
+  }
+}
+
+/* CHECK relevance of the following - in use? - Fixme */
+.panel > .list-group {margin-bottom: 0;}
+.panel > .list-group .list-group-item {border-width: 1px 0;}
+.panel > .list-group:first-child .list-group-item:first-child {border-top: 0;}
+.panel > .list-group:last-child .list-group-item:last-child {border-bottom: 0;}
+
+.panel h1 + .list-group .list-group-item:first-child,
+.panel h2 + .list-group .list-group-item:first-child,
+.panel h3 + .list-group .list-group-item:first-child,
+.panel h4 + .list-group .list-group-item:first-child,
+.panel h5 + .list-group .list-group-item:first-child {border-top-width: 0;}
+
+label.list-group-item {
+  font-weight: normal;
+  margin-top: 0;
+  padding-left: 2rem;
+}
+.list-group-item.title {font-weight: normal;}
+
+.browse.list-group .list-group-item {word-wrap: break-word;}
+
+.browse.list-group .list-group-item.view-record {
+  border-top: 0;
+  font-size: .75rem;
+  padding: .1rem .25rem;
+  text-align: right;
+}
+
+.list-group-item.active i.fa,
+.badge i.fa {cursor: inherit;}
+
+/* CHECK relevance 2 here - Fixme */
+/* List-groups - end */
+
+/* Badges = round labels = also used as blocks with number of items in facets - we take the roundness out */
+/* -- Removed for Foundation features (.label) -- */
+/* Badges - end */
+
+/* Help blocks */
+
+/* short messages with hints such as eg. my account - favourites - edit: 'separate tags ... with comma' or advanced search - 'search for' */
+.help-block {
+  display: block;
+  color: #4D4D4D;
+  font-size: .875rem;
+}
+
+/* Help blocks - end */
+
+/* Link button - a 'deemphasized' BS button that looks like a link but has button behavior, original btn-link, used only in auth/abstractbase/login.phtml. */
+.button.link {
+  @include button($bg:rgba(255,255,255,0));
+  color: $primary-color;
+  &:active,
+  &:focus,
+  &:hover {text-decoration: underline;}
+}
+
+/* Link button - end */
+
+/* SCREENREADER-specific (only 'visible' on screen readers) */
+.sr-only {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  clip: rect(1px, 1px, 1px, 1px);
+  position: absolute;
+  height: auto;
+  overflow: hidden;
+}
+.sr-only:focus {
+  padding: 15px 15px;
+  width: auto;
+  display: block;
+  color: #132531;
+  background: #ffffff;
+  font-size: 1rem;
+  line-height: 20px;
+  text-decoration: none;
+  text-transform: none;
+  clip: auto;
+  height: 50px;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 100000;
+  border-radius: 4px;
+}
+
+/* SCREENREADER-specific - end */
+
+/* HIDDEN elements, used for Login/-out, accordion-more-collapsibles (facets) etc.,  */
+/* -- Removed for Foundation features (.hide) -- */
+/* HIDDEN elements - end */
+
+/* HEADER */
+/* Sticky header, TopBar, searchbox, breadcrumbs */
+.top-bar {
+  height: auto;
+  .name {
+    margin-left: 0;
+  }
+  #searchForm {
+    margin-left: 81px;
+    li.has-form {
+      height: auto;
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+  }
+  input,select,button,.button {
+    position: relative;
+    top: .4rem;
+    height: 2rem;
+    margin-bottom: .4rem;
+  }
+  button, .button {line-height: 1.3rem;}
+  select {line-height: .8rem;}
+  .has-form,
+  &.search {
+    height: auto;
+    input,select,button,.button {top: 0;}
+    .button {line-height: 1.25rem;}
+    li.has-form {height: 2.5rem;}
+  }
+}
+
+.contain-to-grid .breadcrumbs {
+  max-width: 62.5rem;
+  margin: 0 auto;
+  margin-bottom: 0;
+}
+
+/* max-width to prevent from going full width on scroll-down */
+.breadcrumbs.columns {float: none;}
+
+.breadcrumbs {
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid $steel;
+  background-color: inherit;
+  color: #fff;
+}
+
+.breadcrumbs > * {
+  color: #fff;
+  a {color: $gainsboro;}
+}
+
+/* Sticky header, TopBar, searchbox, breadcrumbs - end */
+
+/* Searchbox */
+
+/* see also form-control below */
+.twitter-typeahead {
+  width: 100%;
+  height: 32px;
+  padding-top: 0;
+  margin-top: 0;
+  border: none;
+  background: #fff;
+  vertical-align: top;
+}
+
+/* is used in search and advanced search - css copied over - CK */
+.top-bar .twitter-typeahead {line-height: 1.5;}
+.top-bar .twitter-typeahead input {top: 0;}
+.top-bar .twitter-typeahead {top: 0;}
+.tt-hint {color: $iron;}
+.tt-dropdown-menu {
+  width: 464px;
+  margin-top: 2px;
+  background-color: $white;
+  border: 1px solid $iron;
+}
+.tt-suggestion {
+  border-bottom: 1px solid $iron;
+  padding: 6px 20px 4px;
+  line-height: 24px;
+  &:last-child {border: 0;}
+  &.tt-cursor {
+    background-color: $primary-color;
+    color: #fff;
+    cursor: pointer;
+  }
+  p {
+    margin: 0;
+    font-size: 85% !important;
+  }
+}
+
+/* Placement of Search and Advanced buttons */
+#searchForm .button-group.even-2 li:nth-of-type(2) {float: right;}
+#searchForm .button-group.even-2 li {width: 48.25%;}
+
+/* Placement of Search and Advanced buttons - end */
+
+/* Keep filter checkbox */
+#searchForm .checkbox label {
+  font-size: .75rem;
+  color: #FFF;
+  line-height: 0.2;
+  margin-left: .75rem;
+}
+
+/* Keep filter checkbox - end */
+
+.searchHomeContent .panel {
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+}
+
+.nav.searchbox.large-12.hide-for-large-up {background-color: #333333;}
+
+/* Dark BG for searchbox when located directly under header */
+
+/* Position of ai and devel checkboxes for developer machines */
+#searchForm input[type="checkbox"] {margin-left: 1rem;}
+
+.top-bar #searchForm input[type="checkbox"] {margin-left: 0;}
+
+/* Position of ai and devel checkboxes for developer machines */
+/* Searchbox - end */
+
+/* Advanced Search: search term insert */
+#top-srchbx .tabs-content {border: none;}
+
+p.adv_search_terms {
+  width: 100%;
+  padding: .35rem .5rem;
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  font-size: 0.8rem;
+}
+
+ul.adv_search_links {list-style: none;}
+
+.top-bar-section .adv_search_links {
+  float: left;
+  margin-bottom: 1rem;
+}
+
+.adv_search_links li {border: 1px solid #ccc;}
+
+.top-bar-section .adv_search_links > a {font-size: .80rem;}
+
+/* Advanced Search: search term insert - END */
+
+/* HEADER end */
+
+/* NAVIGATION BAR */
+ul[role=navigation] {list-style: none;}
+
+/* NAVIGATION BAR end */
+
+/* MAIN content area */
+/* for Searchbox see header, above, for Advanced Search fields see below */
+#content.panel {padding: 1rem;}
+
+/* Advanced Search: criterion remove button */
+#advSearchForm .close {
+  margin-top: -1.5rem;
+  margin-right: -1.5rem;
+}
+#advSearchForm .panel {margin-bottom: 1rem;}
+#advSearchForm #limit {margin-top: 1.25rem;}
+
+/* top-align the fields at the bottom of advanced search page */
+/* Advanced Search: criterion remove button - END */
+
+/* List view */
+/* Rows */
+.row.result {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+.row.result:first-of-type {padding-top: 0;}
+.row.result:nth-of-type(even) {background-color: $silver;}
+
+/* Rows - end */
+
+/* Limit, sort and select-boxes */
+
+.form-inline.sort label,
+.form-inline.limit label {
+  /*float: left; margin-right: .25em;*/
+  font-size: .875em;
+}
+
+/*.form-inline .jumpMenu {max-width: 100%} */
+
+.sort select,
+.limit select {width: 100%;}
+
+/* Limit, sort and view selector dropdowns - end */
+
+/* Bulk action buttons, e.g. favourites list */
+.bulk-action-buttons {clear: both;}
+
+/* Images column */
+form .row.result .row {margin-left: -1rem;}
+
+form .row.result .row .columns,
+form .row.result .row .column {padding-left: 0 !important;}
+
+img.recordcover {height: 100%;}
+
+/* Images column - end */
+
+/* Full text links */
+/* Full text links - end */
+
+/* Favourites, Edit and Delete links */
+
+.delete.tool,
+.edit.tool,
+.save-record,
+.qrcodeLink,
+.hierarchyTreeLinkText {font-size: .875rem;}
+
+/* Favourites and Delete links - end */
+/* List view - end */
+
+/* Detail view */
+/* Page browser */
+.pager {
+  margin: 0 0 1rem 0;
+  padding: 0;
+  text-align: center;
+  list-style: outside none none;
+}
+
+.pager li {
+  display: inline;
+}
+
+.pager li.disabled {
+  display: none;
+}
+
+.pager li:first-of-type {
+  float: left;
+}
+
+.pager li:last-of-type {
+  float: right;
+}
+
+.pager li > a,
+.pager li > span {
+  display: inline-block;
+  padding: .25rem 1rem;
+}
+
+.pager li > a:first-of-type {padding-left: .75rem;}
+.pager li > a:last-of-type {padding-right: .75rem;}
+.pager .button:first-of-type {margin-left: 0;}
+.pager .button:last-of-type {margin-right: 0;}
+
+/* Page browser - end */
+
+/* Sub-nav with modal links */
+.main .sub-nav {width: 100%;}
+
+.sub-nav dd {margin-left: 0;}
+
+.sub-nav dd:first-of-type a {padding-left: 0;}
+
+.sub-nav dt a,
+.sub-nav dd a {padding: 0.1875rem 1rem 0.1875rem 0;}
+
+.sub-nav  .f-dropdown li a {padding: .35rem .75rem;}
+
+/* Sub-nav with modal links - END */
+
+/* Book cover column */
+.bookimgs {padding-top: .4rem;}
+
+.bookimgs img {width: 100%;}
+
+/* Book cover column - end */
+
+/* Clearing lightboxes for book images */
+.bookimgs .clearing-blackout {
+  background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.45);
+  /*height: 80%; width:80%;margin: 2em 10%; */
+}
+
+.bookimgs .clearing-blackout .carousel {display: none;}
+
+/* This is the container for the thumbnails - only useful for multiple images */
+.bookimgs .clearing-container .visible-img {
+  max-width: 90%;
+  max-height: 70%;
+  border: 2px solid #fff;
+  margin: 2em auto;
+}
+
+.bookimgs .clearing-assembled .clearing-container .visible-img {background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.7);}
+
+.bookimgs .visible-img img {
+  width: auto;
+  height: 100%;
+}
+
+.bookimgs .clearing-main-prev,
+.bookimgs .clearing-main-next {display: none;}
+
+/* This is the container for the thumbnails - only useful for multiple images */
+.bookimgs p.clearing-caption {
+  color: #ccc;
+  background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.7);
+}
+
+/* Clearing lightboxes - end */
+
+#content h2 {font-size: 1.6875rem;}
+
+/* Detail view - end */
+
+/* Tabs */
+.tabs {
+  border: 1px solid #DDD;
+  border-bottom: none;
+}
+
+.tabs dd > a,
+.tabs .tab-title > a {padding: .5rem 1rem;}
+
+.tabs-content {
+  border: 1px solid #DDD;
+  border-top: none;
+}
+
+.tabs-content > .content {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.tabs-content > .content.active {background: #fff;}
+
+/* Description, Details tab */
+
+/* Note: minimum width = small mobile landscape */
+/* -- Removed for Foundation features -- */
+/* Details tab - END */
+
+/* Hierarchy tab */
+#hierarchyTreeHolder {
+  border-right: 1px solid #eee;
+  overflow-x: hidden;
+}
+/* Hierarchy tab - end */
+/* Tabs - end */
+
+/* -- Removed for Foundation features -- */
+/* Forms */
+/* Alert boxes */
+/* Text highlighting */
+
+/* FOOTER */
+footer.panel {padding: 1rem;}
+
+/* FOOTER - end */
+
+/* SIDEBAR, FACETS ETC */
+
+/* MOVE TO MQueries - FIXME */
+/* -- Removed for Foundation features -- */
+/* SIDEBAR, FACETS ETC - end */
+
+// Checkboxes and radios
+//
+// Indent the labels to position radios/checkboxes as hanging controls.
+//
+// https://github.com/twbs/bootstrap/blob/b6e6a05b951aac3fad30da441c765dbb86518644/less/forms.less
+
+.radio,
+.checkbox {
+  position: relative;
+  display: block;
+  margin-top: .7rem;
+  margin-bottom: .7rem;
+
+  label {
+    min-height: .8rem;
+    // Ensure the input doesn't jump when there is no text
+    padding-left: 20px;
+    margin-bottom: 0;
+    font-weight: normal;
+    line-height: .8rem;
+    cursor: pointer;
+  }
+}
+
+.radio input[type="radio"],
+.radio-inline input[type="radio"],
+.checkbox input[type="checkbox"],
+.checkbox-inline input[type="checkbox"] {
+  position: absolute;
+  margin-left: -20px;
+  margin-top: 4px \9;
+}
+
+.radio + .radio,
+.checkbox + .checkbox {
+  margin-top: -5px;
+  // Move up sibling radios or checkboxes for tighter spacing
+}
