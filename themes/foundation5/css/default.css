@@ -54,7 +54,7 @@ table td[class*="col-"],table th[class*="col-"]{position: static;float: none;dis
 
 /* MODALS - END */
 
-/*LIST GROUPS - do not exist in FNDTN */
+/* LIST GROUPS - do not exist in FNDTN */
 /* -- Removed for Foundation features -- */
 .sidebar .accordion { margin-left: 0; }
 
@@ -71,6 +71,12 @@ table td[class*="col-"],table th[class*="col-"]{position: static;float: none;dis
 .sidebar .side-nav li .active:hover { background-color: #f08a24; }
 
 .sidebar .side-nav li .active:focus { background-color: #a0d3e8; }
+
+/* Lists with similar items, related items etc. */
+.similar-items, .related-editions { margin-bottom: 1rem; margin-left: 0; padding-left: 0; }
+
+.similar-items li, .related-editions li { border-color: #dddddd #dddddd -moz-use-text-color;
+ border-image: none; border-style: solid solid none; border-width: 1px 1px medium; list-style: none none; padding: .75em 1em .75em 1em; -moz-border-bottom-colors: none; -moz-border-left-colors: none; -moz-border-right-colors: none; -moz-border-top-colors: none; }
 
 /* CHECK relevance of the following - in use? - Fixme */
 .panel > .list-group { margin-bottom: 0; }
