@@ -22,10 +22,13 @@
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace Finna\RecordDriver;
+
+use VuFind\RecordDriver\AbstractBase;
 
 /**
  * Additional functionality for Finna Solr records.
@@ -33,6 +36,7 @@ namespace Finna\RecordDriver;
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  *
@@ -330,6 +334,16 @@ trait SolrFinna
     }
 
     /**
+     * Return SFX Object ID
+     *
+     * @return string.
+     */
+    public function getSfxObjectId()
+    {
+        return '';
+    }
+
+    /**
      * Return record source.
      *
      * @return string.
@@ -362,6 +376,29 @@ trait SolrFinna
     }
 
     /**
+     * Does the OpenURL configuration indicate that we should display OpenURLs in
+     * the specified context?
+     *
+     * @param string $area 'results', 'record' or 'holdings'
+     *
+     * @return bool
+     */
+    public function openURLActive($area)
+    {
+        // Only display OpenURL link if the option is turned on and we have
+        // an ISSN, ISBN or SFX Object ID.
+        if (!$this->getCleanISSN() && !$this->getCleanISBN()
+            && !$this->getSfxObjectId()
+        ) {
+            return false;
+        }
+
+        // Bypass SolrDefault since it only allows OpenURL's for records that have
+        // an ISSN
+        return AbstractBase::openURLActive($area);
+    }
+
+    /**
      * Get OpenURL parameters for a book section.
      *
      * @return array
@@ -376,6 +413,20 @@ trait SolrFinna
         $params['rft.btitle'] = $this->getContainerTitle();
         $params['rft.atitle'] = $this->getTitle();
 
+        return $params;
+    }
+
+    /**
+     * Get OpenURL parameters for a journal.
+     *
+     * @return array
+     */
+    protected function getJournalOpenURLParams()
+    {
+        $params = parent::getJournalOpenURLParams();
+        if ($objectId = $this->getSfxObjectId()) {
+            $params['rft.object_id'] = $objectId;
+        }
         return $params;
     }
 

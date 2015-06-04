@@ -1,6 +1,6 @@
 <?php
 /**
- * URL truncater
+ * Resolver Driver Factory Class
  *
  * PHP version 5
  *
@@ -20,47 +20,40 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  Resolver_Drivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
-namespace Finna\View\Helper\Root;
+namespace Finna\Resolver\Driver;
+use Zend\ServiceManager\ServiceManager;
 
 /**
- * URL truncater
+ * Resolver Driver Factory Class
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  Resolver_Drivers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
+ *
+ * @codeCoverageIgnore
  */
-class TruncateUrl extends \Zend\View\Helper\AbstractHelper
+class Factory
 {
     /**
-     * Truncate a URL for display
+     * Factory for Sfx record driver.
      *
-     * @param string $url URL to truncate
+     * @param ServiceManager $sm Service manager.
      *
-     * @return string
+     * @return Sfx
      */
-    public function __invoke($url)
+    public static function getSfx(ServiceManager $sm)
     {
-        // Remove 'http://' (leave any other)
-        if (strncasecmp($url, 'http://', 7) == 0) {
-            $url = substr($url, 7);
-        }
-        // Remove trailing slash if it's the only one
-        if (strpos($url, '/') == strlen($url) - 1) {
-            $url = substr($url, 0, -1);
-        }
-        // Shorten if necessary
-        if (strlen($url) > 40) {
-            $url = preg_replace(
-                '#^ (?>((?:.*:/+)?[^/]+/.{8})) .{4,} (.{12}) $#x', '$1...$2', $url
-            );
-        }
-        return $url;
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        return new Sfx(
+            $config->OpenURL->url,
+            $sm->getServiceLocator()->get('VuFind\Http')->createClient()
+        );
     }
 }

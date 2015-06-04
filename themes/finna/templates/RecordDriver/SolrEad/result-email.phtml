@@ -11,7 +11,7 @@
 <? endif; ?>
 <?= $this->translate('Title'); ?>: <?= !empty($title) ? $title : $this->translate('Title not available'); ?>
 <? // The funky comparison below is due to Zend translator not supporting empty values (see ExtendedIniReader) ?>
-<? if ($this->transEsc('Archive Repository') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><?= $this->transEsc('Archive Repository')?>:<? endif; ?>
+<? if (!$this->translationEmpty('Archive Repository')): ?><?= $this->transEsc('Archive Repository')?>:<? endif; ?>
 <?= implode(', ', array_map(function($str) { $this->escapeHtml($this->translate("source_$str", array(), $str)); }, $this->driver->getInstitutions())); ?>
 <? if ($origination = $this->driver->getOrigination()): ?>
 <?= PHP_EOL . $this->transEsc('Archive Origination')?>: <?=$this->escapeHtml($origination)?>
