@@ -55,8 +55,8 @@ table td[class*="col-"],table th[class*="col-"]{position: static;float: none;dis
 
 /* MODALS - END */
 
-/* LIST GROUPS - do not exist in FNDTN */
-/* -- Removed for Foundation features -- */
+/* LIST GROUP replacements - do not exist in FNDTN */
+
 .sidebar .accordion { margin-left: 0; }
 
 .sidebar .accordion .content { border: 1px solid #e8e8e8; border-bottom: 0; padding: 0; }
@@ -104,6 +104,13 @@ label.list-group-item { font-weight: normal; margin-top: 0; padding-left: 2rem; 
 /* CHECK relevance 2 here - in use? - Fixme */
 
 /* List-groups - END */
+
+/* Range slider */
+#side-panel-publishDate ul { list-style: none }
+ul.date-range-slider { margin: .25rem 1rem 0 1rem }
+.slider-container { padding-right: 1.25rem }
+
+/* Range slider - END */
 
 /* Help blocks */
 /* short messages with hints such as eg. my account - favourites - edit: 'separate tags ... with comma' or advanced search - 'search for' */
