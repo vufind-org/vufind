@@ -128,7 +128,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if ($this->formWasSubmitted('saveUserProfile')) {
             $validator = new \Zend\Validator\EmailAddress();
             if ($validator->isValid($values->email)) {
-                $user = $this->getUser();
                 $user->email = $values->email;
                 if (isset($values->due_date_reminder)) {
                     $user->finna_due_date_reminder = $values->due_date_reminder;
