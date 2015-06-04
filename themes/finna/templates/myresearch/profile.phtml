@@ -19,7 +19,7 @@
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9">
-    <? if ($this->transEsc('profile_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><? endif; ?>
+    <? if (!$this->translationEmpty('profile_instructions')): ?><p class="no-content-message"><?=$this->transEsc('profile_instructions')?></p><? endif; ?>
     <?=$this->flashmessages();?>
     <?=$this->partial('myresearch/borrowing-block.phtml', ['profile' => $this->profile]); ?>
     <?= $this->partial('myresearch/profile-my-information.phtml', ['user' => $user, 'cards' => $cards]); ?>

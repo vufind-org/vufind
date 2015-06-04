@@ -28,7 +28,7 @@
         <? endforeach; ?>
       </div>
     <? endif; ?>
-    
+
     <? $urls = $this->driver->getURLs(); $openURL = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false; $onlineURLs = $this->driver->getOnlineURLs(); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
     <? if (!empty($urls) || $openURL || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
       <div class="recordURLs local-available-online-record">
@@ -52,7 +52,7 @@
       <? endif; ?>
       </div>
     <? endif; ?>
-    
+
     <div class="record-authors" property="author">
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <?=$this->record($this->driver)->getFormatList()?><br>
@@ -86,14 +86,14 @@
             <? endforeach; ?>
           </span>
         <? endif; ?>
-      
+
       <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
           <span class="recordEdition">
               <span property="bookEdition"><?=$this->escapeHtml($edition)?></span>
           </span>
-      <? endif; ?>   
+      <? endif; ?>
     </div>
-    
+
     <div class="description">
       <span id="description_text" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>">
         <i class="fa fa-spinner fa-spin"></i>
@@ -197,7 +197,7 @@
           </td>
         </tr>
       <? endif; ?>
-            
+
       <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
         <tr class="recordLanguage">
           <th><?=$this->transEsc('Language')?>: </th>
@@ -223,7 +223,7 @@
           </td>
         </tr>
       <? endif; ?>
-      
+
       <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
           <tr class="recordPublications">
             <th><?=$this->transEsc('Publisher')?>: </th>
@@ -244,7 +244,7 @@
             </td>
           </tr>
       <? endif; ?>
-      
+
       <? $projectedDate = $this->driver->tryMethod('getProjectedPublicationDate'); if (!empty($projectedDate)): ?>
         <tr class="coreProjectedPublicationDate">
           <th><?=$this->transEsc('Projected Publication Date')?>: </th>

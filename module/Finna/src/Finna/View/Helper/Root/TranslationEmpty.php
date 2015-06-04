@@ -1,6 +1,6 @@
 <?php
 /**
- * URL truncater
+ * Helper to check if a translation is empty
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace Finna\View\Helper\Root;
 
 /**
- * URL truncater
+ * Helper to check if a translation is empty
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -36,31 +36,21 @@ namespace Finna\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class TruncateUrl extends \Zend\View\Helper\AbstractHelper
+class TranslationEmpty extends \Zend\View\Helper\AbstractHelper
+    implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
     /**
-     * Truncate a URL for display
+     * Check if a translation is empty
      *
-     * @param string $url URL to truncate
+     * @param string|object $str String to translate
      *
-     * @return string
+     * @return bool
      */
-    public function __invoke($url)
+    public function __invoke($str)
     {
-        // Remove 'http://' (leave any other)
-        if (strncasecmp($url, 'http://', 7) == 0) {
-            $url = substr($url, 7);
-        }
-        // Remove trailing slash if it's the only one
-        if (strpos($url, '/') == strlen($url) - 1) {
-            $url = substr($url, 0, -1);
-        }
-        // Shorten if necessary
-        if (strlen($url) > 40) {
-            $url = preg_replace(
-                '#^ (?>((?:.*:/+)?[^/]+/.{8})) .{4,} (.{12}) $#x', '$1...$2', $url
-            );
-        }
-        return $url;
+        return $this->translate($str, [], null)
+            == html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8');
     }
 }

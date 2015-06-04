@@ -1,5 +1,5 @@
 <h3><?=$this->transEsc("Send us your feedback!")?></h3>
-<? if ($this->transEsc('feedback_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?>
+<? if (!$this->translationEmpty('feedback_instructions')): ?>
   <p><?=$this->transEsc("feedback_instructions"); ?></p>
 <? endif; ?>
 

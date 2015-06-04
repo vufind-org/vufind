@@ -8,7 +8,7 @@
 ?>
 <h2><?= $this->transEsc('Send feedback on record'); ?></h2>
 
-<? if ($this->transEsc('record_feedback_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?>
+<? if (!$this->translationEmpty('record_feedback_instructions')): ?>
   <p><?=$this->transEsc("record_feedback_instructions"); ?></p>
 <? endif; ?>
 

@@ -23,6 +23,7 @@
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -34,6 +35,7 @@ namespace Finna\RecordDriver;
  * @category VuFind2
  * @package  RecordDrivers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
@@ -178,6 +180,20 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
+     * Return information whether fulltext is available
+     *
+     * @return bool
+     */
+    public function getFulltextAvailable()
+    {
+        $rec = $this->getSimpleXML();
+        if (isset($rec->delivery->fulltext)) {
+            return $rec->delivery->fulltext == 'fulltext';
+        }
+        return false;
+    }
+
+    /**
      * Return image rights.
      *
      * @return mixed array with keys:
@@ -211,80 +227,31 @@ class Primo extends \VuFind\RecordDriver\Primo
     }
 
     /**
-     * Get OpenURL parameters for an article.
-     *
-     * @return array
-     */
-    protected function getArticleOpenURLParams()
-    {
-        return $this->processOpenURLParams(
-            parent::getArticleOpenURLParams()
-        );
-    }
-
-    /**
-     * Get OpenURL parameters for a book.
-     *
-     * @return array
-     */
-    protected function getBookOpenURLParams()
-    {
-        return $this->processOpenURLParams(
-            parent::getBookOpenURLParams()
-        );
-    }
-
-    /**
-     * Get OpenURL parameters for a journal.
-     *
-     * @return array
-     */
-    protected function getJournalOpenURLParams()
-    {
-        return $this->processOpenURLParams(
-            parent::getJournalOpenURLParams()
-        );
-    }
-
-    /**
-     * Get OpenURL parameters for an unknown format.
-     *
-     * @param string $format Name of format
-     *
-     * @return array
-     */
-    protected function getUnknownFormatOpenURLParams($format)
-    {
-        return $this->processOpenURLParams(
-            parent::getUnknownFormatOpenURLParams($format)
-        );
-    }
-
-    /**
      * Get default OpenURL parameters.
      *
-     * @return array|false
+     * @return array
      */
     protected function getDefaultOpenURLParams()
     {
-        if (!isset($this->mainConfig->OpenURL->rfr_id)
-            || empty($this->mainConfig->OpenURL->rfr_id)
-        ) {
-            return false;
-        }
+        $link = isset($this->fields['url']) ? $this->fields['url'] : '';
 
-        $link = $this->fields['url'];
-
+        $params = [];
+        // Take params from the OpenURL returned from Primo, if available
         if ($link && strpos($link, 'url_ver=Z39.88-2004') !== false) {
             parse_str(substr($link, strpos($link, '?') + 1), $params);
-            $params['rfr_id'] = $this->mainConfig->OpenURL->rfr_id;
-            if ($dates = $this->getPublicationDates()) {
-                $params['rft.date'] = implode('', $this->getPublicationDates());
-            }
-            return $params;
+            $params = $this->processOpenURLParams($params);
+        }
+        $params['rfr_id'] = !empty($this->mainConfig->OpenURL->rfr_id)
+            ? $this->mainConfig->OpenURL->rfr_id
+            : '';
+        if ($dates = $this->getPublicationDates()) {
+            $params['rft.date'] = implode('', $this->getPublicationDates());
+        }
+        if (!isset($params['rft.title'])) {
+            $params['rft.title'] = $this->getTitle();
         }
 
-        return false;
+        return $params;
     }
 
     /**
