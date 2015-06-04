@@ -3,7 +3,7 @@
 <div class="sidegroup">
   <h4>Open Library <? /* Intentionally not translated -- this is a site name, not a phrase */ ?></h4>
   <div><?=$this->transEsc('Results for')?> <?=$this->escapeHtmlAttr($data['subject'])?> ...</div>
-  <ul class="similar">
+  <ul class="similar-items">
     <? foreach ($data['worksArray'] as $work): ?>
       <li>
         <a href="http://openlibrary.org<?=$work['key']?>" title="<?=$this->transEsc('Get full text')?>" target="_blank">
@@ -25,7 +25,7 @@
   </ul>
   <p class="olSubjectMore">
     <a href="http://openlibrary.org/subjects" title="Open Library" target="_blank">
-      <?=$this->transEsc('more')?>...
+      <?=$this->transEsc('more')?> ...
     </a>
   </p>
 </div>
