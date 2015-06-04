@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+<atom:link href="" rel="self" type="application/rss+xml" /><title>Collection highlights</title>
+<item>
+<title>Children’s new media culture: babies on the net</title>
+<link><![CDATA[Search/Results?lookfor=lapset+media+muutokset&SearchForm_submit=Hae&filter[]=format%3A"1%2FBook%2FBook%2F"&filter[]=language%3A"fin"&view=list&limit=20&sort=relevance]]></link>
+<description>Digital media is part of the everyday life of babies, too, and children’s media culture is changing quickly, say sources at the Finna service. For instance, according to the 2013 Youth Barometer, 40% of 0–2-year-old children use the Internet weekly. </description>
+<media:thumbnail url="themes/national/images/carousel-images/01lapset.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/01lapset.jpg"/>
+</item>
+<item>
+<title>Items from the Seurasaari Open-Air Museum</title>
+<link><![CDATA[Search/Results?lookfor=Seurasaari&type=AllFields&view=grid&filter%5B%5D=~format%3A"0%2FImage%2F"&filter%5B%5D=~format%3A"0%2FPhysicalObject%2F"&filter%5B%5D=online_boolean%3A1]]></link>
+<description>Objects from and photos of buildings in Seurasaari have been digitised. Visitors can explore objects from the Kurssi, Ivars, Pertinotsa, Halla and Kaukola cottages. The photos show the buildings in their original locations, the transfer of the buildings to Seurasaari, and earlier museum activities. More recent photos show the museum buildings and their interiors.</description>
+<media:thumbnail url="themes/national/images/carousel-images/03ss.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/03ss.jpg"/>
+</item>
+<item>
+<title>History of public transport in Helsinki</title>
+<link>Search/Results?lookfor=liikennelaitos&amp;type=AllFields&amp;filter[]=building%3A%220%2FHKM%2F%22&amp;sort=relevance&amp;view=grid&amp;limit=100</link>
+<description>Tickets, modes of transport, and photographs from the collections of the Helsinki City Museum... What did trams look like in the 1920s? And do you remember bus tickets from 1986? The material related to public transport in the Metropolitan area covers the period from the early 1900s to the present.</description>
+<media:thumbnail url="themes/national/images/carousel-images/02hkl.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/02hkl.jpg"/>
+</item>
+<item>
+<title>Pictures from Finland's Winter, Continuation and Lapland Wars</title>
+<link><![CDATA[Search/Results?type=AllFields&limit=100&view=grid&filter%5B%5D=~building%3A"0%2FSA-kuva%2F"]]></link>
+<description>What you have in front of you is a unique collection of photographs from the Wartime Photograph Archives ("SA-kuva-arkisto" in Finnish). It contains some 160,000 photographs from Finland's Winter War, Continuation War and Lapland War. Most of the pictures were taken by Information Company (IC) photographers.</description>            
+<media:thumbnail url="themes/national/images/carousel-images/07sakuvat.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/07sakuvat.jpg"/>
+</item>
+<item>
+<title>Finnish rail travel posters</title>
+<link><![CDATA[Search/Results?lookfor=junamatkailu+matkailujulisteet+&type=AllFields&limit=100&view=grid&filter%5B%5D=~building%3A"0%2FSRM%2F"]]></link>
+<description>The poster collection of the Finnish Railway Museum is from the 1930s to the 2000s. The posters have been used at stations, in trains and at various events, and exchanged with international partners. The drawings and illustrations have been created by artists including Erik Bruun, Osmo K. Oksanen and Juha Anttinen, as well as photographers Fred Runeberg, E. Tolvanen and Yrjö Metsälä.</description>
+<media:thumbnail url="themes/national/images/carousel-images/08vr.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/08vr.jpg"/>
+</item>
+<item>
+<title>Life management and drugs: fact and fiction</title>
+<link><![CDATA[Search/Results?lookfor=elämänhallinta+huumeet&type=AllFields&limit=100&filter%5B%5D=~language%3A"fin"&filter%5B%5D=~format%3A"0%2FBook%2F"&filter%5B%5D=publishDate%3A"%5B2005+TO+%2A%5D"]]></link>
+<description>Finna has material on the effects of drug use on life management. For instance, the Ministry of Social Affairs and Health designed a related test for young men in 2006, and Mikhail Bulgakov wrote about his personal experiences with drugs in the 1920s. The Ministry’s test is available online, while Bulgakov’s short stories can be borrowed.</description>
+<media:thumbnail url="themes/national/images/carousel-images/06jumissa.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/06jumissa.jpg"/>
+</item>
+<item>
+<title>Edith Södergran’s photographs (by Svenska litteratursällskapet)</title>
+<link><![CDATA[Collection/sls.SLSA+566/Home?type=AllFields&limit=100&view=grid&sort=year+asc]]></link>
+<description>Poet Edith Södergran (1892–1923) is one of Finland’s most translated writers, whose poems in Swedish are regularly republished. Since the 1990s she has also been known for her photographs, of which about 400 taken in Davos in Switzerland and Raivola on the Karelian Isthmus have been preserved. One of her favourite subjects is her cats.</description>
+<media:thumbnail url="themes/national/images/carousel-images/04ediths.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/04ediths.jpg"/>
+</item>
+<item>
+<title>Helsinki Hall of Culture: built by volunteers</title>
+<link><![CDATA[Search/Results?lookfor=Kulttuuritalon+rakentaminen+1955&type=AllFields&prefiltered=-&filter[]=online_boolean%3A"1"&sort=relevance&view=grid&limit=100]]></link>
+<description> Designed by Alvar Aalto, the Helsinki Hall of Culture was a labour movement feat of strength. The building project register contains the names of over 5,000 volunteers, whose contributions extended from a few hours’ work to a maximum of 400. Finished in 1958, the building became the city’s first concert hall. (Malmberg, Aleksi: Kulttuuritalo. Puoli vuosisataa tarinoita ja tapahtumia)</description>
+<media:thumbnail url="themes/national/images/carousel-images/05kultsa.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/05kultsa.jpg"/>
+</item>
+</channel>
+</rss>

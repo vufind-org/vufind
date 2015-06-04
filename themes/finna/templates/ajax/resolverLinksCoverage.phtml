@@ -1,0 +1,55 @@
+<? if (isset($this->link['coverage_details'])): ?>
+<?
+    $details = $this->link['coverage_details'];
+    $from = ''; $to = ''; $embargo = '';
+    if (isset($details['from'])) {
+        if (isset($details['from']['year'])) {
+            $from = $this->transEsc('openurl_coverage_from_year', ['%%year%%' => $details['from']['year']]);
+        }
+        if (isset($details['from']['volume'])) {
+            $from .= ' ' . $this->transEsc('openurl_coverage_from_volume', ['%%volume%%' => $details['from']['volume']]);
+        }
+        if (isset($details['from']['issue'])) {
+            $from .= ' ' . $this->transEsc('openurl_coverage_from_issue', ['%%issue%%' => $details['from']['issue']]);
+        }
+    }
+    if (isset($details['to'])) {
+        if (isset($details['to']['year'])) {
+            $to = $this->transEsc('openurl_coverage_until_year', ['%%year%%' => $details['to']['year']]);
+        }
+        if (isset($details['from']['volume'])) {
+            $to .= ' ' . $this->transEsc('openurl_coverage_until_volume', ['%%volume%%' => $details['to']['volume']]);
+        }
+        if (isset($details['from']['issue'])) {
+            $to .= ' ' . $this->transEsc('openurl_coverage_until_issue', ['%%issue%%' => $details['to']['issue']]);
+        }
+    }
+    if (isset($details['embargo'])) {
+        $prefix = isset($details['embargo']['availability']) && $details['embargo']['availability'] == 'available' ? 'openurl_embargo_available_' : 'openurl_embargo_not_available_';
+        if (!empty($details['embargo']['year'])) {
+            $embargo = $this->transEsc($prefix . 'year', ['%%year%%' => $details['embargo']['year']]);
+        } elseif (!empty($details['embargo']['month'])) {
+            $embargo = $this->transEsc($prefix . 'month', ['%%month%%' => $details['embargo']['month']]);
+        } elseif (!empty($details['embargo']['days'])) {
+            $embargo = $this->transEsc($prefix . 'days', ['%%days%%' => $details['embargo']['days']]);
+        }
+    }
+?>
+<? endif; ?>
+
+<? if (!empty($from) || !empty($to) || !empty($embargo)): ?>
+  <span class="coverage">
+  <? if (!$this->translationEmpty('openurl_coverage_prefix')): ?>
+    <?=$this->transEsc('openurl_coverage_prefix') ?>
+  <? endif; ?>
+  <?=$from ?> <?=$to ?>
+  <? if (!empty($embargo)): ?>
+    <? if (!empty($from) || !empty($to)): ?> &ndash; <? endif; ?>
+    <?=$embargo ?>
+  <? endif; ?>
+  </span>
+<? else: ?>
+  <? if (isset($this->link['coverage'])): ?>
+    <span class="coverage"><?=$this->escapeHtml($this->link['coverage']); ?></span>
+  <? endif; ?>
+<? endif; ?>

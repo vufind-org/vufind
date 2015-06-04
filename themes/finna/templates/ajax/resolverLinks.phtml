@@ -1,23 +1,39 @@
 <div>
   <? if (!empty($this->electronic)): ?>
     <div class="openurls">
-      <strong><?$this->transEsc('Electronic')?></strong>
       <ul>
         <? foreach ($this->electronic as $link): ?>
           <li>
             <? if (isset($link['href']) && !empty($link['href'])): ?>
-              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>" target="_blank"><i class="fa fa-external-link"></i> <?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a> 
+              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>" target="_blank"><i class="fa fa-external-link"></i> <?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
             <? else: ?>
               <?=isset($link['title'])?$this->escapeHtml($link['title']):''?>
             <? endif; ?>
+            <?=$this->context($this)->renderInContext('ajax/resolverLinksCoverage.phtml', ['link' => $link]); ?>
           </li>
         <? endforeach; ?>
       </ul>
     </div>
   <? endif; ?>
-  <? if (empty($this->electronic)): ?>
- <div class="openurls more-options">
-   <a href="<?=$this->escapeHtmlAttr($this->openUrlBase)?>?<?=$this->escapeHtmlAttr($this->openUrl)?>" target="_blank"><?=$this->transEsc('More options')?> <i class="fa fa-new-window"></i></a>
- </div>
+  <? if (!empty($this->print) && $this->searchClassId != 'Primo'): ?>
+    <div class="openurls">
+      <ul>
+        <? foreach ($this->print as $link): ?>
+          <li>
+            <? if (isset($link['href']) && !empty($link['href'])): ?>
+              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>" target="_blank"><i class="fa fa-external-link"></i> <?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
+            <? else: ?>
+              <?=isset($link['title'])?$this->escapeHtml($link['title']):''?>
+            <? endif; ?>
+            <?=$this->context($this)->renderInContext('ajax/resolverLinksCoverage.phtml', ['link' => $link]); ?>
+          </li>
+        <? endforeach; ?>
+      </ul>
+    </div>
+  <? endif; ?>
+  <? if (empty($this->electronic) || $this->searchClassId != 'Primo'): ?>
+    <div class="openurls more-options">
+      <a href="<?=$this->escapeHtmlAttr($this->openUrlBase)?>?<?=$this->escapeHtmlAttr($this->openUrl)?>" target="_blank"><?=$this->transEsc('More options')?> <i class="fa fa-new-window"></i></a>
+    </div>
  <? endif; ?>
 </div>

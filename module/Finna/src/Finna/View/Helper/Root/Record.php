@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  View_Helpers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -33,6 +34,7 @@ namespace Finna\View\Helper\Root;
  * @category VuFind2
  * @package  View_Helpers
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -71,12 +73,18 @@ class Record extends \VuFind\View\Helper\Root\Record
     /**
      * Render online URLs
      *
+     * @param string $context Record context ('results', 'record' or 'holdings')
+     *
      * @return string
      */
-    public function getOnlineUrls()
+    public function getOnlineUrls($context)
     {
         return $this->renderTemplate(
-            'result-online-urls.phtml', ['driver' => $this->driver]
+            'result-online-urls.phtml',
+            [
+                'driver' => $this->driver,
+                'context' => $context
+            ]
         );
     }
 }

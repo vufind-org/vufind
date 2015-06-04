@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+<atom:link href="" rel="self" type="application/rss+xml" /><title>Kokoelmien helmiä</title>
+<item>
+<title>Lasten uusi mediakulttuuri: vauvatkin jo netissä</title>
+<link><![CDATA[Search/Results?lookfor=lapset+media+muutokset&SearchForm_submit=Hae&filter[]=format%3A"1%2FBook%2FBook%2F"&filter[]=language%3A"fin"&view=list&limit=20&sort=relevance]]></link>
+<description>Digitaaliset mediat ovat jo vauvojenkin arkipäivää, ja lasten mediakulttuuri muuttuu nopeasti, kertovat Finnasta löytyvät lähteet. Esimerkiksi vuoden 2013 Lasten mediabarometrin mukaan 40 prosenttia 0–2-vuotiaista käyttää internetiä viikoittain.</description>
+<media:thumbnail url="themes/national/images/carousel-images/01lapset.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/01lapset.jpg"/>
+</item>
+<item>
+<title>Seurasaaren ulkomuseon esineitä ja valokuvia</title>
+<link><![CDATA[Search/Results?lookfor=Seurasaari&type=AllFields&view=grid&filter%5B%5D=~format%3A"0%2FImage%2F"&filter%5B%5D=~format%3A"0%2FPhysicalObject%2F"&filter%5B%5D=online_boolean%3A1]]></link>
+<description>Seurasaaren talojen esineistöä ja valokuvia on digitoitu. Kurssin, Ivarsin, Pertinotsan, Hallan ja Kaukolan savutupien esineisiin pääsee tutustumaan nyt tarkemmin. Valokuvat esittelevät ulkomuseon taloja niiden alkuperäisillä paikoillaan, talojen siirtämistä Seurasaareen sekä aikaisempaa museotoimintaa. Uudemmat kuvat esittelevät museotaloja ja niiden interiöörejä.</description>
+<media:thumbnail url="themes/national/images/carousel-images/03ss.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/03ss.jpg"/>
+</item>
+<item>
+<title>Helsingin joukkoliikenteen historiaa</title>
+<link>Search/Results?lookfor=liikennelaitos&amp;type=AllFields&amp;filter[]=building%3A%220%2FHKM%2F%22&amp;sort=relevance&amp;view=grid&amp;limit=100</link>
+<description>Matkalippuja, kulkuvälineitä ja valokuvia Helsingin kaupunginmuseon kokoelmista. Miltä näytti raitiovaunu 1920-luvulla? Entä muistatko bussilipun vuodelta 1986? Pääkaupungin joukkoliikenteen vaiheista kertova aineisto ulottuu 1900-luvun alusta nykypäivään.</description>
+<media:thumbnail url="themes/national/images/carousel-images/02hkl.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/02hkl.jpg"/>
+</item>
+<item>
+<title>Ainutlaatuisia kuvia Suomen talvi-, jatko- ja Lapin sodista</title>
+<link><![CDATA[Search/Results?type=AllFields&limit=100&view=grid&filter%5B%5D=~building%3A"0%2FSA-kuva%2F"]]></link>
+<description>Edessäsi on ainutlaatuinen kuvakokoelma SA-kuva-arkisto, joka sisältää lähes 160 000 Suomen talvi-, jatko- ja Lapin sodan ajan valokuvaa vuosilta 1939-1945. Pääosan kuvista ovat ottaneet Päämajan alaisten tiedotuskomppanioiden kuvaajat. Talvisodan kuvamateriaali on rintamamiesten omalla kalustollaan kuvaamaa.</description>            
+<media:thumbnail url="themes/national/images/carousel-images/07sakuvat.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/07sakuvat.jpg"/>
+</item>
+<item>
+<title>VR:n matkailujulisteita</title>
+<link><![CDATA[Search/Results?lookfor=junamatkailu+matkailujulisteet+&type=AllFields&limit=100&view=grid&filter%5B%5D=~building%3A"0%2FSRM%2F"]]></link>
+<description>Suomen Rautatiemuseon julistekokoelma on 1930–2000 -luvuilta. VR on käyttänyt julisteita asemilla, junissa ja erilaisissa tapahtumissa sekä tehnyt kansainvälistä julistevaihtoa. Kuvaajina  ja piirtäjinä ovat toimineet mm. taiteilijat Erik Bruun, Osmo K. Oksanen, Juha Anttinen ja valokuvaajat Fred Runeberg, E. Tolvanen ja Yrjö Metsälä.</description>
+<media:thumbnail url="themes/national/images/carousel-images/08vr.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/08vr.jpg"/>
+</item>
+<item>
+<title>Elämänhallinta ja huumeet: tietoa ja kaunokirjallisuutta</title>
+<link><![CDATA[Search/Results?lookfor=elämänhallinta+huumeet&type=AllFields&limit=100&filter%5B%5D=~language%3A"fin"&filter%5B%5D=~format%3A"0%2FBook%2F"&filter%5B%5D=publishDate%3A"%5B2005+TO+%2A%5D"]]></link>
+<description> Finnasta löytyy tietoa ja kaunokirjallisuutta huumeidenkäytön vaikutuksista elämänhallintaan. Esimerkiksi sosiaali- ja terveysministeriö (2006) on tuottanut nuorille miehille testin ja Mihail Bulgakov omakohtaisia novelleja 1920-luvulla. STM:n testi on saatavilla verkossa, Bulgakovin novellit lainattavina aineistoina.</description>
+<media:thumbnail url="themes/national/images/carousel-images/06jumissa.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/06jumissa.jpg"/>
+</item>
+<item>
+<title>Edith Södergranin valokuvat (Svenska litteratursällskapet</title>
+<link><![CDATA[Collection/sls.SLSA+566/Home?type=AllFields&limit=100&view=grid&sort=year+asc]]></link>
+<description>Runoilija Edith Södergran (1892–1923) on yksi Suomen käännetyimmistä kirjailijoista, ja hänen ruotsinkielisistä runoistaan ilmestyy jatkuvasti uusia painoksia. 1990-luvulta lähtien hänet on tunnettu myös valokuvaajana: hänen valokuviaan Sveitsin Davosista ja Karjalankannaksen Raivolasta on säilynyt noin 400. Yksi Södergranin lempiaiheista ovat hänen kissansa.</description>
+<media:thumbnail url="themes/national/images/carousel-images/04ediths.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/04ediths.jpg"/>
+</item>
+<item>
+<title>Kulttuuritalo rakennettiin talkoilla</title>
+<link><![CDATA[Search/Results?lookfor=Kulttuuritalon+rakentaminen+1955&type=AllFields&prefiltered=-&filter[]=online_boolean%3A"1"&sort=relevance&view=grid&limit=100]]></link>
+<description>Alvar Aallon suunnittelema ja talkootyönä rakennettu Kulttuuritalo oli työväenliikkeen voimannäyte. Talkookortistossa oli yli 5000 talkoolaisen nimet, työpanos vaihteli muutamasta tunnista jopa 400 työtuntiin. Valmistuessaan v. 1958 talo oli kaupungin ensimmäinen konserttisali. (Malmberg, Aleksi: Kulttuuritalo. Puoli vuosisataa tarinoita ja tapahtumia)</description>
+<media:thumbnail url="themes/national/images/carousel-images/05kultsa.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/05kultsa.jpg"/>
+</item>
+</channel>
+</rss>
