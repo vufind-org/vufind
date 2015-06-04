@@ -98,10 +98,9 @@ class Params extends \VuFind\Search\Base\Params
             $this->setFacetLimit($config->Results_Settings->facet_limit);
         }
         if (isset($config->Results_Settings->sorted_by_index)
-            && is_array($config->Results_Settings->sorted_by_index->toArray())
             && count($config->Results_Settings->sorted_by_index->toArray() > 0)
         ) {
-            $this->setFacetSortedByIndex($config->Results_Settings->sorted_by_index->toArray());
+            $this->setIndexSortedFacets($config->Results_Settings->sorted_by_index->toArray());
         }
     }
 
@@ -180,8 +179,8 @@ class Params extends \VuFind\Search\Base\Params
                 // so making this explicit ensures consistent behavior.
                 $facetSet['sort'] = ($this->facetLimit > 0) ? 'count' : 'index';
             }
-            if ($this->facetSortedByIndex != null) {
-                $facetSet['sortedByIndex'] = $this->facetSortedByIndex;
+            if ($this->indexSortedFacets != null) {
+                $facetSet['indexSortedFacets'] = $this->indexSortedFacets;
             }
         }
         return $facetSet;
@@ -256,15 +255,15 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Set Facet Sorting
+     * Set Index Facet Sorting
      *
      * @param array $s the facets sorted by index
      *
      * @return void
      */
-    public function setFacetSortedByIndex($s)
+    public function setIndexSortedFacets ($s)
     {
-        $this->facetSortedByIndex = $s;
+        $this->indexSortedFacets  = $s;
     }
 
 
@@ -475,14 +474,18 @@ class Params extends \VuFind\Search\Base\Params
         $facets = $this->getFacetSettings();
         if (!empty($facets)) {
             $backendParams->add('facet', 'true');
-            foreach ($facets as $key => $value) {
-                if ($key == 'sortedByIndex') {
-                    foreach ($value as $field) {
+
+            if (isset($facets['indexSortedFacets'])) {
+                if (count($facets['indexSortedFacets']) > 0) {
+                    foreach ($facets['indexSortedFacets'] as $field){
                         $backendParams->add("f.{$field}.facet.sort", "index");
                     }
-                } else {
-                    $backendParams->add("facet.{$key}", $value);
                 }
+                unset($facets['indexSortedFacets']);
+            }
+
+            foreach ($facets as $key => $value) {
+                    $backendParams->add("facet.{$key}", $value);
             }
             $backendParams->add('facet.mincount', 1);
         }
