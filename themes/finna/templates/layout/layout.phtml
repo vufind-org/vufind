@@ -103,13 +103,11 @@
     </header>
     <section role="search" class="searchLayout">
       <div class="container">
-        <?if (isset($this->layout()->logosection) && $this->layout()->logosection == true): ?>
         <div class="row">
           <div class="logo col-xs-12 clearfix">
             <?=$this->render('search/logosection.phtml') ?>
           </div>
         </div>
-        <? endif; ?>
         <? if (isset($this->layout()->introduction) && $this->resolver('search/introductiontext.phtml')): ?>
         <div class="row">
           <div class="col-xs-12 introduction clearfix">

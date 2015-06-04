@@ -6,7 +6,6 @@
   } else {
       $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
   }
-  $this->layout()->logosection = true;
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
