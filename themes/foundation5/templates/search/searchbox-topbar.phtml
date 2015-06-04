@@ -85,7 +85,7 @@ $filterDetails = $this->searchbox()->getFilterDetails(
             <?= $this->transEsc("basic_search_keep_filters") ?>
         </label>
     </div>
-    <div class="hidden">
+    <div class="hide">
         <? foreach ($filterDetails as $current): ?>
             <input class="applied-filter" id="<?= $this->escapeHtmlAttr($current['id']) ?>" type="checkbox"<?= $defaultFilterState ?> name="filter[]" value="<?= $this->escapeHtmlAttr($current['value']) ?>"/>
             <label for="<?= $this->escapeHtmlAttr($current['id']) ?>"><?= $this->escapeHtml($current['value']) ?></label>

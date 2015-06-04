@@ -2,16 +2,16 @@
 <script>
   // Mandatory update function
   updateFunction = function(data, tab) {
-    $('.loading-bar').removeClass('hidden');
+    $('.loading-bar').removeClass('hide');
     if(!data['zoom'] && data['large']) data['zoom'] = data['large'];
     pageData = data;
     //console.log(data);
-    $('#view .tabs dd:not(.static) a').addClass('hidden');
+    $('#view .tabs dd:not(.static) a').addClass('hide');
     for(var i in data) {
-      $('#'+i+'-tab').removeClass('hidden');
+      $('#'+i+'-tab').removeClass('hide');
     }
     $('.download').attr('href', data['master']);
-    Zoomy.load(data['large'], function() {$('.loading-bar').addClass('hidden')});
+    Zoomy.load(data['large'], function() {$('.loading-bar').addClass('hide')});
     $('#'+tab).click();
   };
   // Load an image into the preview (to be deprecated by the new template system)
@@ -19,11 +19,11 @@
   function showPreview(index, tab) {
     if(currentPreview !== pageData[index]) {
       currentPreview = pageData[index];
-      $('.loading-bar').removeClass('hidden');
+      $('.loading-bar').removeClass('hide');
       $('#preview')
         .load(function() {
           $('#preview').css('opacity','1');
-          $('.loading-bar').addClass('hidden');
+          $('.loading-bar').addClass('hide');
         })
         .css('opacity','.3')
         .attr({
@@ -46,7 +46,7 @@
   }
 
   $(document).ready(function() {
-    $('#view .tabs dd.opener a').addClass('hidden');
+    $('#view .tabs dd.opener a').addClass('hide');
     $('#view .tabs dd:not(.static) a').click(function (e) {
       e.preventDefault();
       $(this).tab('show');
@@ -56,7 +56,7 @@
     $('#zoom-tab').on('shown.bs.tab', function() {
       resizeZoom();
       Zoomy.init(document.getElementById('zoomy'));
-      Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hidden'); });
+      Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hide'); });
     });
     $(window).scroll(resizeZoom);
     $(window).resize(resizeZoom);

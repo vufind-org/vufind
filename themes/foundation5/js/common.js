@@ -160,8 +160,8 @@ function registerLightboxEvents() {
 }
 function updatePageForLogin() {
   // Hide "log in" options and show "log out" options:
-  $('#loginOptions').addClass('hidden');
-  $('.logoutOptions').removeClass('hidden');
+  $('#loginOptions').addClass('hide');
+  $('.logoutOptions').removeClass('hide');
 
   var recordId = $('#record_id').val();
 

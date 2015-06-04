@@ -62,7 +62,7 @@
 			$this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc($desc) . '</li>';
 			$activeTabObj = $obj;
 		  }
-		  if (!$obj->isVisible()) { $tab_classes[] = 'hidden'; }
+		  if (!$obj->isVisible()) { $tab_classes[] = 'hide'; }
 		  if (!$obj->supportsAjax()) { $tab_classes[] = 'noajax'; }
 		?>
 		<li class="tab-title<?=count($tab_classes) > 0 ? ' ' . implode(' ', $tab_classes) . '' : ''?>">

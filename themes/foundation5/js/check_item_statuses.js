@@ -8,7 +8,7 @@ function checkItemStatuses() {
     return;
   }
 
-  $(".ajax-availability").removeClass('hidden');
+  $(".ajax-availability").removeClass('hide');
   $.ajax({
     dataType: 'json',
     url: path + '/AJAX/JSON?method=getItemStatuses',
@@ -25,21 +25,21 @@ function checkItemStatuses() {
           ) {
             // Full status mode is on -- display the HTML and hide extraneous junk:
             item.find('.callnumAndLocation').empty().append(result.full_status);
-            item.find('.callnumber').addClass('hidden');
-            item.find('.location').addClass('hidden');
-            item.find('.hideIfDetailed').addClass('hidden');
-            item.find('.status').addClass('hidden');
+            item.find('.callnumber').addClass('hide');
+            item.find('.location').addClass('hide');
+            item.find('.hideIfDetailed').addClass('hide');
+            item.find('.status').addClass('hide');
           } else if (typeof(result.missing_data) != 'undefined'
             && result.missing_data
           ) {
             // No data is available -- hide the entire status area:
-            item.find('.callnumAndLocation').addClass('hidden');
-            item.find('.status').addClass('hidden');
+            item.find('.callnumAndLocation').addClass('hide');
+            item.find('.status').addClass('hide');
           } else if (result.locationList) {
             // We have multiple locations -- build appropriate HTML and hide unwanted labels:
-            item.find('.callnumber').addClass('hidden');
-            item.find('.hideIfDetailed').addClass('hidden');
-            item.find('.location').addClass('hidden');
+            item.find('.callnumber').addClass('hide');
+            item.find('.hideIfDetailed').addClass('hide');
+            item.find('.location').addClass('hide');
             var locationListHTML = "";
             for (var x=0; x<result.locationList.length; x++) {
               locationListHTML += '<div class="groupLocation">';
@@ -56,7 +56,7 @@ function checkItemStatuses() {
                    ?  result.locationList[x].callnumbers : '';
               locationListHTML += '</div>';
             }
-            item.find('.locationDetails').removeClass('hidden');
+            item.find('.locationDetails').removeClass('hide');
             item.find('.locationDetails').empty().append(locationListHTML);
           } else {
             // Default case -- load call number and location into appropriate containers:

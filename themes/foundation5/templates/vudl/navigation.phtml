@@ -48,9 +48,9 @@
     <? endif; ?>
     <li>
 			<ul class="button-group">
-				<li><a href="javascript:prevPage()" role="button" class="turn-button button secondary tiny<? if($this->outline['counts'][$this->initList] <= 1): ?> hidden<? endif; ?>">Prev Page</a></li>
+				<li><a href="javascript:prevPage()" role="button" class="turn-button button secondary tiny<? if($this->outline['counts'][$this->initList] <= 1): ?> hide<? endif; ?>">Prev Page</a></li>
 				<li><a href="<?=$this->url('vudl-grid', array('id'=>$this->id)) ?>" class="button secondary tiny" role="button"><i class="fa fa-th"></i></a></li>
-				<li><a href="javascript:nextPage()" role="button" class="button secondary tiny<? if($this->outline['counts'][$this->initList] <= 1): ?> hidden<? endif; ?>">Next Page</a></li>
+				<li><a href="javascript:nextPage()" role="button" class="button secondary tiny<? if($this->outline['counts'][$this->initList] <= 1): ?> hide<? endif; ?>">Next Page</a></li>
 			</ul>
     </li>
     <? if(count($uniqueParents) > 1): ?>

@@ -45,7 +45,7 @@ ClusterIcon.prototype.onAdd = function () {
   this.div_ = document.createElement("div");
   this.div_.className = "clusterDiv";
   if (this.visible_) {
-    this.removeClass('hidden');
+    this.removeClass('hide');
   }
 
   this.getPanes().overlayMouseTarget.appendChild(this.div_);

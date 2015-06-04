@@ -21,7 +21,7 @@
     <label class="medium-3 columns control-label"><?=$this->transEsc('Title')?></label>
     <div class="medium-9 columns">
     <? if(count($this->records) > 1): ?>
-      <button type="button" class="button secondary tiny hidden" data-dropdown="itemhide" role="button" aria-controls="itemhide" aria-expanded="false">
+      <button type="button" class="button secondary tiny hide" data-dropdown="itemhide" role="button" aria-controls="itemhide" aria-expanded="false">
         <?=count($this->records).' '.$this->transEsc('items') ?>
       </button>
       <ul id="itemhide" class="f-dropdown" data-dropdown-content aria-hidden="true" tabindex="-1">
@@ -69,8 +69,8 @@
 
 <?
   $script = <<<JS
-  $('button.button.hidden').removeClass('hidden');
-  JS;
+  $('button.button.hide').removeClass('hide');
+JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
 <!-- cart - SAVE.phtml end -->

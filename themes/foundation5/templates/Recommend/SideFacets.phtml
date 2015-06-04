@@ -10,7 +10,7 @@
   foreach ($checkboxFilters as $current) {
     $html .= '<div class="checkbox';
     if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
-      $html .= ' hidden';
+      $html .= ' hide';
     } else {
       $shown ++;
     }
@@ -19,7 +19,7 @@
       onclick="document.location.href=\''.($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).'</label></div>';
   }
 ?>
-  <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
+  <div class="checkboxFilter<?if($shown == 0):?> hide<? endif; ?>"><?=$html ?></div>
 <? endif; ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
@@ -85,7 +85,7 @@
                     </div>
                   </div>
                   <? if ($rangeFacets[$title]['type'] == 'date'): ?>
-                      <div class="slider-container"><input type="text" class="hidden" id="<?=$this->escapeHtmlAttr($title)?><?=$this->escapeHtml($rangeFacets[$title]['type'])?>Slider"/></div>
+                      <div class="slider-container"><input type="text" class="hide" id="<?=$this->escapeHtmlAttr($title)?><?=$this->escapeHtml($rangeFacets[$title]['type'])?>Slider"/></div>
                   <? endif; ?>
                   <input class="button tiny" type="submit" role="button" value="<?=$this->transEsc('Set')?>"/>
                 </form>

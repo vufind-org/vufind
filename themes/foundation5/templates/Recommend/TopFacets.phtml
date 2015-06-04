@@ -6,7 +6,7 @@
 ?>
 <? if (isset($topFacetSet)): ?>
   <? $row=0; foreach($topFacetSet as $title => $cluster): ?>
-    <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
+    <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hide'; ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
     <div class="row top-row">

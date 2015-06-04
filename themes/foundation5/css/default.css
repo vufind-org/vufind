@@ -408,3 +408,6 @@ footer.panel { padding: 1rem; }
 .radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] { position: absolute; margin-left: -20px; margin-top: 4px \9; } /* What is \9 for? - Fixme - CK */
 
 .radio + .radio, .checkbox + .checkbox { margin-top: -5px; }
+
+/* General visibility classes - leave at end of file to overrule other display settings */
+.hide { display: none }

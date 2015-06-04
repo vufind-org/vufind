@@ -32,11 +32,11 @@
     <? endif; ?>
 
     <? /* Display the lists that this record is saved to */ ?>
-    <div class="savedLists hidden alert-box info" id="savedLists" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
+    <div class="savedLists hide alert-box info" id="savedLists" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
 
-    <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
+    <a id="moreInfoToggle" href="#" class="hide"><?=$this->transEsc('more_info_toggle')?></a>
     <?/* Display Main Details */?>
     <table id="collectionInfo" class="table" summary="<?=$this->transEsc('Bibliographic Details')?>">
       <? $authors = $this->driver->getDeduplicatedAuthors(); ?>

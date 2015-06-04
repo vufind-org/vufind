@@ -28,7 +28,7 @@ $urls = $this->record($this->driver)->getLinkDetails();
   </div>
   <? if (!$openUrlActive && empty($urls)): ?>
     <? if ($this->driver->supportsAjaxStatus()): ?>
-      <div class="status ajax-availability hidden text-center"><span class="label secondary"><?=$this->transEsc('Loading')?>&nbsp;...</span></div>
+      <div class="status ajax-availability hide text-center"><span class="label secondary"><?=$this->transEsc('Loading')?>&nbsp;...</span></div>
     <? endif; ?>
   <? endif; ?>
   <div>

@@ -51,7 +51,7 @@ $this->headScript()->appendScript(
 			<input type="hidden" name="sort" value="relevance">
 			<div class="clearfix">
 				<p class="lead pull-left"><?= $this->transEsc('Advanced Search') ?></p>
-				<div id="groupJoin" class="form-inline pull-right hidden">
+				<div id="groupJoin" class="form-inline pull-right hide">
 					<label for="groupJoinOptions"><?= $this->transEsc("search_match") ?>:</label>
 					<select id="groupJoinOptions" name="join" class="form-control">
 						<option value="AND"<? if ($searchDetails && $searchDetails->getOperator() == 'ALL'): ?> selected<? endif ?>><?= $this->transEsc('group_AND') ?></option>

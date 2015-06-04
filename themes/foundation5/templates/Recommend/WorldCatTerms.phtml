@@ -3,7 +3,7 @@
 <h4><?=$this->transEsc('Subject Recommendations')?></h4>
 <div class="row">
   <? $i = 0; foreach ($worldCatTerms as $type => $section): ?>
-    <? $moreClass = 'WCTerms'.$this->escapeHtml($type).' hidden'; ?>
+    <? $moreClass = 'WCTerms'.$this->escapeHtml($type).' hide'; ?>
     <div class="medium-<?=floor(12/count($worldCatTerms)) ?> columns">
       <dl>
         <dt><?=$this->transEsc('wcterms_' . $type)?></dt>

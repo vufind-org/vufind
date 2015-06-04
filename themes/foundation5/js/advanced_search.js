@@ -30,7 +30,7 @@ function addSearch(group, term, field)
   $("#group" + group + "Holder").before(newSearch);
   // Show x if we have more than one search inputs
   if(inputIndex > 0) {
-    $('#group'+group+' .search .delete').removeClass('hidden');
+    $('#group'+group+' .search .delete').removeClass('hide');
   }
 }
 
@@ -48,7 +48,7 @@ function deleteSearch(group, eq)
   }
   // Hide x
   if($('#group'+group+' .search').length == 1) {
-    $('#group'+group+' .search .delete').addClass('hidden');
+    $('#group'+group+' .search .delete').addClass('hide');
   }
 }
 
@@ -62,7 +62,7 @@ function addGroup(firstTerm, firstField, join)
     + '<div class="large-9 columns"><div class="row"><div class="large-12 columns"><label class="help-block">'+searchLabel+':</label></div>'
     + '<div class="large-12 columns"><i id="group'+nextGroup+'Holder" class="fa fa-plus-circle"></i> <a href="#" id="add_search_link_'+nextGroup+'" onClick="addSearch('+nextGroup+')">'+addSearchString+'</a></div></div></div>'
     + '<div class="large-3 columns">'
-    + '<a href="#" onClick="deleteGroup('+nextGroup+')" class="close hidden" title="'+deleteSearchGroupString+'">&times;</a>'
+    + '<a href="#" onClick="deleteGroup('+nextGroup+')" class="close hide" title="'+deleteSearchGroupString+'">&times;</a>'
     + '<label for="search_bool'+nextGroup+'">'+searchMatch+':&nbsp;</label>'
     + '<select id="search_bool'+nextGroup+'" name="bool'+nextGroup+'[]" class="form-control">'
     + '<option value="AND"';
@@ -86,9 +86,9 @@ function addGroup(firstTerm, firstField, join)
   addSearch(nextGroup, firstTerm, firstField);
   // Show join menu
   if($('.group').length > 1) {
-    $('#groupJoin').removeClass('hidden');
+    $('#groupJoin').removeClass('hide');
     // Show x
-    $('.group .close').removeClass('hidden');
+    $('.group .close').removeClass('hide');
   }
   return nextGroup++;
 }
@@ -101,9 +101,9 @@ function deleteGroup(group)
   if($('.group').length == 0) {
     addGroup();
   } else if($('.group').length == 1) { // Hide join menu
-    $('#groupJoin').addClass('hidden');
+    $('#groupJoin').addClass('hide');
     // Hide x
-    $('.group .close').addClass('hidden');
+    $('.group .close').addClass('hide');
   }
 }
 

@@ -34,7 +34,7 @@ function checkSaveStatuses() {
             var html = '<li><a href="' + path + '/MyResearch/MyList/' + result.list_id + '">'
                      + result.list_title + '</a></li>';
             $ul.append(html);
-            $container.removeClass('hidden');
+            $container.removeClass('hide');
           });
         }
       }

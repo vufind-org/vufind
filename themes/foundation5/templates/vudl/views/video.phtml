@@ -10,12 +10,12 @@
       + '<source src="'+data['mp4']+'?download=true"/>'
       + '<source src="'+data[data['master']]+'?download=true"/>';
       var video = $('video');
-      video.trigger('pause').html(html).removeClass('hidden');
+      video.trigger('pause').html(html).removeClass('hide');
       video[0].load();
     }
   };
   $(document).ready(function() {
-    $('#view .tabs dd.opener a').addClass('hidden');
+    $('#view .tabs dd.opener a').addClass('hide');
   });
 </script>
 <dl class="tabs" data-tab>

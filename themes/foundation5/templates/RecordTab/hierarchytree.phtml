@@ -34,17 +34,17 @@
 <? if ($activeTree): ?>
   <div id="hierarchyTreeHolder">
     <? if ($this->tab->searchActive()): ?>
-      <div id="treeSearch" class="form-inline hidden">
+      <div id="treeSearch" class="form-inline hide">
         <input type="text" id="treeSearchText" class="form-control search-query" value="">
         <select class="form-control" id="treeSearchType" name="type">
           <option value="AllFields"><?=$this->transEsc('All Fields')?></option>
           <option value="Title"><?=$this->transEsc('Title')?></option>
         </select>
         <input type="submit" class="button secondary tiny" role="button" value="<?=$this->transEsc('Search') ?>"/>
-        <i id="treeSearchLoadingImg" class="fa fa-spinner fa-spin hidden"></i>
+        <i id="treeSearchLoadingImg" class="fa fa-spinner fa-spin hide"></i>
       </div>
-      <div id="treeSearchNoResults" data-alert class="alert-box alert hidden" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->translate('nohit_heading')?></div>
-      <div id="treeSearchLimitReached" data-alert class="alert-box alert hidden" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->translate('tree_search_limit_reached_html', array('%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()))?></div>
+      <div id="treeSearchNoResults" data-alert class="alert-box alert hide" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->translate('nohit_heading')?></div>
+      <div id="treeSearchLimitReached" data-alert class="alert-box alert hide" tabindex="0" aria-live="assertive" role="dialogalert"><?=$this->translate('tree_search_limit_reached_html', array('%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()))?></div>
     <? endif; ?>
     <div id="hierarchyLoading" class="hide"><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc("Loading")?>&nbsp;...</div>
     <div id="hierarchyTree" class="hierarchy-tree">

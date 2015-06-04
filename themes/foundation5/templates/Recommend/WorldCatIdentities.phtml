@@ -5,7 +5,7 @@
       <? $i = 0; foreach ($worldCatIdentities as $author => $subjects): ?>
         <? if (++$i == 4): ?>
           <dd id="moreWCIdents"><a href="#" onclick="moreFacets('WCIdents'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
-          <span class="hidden" id="narrowGroupHidden_WCIdents">
+          <span class="hide" id="narrowGroupHidden_WCIdents">
         <? endif; ?>
         <dd>
         <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($author)?>%22&amp;type=Author"><?=$this->escapeHtml($author)?></a>

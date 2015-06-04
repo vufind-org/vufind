@@ -10,12 +10,12 @@
       + '<source src="'+data['mp3']+'?download=true"/>'
       + '<source src="'+data[data['master']]+'?download=true"/>';
       var audio = $('audio');
-      audio.trigger('pause').html(html).removeClass('hidden');
+      audio.trigger('pause').html(html).removeClass('hide');
       audio[0].load();
     }
   };
   $(document).ready(function() {
-    $('#view .tabs dd.opener a').addClass('hidden');
+    $('#view .tabs dd.opener a').addClass('hide');
   });
 </script>
 <dl class="tabs" data-tab>

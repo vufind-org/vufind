@@ -46,7 +46,7 @@
 
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
-      <div class="savedLists hidden alert-box info" id="savedLists" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
+      <div class="savedLists hide alert-box info" id="savedLists" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
         <strong><?=$this->transEsc("Saved in")?>:</strong>
       </div>
     <? endif; ?>

@@ -85,7 +85,7 @@
         ?>
         <span class="hide-for-small">
           <i class="fa fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
-          <div class="qrcode hidden">
+          <div class="qrcode hide">
             <script type="text/template" class="qrCodeImgTag">
             <img alt="<?=$this->transEsc('QR Code')?>" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
             </script>
@@ -98,7 +98,7 @@
         <i class="fa fa-star"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
         <? /* Saved lists */ ?>
-        <div class="savedLists alert-box info hidden" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
+        <div class="savedLists hide alert-box info" data-alert tabindex="0" aria-live="assertive" role="dialogalert">
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
       <? endif; ?>
