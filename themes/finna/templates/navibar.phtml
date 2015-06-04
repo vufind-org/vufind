@@ -88,9 +88,9 @@
       <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
       <? else: ?>
         <? if ($this->templateDir === 'myresearch' && $this->templateName === 'login'): ?>
-            <a title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in fa-flip-horizontal"></i> <?=$this->transEsc("Login")?></a>
+            <a title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
         <? else: ?>
-            <a href="<?=$this->url('myresearch-userlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in fa-flip-horizontal"></i> <?=$this->transEsc("Login")?></a>
+            <a href="<?=$this->url('myresearch-userlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
         <? endif; ?>
       <? endif; ?>
     </li>

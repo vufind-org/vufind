@@ -3,7 +3,7 @@
 
 body {
     background: @background-image-url;
-    background-attachment: fixed;
+    background-attachment: @background-image-attachment;
     background-size: 100% auto;
     background-position: 0% 0%;
     @media(max-width:@screen-sm-max) {
@@ -383,11 +383,12 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     font-size: 1.05em;
     margin-bottom: 0px;
 }
-.show-details-button {
-    margin-top: 10px;
+.show-details-button, .hide-details-button {
+    margin-top: 0px;
     margin-bottom: 5px;
     cursor: pointer;
-    background: #f5f5f5;
+    padding-left: 0;
+    background: @body-bg;
     color: @link-color;
     &:hover {
         color: @link-color;   
@@ -1143,6 +1144,23 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
 //Finna mixins
 .truncate-field {
     overflow: hidden;
+}
+.more-link.dots:after {
+    content: '...';
+    position: absolute;
+    right: 15px;
+    width: 100px;
+    margin-top: -28px;
+    background: #fff;
+    padding-left: 14px;
+    color: gray;
+    background: -moz-linear-gradient(left,  rgba(255,255,255,0.2) 0%, rgba(255,255,255,1) 12%, rgba(255,255,255,1) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,0.2)), color-stop(12%,rgba(255,255,255,1)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left,  rgba(255,255,255,0.2) 0%,rgba(255,255,255,1) 12%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left,  rgba(255,255,255,0.2) 0%,rgba(255,255,255,1) 12%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left,  rgba(255,255,255,0.2) 0%,rgba(255,255,255,1) 12%,rgba(255,255,255,1) 100%); /* IE10+ */
+    background: linear-gradient(to right,  rgba(255,255,255,0.2) 0%,rgba(255,255,255,1) 12%,rgba(255,255,255,1) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#33ffffff', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 */
 }
 .more-link, .less-link {
     padding: 0px 0px 5px;

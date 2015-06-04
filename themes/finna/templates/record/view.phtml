@@ -23,7 +23,7 @@
 <div class="container-fluid record-view-header">
  <div class="container">
   <div class="row">
-    <div class="col-xs-5">
+    <div class="col-xs-5 hidden-print">
     <?
       $html = '<span class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></span>';
       $html .= '<span class="back-to-search-text hidden-xs">'.$this->transEsc('Back to search results').'</span>';
@@ -64,13 +64,14 @@
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
-      <?=$this->record($this->driver)->getCoreMetadata()?>
       <?=$this->record($this->driver)->getToolbar()?>
+      <?=$this->record($this->driver)->getCoreMetadata()?>
+
     </div>
 
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
-      <ul class="recordTabs nav nav-tabs">
+      <ul class="recordTabs nav nav-tabs hidden-print">
         <? foreach ($this->tabs as $tab => $obj): ?>
         <? // add current tab to breadcrumbs if applicable:
           $desc = $obj->getDescription();
