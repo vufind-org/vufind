@@ -686,7 +686,7 @@ class SolrDefault extends AbstractBase
         } else if (strlen($this->getCleanISSN()) > 0) {
             return 'Journal';
         }
-        return 'Book';
+        return 'UnknownFormat';
     }
 
     /**
@@ -859,6 +859,10 @@ class SolrDefault extends AbstractBase
      */
     public function getOpenURL()
     {
+        if (!$this->openURLSupportedRecord()) {
+            return false;
+        }
+
         // Set up parameters based on the format of the record:
         $format = $this->getOpenURLFormat();
         $method = "get{$format}OpenURLParams";
@@ -1586,24 +1590,6 @@ class SolrDefault extends AbstractBase
 
         // Unsupported format:
         return false;
-    }
-
-    /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
-     * @return bool
-     */
-    public function openURLActive($area)
-    {
-        // Only display OpenURL link if the option is turned on and we have
-        // an ISSN.  We may eventually want to make this rule more flexible.
-        if (!$this->getCleanISSN()) {
-            return false;
-        }
-        return parent::openURLActive($area);
     }
 
     /**

@@ -410,6 +410,64 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Checks the current record if it's supported for OpenURL generation
+     *
+     * @return bool
+     */
+    protected function openURLSupportedRecord()
+    {
+        if (isset($this->mainConfig->OpenURL)
+            && isset($this->mainConfig->OpenURL->supported_records)
+        ) {
+            $supportedRecordsRuleset
+                = $this->mainConfig->OpenURL->supported_records->toArray();
+
+            // check each rule - first rule-match
+            foreach ($supportedRecordsRuleset as $rule) {
+                $ruleArray = json_decode($rule, true);
+
+                $ruleMatchCounter = 0;
+
+                foreach ($ruleArray as $key => $value) {
+                    if (isset($this->fields[$key])
+                        && !empty($this->fields[$key])
+                    ) {
+                        // do we have a value provided for the field or is its
+                        // existence sufficient for generating OpenURLs?
+                        if (empty($value)) {
+                            // no value is given, so existence of field is sufficient
+                            $ruleMatchCounter++;
+                        } else {
+                            // a value is given, so check if it matches the record's
+
+                            // multiValue field
+                            if (is_array($this->fields[$key])) {
+                                if (!is_array($value)) {
+                                    $value = [$value];
+                                }
+
+                                if (count(array_diff($this->fields[$key], $value)) == 0
+                                ) {
+                                    $ruleMatchCounter++;
+                                }
+                            } else {
+                                // singleValue field
+                                if ($this->fields[$key] == $value) {
+                                    $ruleMatchCounter++;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (count($ruleArray) == $ruleMatchCounter) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Should we display regular URLs when an OpenURL is present?
      *
      * @return bool
