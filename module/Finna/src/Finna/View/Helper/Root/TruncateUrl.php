@@ -1,6 +1,6 @@
 <?php
 /**
- * Record driver view helper
+ * URL truncater
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace Finna\View\Helper\Root;
 
 /**
- * Record driver view helper
+ * URL truncater
  *
  * @category VuFind2
  * @package  View_Helpers
