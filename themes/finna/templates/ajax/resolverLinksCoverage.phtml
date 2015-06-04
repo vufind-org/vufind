@@ -39,7 +39,7 @@
 
 <? if (!empty($from) || !empty($to) || !empty($embargo)): ?>
   <span class="coverage">
-  <? if ($this->transEsc('openurl_coverage_prefix') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?>
+  <? if (!$this->translationEmpty('openurl_coverage_prefix')): ?>
     <?=$this->transEsc('openurl_coverage_prefix') ?>
   <? endif; ?>
   <?=$from ?> <?=$to ?>
