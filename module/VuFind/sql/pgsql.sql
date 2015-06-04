@@ -97,12 +97,12 @@ PRIMARY KEY (id)
 
 CREATE TABLE "user"(
 id SERIAL,
-username varchar(50) NOT NULL DEFAULT '',
+username varchar(255) NOT NULL DEFAULT '',
 password varchar(32) NOT NULL DEFAULT '',
 pass_hash varchar(60) DEFAULT NULL,
 firstname varchar(50) NOT NULL DEFAULT '',
 lastname varchar(50) NOT NULL DEFAULT '',
-email varchar(250) NOT NULL DEFAULT '',
+email varchar(255) NOT NULL DEFAULT '',
 cat_username varchar(50) DEFAULT NULL,
 cat_password varchar(50) DEFAULT NULL,
 cat_pass_enc varchar(110) DEFAULT NULL,

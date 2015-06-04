@@ -13,16 +13,7 @@
 <a rel="external" href="<?=$this->recordLink()->getUrl($this->driver)?>">
   <div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-    <h3>
-      <?
-        $listTitle = $this->driver->getTitle();
-        if (!empty($listTitle)) {
-            echo $this->escapeHtml($this->truncate($listTitle, 180));
-        } else {
-            echo $this->transEsc('Title not available');
-        }
-      ?>
-    </h3>
+    <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
     <? $listAuthor = $this->driver->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
       <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthor)?></p>
     <? endif; ?>
