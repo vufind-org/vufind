@@ -1,0 +1,131 @@
+;; Mandatory settings:
+
+; active = [0|1]
+; url[language code|*] = "<url>" Feed URL, for example:
+;    Absolute URL: http://blogs.helsinki.fi/scriptaselecta/feed/
+;    Relative URL: Search/Results?lookfor=finna&type=AllFields&view=rss&lng=fi
+;    Local file:   themes/custom/templates/rss/feed.xml
+
+; type = "[list|carousel|carousel-vertical]"
+
+;; Optional settings:
+
+; items = <items> Number of newest items to read from the feed. By default, all items are shown.
+; title = "[rss|<translation-key>]" Feed title:
+;    'rss' = Use <title> element from feed
+;    '<translation-key>' = Use local translation
+
+; linkTarget  = "[_blank|_self|_parent|_top|framename]" Link target for item links.
+
+; Item link label. If not defined, the whole element is clickable.
+
+; Same link text for desktops and touch devices:
+; linkText = "<translation-key>"
+
+; Different link texts for desktops and touch devices:
+; linkText[desktop] = "<translation-key>"
+; linkText[touch] = = "<translation-key>"
+
+
+; Content elements to hide (by default all elments are shown):
+
+; content[title] = 0
+; content[text] = 0
+; content[link] = 0
+; content[image] = 0
+; content[date] = 0
+ 
+;; Optional list settings:
+
+; moreLink = [0|1] Display a "more" link.
+; dateFormat = "<format>" Item date format ("j.n." by default, see: http://php.net/manual/en/function.date.php).
+
+;; Optional carousel settings:
+
+; titlePosition = "bottom" Display item title below image.
+; height = [pixels] Carousel height
+; autoplay = [milliseconds] Autoplay slide change interval (autoplay is off by default).
+; dots = [0|1] Display current slide indicator (default 1).
+
+
+
+; Number of visible items in the carousel
+
+; itemsPerPage[desktop] = 4
+; itemsPerPage[desktop-small] = 4 
+; itemsPerPage[tablet] = 2 
+; itemsPerPage[mobile] = 1
+
+; Number of items to scroll, defaults to itemsPerPage
+
+; scrolledItems[desktop] = 3
+; scrolledItems[desktop-small] = 2 
+; scrolledItems[tablet] = 2 
+; scrolledItems[mobile] = 1
+
+; Elements to hide, by default all elements are shown
+
+; content[title] = 0
+; content[text] = 0
+; content[link] = 0
+; content[image] = 0
+; content[date] = 0
+
+
+[carousel]
+type = "carousel"
+active = 1
+url[*] = "http://www.hel.fi/hel2/kaumuseo/finna/hkm_nostot.xml"
+title = 'rss'
+height = 350
+
+itemsPerPage[desktop] = 4
+itemsPerPage[desktop-small] = 3 
+itemsPerPage[tablet] = 2 
+itemsPerPage[mobile] = 1
+
+[carousel-small]
+type = "carousel"
+active = 1
+url[*] = "themes/finna/templates/rss/hanna.xml"
+title = 'rss'
+height = 150
+titlePosition = "bottom"
+
+itemsPerPage[desktop] = 8
+itemsPerPage[desktop-small] = 8 
+itemsPerPage[tablet] = 6
+itemsPerPage[mobile] = 2
+
+scrolledItems[desktop] = 8
+scrolledItems[desktop-small] = 8
+scrolledItems[tablet] = 6
+scrolledItems[mobile] = 2
+
+[carousel-vertical]
+type = "carousel-vertical"
+active = 1
+url[*] = "http://blogs.helsinki.fi/scriptaselecta/feed/"
+title = 'rss'
+height = 200
+content[text] = 0
+
+itemsPerPage[desktop] = 2
+itemsPerPage[desktop-small] = 2 
+itemsPerPage[tablet] = 2 
+itemsPerPage[mobile] = 1
+
+scrolledItems[desktop] = 2
+scrolledItems[desktop-small] = 2
+scrolledItems[tablet] = 2 
+scrolledItems[mobile] = 1
+
+[news]
+active = 1
+url[*] = "http://blogs.helsinki.fi/scriptaselecta/feed/"
+type = list
+title = "rss"
+content[text] = 0
+content[image] = 0
+linkTarget  = "_blank"
+
