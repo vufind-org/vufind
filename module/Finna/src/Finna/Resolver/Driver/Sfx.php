@@ -76,8 +76,6 @@ class Sfx extends \VuFind\Resolver\Driver\Sfx
                         ->embargo_text->embargo_statement;
                     $record['embargo'] = (string)$coverageText
                         ->embargo_text->embargo_statement;
-                    error_log("EMBARGO: " . (string)$coverageText
-                        ->embargo_text->embargo_statement);
                 }
             }
             if (isset($target->coverage)) {
