@@ -234,7 +234,7 @@ ul[role=navigation] { list-style: none; }
 #content.panel { padding: 1rem; }
 
 /* Advanced Search: criterion remove button */
-#advSearchForm .close { margin-right: -1.5rem; margin-top: -1.5rem; }
+#advSearchForm .close { float: right; font-weight: bold; margin-right: -1rem; margin-top: -1rem; }
 
 #advSearchForm .panel { margin-bottom: 1rem; }
 
