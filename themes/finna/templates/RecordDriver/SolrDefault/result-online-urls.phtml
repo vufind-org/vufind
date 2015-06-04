@@ -1,5 +1,5 @@
 <!-- start of Default result-online-urls.phtml -->
-  <? $urls = $this->driver->getURLs(); $openURL = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false; $onlineURLs = $this->driver->tryMethod('getOnlineURLs'); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
+  <? $urls = $this->driver->getURLs(); $openURL = $this->driver->openURLActive($this->context) ? $this->driver->getOpenURL() : false; $onlineURLs = $this->driver->tryMethod('getOnlineURLs'); $mergedData = $this->driver->tryMethod('getMergedRecordData'); ?>
   <? if (!empty($urls) || $openURL || !empty($onlineURLs) || !empty($mergedData['urls']) || strncmp($this->driver->getUniqueID(), 'metalib_', 8) == 0): ?>
     <div class="available-online-links">
       <strong><?=$this->transEsc('Available Online') ?>:</strong>

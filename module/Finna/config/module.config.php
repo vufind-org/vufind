@@ -138,6 +138,11 @@ $config = array(
                     'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful',
                 ],
             ],
+            'resolver_driver' => [
+                'factories' => [
+                    'sfx' => 'Finna\Resolver\Driver\Factory::getSfx',
+                ],
+            ],
             'search_backend' => array(
                 'factories' => array(
                     'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
