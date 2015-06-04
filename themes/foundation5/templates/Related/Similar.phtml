@@ -2,7 +2,7 @@
 <h4><?=$this->transEsc('Similar Items')?></h4>
 <? $similarRecords = $this->related->getResults(); ?>
 <? if (!empty($similarRecords)): ?>
-  <ul class="similar-items">
+  <ul class="list-unstyled">
     <? foreach ($similarRecords as $data): ?>
       <li>
         <? $formats = $data->getFormats(); ?>

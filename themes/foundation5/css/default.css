@@ -34,6 +34,7 @@ body { background-color: #F9F9F9; }
 
 /* LISTS */
 .list-unstyled { list-style: none none; padding-left: 0; }
+
 ul.list-unstyled { margin-left:0; }
 
 /* TABLES */
@@ -72,11 +73,13 @@ table td[class*="col-"],table th[class*="col-"]{position: static;float: none;dis
 
 .sidebar .side-nav li .active:focus { background-color: #a0d3e8; }
 
-/* Lists with similar items, related items etc. */
-.similar-items, .related-editions { margin-bottom: 1rem; margin-left: 0; padding-left: 0; }
+/* Lists with similar items, related items etc. in sidebar */
+.sidebar .list-unstyled  { margin-bottom: 1rem; }
 
-.similar-items li, .related-editions li { border-color: #dddddd #dddddd -moz-use-text-color;
- border-image: none; border-style: solid solid none; border-width: 1px 1px medium; list-style: none none; padding: .75em 1em .75em 1em; -moz-border-bottom-colors: none; -moz-border-left-colors: none; -moz-border-right-colors: none; -moz-border-top-colors: none; }
+.sidebar .list-unstyled li { border-color: #dddddd #dddddd -moz-use-text-color;
+ border-image: none; border-style: solid solid none; border-width: 1px 1px medium; padding: .75em 1em; -moz-border-bottom-colors: none; -moz-border-left-colors: none; -moz-border-right-colors: none; -moz-border-top-colors: none; }
+
+.sidebar .list-unstyled li:last-of-type { border-bottom: 1px solid #dddddd }
 
 /* CHECK relevance of the following - in use? - Fixme */
 .panel > .list-group { margin-bottom: 0; }
