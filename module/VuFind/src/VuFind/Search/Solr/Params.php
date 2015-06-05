@@ -100,7 +100,9 @@ class Params extends \VuFind\Search\Base\Params
         if (isset($config->Results_Settings->sorted_by_index)
             && count($config->Results_Settings->sorted_by_index->toArray() > 0)
         ) {
-            $this->setIndexSortedFacets($config->Results_Settings->sorted_by_index->toArray());
+            $this->setIndexSortedFacets(
+                $config->Results_Settings->sorted_by_index->toArray()
+            );
         }
     }
 
@@ -261,7 +263,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function setIndexSortedFacets ($s)
+    public function setIndexSortedFacets($s)
     {
         $this->indexSortedFacets  = $s;
     }
@@ -477,7 +479,7 @@ class Params extends \VuFind\Search\Base\Params
 
             if (isset($facets['indexSortedFacets'])) {
                 if (count($facets['indexSortedFacets']) > 0) {
-                    foreach ($facets['indexSortedFacets'] as $field){
+                    foreach ($facets['indexSortedFacets'] as $field) {
                         $backendParams->add("f.{$field}.facet.sort", "index");
                     }
                 }
