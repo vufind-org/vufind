@@ -29,6 +29,7 @@
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\FilterFieldConversionListener;
+use VuFind\Search\Solr\HideFacetValueListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectSpellingListener;
@@ -231,6 +232,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $filterFieldConversionListener->attach($events);
         }
 
+        // Attach hide facet value listener:
+        $this->getHideFacetValueListener($backend)->attach($events);
+
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
         $legacyErrorListener = new LegacyErrorListener($backend);
@@ -381,6 +385,24 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $this->searchConfig
         );
     }
+
+    /**
+     * Get a hide facet value listener for the backend
+     *
+     * @param BackendInterface $backend Search backend
+     *
+     * @return HideFacetValueListener
+     */
+    protected function getHideFacetValueListener(BackendInterface $backend)
+    {
+
+        return new HideFacetValueListener(
+            $backend,
+            $this->serviceLocator,
+            $this->facetConfig
+        );
+    }
+
 
     /**
      * Get a hierarchical facet listener for the backend
