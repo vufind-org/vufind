@@ -265,7 +265,7 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function setIndexSortedFacets($s)
     {
-        $this->indexSortedFacets  = $s;
+        $this->indexSortedFacets = $s;
     }
 
 
