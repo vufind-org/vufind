@@ -417,29 +417,12 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     	if (isset($this->recordConfig->eHoldings->active)
             && $this->recordConfig->eHoldings->active == true
         ) {
-	    	$kbrequest = "http://worldcat.org/webservices/kb/openurl/resolve?";
-	    	$kbrequest .= $this->getOpenURL();
-	    	$kbrequest .= '&wskey=' . $this->recordConfig->General->wskey;
-	    		
-	    	$client = $this->httpService
-	    	->createClient($kbrequest);
-	    	$adapter = new \Zend\Http\Client\Adapter\Curl();
-	    	$client->setAdapter($adapter);
-	    	$result = $client->setMethod('GET')->send();
-	    	
-	    	if ($result->isSuccess()){
-	    		$kbresponse = json_decode($result->getBody(), true);
-	    		if (isset($kbresponse[0]['url'])){
-	    			$urls[] = ['url' => $kbresponse[0]['url'], 'desc' => $kbresponse[0]['collection_name']];
-	    		}
-	    	} else {
-	    		throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
-	    	}
+            if ($urlService = $this->getWorldCatKnowledgeBaseUrlService()) {
+                $moreUrls = $urlService->getUrls($this);
+                $urls = array_merge($urls, $moreUrls);
+            }
     	}
-    	if ($urlService = $this->getWorldCatKnowledgeBaseUrlService()) {
-            $moreUrls = $urlService->getUrls($this);
-            $urls = array_merge($urls, $moreUrls);
-        }
+    	
     	return $urls;
     }
 

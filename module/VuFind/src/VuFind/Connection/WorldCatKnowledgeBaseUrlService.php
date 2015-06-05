@@ -39,8 +39,10 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class WorldCatKnowledgeBaseUrlService
+class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInterface
 {
+    use \VuFindHttp\HttpServiceAwareTrait;
+    
     /**
      * Array of record drivers to look up (keyed by ID).
      *
@@ -54,7 +56,25 @@ class WorldCatKnowledgeBaseUrlService
      * @var array
      */
     protected $cache = [];
+    
+    /**
+     * String for API Key to WorldCat Knowledge base
+     * @var string
+     */
+    protected $worldcatKnowledgeBaseWskey;
 
+    /**
+     * 
+     */
+    public function __construct($config, $worldcatDiscoveryConfig)
+    {
+        if ($worldcatDiscoveryConfig) {
+            $this->worldcatKnowledgeBaseWskey = $worldcatDiscoveryConfig->General->wskey;
+        } else {
+            $this->worldcatKnowledgeBaseWskey = $config->OpenURL->worldcatKnowledgeBaseWskey;
+        }
+    }
+    
     /**
      * Add a record driver to the queue of records we should look up (this allows
      * us to save HTTP requests by looking up many URLs at once on a "just in case"
@@ -96,18 +116,53 @@ class WorldCatKnowledgeBaseUrlService
      */
     protected function processQueue()
     {
-        // Load URLs for queue (TODO: retrieve real data!)
-        $ids = array_keys($this->queue);
-        foreach ($ids as $id) {
-            $this->cache[$id] = [
-                [
-                    'url' => 'http://example.com/' . rand(1000, 9999),
-                    'desc' => 'Random fake link'
-                ]
-            ];
+        // Load URLs for queue
+        $kbrequest = "http://worldcat.org/webservices/kb/openurl/mresolve?queries=";
+        $queries = array();
+        foreach ($this->queue as $id => $record){
+            $queries[$id] = $this->openURLToArray($record->getOpenURL());
         }
+        $kbrequest .= json_encode($queries);
+        $kbrequest .= '&wskey=' . $this->worldcatKnowledgeBaseWskey;
+         
+        $client = $this->httpService
+        ->createClient($kbrequest);
+        $adapter = new \Zend\Http\Client\Adapter\Curl();
+        $client->setAdapter($adapter);
+        $result = $client->setMethod('GET')->send();
+        
+        if ($result->isSuccess()){
+            $kbresponse = json_decode($result->getBody(), true);
+            foreach ($kbresponse as $id => $result) {
+                if (isset($result['result'][0]['url']) && isset($result['result'][0]['collection_name'])) {
+                    $this->cache[$id] = [
+                        [
+                            'url' => $result['result'][0]['url'],
+                            'desc' => $result['result'][0]['collection_name']
+                        ]
+                    ];
+                } else {
+                    $this->cache[$id] = array();
+                }
+            }
+        } else {
+            throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
+        }
+        
+        
 
         // Clear queue
         $this->queue = [];
+    }
+    
+    private function openURLToArray($openURL){
+        $parametersPairs = explode('&', $openURL);
+    
+        $parameters = array();
+        foreach ($parametersPairs as $parametersPair){
+            $pairArray = explode('=', $parametersPair);
+            $parameters[$pairArray[0]] = $pairArray[1];
+        }
+        return $parameters;
     }
 }
