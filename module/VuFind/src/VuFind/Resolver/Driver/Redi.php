@@ -208,11 +208,11 @@ class Redi implements DriverInterface
 
                 $accessClass = '';
                 $accessClassExpressions = [
-                    "open"    => "//div[@class='t_ezb_result']["
+                    "denied"    => "//div[@class='t_ezb_result']["
                         . ($i+1) . "]/p/span[@class='t_ezb_red']",
                     "limited" => "//div[@class='t_ezb_result']["
                         . ($i+1) . "]/p/span[@class='t_ezb_yellow']",
-                    "denied"  => "//div[@class='t_ezb_result']["
+                    "open"  => "//div[@class='t_ezb_result']["
                         . ($i+1) . "]/p/span[@class='t_ezb_green']",
                 ]; // $i+1 because XPath-element-counting starts with 1
                 foreach ($accessClassExpressions as $key => $value) {
