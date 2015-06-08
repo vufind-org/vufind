@@ -1,11 +1,7 @@
 <?
   $this->headScript()->appendFile("openurl.js");
   if ($this->openUrlEmbed) {
-    if ($this->openUrlEmbedAutoLoad) {
-        $class = ' class="fulltext openUrlEmbed openUrlEmbedAutoLoad openurl_id:' . $this->openUrlId . '"';
-    } else {
-        $class = ' class="fulltext openUrlEmbed openurl_id:' . $this->openUrlId . '"';
-    }
+    $class = ' class="fulltext openUrlEmbed openurl_id:' . $this->openUrlId . '"';
   } elseif ($this->openUrlWindow) {
     $class = ' class="fulltext openUrlWindow window_settings:' . $this->escapeHtmlAttr($this->openUrlWindow) . '"';
   } else {

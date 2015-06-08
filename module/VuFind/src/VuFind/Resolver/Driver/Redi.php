@@ -206,7 +206,7 @@ class Redi implements DriverInterface
         if ($ezbResultsNodesText->length == $ezbResultsNodesURL->length) {
             for ($i = 0; $i<$ezbResultsNodesText->length; $i++) {
 
-                $accessClass = '';
+                $accessClass = 'unknown';
                 $accessClassExpressions = [
                     "denied"    => "//div[@class='t_ezb_result']["
                         . ($i+1) . "]/p/span[@class='t_ezb_red']",
@@ -235,7 +235,7 @@ class Redi implements DriverInterface
                     'title' => $ezbResultsNodesText->item($i)->textContent,
                     'href' => $ezbResultsNodesURL->item($i)
                         ->attributes->getNamedItem("href")->textContent,
-                    'class'        => 'access-'.$accessClass,
+                    'access'       => $accessClass,
                     'coverage'     => $itemInfo,
                     'service_type' => 'getFullTxt',
                 ];

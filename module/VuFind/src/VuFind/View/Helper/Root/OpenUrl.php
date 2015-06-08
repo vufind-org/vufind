@@ -103,8 +103,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             'openUrlGraphicHeight' => empty($this->config->graphic_height)
                 ? false : $this->config->graphic_height,
             'openUrlEmbed' => $embed,
-            'openUrlEmbedAutoLoad' => (isset($this->config->embed_auto_load)
-                && !empty($this->config->embed_auto_load)),
             'openUrlId' => $counter
         ];
 
