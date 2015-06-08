@@ -38,7 +38,7 @@
         <? foreach ($this->services as $link): ?>
           <? if (isset($link['href']) && !empty($link['href'])): ?>
             <li>
-              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"><?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
+              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class=access-"'.$link['access'].'"':''?>><?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
             </li>
           <? endif; ?>
         <? endforeach; ?>
