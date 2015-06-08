@@ -35,4 +35,5 @@ $(document).ready(function() {
         loadResolverLinks($('#openUrlEmbed'+params.openurl_id).removeClass('hidden'), openUrl);
         return false;
     });
+
 });
