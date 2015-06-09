@@ -213,10 +213,10 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Apply deduplication if applicable:
-        if (isset($search->Records->deduplication)
-            && $search->Records->deduplication
-        ) {
-            $this->getDeduplicationListener($backend)->attach($events);
+        if (isset($search->Records->deduplication)) {
+            $this->getDeduplicationListener(
+                $backend, $search->Records->deduplication
+            )->attach($events);
         }
 
         // Attach hierarchical facet listener:
@@ -370,15 +370,18 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * Get a deduplication listener for the backend
      *
      * @param BackendInterface $backend Search backend
+     * @param bool             $enabled Whether deduplication is enabled
      *
      * @return DeduplicationListener
      */
-    protected function getDeduplicationListener(BackendInterface $backend)
+    protected function getDeduplicationListener(BackendInterface $backend, $enabled)
     {
         return new DeduplicationListener(
             $backend,
             $this->serviceLocator,
-            $this->searchConfig
+            $this->searchConfig,
+            'datasources',
+            $enabled
         );
     }
 
