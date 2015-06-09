@@ -131,6 +131,7 @@ finna.feed = (function() {
 
                         if (titleBottom) {
                             adjustTitles(holder);
+                            holder.find('.carousel-hover-title').hide();
                         }
 
                         holder.find(".slick-slide")

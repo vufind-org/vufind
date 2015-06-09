@@ -18,6 +18,9 @@
 
       <? if (isset($item['text']) || $clickableLink): ?>
       <div class="carousel-text">
+        <? if (isset($item['title'])): ?>
+        <p class="carousel-hover-title"><?= $item['title']; ?></p>
+        <? endif; ?>
         <p><?= $item['text']; ?>
         <? if ($clickableLink): ?><a <?= $this->linkTarget ? ' target="' . $this->escapeHtmlAttr($this->linkTarget) . '"' : '' ?> href="<?= $this->escapeHtmlAttr($item['link']); ?>" class="carousel-link"><?=$this->transEsc($this->linkText ? $this->linkText : 'To the record')?></a><? endif; ?>
         </p>
@@ -25,7 +28,7 @@
       <? endif; ?>
       <? if (isset($item['image']) && isset($item['image']['url'])): ?>
       <div class="wrapper">
-        <img src="<?= $item['image']['url']; ?>" />
+        <img src="<?= $item['image']['url']; ?>" alt="<?=$this->transEsc("Image");?>: <? if (isset($item['title'])): ?><?= $item['title']; ?><? endif; ?>" />
       </div>
       <? endif; ?>
       <? if ($clickableElement):?></a><? endif; ?>

@@ -162,9 +162,12 @@
   & a:hover {
     text-decoration: none;   
   }
-  & > li:not(.addthis-share-buttons) {
+  & > li:not(.addthis-share-buttons):not(.whatsapp) {
     float: left;
     margin: 5px 0px;
+    @media (max-width: @screen-xs-max) {
+        padding-top: 10px;   
+    }
     &:first-child {
         margin-left: 0;   
     }

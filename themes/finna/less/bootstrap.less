@@ -49,6 +49,9 @@ section.main.template-dir-content.template-name-content .container-fluid.finna-m
         margin: 0;
     }
 }
+.template-name-content .finna-main-header {
+    background: @content-heading-background;  
+}
 .record-view-header {
     background: @finna-record-header-background;
 }
@@ -93,6 +96,7 @@ section.main.template-dir-content.template-name-content .container-fluid.finna-m
 }
 .introduction h1 {
     font-size: @introduction-header;
+    line-height: (@introduction-header/2.1);
     @media(max-width:@screen-xs-max) {
         font-size: (@introduction-header/1.5);   
     }
@@ -438,9 +442,6 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Collection view --- */
 .template-dir-collection.template-name-view {
-    & > .container {
-        margin-top: 20px;   
-    }
     & .collection-title {
         margin-top: 0;   
     }
