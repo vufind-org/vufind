@@ -248,6 +248,6 @@ class Pazpar2 extends SolrDefault
      */
     protected function getOpenURLFormat()
     {
-        return 'UnknownFormat';
+        return 'Book';
     }
 }
