@@ -118,24 +118,20 @@
         <? endif; ?>
       </div>
 
-      <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
+      <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlTemplate),
             but even if we don't plan to display the link, we still want to get the $openUrl
             value for use in generating a COinS (Z3988) tag -- see bottom of file.
           */
         $openUrl = $this->driver->getOpenURL();
-        $openUrlActive = $this->driver->openURLActive('results');
-        $urls = $this->record($this->driver)->getLinkDetails();
-        if ($openUrlActive || !empty($urls)):
+        $openUrlTemplate = $openUrl ? $this->openUrl($openUrl, 'results') : false;
+        // Account for replace_other_urls setting
+        $urls = $openUrlTemplate && $this->driver->replaceURLsWithOpenURL() ? array() : $this->record($this->driver)->getLinkDetails();
+
+        if ($openUrlTemplate || !empty($urls)):
       ?>
-        <? if ($openUrlActive): ?>
+        <? if ($openUrlTemplate): ?>
           <br/>
-          <?=$this->openUrl($openUrl)?>
-          <?
-            if ($this->driver->replaceURLsWithOpenURL()) {
-              // clear URL list if replace setting is active
-              $urls = array();
-            }
-          ?>
+          <?=$openUrlTemplate?>
         <? endif;?>
 
         <? if (!is_array($urls)) { $urls = array(); }
@@ -148,7 +144,7 @@
       <br/>
       <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
 
-      <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+      <? if (!$openUrlTemplate && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
         <span class="status ajax-availability hidden"><?=$this->transEsc('Loading')?>...</span>
         <br/><br/>
       <? endif; ?>

@@ -242,25 +242,12 @@ class Pazpar2 extends SolrDefault
     }
 
     /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
-     * @return bool
-     */
-    public function openURLActive($area)
-    {
-        return AbstractBase::openURLActive($area);
-    }
-
-    /**
      * Support method for getOpenURL() -- pick the OpenURL format.
      *
      * @return string
      */
     protected function getOpenURLFormat()
     {
-        return 'Book';
+        return 'UnknownFormat';
     }
 }

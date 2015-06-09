@@ -248,6 +248,11 @@ class Summon extends SolrDefault
      */
     public function getOpenURL()
     {
+        // stop here if this record does not support OpenURLs
+        if (!$this->supportsOpenURL()) {
+            return false;
+        }
+
         return isset($this->fields['openUrl'])
             ? $this->fields['openUrl'] : parent::getOpenURL();
     }
@@ -614,19 +619,5 @@ class Summon extends SolrDefault
             }
         }
         return $str;
-    }
-
-    /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
-     * @return bool
-     */
-    public function openURLActive($area)
-    {
-        // Summon never uses OpenURLs for anything other than COinS:
-        return false;
     }
 }

@@ -686,7 +686,7 @@ class SolrDefault extends AbstractBase
         } else if (strlen($this->getCleanISSN()) > 0) {
             return 'Journal';
         }
-        return 'UnknownFormat';
+        return 'Book';
     }
 
     /**
@@ -859,7 +859,8 @@ class SolrDefault extends AbstractBase
      */
     public function getOpenURL()
     {
-        if (!$this->openURLSupportedRecord()) {
+        // stop here if this record does not support OpenURLs
+        if (!$this->supportsOpenURL()) {
             return false;
         }
 

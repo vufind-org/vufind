@@ -3,11 +3,11 @@
     $account = $this->auth()->getManager();
     $user = $account->isLoggedIn();
     $holdings = $this->driver->getRealTimeHoldings();
-    $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
+    $openUrl = $this->driver->getOpenURL();
+    $openUrlTemplate = $openUrl ? $this->openUrl($openUrl, 'holdings') : false;
     $offlineMode = $this->ils()->getOfflineMode();
     // Account for replace_other_urls setting
-    $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
-
+    $urls = $openUrlTemplate && $this->driver->replaceURLsWithOpenURL() ? array() : $this->record($this->driver)->getLinkDetails();
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
@@ -39,14 +39,14 @@
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
     <a class="placehold modal-link" title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="fa fa-flag"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
-<? if (!empty($urls) || $openUrl): ?>
+<? if (!empty($urls) || $openUrlTemplate): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
   <? if (!empty($urls)): ?>
     <? foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
     <? endforeach; ?>
   <? endif; ?>
-  <? if ($openUrl): ?><?=$this->openUrl($openUrl);?><? endif; ?>
+  <? if ($openUrlTemplate): ?><?=$openUrlTemplate?><? endif; ?>
 <? endif; ?>
 <? foreach ($holdings as $holding): ?>
 <h3><?=$this->transEsc('location_' . $holding['location'], array(), $holding['location'])?></h3>

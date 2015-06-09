@@ -384,97 +384,14 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
-     * @return bool
-     */
-    public function openURLActive($area)
-    {
-        // Doesn't matter the target area if no OpenURL resolver is specified:
-        if (!isset($this->mainConfig->OpenURL->url)) {
-            return false;
-        }
-
-        // If a setting exists, return that:
-        $key = 'show_in_' . $area;
-        if (isset($this->mainConfig->OpenURL->$key)) {
-            return $this->mainConfig->OpenURL->$key;
-        }
-
-        // If we got this far, use the defaults -- true for results, false for
-        // everywhere else.
-        return ($area == 'results');
-    }
-
-    /**
-     * Checks the current record if it's supported for OpenURL generation
-     *
-     * @return bool
-     */
-    protected function openURLSupportedRecord()
-    {
-        if (isset($this->mainConfig->OpenURL)
-            && isset($this->mainConfig->OpenURL->supported_records)
-        ) {
-            $supportedRecordsRuleset
-                = $this->mainConfig->OpenURL->supported_records->toArray();
-
-            // check each rule - first rule-match
-            foreach ($supportedRecordsRuleset as $rule) {
-                $ruleArray = json_decode($rule, true);
-
-                $ruleMatchCounter = 0;
-
-                foreach ($ruleArray as $key => $value) {
-                    if (isset($this->fields[$key])
-                        && !empty($this->fields[$key])
-                    ) {
-                        // do we have a value provided for the field or is its
-                        // existence sufficient for generating OpenURLs?
-                        if (empty($value)) {
-                            // no value is given, so existence of field is sufficient
-                            $ruleMatchCounter++;
-                        } else {
-                            // a value is given, so check if it matches the record's
-
-                            // multiValue field
-                            if (is_array($this->fields[$key])) {
-                                if (!is_array($value)) {
-                                    $value = [$value];
-                                }
-
-                                if (count(array_diff($this->fields[$key], $value)) == 0
-                                ) {
-                                    $ruleMatchCounter++;
-                                }
-                            } else {
-                                // singleValue field
-                                if ($this->fields[$key] == $value) {
-                                    $ruleMatchCounter++;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (count($ruleArray) == $ruleMatchCounter) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Should we display regular URLs when an OpenURL is present?
      *
      * @return bool
      */
     public function replaceURLsWithOpenURL()
     {
-        return isset($this->mainConfig->OpenURL->replace_other_urls)
+        return $this->supportsOpenURL()
+            && isset($this->mainConfig->OpenURL->replace_other_urls)
             ? $this->mainConfig->OpenURL->replace_other_urls : false;
     }
 
@@ -486,6 +403,16 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function supportsAjaxStatus()
     {
         return false;
+    }
+
+    /**
+     * Checks the current record if it's supported for generating OpenURLs.
+     *
+     * @return bool
+     */
+    public function supportsOpenURL()
+    {
+        return true;
     }
 
     /**

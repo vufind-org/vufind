@@ -4,8 +4,8 @@
    value for use in generating a COinS (Z3988) tag -- see bottom of file.
 */
 $openUrl = $this->driver->getOpenURL();
-$openUrlActive = $this->driver->openURLActive('results');
-$urls = $this->record($this->driver)->getLinkDetails();
+$openUrlTemplate = $openUrl ? $this->openUrl($openUrl, 'results') : false;
+$urls = $openUrlTemplate && $this->driver->replaceURLsWithOpenURL() ? array() : $this->record($this->driver)->getLinkDetails();
 ?>
 
 <div class="result <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
@@ -25,7 +25,7 @@ $urls = $this->record($this->driver)->getLinkDetails();
       <? endif; ?>
     </a>
   </div>
-  <? if (!$openUrlActive && empty($urls)): ?>
+  <? if (!$openUrlTemplate && empty($urls)): ?>
     <? if ($this->driver->supportsAjaxStatus()): ?>
       <div class="status ajax-availability hidden text-center"><span class="label label-default"><?=$this->transEsc('Loading')?>...</span></div>
     <? endif; ?>
@@ -34,11 +34,10 @@ $urls = $this->record($this->driver)->getLinkDetails();
     <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <?=$this->record($this->driver)->getTitleHtml(80)?>
     </a>
-    <? if ($openUrlActive || !empty($urls)): ?>
+    <? if ($openUrlTemplate || !empty($urls)): ?>
       <br/><br/>
-      <? if ($openUrlActive): ?>
-        <?=$this->openUrl($openUrl)?><br />
-        <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
+      <? if ($openUrlTemplate): ?>
+        <?=$openUrlTemplate?><br />
       <? endif; ?>
       <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
         <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="fa fa-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
