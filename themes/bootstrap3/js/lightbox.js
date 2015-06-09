@@ -5,6 +5,7 @@
  * We do it here so that non-JS users still have a good time.
  */
 var lightboxShown = false;
+var lightboxLoginCallback = false;
 $(document).ready(function() {
   if(lightboxShown) {
     $('#modal .modal-body').html('');
@@ -27,7 +28,9 @@ function updateLightbox(html, link) {
     html = $('<div>'+html+'</div>').find('.main > .container').html();
   }
   $('#modal .modal-body').html(html);
-  $('#modal').modal('handleUpdate');
+  if(lightboxShown) {
+    $('#modal').modal('handleUpdate');
+  }
   $('#modal .modal-body').on('click', 'a', constrainLink);
   if("undefined" !== typeof link
   && "undefined" !== typeof link.dataset
@@ -53,6 +56,7 @@ function updateLightbox(html, link) {
  * data-lightbox         = looked for at page ready, handles form response in Lightbox
  * data-lightbox-close   = close after success (present to close, set to function name to run)
  * data-lightbox-success = on success, run named function
+ * data-lightbox-after-login = on success, run named function
  *
  * Submit button data options
  *
@@ -96,6 +100,9 @@ function lightboxFormSubmit(event) {
     && "function" === typeof window[event.target.dataset.lightboxSubmit]) {
     console.log(event.target.dataset.lightboxSubmit+"(event, data)");
     return window[event.target.dataset.lightboxSubmit](event, data);
+  }
+  if(dataset && "undefined" !== typeof event.target.dataset.lightboxAfterLogin) {
+    eval('lightboxLoginCallback = ' + event.target.dataset.lightboxAfterLogin);
   }
   lightboxAJAX(event, data);
   if(!lightboxShown) {

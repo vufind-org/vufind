@@ -123,6 +123,10 @@ function updatePageForLogin() {
     var recordSource = extractSource($('#record'));
     refreshCommentList(recordId, recordSource);
   });
+  // Logged in AJAX
+  $('form[name="commentRecord"]').unbind('submit').submit(registerAjaxCommentRecord);
+  $('form[name="commentRecord"]').removeAttr('data-lightbox');
+  $('form[name="commentRecord"]').removeAttr('data-lightbox-after-login');
 
   var summon = false;
   $('.hiddenSource').each(function(i, e) {
@@ -138,6 +142,11 @@ function updatePageForLogin() {
   if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
     var tab = recordTabs.find('.active a').attr('id');
     ajaxLoadTab(tab);
+  }
+
+  if(!('undefined' === typeof lightboxLoginCallback || false === lightboxLoginCallback)) {
+    lightboxLoginCallback();
+    lightboxLoginCallback = false;
   }
 }
 function newAccountHandler(html) {

@@ -92,44 +92,48 @@ function refreshCommentList(recordId, recordSource) {
   });
 }
 
+function commentLoginCallback() {
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+  setTimeout('refreshCommentList("'+recordId+'", "'+recordSource+'")', 500);
+  $('#modal').modal('hide');
+}
+
 function registerAjaxCommentRecord() {
   // Form submission
-  $('form[name="commentRecord"]').unbind('submit').submit(function(){
-    var form = this;
-    var id = form.id.value;
-    var recordSource = form.source.value;
-    var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
-    var data = {
-      comment:form.comment.value,
-      id:id,
-      source:recordSource
-    };
-    $.ajax({
-      type: 'POST',
-      url:  url,
-      data: data,
-      dataType: 'json',
-      success: function(response) {
-        var form = 'form[name="commentRecord"]';
-        if (response.status == 'OK') {
-          refreshCommentList(id, recordSource);
-          $(form).find('textarea[name="comment"]').val('');
-          $(form).find('input[type="submit"]').button('loading');
-        } else {
-          Lightbox.displayError(response.data);
-        }
+  var form = this;
+  var id = form.id.value;
+  var recordSource = form.source.value;
+  var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
+  var data = {
+    comment:form.comment.value,
+    id:id,
+    source:recordSource
+  };
+  $.ajax({
+    type: 'POST',
+    url:  url,
+    data: data,
+    dataType: 'json',
+    success: function(response) {
+      var form = 'form[name="commentRecord"]';
+      if (response.status == 'OK') {
+        refreshCommentList(id, recordSource);
+        $(form).find('textarea[name="comment"]').val('');
+        $(form).find('input[type="submit"]').button('loading');
+      } else {
+        Lightbox.displayError(response.data);
       }
-    });
-    return false;
+    }
   });
-  // Delete links
-  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
+  return false;
 }
 
 function registerTabEvents() {
-
-  // register the record comment form to be submitted via AJAX
-  //registerAjaxCommentRecord();
+  // Logged in AJAX
+  $('form[name="commentRecord"]').unbind('submit').submit(registerAjaxCommentRecord);
+  // Delete links
+  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
 
   setUpCheckRequest();
 
@@ -146,6 +150,8 @@ function registerTabEvents() {
       Lightbox.checkForError(html, Lightbox.changeContent);
     });
   });
+
+  constrainForms('form[data-lightbox]');
 }
 
 function ajaxLoadTab(tabid) {

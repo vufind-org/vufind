@@ -1,12 +1,14 @@
 <?
   // Set page title.
   $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
+
+  $user = $this->auth()->isLoggedIn()
 ?>
 
 <div id="commentList">
   <?=$this->render('record/comments-list.phtml')?>
 </div>
-<form class="comment row" name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post" data-lightbox>
+<form class="comment row" name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post" <? if($user): ?>onSubmit="registerAjaxCommentRecord"<? else: ?>data-lightbox data-lightbox-after-login="commentLoginCallback"<? endif; ?>>
   <div class="col-sm-3 name">
     <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
     <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>
