@@ -3,13 +3,14 @@ $openUrl = $this->driver->getOpenURL();
 $openUrlActive = $this->driver->openURLActive('results');
 $urls = $this->record($this->driver)->getLinkDetails();
 
-$fulltextAvailable = false;
+$fulltextLinkAvailable = false;
 foreach ($urls as $url) {
   if (!$url['citation']) {
-    $fulltextAvailable = true;
+    $fulltextLinkAvailable = true;
     break;
   }
 }
+$fulltextAvailable = $this->driver->getFulltextAvailable();
 ?>
 <div class="primo-available-online<?= $fulltextAvailable ? ' fulltext-available' : ''?>">
   <? if ($openUrlActive || !empty($urls)): ?>
@@ -17,7 +18,7 @@ foreach ($urls as $url) {
     <? if(!$this->driver->isCollection()): ?>
       <? foreach ($urls as $current): ?>
         <? $format = $this->driver->getFormats(); $format = end($format); ?>
-        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] ? $this->transEsc('Citation') : $this->transEsc('format_PCI_' . strtolower($format), null, $format) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext<?=$current['citation'] ? ' citation' : ''?>" target="_blank"><i class="fa fa-external-link"></i> <?=$current['citation'] && ($fulltextLinkAvailable || !$fulltextAvailable) ? $this->transEsc('Citation') : $this->transEsc('format_PCI_' . strtolower($format), null, $format) ?></a><?=$current['urlShort'] ? ' <span class="host">' . $current['urlShort'] . '</span>' : '' ?>
       <? endforeach; ?>
     <? endif; ?>
   <? endif; ?>

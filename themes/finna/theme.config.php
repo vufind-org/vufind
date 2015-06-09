@@ -12,19 +12,20 @@ return array(
             'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
             'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
+            'organisationsList'
+                => 'Finna\View\Helper\Root\Factory::getOrganisationsList',
+            'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
             'primo' => 'Finna\View\Helper\Root\Factory::getPrimo',
             'record' => 'Finna\View\Helper\Root\Factory::getRecord',
             'recordImage' => 'Finna\View\Helper\Root\Factory::getRecordImage',
             'searchTabs' => 'Finna\View\Helper\Root\Factory::getSearchTabs',
-            'organisationsList'
-                => 'Finna\View\Helper\Root\Factory::getOrganisationsList',
-            'personaAuth' => 'Finna\View\Helper\Root\Factory::getPersonaAuth',
         ),
         'invokables' => array(
-            'search' => 'Finna\View\Helper\Root\Search',
-            'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
             'checkboxFacetCounts' =>
                 'Finna\View\Helper\Root\CheckboxFacetCounts',
+            'search' => 'Finna\View\Helper\Root\Search',
+            'translationEmpty' => 'Finna\View\Helper\Root\TranslationEmpty',
+            'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
             'userPublicName' => 'Finna\View\Helper\Root\UserPublicName',
         )
     ),

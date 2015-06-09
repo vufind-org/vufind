@@ -697,6 +697,23 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     }
 
     /**
+     * Return SFX Object ID
+     *
+     * @return string.
+     */
+    public function getSfxObjectId()
+    {
+        $field001 = $this->getMarcRecord()->getField('001');
+        $id = $field001 ? $field001->getData() : '';
+        $field090 = $this->getMarcRecord()->getField('090');
+        $objectId = $field090 ? $field090->getSubfield('a')->getData() : '';
+        if ($id == $objectId) {
+            return $objectId;
+        }
+        return '';
+    }
+
+    /**
      * Get the statement of responsibility that goes with the title (i.e. "by John
      * Smith").
      *

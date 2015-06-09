@@ -77,22 +77,48 @@ type = "carousel"
 active = 1
 url[*] = "http://www.hel.fi/hel2/kaumuseo/finna/hkm_nostot.xml"
 title = 'rss'
-height = 250
-titlePosition = "bottom"
+height = 350
 
 itemsPerPage[desktop] = 4
 itemsPerPage[desktop-small] = 3 
 itemsPerPage[tablet] = 2 
 itemsPerPage[mobile] = 1
 
+[carousel-small]
+type = "carousel"
+active = 1
+url[*] = "themes/finna/templates/rss/hanna.xml"
+title = 'rss'
+height = 150
+titlePosition = "bottom"
+
+itemsPerPage[desktop] = 8
+itemsPerPage[desktop-small] = 8 
+itemsPerPage[tablet] = 6
+itemsPerPage[mobile] = 2
+
+scrolledItems[desktop] = 8
+scrolledItems[desktop-small] = 8
+scrolledItems[tablet] = 6
+scrolledItems[mobile] = 2
 
 [carousel-vertical]
 type = "carousel-vertical"
 active = 1
 url[*] = "http://blogs.helsinki.fi/scriptaselecta/feed/"
 title = 'rss'
-height = 300
+height = 200
 content[text] = 0
+
+itemsPerPage[desktop] = 2
+itemsPerPage[desktop-small] = 2 
+itemsPerPage[tablet] = 2 
+itemsPerPage[mobile] = 1
+
+scrolledItems[desktop] = 2
+scrolledItems[desktop-small] = 2
+scrolledItems[tablet] = 2 
+scrolledItems[mobile] = 1
 
 [news]
 active = 1
@@ -101,3 +127,24 @@ type = list
 title = "rss"
 content[text] = 0
 content[image] = 0
+linkTarget  = "_blank"
+
+[carousel-finna]
+type = "carousel"
+active = 1
+url[fi] = "themes/national/templates/rss/finna_fi.xml"
+url[en-gb] = "themes/national/templates/rss/finna_en-gb.xml"
+url[sv] = "themes/national/templates/rss/finna_sv.xml"
+title = 'rss'
+height = 370
+linkText[touch] = "To the search result"
+
+itemsPerPage[desktop] = 4
+itemsPerPage[desktop-small] = 3 
+itemsPerPage[tablet] = 3
+itemsPerPage[mobile] = 1
+
+scrolledItems[desktop] = 4
+scrolledItems[desktop-small] = 3
+scrolledItems[tablet] = 3
+scrolledItems[mobile] = 1

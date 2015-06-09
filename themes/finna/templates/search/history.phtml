@@ -1,20 +1,29 @@
 <?
   // Set page title.
   $this->headTitle($this->translate('Search History'));
-    
+
   // Set up myresearch menu
   if ($this->auth()->isLoggedIn()):
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", $this->auth()->isLoggedIn() ? array('active' => 'history') : array());
   else:
     $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1>' . $this->transEsc("history_saved_searches") . '</h1></div>';
   endif;
-  
+
   // Set up breadcrumbs:
   $this->layout()->breadcrumbs = '<li><a href="' .  $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li>'
     . '<li class="active">' . $this->transEsc('History') . '</li>';
 ?>
 <div class="row">
   <div class="col-xs-12">
+    <? if ($this->alertemail): ?>
+      <div class="infobox">
+        <?=$this->transEsc("alert_email_address") . ': ' . $this->alertemail . ' (';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("edit");?></a>)
+      </div>
+    <? elseif ($this->auth()->isLoggedIn()): ?>
+      <div class="alert alert-danger">
+        <?=$this->transEsc("no_email_address") . ' ';?><a href="<?=$this->url('myresearch-profile');?>"><?=$this->transEsc("check_profile");?></a>
+      </div>
+    <? endif; ?>
     <?=$this->flashmessages();?>
     <? if (!empty($this->saved)): ?>
       <h2><?=$this->transEsc("history_saved_searches")?></h2>

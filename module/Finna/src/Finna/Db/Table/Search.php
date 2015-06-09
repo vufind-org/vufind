@@ -87,4 +87,20 @@ class Search extends \VuFind\Db\Table\Search
 
         return $this->select($callback);
     }
+
+    /**
+     * Get saved searches.
+     *
+     * @param int $uid User ID
+     *
+     * @return \Zend\Db\ResultSet\ResultSet
+     */
+    public function getSavedSearches($uid)
+    {
+        $callback = function ($select) use ($uid) {
+            $select->where->equalTo('user_id', $uid);
+            $select->order('id');
+        };
+        return $this->select($callback);
+    }
 }

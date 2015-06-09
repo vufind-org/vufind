@@ -4,6 +4,7 @@
     <th class="history-search"><?=$this->transEsc("history_search")?></th>
     <th class="history-limits"><?=$this->transEsc("history_limits")?></th>
     <th class="history-results"><?=$this->transEsc("history_results")?></th>
+    <th class="history-schedule"><?=$this->transEsc($this->showSaved ? "history_schedule" : "")?></th>
     <th class="history-save"><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th>
   </tr>
   <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
@@ -25,6 +26,19 @@
         <? endforeach; ?>
       </td>
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
+      <td class="history-schedule">
+        <? if ($this->showSaved && isset($this->schedule[$info->getSearchId()])): ?>
+          <? $schedule = $this->schedule[$info->getSearchId()]; ?>
+          <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
+            <select name="schedule" class="jumpMenu form-control">
+              <option value="0"<?=($schedule == 0) ? (' selected') : ('')?>><?=$this->transEsc("schedule_none")?></option>
+              <option value="1"<?=($schedule == 1) ? (' selected') : ('')?>><?=$this->transEsc("schedule_daily")?></option>
+              <option value="2"<?=($schedule == 2) ? (' selected') : ('')?>><?=$this->transEsc("schedule_weekly")?></option>
+            </select>
+            <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"/>
+          </form>
+        <? endif; ?>
+      </td>
       <td class="history-save">
         <? if ($this->showSaved): ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history"><i class="fa fa-remove fa-button"></i></a>

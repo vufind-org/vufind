@@ -55,13 +55,15 @@ class Search extends \VuFind\Db\Row\Search
     /**
      * Set schedule for scheduled alert.
      *
-     * @param int $schedule Schedule.
+     * @param int    $schedule Schedule.
+     * @param string $url      Site base URL
      *
      * @return mixed
      */
-    public function setSchedule($schedule)
+    public function setSchedule($schedule, $url)
     {
         $this->finna_schedule = $schedule;
+        $this->finna_schedule_base_url = $url;
         return $this->save();
     }
 

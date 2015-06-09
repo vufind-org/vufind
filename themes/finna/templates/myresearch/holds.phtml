@@ -1,10 +1,10 @@
 <?
     // Set up page title:
     $this->headTitle($this->translate('My Holds'));
-    
+
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'holds'));
-   
+
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('My Holds') . '</li>';
 
@@ -12,7 +12,7 @@
 ?>
 <div class="row">
   <div class="col-md-10 col-lg-9 myresearch-grid-list">
-    <? if ($this->transEsc('holds_instructions') != html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8')): ?><p class="no-content-message"><?=$this->transEsc('holds_instructions')?></p><? endif; ?>
+    <? if (!$this->translationEmpty('holds_instructions')): ?><p class="no-content-message"><?=$this->transEsc('holds_instructions')?></p><? endif; ?>
     <?=$this->flashmessages()?>
     <?=$this->partial('myresearch/borrowing-block.phtml', array('profile' => $this->profile)); ?>
     <div class="useraccount-header"><?=$this->transEsc('Your Holds and Recalls') ?> <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $user))?></div>
@@ -95,12 +95,12 @@
               }
             ?>
             <div class="record-authors">
-             
+
              <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
               <br/>
             <? endif; ?>
-            
+
             <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
               <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
             <? endif; ?>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+<channel>
+<atom:link href="" rel="self" type="application/rss+xml" /><title>Pärlor ur samlingarna</title>
+<item>
+<title>Barnens nya mediekultur: bebisar surfar på nätet</title>
+<link><![CDATA[Search/Results?lookfor=lapset+media+muutokset&SearchForm_submit=Hae&filter[]=format%3A"1%2FBook%2FBook%2F"&filter[]=language%3A"fin"&view=list&limit=20&sort=relevance]]></link>
+<description>Digitala medier hör till spädbarnens vardag och barnens mediekultur förändras snabbt, berättar källor i Finna. Enligt Barnens mediebarometer 2013 använder 40 procent av 0–2-åringarna internet varje vecka.</description>
+<media:thumbnail url="themes/national/images/carousel-images/01lapset.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/01lapset.jpg"/>
+</item>
+<item>
+<title>Föremål och foton från Fölisöns friluftsmuseum</title>
+<link><![CDATA[Search/Results?lookfor=Seurasaari&type=AllFields&view=grid&filter%5B%5D=~format%3A"0%2FImage%2F"&filter%5B%5D=~format%3A"0%2FPhysicalObject%2F"&filter%5B%5D=online_boolean%3A1]]></link>
+<description>Foton på föremål och hus på Fölisöns friluftsmuseum har digitaliserats. Nu kan du titta närmare på föremål från Kurssi, Ivars, Pertinotja, Halla gård och Kaukola rökpörten. Fotona visar husen på sina ursprungliga platser, när de flyttas till Fölisön och tidigare museiverksamhet. De nyare bilderna visar museets hus och deras interiörer.</description>
+<media:thumbnail url="themes/national/images/carousel-images/03ss.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/03ss.jpg"/>
+</item>
+<item>
+<title>Helsingfors kollektivtrafiks historiar</title>
+<link>Search/Results?lookfor=liikennelaitos&amp;type=AllFields&amp;filter[]=building%3A%220%2FHKM%2F%22&amp;sort=relevance&amp;view=grid&amp;limit=100</link>
+<description>Biljetter, fortskaffningsmedel och fotografier ur Helsingfors stadsmuseums samlingar. Hur såg spårvagnarna ut på 1920-talet? Kommer du ihåg bussbiljetterna från 1986? Materialet som presenterar kollektivtrafikens historia omfattar perioden från början av 1900-talet till våra dagar.</description>
+<media:thumbnail url="themes/national/images/carousel-images/02hkl.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/02hkl.jpg"/>
+</item>
+<item>
+<title>Bilder från vinter-, fortsättnings- och Lapplandskriget i Finland</title>
+<link><![CDATA[Search/Results?type=AllFields&limit=100&view=grid&filter%5B%5D=~building%3A"0%2FSA-kuva%2F"]]></link>
+<description>Framför dig har du Förvarsmaktens bildarkiv (SA-kuva-arkisto på finska) ; en unik bildsamling som består av nästan 160 000 fotografier från  vinterkriget, fortsättningskriget och Lapplandskriget i Finland. Största  delen har fotograferats av informationskompaniernas fotografer.</description>            
+<media:thumbnail url="themes/national/images/carousel-images/07sakuvat.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/07sakuvat.jpg"/>
+</item>
+<item>
+<title>VR:s reseaffischer</title>
+<link><![CDATA[Search/Results?lookfor=junamatkailu+matkailujulisteet+&type=AllFields&limit=100&view=grid&filter%5B%5D=~building%3A"0%2FSRM%2F"]]></link>
+<description>Finlands järnvägsmuseums affischsamling är från 1930–2000-talet. VR har använt affischerna på stationerna, i tågen och vid olika evenemang och har bytt till sig affischer från olika länder. Affischerna har skapats av bl.a. konstnärerna Erik Bruun, Osmo K. Oksanen och Juha Anttinen och fotograferna Fred Runeberg, E. Tolvanen och Yrjö Metsälä.</description>
+<media:thumbnail url="themes/national/images/carousel-images/08vr.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/08vr.jpg"/>
+</item>
+<item>
+<title>Livshantering och droger: fakta och skönlitteratur</title>
+<link><![CDATA[Search/Results?lookfor=elämänhallinta+huumeet&type=AllFields&limit=100&filter%5B%5D=~language%3A"fin"&filter%5B%5D=~format%3A"0%2FBook%2F"&filter%5B%5D=publishDate%3A"%5B2005+TO+%2A%5D"]]></link>
+<description>I Finna finns information och skönlitteratur som berättar om droganvändningens inverkan på förmågan att hantera sitt liv. Social- och hälsovårdsministeriet har (2006) producerat ett test för unga män, och Mihail Bulgakov skrev noveller på 1920-talet som baserar sig på vad han själv upplevt. Testet finns på nätet, Bulgakovs noveller kan man låna.</description>
+<media:thumbnail url="themes/national/images/carousel-images/06jumissa.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/06jumissa.jpg"/>
+</item>
+<item>
+<title>Edith Södergrans fotografier (Svenska litteratursällskapet)</title>
+<link><![CDATA[Collection/sls.SLSA+566/Home?type=AllFields&limit=100&view=grid&sort=year+asc]]></link>
+<description>Lyrikern Edit Södergran (1892-1923) är en av Finlands mest översätta författare och hennes dikter på svenska utkommer ständigt i nyutgåvor. Hon är också sedan 1990-talet känd som fotograf och omkring 400 fotografier med motiv från Davos, Schweiz och Raivola på Karelska näset finns bevarade. Ett favoritmotiv är hennes katter.</description>
+<media:thumbnail url="themes/national/images/carousel-images/04ediths.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/04ediths.jpg"/>
+</item>
+<item>
+<title>Kulturhuset byggdes med talkokrafter</title>
+<link><![CDATA[Search/Results?lookfor=Kulttuuritalon+rakentaminen+1955&type=AllFields&prefiltered=-&filter[]=online_boolean%3A"1"&sort=relevance&view=grid&limit=100]]></link>
+<description>Kulturhuset, ritat av Alvar Aalto och uppfört med talkokrafter, är ett kraftprov av arbetarrörelsen. Kartoteket över arbetarna, vars insats varierade från några timmar till 400 timmar, omfattar mer än 5 000 namn. Huset som stod färdigt 1958 var stadens första konsertsal. (Malmberg, Aleksi: Kulttuuritalo. Puoli vuosisataa tarinoita ja tapahtumia)</description>
+<media:thumbnail url="themes/national/images/carousel-images/05kultsa.jpg"/>
+<enclosure type="image/jpeg" length="4774" url="themes/national/images/carousel-images/05kultsa.jpg"/>
+</item>
+</channel>
+</rss>
