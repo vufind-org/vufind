@@ -206,9 +206,25 @@ class Redi implements DriverInterface
         if ($ezbResultsNodesText->length == $ezbResultsNodesURL->length) {
             for ($i = 0; $i<$ezbResultsNodesText->length; $i++) {
 
+                $accessClass = 'unknown';
+                $accessClassExpressions = [
+                    "denied"    => "//div[@class='t_ezb_result']["
+                        . ($i+1) . "]/p/span[@class='t_ezb_red']",
+                    "limited" => "//div[@class='t_ezb_result']["
+                        . ($i+1) . "]/p/span[@class='t_ezb_yellow']",
+                    "open"  => "//div[@class='t_ezb_result']["
+                        . ($i+1) . "]/p/span[@class='t_ezb_green']",
+                ]; // $i+1 because XPath-element-counting starts with 1
+                foreach ($accessClassExpressions as $key => $value) {
+                    if ($xpath->evaluate("count({$value})") == 1) {
+                        $accessClass = $key;
+                    }
+                }
+
                 $itemInfo = '';
 
-                $expression = "//div[@class='t_ezb_result']/p[{$i}]/sup";
+                $expression = "//div[@class='t_ezb_result']["
+                    . ($i+1) . "]/p/sup";
                 if ($xpath->evaluate("count({$expression})") == 1) {
                     $itemInfo = $this->parseRediInfo(
                         $xml, $xpath->query($expression)->item(0)->textContent
@@ -219,6 +235,7 @@ class Redi implements DriverInterface
                     'title' => $ezbResultsNodesText->item($i)->textContent,
                     'href' => $ezbResultsNodesURL->item($i)
                         ->attributes->getNamedItem("href")->textContent,
+                    'access'       => $accessClass,
                     'coverage'     => $itemInfo,
                     'service_type' => 'getFullTxt',
                 ];
