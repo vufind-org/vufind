@@ -76,7 +76,7 @@
 		<? foreach ($lists as $list): ?>
 			<a href="<?= $this->url('userList', array('id' => $list['id'])) ?>" class="list-group-item<?= $this->active == 'list' . $list['id'] ? ' active' : '' ?>">
 				<?= $this->escapeHtml($list['title']) ?>
-				<span class="badge"><?= $list->cnt ?></span>
+				<span class="label"><?= $list->cnt ?></span>
 			</a>
 		<? endforeach; ?>
 			<a href="<?= $this->url('editList', array('id' => 'NEW')) ?>" title="<?= $this->transEsc('Create a List') ?>" class="list-group-item">

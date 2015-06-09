@@ -20,7 +20,7 @@
     <? foreach($sideFacetSet['tags']['list'] as $thisFacet): ?>
       <? if(!$thisFacet['isApplied']): ?>
         <a class="list-group-item" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>">
-          <span class="badge"><?=$this->escapeHtml($thisFacet['count'])?></span>
+          <span class="label"><?=$this->escapeHtml($thisFacet['count'])?></span>
           <?=$this->escapeHtml($thisFacet['displayText'])?>
         </a>
       <? endif ?>

@@ -3,7 +3,7 @@
   <? foreach ($result as $i => $item): ?>
     <a class="list-group-item" href="<?=$this->url('collection', array('id' => $item['value']))?>">
       <strong><?=$this->escapeHtml($item['displayText'])?></strong>
-      <span class="badge">
+      <span class="label">
         <?=$item['count']?> <?=$this->transEsc('items')?>
         <i class="fa fa-angle-right"></i>
       </span>
