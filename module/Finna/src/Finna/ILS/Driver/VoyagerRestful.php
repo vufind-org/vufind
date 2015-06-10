@@ -54,4 +54,64 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
         $profile['blocks'] = $this->checkAccountBlocks($patron['id']);
         return $profile;
     }
+
+    /**
+     * Check Account Blocks
+     *
+     * Checks if a user has any blocks against their account which may prevent them
+     * performing certain operations
+     *
+     * @param string $patronId A Patron ID
+     *
+     * @return mixed           A boolean false if no blocks are in place and an array
+     * of block reasons if blocks are in place
+     */
+    protected function checkAccountBlocks($patronId)
+    {
+        $cacheId = "blocks_$patronId";
+        $blockReason = $this->getCachedData($cacheId);
+        if (null === $blockReason) {
+            // Build Hierarchy
+            $hierarchy = [
+                "patron" =>  $patronId,
+                "patronStatus" => "blocks"
+            ];
+
+            // Add Required Params
+            $params = [
+                "patron_homedb" => $this->ws_patronHomeUbId,
+                "view" => "full"
+            ];
+
+            $blockReason = [];
+
+            $blocks = $this->makeRequest($hierarchy, $params);
+            if ($blocks) {
+                $borrowingBlocks = $blocks->xpath(
+                    "//blocks/institution[@id='LOCAL']/borrowingBlock"
+                );
+                if (count($borrowingBlocks)) {
+                    $blockReason[] = $this->translate('Borrowing Block Message');
+                }
+                foreach ($borrowingBlocks as $borrowBlock) {
+                    $code = (int)$borrowBlock->blockCode;
+                    $reason = "Borrowing Block Voyager Reason $code";
+                    $params = [];
+                    if ($code == 19) {
+                        $params = [
+                            '%%blockCount%%' => $borrowBlock->blockCount,
+                            '%%blockLimit%%' => $borrowBlock->blockLimit
+                        ];
+                    }
+                    $translated = $this->translate($reason, $params);
+                    if ($reason !== $translated) {
+                        $reason = $translated;
+                        $blockReason[] = $reason;
+                    }
+                }
+            }
+            $this->putCachedData($cacheId, $blockReason);
+        }
+        return empty($blockReason) ? false : $blockReason;
+    }
 }
