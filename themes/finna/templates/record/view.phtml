@@ -83,9 +83,10 @@
           $tab_classes = array();
           if ($isCurrent) $tab_classes[] = 'active';
           if (!$obj->isVisible()) $tab_classes[] = 'hidden';
+          $comments = $this->driver->getComments();
         ?>
         <li<?=count($tab_classes) > 0 ? ' class="' . implode(' ', $tab_classes) . '"' : ''?>>
-          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?></a>
+          <a id="<?=strtolower($tab) ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><i class="fa fa-<?=$this->escapeHtmlAttr($tab)?>"></i> <?=$this->transEsc($desc)?> <? if (strtolower($tab) == 'usercomments') : ?>(<?= count($comments) ?>)<? endif; ?></a>
         </li>
         <? endforeach; ?>
       </ul>
