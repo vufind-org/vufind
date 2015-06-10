@@ -214,7 +214,7 @@
         $openUrl = $this->driver->getOpenURL();
         $openUrlTemplate = $openUrl ? $this->openUrl($openUrl, 'record') : false;
         // Account for replace_other_urls setting
-        $urls = $openUrlTemplate && $this->driver->replaceURLsWithOpenURL() ? array() : $this->record($this->driver)->getLinkDetails();
+        $urls = $openUrlTemplate && $this->replaceUrls() ? array() : $this->record($this->driver)->getLinkDetails();
       ?>
       <? if (!empty($urls) || $openUrlTemplate): ?>
       <tr>

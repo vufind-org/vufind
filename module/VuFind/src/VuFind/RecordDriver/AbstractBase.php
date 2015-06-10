@@ -384,18 +384,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Should we display regular URLs when an OpenURL is present?
-     *
-     * @return bool
-     */
-    public function replaceURLsWithOpenURL()
-    {
-        return $this->supportsOpenURL()
-            && isset($this->mainConfig->OpenURL->replace_other_urls)
-            ? $this->mainConfig->OpenURL->replace_other_urls : false;
-    }
-
-    /**
      * Returns true if the record supports real-time AJAX status lookups.
      *
      * @return bool

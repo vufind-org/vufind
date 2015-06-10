@@ -7,7 +7,7 @@
     $openUrlTemplate = $openUrl ? $this->openUrl($openUrl, 'holdings') : false;
     $offlineMode = $this->ils()->getOfflineMode();
     // Account for replace_other_urls setting
-    $urls = $openUrlTemplate && $this->driver->replaceURLsWithOpenURL() ? array() : $this->record($this->driver)->getLinkDetails();
+    $urls = $openUrlTemplate && $this->replaceUrls() ? array() : $this->record($this->driver)->getLinkDetails();
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
