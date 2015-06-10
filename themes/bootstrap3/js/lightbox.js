@@ -11,7 +11,7 @@ $(document).ready(function() {
     $('#modal .modal-body').html('');
     $('#modal').modal('hide');
   } else {
-    $('.modal-link').on('click', constrainLink);
+    $('a[data-lightbox]').on('click', constrainLink);
     lightboxShown = false;
   }
   constrainForms('form[data-lightbox]');
@@ -137,7 +137,7 @@ function lightboxAJAX(event, data) {
     error: function(e) {
       $('body').removeClass('modal-open').html('<div>'+e.responseText+'</div>');
       $('#modal').addClass('hidden');
-      $('.modal-link').on('click', constrainLink);
+      //$('a[data-lightbox]').on('click', constrainLink);
     }
   });
 }

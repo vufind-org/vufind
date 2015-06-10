@@ -7,7 +7,7 @@
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-9">
         <? if ($account->supportsCreation()): ?>
-          <a class="btn btn-link createAccountLink modal-link" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+          <a class="btn btn-link createAccountLink" data-lightbox href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
         <? endif; ?>
         <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>">
         <? if ($account->supportsRecovery()): ?>
