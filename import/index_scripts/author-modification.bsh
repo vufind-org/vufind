@@ -181,7 +181,8 @@ public String getFirstAuthorFilteredByRelator(Record record, String tagList,
  * @returns Set result
  */
 public Set getRelatorsFilteredByRelator(Record record, String tagList,
-    String acceptWithoutRelator, String relatorConfig, Boolean firstOnly
+    String acceptWithoutRelator, String relatorConfig, Boolean firstOnly,
+    String defaultRelator
 ) {
     Set result = new LinkedHashSet();
     String[] noRelatorAllowed = acceptWithoutRelator.split(":");
@@ -198,7 +199,7 @@ public Set getRelatorsFilteredByRelator(Record record, String tagList,
                 List subfield4 = normalizeRelatorSubfieldList(authorField.getSubfields('4'));
     
                 // get the first non-empty subfield
-                String relator = "none";
+                String relator = defaultRelator;
 
                 // try subfield E first
                 for (int j = 0; j < subfieldE.size(); j++) {
@@ -240,7 +241,7 @@ public Set getRelatorsFilteredByRelator(Record record, String tagList,
 ) {
     // default firstOnly to false!
     return getRelatorsFilteredByRelator(
-        record, tagList, acceptWithoutRelator, relatorConfig, false
+        record, tagList, acceptWithoutRelator, relatorConfig, false, "default_relator"
     );
 }
 
