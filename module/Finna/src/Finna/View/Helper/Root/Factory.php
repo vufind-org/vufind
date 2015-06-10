@@ -193,7 +193,8 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getLogoutMessage(ServiceManager $sm)
     {
         $authManager = $sm->getServiceLocator()->get('VuFind\AuthManager');
-        return new LogoutMessage($authManager);
+        $request = $sm->getServiceLocator()->get('Request');
+        return new LogoutMessage($authManager, $request);
     }
 
     /**
