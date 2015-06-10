@@ -270,6 +270,7 @@ class Summon extends SolrDefault
      */
     public function supportsOpenURL()
     {
+        // Summon never uses OpenURLs for anything other than COinS:
         return false;
     }
 
