@@ -335,9 +335,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     {
         if (isset($this->session->cache[$id])) {
             $item = $this->session->cache[$id];
-            if (time() - $item['time'] > 30) {
+            if (time() - $item['time'] < 30) {
                 return $item['entry'];
             }
+            unset($this->session->cache[$id]);
         }
         return null;
     }
