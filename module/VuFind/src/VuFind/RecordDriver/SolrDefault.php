@@ -855,13 +855,18 @@ class SolrDefault extends AbstractBase
      * Get the OpenURL parameters to represent this record (useful for the
      * title attribute of a COinS span tag).
      *
+     * @param bool $overrideSupportsOpenURL Flag to override checking
+     * supportsOpenURL() (default is false)
+     *
      * @return string OpenURL parameters.
      */
-    public function getOpenURL()
+    public function getOpenURL($overrideSupportsOpenURL = false)
     {
-        // stop here if this record does not support OpenURLs
-        if (!$this->supportsOpenURL()) {
-            return false;
+        if (!$overrideSupportsOpenURL) {
+            // stop here if this record does not support OpenURLs
+            if (!$this->supportsOpenURL()) {
+                return false;
+            }
         }
 
         // Set up parameters based on the format of the record:
@@ -875,6 +880,17 @@ class SolrDefault extends AbstractBase
 
         // Assemble the URL:
         return http_build_query($params);
+    }
+
+    /**
+     * Get the OpenURL parameters to represent this record for COinS even if
+     * supportsOpenURL() is false for this RecordDriver.
+     *
+     * @return string OpenURL parameters.
+     */
+    public function getCoinsOpenURL()
+    {
+        return $this->getOpenURL($this->supportsCoinsOpenURL());
     }
 
     /**

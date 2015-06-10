@@ -416,6 +416,16 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
+     * Checks the current record if it's supported for generating COinS-OpenURLs.
+     *
+     * @return bool
+     */
+    public function supportsCoinsOpenURL()
+    {
+        return true;
+    }
+
+    /**
      * Store a piece of supplemental information in the record driver.
      *
      * @param string $key Name of stored information
