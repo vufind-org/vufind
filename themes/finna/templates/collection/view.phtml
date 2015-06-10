@@ -6,10 +6,12 @@
   if ($this->syndeticsPlus()->isActive()) {
     echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
   }
-
+  // Set up breadcrumbs:
+  $lastSearch = $this->getLastSearchLink($this->transEsc('Search'));
   // Set main header
-  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">'.$this->transEsc('Collection').'</h1></div>';
-
+  if (empty($lastSearch)) {
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1 class="content-header">'.$this->transEsc('Collection').'</h1></div>';
+  }
   // Add RDF header link if applicable:
   if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
       $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
@@ -18,24 +20,63 @@
   // Set flag for special cases relating to full-width hierarchy tree tab:
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
-  // Set up breadcrumbs:
-  $lastSearch = $this->getLastSearchLink($this->transEsc('Search'));
+  
   if (!empty($lastSearch)) {
     $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
   }
   $this->layout()->breadcrumbs .= '<li><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> '
      . '<li class="active">' . $this->recordLink()->getBreadcrumb($this->driver) . '</li>';
 ?>
-
-<div class="row">
+<? if (!empty($lastSearch)) : ?>
+</div>
+<div class="container-fluid record-view-header">
+ <div class="container">
+  <div class="row">
+    <div class="col-xs-5 hidden-print">
+    <?
+      $html = '<span class="btn btn-primary"><i class="fa fa-arrow-left"></i> <i class="fa fa-search"></i></span>';
+      $html .= '<span class="back-to-search-text hidden-xs">'.$this->transEsc('Back to search results').'</span>';
+      $previousSearch = $this->getLastSearchLink($html);
+      if ($previousSearch !== ''):
+    ?>
+      <div class="back-to-search"><?=$previousSearch?></div>
+    <? endif; ?>
+    </div>
+    <div class="col-xs-7">
+    <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
+      <ul class="pager hidden-print" id="view-pager">
+      <? if ($this->scrollData['previousRecord']): ?>
+        <li class="pager-previous-record">
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>#searchForm" title="<?=$this->transEsc('Previous Record')?>"><i class="fa fa-arrow-left"></i></a>
+        </li>
+        <? else: ?>
+        <li class="disabled" title="<?=$this->transEsc('First Record')?>"><a href="#searchform"><i class="fa fa-arrow-left"></i></a></li>
+      <? endif; ?>
+        <li class="pager-text"><?=$this->localizedNumber($this->scrollData['currentPosition']) . ' / ' . $this->localizedNumber($this->scrollData['resultTotal']) ?></li>
+      <? if ($this->scrollData['nextRecord']): ?>
+        <li class="pager-next-record">
+          <a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>#searchForm" title="<?=$this->transEsc('Next Record')?>"><i class="fa fa-arrow-right"></i></a>
+        </li>
+      <? else: ?>
+        <li class="disabled" title="<?=$this->transEsc('Last Record')?>"><a href="#"><i class="fa fa-arrow-right"></i></a></li>
+      <? endif; ?>
+      </ul>
+      <? endif; ?>
+    </div>
+  </div>
+ </div>
+</div>
+<div class="container">
+<? endif; ?>
+<div class="row record-row">
   <div class="<?=$this->layoutClass('mainbody') ?>">
+    <?=$this->record($this->driver)->getToolbar()?>
     <div class="record">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
       <?=$this->flashmessages()?>
       <?=$this->record($this->driver)->getCollectionMetadata()?>
     </div>
-   <?=$this->record($this->driver)->getToolbar()?>
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
       <ul class="recordTabs nav nav-tabs">
