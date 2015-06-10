@@ -98,25 +98,25 @@
       }
     ?>
   </form>
+  <? if ($advSearch): ?>
+  <div class="col-md-4 col-lg-5">
+    <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-xs hidden-sm"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Advanced Search")?></a>
+  </div>
+  <? endif; ?>
+  <div class="row">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-lg-7 text-right">
+      <? if ($this->primo()->isAvailable()) : ?>
+      <? if ($action === 'home' && $this->searchClassId === 'Solr') : ?>
+      <a href="<?=$this->url('primo-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Primo Search")?></a>
+      <? endif; ?>
+      <? if ($action === 'home' && $this->searchClassId === 'Primo') : ?>
+      <a href="<?=$this->url('home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Basic Search")?></a>
+      <? endif; ?>
+      <? endif; ?>
       <? if ($advSearch): ?>
-      <div class="col-md-4 col-lg-5">
-        <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-xs hidden-sm"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Advanced Search")?></a>
-      </div>
-    <? endif; ?>
-    <div class="row">
-      <div class="col-xs-12 col-sm-10 col-md-8 col-lg-7 text-right">
-        <? if ($this->primo()->isAvailable()) : ?>
-          <? if ($action === 'home' && $this->searchClassId === 'Solr') : ?>
-          <a href="<?=$this->url('primo-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Primo Search")?></a>
-          <? endif; ?>
-          <? if ($action === 'home' && $this->searchClassId === 'Primo') : ?>
-          <a href="<?=$this->url('home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Basic Search")?></a>
-          <? endif; ?>
-        <? endif; ?>
-          <? if ($advSearch): ?>
-          <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-md hidden-lg"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
-          <? endif; ?>
-     </div>
+      <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-md hidden-lg"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
+      <? endif; ?>
     </div>
+  </div>
   <script type="text/javascript">$("#searchForm_lookfor").focus()</script>
 <? endif; ?>
