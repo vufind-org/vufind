@@ -176,6 +176,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Load configurations:
         $config = $this->config->get('config');
         $search = $this->config->get($this->searchConfig);
+        $facet = $this->config->get($this->facetConfig);
 
         // Highlighting
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
@@ -219,10 +220,10 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         ) {
             $this->getDeduplicationListener($backend)->attach($events);
         }
-
         // Attach hierarchical facet listener:
         $this->getHierarchicalFacetListener($backend)->attach($events);
 
+       
         // Apply legacy filter conversion if necessary:
         $facets = $this->config->get($this->facetConfig);
         if (!empty($facets->LegacyFields)) {
@@ -233,7 +234,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Attach hide facet value listener:
-        $this->getHideFacetValueListener($backend)->attach($events);
+        $this->getHideFacetValueListener($backend, $facet)->attach($events);
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
@@ -387,19 +388,25 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
-     * Get a hide facet value listener for the backend
-     *
-     * @param BackendInterface $backend Search backend
-     *
-     * @return HideFacetValueListener
-     */
-    protected function getHideFacetValueListener(BackendInterface $backend)
-    {
-
+    * Get a hide facet value listener for the backend
+    *
+    * @param BackendInterface $backend Search backend
+    * @param Config           $facet   Configuration of facets
+    *
+    * @return mixed null|HideFacetValueListener
+    */
+    protected function getHideFacetValueListener(
+        BackendInterface $backend,
+        Config $facet
+    ) {
+        if (!isset($facet->HideFacetValue)
+            || ($facet->HideFacetValue->count()) == 0
+        ) {
+            return null;
+        }
         return new HideFacetValueListener(
             $backend,
-            $this->serviceLocator,
-            $this->facetConfig
+            $facet->HideFacetValue->toArray()
         );
     }
 

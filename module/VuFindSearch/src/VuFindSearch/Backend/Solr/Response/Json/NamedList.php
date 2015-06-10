@@ -157,6 +157,6 @@ class NamedList implements Countable, Iterator
      */
     public function remove()
     {
-        unset($this->list[key($this->current)]);
+        unset($this->list[key($this->list)]);
     }
 }

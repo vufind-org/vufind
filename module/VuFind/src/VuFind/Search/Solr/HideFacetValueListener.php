@@ -28,11 +28,8 @@
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
-
 use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
-use Zend\ServiceManager\ServiceLocatorInterface;
-
 
 /**
  * Hide single facet values from displaying.
@@ -55,38 +52,24 @@ class HideFacetValueListener
     protected $backend;
 
     /**
-     * Superior service manager.
+     * List of facets to hide.
      *
-     * @var ServiceLocatorInterface
+     * @var array
      */
-    protected $serviceLocator;
-
-    /**
-     * Facet configuration.
-     *
-     * @var Config
-     */
-    protected $facetConfig;
+    protected $hideFacets = [];
 
     /**
      * Constructor.
      *
-     * @param BackendInterface        $backend        Search backend
-     * @param ServiceLocatorInterface $serviceLocator Service locator
-     * @param string                  $facetConfig    Facet config file id
-     *
-     * @return void
+     * @param BackendInterface $backend         Search backend
+     * @param array            $hideFacetValues Facet config file id
      */
     public function __construct(
         BackendInterface $backend,
-        ServiceLocatorInterface $serviceLocator,
-        $facetConfig
+        array $hideFacetValues
     ) {
         $this->backend = $backend;
-        $this->serviceLocator = $serviceLocator;
-
-        $config = $this->serviceLocator->get('VuFind\Config');
-        $this->facetConfig = $config->get($facetConfig);
+        $this->hideFacets = $hideFacetValues;
     }
 
     /**
@@ -129,22 +112,15 @@ class HideFacetValueListener
      * @param EventInterface $event Event
      *
      * @return void
-    */
+     */
     protected function processHideFacetValue($event)
     {
-
-        if (!isset($this->facetConfig->HideFacetValue)
-            || ($this->facetConfig->HideFacetValue->count()) == 0
-        ) {
-            return null;
-        }
-
         $result = $event->getTarget();
         $facets = $result->getFacets()->getFieldFacets();
 
-        foreach ($this->facetConfig->HideFacetValue->toArray() as $facet => $value) {
+        foreach ($this->hideFacets as $facet => $value) {
             if (isset($facets[$facet])) {
-                foreach ($value as $config_value) {
+                foreach ((array)$value as $config_value) {
                     foreach ($facets[$facet] as $facet_value => $count) {
                         if ($facet_value == $config_value) {
                             $facets[$facet]->remove();
