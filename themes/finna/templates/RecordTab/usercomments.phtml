@@ -1,0 +1,23 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
+?>
+
+<div id="commentList">
+  <?=$this->render('record/comments-list.phtml')?>
+</div>
+<form class="comment row" name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
+  <div class="">
+    <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>"/>
+    <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>"/>
+  </div>
+  <div class="col-sm-12">
+    <? $user = $this->auth()->isLoggedIn() ?>
+    <? if($user): ?>
+      <textarea id="comment" name="comment" class="form-control" rows="3" cols="35" required></textarea><br/>
+      <input class="btn btn-primary" data-loading-text="<?=$this->transEsc('Submitting') ?>..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
+    <? else: ?>
+      <p><a onClick="Lightbox.get('MyResearch', 'UserLogin'); return false;" title="<?=$this->transEsc("Login")?>" class="modal-link"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("Post Comment")?></p>
+    <? endif; ?>
+  </div>
+</form>
