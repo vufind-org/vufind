@@ -202,25 +202,43 @@ class JSTree extends AbstractBase
      */
     protected function getContextualUrl($node, $context, $collectionID)
     {
-        $params = [
-            'id' => $node->id,
-            'tab' => 'HierarchyTree'
-        ];
-        $options = [
-            'query' => [
-                'recordID' => $node->id
-            ]
-        ];
         if ($context == 'Collection') {
-            return $this->router->fromRoute('collection', $params, $options)
+            return $this->getUrlFromRouteCache('collection', $node->id)
                 . '#tabnav';
         } else {
             $options['query']['hierarchy'] = $collectionID;
-            $url = $this->router->fromRoute($node->type, $params, $options);
+            $url = $this->getUrlFromRouteCache($node->type, $node->id);
             return $node->type == 'collection'
                 ? $url . '#tabnav'
                 : $url . '#tree-' . preg_replace('/\W/', '-', $node->id);
         }
+    }
+
+    /**
+     * Get the URL for a record and cache it to avoid the relatively slow routing
+     * calls.
+     *
+     * @param string $route Route
+     * @param string $id    Record ID
+     *
+     * @return string URL
+     */
+    protected function getUrlFromRouteCache($route, $id)
+    {
+        static $cache = [];
+        if (!isset($cache[$route])) {
+            $params = [
+                'id' => '__record_id__',
+                'tab' => 'HierarchyTree'
+            ];
+            $options = [
+                'query' => [
+                    'recordID' => '__record_id__'
+                ]
+            ];
+            $cache[$route] = $this->router->fromRoute($route, $params, $options);
+        }
+        return str_replace('__record_id__', $id, $cache[$route]);
     }
 
     /**
