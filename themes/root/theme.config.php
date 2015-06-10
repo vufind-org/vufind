@@ -28,7 +28,7 @@ return array(
             'record' => 'VuFind\View\Helper\Root\Factory::getRecord',
             'recordlink' => 'VuFind\View\Helper\Root\Factory::getRecordLink',
             'related' => 'VuFind\View\Helper\Root\Factory::getRelated',
-            'replaceUrls' => 'VuFind\View\Helper\Root\Factory::getReplaceUrls',
+            'replaceurls' => 'VuFind\View\Helper\Root\Factory::getReplaceUrls',
             'safemoneyformat' => 'VuFind\View\Helper\Root\Factory::getSafeMoneyFormat',
             'searchbox' => 'VuFind\View\Helper\Root\Factory::getSearchBox',
             'searchoptions' => 'VuFind\View\Helper\Root\Factory::getSearchOptions',
