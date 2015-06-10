@@ -1,4 +1,4 @@
-<? if ($srcUrl = $this->imageSrc('finna-logo_' . $this->layout()->userLang)): ?>
+<? if (($srcUrl = $this->imageSrc('finna-logo_' . $this->layout()->userLang)) || ($srcUrl = $this->imageSrc('finna-logo'))): ?>
   <a href="<?=$this->url('home');?>"><span class="sr-only"><?=$this->transEsc('Home');?></span>
     <img src="<?=$srcUrl; ?>" alt="Logo" />
   </a>
