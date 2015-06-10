@@ -2,11 +2,11 @@
   <ul class="paginationSimple">
     <li>
     <? if (isset($this->previous)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><i class="fa fa-arrow-left"></i></a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><span class="sr-only"><?=$this->transEsc('Previous Page')?></span><i class="fa fa-arrow-left"></i></a></li>
     <? endif; ?>
     <li><span class="hidden-sm"><?=$this->transEsc('Showing')?></span> <strong><span class="index"><?=$this->results->getStartRecord() ?></span> - <?=$this->results->getEndRecord() ?></strong> / <span class="total"><?=$this->localizedNumber($this->results->getResultTotal())?></span></li> 
     <? if (isset($this->next)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><i class="fa fa-arrow-right"></i></a></li>
+      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><span class="sr-only"><?=$this->transEsc('Next Page')?></span><i class="fa fa-arrow-right"></i></a></li>
     <? endif; ?>
   </ul>
 <? endif; ?>     
