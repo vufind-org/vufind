@@ -20,23 +20,14 @@
     // Set up Finna Main Tabs:
     $module = $this->layout()->templateDir;
     $action = $this->layout()->templateName;
-    if (($module === 'search' && $action === 'results')
-       || ($module === 'primo' && $action === 'search')
+    if (($module === 'search' && $action === 'results' && $this->searchType != 'advanced')
+       || ($module === 'primo' && $action === 'search' && $this->searchType != 'advanced')
     ) {
        $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $this->layout()->savedTabs);
        $this->layout()->finnaMainTabs = $this->render('search/searchTabs', array('searchTabs' => $searchTabs));
     }
 ?>
-<? if ($this->searchType == 'advanced'): ?>
-  <div id="searchForm">
-      <p class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?>"</strong></p>
-      <p class="adv_search_links">
-        <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a>
-        <a href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Start a new Advanced Search")?></a>
-        <a href="<?=$this->url($searchHome)?>"><?=$this->transEsc("Start a new Basic Search")?></a>
-      </p>
-  </div>
-<? else: ?>
+<? if ($this->searchType != 'advanced'): ?>
   <form role="search" class="navbar-form navbar-left col-xs-12 col-sm-10 col-md-8 col-lg-7" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" autocomplete="off">
     <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc("Find")?></label><input class="form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" placeholder="<?=$this->transEsc("Find")?>..." id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
     <? if ($handlerCount > 1): ?>
@@ -108,8 +99,25 @@
       }
     ?>
   </form>
+  <? if ($advSearch): ?>
+  <div class="col-md-4 col-lg-5">
+    <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-xs hidden-sm"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Advanced Search")?></a>
+  </div>
+  <? endif; ?>
+  <div class="row">
+    <div class="col-xs-12 col-sm-10 col-md-8 col-lg-7 text-right">
+      <? if ($this->primo()->isAvailable()) : ?>
+      <? if ($action === 'home' && $this->searchClassId === 'Solr') : ?>
+      <a href="<?=$this->url('primo-home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Primo Search")?></a>
+      <? endif; ?>
+      <? if ($action === 'home' && $this->searchClassId === 'Primo') : ?>
+      <a href="<?=$this->url('home');?>" class="btn btn-link"><i class="fa fa-search"></i> <?=$this->transEsc("Basic Search")?></a>
+      <? endif; ?>
+      <? endif; ?>
       <? if ($advSearch): ?>
-      <a href="<?=$this->url($advSearch)?>" class="btn btn-link"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced")?></a>
-    <? endif; ?>
+      <a href="<?=$this->url($advSearch)?>" class="btn btn-link hidden-md hidden-lg"><i class="fa fa-search-adv"></i><?=$this->transEsc("Advanced Search")?></a>
+      <? endif; ?>
+    </div>
+  </div>
   <script type="text/javascript">$("#searchForm_lookfor").focus()</script>
 <? endif; ?>

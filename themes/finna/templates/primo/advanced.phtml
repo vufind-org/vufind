@@ -25,13 +25,11 @@
 ?>
 <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
   <input type="hidden" name="join" value="AND" />
-  <div class="row">
-    <div class="<?=$this->layoutClass('mainbody')?>">
       <?
         $this->searchType = 'advanced';
         $this->layout()->finnaMainTabs = $this->render('search/searchTabs');
+        $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h3>' . $this->transEsc('Advanced Search from Primo') . '</h3></div>';
       ?>
-      <h3><?=$this->transEsc('Advanced Search')?></h3>
       <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
       <? if ($groups !== false) {
           $numGroups = count($groups);
@@ -42,9 +40,12 @@
       ?>
       <? for ($i = 0; $i < $numGroups; $i++): ?>
         <input type="hidden" name="bool<?=$i?>[]" value="AND" />
-        <div class="group well row" id="group<?=$i?>">
-          <div class="col-sm-2" id="group<?=$i?>SearchHolder"><label><?=$this->transEsc("adv_search_label")?>:</label></div>
-          <div class="col-sm-10">
+        <div class="row">
+          <div class="col-sm-12 col-md-10 col-lg-9" id="group<?=$i?>SearchHolder"><h4><?=$this->transEsc("adv_search_label")?><span class="pull-right"><a href="<?=$this->url('content-page', ['page' => 'Help'])?>#advancedsearch" target="_blank"><?=$this->transEsc("Help with Advanced Search")?></a></span></h4></div>
+        </div>
+        
+        <div class="group well col-sm-12 col-md-10 col-lg-9" id="group<?=$i?>">
+          <div class="row">
             <?
               if (isset($groups[$i])) {
                 $currentGroup = $groups[$i]->getQueries();
@@ -58,37 +59,32 @@
             ?>
             <? for ($j = 0; $j < $numRows; $j++): ?>
               <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
-              <div class="row">
-                <div class="col-sm-3">
-                  <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control">
-                  <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                    <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
-                  <? endforeach; ?>
-                  </select>
-                </div>
-                <div class="col-sm-3">
-                  <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control">
+              <div class="col-xs-12 primo-advanced-search-fields">
+                  <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="form-control form-inline responsive-field">
                     <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
                       <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                     <? endforeach; ?>
                   </select>
-                </div>
-                <div class="col-sm-6">
-                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control"/>
-                </div>
+                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="form-control form-inline responsive-field" placeholder="<?=$this->transEsc('Search words')?>..." />
+                  <label for="search_type<?=$i?>_<?=$j?>"><?=$this->transEsc('in')?></label>
+                  <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="form-control form-inline">
+                  <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                    <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                  <? endforeach; ?>
+                  </select>
               </div>
             <? endfor; ?>
           </div>
         </div>
       <? endfor; ?>
+      <div class="row">
+        <div class="col-sm-12 col-md-10 col-lg-9"><button type="submit" class="btn btn-primary pull-right" name="submit" value="<?=$this->transEsc("Find")?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Find")?></button></div>
+      </div>
       <? $lastSort = $this->options->getLastSort(); ?>
       <? if (!empty($lastSort)): ?>
         <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
       <? endif; ?>
-      <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc("Find")?>"/>
-    </div>
 
-    <div class="<?=$this->layoutClass('sidebar')?>">
       <? if ($hasDefaultsApplied): ?>
         <input type="hidden" name="dfApplied" value="1" />
       <? endif ?>
@@ -121,6 +117,4 @@
           </div>
         <? endforeach; ?>
       <? endif; ?>
-    </div>
-  </div>
 </form>

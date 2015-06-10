@@ -41,29 +41,51 @@ use Zend\Session\Container as SessionContainer;
  */
 class LogoutMessage extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Authentication Manager
+     *
+     * @var \VuFind\Auth\Manager
+     */
     protected $authManager;
+
+    /**
+     * Request
+     *
+     * @var \Zend\Http\Request
+     */
+    protected $request;
+
+    /**
+     * Session container
+     *
+     * @var \VuFind\Session\Container
+     */
     protected $session;
 
     /**
      * Constructor
      *
-     * @param type $authManager authentication manager
+     * @param \VuFind\Auth\Manager $authManager Authentication manager
+     * @param \Zend\Http\Request   $request     Request
      */
-    public function __construct($authManager)
+    public function __construct($authManager, $request)
     {
         $this->authManager = $authManager;
+        $this->request = $request;
         $this->session = new SessionContainer('Logout');
     }
 
     /**
      * Return logout text after user has logged out.
-     * Shown only after the first page load.
+     * Shown only after the first page load if loggedOut param is true.
      *
-     * @return string logout message
+     * @return string Logout message
      */
     public function __invoke()
     {
-        if ($this->authManager->userHasLoggedOut()) {
+        if ($this->authManager->userHasLoggedOut()
+            && $this->request->getQuery('logout', false)
+        ) {
             if (!isset($this->session->logoutMessageShown)
                 || !$this->session->logoutMessageShown
             ) {

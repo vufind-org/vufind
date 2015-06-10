@@ -1052,8 +1052,28 @@ class MyResearchController extends AbstractBase
 
         // Get checked out item details:
         $result = $catalog->getMyTransactions($patron);
-        $transactions = [];
-        foreach ($result as $current) {
+
+        // Get page size:
+        $config = $this->getConfig();
+        $limit = isset($config->Catalog->checked_out_page_size)
+            ? $config->Catalog->checked_out_page_size : 50;
+
+        // Build paginator if needed:
+        if ($limit > 0 && $limit < count($result)) {
+            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
+            $paginator = new \Zend\Paginator\Paginator($adapter);
+            $paginator->setItemCountPerPage($limit);
+            $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        } else {
+            $paginator = false;
+            $pageStart = 0;
+            $pageEnd = count($result);
+        }
+
+        $transactions = $hiddenTransactions = [];
+        foreach ($result as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
                 $catalog, $current, $renewStatus
@@ -1065,15 +1085,19 @@ class MyResearchController extends AbstractBase
                 $renewForm = true;
             }
 
-            // Build record driver:
-            $transactions[] = $this->getDriverForILSRecord($current);
+            // Build record driver (only for the current visible page):
+            if ($i >= $pageStart && $i <= $pageEnd) {
+                $transactions[] = $this->getDriverForILSRecord($current);
+            } else {
+                $hiddenTransactions[] = $current;
+            }
         }
 
         return $this->createViewModel(
-            [
-                'transactions' => $transactions, 'renewForm' => $renewForm,
-                'renewResult' => $renewResult
-            ]
+            compact(
+                'transactions', 'renewForm', 'renewResult', 'paginator',
+                'hiddenTransactions'
+            )
         );
     }
 

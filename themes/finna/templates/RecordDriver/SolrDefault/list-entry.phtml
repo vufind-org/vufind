@@ -27,23 +27,14 @@
   <div class="col-xs-8 col-sm-9">
     <div class="resultItemLine1">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <?
-        $summHighlightedTitle = $this->driver->getHighlightedTitle();
-        $summTitle = $this->driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-            echo '<h3 class="record-title">' . $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle)) . '</h3>';
-        } else if (!empty($summTitle)) {
-            echo '<h3 class="record-title">' .$this->escapeHtml($this->truncate($summTitle, 180)) . '</h3>';
-        } else {
-            echo '<h3 class="record-title">' . $this->transEsc('Title not available') . '</h3>';
-        }
-      ?></a>
+        <h3 class="record-title"><?=$this->record($this->driver)->getTitleHtml()?></h3>
+      </a>
     </div>
 
     <div class="record-authors">
       <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList());?><br/>
       <? if($this->driver->isCollection()): ?>
-        <?=implode('<br/>', $this->driver->getSummary()); ?>
+        <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
       <? else: ?>
         <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
         <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
@@ -95,7 +86,7 @@
       } ?>
 
     <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
-        $list_id, // get tags for all lists if no single list is selected
+        null === $list_id ? true : $list_id, // get tags for all lists if no single list is selected
         $user_id, 'tag'
        ) : array();
     ?>
@@ -182,7 +173,7 @@
   <div class="col-xs-3 col-sm-2 hidden">
     <i class="fa fa-pen"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
     <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
-      $deleteUrl = is_null($list_id)
+      $deleteUrl = null === $list_id
           ? $this->url('myresearch-favorites')
           : $this->url('userList', array('id' => $list_id));
       $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);

@@ -20,14 +20,9 @@
     <? endif; ?>
   </div>
   <div class="span-10">
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title"><?
-      $listTitle = $this->driver->getTitle();
-      if (!empty($listTitle)) {
-          echo $this->escapeHtml($this->truncate($listTitle, 180));
-      } else {
-          echo $this->transEsc('Title not available');
-      }
-    ?></a><br/>
+    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+      <?=$this->record($this->driver)->getTitleHtml()?>
+    </a><br/>
     <? $listAuthor = $this->driver->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
       <?=$this->transEsc('by')?>:
       <a href="<?=$this->record($this->driver)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
