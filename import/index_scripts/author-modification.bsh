@@ -167,6 +167,85 @@ public String getFirstAuthorFilteredByRelator(Record record, String tagList,
 }
 
 /**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for saving relators of authors separated by different
+ * types.
+ *
+ * @param record               The record (fed in automatically)
+ * @param tagList              The field specification to read
+ * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig        The setting in author-classification.ini which
+ * defines which relator terms are acceptable (or a colon-delimited list)
+ * @param firstOnly            Return first result only?
+ * @returns Set result
+ */
+public Set getRelatorsFilteredByRelator(Record record, String tagList,
+    String acceptWithoutRelator, String relatorConfig, Boolean firstOnly,
+    String defaultRelator
+) {
+    Set result = new LinkedHashSet();
+    String[] noRelatorAllowed = acceptWithoutRelator.split(":");
+    HashMap parsedTagList = getParsedTagList(tagList);
+    List fields = indexer.getFieldSetMatchingTagList(record, tagList);
+    Iterator fieldsIter = fields.iterator();
+    if (fields != null){
+        DataField authorField;
+        while (fieldsIter.hasNext()){
+            authorField = (DataField) fieldsIter.next();
+            //add all author types to the result set
+            if (authorHasAppropriateRelator(authorField, noRelatorAllowed, relatorConfig)) {
+                List subfieldE = normalizeRelatorSubfieldList(authorField.getSubfields('e'));
+                List subfield4 = normalizeRelatorSubfieldList(authorField.getSubfields('4'));
+    
+                // get the first non-empty subfield
+                String relator = defaultRelator;
+
+                // try subfield E first
+                for (int j = 0; j < subfieldE.size(); j++) {
+                    if (!subfieldE.get(j).getData().isEmpty()) {
+                        relator = subfieldE.get(j).getData();
+                        continue;
+                    }
+                }
+                // try subfield 4 now and overwrite relator as subfield 4 is most important
+                for (int j = 0; j < subfield4.size(); j++) {
+                    if (!subfield4.get(j).getData().isEmpty()) {
+                        relator = subfield4.get(j).getData();
+                        continue;
+                    }
+                }
+
+                result.add(relator);
+            }
+        }
+    }
+    return result;
+}
+
+/**
+ * Filter values retrieved using tagList to include only those whose relator
+ * values are acceptable. Used for saving relators of authors separated by different
+ * types.
+ *
+ * @param record               The record (fed in automatically)
+ * @param tagList              The field specification to read
+ * @param acceptWithoutRelator Colon-delimited list of tags whose values should
+ * be accepted even if no relator subfield is defined
+ * @param relatorConfig        The setting in author-classification.ini which
+ * defines which relator terms are acceptable (or a colon-delimited list)
+ * @returns Set result
+ */
+public Set getRelatorsFilteredByRelator(Record record, String tagList,
+    String acceptWithoutRelator, String relatorConfig
+) {
+    // default firstOnly to false!
+    return getRelatorsFilteredByRelator(
+        record, tagList, acceptWithoutRelator, relatorConfig, false, "default_relator"
+    );
+}
+
+/**
  * This method fetches relator definitions from ini file and casts them to an
  * array. If a colon-delimited string is passed in, this will be directly parsed
  * instead of resorting to .ini loading.
