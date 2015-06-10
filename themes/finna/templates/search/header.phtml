@@ -1,3 +1,22 @@
+<?
+    // Set default value if necessary:
+    if (!isset($this->searchClassId)) {
+        $this->searchClassId = 'Solr';
+    }
+
+    // Load search actions and settings (if any):
+    $options = $this->searchOptions($this->searchClassId);
+    $handlers = $this->searchbox()->getHandlers(
+        $this->searchClassId,
+        isset($this->searchIndex) ? $this->searchIndex : null
+    );
+    $handlerCount = count($handlers);
+    $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
+    $searchHome = $options->getSearchHomeAction();
+    $advSearch = $options->getAdvancedSearchAction();
+    $lastSort = $options->getLastSort();
+    $lastLimit = $options->getLastLimit();
+?>
 <div class="col-sm-9">
   <h1 class="search-result-header">
   <? if ($this->recordsFound): ?>
@@ -5,6 +24,8 @@
       <?=$this->overrideSearchHeading?>
     <? elseif ($this->params->getsearchType() == 'basic'): ?>
       <?=$this->transEsc('Search')?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong>
+    <? elseif ($this->params->getsearchType() == 'advanced'): ?>
+      <span class="adv_search_terms"><?=$this->transEsc("Your search terms")?> : <strong><?=$this->escapeHtml($this->lookfor)?></strong></span>
     <? endif; ?>
     <? else: ?>
       <?=$this->transEsc('nohit_heading')?>
@@ -14,3 +35,16 @@
     <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
   <? endif; ?>
 </div>
+<div class="col-sm-3"></div>
+
+<? if ($this->params->getsearchType() == 'advanced'): ?>
+<div class="col-xs-12">
+  <div id="searchForm">
+      <div class="adv_search_links">
+        <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->results->getSearchId())?>"><i class="fa fa-pen"></i> <?=$this->transEsc("Edit this Advanced Search")?></a>
+        <a href="<?=$this->url($advSearch)?>"><i class="fa fa-search-adv"></i> <?=$this->transEsc("Start a new Advanced Search")?></a>
+        <a href="<?=$this->url($searchHome)?>"><i class="fa fa-search"></i> <?=$this->transEsc("Start a new Basic Search")?></a>
+      </div>
+  </div>
+</div>
+<? endif; ?>
