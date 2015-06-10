@@ -90,6 +90,24 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             $counter++;
         }
 
+        $embedAutoLoad = (isset($this->config->embed_auto_load)
+            ? $this->config->embed_auto_load : false);
+        // ini values 'true'/'false' are provided via ini reader as 1/0
+        /*if (!($embedAutoLoad === 1 || $embedAutoLoad === 0)) {
+            // embedAutoLoad is neither true nor false, so check if it contains an
+            // area string defining where exactly to use autoloading
+            $embedAutoLoad = in_array(
+                strtolower($area),
+                array_map(
+                    'trim',
+                    array_map(
+                        'strtolower',
+                        explode(',', $embedAutoLoad)
+                    )
+                )
+            );
+        }*/
+
         // Build parameters needed to display the control:
         $params = [
             'openUrl' => $openUrl,
@@ -103,8 +121,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             'openUrlGraphicHeight' => empty($this->config->graphic_height)
                 ? false : $this->config->graphic_height,
             'openUrlEmbed' => $embed,
-            'openUrlEmbedAutoLoad' => (isset($this->config->embed_auto_load)
-                && !empty($this->config->embed_auto_load)),
+            'openUrlEmbedAutoLoad' => $embedAutoLoad,
             'openUrlId' => $counter
         ];
 
