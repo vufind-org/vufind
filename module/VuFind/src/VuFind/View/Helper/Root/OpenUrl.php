@@ -202,6 +202,27 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
 
                 $ruleMatchCounter = 0;
 
+                // check if current rule is RecordDriver specific
+                $loadedRecordDriver = get_class($this->view->driver);
+                if (isset($ruleArray['recorddriver'])) {
+                    if (substr_compare(
+                        $loadedRecordDriver,
+                        $ruleArray['recorddriver'],
+                        strrpos($loadedRecordDriver, "\\")+1,
+                        strlen($ruleArray['recorddriver']),
+                        true
+                    ) === 0) {
+                        // get rid of recorddriver field as we have checked the
+                        // current rule as being relevant for the current
+                        // RecordDriver
+                        unset($ruleArray['recorddriver']);
+                    } else {
+                        // skip this rule as it's not relevant for the current
+                        // RecordDriver
+                        continue;
+                    }
+                }
+
                 foreach ($ruleArray as $key => $value) {
                     if (method_exists($this->view->driver, $key)) {
                         $recordValue = $this->view->driver->$key();
