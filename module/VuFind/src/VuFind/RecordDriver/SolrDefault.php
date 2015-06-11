@@ -862,11 +862,9 @@ class SolrDefault extends AbstractBase
      */
     public function getOpenURL($overrideSupportsOpenURL = false)
     {
-        if (!$overrideSupportsOpenURL) {
-            // stop here if this record does not support OpenURLs
-            if (!$this->supportsOpenURL()) {
-                return false;
-            }
+        // stop here if this record does not support OpenURLs
+        if (!$overrideSupportsOpenURL && !$this->supportsOpenURL()) {
+            return false;
         }
 
         // Set up parameters based on the format of the record:
