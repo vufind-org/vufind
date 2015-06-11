@@ -52,6 +52,11 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected $config;
 
+    /**
+     * Most recent OpenURL view template parameters
+     *
+     * @var array
+     */
     protected $params;
 
     /**
