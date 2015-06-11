@@ -116,14 +116,14 @@
             value for use in generating a COinS (Z3988) tag -- see bottom of file.
           */
         $openUrl = $this->driver->getOpenURL();
-        $openUrlTemplate = $openUrl ? $this->openUrl($openUrl, 'results') : false;
+        $openUrlActive = $openUrl ? $this->openUrl($openUrl)->openURLActive('results') : false;
         // Account for replace_other_urls setting
-        $urls = $openUrlTemplate && $this->replaceUrls() ? array() : $this->record($this->driver)->getLinkDetails();
+        $urls = $openUrlActive ? $this->record($this->driver)->getLinkDetailsForOpenURL() : $this->record($this->driver)->getLinkDetails();
 
-        if ($openUrlTemplate || !empty($urls)): ?>
-        <? if ($openUrlTemplate): ?>
+        if ($openUrlActive || !empty($urls)): ?>
+        <? if ($openUrlActive): ?>
           <br/>
-          <?=$openUrlTemplate?>
+          <?=$this->openUrl($openUrl)->openURLRenderTemplate()?>
         <? endif; ?>
         <? if (!is_array($urls)) $urls = array();
           if(!$this->driver->isCollection()):
@@ -135,7 +135,7 @@
 
       <?=str_replace('class="', 'class="label label-info ', $this->record($this->driver)->getFormatList())?>
 
-      <? if (!$openUrlTemplate && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+      <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
         <span class="status ajax-availability hidden">
           <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
         </span>

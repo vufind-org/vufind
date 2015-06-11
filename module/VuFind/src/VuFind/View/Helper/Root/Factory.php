@@ -391,20 +391,6 @@ class Factory
     }
 
     /**
-     * Construct the ReplaceUrls helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return ProxyUrl
-     */
-    public static function getReplaceUrls(ServiceManager $sm)
-    {
-        return new ReplaceUrls(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
-    }
-
-    /**
      * Construct the SafeMoneyFormat helper.
      *
      * @param ServiceManager $sm Service manager.

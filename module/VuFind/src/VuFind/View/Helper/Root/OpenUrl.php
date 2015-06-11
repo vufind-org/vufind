@@ -52,6 +52,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected $config;
 
+    protected $params;
+
     /**
      * Constructor
      *
@@ -73,17 +75,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function __invoke($openUrl, $area)
+    public function __invoke($openUrl)
     {
-        // check first if OpenURLs are enabled for this context
-        // check second if any excluded_records rule applies
-        // check last if this record is supported
-        if (!$this->openURLActive($area)
-            || $this->openURLCheckExcludedRecordsRules()
-            || !$this->openURLCheckSupportedRecordsRules()
-        ) {
-            return false;
-        }
 
         // Static counter to ensure that each OpenURL gets a unique ID.
         static $counter = 0;
@@ -102,7 +95,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // Build parameters needed to display the control:
-        $params = [
+        $this->params = [
             'openUrl' => $openUrl,
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)
@@ -117,10 +110,42 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             'openUrlId' => $counter
         ];
 
+        return $this;
+    }
+
+    /**
+     * Public method to render the OpenURL template
+     *
+     * @return string
+     */
+    public function openURLRenderTemplate()
+    {
         // Render the subtemplate:
         return $this->context->__invoke($this->getView())->renderInContext(
-            'Helpers/openurl.phtml', $params
+            'Helpers/openurl.phtml', $this->params
         );
+    }
+
+    /**
+     * Public method to check whether OpenURLs are active for current record
+     *
+     * @param string $area 'results', 'record' or 'holdings'
+     *
+     * @return bool
+     */
+    public function openURLActive($area)
+    {
+        // check first if OpenURLs are enabled for this context
+        // check second if any excluded_records rule applies
+        // check last if this record is supported
+        if (!$this->openURLCheckContext($area)
+            || $this->openURLCheckExcludedRecordsRules()
+            || !$this->openURLCheckSupportedRecordsRules()
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -131,7 +156,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    protected function openURLActive($area)
+    protected function openURLCheckContext($area)
     {
         // Doesn't matter the target area if no OpenURL resolver is specified:
         if (!isset($this->config->url)) {

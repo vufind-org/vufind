@@ -150,19 +150,19 @@
 
       <?
         $openUrl = $this->driver->getOpenURL();
-        $openUrlTemplate = $openUrl ? $this->openUrl($openUrl, 'record') : false;
+        $openUrlActive = $openUrl ? $this->openUrl($openUrl)->openURLActive('record') : false;
         // Account for replace_other_urls setting
-        $urls = $openUrlTemplate && $this->replaceUrls() ? array() : $this->record($this->driver)->getLinkDetails();
+        $urls = $openUrlActive ? $this->record($this->driver)->getLinkDetailsForOpenURL() : $this->record($this->driver)->getLinkDetails() ;
       ?>
-      <? if (!empty($urls) || $openUrlTemplate): ?>
+      <? if (!empty($urls) || $openUrlActive): ?>
       <tr>
         <th><?=$this->transEsc('Online Access')?>: </th>
         <td>
           <? foreach ($urls as $current): ?>
             <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
           <? endforeach; ?>
-          <? if ($openUrlTemplate): ?>
-            <?=$openUrlTemplate?><br/>
+          <? if ($openUrlActive): ?>
+            <?=$this->openUrl($openUrl)->openURLRenderTemplate()?><br/>
           <? endif; ?>
         </td>
       </tr>
