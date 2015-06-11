@@ -3,577 +3,960 @@ $include-html-classes: false;
 
 @charset "utf-8";
 
-/* Basic settings taken over from BS3 - REMOVED. Part of normalize.css */
+// Basic settings taken over from BS3 - REMOVED. Part of normalize.css
 
+// Avoid Mozilla horizontal jumps
 html {
   overflow: -moz-scrollbars-vertical !important;
-  /* Avoid Mozilla horizontal jumps upon dropdown content extending past bottom of browser window */
-  //font-size: 16px; /* Avoid issues with users changing default browser font size */
 }
 
-body {background-color: $snow;}
+body {
+  background-color: $snow;
+}
 
-.main.panel {background: #fff;}
+.main.panel {
+  background: #fff;
+}
 
-/* ICONS */
-.fa-grid::before   {content: "\f00a";}
-.fa-visual::before {content: "\f1fe";}
+// ICONS 
+.fa-grid:before {
+  content: "\f00a";
+}
 
-/* LISTS */
+.fa-visual:before {
+  content: "\f1fe";
+}
+
+// ICONS - END
+
+// LISTS 
 .list-unstyled {
-  padding-left: 0;
   list-style: none none;
+  padding-left: 0;
 }
 
-/* LISTS end */
+ul.list-unstyled {
+  margin-left: 0;
+}
 
-/* TABLES */
+// LISTS - END
+
+// TABLES 
 .alphabrowse.table {
   margin-bottom: 0;
   table-layout: fixed;
 }
 
-.citation .pace-car th,.citation .pace-car td {
-  border: 0;
-  padding: 0;
+.citation {
+  .pace-car th, .pace-car td {
+    border: 0;
+    padding: 0;
+  }
+
+  th {
+    text-align: right;
+  }
+
+  th, td {
+    @media only screen and (min-width: 20em) {
+      font-size: 80%; padding: .25em; // Details tab
+    }
+    @media only screen and (min-width: 48rem) {
+      font-size: 0.875rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
 }
 
-.citation th {text-align: right;}
+// TABLES - END
 
-/*
-table col[class*="col-"]{position: static;float: none;display: table-column}
-table td[class*="col-"],table th[class*="col-"]{position: static;float: none;display: table-cell	}
-*/
-/* TABLES - end */
-
-/* MODALS */
+// MODALS
 #modal .close-reveal-modal {
   right: -2.5rem;
   color: #fff;
 }
-/* legacy BS modals */
 
-/* copied from BS compiles.css + adapted slightly - replace when FNDTN modal is ready */
-/* -- Removed for Foundation features -- */
-/* legacy BS modals - end */
+// MODALS - END
 
-/* MODALS - end */
-
-/*LIST GROUPS - do not exist in FNDTN */
-/* -- Removed for Foundation features -- */
+//LIST GROUPS - do not exist in FNDTN, use ul list-unstyled and define via parent container e.g. sidebar ul...
 .sidebar {
   .accordion {
     margin-left: 0;
+
     .content {
       border: 1px solid $accordion-navigation-active-bg-color;
       border-bottom: 0;
       padding: 0;
     }
   }
+
   .accordion-navigation:not(.active),
   .filters,
-  .side-nav {margin-bottom: 6px !important;}
-  .side-nav {padding: 0;}
-  .side-nav li {
-    border-bottom: 1px solid $accordion-navigation-active-bg-color;
-    margin: 0;
-    .active {
-      z-index: 2;
-      color: #fff !important;
-      background-color: $primary-color;
-      &:hover {background-color: $warning-color;}
-      &:focus {background-color: $info-color;}
+  .side-nav {
+    margin-bottom: 6px !important;
+  }
+
+  .side-nav {
+    padding: 0;
+
+    li {
+      border-bottom: 1px solid $accordion-navigation-active-bg-color;
+      margin: 0;
+
+      .active {
+        background-color: $primary-color;
+        color: #fff !important;
+        z-index: 2;
+
+        &:hover {
+          background-color: $warning-color;
+        }
+
+        &:focus {
+          background-color: $info-color;
+        }
+      }
+    }
+  }
+
+  .list-unstyled {
+    margin-bottom: 1rem;
+
+    // check for redundant styles in the block below - Fixme CK
+    li {
+      border-color: #DDD #DDD -moz-use-text-color;
+      border-image: none;
+      border-style: solid solid none;
+      border-width: 1px 1px medium;
+      padding: .75rem 1em;
+      -moz-border-bottom-colors: none;
+      -moz-border-left-colors: none;
+      -moz-border-right-colors: none;
+      -moz-border-top-colors: none;
+
+      &:last-of-type {
+        border-bottom: 1px solid #DDD;
+      }
     }
   }
 }
 
-/* CHECK relevance of the following - in use? - Fixme */
-.panel > .list-group {margin-bottom: 0;}
-.panel > .list-group .list-group-item {border-width: 1px 0;}
-.panel > .list-group:first-child .list-group-item:first-child {border-top: 0;}
-.panel > .list-group:last-child .list-group-item:last-child {border-bottom: 0;}
+// CHECK relevance of the following - in use? - Fixme - CK
+.panel {
+  > .list-group {
+    margin-bottom: 0;
 
-.panel h1 + .list-group .list-group-item:first-child,
-.panel h2 + .list-group .list-group-item:first-child,
-.panel h3 + .list-group .list-group-item:first-child,
-.panel h4 + .list-group .list-group-item:first-child,
-.panel h5 + .list-group .list-group-item:first-child {border-top-width: 0;}
+    .list-group-item {
+      border-width: 1px 0;
+    }
+
+    &:first-child .list-group-item:first-child {
+      border-top: 0;
+    }
+
+    &:last-child .list-group-item:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  // There must be a more clever way to write the following - Fixme - CK
+  h1 + .list-group .list-group-item:first-child,
+  h2 + .list-group .list-group-item:first-child,
+  h3 + .list-group .list-group-item:first-child,
+  h4 + .list-group .list-group-item:first-child,
+  h5 + .list-group .list-group-item:first-child {
+    border-top-width: 0;
+  }
+}
 
 label.list-group-item {
   font-weight: normal;
   margin-top: 0;
   padding-left: 2rem;
 }
-.list-group-item.title {font-weight: normal;}
 
-.browse.list-group .list-group-item {word-wrap: break-word;}
-
-.browse.list-group .list-group-item.view-record {
-  border-top: 0;
-  font-size: .75rem;
-  padding: .1rem .25rem;
-  text-align: right;
+.browse {
+  .list-group {
+    .list-group-item {
+      word-wrap: break-word; // include in replacement FNDTN version - Fixme - CK
+      .view-record {
+        border-top: 0;
+        font-size: .75rem;
+        padding: .1rem .25rem;
+        text-align: right;
+      }
+    }
+  }
 }
 
-.list-group-item.active i.fa,
-.badge i.fa {cursor: inherit;}
+.list-group-item {
+  .title {
+    font-weight: normal;
+  }
+  .active i.fa,
+  .label i.fa {
+    cursor: inherit;
+  }
+}
 
-/* CHECK relevance 2 here - Fixme */
-/* List-groups - end */
+// CHECK relevance 2 here - Fixme
+// List-groups - END
 
-/* Badges = round labels = also used as blocks with number of items in facets - we take the roundness out */
-/* -- Removed for Foundation features (.label) -- */
-/* Badges - end */
+// Range sliders
+#side-panel-publishDate ul {
+  list-style: none
+}
 
-/* Help blocks */
+ul.date-range-slider {
+  margin: .25rem 1rem 0 1rem
+}
 
-/* short messages with hints such as eg. my account - favourites - edit: 'separate tags ... with comma' or advanced search - 'search for' */
+.slider-container {
+  padding-right: 1.25rem
+}
+
+// Range sliders - END
+
+// Help blocks
+// short messages with hint texts such as e.g. my account - favourites - edit: 'separate tags ... with comma' or advanced search - 'search for'
 .help-block {
-  display: block;
   color: #4D4D4D;
-  font-size: .875rem;
+  display: block;
+  font-size: .875rem; // define as mixin font-size: .875em - Fixme Ck
 }
 
-/* Help blocks - end */
+// Help blocks - END
 
-/* Link button - a 'deemphasized' BS button that looks like a link but has button behavior, original btn-link, used only in auth/abstractbase/login.phtml. */
+// Link button - a 'deemphasized' BS button that looks like a link but has button behavior, original btn-link, used only in auth/abstractbase/login.phtml.
 .button.link {
-  @include button($bg:rgba(255,255,255,0));
+  @include button($bg: rgba(255, 255, 255, 0));
   color: $primary-color;
+
   &:active,
   &:focus,
-  &:hover {text-decoration: underline;}
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
-/* Link button - end */
+// Link button - END
 
-/* SCREENREADER-specific (only 'visible' on screen readers) */
+// SCREENREADER-specifics (only 'visible' on screen readers)
 .sr-only {
-  width: auto;
-  margin: 0;
-  padding: 0;
   border: 0;
   clip: rect(1px, 1px, 1px, 1px);
-  position: absolute;
   height: auto;
+  margin: 0;
   overflow: hidden;
-}
-.sr-only:focus {
-  padding: 15px 15px;
-  width: auto;
-  display: block;
-  color: #132531;
-  background: #ffffff;
-  font-size: 1rem;
-  line-height: 20px;
-  text-decoration: none;
-  text-transform: none;
-  clip: auto;
-  height: 50px;
+  padding: 0;
   position: absolute;
-  left: 5px;
-  top: 5px;
-  z-index: 100000;
-  border-radius: 4px;
+  width: auto;
+
+  &:focus {
+    background: #fff;
+    clip: auto;
+    color: #132531;
+    display: block;
+    font-size: 1rem;
+    height: 3rem;
+    left: .25rem;
+    line-height: 1.5rem;
+    padding: 1rem;
+    position: absolute;
+    text-decoration: none;
+    text-transform: none;
+    top: .25rem;
+    width: auto;
+    z-index: 100000;
+  }
 }
 
-/* SCREENREADER-specific - end */
+// SCREENREADER-specifics - END
 
-/* HIDDEN elements, used for Login/-out, accordion-more-collapsibles (facets) etc.,  */
-/* -- Removed for Foundation features (.hide) -- */
-/* HIDDEN elements - end */
-
-/* HEADER */
-/* Sticky header, TopBar, searchbox, breadcrumbs */
+// HEADER
+// Sticky header, TopBar, search box, breadcrumbs
+// Do NOT set top-bar height to auto in default or toggles wont work on small devices
 .top-bar {
-  height: auto;
+  @media only screen and (min-width: 45rem) {
+    height: auto
+  }
   .name {
     margin-left: 0;
   }
+
   #searchForm {
     margin-left: 81px;
+
     li.has-form {
       height: auto;
       padding-left: 2px;
       padding-right: 2px;
     }
+    // Search form - distance between elements
+    @media only screen and (min-width: 45rem) {
+      .columns {
+        &:first-of-type {
+          padding-left: 0;
+        }
+        &:last-of-type {
+          padding-right: 0;
+        }
+      }
+    }
   }
-  input,select,button,.button {
-    position: relative;
-    top: .4rem;
+
+  input,
+  select,
+  button,
+  .button {
     height: 2rem;
     margin-bottom: .4rem;
+    position: relative;
+    top: .4rem;
   }
-  button, .button {line-height: 1.3rem;}
-  select {line-height: .8rem;}
+
+  button,
+  .button {
+    line-height: 1.3rem;
+  }
+
+  select {
+    line-height: .8rem;
+  }
+
   .has-form,
   &.search {
     height: auto;
-    input,select,button,.button {top: 0;}
-    .button {line-height: 1.25rem;}
-    li.has-form {height: 2.5rem;}
+
+    .button {
+      line-height: 1.25rem;
+    }
+
+    li.has-form {
+      height: 2.5rem;
+    }
   }
 }
 
+// Breadcrumbs - prevent spilling of breadcrumbs over main content margins
 .contain-to-grid .breadcrumbs {
-  max-width: 62.5rem;
   margin: 0 auto;
   margin-bottom: 0;
+  max-width: 62.5rem;
 }
 
-/* max-width to prevent from going full width on scroll-down */
-.breadcrumbs.columns {float: none;}
+// max-width to prevent from going full width on scroll-down
+.breadcrumbs.columns { float: none; }
 
 .breadcrumbs {
-  border-radius: 0;
-  border: none;
-  border-top: 1px solid $steel;
   background-color: inherit;
+  border: none; border-radius: 0;
+  border-top: 1px solid $steel;
+  clear: both;
   color: #fff;
+  > * {
+    color: #fff;
+
+    a {
+      color: $gainsboro;
+    }
+  }
+  @media (min-width: 62rem) {
+    clear: both;
+    max-width: 64rem; // limit to max width of central column
+  }
 }
 
-.breadcrumbs > * {
-  color: #fff;
-  a {color: $gainsboro;}
-}
+// Sticky header, TopBar, search box, breadcrumbs - END
 
-/* Sticky header, TopBar, searchbox, breadcrumbs - end */
-
-/* Searchbox */
-
-/* see also form-control below */
+// Searchbox
+// see also form-control below
 .twitter-typeahead {
-  width: 100%;
-  height: 32px;
-  padding-top: 0;
-  margin-top: 0;
-  border: none;
   background: #fff;
+  border: none;
+  height: 32px;
+  margin-top: 0;
+  padding-top: 0;
   vertical-align: top;
+  width: 100%;
+
+  @media only screen and (max-width: 767px) {
+    width: 100%
+  }
 }
 
-/* is used in search and advanced search - css copied over - CK */
-.top-bar .twitter-typeahead {line-height: 1.5;}
-.top-bar .twitter-typeahead input {top: 0;}
-.top-bar .twitter-typeahead {top: 0;}
-.tt-hint {color: $iron;}
+.top-bar {
+  .twitter-typeahead {
+    line-height: 1.5;
+    top: .4rem;
+
+    input {
+      top: 0;
+    }
+  }
+}
+
+.tt-hint {
+  color: $iron;
+}
+
+// check widths for block below - Fixme CK
 .tt-dropdown-menu {
-  width: 464px;
-  margin-top: 2px;
   background-color: $white;
   border: 1px solid $iron;
+  margin-top: 2px;
+  width: 464px;
 }
+
 .tt-suggestion {
   border-bottom: 1px solid $iron;
-  padding: 6px 20px 4px;
   line-height: 24px;
-  &:last-child {border: 0;}
+  padding: 6px 20px 4px;
+
+  &:last-child {
+    border: 0;
+  }
+
   &.tt-cursor {
     background-color: $primary-color;
     color: #fff;
     cursor: pointer;
   }
+
   p {
-    margin: 0;
     font-size: 85% !important;
+    margin: 0;
   }
 }
 
-/* Placement of Search and Advanced buttons */
-#searchForm .button-group.even-2 li:nth-of-type(2) {float: right;}
-#searchForm .button-group.even-2 li {width: 48.25%;}
+// Search form
+#searchForm {
+  .columns {
+    @media only screen and (min-width: 20em) {
+      padding: 0;
+    }
+    @media only screen and (min-width: 45rem) {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+  }
 
-/* Placement of Search and Advanced buttons - end */
+  input[type="text"] {
+    margin-bottom: 0;
+  }
+  select {
+    margin-bottom: .5em;
+  }
 
-/* Keep filter checkbox */
-#searchForm .checkbox label {
-  font-size: .75rem;
-  color: #FFF;
-  line-height: 0.2;
-  margin-left: .75rem;
+  // Placement of Search and Advanced buttons
+  .button-group.even-2 {
+    li {
+      width: 48.25%;
+
+      &:nth-of-type(2) {
+        float: right;
+      }
+    }
+  }
+  // Placement of Search and Advanced buttons - END
+  // Keep filter checkbox
+  .checkbox label {
+    color: #FFF;
+    font-size: .75rem;
+    line-height: 0.2;
+    margin-left: .75rem;
+  }
+
+  // Keep filter checkbox - END
+  // Shard selector checkboxes for developer machines - see also below
+  input[type="checkbox"] {
+    margin-left: 1rem;
+  }
 }
-
-/* Keep filter checkbox - end */
 
 .searchHomeContent .panel {
+  padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
-  padding-bottom: 0;
 }
 
-.nav.searchbox.large-12.hide-for-large-up {background-color: #333333;}
+// Dark BG for search box when located directly under header
+.nav.searchbox.large-12.hide-for-large-up {
+  background-color: #333;
+}
 
-/* Dark BG for searchbox when located directly under header */
+// Shard selector checkboxes for developer machines in top-bar and search form
+.top-bar #searchForm input[type="checkbox"] {
+  margin-left: 0;
+}
 
-/* Position of ai and devel checkboxes for developer machines */
-#searchForm input[type="checkbox"] {margin-left: 1rem;}
+#shard-selector {
+  @media only screen and (min-width: 20em) {
+    clear: both;
+    color: #ccc;
+  }
+  @media only screen and (min-width: 45rem) {
+    float: left;
+    font-size: .7rem;
+    line-height: 1;
+    padding: 0;
+  }
+  @media (min-width: 62rem) {
+    left: 1rem;
+    top: 2.5rem;
+  }
+  @media (min-width: 80rem) {
+    left: 0;
+  }
+}
 
-.top-bar #searchForm input[type="checkbox"] {margin-left: 0;}
+// Shard selector checkboxes for developer machines - END
+// Searchbox - END
 
-/* Position of ai and devel checkboxes for developer machines */
-/* Searchbox - end */
+.grid {
+  @media only screen and (max-width: 767px) {
+    min-height: 250px; // e.g. search/list-grid.phtml
+  }
+}
 
-/* Advanced Search: search term insert */
-#top-srchbx .tabs-content {border: none;}
+// Advanced Search: search term insert
+// top-bar search box section placement
+#top-srchbx {
+  .tabs-content {
+    border: none;
+  }
+
+  @media only screen and (min-width: 48rem) {
+    float: left;
+
+    .has-form {
+      padding-left: 0; padding-right: 0
+    }
+  }
+}
 
 p.adv_search_terms {
-  width: 100%;
-  padding: .35rem .5rem;
-  margin-top: .25rem;
-  margin-bottom: .25rem;
   background-color: #f1f1f1;
   border: 1px solid #ccc;
   font-size: 0.8rem;
+  margin-bottom: .25rem;
+  margin-top: .25rem;
+  padding: .35rem .5rem;
+  width: 100%;
 }
 
-ul.adv_search_links {list-style: none;}
+ul.adv_search_links {
+  list-style: none; // shorten this? - Fixme - CK
+
+  li {
+    border: 1px solid #ccc;
+  }
+}
 
 .top-bar-section .adv_search_links {
   float: left;
   margin-bottom: 1rem;
+
+  > a {
+    font-size: .80rem;
+  }
 }
 
-.adv_search_links li {border: 1px solid #ccc;}
+// Advanced Search: search term insert - END
 
-.top-bar-section .adv_search_links > a {font-size: .80rem;}
+// HEADER - END
 
-/* Advanced Search: search term insert - END */
-
-/* HEADER end */
-
-/* NAVIGATION BAR */
-ul[role=navigation] {list-style: none;}
-
-/* NAVIGATION BAR end */
-
-/* MAIN content area */
-/* for Searchbox see header, above, for Advanced Search fields see below */
-#content.panel {padding: 1rem;}
-
-/* Advanced Search: criterion remove button */
-#advSearchForm .close {
-  margin-top: -1.5rem;
-  margin-right: -1.5rem;
+// NAVIGATION BAR
+ul[role=navigation] {
+  list-style: none;
 }
-#advSearchForm .panel {margin-bottom: 1rem;}
-#advSearchForm #limit {margin-top: 1.25rem;}
 
-/* top-align the fields at the bottom of advanced search page */
-/* Advanced Search: criterion remove button - END */
+// NAVIGATION BAR - END
 
-/* List view */
-/* Rows */
+// MAIN content area
+// for Search Box see header, above, for Advanced Search fields see below
+#content.panel {
+  padding: 1rem;
+}
+
+// Advanced Search: criterion remove button and other settings
+#advSearchForm {
+  .close {
+    float: right;
+    font-weight: bold;
+    margin-top: -1.5rem;
+    margin-right: -1.5rem;
+  }
+  .panel {
+    margin-bottom: 1rem;
+  }
+  // top-align the fields at the bottom of advanced search page
+  #limit {
+    margin-top: 1.25rem;
+  }
+}
+
+// Advanced Search: criterion remove button and other settings - END
+
+// LIST VIEW
+// Rows
 .row.result {
-  padding-top: 1rem;
   padding-bottom: 1rem;
-}
-.row.result:first-of-type {padding-top: 0;}
-.row.result:nth-of-type(even) {background-color: $silver;}
+  padding-top: 1rem;
 
-/* Rows - end */
+  &:first-of-type {
+    padding-top: 0;
+  }
 
-/* Limit, sort and select-boxes */
-
-.form-inline.sort label,
-.form-inline.limit label {
-  /*float: left; margin-right: .25em;*/
-  font-size: .875em;
+  &:nth-of-type(even) {
+    background-color: $silver;
+  }
 }
 
-/*.form-inline .jumpMenu {max-width: 100%} */
+// Rows - END
 
-.sort select,
-.limit select {width: 100%;}
+// Limit, sort and select-boxes
+.form-inline {
+  .sort,
+  .limit {
+    label {
+      font-size: .875em; // define as mixin font-size: .875em - Fixme Ck
+    }
+  }
+  //.jumpMenu {max-width: 100%}
+}
 
-/* Limit, sort and view selector dropdowns - end */
+.sort,
+.limit {
+  select {
+    width: 100%;
+  }
+}
 
-/* Bulk action buttons, e.g. favourites list */
-.bulk-action-buttons {clear: both;}
+// Limit, sort and view selector dropdowns - END
 
-/* Images column */
-form .row.result .row {margin-left: -1rem;}
+// Bulk action buttons, e.g. favourites list
+.bulk-action-buttons {
+  clear: both;
+}
 
-form .row.result .row .columns,
-form .row.result .row .column {padding-left: 0 !important;}
+// Images column in results list
+// images in details view below
+form .row.result .row {
+  margin-left: -1rem;
 
-img.recordcover {height: 100%;}
+  .columns,
+  .column {
+    padding-left: 0 !important;
+  }
+}
 
-/* Images column - end */
+img.recordcover {
+  height: 100%
+}
 
-/* Full text links */
-/* Full text links - end */
+// Images column - end
 
-/* Favourites, Edit and Delete links */
-
+// Favourites, Edit and Delete links
 .delete.tool,
 .edit.tool,
 .save-record,
 .qrcodeLink,
-.hierarchyTreeLinkText {font-size: .875rem;}
+.hierarchyTreeLinkText {
+  font-size: .875rem; // define as mixin font-size: .875em - Fixme Ck
+}
 
-/* Favourites and Delete links - end */
-/* List view - end */
+// Favourites and Delete links - END
+// LIST VIEW  - END
 
-/* Detail view */
-/* Page browser */
+// DETAILS VIEW
+// Page browser
 .pager {
+  list-style: outside none none;
   margin: 0 0 1rem 0;
   padding: 0;
   text-align: center;
-  list-style: outside none none;
+
+  li {
+    display: inline;
+
+    .disabled {
+      display: none;
+    }
+
+    &:first-of-type {
+      float: left;
+    }
+
+    &:last-of-type {
+      float: right;
+    }
+    > a,
+    > span {
+      display: inline-block;
+      padding: .25rem 1rem;
+    }
+
+    > a {
+      &:first-of-type {
+        padding-left: .75rem;
+      }
+      &:last-of-type {
+        padding-right: .75rem;
+      }
+    }
+  }
+  .button {
+    &:first-of-type {
+      margin-left: 0;
+    }
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
 }
 
-.pager li {
-  display: inline;
+// Page browser - end
+
+// Sub-nav with modal links
+.sub-nav {
+  width: 100%;
+
+  dd {
+    margin-left: 0;
+  }
+  dd,
+  dt {
+    a {
+      padding: 0.1875rem 1rem 0.1875rem 0;
+    }
+  }
+
+  dd:first-of-type a {
+    padding-left: 0;
+  }
+
+  .f-dropdown li a {
+    padding: .35rem .75rem;
+  }
 }
 
-.pager li.disabled {
-  display: none;
+// Sub-nav with modal links - END
+
+// Book covers column
+.bookimgs {
+  padding-top: .4rem;
+
+  img {
+    width: 100%;
+  }
+
+  // Clearing lightboxes for book images
+  // are these used ? - fixme ck
+  .clearing-blackout {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.45);
+    //height: 80%; width:80%;margin: 2em 10%;
+
+    .carousel {
+      display: none;
+    }
+  }
+  // This is the container for the thumbnails - only useful for multiple images
+  .clearing-container .visible-img {
+    border: 2px solid #fff;
+    margin: 2em auto;
+    max-height: 70%;
+    max-width: 90%;
+  }
+
+  // this following stacking necessary ? can we use standard FNDTN values?- fixme CK
+  .clearing-assembled .clearing-container .visible-img {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7);
+  }
+
+  .visible-img img {
+    height: 100%;
+    width: auto;
+  }
+
+  .clearing-main-prev,
+  .clearing-main-next {
+    display: none;
+  }
+
+  // This is the container for the thumbnails - only useful for multiple images
+  p.clearing-caption {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7);
+    color: #ccc;
+  }
+
+  // Clearing lightboxes - end
 }
 
-.pager li:first-of-type {
-  float: left;
+// Book cover column - END
+
+// where does the following go best - or leave standard values? - fixme ck
+#content h2 {
+  font-size: 1.6875rem;
 }
 
-.pager li:last-of-type {
-  float: right;
-}
-
-.pager li > a,
-.pager li > span {
-  display: inline-block;
-  padding: .25rem 1rem;
-}
-
-.pager li > a:first-of-type {padding-left: .75rem;}
-.pager li > a:last-of-type {padding-right: .75rem;}
-.pager .button:first-of-type {margin-left: 0;}
-.pager .button:last-of-type {margin-right: 0;}
-
-/* Page browser - end */
-
-/* Sub-nav with modal links */
-.main .sub-nav {width: 100%;}
-
-.sub-nav dd {margin-left: 0;}
-
-.sub-nav dd:first-of-type a {padding-left: 0;}
-
-.sub-nav dt a,
-.sub-nav dd a {padding: 0.1875rem 1rem 0.1875rem 0;}
-
-.sub-nav  .f-dropdown li a {padding: .35rem .75rem;}
-
-/* Sub-nav with modal links - END */
-
-/* Book cover column */
-.bookimgs {padding-top: .4rem;}
-
-.bookimgs img {width: 100%;}
-
-/* Book cover column - end */
-
-/* Clearing lightboxes for book images */
-.bookimgs .clearing-blackout {
-  background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.45);
-  /*height: 80%; width:80%;margin: 2em 10%; */
-}
-
-.bookimgs .clearing-blackout .carousel {display: none;}
-
-/* This is the container for the thumbnails - only useful for multiple images */
-.bookimgs .clearing-container .visible-img {
-  max-width: 90%;
-  max-height: 70%;
-  border: 2px solid #fff;
-  margin: 2em auto;
-}
-
-.bookimgs .clearing-assembled .clearing-container .visible-img {background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.7);}
-
-.bookimgs .visible-img img {
-  width: auto;
-  height: 100%;
-}
-
-.bookimgs .clearing-main-prev,
-.bookimgs .clearing-main-next {display: none;}
-
-/* This is the container for the thumbnails - only useful for multiple images */
-.bookimgs p.clearing-caption {
-  color: #ccc;
-  background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.7);
-}
-
-/* Clearing lightboxes - end */
-
-#content h2 {font-size: 1.6875rem;}
-
-/* Detail view - end */
-
-/* Tabs */
+// Tabs
 .tabs {
   border: 1px solid #DDD;
   border-bottom: none;
-}
 
-.tabs dd > a,
-.tabs .tab-title > a {padding: .5rem 1rem;}
+  dd > a,
+  .tab-title > a {
+    padding: .5rem 1rem;
+  }
+}
 
 .tabs-content {
   border: 1px solid #DDD;
   border-top: none;
+
+  > .content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+
+    .active {
+      background: #fff;
+    }
+  }
 }
 
-.tabs-content > .content {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.tabs-content > .content.active {background: #fff;}
-
-/* Description, Details tab */
-
-/* Note: minimum width = small mobile landscape */
-/* -- Removed for Foundation features -- */
-/* Details tab - END */
-
-/* Hierarchy tab */
+// Hierarchy tab
 #hierarchyTreeHolder {
   border-right: 1px solid #eee;
   overflow-x: hidden;
 }
-/* Hierarchy tab - end */
-/* Tabs - end */
 
-/* -- Removed for Foundation features -- */
-/* Forms */
-/* Alert boxes */
-/* Text highlighting */
+// Hierarchy tab - END
 
-/* FOOTER */
-footer.panel {padding: 1rem;}
+// Similar items tab with  carousel (with Slick carousel)
+#similar-items-carousel {
+  .hover-overlay {
+    display: block;
+    margin: auto;
+    min-height: 12rem;
+    min-width: 30%;
+    position: relative;
+    text-align: center;
 
-/* FOOTER - end */
+    .content {
+      background: rgba(0, 0, 0, 0.5);
+      color: #FFF;
+      display: none;
+      height: 100%;
+      left: 0;
+      padding: .5em .5em 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+    &:hover .content {
+      display: block
+    }
+  }
+}
 
-/* SIDEBAR, FACETS ETC */
+.slick-slide {
+  font-size: .875rem;
+  margin: 0 .5rem .5rem .5rem;
 
-/* MOVE TO MQueries - FIXME */
-/* -- Removed for Foundation features -- */
-/* SIDEBAR, FACETS ETC - end */
+  img {
+    margin-bottom: .5rem;
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 12rem;
+  }
+}
+
+.slick-prev, .slick-next {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: white;
+  height: 3rem;
+  line-height: 4rem;
+  margin-top: -2.5rem;
+  padding: 0;
+  position: absolute;
+  text-indent: -9999px !important;
+  top: 50%;
+  width: 2rem;
+  z-index: 10;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  > span {
+    border: 10px inset;
+    display: block;
+    height: 0;
+    margin-top: -10px;
+    position: absolute;
+    top: 50%;
+    width: 0;
+  }
+}
+
+.slick-prev {
+  left: -1rem;
+}
+
+.slick-next {
+  right: -1rem;
+}
+
+.slick-prev > span {
+  border-color: transparent #fff transparent transparent;
+  border-right-style: solid;
+}
+
+.slick-next > span {
+  border-color: transparent transparent transparent #fff;
+  border-left-style: solid;
+  left: 50%;
+  margin-left: -4px;
+}
+
+.slick-prev:hover > span {
+  border-right-color: #fff;
+}
+
+.slick-next:hover > span {
+  border-left-color: #fff;
+}
+
+@media only screen and (max-width: 35.5556em) {
+  .slick-next, .slick-prev {
+    display: none;
+  }
+
+}
+
+/* Similar items tab carousel - END */
+// Tabs - END
+// DETAILS VIEW - END
+
+// FOOTER
+footer.panel {
+  padding: 1rem;
+}
+
+// FOOTER - END
 
 // Checkboxes and radios
-//
 // Indent the labels to position radios/checkboxes as hanging controls.
-//
 // https://github.com/twbs/bootstrap/blob/b6e6a05b951aac3fad30da441c765dbb86518644/less/forms.less
 
 .radio,
 .checkbox {
-  position: relative;
   display: block;
-  margin-top: .7rem;
   margin-bottom: .7rem;
+  margin-top: .7rem;
+  position: relative;
 
   label {
     min-height: .8rem;
@@ -586,17 +969,48 @@ footer.panel {padding: 1rem;}
   }
 }
 
+// try to shorten the following
 .radio input[type="radio"],
 .radio-inline input[type="radio"],
 .checkbox input[type="checkbox"],
 .checkbox-inline input[type="checkbox"] {
-  position: absolute;
   margin-left: -20px;
-  margin-top: 4px \9;
+  margin-top: 4px;
+  position: absolute;
 }
 
 .radio + .radio,
 .checkbox + .checkbox {
   margin-top: -5px;
   // Move up sibling radios or checkboxes for tighter spacing
+}
+
+// General visibility classes - leave at end of file to overrule other display settings
+.hide {
+  display: none
+}
+
+// Print styles
+
+@media print {
+  .columns {
+    width: auto
+  }
+  // for similar layout as on screen
+  // Print links
+  // Show verbose links for certain elements
+  // It should be easier to list the elements where the link should be SHOWN and generally switch this feature off
+  // Turn off verbose links
+  a[href]:after {
+    content: "";
+  }
+  a,
+  a:visited {
+    text-decoration: none;
+  }
+  // Show links for
+  a.fulltext[href]:after {
+    content: " (" attr(href) ")";
+    text-decoration: underline
+  }
 }
