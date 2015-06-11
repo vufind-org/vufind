@@ -124,9 +124,11 @@ function updatePageForLogin() {
     refreshCommentList(recordId, recordSource);
   });
   // Logged in AJAX
-  $('form[name="commentRecord"]').unbind('submit').submit(registerAjaxCommentRecord);
-  $('form[name="commentRecord"]').removeAttr('data-lightbox');
-  $('form[name="commentRecord"]').removeAttr('data-lightbox-after-login');
+  if ('function' === typeof registerAjaxCommentRecord) {
+    $('form[name="commentRecord"]').unbind('submit').submit(registerAjaxCommentRecord);
+    $('form[name="commentRecord"]').removeAttr('data-lightbox');
+    $('form[name="commentRecord"]').removeAttr('data-lightbox-after-login');
+  }
 
   var summon = false;
   $('.hiddenSource').each(function(i, e) {

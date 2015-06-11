@@ -35,7 +35,7 @@
           <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
             <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Institutional Login")?></a>
           <? else: ?>
-            <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox title="<?=$this->transEsc("Login")?>" data-lightbox-close><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
+            <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox data-lightbox-after-login="hide" title="<?=$this->transEsc("Login")?>" data-lightbox-close><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a>
           <? endif; ?>
         </li>
       <? endif; ?>

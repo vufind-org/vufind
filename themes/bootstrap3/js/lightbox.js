@@ -102,7 +102,11 @@ function lightboxFormSubmit(event) {
     return window[event.target.dataset.lightboxSubmit](event, data);
   }
   if(dataset && "undefined" !== typeof event.target.dataset.lightboxAfterLogin) {
-    eval('lightboxLoginCallback = ' + event.target.dataset.lightboxAfterLogin);
+    if('hide' === event.target.dataset.lightboxAfterLogin) {
+      lightboxLoginCallback = function(){$('#modal').modal('hide');}
+    } else {
+      eval('lightboxLoginCallback = ' + event.target.dataset.lightboxAfterLogin);
+    }
   }
   lightboxAJAX(event, data);
   if(!lightboxShown) {
@@ -159,6 +163,13 @@ function constrainLink(event) {
   }
   if('undefined' === typeof this.href) {
     this.href = path;
+  }
+  if('undefined' !== typeof event.target.dataset.lightboxAfterLogin) {
+    if('hide' === event.target.dataset.lightboxAfterLogin) {
+      lightboxLoginCallback = function(){$('#modal').modal('hide');}
+    } else {
+      eval('lightboxLoginCallback = ' + event.target.dataset.lightboxAfterLogin);
+    }
   }
   if(this.href.length > 1) {
     event.preventDefault();
