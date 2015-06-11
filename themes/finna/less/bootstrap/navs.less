@@ -5,7 +5,9 @@
 
 // Base class
 // --------------------------------------------------
-
+.recordTabs.nav {
+    margin-top: 20px;   
+}
 .nav {
   margin-bottom: 10px;
   margin-top: 10px;
@@ -155,16 +157,25 @@
 // Pills This is the toolbar 
 // -------------------------
 .nav-pills {
-  padding: 10px 0px;
+  padding: 0px 0px 10px;
   margin: 0px;
-  > li {
+  & a:hover {
+    text-decoration: none;   
+  }
+  & > li:not(.addthis-share-buttons):not(.whatsapp) {
     float: left;
     margin: 5px 0px;
+    @media (max-width: @screen-xs-max) {
+        padding-top: 10px;   
+    }
+    &:first-child {
+        margin-left: 0;   
+    }
     // Links rendered as pills
-    > a {
+    & > a {
       border-radius: @nav-pills-border-radius;
     }
-    + li {
+    & + li {
       margin-left: 0px;
     }
 

@@ -39,3 +39,23 @@
 .main.template-name-advanced .finna-main-tabs {
     padding-top: 25px;
 }
+
+#record-tabs {
+    margin-bottom: 20px;
+    & #commentList {
+      margin-bottom: 20px;  
+    }
+    & .comment-wrapper {
+        background: @brand-third;
+        padding: 10px;
+        padding-top: 5px;
+        margin-bottom: 10px;
+        & .name {
+            padding-bottom: 4px;
+            border-bottom: 2px solid @body-bg;
+        }
+        & .comment-text {
+            padding-top: 5px;   
+        }
+    }
+}
