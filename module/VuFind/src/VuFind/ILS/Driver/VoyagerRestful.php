@@ -3150,14 +3150,18 @@ EOT;
         $lastname = htmlspecialchars($patron['lastname'], ENT_COMPAT, 'UTF-8');
         $ubId = htmlspecialchars($this->ws_patronHomeUbId, ENT_COMPAT, 'UTF-8');
         $oldPIN = trim(
-            htmlspecialchars($details['oldPassword'], ENT_COMPAT, 'UTF-8')
+            htmlspecialchars(
+                $this->sanitizePIN($details['oldPassword']), ENT_COMPAT, 'UTF-8'
+            )
         );
         if ($oldPIN === '') {
             // Voyager requires the PIN code to be set even if it was empty
             $oldPIN = '     ';
         }
         $newPIN = trim(
-            htmlspecialchars($details['newPassword'], ENT_COMPAT, 'UTF-8')
+            htmlspecialchars(
+                $this->sanitizePIN($details['newPassword']), ENT_COMPAT, 'UTF-8'
+            )
         );
         $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
 
