@@ -2,6 +2,7 @@
 return array(
     'extends' => 'finna',
     'css' => array(
-        'custom.css'
+        'custom.css',
+        'settings.css'
     ),
 );
