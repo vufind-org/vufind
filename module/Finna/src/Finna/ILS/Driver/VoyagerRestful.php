@@ -39,6 +39,28 @@ namespace Finna\ILS\Driver;
 class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
 {
     /**
+     * Configuration Reader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configReader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter       $dateConverter  Date converter object
+     * @param string                       $holdsMode      Holds mode setting
+     * @param string                       $titleHoldsMode Title holds mode setting
+     * @param \VuFind\Config\PluginManager $configReader   Configuration reader
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter,
+        $holdsMode, $titleHoldsMode, \VuFind\Config\PluginManager $configReader
+    ) {
+        parent::__construct($dateConverter, $holdsMode, $titleHoldsMode);
+        $this->configReader = $configReader;
+    }
+
+    /**
      * Get Patron Profile
      *
      * This is responsible for retrieving the profile for a specific patron.
@@ -53,6 +75,30 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
         $profile = parent::getMyProfile($patron);
         $profile['blocks'] = $this->checkAccountBlocks($patron['id']);
         return $profile;
+    }
+
+    /**
+     * Get ILL (UB) Pickup Locations
+     *
+     * This is responsible for getting a list of possible pickup locations for a
+     * library
+     *
+     * @param string $id        Record ID
+     * @param string $pickupLib Pickup library ID
+     * @param array  $patron    Patron
+     *
+     * @return bool|array False if request not allowed, or an array of
+     * locations.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getILLPickupLocations($id, $pickupLib, $patron)
+    {
+        $result = parent::getILLPickupLocations($id, $pickupLib, $patron);
+        if (is_array($result)) {
+            $result = $this->filterAllowedUBPickupLocations($result, $patron);
+        }
+        return $result;
     }
 
     /**
@@ -113,5 +159,148 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
             $this->putCachedData($cacheId, $blockReason);
         }
         return empty($blockReason) ? false : $blockReason;
+    }
+
+    /**
+     * A helper function that retrieves UB request details for ILL and caches them
+     * for a short while for faster access.
+     *
+     * @param string $id     BIB id
+     * @param array  $patron Patron
+     *
+     * @return bool|array False if UB request is not available or an array
+     * of details on success
+     */
+    protected function getUBRequestDetails($id, $patron)
+    {
+        $result = parent::getUBRequestDetails($id, $patron);
+        if (is_array($result)) {
+            $result['libraries'] = $this->filterAllowedUBPickupLibraries(
+                $result['libraries'], $patron
+            );
+        }
+        return $result;
+    }
+
+    /**
+     * Utility function for filtering the given UB pickup libraries
+     * based on allowed pickup locations within the users local library.
+     * If allowed pickup locations are configured, only users local library
+     * is returned. If not, no filtering is done.
+     *
+     * @param array $libraries Array of libraries
+     * @param array $patron    Patron
+     *
+     * @return bool|array False if request not allowed, or an array of
+     * allowed pickup libraries.
+     */
+    protected function filterAllowedUBPickupLibraries($libraries, $patron)
+    {
+        if (!$allowedIDs = $this->getAllowedUBPickupLocationIDs($patron)) {
+            return $libraries;
+        }
+
+        if (!$patronHomeUBID = $this->getPatronHomeUBID($patron)) {
+            return false;
+        }
+
+        $allowedLibraries = array();
+        foreach ($libraries as $library) {
+            if ($patronHomeUBID === $library['id']) {
+                $allowedLibraries[] = $library;
+            }
+        }
+
+        return $allowedLibraries;
+    }
+
+    /**
+     * Utility function for filtering the given UB locations
+     * based on allowed pickup locations within the users local library.
+     * If allowed pickup locations are not configured, no filtering is done.
+     *
+     * @param array $locations Array of locations
+     * @param array $patron    Patron
+     *
+     * @return array array of allowed pickup locations.
+     */
+    protected function filterAllowedUBPickupLocations($locations, $patron)
+    {
+        if (!$allowedIDs = $this->getAllowedUBPickupLocationIDs($patron)) {
+            return $locations;
+        }
+
+        $allowedLocations = array();
+        foreach ($locations as $location) {
+            if (in_array($location['id'], $allowedIDs)) {
+                $allowedLocations[] = $location;
+            }
+        }
+
+        return $allowedLocations;
+    }
+
+    /**
+     * Return list of allowed UB pickup locations
+     * within the users home local library.
+     *
+     * @param array $patron Patron
+     *
+     * @return bool|array False if allowed pickup locations are
+     * not configured, or array of location codes
+     */
+    protected function getAllowedUBPickupLocationIDs($patron)
+    {
+        if (!$config = $this->getPatronDriverConfig($patron)) {
+            return false;
+        }
+
+        if (!isset($config['ILLRequests']['pickUpLocations'])) {
+            return false;
+        }
+
+        return explode(':', $config['ILLRequests']['pickUpLocations']);
+    }
+
+    /**
+     * Return configuration for the patron's active library card driver.
+     *
+     * @param array $patron Patron
+     *
+     * @return bool|array False if no driver configuration was found,
+     * or configuration.
+     */
+    protected function getPatronDriverConfig($patron)
+    {
+        if (isset($patron['cat_username'])
+            && ($pos = strpos($patron['cat_username'], '.')) > 0
+        ) {
+            $source = substr($patron['cat_username'], 0, $pos);
+
+            $config = $this->configReader->get($source);
+            return is_object($config) ? $config->toArray() : [];
+        }
+
+        return false;
+    }
+
+    /**
+     * Return patron's local library UB id.
+     *
+     * @param array $patron Patron
+     *
+     * @return bool|string False if request not allowed, or UB id
+     */
+    protected function getPatronHomeUBID($patron)
+    {
+        if (!$config = $this->getPatronDriverConfig($patron)) {
+            return false;
+        }
+
+        if (!isset($config['WebServices']['patronHomeUbId'])) {
+            return false;
+        }
+
+        return $config['WebServices']['patronHomeUbId'];
     }
 }
