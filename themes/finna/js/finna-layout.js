@@ -59,7 +59,7 @@ finna.layout = (function() {
           if (typeof($(this).data('row-height')) !== 'undefined') {
               rowHeight[index] = $(this).data('row-height');
           } else {
-            if ($(this).children().first().css("div")) {
+            if ($(this).children().first().is("div")) {
               rowHeight[index] = parseFloat($(this).children().first().height());
             }
             else {
