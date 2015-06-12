@@ -645,6 +645,20 @@ class Factory
     }
 
     /**
+     * Construct the Search runner.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\SearchRunner
+     */
+    public static function getSearchRunner(ServiceManager $sm)
+    {
+        return new \VuFind\Search\SearchRunner(
+            $sm->get('VuFind\SearchResultsPluginManager')
+        );
+    }
+
+    /**
      * Construct the search specs reader.
      *
      * @param ServiceManager $sm Service manager.

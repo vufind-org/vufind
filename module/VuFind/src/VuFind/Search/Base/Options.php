@@ -206,15 +206,21 @@ abstract class Options implements TranslatorAwareInterface
     protected $facetsIni = 'facets';
 
     /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         $this->limitOptions = [$this->defaultLimit];
+        $this->configLoader = $configLoader;
     }
 
     /**
@@ -708,6 +714,64 @@ abstract class Options implements TranslatorAwareInterface
     {
         // No limit by default:
         return -1;
+    }
+
+    /**
+     * Load all recommendation settings from the relevant ini file.  Returns an
+     * associative array where the key is the location of the recommendations (top
+     * or side) and the value is the settings found in the file (which may be either
+     * a single string or an array of strings).
+     *
+     * @param string $handler Name of handler for which to load specific settings.
+     *
+     * @return array associative: location (top/side/etc.) => search settings
+     */
+    public function getRecommendationSettings($handler = null)
+    {
+        // Load the necessary settings to determine the appropriate recommendations
+        // module:
+        $searchSettings = $this->configLoader->get($this->getSearchIni());
+
+        // Load a type-specific recommendations setting if possible, or the default
+        // otherwise:
+        $recommend = [];
+
+        if (null !== $handler
+            && isset($searchSettings->TopRecommendations->$handler)
+        ) {
+            $recommend['top'] = $searchSettings->TopRecommendations
+                ->$handler->toArray();
+        } else {
+            $recommend['top']
+                = isset($searchSettings->General->default_top_recommend)
+                ? $searchSettings->General->default_top_recommend->toArray()
+                : false;
+        }
+        if (null !== $handler
+            && isset($searchSettings->SideRecommendations->$handler)
+        ) {
+            $recommend['side'] = $searchSettings->SideRecommendations
+                ->$handler->toArray();
+        } else {
+            $recommend['side']
+                = isset($searchSettings->General->default_side_recommend)
+                ? $searchSettings->General->default_side_recommend->toArray()
+                : false;
+        }
+        if (null !== $handler
+            && isset($searchSettings->NoResultsRecommendations->$handler)
+        ) {
+            $recommend['noresults'] = $searchSettings->NoResultsRecommendations
+                ->$handler->toArray();
+        } else {
+            $recommend['noresults']
+                = isset($searchSettings->General->default_noresults_recommend)
+                ? $searchSettings->General->default_noresults_recommend
+                    ->toArray()
+                : false;
+        }
+
+        return $recommend;
     }
 
     /**
