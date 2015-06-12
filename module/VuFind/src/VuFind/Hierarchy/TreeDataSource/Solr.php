@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
+use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\ParamBag;
@@ -51,6 +52,13 @@ class Solr extends AbstractBase
     protected $solrConnector;
 
     /**
+     * Formatter manager
+     *
+     * @var FormatterManager
+     */
+    protected $formatterManager;
+
+    /**
      * Cache directory
      *
      * @var string
@@ -67,14 +75,16 @@ class Solr extends AbstractBase
     /**
      * Constructor.
      *
-     * @param Connector $connector Solr connector
-     * @param string    $cacheDir  Directory to hold cache results (optional)
-     * @param array     $filters   Filters to apply to Solr tree queries
+     * @param Connector        $connector Solr connector
+     * @param FormatterManager $fm        Formatter manager
+     * @param string           $cacheDir  Directory to hold cache results (optional)
+     * @param array            $filters   Filters to apply to Solr tree queries
      */
-    public function __construct(Connector $connector, $cacheDir = null,
-        $filters = []
+    public function __construct(Connector $connector, FormatterManager $fm,
+        $cacheDir = null, $filters = []
     ) {
         $this->solrConnector = $connector;
+        $this->formatterManager = $fm;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');
         }
@@ -94,10 +104,7 @@ class Solr extends AbstractBase
      */
     public function getXML($id, $options = [])
     {
-        return $this->getFormattedData(
-            $id, 'VuFind\Hierarchy\TreeDataFormatter\Xml', $options,
-            'hierarchyTree_%s.xml'
-        );
+        return $this->getFormattedData($id, 'xml', $options, 'hierarchyTree_%s.xml');
     }
 
     /**
@@ -203,17 +210,14 @@ class Solr extends AbstractBase
      */
     public function getJSON($id, $options = [])
     {
-        return $this->getFormattedData(
-            $id, 'VuFind\Hierarchy\TreeDataFormatter\Json', $options,
-            'tree_%s.json'
-        );
+        return $this->getFormattedData($id, 'json', $options, 'tree_%s.json');
     }
 
     /**
      * Get formatted data for the specified hierarchy ID.
      *
      * @param string $id            Hierarchy ID.
-     * @param string $formatClass   Class for formatting data
+     * @param string $format        Name of formatter service to use.
      * @param array  $options       Additional options for JSON generation.
      * (Currently one option is supported: 'refresh' may be set to true to
      * bypass caching).
@@ -221,7 +225,7 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-    public function getFormattedData($id, $formatClass, $options = [],
+    public function getFormattedData($id, $format, $options = [],
         $cacheTemplate = 'tree_%s'
     ) {
         $cacheFile = (null !== $this->cacheDir)
@@ -244,7 +248,8 @@ class Solr extends AbstractBase
                 return '';
             }
             // Get top record's info
-            $formatter = new $formatClass(
+            $formatter = $this->formatterManager->get($format);
+            $formatter->setRawData(
                 $this->getRecord($id), $map,
                 $this->getHierarchyDriver()->treeSorting(),
                 $this->getHierarchyDriver()->getCollectionLinkType()

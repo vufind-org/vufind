@@ -300,6 +300,19 @@ class Factory
     }
 
     /**
+     * Construct the Hierarchy\TreeDataFormatter Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Hierarchy\TreeDataFormatter\PluginManager
+     */
+    public static function getHierarchyTreeDataFormatterPluginManager(
+        ServiceManager $sm
+    ) {
+        return static::getGenericPluginManager($sm, 'Hierarchy\TreeDataFormatter');
+    }
+
+    /**
      * Construct the Hierarchy\TreeDataSource Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.

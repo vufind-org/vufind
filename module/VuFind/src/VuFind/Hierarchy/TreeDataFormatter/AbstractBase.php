@@ -74,14 +74,16 @@ abstract class AbstractBase
     protected $count = 0;
 
     /**
-     * Constructor
+     * Set raw data.
      *
      * @param object $topNode  Full record for top node
      * @param array  $childMap Data map from index
      * @param bool   $sort     Is sorting enabled?
      * @param string $cType    Collection type
+     *
+     * @return void
      */
-    public function __construct($topNode, $childMap, $sort = false, $cType = 'All')
+    public function setRawData($topNode, $childMap, $sort = false, $cType = 'All')
     {
         $this->topNode = $topNode;
         $this->childMap = $childMap;
