@@ -490,7 +490,6 @@ abstract class Results implements ServiceLocatorAwareInterface
         $this->resultTotal = $minified->r;
     }
 
-
     /**
      * Get an array of recommendation objects for augmenting the results display.
      *
@@ -552,6 +551,8 @@ abstract class Results implements ServiceLocatorAwareInterface
         // Restore translator:
         $this->getOptions()
             ->setTranslator($serviceLocator->get('VuFind\Translator'));
+        $this->getOptions()
+            ->setConfigLoader($serviceLocator->get('VuFind\Config'));
         return $this;
     }
 
