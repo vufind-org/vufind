@@ -83,7 +83,8 @@ class Koha extends AbstractBase
             ';port=' . $this->config['Catalog']['port'] .
             ';dbname=' . $this->config['Catalog']['database'],
             $this->config['Catalog']['username'],
-            $this->config['Catalog']['password']
+            $this->config['Catalog']['password'],
+            [PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']
         );
         // Throw PDOExceptions if something goes wrong
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

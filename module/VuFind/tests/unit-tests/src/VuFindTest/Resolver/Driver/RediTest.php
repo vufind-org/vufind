@@ -86,12 +86,14 @@ class RediTest extends \VuFindTest\Unit\TestCase
             1 => [
                 'title' => "Zum Volltext (via SpringerLink)",
                 'href' => "http://www-fr.redi-bw.de/links/?rl_site=ubl&rl_action=link&rl_link_target=ezb&rl_link_name=0.article&rl_citation=9443914d0e261c0c1f6a3fd8151213c1d4cec05f5d3053097da6fa5597bbb9d7",
+                'access'        => 'limited',
                 'coverage' => "",
                 'service_type' => "getFullTxt",
             ],
             2 => [
                 'title' => "Zur Zeitschriftenhomepage* (via www.ncbi.nlm.nih.gov)",
                 'href' => "http://www-fr.redi-bw.de/links/?rl_site=ubl&rl_action=link&rl_link_target=ezb&rl_link_name=1.article&rl_citation=9443914d0e261c0c1f6a3fd8151213c1d4cec05f5d3053097da6fa5597bbb9d7",
+                'access'        => 'open',
                 'coverage' => "*Es konnte nicht zuverlÃ¤ssig festgestellt werden, ob der gesuchte Aufsatz in den Zeitraum fÃ¤llt, fÃ¼r den bei diesem Anbieter der Volltext verfÃ¼gbar ist.",
                 'service_type' => "getFullTxt",
             ],

@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
+use VuFind\Search\SearchRunner;
 
 /**
  * Abstract SearchObject Recommendations Module (needs to be extended to use
@@ -62,20 +63,20 @@ abstract class SearchObject implements RecommendInterface
     protected $requestParam;
 
     /**
-     * Results plugin manager
+     * Search runner
      *
-     * @var \VuFind\Search\Results\PluginManager
+     * @var SearchRunner
      */
-    protected $resultsManager;
+    protected $runner;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param SearchRunner $runner Search runner
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    public function __construct(SearchRunner $runner)
     {
-        $this->resultsManager = $results;
+        $this->runner = $runner;
     }
 
     /**
@@ -123,17 +124,18 @@ abstract class SearchObject implements RecommendInterface
             $lookfor = $params->getQuery()->getAllTerms();
         }
 
-        // Set up the parameters:
-        $this->results = $this->resultsManager->get($this->getSearchClassId());
-        $params = $this->results->getParams();
-        $params->setLimit($this->limit);
-        $params->setBasicSearch(
-            $lookfor,
-            $params->getOptions()->getHandlerForLabel($typeLabel)
-        );
+        // Set up the callback to initialize the parameters:
+        $limit = $this->limit;
+        $callback = function ($runner, $params) use ($lookfor, $limit, $typeLabel) {
+            $params->setLimit($limit);
+            $params->setBasicSearch(
+                $lookfor, $params->getOptions()->getHandlerForLabel($typeLabel)
+            );
+        };
 
         // Perform the search:
-        $this->results->performAndProcessSearch();
+        $this->results
+            = $this->runner->run([], $this->getSearchClassId(), $callback);
     }
 
     /**
