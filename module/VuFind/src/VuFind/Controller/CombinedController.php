@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use Zend\Stdlib\Parameters;
 
 /**
  * Redirects the user to the appropriate default VuFind action.

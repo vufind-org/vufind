@@ -490,7 +490,6 @@ abstract class Results implements ServiceLocatorAwareInterface
         $this->resultTotal = $minified->r;
     }
 
-
     /**
      * Get an array of recommendation objects for augmenting the results display.
      *
