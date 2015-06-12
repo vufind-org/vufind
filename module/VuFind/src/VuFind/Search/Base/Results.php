@@ -551,6 +551,8 @@ abstract class Results implements ServiceLocatorAwareInterface
         // Restore translator:
         $this->getOptions()
             ->setTranslator($serviceLocator->get('VuFind\Translator'));
+        $this->getOptions()
+            ->setConfigLoader($serviceLocator->get('VuFind\Config'));
         return $this;
     }
 

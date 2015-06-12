@@ -220,6 +220,18 @@ abstract class Options implements TranslatorAwareInterface
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         $this->limitOptions = [$this->defaultLimit];
+        $this->setConfigLoader($configLoader);
+    }
+
+    /**
+     * Set the config loader
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     *
+     * @return void
+     */
+    public function setConfigLoader(\VuFind\Config\PluginManager $configLoader)
+    {
         $this->configLoader = $configLoader;
     }
 
@@ -784,6 +796,7 @@ abstract class Options implements TranslatorAwareInterface
     public function __sleep()
     {
         $vars = get_object_vars($this);
+        unset($vars['configLoader']);
         unset($vars['translator']);
         $vars = array_keys($vars);
         return $vars;
