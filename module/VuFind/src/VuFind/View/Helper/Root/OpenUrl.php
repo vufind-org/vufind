@@ -53,11 +53,11 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $config;
 
     /**
-     * Most recent OpenURL view template parameters
+     * Current recorddriver
      *
-     * @var array
+     * @var \VuFind\RecordDriver
      */
-    protected $params;
+    protected $driver;
 
     /**
      * Constructor
@@ -75,14 +75,23 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Render appropriate UI controls for an OpenURL link.
      *
-     * @param string $openUrl The OpenURL to display
-     * @param string $area    The area where OpenURLs are to be displayed
+     * @param \VuFind\RecordDriver $driver The current recorddriver
+     *
+     * @return object
+     */
+    public function __invoke($driver)
+    {
+        $this->driver = $driver;
+        return $this;
+    }
+
+    /**
+     * Public method to render the OpenURL template
      *
      * @return string
      */
-    public function __invoke($openUrl)
+    public function openURLRenderTemplate()
     {
-
         // Static counter to ensure that each OpenURL gets a unique ID.
         static $counter = 0;
 
@@ -100,8 +109,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // Build parameters needed to display the control:
-        $this->params = [
-            'openUrl' => $openUrl,
+        $params = [
+            'openUrl' => $this->driver->getOpenURL(),
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)
                 ? false : $this->config->window_settings,
@@ -115,19 +124,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             'openUrlId' => $counter
         ];
 
-        return $this;
-    }
-
-    /**
-     * Public method to render the OpenURL template
-     *
-     * @return string
-     */
-    public function openURLRenderTemplate()
-    {
         // Render the subtemplate:
         return $this->context->__invoke($this->getView())->renderInContext(
-            'Helpers/openurl.phtml', $this->params
+            'Helpers/openurl.phtml', $params
         );
     }
 
@@ -140,10 +139,12 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     public function openURLActive($area)
     {
-        // check first if OpenURLs are enabled for this context
-        // check second if any excluded_records rule applies
+        // check first if OpenURLs are enabled for this RecordDriver
+        // check second if OpenURLs are enabled for this context
+        // check third if any excluded_records rule applies
         // check last if this record is supported
-        if (!$this->openURLCheckContext($area)
+        if (!$this->driver->getOpenURL()
+            || !$this->openURLCheckContext($area)
             || $this->openURLCheckExcludedRecordsRules()
             || !$this->openURLCheckSupportedRecordsRules()
         ) {
@@ -233,15 +234,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                 $ruleMatchCounter = 0;
 
                 // check if current rule is RecordDriver specific
-                $loadedRecordDriver = get_class($this->view->driver);
                 if (isset($ruleArray['recorddriver'])) {
-                    if (substr_compare(
-                        $loadedRecordDriver,
-                        $ruleArray['recorddriver'],
-                        strrpos($loadedRecordDriver, "\\")+1,
-                        strlen($ruleArray['recorddriver']),
-                        true
-                    ) === 0) {
+                    if (is_a($this->driver, $ruleArray['recorddriver'])) {
                         // get rid of recorddriver field as we have checked the
                         // current rule as being relevant for the current
                         // RecordDriver
@@ -254,8 +248,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                 }
 
                 foreach ($ruleArray as $key => $value) {
-                    if (method_exists($this->view->driver, $key)) {
-                        $recordValue = $this->view->driver->$key();
+                    if (method_exists($this->driver, $key)) {
+                        $recordValue = $this->driver->$key();
                         if ($value === "*" && $recordValue) {
                             // wildcard value
                             $ruleMatchCounter++;
