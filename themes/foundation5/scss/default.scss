@@ -226,7 +226,7 @@ ul.date-range-slider {
 
 // Help blocks - END
 
-// Link button - a 'deemphasized' BS button that looks like a link but has button behavior, original btn-link, used only in auth/abstractbase/login.phtml.
+// Link button - a 'de-emphasized' BS button that looks like a link but has button behavior, original btn-link, used only in auth/abstractbase/login.phtml.
 .button.link {
   @include button($bg: rgba(255, 255, 255, 0));
   color: $primary-color;
