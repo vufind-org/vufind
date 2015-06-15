@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use Zend\Stdlib\Parameters;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -131,14 +130,10 @@ class CombinedController extends AbstractSearch
     public function resultsAction()
     {
         // Set up current request context:
-        $results = $this->getResultsManager()->get('Combined');
-        $params = $results->getParams();
-        $params->recommendationsEnabled(true);
-        $params->initFromRequest(
-            new Parameters(
-                $this->getRequest()->getQuery()->toArray()
-                + $this->getRequest()->getPost()->toArray()
-            )
+        $request = $this->getRequest()->getQuery()->toArray()
+            + $this->getRequest()->getPost()->toArray();
+        $results = $this->getServiceLocator()->get('VuFind\SearchRunner')->run(
+            $request, 'Combined', $this->getSearchSetupCallback()
         );
 
         // Remember the current URL, then disable memory so multi-search results
@@ -203,7 +198,7 @@ class CombinedController extends AbstractSearch
                 'columns' => $columns,
                 'combinedResults' => $combinedResults,
                 'config' => $config,
-                'params' => $params,
+                'params' => $results->getParams(),
                 'placement' => $placement,
                 'results' => $results,
                 'supportsCart' => $supportsCart,
