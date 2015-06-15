@@ -216,12 +216,26 @@ Subject:
       - [or, ~]
   ExactSettings:
     DismaxFields:
-      - topic_unstemmed^150
+      - topic_unstemmed^1500
+      - geographic^50
+      - genre^50
+      - era
     QueryFields:
       - topic_unstemmed:
-        - [onephrase, 350]
+        - [onephrase, 3500]
         - [and, 150]
         - [or, ~]
+        - geographic:
+          - [onephrase, 300]
+          - [and, 100]
+          - [or, ~]
+        - genre:
+          - [onephrase, 300]
+          - [and, 100]
+          - [or, ~]
+        - era:
+          - [and, 100]
+          - [or, ~]
 
 # This field definition is a compromise that supports both journal-level and
 # article-level data.  The disadvantage is that hits in article titles will
@@ -266,7 +280,7 @@ JournalTitle:
     series2:
       - [onephrase, 50]
       - [and , ~]
-  FilterQuery: "format:Journal OR format:Article"
+  FilterQuery: "format:0/Journal/"
   ExactSettings:
     DismaxFields:
       - title_full_unstemmed^450
@@ -274,7 +288,7 @@ JournalTitle:
       - title_full_unstemmed:
         - [onephrase, 450]
         - [and, 400]
-    FilterQuery: "format:Journal OR format:Article"
+    FilterQuery: "format:0/Journal/"
 
 Title:
   DismaxFields:
@@ -334,10 +348,11 @@ Series:
 
 AllFields:
   DismaxFields:
+    - title_txtP^8600
+    - title^750
+    - title_full_unstemmed^750
+    - title_full^500
     - title_short^750
-    - title_full_unstemmed^8600
-    - title_full^800
-    - title^500
     - title_alt^200
     - title_new^100
     - series^50
@@ -347,7 +362,6 @@ AllFields:
     - author_additional^50
     - author_fuller^150
     - contents^10
-    - description^10
     - topic_unstemmed^4200
     - topic^400
     - geographic^300
@@ -356,23 +370,28 @@ AllFields:
     - fulltext_unstemmed^4010
     - allfields
     - fulltext
+    - description^10
     - isbn
     - issn
+    - ismn_isn_mv
   QueryFields:
     0:
       0:
         - OR
         - 50
-      title_short:
-        - [onephrase, 750]
-      title_full_unstemmed:
+      title_txtP:
         - [onephrase, 8600]
         - [and, 8500]
-      title_full:
-        - [onephrase, 800]
       title:
+        - [onephrase, 750]
+        - [and, 700]
+      title_full_unstemmed:
+        - [onephrase, 750]
+        - [and, 500]
+      title_full:
         - [onephrase, 500]
-        - [and, 450]
+      title_short:
+        - [onephrase, 750]
       title_alt:
         - [and, 200]
       title_new:
@@ -393,8 +412,6 @@ AllFields:
       - [and, 50]
     contents:
       - [and, 10]
-    description:
-      - [and, 10]
     topic_unstemmed:
       - [onephrase, 4250]
       - [and, 4200]
@@ -412,22 +429,31 @@ AllFields:
       - [or, ~]
     fulltext:
       - [or, ~]
+    description:
+      - [and, 10]
     isbn:
       - [onephrase, ~]
     issn:
       - [onephrase, ~]
+    ismn_isn_mv:
+      - [onephrase, ~]
   ExactSettings:
     DismaxFields:
-      - title_full_unstemmed^8600
+      - title_txtP^8600
+      - title_full_unstemmed^750
       - topic_unstemmed^4200
       - allfields_unstemmed^4010
       - fulltext_unstemmed^4010
       - isbn
       - issn
+      - ismn_isn_mv
     QueryFields:
-      title_full_unstemmed:
+      title_txtP:
         - [onephrase, 8600]
-        - [and, 850]
+        - [and, 8500]
+      title_full_unstemmed:
+        - [onephrase, 750]
+        - [and, 500]
       topic_unstemmed:
         - [onephrase, 4250]
         - [and, 4200]
@@ -438,6 +464,8 @@ AllFields:
       isbn:
         - [onephrase, ~]
       issn:
+        - [onephrase, ~]
+      ismn_isn_mv:
         - [onephrase, ~]
 
 # These are advanced searches that never use Dismax:
