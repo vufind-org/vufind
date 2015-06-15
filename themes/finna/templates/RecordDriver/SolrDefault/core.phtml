@@ -20,7 +20,7 @@
   </div>
 
   <div class="col-sm-10 record-information">
-    <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle())?></h1>
+    <h1 property="name" class="record-title"><?=$this->escapeHtml($this->driver->getShortTitle())?><? if ($subtitle = $this->driver->getSubtitle()): ?>&nbsp;: <?=$this->escapeHtml($subtitle) ?><? endif; ?></h1>
     <? if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
       <div class="record-uniform-titles">
         <? foreach ($uniformTitles as $uniformTitle): ?>
