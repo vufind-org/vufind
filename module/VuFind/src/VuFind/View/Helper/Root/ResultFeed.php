@@ -46,6 +46,25 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
+     * Override title
+     *
+     * @var string
+     */
+    protected $overrideTitle = null;
+
+    /**
+     * Set override title.
+     *
+     * @param string $title Title
+     *
+     * @return void
+     */
+    public function setOverrideTitle($title)
+    {
+        $this->overrideTitle = $title;
+    }
+
+    /**
      * Set up Dublin Core extension.
      *
      * @return void
@@ -93,10 +112,14 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
 
         // Create the parent feed
         $feed = new Feed();
-        $feed->setTitle(
-            $this->translate('Results for') . ' '
-            . $results->getParams()->getDisplayQuery()
-        );
+        if (null !== $this->overrideTitle) {
+            $feed->setTitle($this->translate($this->overrideTitle));
+        } else {
+            $feed->setTitle(
+                $this->translate('Results for') . ' '
+                . $results->getParams()->getDisplayQuery()
+            );
+        }
         $feed->setLink(
             $baseUrl . $results->getUrlQuery()->setViewParam(null, false)
         );
@@ -145,7 +168,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $feed->setOpensearchTotalResults($results->getResultTotal());
         $feed->setOpensearchItemsPerPage($params->getLimit());
         $feed->setOpensearchStartIndex($results->getStartRecord() - 1);
-        $feed->setOpensearchSearchTerms($params->getQuery()->getString());
+        $feed->setOpensearchSearchTerms($params->getQuery()->getAllTerms());
 
         $records = $results->getResults();
         foreach ($records as $current) {

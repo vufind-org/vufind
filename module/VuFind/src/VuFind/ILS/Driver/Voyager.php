@@ -1157,6 +1157,19 @@ class Voyager extends AbstractBase
     }
 
     /**
+     * Sanitize patron PIN code (remove characters Voyager doesn't handle properly)
+     *
+     * @param string $pin PIN code to sanitize
+     *
+     * @return string Sanitized PIN code
+     */
+    protected function sanitizePIN($pin)
+    {
+        $pin = preg_replace('/[^0-9a-zA-Z#&<>+^`~]+/', '', $pin);
+        return $pin;
+    }
+
+    /**
      * Patron Login
      *
      * This is responsible for authenticating a patron against the catalog.
@@ -1216,7 +1229,8 @@ class Voyager extends AbstractBase
                     ? mb_strtolower(utf8_encode($row['FALLBACK_LOGIN']), 'UTF-8')
                     : null;
 
-                if ((!is_null($primary) && $primary == $compareLogin)
+                if ((!is_null($primary) && ($primary == $compareLogin
+                    || $primary == $this->sanitizePIN($compareLogin)))
                     || ($fallback_login_field && is_null($primary)
                     && $fallback == $compareLogin)
                 ) {
