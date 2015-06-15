@@ -159,6 +159,7 @@ $config = [
             'VuFind\ILSTitleHoldLogic' => 'VuFind\Service\Factory::getILSTitleHoldLogic',
             'VuFind\Logger' => 'VuFind\Service\Factory::getLogger',
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
+            'VuFind\OpenUrlRulesReader' => 'VuFind\Service\Factory::getOpenUrlRulesReader',
             'VuFind\Recaptcha' => 'VuFind\Service\Factory::getRecaptcha',
             'VuFind\RecommendPluginManager' => 'VuFind\Service\Factory::getRecommendPluginManager',
             'VuFind\RecordDriverPluginManager' => 'VuFind\Service\Factory::getRecordDriverPluginManager',

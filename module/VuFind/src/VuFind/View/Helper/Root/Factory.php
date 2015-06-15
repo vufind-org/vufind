@@ -316,8 +316,12 @@ class Factory
     public static function getOpenUrl(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $openUrlRules = $sm->getServiceLocator()
+            ->get('VuFind\OpenUrlRulesReader')->get('OpenUrlRules.json');
         return new OpenUrl(
-            $sm->get('context'), isset($config->OpenURL) ? $config->OpenURL : null
+            $sm->get('context'),
+            $openUrlRules,
+            isset($config->OpenURL) ? $config->OpenURL : null
         );
     }
 

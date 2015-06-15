@@ -449,6 +449,20 @@ class Factory
     }
 
     /**
+     * Construct the OpenURL rules reader.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Config\OpenUrlRulesReader
+     */
+    public static function getOpenUrlRulesReader(ServiceManager $sm)
+    {
+        return new \VuFind\Config\OpenUrlRulesReader(
+            $sm->get('VuFind\CacheManager')
+        );
+    }
+
+    /**
      * Construct the recaptcha helper
      *
      * @param ServiceManager $sm Service manager.

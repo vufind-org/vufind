@@ -53,6 +53,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $config;
 
     /**
+     * OpenURL rules
+     *
+     * @var \Zend\Config\OpenUrlRules
+     */
+    protected $openUrlRules;
+
+    /**
      * Current recorddriver
      *
      * @var \VuFind\RecordDriver
@@ -63,12 +70,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param \VuFind\View\Helper\Root\Context $context Context helper
+     * @param \Zend\Config\OpenUrlRules        $openUrlRules VuFind OpenURL rules
      * @param \Zend\Config\Config              $config  VuFind OpenURL configuration
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
-        $config = null
+        $openUrlRules, $config = null
     ) {
         $this->context = $context;
+        $this->openUrlRules = $openUrlRules;
         $this->config = $config;
     }
 
@@ -90,7 +99,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function openURLRenderTemplate()
+    public function renderTemplate()
     {
         // Static counter to ensure that each OpenURL gets a unique ID.
         static $counter = 0;
@@ -137,16 +146,16 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function openURLActive($area)
+    public function isActive($area)
     {
         // check first if OpenURLs are enabled for this RecordDriver
         // check second if OpenURLs are enabled for this context
         // check third if any excluded_records rule applies
         // check last if this record is supported
         if (!$this->driver->getOpenURL()
-            || !$this->openURLCheckContext($area)
-            || $this->openURLCheckExcludedRecordsRules()
-            || !$this->openURLCheckSupportedRecordsRules()
+            || !$this->checkContext($area)
+            || $this->checkExcludedRecordsRules()
+            || !$this->checkSupportedRecordsRules()
         ) {
             return false;
         }
@@ -162,7 +171,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    protected function openURLCheckContext($area)
+    protected function checkContext($area)
     {
         // Doesn't matter the target area if no OpenURL resolver is specified:
         if (!isset($this->config->url)) {
@@ -186,14 +195,10 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    protected function openURLCheckExcludedRecordsRules()
+    protected function checkExcludedRecordsRules()
     {
-        if (isset($this->config)
-            && isset($this->config->excluded_records)
-        ) {
-            $excluded_records
-                = $this->config->excluded_records->toArray();
-            return $this->openURLCheckRules($excluded_records);
+        if (isset($this->openUrlRules['exclude'])) {
+            return $this->checkRules($this->openUrlRules['exclude']);
         }
         return false;
     }
@@ -204,14 +209,10 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    protected function openURLCheckSupportedRecordsRules()
+    protected function checkSupportedRecordsRules()
     {
-        if (isset($this->config)
-            && isset($this->config->supported_records)
-        ) {
-            $supported_records
-                = $this->config->supported_records->toArray();
-            return $this->openURLCheckRules($supported_records);
+        if (isset($this->openUrlRules['include'])) {
+            return $this->checkRules($this->openUrlRules['include']);
         }
         return false;
     }
@@ -224,22 +225,21 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    protected function openURLCheckRules($ruleset)
+    protected function checkRules($ruleset)
     {
         if (count($ruleset)) {
             // check each rule - first rule-match
             foreach ($ruleset as $rule) {
-                $ruleArray = json_decode($rule, true);
 
                 $ruleMatchCounter = 0;
 
                 // check if current rule is RecordDriver specific
-                if (isset($ruleArray['recorddriver'])) {
-                    if (is_a($this->driver, $ruleArray['recorddriver'])) {
+                if (isset($rule['recorddriver'])) {
+                    if (is_a($this->driver, $rule['recorddriver'])) {
                         // get rid of recorddriver field as we have checked the
                         // current rule as being relevant for the current
                         // RecordDriver
-                        unset($ruleArray['recorddriver']);
+                        unset($rule['recorddriver']);
                     } else {
                         // skip this rule as it's not relevant for the current
                         // RecordDriver
@@ -247,7 +247,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                     }
                 }
 
-                foreach ($ruleArray as $key => $value) {
+                foreach ($rule as $key => $value) {
                     if (method_exists($this->driver, $key)) {
                         $recordValue = $this->driver->$key();
                         if ($value === "*" && $recordValue) {
@@ -262,7 +262,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                     }
                 }
 
-                if ($ruleMatchCounter == count($ruleArray)) {
+                if ($ruleMatchCounter == count($rule)) {
                     // this rule matched
                     return true;
                 }
