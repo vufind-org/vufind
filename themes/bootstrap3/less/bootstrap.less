@@ -35,7 +35,16 @@ label.list-group-item {
 }
 .list-group-item.title {font-weight: bold;}
 #modal {background-color: rgba(0,0,0,.2);}
-#modal .modal-body > h2:first-child {display: none;}
+#modal .modal-content > .close {
+  position: absolute;
+  right: -50px;
+  top: 0;
+  z-index: 2;
+  font-size: 32pt;
+  color: #fff;
+  opacity: .4;
+}
+#modal .modal-content > .close:hover {opacity: .6;}
 .popover {width: 250px;}
 p.lead {
   @media (min-width: 768px) {
