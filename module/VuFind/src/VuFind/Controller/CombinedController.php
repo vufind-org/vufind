@@ -256,6 +256,9 @@ class CombinedController extends AbstractSearch
         $query = $this->getRequest()->getQuery();
         $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
 
+        // Reset override to avoid bleed-over from one section to the next!
+        $query->recommendOverride = false;
+
         // Always leave noresults active (useful for 0-hit searches) and
         // side inactive (no room to display) but display or hide top based
         // on include_recommendations setting.
@@ -263,6 +266,10 @@ class CombinedController extends AbstractSearch
             && $settings['include_recommendations']
         ) {
             $query->noRecommend = 'side';
+            if (is_array($settings['include_recommendations'])) {
+                $query->recommendOverride
+                    = ['top' => $settings['include_recommendations']];
+            }
         } else {
             $query->noRecommend = 'top,side';
         }
