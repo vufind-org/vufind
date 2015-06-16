@@ -1216,7 +1216,8 @@ class Demo extends AbstractBase
             return [
                 'blocks' => [
                     'Simulated account block; try again and it will work eventually.'
-                ]
+                ],
+                'details' => []
             ];
         }
 

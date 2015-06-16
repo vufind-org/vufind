@@ -96,7 +96,7 @@ class Factory
     public static function getCatalogResults(ServiceManager $sm)
     {
         return new CatalogResults(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            $sm->getServiceLocator()->get('VuFind\SearchRunner')
         );
     }
 
@@ -247,7 +247,7 @@ class Factory
     public static function getSummonResults(ServiceManager $sm)
     {
         return new SummonResults(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            $sm->getServiceLocator()->get('VuFind\SearchRunner')
         );
     }
 
@@ -316,9 +316,7 @@ class Factory
      */
     public static function getWebResults(ServiceManager $sm)
     {
-        return new WebResults(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-        );
+        return new WebResults($sm->getServiceLocator()->get('VuFind\SearchRunner'));
     }
 
     /**

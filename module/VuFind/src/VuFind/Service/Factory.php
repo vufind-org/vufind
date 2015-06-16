@@ -468,7 +468,9 @@ class Factory
             : (isset($config->Captcha->privateKey)
                 ? $config->Captcha->privateKey
                 : '');
-        $recaptcha = new \LosReCaptcha\Service\ReCaptcha($siteKey, $secretKey);
+        $recaptcha = new \LosReCaptcha\Service\ReCaptcha(
+            $siteKey, $secretKey, ['ssl' => true]
+        );
         if (isset($config->Captcha->theme)) {
             $recaptcha->setOption('theme', $config->Captcha->theme);
         }
@@ -640,6 +642,20 @@ class Factory
     public static function getSearchResultsPluginManager(ServiceManager $sm)
     {
         return static::getGenericPluginManager($sm, 'Search\Results');
+    }
+
+    /**
+     * Construct the Search runner.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\SearchRunner
+     */
+    public static function getSearchRunner(ServiceManager $sm)
+    {
+        return new \VuFind\Search\SearchRunner(
+            $sm->get('VuFind\SearchResultsPluginManager')
+        );
     }
 
     /**

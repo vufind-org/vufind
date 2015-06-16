@@ -543,12 +543,14 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param string $cardName Card name
      * @param string $username Username
      * @param string $password Password
+     * @param string $homeLib  Home Library
      *
      * @return int Card ID
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function saveLibraryCard($id, $cardName, $username, $password)
-    {
+    public function saveLibraryCard($id, $cardName, $username,
+        $password, $homeLib = ''
+    ) {
         if (!$this->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
@@ -576,6 +578,9 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
         $row->card_name = $cardName;
         $row->cat_username = $username;
+        if (!empty($homeLib)) {
+            $row->home_library = $homeLib;
+        }
         if ($this->passwordEncryptionEnabled()) {
             $row->cat_password = null;
             $row->cat_pass_enc = $this->encryptOrDecrypt($password, true);
