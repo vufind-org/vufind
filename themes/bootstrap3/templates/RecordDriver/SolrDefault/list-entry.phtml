@@ -25,17 +25,8 @@
   <div class="col-xs-6 middle">
     <div class="resultItemLine1">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <?
-        $summHighlightedTitle = $this->driver->getHighlightedTitle();
-        $summTitle = $this->driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-            echo $this->transEsc('Title not available');
-        }
-      ?></a>
+        <?=$this->record($this->driver)->getTitleHtml()?>
+      </a>
     </div>
 
     <div class="resultItemLine2">
@@ -43,13 +34,8 @@
         <?=implode('<br>', array_map(array($this, 'escapeHtml'), $this->driver->getSummary())); ?>
       <? else: ?>
         <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-        <?=$this->transEsc('by')?>
-        <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?
-          $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
-          echo !empty($summHighlightedAuthor)
-              ? $this->highlight($summHighlightedAuthor)
-              : $this->escapeHtml($summAuthor);
-        ?></a>
+          <?=$this->transEsc('by')?>
+          <a href="<?=$this->record($this->driver)->getLink('author', $summAuthor)?>"><?=$this->escapeHtml($summAuthor)?></a>
         <? endif; ?>
 
         <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>

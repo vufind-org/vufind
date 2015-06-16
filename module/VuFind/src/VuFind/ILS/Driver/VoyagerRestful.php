@@ -335,9 +335,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     {
         if (isset($this->session->cache[$id])) {
             $item = $this->session->cache[$id];
-            if (time() - $item['time'] > 30) {
+            if (time() - $item['time'] < 30) {
                 return $item['entry'];
             }
+            unset($this->session->cache[$id]);
         }
         return null;
     }
@@ -3149,15 +3150,24 @@ EOT;
         $lastname = htmlspecialchars($patron['lastname'], ENT_COMPAT, 'UTF-8');
         $ubId = htmlspecialchars($this->ws_patronHomeUbId, ENT_COMPAT, 'UTF-8');
         $oldPIN = trim(
-            htmlspecialchars($details['oldPassword'], ENT_COMPAT, 'UTF-8')
+            htmlspecialchars(
+                $this->sanitizePIN($details['oldPassword']), ENT_COMPAT, 'UTF-8'
+            )
         );
         if ($oldPIN === '') {
             // Voyager requires the PIN code to be set even if it was empty
             $oldPIN = '     ';
         }
         $newPIN = trim(
-            htmlspecialchars($details['newPassword'], ENT_COMPAT, 'UTF-8')
+            htmlspecialchars(
+                $this->sanitizePIN($details['newPassword']), ENT_COMPAT, 'UTF-8'
+            )
         );
+        if ($newPIN === '') {
+            return [
+                'success' => false, 'status' => 'password_error_invalid'
+            ];
+        }
         $barcode = htmlspecialchars($patron['cat_username'], ENT_COMPAT, 'UTF-8');
 
         $xml =  <<<EOT
@@ -3201,12 +3211,11 @@ EOT;
                 ];
             }
             if ($code == $exceptionNamespace . 'ValidateLengthException') {
-                // This issue should not be encountered if the settings are correct.
-                // Log an error and let through for an exception
-                $this->error(
-                    'ValidateLengthException encountered when trying to'
-                    . ' change patron PIN. Verify PIN length settings.'
-                );
+                // This error may happen even with correct settings if the new PIN
+                // contains invalid characters.
+                return [
+                    'success' => false, 'status' => 'password_error_invalid'
+                ];
             }
             throw new ILSException((string)$error);
         }
