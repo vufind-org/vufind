@@ -4,7 +4,8 @@
  *
  * PHP version 5
  *
- * Copyright (C) The National Library of Finland
+ * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2015.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,6 +22,7 @@
  *
  * @category VuFind2
  * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -33,6 +35,7 @@ namespace Finna\View\Helper\Root;
  *
  * @category VuFind2
  * @package  View_Helpers
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -40,6 +43,30 @@ namespace Finna\View\Helper\Root;
  */
 class Record extends \VuFind\View\Helper\Root\Record
 {
+    /**
+     * Render an HTML checkbox control for the current record.
+     *
+     * @param string $idPrefix Prefix for checkbox HTML ids
+     * @param bool   $label    Whether to enclose the actual checkbox in a label
+     *
+     * @return string
+     */
+    public function getCheckbox($idPrefix = '', $label = false)
+    {
+        static $checkboxCount = 0;
+        $id = $this->driver->getResourceSource() . '|'
+            . $this->driver->getUniqueId();
+        $context = [
+            'id' => $id,
+            'count' => $checkboxCount++,
+            'prefix' => $idPrefix,
+            'label' => $label
+        ];
+        return $this->contextHelper->renderInContext(
+            'record/checkbox.phtml', $context
+        );
+    }
+
     /**
      * Return record image URL.
      *
