@@ -432,10 +432,10 @@ class Record extends AbstractHelper
      */
     public function getCover($context, $default, $link = false)
     {
-        $size = isset($this->config->Content->coversize[$context]) ? 
+        $size = isset($this->config->Content->coversize[$context]) ?
               $this->config->Content->coversize[$context] : $default;
-        if (empty($size)) { 
-            return false; 
+        if (empty($size)) {
+            return false;
         }
         // check if more than one size is defined
         // for example small:medium
@@ -449,8 +449,9 @@ class Record extends AbstractHelper
                 }
             }
         }
+        $driver = $this->driver;
         return $this->contextHelper->renderInContext(
-            'record/cover.phtml', compact('size', 'link', 'context')
+            'record/cover.phtml', compact('size', 'link', 'context', 'driver')
         );
     }
 
@@ -588,7 +589,7 @@ class Record extends AbstractHelper
             if (!isset($link['desc'])) {
                 $link['desc'] = $link['url'];
             }
-            
+
             return $link;
         };
 
