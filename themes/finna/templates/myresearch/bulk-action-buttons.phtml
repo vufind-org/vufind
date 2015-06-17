@@ -6,10 +6,12 @@
 <div class="row bulk-action-buttons-row">
   <div class="col-xs-12 bulk-action-buttons-col">
     <div class="checkboxFilter mylist-select-all">
-      <label class="checkbox">
-        <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
-        <span><?=$this->transEsc('select_page')?></span>
-      </label>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
+          <span><?=$this->transEsc('select_page')?></span>
+        </label>
+      </div>
     </div>
   <div class="btn-group mylist-functions">
     <input class="btn btn-primary" type="submit" name="email" value="<?=$this->transEsc('Email')?>" title="<?=$this->transEsc('email_selected')?>"/>

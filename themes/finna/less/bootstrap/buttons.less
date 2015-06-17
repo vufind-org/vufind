@@ -125,26 +125,52 @@
         top: 41px;   
     }
 }
-.searchbox .checkbox label input {
+.searchbox, .checkboxFilter {
+    & .checkbox label input {
     display: none;
-}
-.searchbox .checkbox label {
-    margin-left: 10px;
-    line-height: 24px;  
-}
-.searchbox .checkbox label:before{
-    content: "\f096";
-    font-family: 'Fontawesome';
-    font-size: 20px;
-    vertical-align: top;
+    }
+    & .checkbox label {
+        margin-left: 10px;
+        line-height: 24px;  
+    }
+    & .checkbox label:before {
+        content: "\f096";
+        font-family: 'Fontawesome';
+        font-size: 20px;
+        vertical-align: -2px;
+    }
+    & .checkbox.checked label:before {
+        font-family: 'Fontawesome';
+        content: "\f14a"; 
+    }
 }
 
 //== Styling Finna checkboxes
-.checkboxFilter .checkbox {
-    padding: 5px 0px 0px 20px;
+.sidebar .checkboxFilter  {
+    padding: 0px;
+    & .checkbox {
+        padding-left: 12px;
+        margin: 12px 0px;
+    }
+    & label {
+        margin-left: 0px;   
+    }
+    & label:before {
+        margin-right: 5px;
+    }
 }
-.checkboxFilter .checkbox:last-child {
-    padding-bottom: 5px;
+.checkboxFilter.mylist-select-all {
+    padding-left: 0; 
+    padding-top: 2px;
+    & .checkbox {
+        padding-left: 0;
+        & label {
+            margin-left: 0;   
+        }
+    }
+}
+.bulk-action-buttons-col.fixed .checkboxFilter.mylist-select-all {
+    color: @body-bg   
 }
 .checkboxFilter label {
     font-size: 14px;
@@ -166,10 +192,17 @@
     position: absolute;
     margin-left: -1px;
 }
-.searchbox .checkbox.checked label:before, .checkboxFilter label.checkbox input:checked:before  {
-    font-family: 'Fontawesome';
-    content: "\f14a"; 
+.myresearch-row .checkboxFilter {
+    padding-left: 0;
+    & .checkbox {
+        padding-left: 0;
+        margin-top: 0;
+        & label {
+            margin-left: 0;   
+        }
+    }
 }
+
 // Default styling of Finna Jump menus
 
 .jump-menu-style {

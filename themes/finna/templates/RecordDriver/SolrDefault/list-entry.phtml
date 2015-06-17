@@ -14,9 +14,11 @@
 <div class="row record-container<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?> myresearch-row">
   <div class="col-xs-2 col-sm-1">
     <div class="checkboxFilter">
-      <label class="checkbox">
-      <?=$this->record($this->driver)->getCheckbox() ?>
-      </label>
+      <div class="checkbox">
+        <label>
+        <?=$this->record($this->driver)->getCheckbox() ?>
+        </label>
+      </div>
     </div>
     <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
   </div>
