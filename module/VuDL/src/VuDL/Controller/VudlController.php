@@ -283,7 +283,6 @@ class VudlController extends AbstractVuDL
         $view->parents = $parents;
         if ($id != $root) {
             $view->parentID = $root;
-            $view->breadcrumbEnd = $outline['lists'][0][$view->initPage]['label'];
         }
         $view->pagelength = $this->getConnector()->getPageLength();
         return $view;
