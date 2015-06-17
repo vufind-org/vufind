@@ -1,11 +1,16 @@
-<? if($this->params->getOptions()->getListViewOption()!="full"): ?>
-  <div>
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption()?>">
-     <?=$this->record($this->driver)->getTitleHtml()?>
-    </a>
+<?
+  $dataView = $this->params->getOptions()->getListViewOption();
+?>
+
+<? if ('full' != $dataView): ?>
+  <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$this->params->getOptions()->getListViewOption()?>">
+    <?=$this->record($this->driver)->getTitleHtml()?>
+  </a>
+  <div class="loading hide">
+    <p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p>
+  </div>
+  <div class="short-view source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
 <? endif;?>
-<div id="loading_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hide"><p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p></div>
-  <div id="short_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
   <div class="span-2">
@@ -18,11 +23,11 @@
     </a>
   </div>
   <div class="span-9">
-    <? if ($this->params->getOptions()->getListViewOption()=="full"): ?>
+    <? if ('full' == $dataView): ?>
       <div class="resultItemLine1">
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title"><?
+        <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
           <?=$this->record($this->driver)->getTitleHtml()?>
-        ?></a>
+        </a>
       </div>
     <? endif; ?>
 
@@ -185,9 +190,8 @@
   <div class="clear"></div>
 </div>
 
-<?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+<? if('full' != $dataView): ?>
+  <div class="long-view hidden"></div>
+<? endif; ?>
 
-<? if ($this->params->getOptions()->getListViewOption()!="full"): ?>
-    <div id="long_<?=preg_replace("/\W/", "_", $this->driver->getUniqueID())?>" class="hidden"></div>
-  </div>
-<?endif?>
+<?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>

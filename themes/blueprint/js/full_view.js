@@ -41,14 +41,14 @@ function ajaxFLLoadTab(tabid) {
 
 $(document).ready(function() {
   $('.getFull').click(function(type) {
-    var div_id = $(this).parent().parent().find(".hiddenId")[0].value;
-    var div_source = $(this).parent().parent().find(".hiddenSource")[0].value;
+    var mainNode = $(this).closest('.result');
+    var div_id = mainNode.find(".hiddenId")[0].value;
+    var div_source = mainNode.find(".hiddenSource")[0].value;
     var div_html_id = div_id.replace(/\W/g, "_");
     var viewType = $(this).attr("data-view");
-    var shortNode = jQuery('#short_'+div_html_id);
-    var loadingNode = jQuery('#loading_'+div_html_id);
-    var mainNode = shortNode.parent();
-    var longNode = jQuery('#long_'+div_html_id);
+    var shortNode = mainNode.find('.short-view');
+    var loadingNode = mainNode.find('.loading');
+    var longNode = mainNode.find('.long-view');
     if (longNode.is(':empty')) {
       loadingNode.show();
       var url = path + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
