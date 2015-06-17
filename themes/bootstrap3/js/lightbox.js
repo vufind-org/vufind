@@ -18,7 +18,6 @@ $(document).ready(function() {
   $('#modal').on('hidden.bs.modal', function() {
     $('#modal .modal-body').html(vufindString.loading+'...');
     lightboxShown = false;
-    refreshTags();
   });
 });
 
@@ -122,7 +121,6 @@ function lightboxAJAX(event, data) {
     method: event.target.method || 'GET',
     data: data,
     success: function(html, status) {
-      console.log(status);
       if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess
         && "function" === typeof window[event.target.dataset.lightboxSuccess]) {
         window[event.target.dataset.lightboxSuccess](html, status);

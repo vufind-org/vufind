@@ -200,6 +200,7 @@ function refreshTags() {
       dataType: 'json',
       url: url,
       success: function(response) {
+        console.log(response);
         if (response.status == 'OK') {
           $.each(response.data, function(i, tag) {
             var href = path + '/Tag?' + $.param({lookfor:tag.tag});
