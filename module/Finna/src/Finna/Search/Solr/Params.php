@@ -22,6 +22,7 @@
  * @category VuFind2
  * @package  Search_Solr
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -34,6 +35,7 @@ namespace Finna\Search\Solr;
  * @category VuFind2
  * @package  Search_Solr
  * @author   Mika Hatakka <mika.hatakka@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -55,5 +57,43 @@ class Params extends \VuFind\Search\Solr\Params
             }
         }
         return $facetSet;
+    }
+
+    /**
+     * Add filters to the object based on values found in the request object.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initFilters($request)
+    {
+        parent::initFilters($request);
+
+        $this->initNewItemsFilter($request);
+    }
+
+    /**
+     * Initialize new items filter (first_indexed)
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initNewItemsFilter($request)
+    {
+        // first_indexed filter automatically included, no query param required
+        // (compatible with Finna 1 implementation)
+        $from = $request->get('first_indexedfrom');
+        $from = call_user_func([$this, 'formatDateForFullDateRange'], $from);
+
+        if ($from != '*') {
+            $rangeFacet = call_user_func(
+                [$this, 'buildFullDateRangeFilter'], 'first_indexed', $from, '*'
+            );
+            $this->addFilter($rangeFacet);
+        }
     }
 }

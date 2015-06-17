@@ -35,10 +35,13 @@ category_str_mv    = Category
 ; This section is used to identify facets for special treatment by the SideFacets
 ; recommendations module.
 [SpecialFacets]
-; Any fields listed below will be treated as date ranges rather than plain facets:
+; Any fields listed below will be treated as year-based date ranges rather than plain
+; facets:
 dateRange[] = publishDate
-dateVis[] = main_date_str
-dateRangeVis = search_sdaterange_mv:main_date_str
+; Any fields listed below will be treated as year/month/day-based date ranges rather
+; than plain facets:
+;fullDateRange[] = example_field_date
+; Any fields listed below will be treated as numeric ranges rather than plain facets:
 ;numericRange[] = example_field_str
 ; Any fields listed below will be treated as free-form ranges rather than plain
 ; facets:
@@ -58,6 +61,17 @@ hierarchical[] = category_str_mv
 ;       second level the library branch) 
 ; all = Sort all levels alphabetically 
 hierarchicalFacetSortOptions[building] = top
+; How hierarchical facet values are displayed in the records:
+; single = Display only the deepest level (default)
+; full   = Display full hierarchy for each entry
+;hierarchicalFacetDisplayStyles[format] = full
+; Separator used when display hierarchical facet levels (default is "/")
+;hierarchicalFacetSeparators[format] = " > "
+; Any fields listed below will be treated as new items facets
+newItems[] = first_indexed
+; Date visualisations 
+dateVis[] = main_date_str
+dateRangeVis = search_sdaterange_mv:main_date_str
 
 ; This section is reserved for special boolean facets.  These are displayed
 ; as checkboxes.  If the box is checked, the filter on the left side of the

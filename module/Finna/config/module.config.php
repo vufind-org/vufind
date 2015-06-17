@@ -138,6 +138,11 @@ $config = array(
                     'voyagerrestful' => 'Finna\ILS\Driver\Factory::getVoyagerRestful',
                 ],
             ],
+            'recommend' => [
+                'factories' => [
+                    'sidefacets' => 'Finna\Recommend\Factory::getSideFacets',
+                ],
+            ],
             'resolver_driver' => [
                 'factories' => [
                     'sfx' => 'Finna\Resolver\Driver\Factory::getSfx',

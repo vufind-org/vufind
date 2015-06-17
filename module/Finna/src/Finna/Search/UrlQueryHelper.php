@@ -59,7 +59,7 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     }
 
     /**
-     * Expose parent method since we need to use from SearchTabs.
+     * Expose parent method since we need to use it from SearchTabs.
      *
      * @param array $a      Array of parameters to turn into a GET string
      * @param bool  $escape Should we escape the string for use in the view?
@@ -69,6 +69,21 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     public function buildQueryString($a, $escape = true)
     {
         return parent::buildQueryString($a, $escape);
+    }
+
+    /**
+     * Remove any instance of the facet from the parameters and add a new one.
+     *
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param string $operator Facet type to add (AND, OR, NOT)
+     *
+     * @return string
+     */
+    public function replaceFacet($field, $value, $operator = 'AND')
+    {
+        $this->params->removeAllFilters($field);
+        return $this->addFacet($field, $value, $operator);
     }
 
     /**
