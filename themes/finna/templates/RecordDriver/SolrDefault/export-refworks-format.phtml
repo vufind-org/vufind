@@ -1,0 +1,62 @@
+<?
+// A driver-specific template may pass in format overrides; check for these before going to the driver itself:
+$formats = isset($this->overrideFormats) ? $this->overrideFormats : $this->driver->tryMethod('getFormats');
+$format = '';
+$subformat = '';
+if (is_array($formats) && !empty($formats[0])) {
+    $parts = explode('/', !empty($formats[1]) ? $formats[1] : $formats[0]);
+    if (isset($parts[1])) {
+        $format = $parts[1];
+    }
+    if (isset($parts[2])) {
+        $subformat = $parts[2];
+    }
+}
+$refworksFormat = 'Generic';
+switch ($format) {
+case 'Book':
+    if ($subformat == 'BookSection') {
+        $refworksFormat = 'Book, Section';
+    } else {
+        $refworksFormat = 'Book, Whole';
+    }
+    break;
+case 'WorkOfArt':
+    $refworksFormat = 'Artwork';
+    break;
+case 'Sound':
+    $refworksFormat = 'Sound Recording';
+    break;
+case 'Video':
+    $refworksFormat = 'Video/ DVD';
+    break;
+case 'Other':
+    if ($subformat == 'Software') {
+        $refworksFormat = 'Computer Program';
+    } else if ($subformat == 'ConferenceProceeding') {
+        $refworksFormat = 'Conference Proceedings';
+    }
+    break;
+case 'Journal':
+    if ($subformat == 'eArticle' || $subformat == 'eSerial' || $subformat == 'eJournal') {
+        $refworksFormat = 'Journal, Electronic';
+    } else if ($subformat == 'Newspaper') {
+        $refworksFormat = 'Newspaper Article';
+    } else {
+        $refworksFormat = 'Journal Article';
+    }
+    break;
+case 'Map':
+    $refworksFormat = 'Map';
+    break;
+case 'Database':
+    if ($subformat == 'ResearchReport') {
+        $refworksFormat = 'Report';
+    }
+    break;
+case 'Thesis':
+    $refworksFormat = 'Dissertation/Thesis';
+    break;
+}
+
+echo "RT $refworksFormat\n";
