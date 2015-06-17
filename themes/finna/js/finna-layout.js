@@ -224,6 +224,30 @@ finna.layout = (function() {
             buttonClass: "form-control",
         });
     };
+    var initCheckboxClicks = function() {
+      $('.checkboxFilter:not(.mylist-select-all) .checkbox input').click(function() {
+        $(this).closest('.checkbox').toggleClass('checked');
+      });
+      $('.checkboxFilter.mylist-select-all .checkbox .checkbox-select-all').click(function() {
+        if ($('.checkboxFilter.mylist-select-all .checkbox').hasClass('checked')) {
+          var isEverythingChecked = true;
+          $('.myresearch-row .checkboxFilter .checkbox').each(function() {
+            if (!$(this).hasClass('checked')) {
+              isEverythingChecked = false;
+            }
+          });
+          if (isEverythingChecked == true) {
+            $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').removeClass('checked');
+          }
+          else {
+            $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').addClass('checked');
+          }
+        }
+        else {
+            $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').addClass('checked');
+        }
+      });
+    };
 
     var my = {
         isTouchDevice: isTouchDevice,
@@ -242,6 +266,7 @@ finna.layout = (function() {
             initContentNavigation();
             initRecordSwipe();
             initMultiSelect();
+            initCheckboxClicks();
         },
     };
 
