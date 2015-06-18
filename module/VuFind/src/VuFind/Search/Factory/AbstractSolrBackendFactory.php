@@ -223,7 +223,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
 
         // Attach hierarchical facet listener:
         $this->getHierarchicalFacetListener($backend)->attach($events);
-
+       
         // Apply legacy filter conversion if necessary:
         $facets = $this->config->get($this->facetConfig);
         if (!empty($facets->LegacyFields)) {
