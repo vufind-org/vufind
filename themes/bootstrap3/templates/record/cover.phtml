@@ -1,5 +1,4 @@
 <? /* Display thumbnail if appropriate: */ ?>
-<? $cover = $this->record($this->driver)->getThumbnail($this->size); ?>
 <? if ($cover): ?>
   <? if ($this->link): ?><a href="<?=$this->escapeHtmlAttr($this->link)?>"><? endif; ?>
   <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($cover); ?>"/>

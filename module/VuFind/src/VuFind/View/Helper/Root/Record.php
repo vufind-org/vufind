@@ -432,26 +432,31 @@ class Record extends AbstractHelper
      */
     public function getCover($context, $default, $link = false)
     {
-        $size = isset($this->config->Content->coversize[$context]) ?
-              $this->config->Content->coversize[$context] : $default;
-        if (empty($size)) {
-            return false;
+        if (isset($this->config->Content->coversize)
+            && !$this->config->Content->coversize
+        ) {
+            // covers disabled entirely
+            $preferredSize = false;
+        } else {
+            // check for context-specific overrides
+            $preferredSize = isset($this->config->Content->coversize[$context])
+                ? $this->config->Content->coversize[$context] : $default;
         }
-        // check if more than one size is defined
-        // for example small:medium
-        if (strpos($size, ':')) {
-            $sizes=explode(':', $size);
-            // set size to first value
-            $size=$sizes[0];
-            foreach ($sizes as $check) {
-                if ($this->getThumbnail($check)) {
-                    $size = $check;
-                }
+        if (empty($preferredSize)) {
+            return '';
+        }
+
+        // Find best option if more than one size is defined (e.g. small:medium)
+        $cover = false;  // assume invalid until good size found below
+        foreach (explode(':', $preferredSize) as $size) {
+            if ($cover = $this->getThumbnail($size)) {
+                break;
             }
         }
-        $driver = $this->driver;
+
+        $driver = $this->driver;    // for convenient use in compact()
         return $this->contextHelper->renderInContext(
-            'record/cover.phtml', compact('size', 'link', 'context', 'driver')
+            'record/cover.phtml', compact('cover', 'link', 'context', 'driver')
         );
     }
 
