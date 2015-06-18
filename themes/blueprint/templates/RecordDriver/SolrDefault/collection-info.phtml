@@ -1,6 +1,6 @@
 <? $this->headScript()->appendFile('collection_record.js'); ?>
 <? /* Display thumbnail if appropriate: */ ?>
-<? $cover = $this->record($this->driver)->getCover("core", "medium", $this->record($this->driver)->getThumbnail('large')); ?>
+<? $cover = $this->record($this->driver)->getCover("collection-info", "medium", $this->record($this->driver)->getThumbnail('large')); ?>
 <? if ($cover): ?>
   <div class="floatright">
      <?=$cover?>
