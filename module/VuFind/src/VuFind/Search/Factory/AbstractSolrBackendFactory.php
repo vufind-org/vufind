@@ -415,7 +415,6 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         );
     }
 
-
     /**
      * Get a hierarchical facet listener for the backend
      *
