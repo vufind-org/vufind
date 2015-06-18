@@ -29,6 +29,7 @@
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\FilterFieldConversionListener;
+use VuFind\Search\Solr\HideFacetValueListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectSpellingListener;
@@ -175,6 +176,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Load configurations:
         $config = $this->config->get('config');
         $search = $this->config->get($this->searchConfig);
+        $facet = $this->config->get($this->facetConfig);
 
         // Highlighting
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
@@ -229,6 +231,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $facets->LegacyFields->toArray()
             );
             $filterFieldConversionListener->attach($events);
+        }
+
+        // Attach hide facet value listener:
+        if ($hfvListener = $this->getHideFacetValueListener($backend, $facet)) {
+            $hfvListener->attach($events);
         }
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
@@ -384,6 +391,30 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $enabled
         );
     }
+
+    /**
+    * Get a hide facet value listener for the backend
+    *
+    * @param BackendInterface $backend Search backend
+    * @param Config           $facet   Configuration of facets
+    *
+    * @return mixed null|HideFacetValueListener
+    */
+    protected function getHideFacetValueListener(
+        BackendInterface $backend,
+        Config $facet
+    ) {
+        if (!isset($facet->HideFacetValue)
+            || ($facet->HideFacetValue->count()) == 0
+        ) {
+            return null;
+        }
+        return new HideFacetValueListener(
+            $backend,
+            $facet->HideFacetValue->toArray()
+        );
+    }
+
 
     /**
      * Get a hierarchical facet listener for the backend
