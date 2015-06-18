@@ -1,0 +1,27 @@
+<?$this->headScript()->appendFile("fastSubject.js");?>
+<?$this->headLink()->appendStylesheet("fastSubject.css");?>
+<? $subjects = $this->related->getResults(); if (!empty($subjects)): ?>
+  <div class="sidegroup">
+    <h4><?=$this->transEsc('Related Subjects')?></h4>
+    <ul class="similar">
+    <? foreach ($subjects as $subject => $relatedSubjects): ?>
+          <li class="subjectLine">
+            <a title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=str_replace(array( '%28', '%29' ), '', $this->record($this->driver)->getLink('subject', $subject))?>" class="subjectHeading">
+            <?=$this->escapeHtml($subject)?></a>
+          <? if (!empty($relatedSubjects)): ?>
+          <button class="toggle-related-subjects" on>+</button>
+            <ul class="relatedSubjects">
+              Related Subjects:
+                <? foreach ($relatedSubjects as $relatedSubject): ?>
+                  <li class="subjectLine relatedSubject">
+                    <a title="<?=$this->escapeHtmlAttr($relatedSubject)?>" href="<?=str_replace(array( '%28', '%29' ), '',$this->record($this->driver)->getLink('subject', $relatedSubject))?>" class="subjectHeading">
+                    <?=$this->escapeHtml($relatedSubject)?></a>
+                  </li>
+                <? endforeach; ?>
+            </ul>
+          <? endif; ?>
+          </li>
+        <? endforeach; ?>
+    </ul>
+  </div>
+<? endif; ?>

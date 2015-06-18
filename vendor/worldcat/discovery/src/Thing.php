@@ -67,9 +67,9 @@ class Thing extends EasyRdf_Resource
     	
     	static::requestSetup();
     	
-    	if (strpos($uri, 'viaf')){
+    	if (empty($options['accept']) && strpos($uri, 'viaf')){
     		$options['accept'] = 'application/rdf+xml';
-    	} else {
+    	} elseif (empty($options['accept'])) {
     		$options['accept'] = null;
     	}
     	if (isset($options['logger'])){

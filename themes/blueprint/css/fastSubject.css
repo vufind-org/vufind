@@ -1,0 +1,13 @@
+/* CSS for related subjects */
+
+.relatedSubject {
+    margin-left: 20px;
+}
+
+.toggle-related-subjects {
+    text-align: center;
+    background: #eee;
+    border: 0;
+    cursor: pointer;
+
+}

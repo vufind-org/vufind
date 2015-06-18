@@ -495,6 +495,9 @@ $config = [
                     'worldcateditions' => 'VuFind\Related\Factory::getWorldCatEditions',
                     'worldcatsimilar' => 'VuFind\Related\Factory::getWorldCatSimilar',
                 ],
+            	'invokables' => [
+            		'fastSubjects' => 'VuFind\Related\FASTSubjects',
+            	],
             ],
             'resolver_driver' => [
                 'abstract_factories' => ['VuFind\Resolver\Driver\PluginFactory'],
