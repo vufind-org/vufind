@@ -2,8 +2,8 @@
 <div class="row">
   <? $QRCode = $this->record($this->driver)->getQRCode("core");
      $cover = $this->record($this->driver)->getCover('collection-info', 'medium', $this->record($this->driver)->getThumbnail('large'));
-     $Preview = $this->record($this->driver)->getPreviews(); ?>
-  <? if (($QRCode) || ($cover) || ($Preview)): ?>
+     $preview = $this->record($this->driver)->getPreviews(); ?>
+  <? if ($QRCode || $cover || $preview): ?>
   <div class="col-sm-3">
     <div class="text-center">
       <? /* Display thumbnail if appropriate: */ ?>
@@ -19,9 +19,7 @@
       <? endif; ?>
     </div>
 
-    <? if($Preview): ?>
-        <?=$Preview?>
-      <? endif; ?>
+    <? if ($preview): ?><?=$preview?><? endif; ?>
   </div>
 
   <div class="col-sm-6">
