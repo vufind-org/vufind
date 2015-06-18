@@ -220,9 +220,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $backend, $search->Records->deduplication
             )->attach($events);
         }
+
         // Attach hierarchical facet listener:
         $this->getHierarchicalFacetListener($backend)->attach($events);
-
        
         // Apply legacy filter conversion if necessary:
         $facets = $this->config->get($this->facetConfig);
@@ -234,7 +234,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Attach hide facet value listener:
-        $this->getHideFacetValueListener($backend, $facet)->attach($events);
+        if ($hfvListener = $this->getHideFacetValueListener($backend, $facet)) {
+            $hfvListener->attach($events);
+        }
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
