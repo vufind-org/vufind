@@ -46,7 +46,20 @@ class AuthorController extends AbstractSearch
     public function resultsAction()
     {
         $this->searchClassId = 'SolrAuthor';
-        $this->saveToHistory = false;
+
+        /*
+         * save author searches if next_prev_navigation is enabled -
+         * otherwise there are wacky results when trying to page
+         * through results (the next/prev links only appear for
+         * records which were included in the results for the previous
+         * keyword search, and the next/prev links will iterate you
+         * through that search
+         */
+
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $this->saveToHistory = (isset($config->Record->next_prev_navigation)
+          && $config->Record->next_prev_navigation);
+
         return parent::resultsAction();
     }
 
@@ -77,6 +90,18 @@ class AuthorController extends AbstractSearch
             return $this->forwardTo('Author', 'Results');
         }
         return $this->createViewModel();
+    }
+
+    /**
+     * Is the result scroller active?
+     * 
+     * @return bool
+     */
+    protected function resultScrollerActive()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        return (isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation);
     }
 }
 
