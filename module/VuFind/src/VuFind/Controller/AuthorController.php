@@ -88,7 +88,7 @@ class AuthorController extends AbstractSearch
 
     /**
      * Is the result scroller active?
-     * 
+     *
      * @return bool
      */
     protected function resultScrollerActive()
