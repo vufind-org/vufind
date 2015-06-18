@@ -4,7 +4,7 @@
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
     </div>
-    <? $cover = $this->record($this->driver)->getCover("result-list", "medium", $this->recordLink()->getUrl($this->driver)); ?>
+    <? $cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver)); ?>
     <? if ($cover): ?>
     <div class="col-sm-2 col-xs-3 left">
       <?=$cover ?>

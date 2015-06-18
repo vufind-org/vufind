@@ -64,7 +64,7 @@
           <? endif; ?>
         <? endif; ?>
         <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>">
-          <? $cover = $this->record($this->driver)->getCover("checkedout", "small"); ?>
+          <? $cover = $this->record($resource)->getCover('checkedout', 'small'); ?>
           <? if ($cover): ?>
           <div class="span-2">
             <?=$cover?>

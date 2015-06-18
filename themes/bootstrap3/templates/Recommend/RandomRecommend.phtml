@@ -9,7 +9,7 @@
         <?if($this->recommend->getDisplayMode() === "images" || $this->recommend->getDisplayMode() === "mixed"):?>
 
           <? /* Display thumbnail if appropriate: */ ?>
-          <?=$this->record($this->driver)->getCover("RandomRecommend", "small:medium", $this->recordLink()->getUrl($driver)); ?>
+          <?=$this->record($driver)->getCover('RandomRecommend', 'small:medium', $this->recordLink()->getUrl($driver)); ?>
         <?endif;?>
 
         <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>

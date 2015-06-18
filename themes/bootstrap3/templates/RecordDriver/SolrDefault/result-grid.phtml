@@ -15,7 +15,7 @@ $urls = $this->record($this->driver)->getLinkDetails();
     <?=$this->record($this->driver)->getCheckbox() ?></br>
   <? endif; ?>
   <div class="text-center">
-    <?=$this->record($this->driver)->getCover("result-grid", "small", $this->recordLink()->getUrl($this->driver)); ?>
+    <?=$this->record($this->driver)->getCover('result-grid', 'small', $this->recordLink()->getUrl($this->driver)); ?>
   </div>
   <? if (!$openUrlActive && empty($urls)): ?>
     <? if ($this->driver->supportsAjaxStatus()): ?>

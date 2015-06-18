@@ -12,7 +12,7 @@
 ?>
 <div class="listentry recordId source<?=$this->escapeHtmlAttr($source)?><?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>" id="record<?=$this->escapeHtmlAttr($id)?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-  <? $cover = $this->record($this->driver)->getCover("list-entry", "small"); ?>
+  <? $cover = $this->record($this->driver)->getCover('list-entry', 'small'); ?>
   <? if ($cover): ?>
    <div class="span-2">
      <?=$cover?>

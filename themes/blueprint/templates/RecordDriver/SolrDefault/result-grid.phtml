@@ -1,7 +1,7 @@
 <div class="gridRecordBox source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
     <span class="gridImageBox">
-    <?=$this->record($this->driver)->getCover("result-grid", "large", $this->recordLink()->getUrl($this->driver)); ?>
+    <?=$this->record($this->driver)->getCover('result-grid', 'large', $this->recordLink()->getUrl($this->driver)); ?>
     </span>
     <div class="gridTitleBox" >
       <a class="gridTitle" href="<?=$this->recordLink()->getUrl($this->driver)?>">
