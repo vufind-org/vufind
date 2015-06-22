@@ -324,19 +324,24 @@ class UtilController extends AbstractBase
         // No filename specified?  Give usage guidelines:
         if (empty($filename)) {
             Console::writeLine("Delete records from VuFind's index.");
-            Console::writeLine("");
-            Console::writeLine("Usage: deletes.php [filename] [format] [index]");
-            Console::writeLine("");
+            Console::writeLine('');
             Console::writeLine(
-                "[filename] is the file containing records to delete."
+                'Usage: deletes.php [--verbose] FILENAME FORMAT INDEX'
+            );
+            Console::writeLine('');
+            Console::writeLine(
+                'The optional --verbose switch turns on detailed feedback.'
             );
             Console::writeLine(
-                "[format] is the format of the file -- "
-                . "it may be one of the following:"
+                'FILENAME is the file containing records to delete.'
+            );
+            Console::writeLine(
+                'FORMAT is the format of the file -- '
+                . 'it may be one of the following:'
             );
             Console::writeLine(
                 "\tflat - flat text format "
-                . "(deletes all IDs in newline-delimited file)"
+                . '(deletes all IDs in newline-delimited file)'
             );
             Console::writeLine(
                 "\tmarc - binary MARC format (delete all record IDs from 001 fields)"
@@ -347,7 +352,7 @@ class UtilController extends AbstractBase
             Console::writeLine(
                 '"marc" is used by default if no format is specified.'
             );
-            Console::writeLine("[index] is the index to use (default = Solr)");
+            Console::writeLine('INDEX is the index to use (default = Solr)');
             return $this->getFailureResponse();
         }
 
@@ -387,7 +392,7 @@ class UtilController extends AbstractBase
                     $missingIdCount++;
                 }
             }
-            if ($verbose) {
+            if ($verbose && $missingIdCount) {
                 Console::writeLine(
                     "Encountered $missingIdCount record(s) without IDs."
                 );
