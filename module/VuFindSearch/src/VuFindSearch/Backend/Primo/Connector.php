@@ -515,7 +515,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             // Remove dash-less ISSNs if there are corresponding dashed ones
             // (We could convert dash-less ISSNs to dashed ones, but try to stay
             // true to the metadata)
-            $callback = function($issn) use ($item) {
+            $callback = function ($issn) use ($item) {
                 return strlen($issn) != 8
                     || !in_array(
                         substr($issn, 0, 4) . '-' . substr($issn, 4),
