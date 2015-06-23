@@ -70,7 +70,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param \VuFind\View\Helper\Root\Context $context      Context helper
-     * @param \Zend\Config\OpenUrlRules        $openUrlRules VuFind OpenURL rules
+     * @param object                           $openUrlRules VuFind OpenURL rules
      * @param \Zend\Config\Config              $config       VuFind OpenURL config
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
@@ -198,7 +198,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected function checkExcludedRecordsRules()
     {
         if (isset($this->openUrlRules->exclude)) {
-            return $this->checkRules($this->openUrlRules->exclude);
+            // No exclusion rules mean no exclusions -- return false
+            return count($this->openUrlRules->exclude)
+                ? $this->checkRules($this->openUrlRules->exclude) : false;
         }
         return false;
     }
@@ -212,7 +214,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected function checkSupportedRecordsRules()
     {
         if (isset($this->openUrlRules->include)) {
-            return $this->checkRules($this->openUrlRules->include);
+            // No inclusion rules mean include everything -- return true
+            return count($this->openUrlRules->include)
+                ? $this->checkRules($this->openUrlRules->include) : true;
         }
         return false;
     }
@@ -227,50 +231,46 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected function checkRules($ruleset)
     {
-        if (count($ruleset)) {
-            // check each rule - first rule-match
-            foreach ($ruleset as $rule) {
+        // check each rule - first rule-match
+        foreach ($ruleset as $rule) {
 
-                $ruleMatchCounter = 0;
+            $ruleMatchCounter = 0;
 
-                // check if current rule is RecordDriver specific
-                if (isset($rule->recorddriver)) {
-                    if (is_a($this->driver, $rule->recorddriver)) {
-                        // get rid of recorddriver field as we have checked the
-                        // current rule as being relevant for the current
-                        // RecordDriver
-                        unset($rule->recorddriver);
-                    } else {
-                        // skip this rule as it's not relevant for the current
-                        // RecordDriver
-                        continue;
-                    }
-                }
-
-                foreach ($rule as $key => $value) {
-                    if (method_exists($this->driver, $key)) {
-                        $recordValue = $this->driver->$key();
-                        if ($value === "*" && $recordValue) {
-                            // wildcard value
-                            $ruleMatchCounter++;
-                        } elseif (!count(
-                            array_diff((array)$value, (array)$recordValue)
-                        )) {
-                            // any other value
-                            $ruleMatchCounter++;
-                        }
-                    }
-                }
-
-                if ($ruleMatchCounter == count($rule)) {
-                    // this rule matched
-                    return true;
+            // check if current rule is RecordDriver specific
+            if (isset($rule->recorddriver)) {
+                if ($this->driver instanceof $rule->recorddriver) {
+                    // get rid of recorddriver field as we have checked the
+                    // current rule as being relevant for the current
+                    // RecordDriver
+                    unset($rule->recorddriver);
+                } else {
+                    // skip this rule as it's not relevant for the current
+                    // RecordDriver
+                    continue;
                 }
             }
-            // no rule matched
-            return false;
+
+            foreach ($rule as $key => $value) {
+                if (method_exists($this->driver, $key)) {
+                    $recordValue = $this->driver->$key();
+                    if ($value === "*" && $recordValue) {
+                        // wildcard value
+                        $ruleMatchCounter++;
+                    } elseif (!count(
+                        array_diff((array)$value, (array)$recordValue)
+                    )) {
+                        // any other value
+                        $ruleMatchCounter++;
+                    }
+                }
+            }
+
+            if ($ruleMatchCounter == count($rule)) {
+                // this rule matched
+                return true;
+            }
         }
-        // non-existing rules match always
-        return true;
+        // no rule matched
+        return false;
     }
 }
