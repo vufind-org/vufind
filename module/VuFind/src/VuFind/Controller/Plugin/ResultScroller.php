@@ -98,7 +98,7 @@ class ResultScroller extends AbstractPlugin
         unset($this->data->prevIds);
         unset($this->data->nextIds);
 
-        return true;
+        return (bool)$this->data->currIds;
     }
 
     /**
@@ -393,6 +393,9 @@ class ResultScroller extends AbstractPlugin
 
         $retVal = [];
         foreach ($searchObject->getResults() as $record) {
+            if (!($record instanceof \VuFind\RecordDriver\AbstractBase)) {
+                return false;
+            }
             $retVal[] = $record->getResourceSource() . '|' . $record->getUniqueId();
         }
         return $retVal;

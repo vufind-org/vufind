@@ -1,6 +1,6 @@
 <?php
 /**
- * Tags aspect of the Search Multi-class (Params)
+ * Hierarchy tree data formatter plugin manager
  *
  * PHP version 5
  *
@@ -20,22 +20,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Search_Tags
+ * @package  HierarchyTree_DataSource
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
-namespace VuFind\Search\Tags;
+namespace VuFind\Hierarchy\TreeDataFormatter;
 
 /**
- * Search Tags Parameters
+ * Hierarchy tree data formatter plugin manager
  *
  * @category VuFind2
- * @package  Search_Tags
+ * @package  HierarchyTree_DataSource
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
-class Params extends \VuFind\Search\Base\Params
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
+    /**
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
+     *
+     * @return string
+     */
+    protected function getExpectedInterface()
+    {
+        return 'VuFind\Hierarchy\TreeDataFormatter\AbstractBase';
+    }
 }

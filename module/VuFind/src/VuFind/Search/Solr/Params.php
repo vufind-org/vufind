@@ -72,7 +72,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $facetSortedByIndex = null;
+    protected $indexSortedFacets = null;
 
     /**
      * Fields for visual faceting

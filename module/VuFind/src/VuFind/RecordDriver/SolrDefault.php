@@ -1423,6 +1423,9 @@ class SolrDefault extends AbstractBase
     /**
      * Get the value of whether or not this is a collection level record
      *
+     * NOTE: \VuFind\Hierarchy\TreeDataFormatter\AbstractBase::isCollection()
+     * duplicates some of this logic.
+     *
      * @return bool
      */
     public function isCollection()
@@ -1447,48 +1450,6 @@ class SolrDefault extends AbstractBase
             // Default to not be a collection level record
             return false;
         }
-    }
-
-    /**
-     * Get the positions of this item within parent collections.  Returns an array
-     * of parent ID => sequence number.
-     *
-     * @return array
-     */
-    public function getHierarchyPositionsInParents()
-    {
-        $retVal = [];
-        if (isset($this->fields['hierarchy_parent_id'])
-            && isset($this->fields['hierarchy_sequence'])
-        ) {
-            foreach ($this->fields['hierarchy_parent_id'] as $key => $val) {
-                $retVal[$val] = $this->fields['hierarchy_sequence'][$key];
-            }
-        }
-        return $retVal;
-    }
-
-     /**
-     * Get the titles of this item within parent collections.  Returns an array
-     * of parent ID => sequence number.
-     *
-     * @return Array
-     */
-    public function getTitlesInHierarchy()
-    {
-        $retVal = [];
-        if (isset($this->fields['title_in_hierarchy'])
-            && is_array($this->fields['title_in_hierarchy'])
-        ) {
-            $titles = $this->fields['title_in_hierarchy'];
-            $parentIDs = $this->fields['hierarchy_parent_id'];
-            if (count($titles) === count($parentIDs)) {
-                foreach ($parentIDs as $key => $val) {
-                    $retVal[$val] = $titles[$key];
-                }
-            }
-        }
-        return $retVal;
     }
 
     /**

@@ -31,7 +31,7 @@ use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Stdlib\Parameters;
+    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters;
 
 /**
  * Controller for the user account area.
@@ -641,23 +641,28 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $results = $this->getServiceLocator()
-                ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
-            $params = $results->getParams();
+            $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
-            $params->initFromRequest(
-                new Parameters(
-                    $this->getRequest()->getQuery()->toArray()
-                    + $this->getRequest()->getPost()->toArray()
-                    + ['id' => $this->params()->fromRoute('id')]
-                )
-            );
+            $request = $this->getRequest()->getQuery()->toArray()
+                + $this->getRequest()->getPost()->toArray()
+                + ['id' => $this->params()->fromRoute('id')];
 
-            $results->performAndProcessSearch();
+            // Set up listener for recommendations:
+            $rManager = $this->getServiceLocator()
+                ->get('VuFind\RecommendPluginManager');
+            $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
+                $listener = new RecommendListener($rManager, $searchId);
+                $listener->setConfig(
+                    $params->getOptions()->getRecommendationSettings()
+                );
+                $listener->attach($runner->getEventManager()->getSharedManager());
+            };
+
+            $results = $runner->run($request, 'Favorites', $setupCallback);
             return $this->createViewModel(
-                ['params' => $params, 'results' => $results]
+                ['params' => $results->getParams(), 'results' => $results]
             );
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {
