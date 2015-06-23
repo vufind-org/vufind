@@ -197,8 +197,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected function checkExcludedRecordsRules()
     {
-        if (isset($this->openUrlRules['exclude'])) {
-            return $this->checkRules($this->openUrlRules['exclude']);
+        if (isset($this->openUrlRules->exclude)) {
+            return $this->checkRules($this->openUrlRules->exclude);
         }
         return false;
     }
@@ -211,8 +211,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected function checkSupportedRecordsRules()
     {
-        if (isset($this->openUrlRules['include'])) {
-            return $this->checkRules($this->openUrlRules['include']);
+        if (isset($this->openUrlRules->include)) {
+            return $this->checkRules($this->openUrlRules->include);
         }
         return false;
     }
@@ -234,12 +234,12 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                 $ruleMatchCounter = 0;
 
                 // check if current rule is RecordDriver specific
-                if (isset($rule['recorddriver'])) {
-                    if (is_a($this->driver, $rule['recorddriver'])) {
+                if (isset($rule->recorddriver)) {
+                    if (is_a($this->driver, $rule->recorddriver)) {
                         // get rid of recorddriver field as we have checked the
                         // current rule as being relevant for the current
                         // RecordDriver
-                        unset($rule['recorddriver']);
+                        unset($rule->recorddriver);
                     } else {
                         // skip this rule as it's not relevant for the current
                         // RecordDriver
