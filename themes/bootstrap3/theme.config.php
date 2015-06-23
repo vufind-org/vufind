@@ -8,6 +8,7 @@ return array(
         'compiled.css',
         'vendor/font-awesome.min.css',
         'vendor/bootstrap-slider.css',
+        'vendor/bootstrap-rtl.min.css', // will be made conditional next draft
         'print.css:print',
     ),
     'js' => array(
