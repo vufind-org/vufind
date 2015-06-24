@@ -241,7 +241,7 @@
 
   @media (max-width: @grid-float-breakpoint-max) {
     // Dropdowns get custom display when collapsed
-    .open .dropdown-menu {
+    .open:not(.logoutOptions) .dropdown-menu {
       position: static;
       float: none;
       width: auto;
@@ -647,10 +647,4 @@
     position: absolute;
     top: 0px;
     right: 15px;
-}
-
-@media (max-width: @grid-float-breakpoint-max) {
-    .navbar-nav li.logoutOptions {
-        display: inline-block;   
-    }
 }
