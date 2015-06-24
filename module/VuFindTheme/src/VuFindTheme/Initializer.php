@@ -397,25 +397,26 @@ class Initializer
      * 
      * @return void
      */
-    protected function updateTranslator($themes) {
-      try {
-        $translator = $this->serviceManager->get('VuFind\Translator');
-      } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
-        if (!extension_loaded('intl')) {
-          throw new \Exception(
-              'Translation broken due to missing PHP intl extension.'
-              . ' Please disable translation or install the extension.'
-          );
+    protected function updateTranslator($themes)
+    {
+        $pathStack = [];
+        foreach (array_keys($themes) as $theme) {
+            $dir = APPLICATION_PATH . '/themes/' . $theme . '/languages';
+            if (is_dir($dir)) {
+                $pathStack[] = $dir;
+            }
         }
-      }
-      
-      $themes = array_keys($themes);
-      $pathStack = [];
-      foreach ($themes as $theme) {
-        $pathStack[] = APPLICATION_PATH . "/themes/" . $theme . '/languages';
-      }
-        
-      $pm = $translator->getPluginManager();
-      $pm->get('extendedini')->addLanguageFiles($pathStack);
+
+        if (!empty($pathStack)) {
+            try {
+                $translator = $this->serviceManager->get('VuFind\Translator');
+                $pm = $translator->getPluginManager();
+                $pm->get('extendedini')->addToPathStack($pathStack);
+            } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+                // This exception likely indicates that translation is disabled,
+                // so we can't proceed.
+                return;
+            }
+        }
     }
 }
