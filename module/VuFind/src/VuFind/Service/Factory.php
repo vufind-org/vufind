@@ -794,17 +794,10 @@ class Factory
 
         // Set up the ExtendedIni plugin:
         $config = $sm->get('VuFind\Config')->get('config');
-        
-        $pathStack = [APPLICATION_PATH  . '/languages'];
-
-        $themeInfo = $sm->get('VuFindTheme\ThemeInfo');
-        $themeInfo->setTheme($config->Site->theme);
-        $themes = array_reverse($themeInfo->getThemeInfo());
-        foreach ($themes as $theme => $themeInfos) {
-            $pathStack[] = APPLICATION_PATH . "/themes/" . $theme . '/languages';
-        }
-        $pathStack[] = LOCAL_OVERRIDE_DIR . '/languages';
-        
+        $pathStack = [
+            APPLICATION_PATH  . '/languages',
+            LOCAL_OVERRIDE_DIR . '/languages'
+        ];
         $fallbackLocales = $config->Site->language == 'en'
             ? 'en'
             : [$config->Site->language, 'en'];
