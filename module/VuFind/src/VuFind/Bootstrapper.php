@@ -342,6 +342,14 @@ class Bootstrapper
             $viewModel = $sm->get('viewmanager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
+            $viewModel->setVariable('rtl', false);
+            $rtlLangs = explode(',', $config->LanguageSettings->rtl_langs);
+            foreach ($rtlLangs as $rtl) {
+                if (trim($rtl) == $language) {
+                    $viewModel->setVariable('rtl', true);
+                    break;
+                }
+            }
         };
         $this->events->attach('dispatch.error', $callback, 10000);
         $this->events->attach('dispatch', $callback, 10000);
