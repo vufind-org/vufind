@@ -90,6 +90,11 @@ class ExtendedIni implements FileLoaderInterface
         }
         $this->reader = ($reader === null) ? new ExtendedIniReader() : $reader;
     }
+    
+    public function addLanguageFiles($pathStack) {
+      $this->pathStack = array_merge($this->pathStack, $pathStack);
+      $this->pathStack;
+    }
 
     /**
      * Load method defined by FileLoaderInterface.
@@ -199,4 +204,5 @@ class ExtendedIni implements FileLoaderInterface
         $parent->merge($data);
         return $parent;
     }
+    
 }

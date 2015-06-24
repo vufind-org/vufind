@@ -197,10 +197,14 @@ class Initializer
         // to display an error message!
         $this->setUpThemes(array_reverse($this->tools->getThemeInfo()));
 
+        // Add theme specific language files for translation
+        $this->updateTranslator(array_reverse($this->tools->getThemeInfo()));
+
         // If we encountered an error loading theme settings, fail now.
         if (isset($error)) {
             throw new \Exception($error->getMessage());
         }
+
     }
 
     /**
@@ -385,5 +389,34 @@ class Initializer
                 $current->setPaths($templatePathStack);
             }
         }
+    }
+    
+    /**
+     * Support method for init() -- add theme specific language files for translation.
+     *
+     * @param array $themes Theme configuration information.
+     * 
+     * @return void
+     */
+    protected function updateTranslator($themes) {
+      try {
+        $translator = $this->serviceManager->get('VuFind\Translator');
+      } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
+        if (!extension_loaded('intl')) {
+          throw new \Exception(
+              'Translation broken due to missing PHP intl extension.'
+              . ' Please disable translation or install the extension.'
+          );
+        }
+      }
+      
+      $themes = array_keys($themes);
+      $pathStack = [];
+      foreach ($themes as $theme) {
+        $pathStack[] = APPLICATION_PATH . "/themes/" . $theme . '/languages';
+      }
+        
+      $pm = $translator->getPluginManager();
+      $pm->get('extendedini')->addLanguageFiles($pathStack);
     }
 }
