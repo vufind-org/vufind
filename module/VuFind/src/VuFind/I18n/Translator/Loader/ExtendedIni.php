@@ -204,5 +204,4 @@ class ExtendedIni implements FileLoaderInterface
         $parent->merge($data);
         return $parent;
     }
-    
 }
