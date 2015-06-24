@@ -204,7 +204,6 @@ class Initializer
         if (isset($error)) {
             throw new \Exception($error->getMessage());
         }
-
     }
 
     /**
