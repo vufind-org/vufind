@@ -69,6 +69,15 @@ class Factory
             ? false : $config->Site->sidebarOnLeft;
         $offcanvas = !isset($config->Site->offcanvas)
             ? false : $config->Site->offcanvas;
-        return new LayoutClass($left, $offcanvas);
+        $rtl = false;
+        $rtlLangs = explode(',', $config->LanguageSettings->rtl_langs);
+        $locale = $sm->getServiceLocator()->get('VuFind\Translator')->getLocale();
+        foreach ($rtlLangs as $lang) {
+            if (trim($lang) == $locale) {
+                $rtl = true;
+                break;
+            }
+        }
+        return new LayoutClass($left, $offcanvas, $rtl);
     }
 }
