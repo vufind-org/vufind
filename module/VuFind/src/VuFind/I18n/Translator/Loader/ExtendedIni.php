@@ -90,10 +90,17 @@ class ExtendedIni implements FileLoaderInterface
         }
         $this->reader = ($reader === null) ? new ExtendedIniReader() : $reader;
     }
-    
-    public function addLanguageFiles($pathStack) {
-      $this->pathStack = array_merge($this->pathStack, $pathStack);
-      $this->pathStack;
+
+    /**
+     * Add additional directories to the path stack.
+     *
+     * @param array|string $pathStack Path stack addition(s).
+     *
+     * @return void
+     */
+    public function addToPathStack($pathStack)
+    {
+        $this->pathStack = array_merge($this->pathStack, (array)$pathStack);
     }
 
     /**
