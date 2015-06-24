@@ -1,3 +1,9 @@
 <? // autocomplete="off" is needed to uncheck the checkbox after copying to another list ?>
-<input autocomplete="off" class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->id ?>"/>
-<input type="hidden" name="idsAll[]" value="<?=$this->id ?>"/>
+<? if ($this->label): ?>
+<label>
+<? endif; ?>
+<input autocomplete="off" class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"/>
+<? if ($this->label): ?>
+</label>
+<? endif; ?>
+<input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"/>

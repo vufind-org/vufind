@@ -270,7 +270,10 @@
                name.  We should account for both cases to maximize compatibility. */?>
             <? if (is_array($field)): ?>
               <? if (!empty($field['name'])): ?>
-                <a href="<?=$this->record($this->driver)->getLink('series', $field['name'])?>"><?=$this->escapeHtml($field['name'])?></a>
+                <a href="<?=$this->record($this->driver)->getLink('series', $field['name'])?>"><?=$this->escapeHtml($field['name'])?></a><? if (!empty($field['issn']) || !empty($field['number'])): ?>, <? endif; ?>
+                <? if (!empty($field['issn'])): ?>
+                  ISSN <?=$this->escapeHtml($field['issn'])?><? if (!empty($field['number'])): ?>; <? endif; ?>
+                <? endif; ?>
                 <? if (!empty($field['number'])): ?>
                   <?=$this->escapeHtml($field['number'])?>
                 <? endif; ?>

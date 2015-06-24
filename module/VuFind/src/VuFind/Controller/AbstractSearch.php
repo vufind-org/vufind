@@ -231,6 +231,18 @@ class AbstractSearch extends AbstractBase
         }
 
         $rManager = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
+
+        // Special case: override recommend settings through parameter (used by
+        // combined search)
+        if ($override = $this->params()->fromQuery('recommendOverride')) {
+            return function ($runner, $p, $searchId) use ($rManager, $override) {
+                $listener = new RecommendListener($rManager, $searchId);
+                $listener->setConfig($override);
+                $listener->attach($runner->getEventManager()->getSharedManager());
+            };
+        }
+
+        // Standard case: retrieve recommend settings from params object:
         return function ($runner, $params, $searchId) use ($rManager, $activeRecs) {
             $listener = new RecommendListener($rManager, $searchId);
             $config = [];

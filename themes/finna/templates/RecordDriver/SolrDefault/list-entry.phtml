@@ -15,9 +15,8 @@
   <div class="col-xs-2 col-sm-1">
     <div class="checkboxFilter">
       <div class="checkbox">
-        <label>
-        <?=$this->record($this->driver)->getCheckbox() ?>
-        </label>
+        <? // Request a checkbox with a label (can't add the label here as checkbox template contains more than one field): ?>
+        <?=$this->record($this->driver)->getCheckbox('', true) ?>
       </div>
     </div>
     <input type="hidden" value="<?=$id ?>" class="hiddenId"/>

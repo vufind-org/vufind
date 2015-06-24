@@ -1,6 +1,6 @@
 <?php
 /**
- * Hierarchy Data Source Factory Class
+ * Hierarchy tree data formatter plugin manager
  *
  * PHP version 5
  *
@@ -25,47 +25,27 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
-namespace VuFind\Hierarchy\TreeDataSource;
-use Zend\ServiceManager\ServiceManager;
+namespace VuFind\Hierarchy\TreeDataFormatter;
 
 /**
- * Hierarchy Data Source Factory Class
- *
- * This is a factory class to build objects for managing hierarchies.
+ * Hierarchy tree data formatter plugin manager
  *
  * @category VuFind2
  * @package  HierarchyTree_DataSource
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
- *
- * @codeCoverageIgnore
  */
-class Factory
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Factory for Solr driver.
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
      *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Solr
+     * @return string
      */
-    public static function getSolr(ServiceManager $sm)
+    protected function getExpectedInterface()
     {
-        $cacheDir = $sm->getServiceLocator()->get('VuFind\CacheManager')
-            ->getCacheDir(false);
-        $hierarchyFilters = $sm->getServiceLocator()->get('VuFind\Config')
-            ->get('HierarchyDefault');
-        $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
-          ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
-          : [];
-        $solr = $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
-            ->get('Solr')->getConnector();
-        $formatterManager = $sm->getServiceLocator()
-            ->get('VuFind\HierarchyTreeDataFormatterPluginManager');
-        return new Solr(
-            $solr, $formatterManager, rtrim($cacheDir, '/') . '/hierarchy',
-            $filters
-        );
+        return 'VuFind\Hierarchy\TreeDataFormatter\AbstractBase';
     }
 }
