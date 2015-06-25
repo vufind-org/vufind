@@ -1,0 +1,82 @@
+<?
+  $this->headTitle('Vem medverkar?');
+  $this->content()->setHeading('Vem medverkar?');
+  $organisationList = $this->organisationsList();
+?>
+
+<div class="row">
+  <div class="col-md-10 col-lg-8">
+    <h2>Organisationer som medverkar i Finna</h2>
+    <p>Följande organisationer har överfört material till Finna.</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-4">
+    <h4><?=$this->TransEsc('organisation_archives', ['%%cnt%%' => count($organisationList['arc'])]) ?></h4>
+    <?= $this->partial('content/organisation-list.phtml', array('list' => $organisationList['arc'])); ?>
+  </div>
+  <div class="col-sm-4">
+    <h4><?=$this->TransEsc('organisation_libraries', ['%%cnt%%' => count($organisationList['lib'])]) ?></h4>
+    <?= $this->partial('content/organisation-list.phtml', array('list' => $organisationList['lib'])); ?>
+  </div>
+  <div class="col-sm-4">
+    <h4><?=$this->TransEsc('organisation_museums', ['%%cnt%%' => count($organisationList['mus'])]) ?></h4>
+    <?= $this->partial('content/organisation-list.phtml', array('list' => $organisationList['mus'])); ?>
+  </div>
+</div>
+</div>
+</div>
+</div>
+<div class="container-fluid odd-fluid">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-lg-8">
+        <p>&nbsp;</p>
+        <h2>Får jag använda materialet?</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <h4>Arkiv</h4>
+        <p>Största delen av arkivens material kan man läsa på plats i arkiven. Forskare, studenter och andra kan ansöka om tillstånd att använda material med begränsad tillgång för forskningsändamål. Oftast beviljas tillståndet.</p>
+        <p>Alla arkiv som medverkar i Finna har överfört sådant material som är fritt tillgängligt på nätet.</p>
+        <p><a href="<?=$this->url('search-results')?>?<?=$this->escapeHtmlAttr('type=AllFields&filter%5B%5D=~sector_str_mv%3A"0%2Farc%2F"')?>">Arkivens material i finna.fi <i class="fa fa-search"></i></a></p>
+        <p>&nbsp;</p>
+      </div>
+      <div class="col-sm-4">
+        <h4>Universitetens och yrkeshögskolornas bibliotek</h4>
+        <p>I de flesta universitets- och yrkeshögskolebiblioteken får vem som helst låna material.</p>
+        <p>Man måste inte alltid ens skaffa ett nytt kort för att få rätt att låna material i ett bibliotek, i vissa fall kan man lägga till lånerätten till det kort som kunden redan använder. Lånerätten beviljas oftast av bibliotekens kundtjänst.</p>
+        <p><a href="<?=$this->url('search-results')?>?<?=$this->escapeHtmlAttr('type=AllFields&filter%5B%5D=~sector_str_mv%3A"1%2Flib%2Funi%2F"&filter%5B%5D=~sector_str_mv%3A"1%2Flib%2Fpoly%2F"')?>">Universitets- och yrkeshögskolebibliotekens material i finna.fi <i class="fa fa-search"></i></a></p>
+        <h4>Stads- och landskapsbibliotek</h4>
+        <p>Vem som helst får låna böcker och annat material i de allmänna biblioteken i Finland. För att få ett lånekort kan det krävas att man har en adress i Finland.</p>
+        <p><a href="<?=$this->url('search-results')?>?<?=$this->escapeHtmlAttr('type=AllFields&filter%5B%5D=~sector_str_mv%3A"1%2Flib%2Fpub%2F"')?>">De allmänna bibliotekens material i finna.fi <i class="fa fa-search"></i></a></p>
+        <p>&nbsp;</p>
+      </div>
+      <div class="col-sm-4">
+        <h4>Museer</h4>
+        <p>I Finna får du tillgång till material på nätet som inte visas i museet och som t.ex. bara forskare har haft tillgång till tidigare.</p>
+        <p>Många museer erbjuder en möjlighet att ansöka om rätt att mot betalning använda bilder eller beställa bilder som kan tryckas.</p>
+        <a href="<?=$this->url('search-results')?>?<?=$this->escapeHtmlAttr('type=AllFields&filter%5B%5D=~sector_str_mv%3A"0%2Fmus%2F"')?>">Museernas material i finna.fi <i class="fa fa-search"></i></a>
+        <p>&nbsp;</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-lg-8">
+        <p>&nbsp;</p>
+        <h2>Mer om ämnet på andra sidor</h2>
+        <p>På sidan <a href="<?=$this->url('content-page', ['page' => 'terms_conditions'])?>">Sekretess i villkor</a> finns mer information om rätten att använda materialet som finns i Finna.</p>
+        <p>Sidan <a href="<?=$this->url('content-page', ['page' => 'about'])?>">Vad är Finna?</a> innehåller information om Finnas olika webbsidor och funktioner.</p>
+        <p>&nbsp;</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="container">
+    <div class="row">
+    <!-- open closed divs for valid HTML -->
