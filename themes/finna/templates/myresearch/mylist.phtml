@@ -22,7 +22,6 @@
   $this->headScript()->appendFile("finna-mylist.js");
   $this->headScript()->appendFile("vendor/jquery.editable.js");
 
-  $this->headScript()->prependScript("var listId = $activeId;");
   $this->jsTranslations()->addStrings(['add_note' => 'Add note', 'loading' => 'Loading']);
 
   $recordTotal = $this->results->getResultTotal();
