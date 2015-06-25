@@ -169,7 +169,7 @@
         <? endif; ?>
       </div> 
     </div>
-    <? if ((count($this->lists) > 0) && (!$list)): ?>
+    <? if (count($this->lists) > 0 && !$list): ?>
     <div class="saved-lists">
       <strong><?=$this->transEsc('Saved in')?>:</strong>
       <? $i=0;foreach($this->lists as $current): ?>
