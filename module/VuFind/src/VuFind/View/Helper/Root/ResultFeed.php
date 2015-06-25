@@ -144,7 +144,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         if ($params->getPage() > 1) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage()-1, false),
+                    ->setPage($params->getPage() - 1, false),
                 'previous',
                 $params->getView()
             );
@@ -153,7 +153,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         if ($params->getPage() < $lastPage) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage()+1, false),
+                    ->setPage($params->getPage() + 1, false),
                 'next',
                 $params->getView()
             );

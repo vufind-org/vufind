@@ -217,7 +217,7 @@ class LessCompiler
         }
         file_put_contents($finalFile, $this->makeRelative($css, $less));
 
-        $this->logMessage("\t\t" . (microtime(true)-$start) . ' sec');
+        $this->logMessage("\t\t" . (microtime(true) - $start) . ' sec');
     }
 
     /**

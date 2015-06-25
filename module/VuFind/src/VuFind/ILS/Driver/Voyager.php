@@ -1378,7 +1378,7 @@ class Voyager extends AbstractBase
             if (is_numeric($dueTimeStamp)) {
                 if ($now > $dueTimeStamp) {
                     $dueStatus = "overdue";
-                } else if ($now > $dueTimeStamp-(1*24*60*60)) {
+                } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                     $dueStatus = "due";
                 }
             }
@@ -2040,8 +2040,8 @@ class Voyager extends AbstractBase
 
         $page = ($page) ? $page : 1;
         $limit = ($limit) ? $limit : 20;
-        $bindParams[':startRow'] = (($page-1)*$limit)+1;
-        $bindParams[':endRow'] = ($page*$limit);
+        $bindParams[':startRow'] = (($page - 1) * $limit) + 1;
+        $bindParams[':endRow'] = ($page * $limit);
         /*
         $sql = "select * from " .
                "(select a.*, rownum rnum from " .
