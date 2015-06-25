@@ -45,11 +45,6 @@
   <div class="<?=$this->layoutClass('mainbody')?>">
     <div class="clearfix hidden-print">
     <div class="row">
-      <div class="col-xs-12">
-        <?=$this->flashmessages()?>
-      </div>
-    </div>
-    <div class="row">
       <div class="col-xs-7">
       <h2 class="list-title<?= !$list ? ' no-edit' : '' ?>"><span><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></span><? if(!$isDefaultList): ?><i class="list-title-edit fa fa-pen"></i><? endif; ?></h2><br>
       <? if ($list && !empty($list->description)): ?>
@@ -57,6 +52,7 @@
       <? elseif ($list && empty($list->description)): ?>
         <h5 class="list-description"><span data-empty="1"><?=$this->transEsc('Add list description')?></span> <i class="list-description-edit fa fa-pen"></i></h5>
       <? endif; ?>
+      <?=$this->flashmessages()?>
     </div>
     </div>
     </div>
