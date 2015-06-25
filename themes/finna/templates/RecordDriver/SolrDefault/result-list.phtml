@@ -205,12 +205,15 @@
       <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
   </div>
   <div class="col-xs-12 col-sm-9 col-sm-push-2">
-  <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
-        </div>
-  <? endif; ?>
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <? /* Saved lists */ ?>
+    <div class="savedLists alert alert-info hidden">
+      <strong><?=$this->transEsc("Saved in")?>:</strong>
+    </div>
+    <? endif; ?>
+    <? if ($this->layout()->templateDir === 'list'): ?>
+      <?=$this->render('list/list-notes.phtml')?>
+    <? endif; ?>
   </div>
 </div>
 <!-- End of Default result-list.phtml -->
