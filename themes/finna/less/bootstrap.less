@@ -244,6 +244,9 @@ mark, .highlight {
     color: inherit;
     font-size: 1.03em;
 }
+.savedLists.alert {
+    margin: 15px 0px 0px;
+}
 .container.resultListDisplay {
     margin-top: 30px;
 }
@@ -283,6 +286,11 @@ mark, .highlight {
 .result .save-record {
     float:right;
     font-size: medium;
+    @media(max-width: @screen-xs-max) {
+        font-size: 1em;
+        float: none;
+        margin-top: 10px;
+    }
 }
 .available-online-links {
     margin: 10px 0px 0px;
@@ -295,17 +303,11 @@ mark, .highlight {
     & a {
         color: darken(@link-color, 5%);   
     }
-    @media(max-width: 400px) {
-        .mobileMargin();   
-    }
 }
 /* Holdings styling */
 .holding-details {
     margin-top: 10px;
     @media(max-width: 400px) {
-        .template-name-results & {
-            .mobileMargin();   
-        }
         .template-name-mylist & {
             margin-left: -55%;   
         }
@@ -334,7 +336,11 @@ mark, .highlight {
 .groupLocation span.text-error {
     vertical-align: middle;
 }
-
+.add-to-favorite-col {
+    @media(max-width: @screen-xs-max) {
+        margin-top: 10px;   
+    }
+}
 /* Home custom styles */
 .introductionBackground {
     background-color: @brand-third;  

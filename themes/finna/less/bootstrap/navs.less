@@ -95,6 +95,9 @@
       margin-bottom: -1px;
       border-radius: @tabs-border-radius @tabs-border-radius 0 0;
       transition: none;
+      @media (max-width: @screen-xs-max) {
+        font-size: .9em;   
+      }
       &:hover {
           color: @nav-tabs-link-hover-color;
           border-color: @nav-tabs-border-color @nav-tabs-border-color @nav-tabs-border-color;
