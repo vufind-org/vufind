@@ -59,6 +59,11 @@ finna.imagePopup = (function(finna) {
         });     
     };
 
+    // Copied from finna-mylist.js to avoid dependency
+    var getActiveListId = function() {
+        return $('input[name="listID"]').val();
+    };
+    
     var initRecordImage = function() {
         // Collect data for all image-popup triggers on page.
         urls = $('.image-popup').map(
@@ -96,6 +101,7 @@ finna.imagePopup = (function(finna) {
                     src += '&publicList=1';
                 }
 
+                var listId = getActiveListId();
                 if (typeof(listId) != 'undefined') {
                     src += '&listId=' + listId;
                 }
