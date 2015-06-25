@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFindTheme;
-use \Zend\Console\Console;
+use Zend\Console\Console;
 
 /**
  * Class to compile LESS into CSS within a theme.
