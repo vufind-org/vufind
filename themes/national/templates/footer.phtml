@@ -2,7 +2,8 @@
   <div class="col-sm-3">
     <h5><strong><?=$this->transEsc('About')?></strong></h5>
     <ul>
-      <li><a href="<?=$this->url('content-page', ['page' => 'About'])?>"><?=$this->transEsc('About Finna')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'organisations'])?>"><?=$this->transEsc('Who participates in Finna')?></a></li>
+      <li><a href="<?=$this->url('content-page', ['page' => 'About'])?>"><?=$this->transEsc('What is Finna')?></a></li>
       <li><a href="<?=$this->url('content-page', ['page' => 'terms_conditions'])?>"><?=$this->transEsc('Privacy & Terms')?></a></li>
       <li><a href="<?=$this->url('content-page', ['page' => 'register_details'])?>"><?=$this->transEsc('Register Details')?></a></li>
     </ul>
@@ -29,7 +30,7 @@
 <hr>
 <div class="row">
   <div class="col-sm-3">
-    <a href="https://www.finna.fi/Content/about"><img src="<?=$this->imageLink('finna-logo.png')?>" alt="Finna-logo" /></a><br><br>
+    <a href="<?=$this->url('home')?>"><img src="<?=$this->imageLink('finna-logo.png')?>" alt="Finna-logo" /></a><br><br>
   </div>
   <div class="col-sm-3">
      <a href="http://www.kdk.fi/"><img src="<?=$this->imageLink('kdk_logo_' . $this->layout()->userLang . '.png')?>" alt="KDK-logo" /></a><br><br>

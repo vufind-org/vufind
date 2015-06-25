@@ -1267,3 +1267,23 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
 .mobileMargin {
     margin: 15px -8.333% 0px -23%;   
 }
+// Content page styles
+.main.template-dir-content.template-name-content {
+    & .odd-fluid {
+        background: #f5f5f5;   
+    }
+    & .organisation-list-header {
+        font-weight: bold;
+        margin-top: 3px;
+        margin-bottom: -4px;
+    }
+    & .organisation-list-header, .organisation-list-url {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .organisation-list-url {
+        color: @link-color;
+        margin-bottom: 25px;
+    }
+}

@@ -1,0 +1,82 @@
+<?
+  $this->headTitle('Who participates in Finna?');
+  $this->content()->setHeading('Who participates in Finna?');
+  $organisationList = $this->organisationsList();
+?>
+
+<div class="row">
+  <div class="col-md-10 col-lg-8">
+    <h2>Partner organisations</h2>
+    <p>The following organisations have provided material for Finna.</p>
+  </div>
+</div>
+<div class="row">
+  <div class="col-sm-4">
+    <h4><?=$this->TransEsc('organisation_archives', ['%%cnt%%' => count($organisationList['arc'])]) ?></h4>
+    <?= $this->partial('content/organisation-list.phtml', array('list' => $organisationList['arc'])); ?>
+  </div>
+  <div class="col-sm-4">
+    <h4><?=$this->TransEsc('organisation_libraries', ['%%cnt%%' => count($organisationList['lib'])]) ?></h4>
+    <?= $this->partial('content/organisation-list.phtml', array('list' => $organisationList['lib'])); ?>
+  </div>
+  <div class="col-sm-4">
+    <h4><?=$this->TransEsc('organisation_museums', ['%%cnt%%' => count($organisationList['mus'])]) ?></h4>
+    <?= $this->partial('content/organisation-list.phtml', array('list' => $organisationList['mus'])); ?>
+  </div>
+</div>
+</div>
+</div>
+</div>
+<div class="container-fluid odd-fluid">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-lg-8">
+        <p>&nbsp;</p>
+        <h2>Can I use the material?</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <h4>Archives</h4>
+        <p>Most archive material can be browsed at the premises of individual archives. Scholars, students and ordinary citizens can apply for a research permit for browsing limited use material. In general, an attempt will be made to grant a permit.</p>
+        <p>All participating archives have provided Finna with material accessible on the web that is freely available.</p>
+        <p><a href="<?=$this->url('search-results')?>?<?=$this->escapeHtmlAttr('type=AllFields&filter%5B%5D=~sector_str_mv%3A"0%2Farc%2F"')?>">Archive material at finna.fi <i class="fa fa-search"></i></a></p>
+        <p>&nbsp;</p>
+      </div>
+      <div class="col-sm-4">
+        <h4>University and university of applied sciences libraries</h4>
+        <p>Anyone can borrow material from most university and university of applied sciences libraries.</p>
+        <p>Applying for the right to borrow material from a new library does not always require applying for a new library card, since, in some cases, the right can be included in a library card acquired earlier. Borrowing rights are usually granted by library service desks.</p>
+        <p><a href="<?=$this->url('search-results')?>?<?=$this->escapeHtmlAttr('type=AllFields&filter%5B%5D=~sector_str_mv%3A"1%2Flib%2Funi%2F"&filter%5B%5D=~sector_str_mv%3A"1%2Flib%2Fpoly%2F"')?>">University and university of applied sciences library material at finna.fi <i class="fa fa-search"></i></a></p>
+        <h4>City and provincial libraries</h4>
+        <p>Anyone can borrow books and other material from public libraries in Finland. A Finnish address may be a requisite for getting a library card.</p>
+        <p><a href="<?=$this->url('search-results')?>?<?=$this->escapeHtmlAttr('type=AllFields&filter%5B%5D=~sector_str_mv%3A"1%2Flib%2Fpub%2F"')?>">Public library material at finna.fi <i class="fa fa-search"></i></a></p>
+        <p>&nbsp;</p>
+      </div>
+      <div class="col-sm-4">
+        <h4>Museums</h4>
+        <p>At Finna, you can browse material available on the web not on view at museum premises and, for example, previously available only to scholars.</p>
+        <p>Many museums offer the opportunity to order print-quality images and purchase image rights as an additional, chargeable service.</p>
+        <a href="<?=$this->url('search-results')?>?<?=$this->escapeHtmlAttr('type=AllFields&filter%5B%5D=~sector_str_mv%3A"0%2Fmus%2F"')?>">Museum material at finna.fi <i class="fa fa-search"></i></a>
+        <p>&nbsp;</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-lg-8">
+        <p>&nbsp;</p>
+        <h2>Further information</h2>
+        <p>Further information on user rights for the material found in Finna is available on the page <a href="<?=$this->url('content-page', ['page' => 'terms_conditions'])?>">Privacy and terms.</a></p>
+        <p>The page <a href="<?=$this->url('content-page', ['page' => 'about'])?>">What is Finna?</a> contains information on the sites included in Finna and additional functions provided by Finna.</p>
+        <p>&nbsp;</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="container">
+    <div class="row">
+    <!-- open closed divs for valid HTML -->
