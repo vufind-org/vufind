@@ -7,7 +7,7 @@ history = 'search-history'
 
 [about_us]
 about_us = 'content-about'
-what_is_finna = 'content-aboutfinna'
+what_is_finna = 'content-about_finna'
 
 [help]
 help = 'content-help'
