@@ -23,6 +23,7 @@ return array(
         'invokables' => array(
             'checkboxFacetCounts' =>
                 'Finna\View\Helper\Root\CheckboxFacetCounts',
+            'resultfeed' => 'Finna\View\Helper\Root\ResultFeed',
             'search' => 'Finna\View\Helper\Root\Search',
             'translationEmpty' => 'Finna\View\Helper\Root\TranslationEmpty',
             'truncateUrl' => 'Finna\View\Helper\Root\TruncateUrl',
