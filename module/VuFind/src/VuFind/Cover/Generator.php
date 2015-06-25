@@ -341,7 +341,8 @@ class Generator
                 $im,
                 '...',
                 5,
-                $this->settings->topPadding + $this->settings->maxLines * $lineHeight,
+                $this->settings->topPadding
+                + $this->settings->maxLines * $lineHeight,
                 $this->settings->titleFont,
                 $this->settings->fontSize + 1,
                 $this->black,
@@ -495,7 +496,9 @@ class Generator
             $v = $k / 2 < 1 ? $box : -$box;
             for ($i = 0;$i < 16;$i++) {
                 if ($bc[$i] == "1") {
-                    imagefilledrectangle($im, $x, $y, $x + $box - 1, $y + $box - 1, $color);
+                    imagefilledrectangle(
+                        $im, $x, $y, $x + $box - 1, $y + $box - 1, $color
+                    );
                 }
                 $x += $u;
                 if ($x >= $this->settings->size || $x < 0) {

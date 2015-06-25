@@ -99,7 +99,8 @@ class Record extends AbstractBase
                             'source' => $source
                         ];
                         // Insert sort (limit to listLength)
-                        for ($i = 0;$i < $listLength - 1 && $i < count($reference);$i++) {
+                        $refCount = count($reference);
+                        for ($i = 0; $i < $listLength - 1 && $i < $refCount; $i++) {
                             if ($count > $reference[$i]['count']) {
                                 // Insert in order
                                 array_splice($reference, $i, 0, [$newRecord]);

@@ -256,7 +256,8 @@ class PICA extends DAIA
                 if ($position_state !== null
                     && substr($postit, $position_state + 24, 8) !== 'bestellt'
                 ) {
-                    $reservations[] = substr($postit, $position_reservations + 24, 1);
+                    $reservations[]
+                        = substr($postit, $position_reservations + 24, 1);
                     $expiration[] = substr($postit, $position_expire + 24, 10);
                     $renewals[] = $this->getRenewals($completeValue);
                     $closing_title = strpos($postit, '</td>', $position_title);
@@ -437,7 +438,8 @@ class PICA extends DAIA
             // first class=plain => description
             // length = position of next </td> - startposition
             $nextClosingTd = strpos($postit, '</td>', $pos);
-            $description[$i] = substr($postit, $pos + 18, ($nextClosingTd - $pos - 18));
+            $description[$i]
+                = substr($postit, $pos + 18, ($nextClosingTd - $pos - 18));
             $position = $pos + 1;
             // next class=plain => date of fee creation
             $pos = strpos($postit, '<td class="plain"', $position);
@@ -567,7 +569,9 @@ class PICA extends DAIA
             $position = strpos(
                 $postit_lol, '<td class="value-small">bestellt</td>', $position + 1
             );
-            $pos = strpos($postit_lol, '<td class="value-small">', ($position - 100));
+            $pos = strpos(
+                $postit_lol, '<td class="value-small">', ($position - 100)
+            );
             $nextClosingTd = strpos($postit_lol, '</td>', $pos);
             $value = substr($postit_lol, $pos + 27, ($nextClosingTd - $pos - 27));
             $ppns[] = $this->getPpnByBarcode($value);
