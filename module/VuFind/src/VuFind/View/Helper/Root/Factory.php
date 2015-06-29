@@ -319,7 +319,8 @@ class Factory
         $openUrlRules = json_decode(
             file_get_contents(
                 \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json')
-            )
+            ),
+            true
         );
         return new OpenUrl(
             $sm->get('context'),

@@ -1,0 +1,9 @@
+{
+  "include" :
+  [
+    {
+      "getCleanISSN": "*",
+      "getFormats": ["ElectronicArticle", "Article"]
+    }
+  ]
+}

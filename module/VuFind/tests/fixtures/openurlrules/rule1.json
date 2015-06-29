@@ -1,0 +1,15 @@
+{
+  "exclude" :
+  [
+    {
+      "recorddriver": "VuFind\\RecordDriver\\SolrMarc",
+      "getFormats": ["Article"]
+    }
+  ],
+  "include" :
+  [
+    {
+      "getFormats": ["Article"]
+    }
+  ]
+}

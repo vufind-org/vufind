@@ -1,0 +1,13 @@
+{
+  "include" :
+  [
+    {
+      "getCleanISSN": "*",
+      "getFormats": ["Journal"]
+    },
+    {
+      "getCleanISSN": "*",
+      "getFormats": ["Article"]
+    }
+  ]
+}

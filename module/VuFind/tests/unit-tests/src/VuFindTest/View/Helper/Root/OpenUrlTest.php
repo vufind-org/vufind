@@ -22,23 +22,32 @@
  * @category VuFind2
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFindTest\View\Helper\Root;
-use VuFind\View\Helper\Root\OpenUrl, Zend\Config\Config;
+use VuFind\View\Helper\Root\OpenUrl, Zend\Config\Config, InvalidArgumentException;
 
 /**
- * CitationBuilder Test Class
+ * OpenUrl Test Class
  *
  * @category VuFind2
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   André Lahmann <lahmann@ub.uni-leipzig.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
+    /**
+     * Configuration array providing basic settings for testing OpenUrlRules
+     *
+     * @var array
+     */
+    protected $rulesConfig = ['url' => 'http://foo/bar', 'show_in_results' => true];
+
     /**
      * Test checkContext() default behavior.
      *
@@ -87,6 +96,62 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
     }
 
     /**
+     * Test checkExcludedRecordRules() with rule not applying (isActive() will return
+     * TRUE!!)
+     *
+     * @return void
+     */
+    public function testCheckExcludedRecordsRulesFalse()
+    {
+        $openUrl = $this
+            ->getOpenUrl($this->getFixture("rule1.json"), $this->rulesConfig)
+            ->__invoke($this->getMockDriver());
+        $this->assertTrue($openUrl->isActive('results'));
+    }
+
+    /**
+     * Test checkExcludedRecordRules() with matching rule (isActive() will return
+     * FALSE!!)
+     *
+     * @return void
+     */
+    public function testCheckExcludedRecordsRulesTrue()
+    {
+        $openUrl = $this
+            ->getOpenUrl($this->getFixture("rule2.json"), $this->rulesConfig)
+            ->__invoke($this->getMockDriver());
+        $this->assertFalse($openUrl->isActive('results'));
+    }
+
+    /**
+     * Test checkSupportedRecordRules() with no matching rule (isActive() will return
+     * FALSE!!)
+     *
+     * @return void
+     */
+    public function testCheckSupportedRecordsRulesFalse()
+    {
+        $openUrl = $this
+            ->getOpenUrl($this->getFixture("rule3.json"), $this->rulesConfig)
+            ->__invoke($this->getMockDriver());
+        $this->assertFalse($openUrl->isActive('results'));
+    }
+
+    /**
+     * Test checkSupportedRecordRules() with matching rule (isActive() will return
+     * TRUE!!)
+     *
+     * @return void
+     */
+    public function testCheckSupportedRecordsRulesTrue()
+    {
+        $openUrl = $this
+            ->getOpenUrl($this->getFixture("rule4.json"), $this->rulesConfig)
+            ->__invoke($this->getMockDriver());
+        $this->assertTrue($openUrl->isActive('results'));
+    }
+
+    /**
      * Get mock context helper.
      *
      * @return \VuFind\View\Helper\Root\Context
@@ -101,6 +166,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
      * Get mock driver that returns an openURL.
      *
      * @param string $openUrl OpenURL to return
+     *
      * @return \VuFind\RecordDriver\SolrDefault
      */
     protected function getMockDriver($openUrl = 'fake-data')
@@ -111,13 +177,40 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
             ->will($this->returnValue($openUrl));
         $driver->expects($this->any())->method('getCleanISSN')
             ->will($this->returnValue('1234-5678'));
+        $driver->expects($this->any())->method('getFormats')
+            ->will($this->returnValue(['Article']));
         return $driver;
+    }
+
+    /**
+     * Get the fixtures for testing OpenUrlRules
+     *
+     * @param string $fixture filename of the fixture to load
+     *
+     * @return mixed|null
+     */
+    protected function getFixture($fixture)
+    {
+        if ($fixture) {
+            $file = realpath(
+                __DIR__ .
+                '/../../../../../../../tests/fixtures/openurlrules/' . $fixture
+            );
+            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
+                throw new \InvalidArgumentException(
+                    sprintf('Unable to load fixture file: %s ', $fixture)
+                );
+            }
+            return json_decode(file_get_contents($file), true);
+        }
+
+        return null;
     }
 
     /**
      * Get the object to test
      *
-     * @param object $rules       JSON-decoded object containing rules (optional)
+     * @param array  $rules       JSON-decoded array containing rules (optional)
      * @param array  $config      Configuration settings (optional)
      * @param object $mockContext Mock context helper (optional)
      *
@@ -125,10 +218,10 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getOpenUrl($rules = null, $config = [], $mockContext = null)
     {
-        if (!is_object($rules)) {
+        if (null === $rules) {
             $json = __DIR__
                 . '/../../../../../../../../../config/vufind/OpenUrlRules.json';
-            $rules = json_decode(file_get_contents($json));
+            $rules = json_decode(file_get_contents($json), true);
         }
         if (null === $mockContext) {
             $mockContext = $this->getMockContext();

@@ -55,7 +55,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * OpenURL rules
      *
-     * @var \Zend\Config\OpenUrlRules
+     * @var array
      */
     protected $openUrlRules;
 
@@ -70,11 +70,11 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param \VuFind\View\Helper\Root\Context $context      Context helper
-     * @param object                           $openUrlRules VuFind OpenURL rules
+     * @param array                            $openUrlRules VuFind OpenURL rules
      * @param \Zend\Config\Config              $config       VuFind OpenURL config
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
-        $openUrlRules, $config = null
+                                $openUrlRules, $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
@@ -190,39 +190,39 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if excluded_records rules from the OpenURL config.ini section apply to
+     * Check if excluded_records rules from the OpenUrlRules.json file apply to
      * the current record
      *
      * @return bool
      */
     protected function checkExcludedRecordsRules()
     {
-        if (isset($this->openUrlRules->exclude)) {
+        if (isset($this->openUrlRules['exclude'])) {
             // No exclusion rules mean no exclusions -- return false
-            return count($this->openUrlRules->exclude)
-                ? $this->checkRules($this->openUrlRules->exclude) : false;
+            return count($this->openUrlRules['exclude'])
+                ? $this->checkRules($this->openUrlRules['exclude']) : false;
         }
         return false;
     }
 
     /**
-     * Check if supported_records rules from the OpenURL config.ini section apply to
+     * Check if supported_records rules from the OpenUrlRules.json file apply to
      * the current record
      *
      * @return bool
      */
     protected function checkSupportedRecordsRules()
     {
-        if (isset($this->openUrlRules->include)) {
+        if (isset($this->openUrlRules['include'])) {
             // No inclusion rules mean include everything -- return true
-            return count($this->openUrlRules->include)
-                ? $this->checkRules($this->openUrlRules->include) : true;
+            return count($this->openUrlRules['include'])
+                ? $this->checkRules($this->openUrlRules['include']) : true;
         }
         return false;
     }
 
     /**
-     * Checks if rules from the OpenURL config.ini section apply to the current
+     * Checks if rules from the OpenUrlRules.json file apply to the current
      * record
      *
      * @param array $ruleset Array of rules to be checked
@@ -237,12 +237,12 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             $ruleMatchCounter = 0;
 
             // check if current rule is RecordDriver specific
-            if (isset($rule->recorddriver)) {
-                if ($this->driver instanceof $rule->recorddriver) {
+            if (isset($rule['recorddriver'])) {
+                if ($this->driver instanceof $rule['recorddriver']) {
                     // get rid of recorddriver field as we have checked the
                     // current rule as being relevant for the current
                     // RecordDriver
-                    unset($rule->recorddriver);
+                    unset($rule['recorddriver']);
                 } else {
                     // skip this rule as it's not relevant for the current
                     // RecordDriver
