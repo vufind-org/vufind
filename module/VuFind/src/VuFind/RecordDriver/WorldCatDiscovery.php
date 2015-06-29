@@ -327,7 +327,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     {
         $author = $this->getRawObject()->getAuthor();
         
-        return is_callable([$author, 'getName']) ? $author->getName() : '';
+        return is_callable([$author, 'getName']) ? $author->getName()->getValue() : '';
     }
 
     /**
@@ -363,7 +363,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $contributors = $this->getRawObject()->getContributors();
         array_walk($contributors, function(&$contributor)
         {
-            $contributor = $contributor->getName();
+            $contributor = $contributor->getName()->getValue();
         });
         return $contributors;
     }
@@ -375,7 +375,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
      */
     public function getShortTitle()
     {
-        return $this->getRawObject()->getName();
+        return $this->getRawObject()->getName()->getValue();
     }
 
     /**
@@ -385,7 +385,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
      */
     public function getTitle()
     {
-        return $this->getRawObject()->getName();
+        return $this->getRawObject()->getName()->getValue();
     }
 
     /**
