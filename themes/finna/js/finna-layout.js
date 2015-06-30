@@ -227,6 +227,18 @@ finna.layout = (function() {
     var initCheckboxClicks = function() {
       $('.checkboxFilter:not(.mylist-select-all) .checkbox input').click(function() {
         $(this).closest('.checkbox').toggleClass('checked');
+        var nonChecked = true;
+        $('.myresearch-row .checkboxFilter .checkbox').each(function() {
+            if ($(this).hasClass('checked')) {
+              $('.mylist-functions button, .mylist-functions select').removeAttr("disabled");
+              $('.mylist-functions .jump-menu-style').removeClass('disabled');
+              nonChecked = false;
+            }
+        });
+        if (nonChecked == true) {
+          $('.mylist-functions button, .mylist-functions select').attr("disabled", true);
+          $('.mylist-functions .jump-menu-style').addClass('disabled');
+        }
       });
       $('.checkboxFilter.mylist-select-all .checkbox .checkbox-select-all').click(function() {
         if ($('.checkboxFilter.mylist-select-all .checkbox').hasClass('checked')) {
@@ -238,13 +250,19 @@ finna.layout = (function() {
           });
           if (isEverythingChecked == true) {
             $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').removeClass('checked');
+            $('.mylist-functions button, .mylist-functions select').attr("disabled", true);
+            $('.mylist-functions .jump-menu-style').addClass('disabled');
           }
           else {
             $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').addClass('checked');
+            $('.mylist-functions button, .mylist-functions select').removeAttr("disabled");
+            $('.mylist-functions .jump-menu-style').removeClass('disabled');
           }
         }
         else {
             $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').addClass('checked');
+            $('.mylist-functions button, .mylist-functions select').removeAttr("disabled");
+            $('.mylist-functions .jump-menu-style').removeClass('disabled');
         }
       });
     };
