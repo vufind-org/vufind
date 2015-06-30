@@ -7,17 +7,9 @@
     <li>
       <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
       <span class="<?=$this->record($driver)->getFormatClass($format)?>">
-      <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title"><?
-        $summHighlightedTitle = $driver->getHighlightedTitle();
-        $summTitle = $driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-            echo $this->transEsc('Title not available');
-        }
-      ?></a>
+        <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title">
+          <?=$this->record($driver)->getTitleHtml()?>
+        </a>
       </span>
       <? $summAuthor = $driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
       <br />

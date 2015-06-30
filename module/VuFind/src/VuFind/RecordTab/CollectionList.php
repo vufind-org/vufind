@@ -26,6 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
+use VuFind\Recommend\PluginManager as RecommendManager,
+    VuFind\Search\RecommendListener, VuFind\Search\SearchRunner;
 
 /**
  * Collection list tab
@@ -39,27 +41,36 @@ namespace VuFind\RecordTab;
 class CollectionList extends AbstractBase
 {
     /**
-     * Search results object
+     * Search results object (null prior to processing)
      *
      * @var \VuFind\Search\SolrCollection\Results
      */
-    protected $results;
+    protected $results = null;
 
     /**
-     * Flag indicating whether results have been processed yet
+     * Search runner
      *
-     * @var bool
+     * @var SearchRunner
      */
-    protected $processed = false;
+    protected $runner;
+
+    /**
+     * Recommendation manager
+     *
+     * @var RecommendManager
+     */
+    protected $recommendManager;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Search\SolrCollection\Results $results Search object
+     * @param SearchRunner     $runner Search runner
+     * @param RecommendManager $recMan Recommendation manager
      */
-    public function __construct(\VuFind\Search\SolrCollection\Results $results)
+    public function __construct(SearchRunner $runner, RecommendManager $recMan)
     {
-        $this->results = $results;
+        $this->runner = $runner;
+        $this->recommendManager = $recMan;
     }
 
     /**
@@ -89,16 +100,21 @@ class CollectionList extends AbstractBase
      */
     public function getResults()
     {
-        if (!$this->processed) {
-            $params = new \Zend\Stdlib\Parameters(
-                $this->getRequest()->getQuery()->toArray()
-                + $this->getRequest()->getPost()->toArray()
-            );
-            $this->results->getParams()->initFromRecordDriver(
-                $this->getRecordDriver(), $params
-            );
-            $this->results->getParams()->recommendationsEnabled(true);
-            $this->processed = true;
+        if (null === $this->results) {
+            $driver = $this->getRecordDriver();
+            $request = $this->getRequest()->getQuery()->toArray()
+                + $this->getRequest()->getPost()->toArray();
+            $rManager = $this->recommendManager;
+            $cb = function ($runner, $params, $searchId) use ($driver, $rManager) {
+                $params->initFromRecordDriver($driver);
+                $listener = new RecommendListener($rManager, $searchId);
+                $listener->setConfig(
+                    $params->getOptions()->getRecommendationSettings()
+                );
+                $listener->attach($runner->getEventManager()->getSharedManager());
+            };
+            $this->results
+                = $this->runner->run($request, 'SolrCollection', $cb);
         }
         return $this->results;
     }
@@ -111,5 +127,16 @@ class CollectionList extends AbstractBase
     public function getSideRecommendations()
     {
         return $this->getResults()->getRecommendations('side');
+    }
+
+    /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax()
+    {
+        // No, special sidebar needed.
+        return false;
     }
 }

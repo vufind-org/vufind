@@ -18,7 +18,7 @@
 namespace ZfcRbac\Guard;
 
 use Zend\Mvc\MvcEvent;
-use ZfcRbac\Exception;
+use ZfcRbac\Exception\InvalidArgumentException;
 use ZfcRbac\Service\AuthorizationServiceInterface;
 
 /**
@@ -101,12 +101,37 @@ class RoutePermissionsGuard extends AbstractGuard
             return true;
         }
 
-        foreach ($allowedPermissions as $permission) {
-            if (!$this->authorizationService->isGranted($permission)) {
-                return false;
+        $permissions = isset($allowedPermissions['permissions'])
+            ? $allowedPermissions['permissions']
+            : $allowedPermissions;
+
+        $condition   = isset($allowedPermissions['condition'])
+            ? $allowedPermissions['condition']
+            : GuardInterface::CONDITION_AND;
+
+        if (GuardInterface::CONDITION_AND === $condition) {
+            foreach ($permissions as $permission) {
+                if (!$this->authorizationService->isGranted($permission)) {
+                    return false;
+                }
             }
+
+            return true;
         }
 
-        return true;
+        if (GuardInterface::CONDITION_OR === $condition) {
+            foreach ($permissions as $permission) {
+                if ($this->authorizationService->isGranted($permission)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        throw new InvalidArgumentException(sprintf(
+            'Condition must be either "AND" or "OR", %s given',
+            is_object($condition) ? get_class($condition) : gettype($condition)
+        ));
     }
 }

@@ -530,7 +530,7 @@ class DAIA extends AbstractBase implements
             foreach ($daiaArray["item"] as $item) {
                 $result_item = [];
                 $result_item["id"] = $id;
-                $result_item["item_id"] = $id;
+                $result_item["item_id"] = $item["id"];
                 $result_item["ilslink"] = $doc_href;
                 $number++; // count items
                 $result_item["number"] = $number;
@@ -551,7 +551,7 @@ class DAIA extends AbstractBase implements
                     $result_item["location"] = "Unknown";
                 }
                 // status and availability will be calculated in own function
-                $result_item = $this->calculateStatus($item)+$result_item;
+                $result_item = $this->calculateStatus($item) + $result_item;
                 // add result_item to the result array
                 $result[] = $result_item;
             } // end iteration on item
@@ -595,7 +595,7 @@ class DAIA extends AbstractBase implements
             $result = [
                 'callnumber' => '',
                 'availability' => '0',
-                'number' => ($c+1),
+                'number' => ($c + 1),
                 'reserve' => 'No',
                 'duedate' => '',
                 'queue'   => '',
@@ -930,7 +930,7 @@ class DAIA extends AbstractBase implements
                 $result = [
                     'callnumber' => '',
                     'availability' => '0',
-                    'number' => ($c+1),
+                    'number' => ($c + 1),
                     'reserve' => 'No',
                     'duedate' => '',
                     'queue'   => '',
@@ -1307,7 +1307,7 @@ class DAIA extends AbstractBase implements
                 'duedate'       => isset($earliest_duedate) ? $earliest_duedate : '',
                 'leanable'      => isset($leanable) ? $leanable : '',
                 'recallhref'    => isset($earliest_href) ? $earliest_href : '',
-                'number'        => ($c+1),
+                'number'        => ($c + 1),
                 'presenceOnly'  => isset($presenceOnly) ? $presenceOnly : '',
             ];
         }

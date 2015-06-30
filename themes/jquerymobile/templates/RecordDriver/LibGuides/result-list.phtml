@@ -3,13 +3,6 @@
 ?>
 <a rel="external" href="<?=$this->escapeHtmlAttr($url)?>">
   <div class="result">
-    <h3><?
-      $summTitle = $this->driver->getTitle();
-      if (!empty($summTitle)) {
-          echo $this->escapeHtml($this->truncate($summTitle, 180));
-      } else {
-          echo $this->transEsc('Title not available');
-      }
-    ?></h3>
+    <h3><?=$this->record($this->driver)->getTitleHtml()?></h3>
   </div>
 </a>
