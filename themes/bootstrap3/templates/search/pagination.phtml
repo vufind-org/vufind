@@ -4,7 +4,7 @@
 <? if ($this->pageCount): ?>
   <ul class="pagination">
     <? if (isset($this->previous)): ?>
-	  <?php if (!isEDS): ?>
+	  <?php if (!$isEDS): ?>
 		<li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a></li>
 	  <?php endif;?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a></li>
@@ -22,7 +22,7 @@
 
     <? if (isset($this->next)): ?>
       <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
-	  <?php if (!isEDS): ?>
+	  <?php if (!$isEDS): ?>
 		<li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
 	  <?php endif;?>
     <? endif; ?>
