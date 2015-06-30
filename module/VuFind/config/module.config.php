@@ -147,6 +147,7 @@ $config = [
             'VuFind\DbTablePluginManager' => 'VuFind\Service\Factory::getDbTablePluginManager',
             'VuFind\Export' => 'VuFind\Service\Factory::getExport',
             'VuFind\HierarchyDriverPluginManager' => 'VuFind\Service\Factory::getHierarchyDriverPluginManager',
+            'VuFind\HierarchyTreeDataFormatterPluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataFormatterPluginManager',
             'VuFind\HierarchyTreeDataSourcePluginManager' => 'VuFind\Service\Factory::getHierarchyTreeDataSourcePluginManager',
             'VuFind\HierarchyTreeRendererPluginManager' => 'VuFind\Service\Factory::getHierarchyTreeRendererPluginManager',
             'VuFind\Http' => 'VuFind\Service\Factory::getHttp',
@@ -348,6 +349,12 @@ $config = [
                 'factories' => [
                     'default' => 'VuFind\Hierarchy\Driver\Factory::getHierarchyDefault',
                     'flat' => 'VuFind\Hierarchy\Driver\Factory::getHierarchyFlat',
+                ],
+            ],
+            'hierarchy_treedataformatter' => [
+                'invokables' => [
+                    'json' => 'VuFind\Hierarchy\TreeDataFormatter\Json',
+                    'xml' => 'VuFind\Hierarchy\TreeDataFormatter\Xml',
                 ],
             ],
             'hierarchy_treedatasource' => [

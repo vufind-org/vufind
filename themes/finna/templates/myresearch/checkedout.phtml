@@ -43,9 +43,11 @@
             <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
               <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
               <div class="checkboxFilter">
-                <label class="checkbox">
-                <input type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
-                </label>
+                <div class="checkbox">
+                  <label>
+                  <input type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
+                  </label>
+                </div>
               </div>
               <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
             <? else: ?>

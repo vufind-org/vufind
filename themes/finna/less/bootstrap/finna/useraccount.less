@@ -155,6 +155,7 @@
     }
     .bulk-action-buttons-row {
         margin: 0;
+        min-height: 60px; // prevent fixed element bounce effect
         @media(max-width:@screen-xs-max) {
            .row();    
         }
@@ -459,5 +460,9 @@
         margin-bottom: 20px;
     }
 }
-
+.template-dir-list.template-name-list {
+    & .finna-main-header {
+        background: @myresearch-header-background;   
+    }
+}
 

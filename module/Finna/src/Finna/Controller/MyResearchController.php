@@ -47,6 +47,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function checkedoutAction()
     {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
         $view = $this->createViewIfUnsupported('getMyTransactions');
         if ($view === false) {
             $view = parent::checkedoutAction();
@@ -301,6 +306,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function holdsAction()
     {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
         $view = $this->createViewIfUnsupported('getMyHolds');
         if ($view === false) {
             $view = parent::holdsAction();
@@ -353,6 +363,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function storageRetrievalRequestsAction()
     {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
         $view = $this->createViewIfUnsupported('StorageRetrievalRequests', true);
         if ($view === false) {
             $view = parent::storageRetrievalRequestsAction();
@@ -369,6 +384,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function illRequestsAction()
     {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
         $view = $this->createViewIfUnsupported('ILLRequests', true);
         if ($view === false) {
             $view = parent::illRequestsAction();
@@ -385,6 +405,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      */
     public function finesAction()
     {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
         $view = $this->createViewIfUnsupported('getMyFines');
         if ($view === false) {
             $view = parent::finesAction();
@@ -550,25 +575,26 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
      * Check if current library card supports a function. If not supported, show
      * a message and a notice about the possibility to change library card.
      *
-     * @param string  $param         function to check
+     * @param string  $function      Function to check
      * @param boolean $checkFunction Use checkFunction() if true,
      * checkCapability() otherwise
      *
      * @return mixed \Zend\View if the function is not supported, false otherwise
      */
-    public function createViewIfUnsupported($param, $checkFunction = false)
+    public function createViewIfUnsupported($function, $checkFunction = false)
     {
+        $params = ['patron' => $this->catalogLogin()];
         if ($checkFunction) {
-            $support = $this->getILS()->checkFunction($param);
+            $supported = $this->getILS()->checkFunction($function, $params);
         } else {
-            $support = $this->getILS()->checkCapability($param);
+            $supported = $this->getILS()->checkCapability($function, $params);
         }
 
-        if (!$support) {
+        if (!$supported) {
             $view = $this->createViewModel();
             $view->noSupport = true;
             $this->flashMessenger()->setNamespace('error')
-                ->addMessage('no_ils_support_for_' . strtolower($param));
+                ->addMessage('no_ils_support_for_' . strtolower($function));
             return $view;
         }
         return false;

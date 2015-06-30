@@ -1,0 +1,11 @@
+[search]
+advanced_search = 'search-advanced'
+browse = 'browse-home'
+history = 'search-history'
+
+[about_finna]
+who_are_participating = 'content-organisations'
+what_is_finna = 'content-about'
+
+[help]
+help = 'content-help'

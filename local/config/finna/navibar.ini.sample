@@ -1,13 +1,13 @@
 [search]
+pci_search = 'primo-home'
 advanced_search = 'search-advanced'
+pci_advanced = 'primo-advanced'
 browse = 'browse-home'
 history = 'search-history'
 
-[organisations]
-organisations = 'content-organisations'
-
-[about]
-about = 'content-about'
+[about_us]
+about_us = 'content-about'
+what_is_finna = 'content-about_finna'
 
 [help]
 help = 'content-help'
