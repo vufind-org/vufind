@@ -443,11 +443,11 @@ class EIT extends SolrDefault
     }
 
     /**
-     * Support method for getOpenURL() -- pick the OpenURL format.
+     * Support method for getOpenUrl() -- pick the OpenURL format.
      *
      * @return string
      */
-    protected function getOpenURLFormat()
+    protected function getOpenUrlFormat()
     {
         // If we have multiple formats, Book, Journal and Article are most
         // important...

@@ -242,11 +242,11 @@ class Pazpar2 extends SolrDefault
     }
 
     /**
-     * Support method for getOpenURL() -- pick the OpenURL format.
+     * Support method for getOpenUrl() -- pick the OpenUrl format.
      *
      * @return string
      */
-    protected function getOpenURLFormat()
+    protected function getOpenUrlFormat()
     {
         return 'Book';
     }

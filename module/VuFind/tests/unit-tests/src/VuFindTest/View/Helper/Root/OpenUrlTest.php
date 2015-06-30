@@ -165,7 +165,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
     /**
      * Get mock driver that returns an openURL.
      *
-     * @param string $openUrl OpenURL to return
+     * @param string $openUrl OpenUrl to return
      *
      * @return \VuFind\RecordDriver\SolrDefault
      */
@@ -173,7 +173,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
     {
         $driver = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
             ->disableOriginalConstructor()->getMock();
-        $driver->expects($this->any())->method('getOpenURL')
+        $driver->expects($this->any())->method('getOpenUrl')
             ->will($this->returnValue($openUrl));
         $driver->expects($this->any())->method('getCleanISSN')
             ->will($this->returnValue('1234-5678'));

@@ -398,7 +398,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return bool
      */
-    public function supportsOpenURL()
+    public function supportsOpenUrl()
     {
         return true;
     }
@@ -408,7 +408,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @return bool
      */
-    public function supportsCoinsOpenURL()
+    public function supportsCoinsOpenUrl()
     {
         return true;
     }
