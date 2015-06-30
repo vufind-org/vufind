@@ -9,17 +9,9 @@
   </div>
   <div class="span-9">
     <div class="resultItemLine1">
-      <b class="title"><?
-        $summHighlightedTitle = $this->driver->getHighlightedTitle();
-        $summTitle = $this->driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-            echo $this->transEsc('Title not available');
-        }
-      ?></b>
+      <b class="title">
+        <?=$this->record($this->driver)->getTitleHtml()?>
+      </b>
     </div>
 
     <div class="resultItemLine2">

@@ -49,7 +49,7 @@ class EDS extends SolrDefault
     {
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
-        return $dbid.','.$an;
+        return $dbid . ',' . $an;
     }
 
     /**
@@ -64,7 +64,7 @@ class EDS extends SolrDefault
             return '';
         }
         if (mb_strlen($title, 'UTF-8') > 20) {
-            $title = mb_substr($title, 0, 17, 'UTF-8').'...';
+            $title = mb_substr($title, 0, 17, 'UTF-8') . '...';
         }
         return $title;
     }
@@ -109,13 +109,13 @@ class EDS extends SolrDefault
     }
 
     /**
-     * obtain an array or authors indicated on the record
+     * Obtain an array or authors indicated on the record
      *
      * @return array
      */
     protected function getItemsAuthorsArray()
     {
-        $authors = array();
+        $authors = [];
         if (isset($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
                 if ('Au' == $item['Group']) {
@@ -134,7 +134,7 @@ class EDS extends SolrDefault
     public function getCustomLinks()
     {
         return isset($this->fields['CustomLinks']) ?
-        $this->fields['CustomLinks'] : array();
+        $this->fields['CustomLinks'] : [];
     }
 
     /**
@@ -145,7 +145,7 @@ class EDS extends SolrDefault
     public function getFTCustomLinks()
     {
         return isset($this->fields['FullText']['CustomLinks']) ?
-        $this->fields['FullText']['CustomLinks'] : array();
+        $this->fields['FullText']['CustomLinks'] : [];
     }
 
     /**
@@ -193,15 +193,15 @@ class EDS extends SolrDefault
      */
     public function getItems()
     {
-        $items = array();
+        $items = [];
         if (isset($this->fields['Items']) && !empty($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
-                $items[] = array(
+                $items[] = [
                     'Label' => isset($item['Label']) ? $item['Label'] : '',
                     'Group' => isset($item['Group']) ? $item['Group'] : '',
                     'Data'  => isset($item['Data'])
                         ? $this->toHTML($item['Data'], $item['Group']) : ''
-                );
+                ];
             }
         }
         return $items;
@@ -228,7 +228,6 @@ class EDS extends SolrDefault
             ? $this->fields['Header']['PubType'] : '';
     }
 
-
     /**
      * Get the publication type id of the record.
      *
@@ -254,10 +253,10 @@ class EDS extends SolrDefault
                 if (isset($link['Type']) && 'pdflink' == $link['Type']) {
                     return true;
                 }
-				// 2015-05-10 RF - added support for pdf
+                // 2015-05-10 RF - added support for pdf
                 if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
                     return true;
-                }				
+                }
             }
         }
         return false;
@@ -274,10 +273,10 @@ class EDS extends SolrDefault
             && isset($this->fields['FullText']['Links'])
         ) {
             foreach ($this->fields['FullText']['Links'] as $link) {
-                if (isset($link['Type']) && 'pdflink' == $link['Type']) {			
+                if (isset($link['Type']) && 'pdflink' == $link['Type']) {
                     return "pdflink"; // return PDF to call retrieve method after
-                }                
-				if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {			
+                }
+                if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
                     return "pdflink"; // return PDF to call retrieve method after
                 }
             }
@@ -292,7 +291,7 @@ class EDS extends SolrDefault
      */
     public function getItemsSubjects()
     {
-        $subjects = array();
+        $subjects = [];
         if (isset($this->fields['Items'])) {
             foreach ($this->fields['Items'] as $item) {
                 if ('Su' == $item['Group']) {
@@ -352,7 +351,7 @@ class EDS extends SolrDefault
             foreach ($this->fields['RecordInfo']['BibRecord']['BibEntity']['Titles']
                 as $titleRecord
             ) {
-                if (isset($titleRecord['Type']) && 'main' ==$titleRecord['Type']) {
+                if (isset($titleRecord['Type']) && 'main' == $titleRecord['Type']) {
                     return $titleRecord['TitleFull'];
                 }
             }
@@ -367,9 +366,10 @@ class EDS extends SolrDefault
      */
     public function getAuthors()
     {
-        $authors = array();
+        $authors = [];
         if (isset($this->fields['RecordInfo']['BibRecord']['BibRelationships'])) {
-            $bibRels =& $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
+            $bibRels
+                = & $this->fields['RecordInfo']['BibRecord']['BibRelationships'];
         }
         if (isset($bibRels['HasContributorRelationships'])
             && !empty($bibRels['HasContributorRelationships'])
@@ -391,8 +391,7 @@ class EDS extends SolrDefault
     public function getPrimaryAuthor()
     {
         $authors = $this->getAuthors();
-        return empty($authors) ? '': $authors[0];
-		
+        return empty($authors) ? '' : $authors[0];
     }
 
     /**
@@ -451,9 +450,9 @@ class EDS extends SolrDefault
 
         // Any group can be added here, but we only use Au (Author)
         // Other groups, not present here, won't be transformed to HTML links
-        $allowed_searchlink_groups = array('au','su');
+        $allowed_searchlink_groups = ['au','su'];
 
-        $xml_to_html_tags = array(
+        $xml_to_html_tags = [
                 '<jsection'    => '<section',
                 '</jsection'   => '</section',
                 '<highlight'   => '<span class="highlight"',
@@ -487,10 +486,10 @@ class EDS extends SolrDefault
                 '<ulink'       => '<a',
                 '</ulink'      => '</a',
                 '<superscript' => '<sup',
-                '</superscript'=> '</sup',
+                '</superscript' => '</sup',
                 '<relatesTo'   => '<sup',
                 '</relatesTo'  => '</sup'
-        );
+        ];
 
         //  The XML data is escaped, let's unescape html entities (e.g. &lt; => <)
         $data = html_entity_decode($data, ENT_QUOTES, "utf-8");
@@ -552,7 +551,7 @@ class EDS extends SolrDefault
      */
     protected function replaceBRWithCommas($data, $group)
     {
-        $groupsToReplace = array('au','su');
+        $groupsToReplace = ['au','su'];
         if (in_array($group, $groupsToReplace)) {
             $br =  '/<br \/>/';
             $comma = ', ';
@@ -571,7 +570,7 @@ class EDS extends SolrDefault
      */
     protected function getSupportedCitationFormats()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -580,6 +579,7 @@ class EDS extends SolrDefault
      * @param string $format Export format
      *
      * @return bool
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function exportDisabled($format)
