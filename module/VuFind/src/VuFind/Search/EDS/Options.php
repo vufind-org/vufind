@@ -45,9 +45,9 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var int
      */
-	
-	// protected $resultLimit = 100;
-	// 2015-06-30 RF - Changed to unlimited
+    
+    // protected $resultLimit = 100;
+    // 2015-06-30 RF - Changed to unlimited
     protected $resultLimit = -1;
 
     /**
