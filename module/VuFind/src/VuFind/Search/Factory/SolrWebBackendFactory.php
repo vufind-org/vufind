@@ -47,10 +47,35 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
     public function __construct()
     {
         parent::__construct();
-        $this->solrCore = 'website';
         $this->searchConfig = 'website';
         $this->searchYaml = 'websearchspecs.yaml';
         $this->facetConfig = 'website';
+    }
+
+    /**
+     * Get the Solr core.
+     *
+     * @return string
+     */
+    protected function getSolrCore()
+    {
+        $config = $this->config->get('website');
+        return isset($config->Index->default_core)
+            ? $config->Index->default_core : 'website';
+    }
+
+    /**
+     * Get the Solr URL.
+     *
+     * @return string
+     */
+    protected function getSolrUrl()
+    {
+        $webconfig = $this->config->get('website');
+        $config = $this->config->get('config');
+        return isset($webconfig->Index->url) 
+            ? $webconfig->Index->url . '/' . $this->getSolrCore()
+            : $config->Index->url . '/' . $this->getSolrCore();
     }
 
     /**
