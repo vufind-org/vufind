@@ -3,7 +3,7 @@
     $this->headTitle($this->translate('Reviews') . ': ' . $this->driver->getBreadcrumb());
 
     // Grab review data:
-    $reviews = $this->tab->getContent($isbn);
+    $reviews = $this->tab->getContent();
 ?>
 <? if (count($reviews) > 0): ?>
   <? foreach ($reviews as $provider => $list): ?>

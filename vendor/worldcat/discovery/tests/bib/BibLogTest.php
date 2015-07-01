@@ -19,11 +19,11 @@ use Guzzle\Http\StaticClient;
 use OCLC\Auth\WSKey;
 use OCLC\Auth\AccessToken;
 use WorldCat\Discovery\Bib;
-use Guzzle\Log\Zf2LogAdapter;
+use Guzzle\Log\PsrLogAdapter;
 use Guzzle\Plugin\Log\LogPlugin;
 use Guzzle\Log\MessageFormatter;
-use Zend\Log\Writer\Mock;
-use Zend\Log\Logger;
+use Monolog\Logger;
+use Monolog\Handler\TestHandler;
 
 class BibLogTest extends \PHPUnit_Framework_TestCase
 {
@@ -45,16 +45,18 @@ class BibLogTest extends \PHPUnit_Framework_TestCase
      *@vcr bibSuccess
      */
     function testLoggerSuccess(){
-        $logMock = new Mock();
-        $logger = new Logger();
-        $logger->addWriter($logMock);
-        $adapter = new Zf2LogAdapter($logger);
-        $logPlugin = new LogPlugin($adapter, "{host} {method} {resource} {req_header_Authorization} \n {code} {reason} {res_header_X-OCLC-RequestId} {res_header_X-OCLC-SelfId}");
+        $logger = new Logger('testLogger');
+        $handler = new TestHandler;
+        $logger->pushHandler($handler);
+        $logAdapter = new PsrLogAdapter($logger);
+        $logPlugin = new LogPlugin($logAdapter, "{host} {method} {resource} {req_header_Authorization} \n {code} {reason} {res_header_X-OCLC-RequestId} {res_header_X-OCLC-SelfId}");
         $options = array(
             'logger' => $logPlugin
         );
         $bib = Bib::find(7977212, $this->mockAccessToken, $options);
-        $this->assertNotEmpty($logMock);
+        
+        $records = $handler->getRecords();
+        $this->assertContains('/discovery/bib/data/7977212', $records[0]['message']);
         
     }
     

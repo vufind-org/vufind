@@ -312,6 +312,13 @@ class Server
             }
         }
 
+        // Headers should be returned only if the metadata format matching
+        // the supplied metadataPrefix is available.
+        // If RecordDriver returns nothing, skip this record.
+        if (empty($xml)) {
+            return true;
+        }
+
         // Check for sets:
         $fields = $record->getRawData();
         if (!is_null($this->setField) && !empty($fields[$this->setField])) {
@@ -592,7 +599,7 @@ class Server
             $from, $until, $solrOffset, $solrLimit, $params['set']
         );
         $nonDeletedCount = $result->getResultTotal();
-        $format = $verb == 'ListIdentifiers' ? false : $params['metadataPrefix'];
+        $format = $params['metadataPrefix'];
         foreach ($result->getResults() as $doc) {
             if (!$this->attachNonDeleted($xml, $doc, $format, $headersOnly)) {
                 $this->unexpectedError('Cannot load document');
@@ -710,7 +717,6 @@ class Server
         $params->setLimit($limit);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
-        $params->recommendationsEnabled(false);
         $params->setSort('last_indexed asc', true);
 
         // Construct a range query based on last indexed time:
@@ -770,13 +776,13 @@ class Server
             // Set default date range if not already provided:
             if (empty($params['from'])) {
                 $params['from'] = $this->earliestDatestamp;
-                if (strlen($params['from'])>strlen($params['until'])) {
+                if (strlen($params['from']) > strlen($params['until'])) {
                     $params['from'] = substr($params['from'], 0, 10);
                 }
             }
             if (empty($params['until'])) {
                 $params['until'] = date($this->iso8601);
-                if (strlen($params['until'])>strlen($params['from'])) {
+                if (strlen($params['until']) > strlen($params['from'])) {
                     $params['until'] = substr($params['until'], 0, 10);
                 }
             }

@@ -5,16 +5,18 @@
         url: 'https://beta.worldcat.org/discovery/bib/data/694454995'
         headers:
             Host: beta.worldcat.org
-            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.33, WorldCat Discovery API PHP Client'
             Accept: text/plain
+            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.41, WorldCat Discovery API PHP Client'
             Authorization: 'Bearer tk_12345'
-            Content-Length: '0'
     response:
-        status: 200
+        status:
+            http_version: '1.1'
+            code: '200'
+            message: OK
         headers:
-            Date: 'Thu, 04 Dec 2014 16:21:33 GMT'
-            X-OCLC-RequestId: bbaab3cc-f67d-4627-b05b-eaf1f364a300
-            X-OCLC-SelfId: 83972b73-765f-4794-884f-b7004dfc8571
+            Date: 'Thu, 25 Jun 2015 20:53:21 GMT'
+            X-OCLC-RequestId: 1295c898-2900-4c78-b0da-f85d19c85900
+            X-OCLC-SelfId: 09ca8e0c-37c8-4716-aebf-f6ab64be42b7
             Content-Type: 'text/plain; charset=UTF-8'
             Content-Location: 'http://beta.worldcat.org/discovery/bib/data/694454995.txt'
             Vary: 'Accept-Encoding, User-Agent'

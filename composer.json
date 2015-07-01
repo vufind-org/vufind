@@ -58,6 +58,7 @@
         "aferrandini/phpqrcode": "1.0.1",
         "jasig/phpcas": "*",
         "johnwohlers/sip2": "dev-master",
+        "los/losrecaptcha": "*",
         "mobileesp/mdetect": "dev-master",
         "ocramius/proxy-manager": "*",
         "oyejorge/less.php": "*",
@@ -68,11 +69,10 @@
         "symfony/yaml": "*",
         "vufind-org/vufindcode": "*",
         "vufind-org/vufindhttp": "*",
-        "worldcat/discovery" : ">=0.15.0",
+        "worldcat/discovery" : ">=0.16.0",
         "zendframework/zendframework": "2.3.7",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",
-        "zendframework/zendservice-recaptcha": "2.*",
         "zf-commons/zfc-rbac": "~2.4"
     },
     "require-dev": {

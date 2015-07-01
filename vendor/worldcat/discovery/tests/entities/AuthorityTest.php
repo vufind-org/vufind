@@ -21,12 +21,16 @@ use WorldCat\Discovery\GeographicAuthority;
 
 class AuthorityTest extends \PHPUnit_Framework_TestCase
 {
+    
     /**
      *@vcr authoritySuccess
      */
     function testGetAuthority(){
         $url = 'http://id.loc.gov/authorities/subjects/sh2008124372';
-        $authority = Authority::findByURI($url);
+        $options = [
+            'Accept' => 'text/plain'
+        ];
+        $authority = Authority::findByURI($url, $options);
         $this->assertInstanceOf('WorldCat\Discovery\Authority', $authority);
         return $authority;
     }
@@ -75,5 +79,17 @@ class AuthorityTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('WorldCat\Discovery\GeographicAuthority', $geographic);
             $this->assertNotEmpty($geographic->getVariants());
         }
+    }
+    
+    /**
+     *
+     */
+    function testGetAuthorityRedirect(){
+        $url = 'http://id.loc.gov/authorities/subjects/sh2008124372';
+        $options = [
+            'Accept' => 'text/plain'
+        ];
+        $authority = Authority::findByURI($url, $options);
+        $this->assertInstanceOf('WorldCat\Discovery\Authority', $authority);
     }
 }

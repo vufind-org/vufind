@@ -62,4 +62,13 @@ class Movie extends CreativeWork
     {
         return $this->allResources('schema:musicBy');
     }
+    
+    /**
+     * Get productionCompany
+     * @return array
+     */
+    function getProductionCompany()
+    {
+        return $this->allResources('schema:productionCompany');
+    }
 }

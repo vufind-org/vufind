@@ -45,7 +45,6 @@ use InvalidArgumentException;
  */
 class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
-
     /**
      * Constructor
      */
@@ -83,7 +82,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'availability' => true,
                     'duedate' => null,
                     'id' => "027586081",
-                    'item_id' => "027586081",
+                    'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:711134758",
                     'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
                     'number' => 1,
                     'barcode' => "1",
@@ -97,7 +96,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'availability' => true,
                     'duedate' => null,
                     'id' => "027586081",
-                    'item_id' => "027586081",
+                    'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:711134766",
                     'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
                     'number' => 2,
                     'barcode' => "1",
@@ -111,7 +110,7 @@ class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
                     'availability' => false,
                     'duedate' => "2115-02-09",
                     'id' => "027586081",
-                    'item_id' => "027586081",
+                    'item_id' => "http://uri.gbv.de/document/opac-de-000:epn:7111347777",
                     'ilslink' => "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
                     'number' => 3,
                     'barcode' => "1",

@@ -107,7 +107,6 @@ abstract class AbstractAmazon
      */
     public function setRequestDate(DateTime $date = null, $preserve = null)
     {
-
         if ($date instanceof DateTime && !is_null($preserve)) {
             $date->{self::DATE_PRESERVE_KEY} = (boolean) $preserve;
         }

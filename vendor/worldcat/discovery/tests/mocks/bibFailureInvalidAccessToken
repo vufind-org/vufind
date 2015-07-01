@@ -5,37 +5,19 @@
         url: 'https://beta.worldcat.org/discovery/bib/data/41266045'
         headers:
             Host: beta.worldcat.org
-            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.33, WorldCat Discovery API PHP Client'
             Accept: text/plain
+            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.41, WorldCat Discovery API PHP Client'
             Authorization: 'Bearer tk_12345'
-            Content-Length: '0'
     response:
-        status: 401
+        status:
+            http_version: '1.1'
+            code: '401'
+            message: Unauthorized
         headers:
-            Date: 'Thu, 04 Dec 2014 16:21:25 GMT'
-            X-OCLC-RequestId: a2f2dce4-5da1-4cc6-b037-d9088ccf2a99
-            X-OCLC-SelfId: 04d13577-3e12-481b-9813-390c68d1ec0f
+            Date: 'Thu, 25 Jun 2015 20:53:08 GMT'
+            X-OCLC-RequestId: 98c51e0e-8c8d-465c-b731-07a06ef6b4f2
+            X-OCLC-SelfId: 937376ed-ddcb-47ba-82ec-e0da6d1a5a04
             Content-Type: 'text/plain; charset=UTF-8'
             Content-Location: 'http://beta.worldcat.org/discovery/bib/data/41266045.txt'
             Transfer-Encoding: chunked
-        body: "_:BX2D51882ff3X3A14a15bac686X3AX2D4205 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://worldcat.org/xmlschemas/response/ClientRequestError> .\n_:BX2D51882ff3X3A14a15bac686X3AX2D4205 <http://worldcat.org/vocab/discovery/errorMessage> \"The given access token is not authorized to view this resource.  Please check your Authorization header and try again.\" .\n_:BX2D51882ff3X3A14a15bac686X3AX2D4205 <http://worldcat.org/vocab/discovery/errorCode> \"401\"^^<http://www.w3.org/2001/XMLSchema#positiveInteger> .\n_:BX2D51882ff3X3A14a15bac686X3AX2D4205 <http://worldcat.org/vocab/discovery/errorType> \"http\" .\n<http://beta.worldcat.org/discovery/bib/data/41266045> <http://worldcat.org/xmlschemas/response/returnsError> _:BX2D51882ff3X3A14a15bac686X3AX2D4205 .\n"
--
-    request:
-        method: GET
-        url: 'https://beta.worldcat.org/discovery/bib/data/7977212'
-        headers:
-            Host: beta.worldcat.org
-            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.33, WorldCat Discovery API PHP Client'
-            Accept: text/plain
-            Authorization: 'Bearer tk_12345'
-            Content-Length: '0'
-    response:
-        status: 401
-        headers:
-            Date: 'Thu, 04 Dec 2014 16:40:17 GMT'
-            X-OCLC-RequestId: 6df6dfc3-9aac-481c-88d2-512aa0ecabff
-            X-OCLC-SelfId: 3f7e7443-e5f9-4f20-99ec-3c7d8a273ce1
-            Content-Type: 'text/plain; charset=UTF-8'
-            Content-Location: 'http://beta.worldcat.org/discovery/bib/data/7977212.txt'
-            Transfer-Encoding: chunked
-        body: "<http://beta.worldcat.org/discovery/bib/data/7977212> <http://worldcat.org/xmlschemas/response/returnsError> _:BX2D51882ff3X3A14a15bac686X3AX2D36fe .\n_:BX2D51882ff3X3A14a15bac686X3AX2D36fe <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://worldcat.org/xmlschemas/response/ClientRequestError> .\n_:BX2D51882ff3X3A14a15bac686X3AX2D36fe <http://worldcat.org/vocab/discovery/errorMessage> \"The given access token is not authorized to view this resource.  Please check your Authorization header and try again.\" .\n_:BX2D51882ff3X3A14a15bac686X3AX2D36fe <http://worldcat.org/vocab/discovery/errorCode> \"401\"^^<http://www.w3.org/2001/XMLSchema#positiveInteger> .\n_:BX2D51882ff3X3A14a15bac686X3AX2D36fe <http://worldcat.org/vocab/discovery/errorType> \"http\" .\n"
+        body: "<http://beta.worldcat.org/discovery/bib/data/41266045> <http://worldcat.org/xmlschemas/response/returnsError> _:BX2D8adb516X3A14e2b662ef2X3AX2D1d8c .\n_:BX2D8adb516X3A14e2b662ef2X3AX2D1d8c <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://worldcat.org/xmlschemas/response/ClientRequestError> .\n_:BX2D8adb516X3A14e2b662ef2X3AX2D1d8c <http://worldcat.org/vocab/discovery/errorMessage> \"The given access token is not authorized to view this resource.  Please check your Authorization header and try again.\" .\n_:BX2D8adb516X3A14e2b662ef2X3AX2D1d8c <http://worldcat.org/vocab/discovery/errorCode> \"401\"^^<http://www.w3.org/2001/XMLSchema#positiveInteger> .\n_:BX2D8adb516X3A14e2b662ef2X3AX2D1d8c <http://worldcat.org/vocab/discovery/errorType> \"http\" .\n"

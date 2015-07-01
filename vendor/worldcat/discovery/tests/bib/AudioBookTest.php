@@ -112,6 +112,8 @@ class AudioBookTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('EasyRdf_Resource', $dataset);
         }
         
+        $this->assertInstanceOf('EasyRdf_Resource', $bib->getBookFormat());
+        
     }
     
     /**
@@ -121,6 +123,6 @@ class AudioBookTest extends \PHPUnit_Framework_TestCase
     function testParseTypes($bib)
     {
         $this->assertContains('schema:Book', $bib->types());
-        $this->assertContains('productontology:Audiobook', $bib->types());
+        $this->assertContains('schema:MediaObject', $bib->types());
     }
 }

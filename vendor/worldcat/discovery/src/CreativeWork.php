@@ -59,6 +59,17 @@ class CreativeWork extends EasyRdf_Resource
     }
     
     /**
+     * Get Alternative Name
+     *
+     * @return array
+     */
+    function getAlternateName()
+    {
+        $alternateNames = $this->all('schema:alternateName');
+        return $alternateNames;
+    }
+    
+    /**
      * @return EasyRDF_Literal
      */
     function getOCLCNumber()

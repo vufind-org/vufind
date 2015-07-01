@@ -69,7 +69,7 @@ class PlaceTest extends \PHPUnit_Framework_TestCase
      *@vcr placeVIAFSuccess
      */
     function testGetPlace(){
-        $place = Place::findByVIAFID('239072486');
+        $place = Place::findByVIAFID('143688816');
         $this->assertInstanceOf('WorldCat\Discovery\Place', $place);
     }
     

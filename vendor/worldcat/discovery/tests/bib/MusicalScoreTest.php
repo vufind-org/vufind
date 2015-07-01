@@ -53,6 +53,7 @@ class MusicalScoreTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertNotEmpty($bib->getId());
         $this->assertNotEmpty($bib->getName());
+        $this->assertNotEmpty($bib->getAlternateName());
         $this->assertNotEmpty($bib->getOCLCNumber());
         $this->assertNotEmpty($bib->getLanguage());
         $this->assertNotEmpty($bib->getDatePublished());
@@ -113,8 +114,7 @@ class MusicalScoreTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertContains('schema:MediaObject', $bib->types());
         $this->assertContains('schema:CreativeWork', $bib->types());
-        $this->assertContains('mo:Score', $bib->types());
-        $this->assertContains('productontology:Sheet_music', $bib->types());
+        $this->assertContains('bgn:MusicScore', $bib->types());
 
     }
     

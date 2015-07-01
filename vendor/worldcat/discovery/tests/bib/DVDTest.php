@@ -118,6 +118,6 @@ class DVDTest extends \PHPUnit_Framework_TestCase
     function testParseTypes($bib)
     {
         $this->assertContains('schema:Movie', $bib->types());
-        $this->assertContains('productontology:DVD', $bib->types());
+        $this->assertContains('bgn:DVD', $bib->types());
     }
 }

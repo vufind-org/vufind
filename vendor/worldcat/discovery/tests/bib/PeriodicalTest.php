@@ -81,6 +81,7 @@ class PeriodicalTest extends \PHPUnit_Framework_TestCase
         }
         
         $this->assertInstanceOf('EasyRdf_Resource', $bib->getIsLike());
+        $this->assertInstanceOf('EasyRdf_Resource', $bib->getIsSimilarTo());
         
     }
 }

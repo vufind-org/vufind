@@ -104,6 +104,6 @@ class VHSTest extends \PHPUnit_Framework_TestCase
     function testParseTypes($bib)
     {
         $this->assertContains('schema:Movie', $bib->types());
-        $this->assertContains('productontology:VHS', $bib->types());
+        $this->assertContains('bgn:VHS', $bib->types());
     }
 }

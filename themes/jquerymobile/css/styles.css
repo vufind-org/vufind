@@ -5,7 +5,7 @@ ul.results,ul.filters,ul.mylists,ul.comments,ul.history,ul.bookbag {
 ul.results .ui-icon-check {
     background-color: green;
 }
-ul.results .ui-icon-plus {   
+ul.results .ui-icon-plus {
     background-color: white;
 }
 ul.results .ui-li-aside {
@@ -236,7 +236,7 @@ div.footer-text {
     margin: 0 auto;
     padding: 1em;
     background-color: #FFEF8F;
-    border: 2px solid #F9DD34;   
+    border: 2px solid #F9DD34;
     border-radius: 5px 5px 5px 5px;
 }
 
@@ -285,3 +285,11 @@ p.citationText {
     color: #000;
     font-weight: bold;
 }
+
+#tagList .tag.ui-btn-up-b a {color: #FFF;}
+#tagList .tag .text {
+  padding: 1em;
+  padding-right: 0;
+  vertical-align: super;
+}
+#tagList .tag .tag-form {display: inline;}

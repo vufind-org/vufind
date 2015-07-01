@@ -34,7 +34,7 @@ class MusicAlbum extends CreativeWork
     function getFormat(){
         $format = array_filter($this->types(), function($type)
         {
-            if (strpos($type, 'productontology:') !== false) {
+            if (strpos($type, 'bgn:') !== false) {
                 $present = true;
             } else {
                 $present = false;
@@ -49,7 +49,7 @@ class MusicAlbum extends CreativeWork
      * @return array
      */
     function getParts(){
-        return $this->allResources('dcterms:hasPart');
+        return $this->allResources('schema:hasPart');
     }
     
     /**

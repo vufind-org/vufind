@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\Ec2;
 
 use ZendService\Amazon\Ec2;
-
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\Test as HttpClientTestAdapter;
 
@@ -89,7 +88,6 @@ class EbsTest extends \PHPUnit_Framework_TestCase
 
     public function testCreateSnapshot()
     {
-
         $rawHttpResponse = "HTTP/1.1 200 OK\r\n"
                     . "Date: Fri, 24 Oct 2008 17:24:52 GMT\r\n"
                     . "Server: hi\r\n"
@@ -119,7 +117,6 @@ class EbsTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertSame($arrCreateSnapShot, $return);
-
     }
 
     public function testCreateNewVolume()
@@ -154,7 +151,6 @@ class EbsTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertSame($arrCreateNewVolume, $return);
-
     }
 
     public function testCreateVolumeFromSnapshot()
@@ -190,12 +186,10 @@ class EbsTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertSame($arrCreateNewVolume, $return);
-
     }
 
     public function testDeleteSnapshot()
     {
-
         $rawHttpResponse = "HTTP/1.1 200 OK\r\n"
                     . "Date: Fri, 24 Oct 2008 17:24:52 GMT\r\n"
                     . "Server: hi\r\n"
@@ -213,7 +207,6 @@ class EbsTest extends \PHPUnit_Framework_TestCase
         $return = $this->ebsInstance->deleteSnapshot('snap-78a54011');
 
         $this->assertTrue($return);
-
     }
 
     public function testDeleteVolume()
@@ -275,8 +268,6 @@ class EbsTest extends \PHPUnit_Framework_TestCase
         ));
 
         $this->assertSame($arrSnapshot, $return);
-
-
     }
 
     public function testDescribeMultipleSnapshots()
@@ -330,7 +321,6 @@ class EbsTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertSame($arrSnapshots, $return);
-
     }
 
     /**
@@ -338,7 +328,6 @@ class EbsTest extends \PHPUnit_Framework_TestCase
      */
     public function testDescribeSingleVolume()
     {
-
         $rawHttpResponse = "HTTP/1.1 200 OK\r\n"
                     . "Date: Fri, 24 Oct 2008 17:24:52 GMT\r\n"
                     . "Server: hi\r\n"
@@ -390,12 +379,10 @@ class EbsTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertSame($arrVolumes, $return);
-
     }
 
     public function testDescribeMultipleVolume()
     {
-
         $rawHttpResponse = "HTTP/1.1 200 OK\r\n"
                     . "Date: Fri, 24 Oct 2008 17:24:52 GMT\r\n"
                     . "Server: hi\r\n"
@@ -463,7 +450,6 @@ class EbsTest extends \PHPUnit_Framework_TestCase
 
     public function testDescribeAttachedVolumes()
     {
-
         $rawHttpResponse = "HTTP/1.1 200 OK\r\n"
                     . "Date: Fri, 24 Oct 2008 17:24:52 GMT\r\n"
                     . "Server: hi\r\n"
@@ -558,5 +544,4 @@ class EbsTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($arrVolume, $return);
     }
-
 }

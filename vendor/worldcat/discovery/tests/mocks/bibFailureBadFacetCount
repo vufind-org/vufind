@@ -5,17 +5,19 @@
         url: 'https://beta.worldcat.org/discovery/bib/search?q=cats&dbIds=638&facetFields=5'
         headers:
             Host: beta.worldcat.org
-            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.33, WorldCat Discovery API PHP Client'
             Accept: text/plain
+            User-Agent: 'Guzzle/3.8.1 curl/7.27.0 PHP/5.4.41, WorldCat Discovery API PHP Client'
             Authorization: 'Bearer tk_12345'
-            Content-Length: '0'
     response:
-        status: 400
+        status:
+            http_version: '1.1'
+            code: '400'
+            message: 'Bad Request'
         headers:
-            Date: 'Thu, 04 Dec 2014 16:21:48 GMT'
-            X-OCLC-RequestId: 35420acc-50aa-497e-a749-d936c3b85685
-            X-OCLC-SelfId: 6fd303ef-9142-4cea-befa-68c0bad4b627
+            Date: 'Thu, 25 Jun 2015 20:53:46 GMT'
+            X-OCLC-RequestId: 086eeb8f-b9d7-4577-a2cd-5caaf3710798
+            X-OCLC-SelfId: 46731a46-5f5c-44d2-9258-bb7968ebffde
             Content-Type: 'text/plain; charset=UTF-8'
             Content-Location: 'http://beta.worldcat.org/discovery/bib/search.txt?q=cats&dbIds=638&facetFields=5'
             Transfer-Encoding: chunked
-        body: "_:BX2D51882ff3X3A14a15bac686X3AX2D4083 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://worldcat.org/xmlschemas/response/ClientRequestError> .\n_:BX2D51882ff3X3A14a15bac686X3AX2D4083 <http://worldcat.org/vocab/discovery/errorMessage> \"Invalid value for facetFields parameter.  A proper value for this field contains two components: 1) the facet name, and 2) the number of items to return from that facet.  The allowed number values are 10, 25, 50, and 100.  An example of such a field is facetFields=creator:10.\" .\n_:BX2D51882ff3X3A14a15bac686X3AX2D4083 <http://worldcat.org/vocab/discovery/errorCode> \"400\"^^<http://www.w3.org/2001/XMLSchema#positiveInteger> .\n_:BX2D51882ff3X3A14a15bac686X3AX2D4083 <http://worldcat.org/vocab/discovery/errorType> \"http\" .\n<http://beta.worldcat.org/discovery/bib/search?q=cats&dbIds=638&facetFields=5> <http://worldcat.org/xmlschemas/response/returnsError> _:BX2D51882ff3X3A14a15bac686X3AX2D4083 .\n"
+        body: "_:B5fad55aeX3A14e2aaf344fX3A1795 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://worldcat.org/xmlschemas/response/ClientRequestError> .\n_:B5fad55aeX3A14e2aaf344fX3A1795 <http://worldcat.org/vocab/discovery/errorMessage> \"Invalid value for facetFields parameter.  A proper value for this field contains two components: 1) the facet name, and 2) the number of items to return from that facet.  The allowed number values are 10, 25, 50, and 100.  An example of such a field is facetFields=creator:10.\" .\n_:B5fad55aeX3A14e2aaf344fX3A1795 <http://worldcat.org/vocab/discovery/errorCode> \"400\"^^<http://www.w3.org/2001/XMLSchema#positiveInteger> .\n_:B5fad55aeX3A14e2aaf344fX3A1795 <http://worldcat.org/vocab/discovery/errorType> \"http\" .\n<http://beta.worldcat.org/discovery/bib/search?q=cats&dbIds=638&facetFields=5> <http://worldcat.org/xmlschemas/response/returnsError> _:B5fad55aeX3A14e2aaf344fX3A1795 .\n"

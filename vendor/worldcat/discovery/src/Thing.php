@@ -67,7 +67,7 @@ class Thing extends EasyRdf_Resource
     	
     	static::requestSetup();
     	
-    	if (empty($options['accept']) && strpos($uri, 'viaf')){
+        if (empty($options['accept']) && strpos($uri, 'viaf')){
     		$options['accept'] = 'application/rdf+xml';
     	} elseif (empty($options['accept'])) {
     		$options['accept'] = null;
@@ -81,6 +81,10 @@ class Thing extends EasyRdf_Resource
         
         try {
             $response = \Guzzle::get($uri, $guzzleOptions);
+            
+            if ($response->getStatusCode() == '303'){
+                $response = \Guzzle::get($response->getHeader('Location'), $guzzleOptions);
+            }
             $graph = new EasyRdf_Graph();
             $graph->parse($response->getBody(true));
             if (isset($options['returnGraph'])){
@@ -90,7 +94,11 @@ class Thing extends EasyRdf_Resource
                 return $resource;
             }
         } catch (\Guzzle\Http\Exception\BadResponseException $error) {
-            return Error::parseError($error);
+            if ($error->getResponse()->getHeader('Content-Type') !== 'text/html'){
+                return Error::parseError($error);
+            } else{
+                return $error;
+            }
         }
         
         

@@ -7,5 +7,10 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'WorldCat\\Discovery\\' => array($vendorDir . '/worldcat/discovery/src'),
+    'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
+    'Symfony\\Component\\Process\\' => array($vendorDir . '/symfony/process'),
+    'Symfony\\Component\\EventDispatcher\\' => array($vendorDir . '/symfony/event-dispatcher'),
+    'Symfony\\Component\\CssSelector\\' => array($vendorDir . '/symfony/css-selector'),
+    'LosReCaptcha\\' => array($vendorDir . '/los/losrecaptcha/src'),
     'Behat\\Mink\\' => array($vendorDir . '/behat/mink/src'),
 );

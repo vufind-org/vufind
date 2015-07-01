@@ -41,7 +41,7 @@ class BibSearchResults extends SearchResults
         }
         
         if (count($errors) > 0){
-            Throw new Exception('Type mapping errors on these records: ' . implode(', ', $errors));
+            Throw new \Exception('Type mapping errors on these records: ' . implode(', ', $errors));
         }
         ksort($sortedSearchResults);
         return $sortedSearchResults;

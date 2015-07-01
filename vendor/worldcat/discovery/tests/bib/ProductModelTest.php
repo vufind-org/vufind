@@ -56,12 +56,7 @@ class ProductModelTest extends \PHPUnit_Framework_TestCase
             $this->assertInstanceOf('WorldCat\Discovery\ProductModel', $manifestation);
             $this->assertNotEmpty($manifestation->getISBNs());
             $this->assertNotEmpty($manifestation->getISBN());
-            if ($manifestation->getURI() == 'http://worldcat.org/isbn/9780156685689'){
-                $this->assertNotEmpty($manifestation->getBookFormat());
-            }
         }
         
     }
-    
-    /* Need a test for $manifestation->getDescription() */
 }

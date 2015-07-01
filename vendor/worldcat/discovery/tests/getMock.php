@@ -182,23 +182,25 @@ if ($type == 'all'  || $type == 'authority'){
         unlink($mockFolder . 'authoritySuccess');
     }
     foreach ($mockBuilder['authority'] as $mock => $mockValue) {
-        createMock($mock, $mockValue);
-        if (file_exists($mockFolder . $mock)){
-            unlink($mockFolder . $mock);
-        }
+        createMock($mock, $mockValue, true);
     }
 }
 
 // delete the accessToken file
 unlink($mockFolder . 'accessToken'); 
 
-function createMock($mock, $mockValues = null){
+function createMock($mock, $mockValues = null, $authority = FALSE){
     global $environment, $mockFolder, $retrievedToken, $mockValue;
     
     if (file_exists($mockFolder . $mock)){
         unlink($mockFolder . $mock);
     }
-    \VCR\VCR::insertCassette($mock);
+    if ($authority == true){
+        $mockFile = 'authoritySuccess';
+    } else {
+        $mockFile = $mock;
+    }
+    \VCR\VCR::insertCassette($mockFile);
     printf("Mock created for '%s'.\n", $mock);
     if (isset($mockValues['accessToken'])){
         $accessToken = new AccessToken('client_credentials', array('accessTokenString' => $mockValues['accessToken'], 'expiresAt' => '2018-08-30 18:25:29Z'));
@@ -250,11 +252,14 @@ function createMock($mock, $mockValues = null){
         }
         file_put_contents($mockFolder . $mock, str_replace('rdap02pxdu.dev.oclc.org:8080', 'test.viaf.org', file_get_contents($mockFolder . $mock)));
     } else {
-        $authority = Authority::findByURI($mockValue);
-        file_put_contents($mockFolder . 'authoritySuccess', str_replace($mockValue, rtrim($mockValue, '.rdf'), file_get_contents($mockFolder . $mock)));
+        $options = [
+            'Accept' => 'text/turtle'
+        ];
+        $authority = Authority::findByURI($mockValue, $options);
+        file_put_contents($mockFolder . $mockFile, str_replace($mockValue, rtrim($mockValue, '.nt'), file_get_contents($mockFolder . $mockFile)));
     }
     \VCR\VCR::eject();
-    file_put_contents($mockFolder . $mock, str_replace("Bearer " . $accessToken->getValue(), "Bearer tk_12345", file_get_contents($mockFolder . $mock)));
+    file_put_contents($mockFolder . $mockFile, str_replace("Bearer " . $accessToken->getValue(), "Bearer tk_12345", file_get_contents($mockFolder . $mockFile)));
 }
 
 

@@ -28,23 +28,34 @@ use \EasyRdf_TypeMapper;
 class Periodical extends CreativeWork
 {
     /**
-     * Get Name
+     * Get IsLike
      *
      * @return EasyRdf_Resource
      */
     function getIsLike()
     {
-        $isLike = $this->getResource('umbel:isLike');
+        $isLike = $this->getResource('schema:isSimilarTo');
         return $isLike;
     }
     
     /**
+     * Get isSimilarTo
+     *
+     * @return EasyRdf_Resource
+     */
+    function getIsSimilarTo()
+    {
+        $isSimilarTo = $this->getResource('schema:isSimilarTo');
+        return $isSimilarTo;
+    }
+    
+    /**
      * Get the ISSN
-     * @return EasyRD_Literal
+     * @return EasyRDF_Literal
      */
     function getIssn()
     {
-        $issn = $this->get('schema:issn');
+        $issn = $this->getWork()->getResource('umbel:isLike')->get('schema:issn');
         return $issn;
     }
 }
