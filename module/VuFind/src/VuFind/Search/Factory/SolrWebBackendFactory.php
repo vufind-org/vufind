@@ -73,7 +73,7 @@ class SolrWebBackendFactory extends AbstractSolrBackendFactory
     {
         // Allow the searchConfig to override the default config if set.
         $webconfig = $this->config->get($this->searchConfig);
-        return isset($webconfig->Index->url) 
+        return isset($webconfig->Index->url)
             ? $webconfig->Index->url . '/' . $this->getSolrCore()
             : parent::getSolrUrl();
     }
