@@ -248,6 +248,16 @@ finna.layout = (function() {
         }
       });
     };
+    
+    var initToolTips = function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      // prevent link opening if tooltip is placed inside link element for touch devices
+      if (isTouchDevice()) {
+        $('[data-toggle="tooltip"] > i').click(function(event) {
+          event.preventDefault();
+        });
+      }
+    };
 
     var my = {
         isTouchDevice: isTouchDevice,
@@ -267,6 +277,7 @@ finna.layout = (function() {
             initRecordSwipe();
             initMultiSelect();
             initCheckboxClicks();
+            initToolTips();
         },
     };
 

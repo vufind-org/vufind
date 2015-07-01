@@ -14,22 +14,37 @@
   .opacity(0);
 
   &.in     { .opacity(@tooltip-opacity); }
-  &.top    { margin-top:  -3px; padding: @tooltip-arrow-width 0; }
-  &.right  { margin-left:  3px; padding: 0 @tooltip-arrow-width; }
-  &.bottom { margin-top:   3px; padding: @tooltip-arrow-width 0; }
-  &.left   { margin-left: -3px; padding: 0 @tooltip-arrow-width; }
+  &.top    { margin-top:  -5px; padding: @tooltip-arrow-width 0; }
+  &.right  { margin-left:  5px; padding: 0 @tooltip-arrow-width; }
+  &.bottom { margin-top:   5px; padding: @tooltip-arrow-width 0; }
+  &.left   { margin-left: -5px; padding: 0 @tooltip-arrow-width; }
 }
 
 // Wrapper for the tooltip content
 .tooltip-inner {
   max-width: @tooltip-max-width;
-  padding: 4px 8px;
+  min-width: @tooltip-min-width; 
+  padding: 12px 16px;
   color: @tooltip-color;
-  text-align: center;
+  text-align: left;
   text-decoration: none;
   background-color: @tooltip-bg;
   border-radius: @border-radius-base;
+  font-size: 1.1em;
+  font-weight: normal;
   box-shadow: 0px 0px 30px -10px #fff inset;
+  border: 1px solid #f5f5f5;
+  & h4 {
+    font-size: 16px;
+    margin-top: 0;
+    margin: -12px -16px;
+    margin-bottom: 10px;
+    padding: 12px 16px 12px;
+    background-color: @brand-secondary;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    color: @gray;
+  }
 }
 
 // Arrows
@@ -74,6 +89,12 @@
     border-width: @tooltip-arrow-width 0 @tooltip-arrow-width @tooltip-arrow-width;
     border-left-color: @tooltip-arrow-color;
   }
+  &.bottom .tooltip-inner{
+    box-shadow: 0px 5px 20px -10px @gray;
+  }
+  &.top .tooltip-inner{
+    box-shadow: 0px -5px 20px -5px @gray;
+  }
   &.bottom .tooltip-arrow {
     top: 0;
     left: 50%;
@@ -93,4 +114,26 @@
     border-width: 0 @tooltip-arrow-width @tooltip-arrow-width;
     border-bottom-color: @tooltip-arrow-color;
   }
+}
+
+// Finna tooltips
+.tooltip-tabs_local {
+    display: @tooltip-tabs-local;   
+}
+.tooltip-tabs_pci {
+    display: @tooltip-tabs-pci;   
+}
+.tooltip-facet {
+    display: @tooltip-facet;   
+}
+.slider {
+    & .tooltip.top .tooltip-inner {
+        min-width: initial;
+        padding: 4px 8px;
+        box-shadow: none;
+        background: @gray-lighter;
+    }
+     & .tooltip.top .tooltip-arrow {
+        border-top-color: @gray-lighter;   
+     }
 }
