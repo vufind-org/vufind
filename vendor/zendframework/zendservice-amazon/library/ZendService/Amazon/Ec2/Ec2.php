@@ -11,7 +11,6 @@
 namespace ZendService\Amazon\Ec2;
 
 use ZendService\Amazon;
-use ZendService\Amazon\Ec2\Exception;
 
 /**
  * Amazon Ec2 Interface to allow easy creation of the Ec2 Components
@@ -33,7 +32,7 @@ class Ec2
      */
     public static function factory($section, $key = null, $secretKey = null)
     {
-        switch(strtolower($section)) {
+        switch (strtolower($section)) {
             case 'keypair':
                 $class = '\ZendService\Amazon\Ec2\Keypair';
                 break;

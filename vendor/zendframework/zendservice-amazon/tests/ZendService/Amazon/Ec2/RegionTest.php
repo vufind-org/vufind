@@ -111,7 +111,7 @@ class RegionTest extends \PHPUnit_Framework_TestCase
                     . "</DescribeRegionsResponse>";
         $this->httpClientTestAdapter->setResponse($rawHttpResponse);
 
-        $response = $this->regionInstance->describe(array('us-east-1','us-west-1'));
+        $response = $this->regionInstance->describe(array('us-east-1', 'us-west-1'));
 
         $arrRegion = array(
             array(

@@ -102,11 +102,11 @@ class WindowsInstance extends AbstractEc2
         $params = array();
         $params['Action'] = 'DescribeBundleTasks';
 
-        if(is_array($bundleId) && !empty($bundleId)) {
-            foreach($bundleId as $k=>$name) {
+        if (is_array($bundleId) && !empty($bundleId)) {
+            foreach ($bundleId as $k=>$name) {
                 $params['bundleId.' . ($k+1)] = $name;
             }
-        } elseif(!empty($bundleId)) {
+        } elseif (!empty($bundleId)) {
             $params['bundleId.1'] = $bundleId;
         }
 
@@ -117,7 +117,7 @@ class WindowsInstance extends AbstractEc2
         $items = $xpath->evaluate('//ec2:bundleInstanceTasksSet/ec2:item');
         $return = array();
 
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $i = array();
             $i['instanceId'] = $xpath->evaluate('string(ec2:instanceId/text())', $item);
             $i['bundleId'] = $xpath->evaluate('string(ec2:bundleId/text())', $item);

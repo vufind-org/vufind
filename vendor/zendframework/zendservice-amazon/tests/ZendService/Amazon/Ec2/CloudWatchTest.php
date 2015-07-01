@@ -108,7 +108,6 @@ class CloudWatchTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertSame($arrReturn, $return);
-
     }
 
     /**
@@ -189,7 +188,6 @@ class CloudWatchTest extends \PHPUnit_Framework_TestCase
 
     public function testZF8149()
     {
-
         $rawHttpResponse = "HTTP/1.1 200 OK\r\n"
                     . "Date: Fri, 24 Oct 2008 17:24:52 GMT\r\n"
                     . "Server: hi\r\n"
@@ -251,40 +249,40 @@ class CloudWatchTest extends \PHPUnit_Framework_TestCase
            )
         );
 
-        $arrReturn = array (
+        $arrReturn = array(
           'label' => 'CPUUtilization',
           'datapoints' =>
-          array (
+          array(
             0 =>
-            array (
+            array(
               'Timestamp' => '2009-11-19T21:52:00Z',
               'Unit' => 'Percent',
               'Samples' => '1.0',
               'Average' => '0.09',
             ),
             1 =>
-            array (
+            array(
               'Timestamp' => '2009-11-19T21:55:00Z',
               'Unit' => 'Percent',
               'Samples' => '1.0',
               'Average' => '0.18',
             ),
             2 =>
-            array (
+            array(
               'Timestamp' => '2009-11-19T21:54:00Z',
               'Unit' => 'Percent',
               'Samples' => '1.0',
               'Average' => '0.09',
             ),
             3 =>
-            array (
+            array(
               'Timestamp' => '2009-11-19T21:51:00Z',
               'Unit' => 'Percent',
               'Samples' => '1.0',
               'Average' => '0.18',
             ),
             4 =>
-            array (
+            array(
               'Timestamp' => '2009-11-19T21:53:00Z',
               'Unit' => 'Percent',
               'Samples' => '1.0',
@@ -295,5 +293,4 @@ class CloudWatchTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($arrReturn, $return);
     }
-
 }
