@@ -126,12 +126,12 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
         $kbrequest .= '&wskey=' . $this->worldcatKnowledgeBaseWskey;
          
         $client = $this->httpService
-        ->createClient($kbrequest);
+            ->createClient($kbrequest);
         $adapter = new \Zend\Http\Client\Adapter\Curl();
         $client->setAdapter($adapter);
         $result = $client->setMethod('GET')->send();
         
-        if ($result->isSuccess()){
+        if ($result->isSuccess()) {
             $kbresponse = json_decode($result->getBody(), true);
             foreach ($kbresponse as $id => $result) {
                 if (isset($result['result'][0]['url']) && isset($result['result'][0]['collection_name'])) {
@@ -155,7 +155,8 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
         $this->queue = [];
     }
     
-    private function openURLToArray($openURL){
+    private function openURLToArray($openURL)
+    {
         $parametersPairs = explode('&', $openURL);
     
         $parameters = [];

@@ -89,24 +89,25 @@ class WorldCatDiscoveryBackendFactory implements FactoryInterface
         
         $configOptions = [];
         
-        if ($config->get('WorldCatDiscovery')){
-        		$configOptions['wskey'] = $config->get('WorldCatDiscovery')->General->wskey;
-        		$configOptions['secret'] = $config->get('WorldCatDiscovery')->General->secret;
-        		$configOptions['institution'] = $config->get('WorldCatDiscovery')->General->institution;
-        		$configOptions['heldBy'] = explode(",", $config->get('WorldCatDiscovery')->General->heldBy);
-        		$configOptions['databaseIDs'] = explode(",", $config->get('WorldCatDiscovery')->General->databaseIDs);
+        if ($config->get('WorldCatDiscovery')) {
+            $configOptions['wskey'] = $config->get('WorldCatDiscovery')->General->wskey;
+            $configOptions['secret'] = $config->get('WorldCatDiscovery')->General->secret;
+            $configOptions['institution'] = $config->get('WorldCatDiscovery')->General->institution;
+            $configOptions['heldBy'] = explode(",", $config->get('WorldCatDiscovery')->General->heldBy);
+            $configOptions['databaseIDs'] = explode(",", $config->get('WorldCatDiscovery')->General->databaseIDs);
         } else {
-        	throw new Exception('You do not have the proper properties setup in the WorldCatDiscovery ini file');
+            throw new Exception('You do not have the proper properties setup in the WorldCatDiscovery ini file');
         }
-		
+        
         //TODO: need to deal with what happens if the MultiDriver is being used with WMS
-        if ($config->get('config')->Catalog->driver == 'WMS'){
-        	$configOptions['wmsEnabled'] = true;
+        if ($config->get('config')->Catalog->driver == 'WMS') {
+            $configOptions['wmsEnabled'] = true;
         } else {
-        	$configOptions['wmsEnabled'] = false;
+            $configOptions['wmsEnabled'] = false;
         }
         $backend = new Backend(
-            $this->createRecordCollectionFactory(), $configOptions);
+            $this->createRecordCollectionFactory(), $configOptions
+        );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
         return $backend;

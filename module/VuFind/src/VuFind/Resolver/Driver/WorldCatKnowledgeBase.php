@@ -57,7 +57,7 @@ class WorldCatKnowledgeBase implements DriverInterface
     /**
      * Constructor
      *
-     * @param array            $baseUrl    The OpenURL Configuration
+     * @param array             $baseUrl    The OpenURL Configuration
      * @param \Zend\Http\Client $httpClient HTTP client
      */
     public function __construct($openURLConfig, \Zend\Http\Client $httpClient)
@@ -78,19 +78,19 @@ class WorldCatKnowledgeBase implements DriverInterface
      */
     public function fetchLinks($openURL)
     {
- 		$kbrequest = "http://worldcat.org/webservices/kb/openurl/resolve?" . $openURL;
-    	$kbrequest .= '&wskey=' . $this->wskey;
-    	 
-    	$this->httpClient->setUri($kbrequest);
-    	$adapter = new \Zend\Http\Client\Adapter\Curl();
-    	$this->httpClient->setAdapter($adapter);
-    	$result = $this->httpClient->setMethod('GET')->send();
-    	
-    	if ($result->isSuccess()){
-    		return $result->getBody();
-    	} else {
-    		throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
-    	}
+        $kbrequest = "http://worldcat.org/webservices/kb/openurl/resolve?" . $openURL;
+        $kbrequest .= '&wskey=' . $this->wskey;
+         
+        $this->httpClient->setUri($kbrequest);
+        $adapter = new \Zend\Http\Client\Adapter\Curl();
+        $this->httpClient->setAdapter($adapter);
+        $result = $this->httpClient->setMethod('GET')->send();
+        
+        if ($result->isSuccess()) {
+            return $result->getBody();
+        } else {
+            throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
+        }
     }
 
     /**
@@ -107,26 +107,26 @@ class WorldCatKnowledgeBase implements DriverInterface
     {
         $records = []; // array to return
         try {
-        	$kbresponse = json_decode($jsonstr, true);
-        	foreach ($kbresponse as $item) {
-        		$record = [];
-        		$record['title'] =  $item['collection_name'];
-        		$record['href'] =  $item['url'];
-        		if ($item['content'] == "fulltext"){
-        			$record['service_type'] = "getFulltext";
-        		} elseif ($item['content'] == "ebook"){
-        			$record['service_type'] = "getFulltext";
-        		} elseif($item['content'] == "print"){
-        			$record['service_type'] = "getHolding";
-        		}else{
-        			// selectedft, abstracts, indexed
-        			$record['service_type'] = "getWebService";
-        		}
-        		if ($item['content'] == "fulltext" || $item['content'] == "print"){
-        			$record['coverage'] = $item['coverage'];
-        		}
-        		array_push($records, $record);
-        	}
+            $kbresponse = json_decode($jsonstr, true);
+            foreach ($kbresponse as $item) {
+                $record = [];
+                $record['title'] =  $item['collection_name'];
+                $record['href'] =  $item['url'];
+                if ($item['content'] == "fulltext") {
+                    $record['service_type'] = "getFulltext";
+                } elseif ($item['content'] == "ebook") {
+                    $record['service_type'] = "getFulltext";
+                } elseif($item['content'] == "print") {
+                    $record['service_type'] = "getHolding";
+                }else{
+                    // selectedft, abstracts, indexed
+                    $record['service_type'] = "getWebService";
+                }
+                if ($item['content'] == "fulltext" || $item['content'] == "print") {
+                    $record['coverage'] = $item['coverage'];
+                }
+                array_push($records, $record);
+            }
         } catch (\Exception $e) {
             return $records;
         }

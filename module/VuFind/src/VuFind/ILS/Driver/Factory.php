@@ -173,10 +173,10 @@ class Factory
      */
     public static function getWMS(ServiceManager $sm)
     {
-    	return new WMS(
-    			$sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery'),
-    			$sm->getServiceLocator()->get('VuFind\Record\Loader'),
-    			$sm->getServiceLocator()->get('VuFind\DateConverter')
-    	);
+        return new WMS(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery'),
+            $sm->getServiceLocator()->get('VuFind\Record\Loader'),
+            $sm->getServiceLocator()->get('VuFind\DateConverter')
+        );
     }
 }

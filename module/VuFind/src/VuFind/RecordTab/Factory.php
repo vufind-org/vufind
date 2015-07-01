@@ -264,7 +264,7 @@ class Factory
      */
     public static function getStaffViewTurtleWorldCatDiscovery()
     {
-    	return new StaffViewTurtleWorldCatDiscovery();
+        return new StaffViewTurtleWorldCatDiscovery();
     }
 
     /**

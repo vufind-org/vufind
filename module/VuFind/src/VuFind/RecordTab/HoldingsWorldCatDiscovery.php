@@ -41,9 +41,10 @@ class HoldingsWorldCatDiscovery extends AbstractBase
     /**
      * Constructor
      */
-	public function __construct($config){
-		$this->config = $config;
-	}
+    public function __construct($config)
+    {
+        $this->config = $config;
+    }
     
     /**
      * Get the on-screen description for this tab.
@@ -72,12 +73,12 @@ class HoldingsWorldCatDiscovery extends AbstractBase
      */
     public function getHoldings()
     {
-    	if ($this->config->General->showAllHoldings == true){
-    		$offers = $this->getRecordDriver()->getOffers();
-    	} else {
-    		$offers = $this->getRecordDriver()->getOtherLibraryOffers();
-    	}
-    	return $offers;
+        if ($this->config->General->showAllHoldings == true) {
+            $offers = $this->getRecordDriver()->getOffers();
+        } else {
+            $offers = $this->getRecordDriver()->getOtherLibraryOffers();
+        }
+        return $offers;
     }
     
 }

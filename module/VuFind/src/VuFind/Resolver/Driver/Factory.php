@@ -114,10 +114,10 @@ class Factory
      */
     public static function getWorldCatKnowledgeBase(ServiceManager $sm)
     {
-    	$config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-    	return new WorldCatKnowledgeBase(
-    			$config->OpenURL,
-    			$sm->getServiceLocator()->get('VuFind\Http')->createClient()
-    	);
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        return new WorldCatKnowledgeBase(
+            $config->OpenURL,
+            $sm->getServiceLocator()->get('VuFind\Http')->createClient()
+        );
     }
 }

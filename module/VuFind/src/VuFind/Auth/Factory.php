@@ -144,8 +144,8 @@ class Factory
      */
     public static function getWorldShare(ServiceManager $sm)
     {
-    	return new WorldShare(
-    			$sm->getServiceLocator()->get('VuFind\Config')
-    	);
+        return new WorldShare(
+            $sm->getServiceLocator()->get('VuFind\Config')
+        );
     }
 }
