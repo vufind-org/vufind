@@ -64,7 +64,7 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
     protected $worldcatKnowledgeBaseWskey;
 
     /**
-     * 
+     *
      */
     public function __construct($config, $worldcatDiscoveryConfig)
     {
@@ -118,7 +118,7 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
     {
         // Load URLs for queue
         $kbrequest = "http://worldcat.org/webservices/kb/openurl/mresolve?queries=";
-        $queries = array();
+        $queries = [];
         foreach ($this->queue as $id => $record){
             $queries[$id] = $this->openURLToArray($record->getOpenURL());
         }
@@ -142,7 +142,7 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
                         ]
                     ];
                 } else {
-                    $this->cache[$id] = array();
+                    $this->cache[$id] = [];
                 }
             }
         } else {
@@ -158,7 +158,7 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
     private function openURLToArray($openURL){
         $parametersPairs = explode('&', $openURL);
     
-        $parameters = array();
+        $parameters = [];
         foreach ($parametersPairs as $parametersPair){
             $pairArray = explode('=', $parametersPair);
             $parameters[$pairArray[0]] = $pairArray[1];

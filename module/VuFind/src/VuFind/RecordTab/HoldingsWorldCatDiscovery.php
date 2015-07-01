@@ -38,7 +38,6 @@ namespace VuFind\RecordTab;
  */
 class HoldingsWorldCatDiscovery extends AbstractBase
 {
-	
     /**
      * Constructor
      */

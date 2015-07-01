@@ -61,16 +61,16 @@ class FASTSubjects implements RelatedInterface
 	        // Add FASTSubjects to query
 	        $abouts = $driver->getRawObject()->getAbout();
 	         
-	        $subjects = array();
+	        $subjects = [];
 	        
 	        foreach($abouts as $subject)
 	        {
-	        	$relatedSubjects = array();
-	        	$broaderSubjects = array();
-	        	$narrowerSubjects = array();
+	        	$relatedSubjects = [];
+	        	$broaderSubjects = [];
+	        	$narrowerSubjects = [];
 	        	// || 0 === strpos($subject->getUri(), 'http://id.loc.gov/authorities/subjects/')
 	        	if(0 === strpos($subject->getUri(), 'http://id.worldcat.org/fast/')) {
-	        		$subjectObject = \WorldCat\Discovery\Thing::findByUri($subject->getUri(), array('accept' => 'application/rdf+xml'));
+	        		$subjectObject = \WorldCat\Discovery\Thing::findByUri($subject->getUri(), ['accept' => 'application/rdf+xml']);
 	        		foreach($subjectObject->allResources('skos:related') as $relatedSubject) {
 	        			array_push($relatedSubjects, $relatedSubject->getLiteral('rdfs:label')->getValue());
 	        		}
@@ -85,7 +85,7 @@ class FASTSubjects implements RelatedInterface
 	        			}
 	        		}
 	        		else if($subject->getName() != null) {
-	        			$subjects[$subject->getName()] = array();
+	        			$subjects[$subject->getName()] = [];
 	        		}
 	        	}
 	        	 

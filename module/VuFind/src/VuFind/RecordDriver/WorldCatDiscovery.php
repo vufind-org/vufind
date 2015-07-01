@@ -413,7 +413,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
      */
     public function getUrls()
     {
-    	$urls = array();
+    	$urls = [];
     	if (isset($this->recordConfig->eHoldings->active)
             && $this->recordConfig->eHoldings->active == true
         ) {

@@ -38,7 +38,6 @@ namespace VuFind\RecordTab;
  */
 class StaffViewTurtleWorldCatDiscovery extends AbstractBase
 {
-    
     /**
      * Get the on-screen description for this tab.
      *
