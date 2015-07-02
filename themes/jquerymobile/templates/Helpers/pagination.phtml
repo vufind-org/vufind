@@ -1,0 +1,21 @@
+<? if ($this->pageCount): ?>
+<div data-role="controlgroup" data-type="horizontal" align="center">
+
+<!-- Previous page link -->
+<? if (isset($this->previous)): ?>
+  <? $newParams = $this->params; $newParams['page'] = $this->previous; ?>
+  <a rel="external" data-role="button" data-rel="back" href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
+    &laquo; <?=$this->transEsc('Prev')?>
+  </a>
+<? endif; ?>
+
+<!-- Next page link -->
+<? if (isset($this->next)): ?>
+  <? $newParams = $this->params; $newParams['page'] = $this->next; ?>
+  <a rel="external" data-role="button" href="<?= $this->currentPath() . '?' . http_build_query($newParams); ?>">
+    <?=$this->transEsc('Next');?> &raquo;
+  </a>
+<? endif; ?>
+
+</div>
+<? endif; ?>

@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\Ec2;
 
 use ZendService\Amazon\Ec2\Instance;
-use ZendService\Amazon\Ec2\Exception;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\Test as HttpClientTestAdapter;
 
@@ -398,11 +397,10 @@ class InstanceTest extends \PHPUnit_Framework_TestCase
 
         $arrInstanceIds = array('i-2ba64342', 'i-2bc64242', 'i-2be64332');
 
-        foreach($return['instances'] as $k => $r) {
+        foreach ($return['instances'] as $k => $r) {
             $this->assertEquals($arrInstanceIds[$k], $r['instanceId']);
             $this->assertEquals($k, $r['amiLaunchIndex']);
         }
-
     }
 
     public function testRunMultipleSecurityGroups()
@@ -500,7 +498,7 @@ class InstanceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, count($return));
 
-        foreach($return as $r) {
+        foreach ($return as $r) {
             $this->assertEquals('i-28a64341', $r['instanceId']);
         }
     }
@@ -550,7 +548,7 @@ class InstanceTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(2, count($return));
 
-        foreach($return as $k=>$r) {
+        foreach ($return as $k=>$r) {
             $this->assertEquals($arrInstanceIds[$k], $r['instanceId']);
         }
     }
@@ -699,5 +697,4 @@ class InstanceTest extends \PHPUnit_Framework_TestCase
         $arrReturn = array(array('instanceid' => 'i-43a4412a', 'monitorstate' => 'pending'));
         $this->assertSame($arrReturn, $return);
     }
-
 }

@@ -29,26 +29,30 @@
         </select>
       </div>
     <? endif; ?>
-    
-    <? if (in_array("pickUpLibrary", $this->extraFields)): ?>
+
+    <? if (in_array("pickUpLibrary", $this->extraFields) && !empty($this->pickupLibraries)): ?>
       <div>
-      <? if (count($this->pickupLibraries) > 1): ?>
-        <?
-          if (isset($this->gatheredDetails['pickUpLibrary']) && $this->gatheredDetails['pickUpLibrary'] !== "") {
-              $selected = $this->gatheredDetails['pickUpLibrary'];
-          } else {
-              $selected = false;
-          }
-        ?>
         <strong><?=$this->transEsc("ill_request_pick_up_library")?>:</strong><br/>
-        <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]">
-        <? foreach ($this->pickupLibraries as $lib): ?>
-          <option value="<?=$this->escapeHtmlAttr($lib['id'])?>"<?=(($selected === false && isset($lib['isDefault']) && $lib['isDefault']) || $selected === $lib['id']) ? ' selected="selected"' : ''?>>
-            <?=$this->transEsc('library_' . $lib['name'], null, $lib['name'])?>
-          </option>
-        <? endforeach; ?>
-        </select>
-      <? endif; ?>
+        <? if (count($this->pickupLibraries) > 1): ?>
+          <?
+            if (isset($this->gatheredDetails['pickUpLibrary']) && $this->gatheredDetails['pickUpLibrary'] !== "") {
+                $selected = $this->gatheredDetails['pickUpLibrary'];
+            } else {
+                $selected = false;
+            }
+          ?>
+          <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]">
+          <? foreach ($this->pickupLibraries as $lib): ?>
+            <option value="<?=$this->escapeHtmlAttr($lib['id'])?>"<?=(($selected === false && isset($lib['isDefault']) && $lib['isDefault']) || $selected === $lib['id']) ? ' selected="selected"' : ''?>>
+              <?=$this->transEsc('library_' . $lib['name'], null, $lib['name'])?>
+            </option>
+          <? endforeach; ?>
+          </select>
+        <? else: ?>
+          <? $lib = $this->pickupLibraries[0]; ?>
+          <input type="text" size="40" readonly="readonly" value="<?=$this->escapeHtmlAttr($this->translate('library_' . $lib['name'], null, $lib['name']))?>" />
+          <input type="hidden" id="pickupLibrary" name="gatheredDetails[pickUpLibrary]" value="<?=$this->escapeHtmlAttr($lib['id'])?>" />
+        <? endif; ?>
       </div>
     <? endif; ?>
 
@@ -64,7 +68,7 @@
         </select>
       </div>
     <? endif; ?>
-    
+
     <? if (in_array("pickUpLocation", $this->extraFields)): ?>
       <div>
       <? if (count($this->pickupLocations) > 1): ?>
@@ -88,7 +92,7 @@
       <? endif; ?>
       </div>
     <? endif; ?>
-    
+
     <? if (in_array("requiredByDate", $this->extraFields)): ?>
       <div>
       <strong><?=$this->transEsc("hold_required_by")?>: </strong>

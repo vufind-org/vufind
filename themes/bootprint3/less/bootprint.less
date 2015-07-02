@@ -48,9 +48,9 @@ body {
 .btn-success,.btn-success:hover {border-color:darken(@brand-success, 12%);font-weight:bold;}
 .btn-warning,.btn-warning:hover {border-color:darken(@brand-warning, 12%);font-weight:bold;}
 h2 {margin:0 8px 8px}
-input[type=checkbox] {
-  margin-top:2px;
+input[type="radio"], input[type="checkbox"] {
   margin:0 auto;
+  margin-top:2px;
   padding:0 2px;
 }
 .nav > li > a {
@@ -182,7 +182,9 @@ header {
 [name=searchForm] {
   margin:6px 8px 8px;
   padding:0;
-  & .btn-primary,& .form-control {
+  & .btn-primary,& .form-control,
+  .template-dir-eds.template-name-advanced & .clear-btn,
+  .template-dir-search.template-name-advanced & .clear-btn {
     font-size:14px;
     height:32px;
     padding:5px 8px;
@@ -234,6 +236,10 @@ footer {
   ul {padding-left:30px}
 }
 
+/* --- Offcanvas --- */
+.offcanvas.active .sidebar {color: #FFF;}
+.offcanvas .sidebar .list-group {color: #000;}
+
 /* --- PubDateVis --- */
 #dateVisColorSettings {
   background-color: #fff; // background of box
@@ -255,7 +261,6 @@ footer {
 /* --- Search --- */
 .alert {padding:8px}
 .bulkActionButtons {margin-bottom:6px}
-.left {text-align:center}
 .result {
   & > .col-xs-1.checkbox {
     width:auto;
@@ -264,6 +269,7 @@ footer {
     display:inline-block;
     margin-bottom:4px;
   }
+  .left {text-align:center}
   .savedLists {
     margin:0 0 4px 0;
     padding:4px 0 4px 6px;
@@ -301,6 +307,9 @@ footer {
 
 /* --- Advanced Search --- */
 #advSearchForm .search {margin:0}
+.group .match {margin-top: .5em;}
+.template-dir-eds.template-name-advanced .clear-btn,
+.template-dir-search.template-name-advanced .clear-btn {background-image: linear-gradient(#fff, #eee);}
 
 /* --- Sidebar --- */
 @active-orange: #E70;

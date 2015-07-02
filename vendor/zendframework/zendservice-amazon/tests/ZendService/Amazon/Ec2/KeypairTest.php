@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\Ec2;
 
 use ZendService\Amazon\Ec2;
-use ZendService\Amazon\Ec2\Exception;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\Test as HttpClientTestAdapter;
 
@@ -179,7 +178,7 @@ class KeypairTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        foreach($response as $k => $r) {
+        foreach ($response as $k => $r) {
             $this->assertSame($arrKeys[$k], $r);
         }
     }

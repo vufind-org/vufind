@@ -343,8 +343,8 @@ class Bootstrapper
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
         };
-        $this->events->attach('dispatch.error', $callback, 9000);
-        $this->events->attach('dispatch', $callback, 9000);
+        $this->events->attach('dispatch.error', $callback, 10000);
+        $this->events->attach('dispatch', $callback, 10000);
     }
 
     /**
@@ -371,8 +371,8 @@ class Bootstrapper
             $theme = new \VuFindTheme\Initializer($config, $event);
             $theme->init();
         };
-        $this->events->attach('dispatch.error', $callback, 10000);
-        $this->events->attach('dispatch', $callback, 10000);
+        $this->events->attach('dispatch.error', $callback, 9000);
+        $this->events->attach('dispatch', $callback, 9000);
     }
 
     /**

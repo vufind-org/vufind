@@ -35,7 +35,7 @@
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
 
-    <a id="moreInfoToggle" href="#" style="display:none"><?=$this->transEsc('more_info_toggle')?></a>
+    <a id="moreInfoToggle" href="#" class="hidden"><?=$this->transEsc('more_info_toggle')?></a>
     <?/* Display Main Details */?>
     <table id="collectionInfo" class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
       <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
@@ -140,7 +140,7 @@
             <? $i = 0; foreach ($field as $subfield): ?>
               <?=($i++ == 0) ? '' : ' &gt; '?>
               <? $subject = trim($subject . ' ' . $subfield); ?>
-              <a title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" class="subjectHeading"><?=$this->escapeHtml($subfield)?></a>
+              <a title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" class="subjectHeading" rel="nofollow"><?=$this->escapeHtml($subfield)?></a>
             <? endforeach; ?>
           </div>
           <? endforeach; ?>

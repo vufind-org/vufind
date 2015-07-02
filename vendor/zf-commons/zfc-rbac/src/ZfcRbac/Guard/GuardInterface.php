@@ -48,6 +48,12 @@ interface GuardInterface extends ListenerAggregateInterface
     const POLICY_ALLOW = 'allow';
 
     /**
+     * Condition constants
+     */
+    const CONDITION_OR  = 'OR';
+    const CONDITION_AND = 'AND';
+
+    /**
      * @param  MvcEvent $event
      * @return bool
      */

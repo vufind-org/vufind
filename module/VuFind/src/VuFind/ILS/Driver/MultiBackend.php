@@ -975,7 +975,6 @@ class MultiBackend extends AbstractBase
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
-     * @access public
      */
     public function placeILLRequest($details)
     {

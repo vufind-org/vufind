@@ -11,8 +11,6 @@
 namespace ZendService\Amazon\Ec2;
 
 use ZendService\Amazon;
-use ZendService\Amazon\Ec2\Exception;
-
 /**
  * An Amazon EC2 interface to query which Availability Zones your account has access to.
  *
@@ -34,11 +32,11 @@ class AvailabilityZones extends AbstractEc2
         $params = array();
         $params['Action'] = 'DescribeAvailabilityZones';
 
-        if(is_array($zoneName) && !empty($zoneName)) {
-            foreach($zoneName as $k=>$name) {
+        if (is_array($zoneName) && !empty($zoneName)) {
+            foreach ($zoneName as $k=>$name) {
                 $params['ZoneName.' . ($k+1)] = $name;
             }
-        } elseif($zoneName) {
+        } elseif ($zoneName) {
             $params['ZoneName.1'] = $zoneName;
         }
 

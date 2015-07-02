@@ -75,7 +75,6 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
 
         $return = $this->securitygroupsInstance->authorizeIp('MyGroup', 'tcp', '80', '80', '0.0.0.0/0');
         $this->assertTrue($return);
-
     }
 
     public function testAuthorizeRangeOfPorts()
@@ -97,7 +96,6 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
 
         $return = $this->securitygroupsInstance->authorizeIp('MyGroup', 'tcp', '6000', '7000', '0.0.0.0/0');
         $this->assertTrue($return);
-
     }
 
     public function testAuthorizeSecurityGroupName()
@@ -119,7 +117,6 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
 
         $return = $this->securitygroupsInstance->authorizeGroup('MyGroup', 'groupname', '15333848');
         $this->assertTrue($return);
-
     }
 
     /**
@@ -127,7 +124,6 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
      */
     public function testCreate()
     {
-
         $rawHttpResponse = "HTTP/1.1 200 OK\r\n"
                     . "Date: Fri, 24 Oct 2008 17:24:52 GMT\r\n"
                     . "Server: hi\r\n"
@@ -146,7 +142,6 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
         $return = $this->securitygroupsInstance->create('MyGroup', 'My Security Grup');
 
         $this->assertTrue($return);
-
     }
 
     /**
@@ -172,7 +167,6 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
         $return = $this->securitygroupsInstance->delete('MyGroup');
 
         $this->assertTrue($return);
-
     }
 
     /**
@@ -231,7 +225,7 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
                     . "</DescribeSecurityGroupsResponse>\r\n";
         $this->httpClientTestAdapter->setResponse($rawHttpResponse);
 
-        $return = $this->securitygroupsInstance->describe(array('WebServers','RangedPortsBySource'));
+        $return = $this->securitygroupsInstance->describe(array('WebServers', 'RangedPortsBySource'));
 
         $this->assertEquals(2, count($return));
 
@@ -259,7 +253,7 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
                     ))
                 )
             );
-        foreach($return as $k => $r) {
+        foreach ($return as $k => $r) {
             $this->assertSame($arrGroups[$k], $r);
         }
     }
@@ -316,7 +310,7 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
                     ))
                 )
             );
-        foreach($return as $k => $r) {
+        foreach ($return as $k => $r) {
             $this->assertSame($arrGroups[$k], $r);
         }
     }
@@ -379,7 +373,7 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
                     ))
                 )
             );
-        foreach($return as $k => $r) {
+        foreach ($return as $k => $r) {
             $this->assertSame($arrGroups[$k], $r);
         }
     }
@@ -406,7 +400,6 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
 
         $return = $this->securitygroupsInstance->revokeIp('MyGroup', 'tcp', '80', '80', '0.0.0.0/0');
         $this->assertTrue($return);
-
     }
 
     public function testRevokePortRange()
@@ -428,7 +421,6 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
 
         $return = $this->securitygroupsInstance->revokeIp('MyGroup', 'tcp', '6000', '7000', '0.0.0.0/0');
         $this->assertTrue($return);
-
     }
 
 
@@ -451,7 +443,5 @@ class SecurityGroupsTest extends \PHPUnit_Framework_TestCase
 
         $return = $this->securitygroupsInstance->revokeGroup('MyGroup', 'groupname', '15333848');
         $this->assertTrue($return);
-
     }
-
 }

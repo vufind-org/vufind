@@ -188,7 +188,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
 
         $this->_amazon->putObject($this->_bucket."/zftest.jpg", $data, null);
         $info = $this->_amazon->getInfo($this->_bucket."/zftest.jpg");
-        $this->assertEquals( 'image/jpeg', $info["type"]);
+        $this->assertEquals('image/jpeg', $info["type"]);
     }
 
     public function testNoBucket()
@@ -254,7 +254,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
 
     protected function _fileTest($filename, $object, $type, $exp_type, $stream = false)
     {
-        if($stream) {
+        if ($stream) {
             $this->_amazon->putFile($filename, $object, array(S3\S3::S3_CONTENT_TYPE_HEADER => $type));
         } else {
             $this->_amazon->putFileStream($filename, $object, array(S3\S3::S3_CONTENT_TYPE_HEADER => $type));
@@ -517,14 +517,13 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
     {
         try {
             $this->_amazon->createBucket("127.0.0.1");
-        } catch(S3\Exception\InvalidArgumentException $e) {
+        } catch (S3\Exception\InvalidArgumentException $e) {
             $this->_amazon->createBucket("123-456-789-123");
             $this->assertTrue($this->_amazon->isBucketAvailable("123-456-789-123"));
             $this->_amazon->removeBucket("123-456-789-123");
             return;
         }
         $this->fail("Failed to throw expected exception");
-
     }
 
     /**
@@ -557,8 +556,8 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         );
         $response = $this->_amazon->getObjectsAndPrefixesByBucket($this->_bucket, $params);
 
-        $this->assertEquals($response['objects'][0],'test-folder/test1');
-        $this->assertEquals($response['prefixes'][0],'test-folder/test2-folder/');
+        $this->assertEquals($response['objects'][0], 'test-folder/test1');
+        $this->assertEquals($response['prefixes'][0], 'test-folder/test2-folder/');
     }
 
     public function tearDown()
