@@ -390,11 +390,11 @@ class Initializer
         }
     }
     
-    /**
+        /**
      * Support method for init() -- add theme specific language files for translation.
      *
      * @param array $themes Theme configuration information.
-     * 
+     *
      * @return void
      */
     protected function updateTranslator($themes)
@@ -403,20 +403,38 @@ class Initializer
         foreach (array_keys($themes) as $theme) {
             $dir = APPLICATION_PATH . '/themes/' . $theme . '/languages';
             if (is_dir($dir)) {
-                $pathStack[] = $dir;
+               $pathStack[] = $dir;
             }
         }
-
+ 
         if (!empty($pathStack)) {
             try {
                 $translator = $this->serviceManager->get('VuFind\Translator');
+                
                 $pm = $translator->getPluginManager();
                 $pm->get('extendedini')->addToPathStack($pathStack);
+                
             } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
-                // This exception likely indicates that translation is disabled,
-                // so we can't proceed.
-                return;
+               // This exception likely indicates that translation is disabled,
+               // so we can't proceed.
+              return;
             }
-        }
+            
+            // Set up language caching for better performance:
+            try {
+              $themeName = end(array_keys($themes));
+              $cacheManager = $this->serviceManager->get('VuFind\CacheManager');
+              $cacheManager->addLanguageCacheForTheme($themeName);
+              $translator->setCache($cacheManager->getCache($themeName));
+            } catch (\Exception $e) {
+              // Don't let a cache failure kill the whole application, but make
+              // note of it:
+              $logger = $this->serviceManager->get('VuFind\Logger');
+              $logger->debug(
+                  'Problem loading cache: ' . get_class($e) . ' exception: '
+                  . $e->getMessage()
+              );
+            }
+       }
     }
 }

@@ -816,21 +816,6 @@ class Factory
             )
         );
 
-        // Set up language caching for better performance:
-        try {
-            $translator->setCache(
-                $sm->get('VuFind\CacheManager')->getCache('language')
-            );
-        } catch (\Exception $e) {
-            // Don't let a cache failure kill the whole application, but make
-            // note of it:
-            $logger = $sm->get('VuFind\Logger');
-            $logger->debug(
-                'Problem loading cache: ' . get_class($e) . ' exception: '
-                . $e->getMessage()
-            );
-        }
-
         return $translator;
     }
 
