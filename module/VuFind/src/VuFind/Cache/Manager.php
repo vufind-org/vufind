@@ -186,7 +186,7 @@ class Manager
     {
         return $this->directoryCreationError;
     }
-    
+
     /**
      * Create a new file cache for the given theme name if neccessary.
      *  
