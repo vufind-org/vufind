@@ -391,7 +391,8 @@ class Initializer
     }
     
      /**
-     * Support method for init() -- add theme specific language files for translation.
+     * Support method for init() 
+     * add theme specific language files for translation.
      *
      * @param array $themes Theme configuration information.
      *

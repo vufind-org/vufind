@@ -196,7 +196,10 @@ class Manager
      */
     public function addLanguageCacheForTheme($themeName) 
     {
-        $this->createFileCache($themeName, $this->getCacheDir() . 'languages/' . $themeName);
+        $this->createFileCache(
+            $themeName, 
+            $this->getCacheDir() . 'languages/' . $themeName
+        );
     }
     
     /**
