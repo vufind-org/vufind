@@ -44,7 +44,7 @@ use Zend\Session\Container;
  */
 class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
-	use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFindHttp\HttpServiceAwareTrait;
 
     /**
      * Date formatting object
@@ -55,9 +55,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
     /**
      * Constructor
-     *
      */
-    public function __construct($config, $recordLoader, \VuFind\Date\Converter $dateConverter) {
+    public function __construct($config, $recordLoader, \VuFind\Date\Converter $dateConverter) 
+    {
         $this->wcdiscoveryConfig = $config;
 
         $this->recordLoader = $recordLoader;
@@ -82,7 +82,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             throw new ILSException('Configuration needs to be set.');
         }
 
-        if ($this->wcdiscoveryConfig){
+        if ($this->wcdiscoveryConfig) {
             $this->wskey = $this->wcdiscoveryConfig->General->wskey;
             $this->secret = $this->wcdiscoveryConfig->General->secret;
             $this->institution = $this->wcdiscoveryConfig->General->institution;
@@ -118,7 +118,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected function getAccessToken()
     {
-        if (empty($this->session->accessToken) || $this->session->accessToken->isExpired()){
+        if (empty($this->session->accessToken) || $this->session->accessToken->isExpired()) {
             $options = [
                     'services' => ['WorldCatDiscoveryAPI', 'WMS_Availability', 'WMS_NCIP','refresh_token']
             ];
@@ -144,7 +144,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         = ConfigLocator::getConfigPath($filename, 'config/vufind');
         if (!file_exists($pickupLocationsFile)) {
             throw new ILSException(
-                    "Cannot load pickup locations file: {$pickupLocationsFile}."
+                "Cannot load pickup locations file: {$pickupLocationsFile}."
             );
         }
         if (($handle = fopen($pickupLocationsFile, "r")) !== false) {
@@ -172,7 +172,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * or may be ignored.  The driver must not add new options to the return array
      * based on this data or other areas of VuFind may behave incorrectly.
      *
-     * @return array        An array of associative arrays with locationID and
+     * @return                                        array        An array of associative arrays with locationID and
      * locationDisplay keys
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -194,18 +194,19 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * hasHoldings
      * This used to hide the holdings tab for records where holdings do not apply
-     * @param string $id     The Bib ID
+     *
+     * @param string $id The Bib ID
      *
      * @return bool True if request is valid, false if not
      */
     public function hasHoldings($id)
     {
-    	$record = $this->recordLoader->load($id, 'WorldCatDiscovery');
-    	if ($record->getOffer($this->institution) || $record->getUrls()){
-    		return true;
-    	} else {
-    		return false;
-    	}
+        $record = $this->recordLoader->load($id, 'WorldCatDiscovery');
+        if ($record->getOffer($this->institution) || $record->getUrls()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -221,7 +222,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        if ($this->recordLoader->load($id, 'WorldCatDiscovery')->getOffer($this->institution)){
+        if ($this->recordLoader->load($id, 'WorldCatDiscovery')->getOffer($this->institution)) {
             return true;
         } else {
             return false;
@@ -231,8 +232,8 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Send an NCIP request.
      *
-     * @param string $xml XML request document
-     * @param array $patron a patron array
+     * @param string $xml    XML request document
+     * @param array  $patron a patron array
      *
      * @return object     SimpleXMLElement parsed from response
      */
@@ -242,7 +243,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // Make the NCIP request:
         try {
             $client = $this->httpService
-            ->createClient($url);
+                ->createClient($url);
             $adapter = new \Zend\Http\Client\Adapter\Curl();
             $client->setAdapter($adapter);
             // Set timeout value
@@ -250,10 +251,12 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             ? $this->config['Catalog']['http_timeout'] : 30;
             $client->setOptions(['timeout' => $timeout]);
             $authorizationHeader = 'Bearer ' . $this->getAccessToken()->getValue();
-            $client->setHeaders([
+            $client->setHeaders(
+                [
                     "Authorization" => $authorizationHeader,
                     "Accept" => 'application/xml'
-            ]);
+                ]
+            );
             $client->setRawBody($xml);
             $client->setEncType('application/xml');
             $result = $client->setMethod('POST')->send();
@@ -297,19 +300,21 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getStatus($id)
     {
         $holding = [];
-        if ($this->recordLoader->load($id, 'WorldCatDiscovery')->getOffer($this->institution)){
+        if ($this->recordLoader->load($id, 'WorldCatDiscovery')->getOffer($this->institution)) {
             // Make the request to WMS_Availability web service
             $wmsAvailabilityRequest = "https://worldcat.org/circ/availability/sru/service?x-registryId=" . $this->institution;
             $wmsAvailabilityRequest .= "&query=no:" . $id;
 
             try {
                 $client = $this->httpService
-                ->createClient($wmsAvailabilityRequest);
+                    ->createClient($wmsAvailabilityRequest);
                 $adapter = new \Zend\Http\Client\Adapter\Curl();
                 $client->setAdapter($adapter);
-                $client->setHeaders([
+                $client->setHeaders(
+                    [
                         "Authorization" => 'Bearer ' . $this->getAccessToken()->getValue()
-                    ]);
+                    ]
+                );
                 $wmsAvailabilityResponse = $client->setMethod('GET')->send();
             } catch (\Exception $e) {
                 throw new ILSException($e->getMessage());
@@ -369,7 +374,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @return mixed     On success, an associative array with the following keys:
+     * @return                                        mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber, duedate,
      * number, barcode.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -387,7 +392,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @param string $id The record id to retrieve the info for
      *
-     * @return mixed     An array with the acquisitions data on success.
+     * @return                                        mixed     An array with the acquisitions data on success.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
@@ -403,17 +408,17 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return mixed           Associative array of patron info on successful login,
+     * @return                                        mixed           Associative array of patron info on successful login,
      * null on unsuccessful login.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)
     {
-    	$patronInfo = [
-    			"principalID" => $this->session->accessToken->getUser()->getPrincipalID(),
-    			"principalIDNS" => $this->session->accessToken->getUser()->getPrincipalIDNS(),
-    			"institution" => $this->institution
-    	];
+        $patronInfo = [
+        "principalID" => $this->session->accessToken->getUser()->getPrincipalID(),
+        "principalIDNS" => $this->session->accessToken->getUser()->getPrincipalIDNS(),
+        "institution" => $this->institution
+        ];
         return $patronInfo;
     }
 
@@ -431,7 +436,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getMyTransactions($patron, $displayInfo = null)
     {
-        if (empty($displayInfo)){
+        if (empty($displayInfo)) {
             $displayInfo = [
                     'startElement' => '1',
                     'maximumCount' => '10',
@@ -452,9 +457,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             '</ns1:Ext>'
         ];
         $request = $this->getLookupUserRequest(
-                $patron['principalID'],
-                $patron['principalIDNS'],
-                $this->institution, $extras
+            $patron['principalID'],
+            $patron['principalIDNS'],
+            $this->institution, $extras
         );
         $response = $this->sendRequest($request, $patron);
 
@@ -467,13 +472,13 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $dueTimestamp = strtotime((string)$tmp[0]);
             $due = date("l, d-M-y h:i a", $dueTimestamp);
             $title = $current->xpath(
-                    'ns1:Ext/ns1:BibliographicDescription/' .
-                    'ns1:Title'
+                'ns1:Ext/ns1:BibliographicDescription/' .
+                'ns1:Title'
             );
             $item_id = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
             $bib_id = $current->xpath(
-                    'ns1:Ext/ns1:BibliographicDescription/' .
-                    'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
+                'ns1:Ext/ns1:BibliographicDescription/' .
+                'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
             );
             // Hack to account for bibs from other non-local institutions
             // temporarily until consortial functionality is enabled.
@@ -509,7 +514,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getMyFines($patron, $displayInfo = null)
     {
-        if (empty($displayInfo)){
+        if (empty($displayInfo)) {
             $displayInfo = [
                     'startElement' => '1',
                     'maximumCount' => '10',
@@ -530,14 +535,14 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 '</ns1:Ext>'
         ];
         $request = $this->getLookupUserRequest(
-                $patron['principalID'],
-                $patron['principalIDNS'],
-                $this->institution, $extras
+            $patron['principalID'],
+            $patron['principalIDNS'],
+            $this->institution, $extras
         );
         $response = $this->sendRequest($request, $patron);
 
         $list = $response->xpath(
-                'ns1:LookupUserResponse/ns1:UserFiscalAccount/ns1:AccountDetails'
+            'ns1:LookupUserResponse/ns1:UserFiscalAccount/ns1:AccountDetails'
         );
 
         $fines = [];
@@ -547,26 +552,26 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
 
             $tmp = $current->xpath(
-                    'ns1:FiscalTransactionInformation/ns1:Amount/ns1:MonetaryValue'
+                'ns1:FiscalTransactionInformation/ns1:Amount/ns1:MonetaryValue'
             );
             $amount = (string)$tmp[0];
             $tmp = $current->xpath('ns1:AccrualDate');
             $date = (string)$tmp[0];
             $tmp = $current->xpath(
-                    'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
+                'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
             );
             $desc = (string)$tmp[0];
              $tmp = $current->xpath(
-             'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
-             'ns1:ItemId/ns1:ItemIdentifierValue'
+                 'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
+                 'ns1:ItemId/ns1:ItemIdentifierValue'
              );
-             if (isset($tmp)){
-                $id = (string)$tmp[0];
-             } else {
-                $id = null;
+             if (isset($tmp)) {
+                 $id = (string)$tmp[0];
+                } else {
+                    $id = null;
              }
-            $balance += $amount;
-            $fines[] = [
+                $balance += $amount;
+                $fines[] = [
                     'amount' => $amount,
                     'balance' => $balance,
                     'checkout' => '',
@@ -575,7 +580,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                     'createdate' => $date,
                     'id' => $id,
                     'source' => 'WorldCatDiscovery'
-            ];
+                ];
         }
         return $fines;
     }
@@ -593,7 +598,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function getMyHolds($patron, $displayInfo = null)
     {
-        if (empty($displayInfo)){
+        if (empty($displayInfo)) {
             $displayInfo = [
                     'startElement' => '1',
                     'maximumCount' => '10',
@@ -614,10 +619,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 '</ns1:Ext>'
         ];
         $request = $this->getLookupUserRequest(
-                $patron['principalID'],
-                $patron['principalIDNS'],
-                $this->institution,
-                $extras
+            $patron['principalID'],
+            $patron['principalIDNS'],
+            $this->institution,
+            $extras
         );
         $response = $this->sendRequest($request, $patron);
 
@@ -626,11 +631,11 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         foreach ($list as $current) {
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
             $id = $current->xpath(
-                    'ns1:Ext/ns1:BibliographicDescription/' .
-                    'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
+                'ns1:Ext/ns1:BibliographicDescription/' .
+                'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier'
             );
             $createdTmp = $current->xpath('ns1:DatePlaced');
-            if (!empty($createdTmp)){
+            if (!empty($createdTmp)) {
                 $createdTimestamp = strtotime((string)$createdTmp[0]);
                 $created = date("l, d-M-y", $createdTimestamp);
             } else {
@@ -643,7 +648,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
             $pickupLocation = $current->xpath('ns1:PickupLocation');
             $expireDate = $current->xpath('ns1:PickupExpiryDate');
-            if (!empty($expireDate)){
+            if (!empty($expireDate)) {
                 $expireDate = strtotime((string)$expireDate[0]);
                 $expireDate = date("l, d-M-y", $expireDate);
             } else {
@@ -709,7 +714,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
         $holdType = 'Hold';
-        if ($details['level'] == 'title'){
+        if ($details['level'] == 'title') {
             $requestScope = 'Bibliographic Item';
         } else {
             $requestScope = 'Item';
@@ -720,12 +725,12 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $lastInterestDate = $lastInterestDate . "T00:00:00.000Z";
 
         $request = $this->getRequest(
-                $userId, $this->institution, $bibId, $itemId,
-                $holdType, $requestScope, $lastInterestDate, $pickUpLocation
+            $userId, $this->institution, $bibId, $itemId,
+            $holdType, $requestScope, $lastInterestDate, $pickUpLocation
         );
         $response = $this->sendRequest($request, $patron);
         $success = $response->xpath(
-                'ns1:RequestItemResponse/ns1:RequestId/ns1:RequestIdentifierValue'
+            'ns1:RequestItemResponse/ns1:RequestId/ns1:RequestIdentifierValue'
         );
 
         if ($success) {
@@ -763,12 +768,12 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         foreach ($details as $cancelDetails) {
             list($itemId, $requestId) = explode("|", $cancelDetails);
             $request = $this->getCancelRequest(
-                    $userID, $this->institution, $requestId, "Hold"
+                $userID, $this->institution, $requestId, "Hold"
             );
             $cancelRequestResponse = $this->sendRequest($request, $patron);
             $userId = $cancelRequestResponse->xpath(
-                    'ns1:CancelRequestItemResponse/' .
-                    'ns1:UserId/ns1:UserIdentifierValue'
+                'ns1:CancelRequestItemResponse/' .
+                'ns1:UserId/ns1:UserIdentifierValue'
             );
             $itemId = (string)$itemId;
             if ($userId) {
@@ -822,7 +827,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $details = [];
         foreach ($renewDetails['details'] as $renewId) {
             $request = $this->getRenewRequest(
-                    $renewDetails['patron']['principalID'], $this->institution, $renewId
+                $renewDetails['patron']['principalID'], $this->institution, $renewId
             );
             $response = $this->sendRequest($request, $renewDetails['patron']);
             $dueDate = $response->xpath('ns1:RenewItemResponse/ns1:DateDue');
@@ -853,7 +858,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Helper function to build the request XML to cancel a request:
      *
-     * @param string $userID           UserID
+     * @param string $userID    UserID
      * @param string $requestId Id of the request to cancel
      * @param string $type      The type of request to cancel (Hold, etc)
      *
@@ -861,7 +866,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected function getCancelRequest($userID, $institution, $requestId, $type)
     {
-		return $this->buildNCIPMessage('CancelRequestItem', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . $this->getRequestIdXml($requestId, $type));
+        return $this->buildNCIPMessage('CancelRequestItem', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . $this->getRequestIdXml($requestId, $type));
     }
 
     /**
@@ -879,16 +884,16 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @return string          NCIP request XML
      */
     protected function getRequest($userID, $institution, $bibId, $itemId,
-            $requestType, $requestScope, $lastInterestDate, $pickupLocation = null
+        $requestType, $requestScope, $lastInterestDate, $pickupLocation = null
     ) {
        
-		$messageBody = $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID);
+        $messageBody = $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID);
 
-	    if ($requestScope = 'Bibliographic Item'){
-	        $messageBody .= $this->getBibIdXml($institution, $bibId);
-	    } else {
-	        $messageBody .= $this->getItemIdXml($itemId);
-	    }
+        if ($requestScope = 'Bibliographic Item') {
+            $messageBody .= $this->getBibIdXml($institution, $bibId);
+        } else {
+            $messageBody .= $this->getItemIdXml($itemId);
+        }
         $messageBody .= '<ns1:RequestType>' .
                 htmlspecialchars($requestType) .
                 '</ns1:RequestType>' .
@@ -910,84 +915,90 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Helper function to build the request XML to renew an item:
      *
-     * @param string $userID   UserID
-     * @param string $itemId   Id of item to renew
+     * @param string $userID UserID
+     * @param string $itemId Id of item to renew
      *
      * @return string          NCIP request XML
      */
     protected function getRenewRequest($userID, $institution, $itemId)
     {
-    	return $this->buildNCIPMessage('RenewItem', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . $this->getItemIdXml($itemId));
+        return $this->buildNCIPMessage('RenewItem', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . $this->getItemIdXml($itemId));
     }
 
     /**
      * Helper function to build the request XML to log in a user
      * and/or retrieve loaned items / request information
      *
-     * @param string $userID         UserID
-     * @param string $extras         Extra elements to include in the request
+     * @param string $userID UserID
+     * @param string $extras Extra elements to include in the request
      *
      * @return string          NCIP request XML
      */
-    protected function getLookupUserRequest($userID, $userPrincipalIDNS, $institution, $extras) {
+    protected function getLookupUserRequest($userID, $userPrincipalIDNS, $institution, $extras) 
+    {
         return $this->buildNCIPMessage('LookupUser', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . implode('', $extras));
     }
     
-    protected function buildNCIPMessage($messageName, $messageBody){
-    	$ncipMessage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-    	'<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-    	'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
-    	'xmlns:ncip="http://www.niso.org/2008/ncip" ' .
-    	'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' .
-    	'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' .
-    	'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">';
-    	$ncipMessage .= '<ns1:' . $messageName . '>';
-    	$ncipMessage .= $messageBody;
-    	$ncipMessage .= '</ns1:' . $messageName . '>';
-    	$ncipMessage .= '</ns1:NCIPMessage>';
-    	return $ncipMessage;
+    protected function buildNCIPMessage($messageName, $messageBody)
+    {
+        $ncipMessage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+        '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
+        'xmlns:ncip="http://www.niso.org/2008/ncip" ' .
+        'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' .
+        'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' .
+        'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">';
+        $ncipMessage .= '<ns1:' . $messageName . '>';
+        $ncipMessage .= $messageBody;
+        $ncipMessage .= '</ns1:' . $messageName . '>';
+        $ncipMessage .= '</ns1:NCIPMessage>';
+        return $ncipMessage;
     }
     
-    protected function getInitiationHeader($institution){
-    	$header = '<ns1:InitiationHeader>' .
-    	'<ns1:FromAgencyId>' .
-    	'<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
-    	$institution .
-    	'</ns1:AgencyId>' .
-    	'</ns1:FromAgencyId>' .
-    	'<ns1:ToAgencyId>' .
-    	'<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
-    	$institution .
-    	'</ns1:AgencyId>' .
-    	'</ns1:ToAgencyId>' .
-    	'<ns1:ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ns1:ApplicationProfileType>' .
-    	'</ns1:InitiationHeader>';
-    	return $header;
+    protected function getInitiationHeader($institution)
+    {
+        $header = '<ns1:InitiationHeader>' .
+        '<ns1:FromAgencyId>' .
+        '<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
+        $institution .
+        '</ns1:AgencyId>' .
+        '</ns1:FromAgencyId>' .
+        '<ns1:ToAgencyId>' .
+        '<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
+        $institution .
+        '</ns1:AgencyId>' .
+        '</ns1:ToAgencyId>' .
+        '<ns1:ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ns1:ApplicationProfileType>' .
+        '</ns1:InitiationHeader>';
+        return $header;
     }
     
-    protected function getUserIdXml($institution, $userID){
-    	$userIdXml = '<ns1:UserId>' .
-    	'<ns1:AgencyId>' .
-    	$institution .
-    	'</ns1:AgencyId>' .
-    	'<ns1:UserIdentifierValue>' .
-    	$userID .
-    	'</ns1:UserIdentifierValue>' .
-    	'</ns1:UserId>';
-    	return $userIdXml;
+    protected function getUserIdXml($institution, $userID)
+    {
+        $userIdXml = '<ns1:UserId>' .
+        '<ns1:AgencyId>' .
+        $institution .
+        '</ns1:AgencyId>' .
+        '<ns1:UserIdentifierValue>' .
+        $userID .
+        '</ns1:UserIdentifierValue>' .
+        '</ns1:UserId>';
+        return $userIdXml;
     }
     
-    protected function getItemIdXml($itemId){
-    	$itemIdXml = '<ns1:ItemId>' .
-    	'<ns1:ItemIdentifierValue>' .
-    	htmlspecialchars($itemId) .
-    	'</ns1:ItemIdentifierValue>' .
-    	'</ns1:ItemId>';
-    	return $itemIdXml;
+    protected function getItemIdXml($itemId)
+    {
+        $itemIdXml = '<ns1:ItemId>' .
+        '<ns1:ItemIdentifierValue>' .
+        htmlspecialchars($itemId) .
+        '</ns1:ItemIdentifierValue>' .
+        '</ns1:ItemId>';
+        return $itemIdXml;
     }
     
-    protected function getBibIdXML($institution, $bibId){
-    	$bibIdXml = '<ns1:BibliographicId>' .
+    protected function getBibIdXML($institution, $bibId)
+    {
+        $bibIdXml = '<ns1:BibliographicId>' .
                 '<ns1:BibliographicRecordId>' .
                 '<ns1:AgencyId>' .
                 $institution .
@@ -997,19 +1008,20 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 '</ns1:BibliographicRecordIdentifier>' .
                 '</ns1:BibliographicRecordId>' .
                 '</ns1:BibliographicId>';
-    	return $bibIdXml;
+        return $bibIdXml;
     }
     
-    protected function getRequestIdXML($requestId, $type){
-    	$requestIdXml = '<ns1:RequestId>' .
-    	'<ns1:RequestIdentifierValue>' .
-    	htmlspecialchars($requestId) .
-    	'</ns1:RequestIdentifierValue>' .
-    	'</ns1:RequestId>' .
-    	'<ns1:RequestType>' .
-    	htmlspecialchars($type) .
-    	'</ns1:RequestType>';
-    	return $requestIdXml;
+    protected function getRequestIdXML($requestId, $type)
+    {
+        $requestIdXml = '<ns1:RequestId>' .
+        '<ns1:RequestIdentifierValue>' .
+        htmlspecialchars($requestId) .
+        '</ns1:RequestIdentifierValue>' .
+        '</ns1:RequestId>' .
+        '<ns1:RequestType>' .
+        htmlspecialchars($type) .
+        '</ns1:RequestType>';
+        return $requestIdXml;
     }
 
     /**
@@ -1018,7 +1030,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $function The name of the feature to be checked
      * @param array  $params   Optional feature-specific parameters (array)
      *
-     * @return array An array with key-value pairs.
+     * @return                                        array An array with key-value pairs.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($function, $params = null)

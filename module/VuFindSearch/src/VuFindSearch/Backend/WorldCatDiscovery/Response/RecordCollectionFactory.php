@@ -100,14 +100,14 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         
         //Determine if its an OfferSet or BibSearchResults object and get the results accordingly
         
-        if (is_a($response, 'WorldCat\Discovery\BibSearchResults')){
-        	$results = $response->getSearchResults();
-        	$offers = null;
-        } elseif (is_a($response, 'WorldCat\Discovery\OfferSet')){
-        	$results = $response->getCreativeWorks();
-        	$offers = $response->getOffers();
+        if (is_a($response, 'WorldCat\Discovery\BibSearchResults')) {
+            $results = $response->getSearchResults();
+            $offers = null;
+        } elseif (is_a($response, 'WorldCat\Discovery\OfferSet')) {
+            $results = $response->getCreativeWorks();
+            $offers = $response->getOffers();
         } else {
-        	echo 'Error';
+            echo 'Error';
         }
         
         foreach ($results as $doc) {

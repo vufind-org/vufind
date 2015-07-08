@@ -101,8 +101,8 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $offers = $this->getOffers();
         
         $offersAtInstitution = array_filter(
-            $offers, function($offer) use ($id)
-            {
+            $offers, function ($offer) use ($id) {
+            
 
                 return($offer->getSeller()->getURI() == 'http://worldcat.org/wcr/organization/resource/' . $id);
             }
@@ -116,8 +116,8 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $offers = $this->getOffers();
         
         $offersAtOtherInstitutions = array_filter(
-            $offers, function($offer) use ($id)
-            {
+            $offers, function ($offer) use ($id) {
+            
         
                 return($offer->getSeller()->getURI() != 'http://worldcat.org/wcr/organization/resource/' . $id);
             }
@@ -134,16 +134,16 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     {
         $subjects = $this->getRawObject()->getAbout();
         array_walk(
-            $subjects, function(&$subject)
-            {
+            $subjects, function (&$subject) {
+            
                 $subject = is_callable([$subject, 'getName'])
                 ? $subject->getName() : null;
             }
         );
         $subjects = array_unique(array_filter($subjects));
         array_walk(
-            $subjects, function(&$subject)
-            {
+            $subjects, function (&$subject) {
+            
                 $subject = [$subject];
             }
         );
@@ -181,8 +181,8 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     {
         $formats = $this->getRawObject()->types();
         array_walk(
-            $formats, function(&$format)
-            {
+            $formats, function (&$format) {
+            
                 if (strchr($format, '/')) {
                     $format = substr(strchr($format, '/'), 1);
                 } else {
@@ -208,8 +208,8 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     {
         $notes = $this->getRawObject()->getDescriptions();
         array_walk(
-            $notes, function(&$note)
-            {
+            $notes, function (&$note) {
+            
                 $note = $note->getValue();
             }
         );
@@ -227,8 +227,8 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         if (is_a($response, 'WorldCat\Discovery\Book')) {
             $manifestations = $response->getManifestations();
             array_walk(
-                $manifestations, function(&$manifestation)
-                {
+                $manifestations, function (&$manifestation) {
+                
                     $manifestation = is_callable([$manifestation, 'getISBN'])
                     ? $manifestation->getISBN() : null;
                 }
@@ -324,8 +324,8 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         // need to fix the WorldCat Discovery code library to account for this
         $placesOfPublication = $this->getRawObject()->getPlacesOfPublication();
         array_walk(
-            $placesOfPublication, function(&$placeOfPublication)
-            {
+            $placesOfPublication, function (&$placeOfPublication) {
+            
                 if ($placeOfPublication->get('schema:name')) {
                     $placeOfPublication = $placeOfPublication->getName();
                 } else {
@@ -380,8 +380,8 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     {
         $contributors = $this->getRawObject()->getContributors();
         array_walk(
-            $contributors, function(&$contributor)
-            {
+            $contributors, function (&$contributor) {
+            
                 $contributor = $contributor->getName()->getValue();
             }
         );
