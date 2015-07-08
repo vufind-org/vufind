@@ -24,14 +24,11 @@
       <div class="loading hidden">
         <i class="fa fa-spin fa-spinner"></i> <?=$this->transEsc("Loading")?>...
       </div>
-      <div class="short-view<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : '' ?>">
+      <div class="short-view">
     <? endif; ?>
     <div class="row">
       <div class="col-xs-2 left">
-        <? if('full' == $dataView): ?>
-          <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
-        <? endif; ?>
-        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+        <input type="hidden" value="<?=$id ?>" class="hiddenId" />
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
           <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
@@ -41,7 +38,7 @@
           <? endif; ?>
         </a>
       </div>
-      <div class="col-xs-6 middle">
+      <div class="col-xs-7 middle">
         <? if('full' == $dataView): ?>
           <div class="resultItemLine1">
             <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
@@ -176,8 +173,7 @@
           <?=$this->record($this->driver)->getPreviews()?>
         </div>
       </div>
-
-      <div class="col-xs-2 right">
+      <div class="col-xs-3 right">
         <i class="fa fa-fw fa-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
         <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
           $deleteUrl = null === $list_id
