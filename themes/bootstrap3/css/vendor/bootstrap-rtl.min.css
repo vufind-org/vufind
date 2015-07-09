@@ -13,7 +13,7 @@ html{direction:rtl}body{direction:rtl}.list-unstyled{padding-right:0;padding-lef
   body.offcanvas.flip .offcanvas-toggle .fa.fa-chevron-left:before {content: "\f054";}
   body.offcanvas.flip .offcanvas-toggle .fa.fa-chevron-right:before {content: "\f053";}
 
-  body.offcanvas.offcanvas-left.flip > .container {padding-right: 25px;}
+  body.offcanvas.offcanvas-left.flip {padding-right: 18px;}
   body.offcanvas.offcanvas-left.flip .sidebar {right: -75%; left: auto;}
   body.offcanvas.offcanvas-left.flip .offcanvas-overlay {left: -100%; right: auto;}
   body.offcanvas.offcanvas-left.flip .offcanvas-toggle {
@@ -29,7 +29,7 @@ html{direction:rtl}body{direction:rtl}.list-unstyled{padding-right:0;padding-lef
   body.offcanvas.offcanvas-left.flip.active .offcanvas-overlay {left: -75%; right: auto;}
   body.offcanvas.offcanvas-left.flip.active .offcanvas-toggle {right: 75%; left: auto;}
 
-  body.offcanvas.offcanvas-right.flip > .container {padding-left: 25px;}
+  body.offcanvas.offcanvas-right.flip {padding-left: 18px;}
   body.offcanvas.offcanvas-right.flip .sidebar {left: -75%; right: auto;}
   body.offcanvas.offcanvas-right.flip .offcanvas-overlay {right: -100%; left: auto;}
   body.offcanvas.offcanvas-right.flip .offcanvas-toggle {
