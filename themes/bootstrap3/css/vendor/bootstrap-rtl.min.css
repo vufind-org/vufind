@@ -45,3 +45,6 @@ html{direction:rtl}body{direction:rtl}.list-unstyled{padding-right:0;padding-lef
   body.offcanvas.offcanvas-right.flip.active .offcanvas-overlay {right: -75%; left: auto;}
   body.offcanvas.offcanvas-right.flip.active .offcanvas-toggle {left: 75%; right: auto;}
 }
+
+/* Customization for sidebar */
+.sidebar .list-group:not(.filters) .title:after {float: left;}
