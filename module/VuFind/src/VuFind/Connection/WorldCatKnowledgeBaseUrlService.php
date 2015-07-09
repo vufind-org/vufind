@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
-use VuFind\RecordDriver\AbstractBase as RecordDriver;
+use VuFind\RecordDriver\AbstractBase as RecordDriver,
+    VuFindHttp\HttpServiceAwareInterface;
 
 /**
  * World Cat Utilities
@@ -39,10 +40,10 @@ use VuFind\RecordDriver\AbstractBase as RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInterface
+class WorldCatKnowledgeBaseUrlService implements HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
-    
+
     /**
      * Array of record drivers to look up (keyed by ID).
      *
@@ -56,7 +57,7 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
      * @var array
      */
     protected $cache = [];
-    
+
     /**
      * String for API Key to WorldCat Knowledge base
      * @var string
@@ -64,17 +65,22 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
     protected $worldcatKnowledgeBaseWskey;
 
     /**
+     * Constructor
      *
+     * @param VuFind/Config $config                  General config data
+     * @param VuFind/Config $worldcatDiscoveryConfig Worldcat Disc. config data
      */
     public function __construct($config, $worldcatDiscoveryConfig)
     {
         if ($worldcatDiscoveryConfig) {
-            $this->worldcatKnowledgeBaseWskey = $worldcatDiscoveryConfig->General->wskey;
+            $this->worldcatKnowledgeBaseWskey
+                = $worldcatDiscoveryConfig->General->wskey;
         } else {
-            $this->worldcatKnowledgeBaseWskey = $config->OpenURL->worldcatKnowledgeBaseWskey;
+            $this->worldcatKnowledgeBaseWskey
+                = $config->OpenURL->worldcatKnowledgeBaseWskey;
         }
     }
-    
+
     /**
      * Add a record driver to the queue of records we should look up (this allows
      * us to save HTTP requests by looking up many URLs at once on a "just in case"
@@ -119,22 +125,24 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
         // Load URLs for queue
         $kbrequest = "http://worldcat.org/webservices/kb/openurl/mresolve?queries=";
         $queries = [];
-        foreach ($this->queue as $id => $record){
-            $queries[$id] = $this->openURLToArray($record->getOpenURL());
+        foreach ($this->queue as $id => $record) {
+            $queries[$id] = $this->_openURLToArray($record->getOpenURL());
         }
         $kbrequest .= json_encode($queries);
         $kbrequest .= '&wskey=' . $this->worldcatKnowledgeBaseWskey;
-         
+
         $client = $this->httpService
             ->createClient($kbrequest);
         $adapter = new \Zend\Http\Client\Adapter\Curl();
         $client->setAdapter($adapter);
         $result = $client->setMethod('GET')->send();
-        
+
         if ($result->isSuccess()) {
             $kbresponse = json_decode($result->getBody(), true);
             foreach ($kbresponse as $id => $result) {
-                if (isset($result['result'][0]['url']) && isset($result['result'][0]['collection_name'])) {
+                if (isset($result['result'][0]['url'])
+                    && isset($result['result'][0]['collection_name'])
+                ) {
                     $this->cache[$id] = [
                         [
                             'url' => $result['result'][0]['url'],
@@ -146,21 +154,31 @@ class WorldCatKnowledgeBaseUrlService implements \VuFindHttp\HttpServiceAwareInt
                 }
             }
         } else {
-            throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
+            throw new \Exception(
+                'WorldCat Knowledge Base API error - ' . $result->getStatusCode()
+                . ' - ' . $result->getReasonPhrase()
+            );
         }
-        
-        
+
+
 
         // Clear queue
         $this->queue = [];
     }
-    
-    private function openURLToArray($openURL)
+
+    /**
+     * Parses a url into an associative array of GET parameters
+     *
+     * @param string $openURL URL to be parsed
+     *
+     * @return array
+     */
+    private function _openURLToArray($openURL)
     {
         $parametersPairs = explode('&', $openURL);
-    
+
         $parameters = [];
-        foreach ($parametersPairs as $parametersPair){
+        foreach ($parametersPairs as $parametersPair) {
             $pairArray = explode('=', $parametersPair);
             $parameters[$pairArray[0]] = $pairArray[1];
         }

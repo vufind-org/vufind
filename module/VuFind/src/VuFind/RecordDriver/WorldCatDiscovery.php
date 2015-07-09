@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Connection\WorldCatKnowledgeBaseUrlService as UrlService;
+use VuFind\Connection\WorldCatKnowledgeBaseUrlService as UrlService,
+    VuFindHttp\HttpServiceAwareInterface;
 
 /**
  * Model for WorldCat Discovery records.
@@ -37,7 +38,7 @@ use VuFind\Connection\WorldCatKnowledgeBaseUrlService as UrlService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAwareInterface
+class WorldCatDiscovery extends SolrDefault implements HttpServiceAwareInterface
 {
     use IlsAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -66,7 +67,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $this->fields = [];
         $this->rawObject = $data;
     }
-    
+
 
     public function setWorldCatKnowledgeBaseUrlService(UrlService $service)
     {
@@ -85,41 +86,39 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         }
         return $this->rawObject;
     }
-    
+
     public function setOffers($offers)
     {
         $this->offers = $offers;
     }
-    
+
     public function getOffers()
     {
         return $this->offers;
     }
-    
+
     public function getOffer($id)
     {
         $offers = $this->getOffers();
-        
+
+        $resourceUrl = 'http://worldcat.org/wcr/organization/resource/';
         $offersAtInstitution = array_filter(
             $offers, function ($offer) use ($id) {
-            
-
-                return($offer->getSeller()->getURI() == 'http://worldcat.org/wcr/organization/resource/' . $id);
+                return($offer->getSeller()->getURI() == $resourceUrl . $id);
             }
         );
         return $offersAtInstitution;
     }
-    
+
     public function getOtherLibraryOffers()
     {
         $id = $this->recordConfig->General->institution;
         $offers = $this->getOffers();
-        
+
+        $resourceUrl = 'http://worldcat.org/wcr/organization/resource/';
         $offersAtOtherInstitutions = array_filter(
             $offers, function ($offer) use ($id) {
-            
-        
-                return($offer->getSeller()->getURI() != 'http://worldcat.org/wcr/organization/resource/' . $id);
+                return($offer->getSeller()->getURI() != $resourceUrl . $id);
             }
         );
         return $offersAtOtherInstitutions;
@@ -135,7 +134,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $subjects = $this->getRawObject()->getAbout();
         array_walk(
             $subjects, function (&$subject) {
-            
+
                 $subject = is_callable([$subject, 'getName'])
                 ? $subject->getName() : null;
             }
@@ -143,7 +142,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $subjects = array_unique(array_filter($subjects));
         array_walk(
             $subjects, function (&$subject) {
-            
+
                 $subject = [$subject];
             }
         );
@@ -182,18 +181,18 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $formats = $this->getRawObject()->types();
         array_walk(
             $formats, function (&$format) {
-            
+
                 if (strchr($format, '/')) {
                     $format = substr(strchr($format, '/'), 1);
                 } else {
                     $format = substr(strchr($format, ':'), 1);
                 }
-            
+
                 if (strchr($format, '_')) {
                     $format = str_replace("_", " ", $format);
                 }
-            
-            
+
+
             }
         );
         return $formats;
@@ -209,7 +208,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $notes = $this->getRawObject()->getDescriptions();
         array_walk(
             $notes, function (&$note) {
-            
+
                 $note = $note->getValue();
             }
         );
@@ -228,7 +227,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
             $manifestations = $response->getManifestations();
             array_walk(
                 $manifestations, function (&$manifestation) {
-                
+
                     $manifestation = is_callable([$manifestation, 'getISBN'])
                     ? $manifestation->getISBN() : null;
                 }
@@ -285,14 +284,17 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $record = $this->getRawObject();
         if ($record instanceof \WorldCat\Discovery\Article) {
             if ($record->getSameAs()) {
-                $doi = str_replace("http://dx.doi.org/", "info:doi:", $record->getSameAs());
+                $doi = str_replace(
+                    "http://dx.doi.org/", "info:doi:", $record->getSameAs()
+                );
                 $kbrequest[] = 'rft_id=' . $doi;
             } else {
                 if ($part = $record->getIsPartOf()) {
                     if (is_callable([$part, 'getVolume'])
                         && ($vol = $part->getVolume())
                     ) {
-                        $kbrequest[] = "rft.issn=" . $vol->getPeriodical()->getIssn();
+                        $kbrequest[] = "rft.issn="
+                            . $vol->getPeriodical()->getIssn();
                         $kbrequest[] = "rft.volume=" . $vol->getVolumeNumber();
                     }
                     if (is_callable([$part, 'getIssueNumber'])) {
@@ -325,11 +327,13 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $placesOfPublication = $this->getRawObject()->getPlacesOfPublication();
         array_walk(
             $placesOfPublication, function (&$placeOfPublication) {
-            
+
                 if ($placeOfPublication->get('schema:name')) {
                     $placeOfPublication = $placeOfPublication->getName();
                 } else {
-                    $placeOfPublication = $placeOfPublication->get('http://purl.org/dc/terms/identifier');
+                    $placeOfPublication = $placeOfPublication->get(
+                        'http://purl.org/dc/terms/identifier'
+                    );
                 }
             }
         );
@@ -344,8 +348,10 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     public function getPrimaryAuthor()
     {
         $author = $this->getRawObject()->getAuthor();
-        
-        return is_callable([$author, 'getName']) ? $author->getName()->getValue() : '';
+
+        return is_callable([$author, 'getName'])
+            ? $author->getName()->getValue()
+            : '';
     }
 
     /**
@@ -381,13 +387,13 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         $contributors = $this->getRawObject()->getContributors();
         array_walk(
             $contributors, function (&$contributor) {
-            
+
                 $contributor = $contributor->getName()->getValue();
             }
         );
         return $contributors;
     }
-    
+
     /**
      * Get the short (pre-subtitle) title of the record.
      *
@@ -421,15 +427,17 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     }
 
     /**
-     * getGenres
+     * TODO: getGenres
      */
 
     /**
-     * getWork
+     * TODO: getWork
      */
 
     /**
-     * getUrls
+     * TODO: getUrls
+     *
+     * @return array
      */
     public function getUrls()
     {
@@ -442,7 +450,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
                 $urls = array_merge($urls, $moreUrls);
             }
         }
-        
+
         return $urls;
     }
 
@@ -467,15 +475,15 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     }
 
     /**
-     * getNumberOfPages
+     * TODO: getNumberOfPages
      */
 
     /**
-     * getReviews
+     * TODO: getReviews
      */
 
     /**
-     * Articles
+     * TODO: Articles
      */
 
     /**
@@ -604,9 +612,9 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
     }
 
     /**
-     * getSameAs
+     * TODO: getSameAs
      */
-    
+
     /**
      * Does the OpenURL configuration indicate that we should display OpenURLs in
      * the specified context?
@@ -621,7 +629,7 @@ class WorldCatDiscovery extends SolrDefault implements \VuFindHttp\HttpServiceAw
         // an ISSN or ISBN.
         if ($this->getCleanISSN() || $this->getCleanISBN()) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }

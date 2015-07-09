@@ -56,8 +56,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Constructor
      */
-    public function __construct($config, $recordLoader, \VuFind\Date\Converter $dateConverter) 
-    {
+    public function __construct($config, $recordLoader,
+        \VuFind\Date\Converter $dateConverter
+    ) {
         $this->wcdiscoveryConfig = $config;
 
         $this->recordLoader = $recordLoader;
@@ -92,7 +93,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $this->institution = $this->config['Catalog']['institution'];
             //TODO: want an elseif statement here for the MultiDriver backend
         } else {
-            throw new Exception('You do not have the proper properties setup in either the WorldCatDiscovery or WMS ini files');
+            throw new Exception(
+                'You do not have the proper properties setup in either '
+                . 'the WorldCatDiscovery or WMS ini files'
+            );
         }
 
         if ($this->config['Catalog']['consortium']) {
@@ -118,12 +122,21 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected function getAccessToken()
     {
-        if (empty($this->session->accessToken) || $this->session->accessToken->isExpired()) {
+        if (empty($this->session->accessToken)
+            || $this->session->accessToken->isExpired()
+        ) {
             $options = [
-                    'services' => ['WorldCatDiscoveryAPI', 'WMS_Availability', 'WMS_NCIP','refresh_token']
+                'services' => [
+                    'WorldCatDiscoveryAPI',
+                    'WMS_Availability',
+                    'WMS_NCIP',
+                    'refresh_token'
+                ]
             ];
             $wskey = new WSKey($this->wskey, $this->secret, $options);
-            $accessToken = $wskey->getAccessTokenWithClientCredentials($this->institution, $this->institution);
+            $accessToken = $wskey->getAccessTokenWithClientCredentials(
+                $this->institution, $this->institution
+            );
             $this->session->accessToken = $accessToken;
         }
         return $this->session->accessToken;
@@ -141,7 +154,7 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         // Load pickup locations file:
         $pickupLocationsFile
-        = ConfigLocator::getConfigPath($filename, 'config/vufind');
+            = ConfigLocator::getConfigPath($filename, 'config/vufind');
         if (!file_exists($pickupLocationsFile)) {
             throw new ILSException(
                 "Cannot load pickup locations file: {$pickupLocationsFile}."
@@ -162,18 +175,21 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * Get Pick Up Locations
      *
      * This is responsible get a list of valid library locations for holds / recall
-     * retrieval
+     * retrieval. Returns an array of associative arrays with locationID and
+     * locationDisplay keys
      *
      * @param array $patron      Patron information returned by the patronLogin
-     * method.
+     *                           method.
      * @param array $holdDetails Optional array, only passed in when getting a list
-     * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the pickup options
-     * or may be ignored.  The driver must not add new options to the return array
-     * based on this data or other areas of VuFind may behave incorrectly.
+     *                           in the context of placing a hold; contains most of
+     *                           the same values passed to placeHold, minus the
+     *                           patron data.  May be used to limit the pickup
+     *                           options or may be ignored.  The driver must not add
+     *                           new options to the return array based on this data
+     *                           or other areas of VuFind may behave incorrectly.
      *
-     * @return                                        array        An array of associative arrays with locationID and
-     * locationDisplay keys
+     * @return array
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron, $holdDetails = null)
@@ -181,18 +197,16 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $locations = [];
         foreach (array_keys($this->agency) as $agency) {
             foreach ($this->pickupLocations[$agency] as $thisAgency) {
-                $locations[]
-                = [
-                        'locationID' => $thisAgency['locationID'],
-                        'locationDisplay' => $thisAgency['locationDisplay'],
+                $locations[] = [
+                    'locationID' => $thisAgency['locationID'],
+                    'locationDisplay' => $thisAgency['locationDisplay'],
                 ];
             }
         }
         return $locations;
     }
-    
+
     /**
-     * hasHoldings
      * This used to hide the holdings tab for records where holdings do not apply
      *
      * @param string $id The Bib ID
@@ -210,8 +224,6 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     }
 
     /**
-     * checkRequestIsValid
-     *
      * This is responsible for determining if an item is requestable
      *
      * @param string $id     The Bib ID
@@ -222,7 +234,8 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        if ($this->recordLoader->load($id, 'WorldCatDiscovery')->getOffer($this->institution)) {
+        $record = $this->recordLoader->load($id, 'WorldCatDiscovery');
+        if (!empty($record) && $record->getOffer($this->institution)) {
             return true;
         } else {
             return false;
@@ -235,11 +248,13 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $xml    XML request document
      * @param array  $patron a patron array
      *
-     * @return object     SimpleXMLElement parsed from response
+     * @return object SimpleXMLElement parsed from response
      */
     protected function sendRequest($xml, $patron)
     {
-        $url = 'https://' . $this->institution . '.share.worldcat.org/ncip/circ-patron?principalID=' . $patron['principalID'] . '&principalIDNS=' . $patron['principalIDNS'];
+        $url = 'https://' . $this->institution
+            . '.share.worldcat.org/ncip/circ-patron?principalID='
+            . $patron['principalID'] . '&principalIDNS=' . $patron['principalIDNS'];
         // Make the NCIP request:
         try {
             $client = $this->httpService
@@ -265,7 +280,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         }
 
         if (!$result->isSuccess()) {
-            throw new ILSException('HTTP error - ' . $result->getStatusCode() . ' ' . $result->getReasonPhrase());
+            throw new ILSException(
+                'HTTP error - ' . $result->getStatusCode() . ' '
+                . $result->getReasonPhrase()
+            );
         }
 
         // Process the NCIP response:
@@ -277,7 +295,12 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             if (count($result->xpath("//ns1:Problem")) > 0) {
                 $problemType = $result->xpath("//ns1:Problem/ns1:ProblemType");
                 $problemDetail = $result->xpath("//ns1:Problem/ns1:ProblemDetail");
-                throw new ILSException("NCIP Error - " . $problemType[0] . (isset($problemDetail[0]) ? ' - ' . $problemDetail[0] : '') . $xml);
+                $message = isset($problemDetail[0])
+                    ? ' - ' . $problemDetail[0]
+                    : '';
+                throw new ILSException(
+                    "NCIP Error - " . $problemType[0] . $message . $xml
+                );
             } else {
                 return $result;
             }
@@ -300,9 +323,11 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     public function getStatus($id)
     {
         $holding = [];
-        if ($this->recordLoader->load($id, 'WorldCatDiscovery')->getOffer($this->institution)) {
+        $record = $this->recordLoader->load($id, 'WorldCatDiscovery');
+        if (!empty($record) && $record->getOffer($this->institution)) {
             // Make the request to WMS_Availability web service
-            $wmsAvailabilityRequest = "https://worldcat.org/circ/availability/sru/service?x-registryId=" . $this->institution;
+            $wmsAvailabilityRequest = "https://worldcat.org/circ/availability/'
+                . 'sru/service?x-registryId=" . $this->institution;
             $wmsAvailabilityRequest .= "&query=no:" . $id;
 
             try {
@@ -312,32 +337,42 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 $client->setAdapter($adapter);
                 $client->setHeaders(
                     [
-                        "Authorization" => 'Bearer ' . $this->getAccessToken()->getValue()
+                        "Authorization" => 'Bearer '
+                        . $this->getAccessToken()->getValue()
                     ]
                 );
                 $wmsAvailabilityResponse = $client->setMethod('GET')->send();
             } catch (\Exception $e) {
                 throw new ILSException($e->getMessage());
             }
-            $availabilityXML = simplexml_load_string($wmsAvailabilityResponse->getContent());
+            $availabilityXML = simplexml_load_string(
+                $wmsAvailabilityResponse->getContent()
+            );
             $copies = $availabilityXML->xpath('//holdings/holding');
 
-            foreach ($copies as $copy){
-                if ($copy->circulations->circulation) {
+            foreach ($copies as $copy) {
+                if ($circ = $copy->circulations->circulation) {
+                    $availability = $circ->availableNow->attributes()->value == "1";
                     $holding[] = [
-                            'id' => $id,
-                            'source' => 'WorldCatDiscovery',
-                            'addLink' => 'check',
-                            'availability' => ($copy->circulations->circulation->availableNow->attributes()->value == "1") ? true : false,
-                            'status' => ($copy->circulations->circulation->availableNow->attributes()->value == "1") ? 'On the shelf' : (string) $copy->circulations->circulation->reasonUnavailable,
-                            'location' => (isset($copy->temporaryLocation)) ? $copy->temporaryLocation : $copy->localLocation .  ' ' . $copy->shelvingLocation,
-                            'reserve' => 'No',
-                            'callnumber' => $copy->callNumber,
-                            'duedate' => $this->dateFormat->convertToDisplayDate("m-d-y", $copy->circulations->circulation->availabilityDate),
-                            'number' => $copy->copyNumber,
-                            'item_id' => $copy->circulations->circulation->itemId,
-                            'barcode' => $copy->circulations->circulation->itemId,
-                            'requests_placed' => $copy->circulations->circulation->onHold->attributes()->value
+                        'id' => $id,
+                        'source' => 'WorldCatDiscovery',
+                        'addLink' => 'check',
+                        'availability' => $availability,
+                        'status' => $availability
+                            ? 'On the shelf'
+                            : (string) $circ->reasonUnavailable,
+                        'location' => (isset($copy->temporaryLocation))
+                            ? $copy->temporaryLocation
+                            : $copy->localLocation .  ' ' . $copy->shelvingLocation,
+                        'reserve' => 'No',
+                        'callnumber' => $copy->callNumber,
+                        'duedate' => $this->dateFormat->convertToDisplayDate(
+                            "m-d-y", $circ->availabilityDate
+                        ),
+                        'number' => $copy->copyNumber,
+                        'item_id' => $circ->itemId,
+                        'barcode' => $circ->itemId,
+                        'requests_placed' => $circ->onHold->attributes()->value
                     ];
                 }
             }
@@ -352,9 +387,9 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * This is responsible for retrieving the status information for a
      * collection of records.
      *
-     * @param array $ids The array of record ids to retrieve the status for
+     * @param array $ids The array of record ids to retrieve the status for.
      *
-     * @return mixed     An array of getStatus() return values on success.
+     * @return mixed An array of getStatus() return values on success.
      */
     public function getStatuses($ids)
     {
@@ -374,9 +409,10 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @return                                        mixed     On success, an associative array with the following keys:
-     * id, availability (boolean), status, location, reserve, callnumber, duedate,
-     * number, barcode.
+     * @return mixed On success, an associative array with the following keys:
+     *               id, availability (boolean), status, location, reserve,
+     *               callnumber, duedate, number, barcode.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHolding($id, array $patron = null)
@@ -392,7 +428,8 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      *
      * @param string $id The record id to retrieve the info for
      *
-     * @return                                        mixed     An array with the acquisitions data on success.
+     * @return mixed An array with the acquisitions data on success.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
@@ -408,16 +445,18 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $username The patron username
      * @param string $password The patron password
      *
-     * @return                                        mixed           Associative array of patron info on successful login,
-     * null on unsuccessful login.
+     * @return mixed Associative array of patron info on successful login,
+     *               null on unsuccessful login.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)
     {
+        $user = $this->session->accessToken->getUser();
         $patronInfo = [
-        "principalID" => $this->session->accessToken->getUser()->getPrincipalID(),
-        "principalIDNS" => $this->session->accessToken->getUser()->getPrincipalIDNS(),
-        "institution" => $this->institution
+            "principalID" => $user->getPrincipalID(),
+            "principalIDNS" => $user->getPrincipalIDNS(),
+            "institution" => $this->institution
         ];
         return $patronInfo;
     }
@@ -448,11 +487,19 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             '<ns1:LoanedItemsDesired/>',
             '<ns1:Ext>',
             '<ns2:ResponseElementControl>',
-            '<ns2:ElementType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/elementtype.scm">Loaned Item</ns2:ElementType>',
-            '<ns2:StartElement>' . $displayInfo['startElement'] . '</ns2:StartElement>',
-            '<ns2:MaximumCount>' . $displayInfo['maximumCount'] . '</ns2:MaximumCount>',
-            '<ns2:SortField ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/accountdetailselementtype.scm">' . $displayInfo['sortField'] . '</ns2:SortField>',
-            '<ns2:SortOrderType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/sortordertype.scm">' . $displayInfo['sortOrder'] . '</ns2:SortOrderType>',
+            '<ns2:ElementType '
+                . 'ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/'
+                . 'elementtype.scm">Loaned Item</ns2:ElementType>',
+            '<ns2:StartElement>' . $displayInfo['startElement']
+                . '</ns2:StartElement>',
+            '<ns2:MaximumCount>' . $displayInfo['maximumCount']
+                . '</ns2:MaximumCount>',
+            '<ns2:SortField ncip:Scheme="http://worldcat.org/ncip/schemes/v2/'
+                . 'extensions/accountdetailselementtype.scm">'
+                . $displayInfo['sortField'] . '</ns2:SortField>',
+            '<ns2:SortOrderType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/'
+                . 'extensions/sortordertype.scm">' . $displayInfo['sortOrder']
+                . '</ns2:SortOrderType>',
             '</ns2:ResponseElementControl>',
             '</ns1:Ext>'
         ];
@@ -526,11 +573,21 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 '<ns1:UserFiscalAccountDesired/>',
                 '<ns1:Ext>',
                 '<ns2:ResponseElementControl>',
-                '<ns2:ElementType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/elementtype.scm">Account Details</ns2:ElementType>',
-                '<ns2:StartElement>' . $displayInfo['startElement'] . '</ns2:StartElement>',
-                '<ns2:MaximumCount>' . $displayInfo['maximumCount'] . '</ns2:MaximumCount>',
-                '<ns2:SortField ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/accountdetailselementtype.scm">' . $displayInfo['sortField'] . '</ns2:SortField>',
-                '<ns2:SortOrderType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/sortordertype.scm">' . $displayInfo['sortOrder'] . '</ns2:SortOrderType>',
+                '<ns2:ElementType '
+                    . 'ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/'
+                    . 'elementtype.scm">Account Details</ns2:ElementType>',
+                '<ns2:StartElement>' . $displayInfo['startElement']
+                    . '</ns2:StartElement>',
+                '<ns2:MaximumCount>' . $displayInfo['maximumCount']
+                    . '</ns2:MaximumCount>',
+                '<ns2:SortField '
+                    . 'ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/'
+                    . 'accountdetailselementtype.scm">' . $displayInfo['sortField']
+                    . '</ns2:SortField>',
+                '<ns2:SortOrderType '
+                    . 'ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/'
+                    . 'sortordertype.scm">' . $displayInfo['sortOrder']
+                    . '</ns2:SortOrderType>',
                 '</ns2:ResponseElementControl>',
                 '</ns1:Ext>'
         ];
@@ -548,7 +605,6 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $fines = [];
         $balance = 0;
         foreach ($list as $current) {
-
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
 
             $tmp = $current->xpath(
@@ -561,26 +617,26 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
             );
             $desc = (string)$tmp[0];
-             $tmp = $current->xpath(
-                 'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
-                 'ns1:ItemId/ns1:ItemIdentifierValue'
-             );
-             if (isset($tmp)) {
-                 $id = (string)$tmp[0];
-                } else {
-                    $id = null;
-             }
-                $balance += $amount;
-                $fines[] = [
-                    'amount' => $amount,
-                    'balance' => $balance,
-                    'checkout' => '',
-                    'fine' => $desc,
-                    'duedate' => '',
-                    'createdate' => $date,
-                    'id' => $id,
-                    'source' => 'WorldCatDiscovery'
-                ];
+            $tmp = $current->xpath(
+                'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
+                'ns1:ItemId/ns1:ItemIdentifierValue'
+            );
+            if (isset($tmp)) {
+                $id = (string)$tmp[0];
+            } else {
+                $id = null;
+            }
+            $balance += $amount;
+            $fines[] = [
+                'amount' => $amount,
+                'balance' => $balance,
+                'checkout' => '',
+                'fine' => $desc,
+                'duedate' => '',
+                'createdate' => $date,
+                'id' => $id,
+                'source' => 'WorldCatDiscovery'
+            ];
         }
         return $fines;
     }
@@ -610,11 +666,21 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                 '<ns1:RequestedItemsDesired/>',
                 '<ns1:Ext>',
                 '<ns2:ResponseElementControl>',
-                '<ns2:ElementType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/elementtype.scm">Requested Item</ns2:ElementType>',
-                '<ns2:StartElement>' . $displayInfo['startElement'] . '</ns2:StartElement>',
-                '<ns2:MaximumCount>' . $displayInfo['maximumCount'] . '</ns2:MaximumCount>',
-                '<ns2:SortField ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/accountdetailselementtype.scm">' . $displayInfo['sortField'] . '</ns2:SortField>',
-                '<ns2:SortOrderType ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/sortordertype.scm">' . $displayInfo['sortOrder'] . '</ns2:SortOrderType>',
+                '<ns2:ElementType '
+                    . 'ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/'
+                    . 'elementtype.scm">Requested Item</ns2:ElementType>',
+                '<ns2:StartElement>' . $displayInfo['startElement']
+                    . '</ns2:StartElement>',
+                '<ns2:MaximumCount>' . $displayInfo['maximumCount']
+                    . '</ns2:MaximumCount>',
+                '<ns2:SortField '
+                    . 'ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/'
+                    . 'accountdetailselementtype.scm">' . $displayInfo['sortField']
+                    . '</ns2:SortField>',
+                '<ns2:SortOrderType '
+                    . 'ncip:Scheme="http://worldcat.org/ncip/schemes/v2/extensions/'
+                    . 'sortordertype.scm">' . $displayInfo['sortOrder']
+                    . '</ns2:SortOrderType>',
                 '</ns2:ResponseElementControl>',
                 '</ns1:Ext>'
         ];
@@ -660,15 +726,15 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             // Retrieval requests are fetched using getMyStorageRetrievalRequests
             if ($requestType === "Hold" or $requestType === "Recall") {
                 $retVal[] = [
-                        'id' => (string)$id[0],
-                        'source' => 'WorldCatDiscovery',
-                        'create' => (string)$created,
-                        'expire' => $expireDate,
-                        'title' => (string)$title[0],
-                        'position' => (string)$pos[0],
+                        'id'        => (string)$id[0],
+                        'source'    => 'WorldCatDiscovery',
+                        'create'    => (string)$created,
+                        'expire'    => $expireDate,
+                        'title'     => (string)$title[0],
+                        'position'  => (string)$pos[0],
                         'requestId' => (string)$requestId[0],
-                        'item_id' =>  (isset($itemId[0])) ? (string)$itemId[0] : null,
-                        'location' => (string)$pickupLocation[0],
+                        'item_id'   => isset($itemId[0]) ? (string)$itemId[0] : null,
+                        'location'  => (string)$pickupLocation[0],
                 ];
             }
         }
@@ -813,14 +879,15 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 
     /**
      * Renew My Items
+     * Returns an array of renewal information keyed by item ID
      *
      * Function for attempting to renew a patron's items.  The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
      * @param array $renewDetails An array of data required for renewing items
-     * including the Patron ID and an array of renewal IDS
+     *                            including the Patron ID and an array of renewal IDS
      *
-     * @return array              An array of renewal information keyed by item ID
+     * @return array
      */
     public function renewMyItems($renewDetails)
     {
@@ -862,11 +929,16 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $requestId Id of the request to cancel
      * @param string $type      The type of request to cancel (Hold, etc)
      *
-     * @return string           NCIP request XML
+     * @return string
      */
     protected function getCancelRequest($userID, $institution, $requestId, $type)
     {
-        return $this->buildNCIPMessage('CancelRequestItem', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . $this->getRequestIdXml($requestId, $type));
+        return $this->buildNCIPMessage(
+            'CancelRequestItem',
+            $this->getInitiationHeader($institution)
+            . $this->getUserIdXml($institution, $userID)
+            . $this->getRequestIdXml($requestId, $type)
+        );
     }
 
     /**
@@ -881,13 +953,14 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $lastInterestDate Last date interested in item
      * @param string $pickupLocation   Code of location to pickup request
      *
-     * @return string          NCIP request XML
+     * @return string
      */
     protected function getRequest($userID, $institution, $bibId, $itemId,
         $requestType, $requestScope, $lastInterestDate, $pickupLocation = null
     ) {
-       
-        $messageBody = $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID);
+
+        $messageBody = $this->getInitiationHeader($institution)
+            . $this->getUserIdXml($institution, $userID);
 
         if ($requestScope = 'Bibliographic Item') {
             $messageBody .= $this->getBibIdXml($institution, $bibId);
@@ -895,19 +968,19 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             $messageBody .= $this->getItemIdXml($itemId);
         }
         $messageBody .= '<ns1:RequestType>' .
-                htmlspecialchars($requestType) .
-                '</ns1:RequestType>' .
-                '<ns1:RequestScopeType ' .
-                'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes' .
-                '/requestscopetype/requestscopetype.scm">' .
-                htmlspecialchars($requestScope) .
-                '</ns1:RequestScopeType>' .
-                '<ns1:PickupLocation>' .
-                htmlspecialchars($pickupLocation) .
-                '</ns1:PickupLocation>' .
-                '<ns1:PickupExpiryDate>' .
-                htmlspecialchars($lastInterestDate) .
-                '</ns1:PickupExpiryDate>';
+            htmlspecialchars($requestType) .
+            '</ns1:RequestType>' .
+            '<ns1:RequestScopeType ' .
+            'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes' .
+            '/requestscopetype/requestscopetype.scm">' .
+            htmlspecialchars($requestScope) .
+            '</ns1:RequestScopeType>' .
+            '<ns1:PickupLocation>' .
+            htmlspecialchars($pickupLocation) .
+            '</ns1:PickupLocation>' .
+            '<ns1:PickupExpiryDate>' .
+            htmlspecialchars($lastInterestDate) .
+            '</ns1:PickupExpiryDate>';
 
         return $this->buildNCIPMessage('RequestItem', $messageBody);
     }
@@ -922,7 +995,12 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      */
     protected function getRenewRequest($userID, $institution, $itemId)
     {
-        return $this->buildNCIPMessage('RenewItem', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . $this->getItemIdXml($itemId));
+        return $this->buildNCIPMessage(
+            'RenewItem',
+            $this->getInitiationHeader($institution)
+            . $this->getUserIdXml($institution, $userID)
+            . $this->getItemIdXml($itemId)
+        );
     }
 
     /**
@@ -932,95 +1010,105 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $userID UserID
      * @param string $extras Extra elements to include in the request
      *
-     * @return string          NCIP request XML
+     * @return string NCIP request XML
      */
-    protected function getLookupUserRequest($userID, $userPrincipalIDNS, $institution, $extras) 
-    {
-        return $this->buildNCIPMessage('LookupUser', $this->getInitiationHeader($institution) . $this->getUserIdXml($institution, $userID) . implode('', $extras));
+    protected function getLookupUserRequest($userID, $userPrincipalIDNS,
+        $institution, $extras
+    ) {
+        return $this->buildNCIPMessage(
+            'LookupUser',
+            $this->getInitiationHeader($institution)
+            . $this->getUserIdXml($institution, $userID)
+            . implode('', $extras)
+        );
     }
-    
+
     protected function buildNCIPMessage($messageName, $messageBody)
     {
         $ncipMessage = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-        '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-        'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
-        'xmlns:ncip="http://www.niso.org/2008/ncip" ' .
-        'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' .
-        'xsi:schemaLocation="http://www.niso.org/2008/ncip http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' .
-        'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">';
-        $ncipMessage .= '<ns1:' . $messageName . '>';
-        $ncipMessage .= $messageBody;
-        $ncipMessage .= '</ns1:' . $messageName . '>';
-        $ncipMessage .= '</ns1:NCIPMessage>';
+            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+            'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' .
+            'xmlns:ncip="http://www.niso.org/2008/ncip" ' .
+            'xmlns:ns2="http://oclc.org/WCL/ncip/2011/extensions" ' .
+            'xsi:schemaLocation="http://www.niso.org/2008/ncip ' .
+            'http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd" ' .
+            'ncip:version="http://www.niso.org/schemas/ncip/v2_01/ncip_v2_01.xsd">' .
+            '<ns1:' . $messageName . '>' . $messageBody .
+            '</ns1:' . $messageName . '></ns1:NCIPMessage>';
         return $ncipMessage;
     }
-    
+
     protected function getInitiationHeader($institution)
     {
         $header = '<ns1:InitiationHeader>' .
-        '<ns1:FromAgencyId>' .
-        '<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
-        $institution .
-        '</ns1:AgencyId>' .
-        '</ns1:FromAgencyId>' .
-        '<ns1:ToAgencyId>' .
-        '<ns1:AgencyId ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
-        $institution .
-        '</ns1:AgencyId>' .
-        '</ns1:ToAgencyId>' .
-        '<ns1:ApplicationProfileType ncip:Scheme="http://oclc.org/ncip/schemes/application-profile/wcl.scm">Version 2011</ns1:ApplicationProfileType>' .
-        '</ns1:InitiationHeader>';
+            '<ns1:FromAgencyId>' .
+            '<ns1:AgencyId ' .
+            'ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
+            $institution .
+            '</ns1:AgencyId>' .
+            '</ns1:FromAgencyId>' .
+            '<ns1:ToAgencyId>' .
+            '<ns1:AgencyId ' .
+            'ncip:Scheme="http://oclc.org/ncip/schemes/agencyid.scm">' .
+            $institution .
+            '</ns1:AgencyId>' .
+            '</ns1:ToAgencyId>' .
+            '<ns1:ApplicationProfileType' .
+            ' ncip:Scheme="http://oclc.org/ncip/schemes/' .
+            'application-profile/wcl.scm">' .
+            'Version 2011</ns1:ApplicationProfileType>' .
+            '</ns1:InitiationHeader>';
         return $header;
     }
-    
+
     protected function getUserIdXml($institution, $userID)
     {
         $userIdXml = '<ns1:UserId>' .
-        '<ns1:AgencyId>' .
-        $institution .
-        '</ns1:AgencyId>' .
-        '<ns1:UserIdentifierValue>' .
-        $userID .
-        '</ns1:UserIdentifierValue>' .
-        '</ns1:UserId>';
+            '<ns1:AgencyId>' .
+            $institution .
+            '</ns1:AgencyId>' .
+            '<ns1:UserIdentifierValue>' .
+            $userID .
+            '</ns1:UserIdentifierValue>' .
+            '</ns1:UserId>';
         return $userIdXml;
     }
-    
+
     protected function getItemIdXml($itemId)
     {
         $itemIdXml = '<ns1:ItemId>' .
-        '<ns1:ItemIdentifierValue>' .
-        htmlspecialchars($itemId) .
-        '</ns1:ItemIdentifierValue>' .
-        '</ns1:ItemId>';
+            '<ns1:ItemIdentifierValue>' .
+            htmlspecialchars($itemId) .
+            '</ns1:ItemIdentifierValue>' .
+            '</ns1:ItemId>';
         return $itemIdXml;
     }
-    
+
     protected function getBibIdXML($institution, $bibId)
     {
         $bibIdXml = '<ns1:BibliographicId>' .
-                '<ns1:BibliographicRecordId>' .
-                '<ns1:AgencyId>' .
-                $institution .
-                '</ns1:AgencyId>' .
-                '<ns1:BibliographicRecordIdentifier>' .
-                htmlspecialchars($bibId) .
-                '</ns1:BibliographicRecordIdentifier>' .
-                '</ns1:BibliographicRecordId>' .
-                '</ns1:BibliographicId>';
+            '<ns1:BibliographicRecordId>' .
+            '<ns1:AgencyId>' .
+            $institution .
+            '</ns1:AgencyId>' .
+            '<ns1:BibliographicRecordIdentifier>' .
+            htmlspecialchars($bibId) .
+            '</ns1:BibliographicRecordIdentifier>' .
+            '</ns1:BibliographicRecordId>' .
+            '</ns1:BibliographicId>';
         return $bibIdXml;
     }
-    
+
     protected function getRequestIdXML($requestId, $type)
     {
         $requestIdXml = '<ns1:RequestId>' .
-        '<ns1:RequestIdentifierValue>' .
-        htmlspecialchars($requestId) .
-        '</ns1:RequestIdentifierValue>' .
-        '</ns1:RequestId>' .
-        '<ns1:RequestType>' .
-        htmlspecialchars($type) .
-        '</ns1:RequestType>';
+            '<ns1:RequestIdentifierValue>' .
+            htmlspecialchars($requestId) .
+            '</ns1:RequestIdentifierValue>' .
+            '</ns1:RequestId>' .
+            '<ns1:RequestType>' .
+            htmlspecialchars($type) .
+            '</ns1:RequestType>';
         return $requestIdXml;
     }
 
@@ -1030,16 +1118,17 @@ class WMS extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @param string $function The name of the feature to be checked
      * @param array  $params   Optional feature-specific parameters (array)
      *
-     * @return                                        array An array with key-value pairs.
+     * @return array An array with key-value pairs.
+     *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig($function, $params = null)
     {
         if ($function == 'Holds') {
             return [
-                    'HMACKeys' => 'id:item_id:level',
-                    'extraHoldFields' => 'pickUpLocation:requiredByDate',
-                    'defaultRequiredDate' => 'driver:0:2:0',
+                'HMACKeys' => 'id:item_id:level',
+                'extraHoldFields' => 'pickUpLocation:requiredByDate',
+                'defaultRequiredDate' => 'driver:0:2:0',
             ];
         }
         return [];

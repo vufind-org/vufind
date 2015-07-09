@@ -83,14 +83,14 @@ class Results extends \VuFind\Search\Base\Results
             $field = $facet->getFacetIndex()->getValue();
             if (isset($filter[$field])) {
                 $facetItemList = [];
-                foreach ($facet->getFacetItems() as $facetItem){
-                    $facetItemInfo = [];
-                    $facetItemInfo['value'] = $facetItem->getName()->getValue();
-                    $facetItemInfo['displayText'] = $facetItem->getName()->getValue();
-                    $facetItemInfo['count'] = $facetItem->getCount()->getValue();
-                    $facetItemInfo['operator'] = 'AND';
-                    $facetItemInfo['isApplied'] = false;
-                    $facetItemList[] = $facetItemInfo;
+                foreach ($facet->getFacetItems() as $facetItem) {
+                    $itemInfo = [];
+                    $itemInfo['value'] = $facetItem->getName()->getValue();
+                    $itemInfo['displayText'] = $facetItem->getName()->getValue();
+                    $itemInfo['count'] = $facetItem->getCount()->getValue();
+                    $itemInfo['operator'] = 'AND';
+                    $itemInfo['isApplied'] = false;
+                    $facetItemList[] = $itemInfo;
                 }
                 $facets[$order[$field]] = [
                     'displayName' => $field,

@@ -844,9 +844,11 @@ class Factory
     public static function getWorldCatKnowledgeBaseUrlService(ServiceManager $sm)
     {
         $config = $sm->get('VuFind\Config')->get('config');
-        $worldCatDiscoveryConfig = $sm->get('VuFind\Config')->get('WorldCatDiscovery');
-        
-        return new \VuFind\Connection\WorldCatKnowledgeBaseUrlService($config, $worldCatDiscoveryConfig);
+        $worldCatDiscConfig = $sm->get('VuFind\Config')->get('WorldCatDiscovery');
+
+        return new \VuFind\Connection\WorldCatKnowledgeBaseUrlService(
+            $config, $worldCatDiscConfig
+        );
     }
 
     /**

@@ -44,8 +44,8 @@ class FASTSubjects implements RelatedInterface
      * @var array
      */
     protected $results;
-    
-    
+
+
     /**
      * Establishes base settings for making recommendations.
      *
@@ -56,45 +56,54 @@ class FASTSubjects implements RelatedInterface
      */
     public function init($settings, $driver)
     {
-        // this only works with WorldCat Discovery driver need to reflect that in the code
+        // this only works with WorldCat Discovery driver
+        // need to reflect that in the code
         if ($driver instanceof \VuFind\RecordDriver\WorldCatDiscovery) :
             // Add FASTSubjects to query
             $abouts = $driver->getRawObject()->getAbout();
-             
+
             $subjects = [];
-            
-            foreach($abouts as $subject)
-            {
+
+            foreach ($abouts as $subject) {
                 $relatedSubjects = [];
                 $broaderSubjects = [];
                 $narrowerSubjects = [];
-                // || 0 === strpos($subject->getUri(), 'http://id.loc.gov/authorities/subjects/')
-                if(0 === strpos($subject->getUri(), 'http://id.worldcat.org/fast/')) {
-                    $subjectObject = \WorldCat\Discovery\Thing::findByUri($subject->getUri(), ['accept' => 'application/rdf+xml']);
-                    foreach($subjectObject->allResources('skos:related') as $relatedSubject) {
-                        array_push($relatedSubjects, $relatedSubject->getLiteral('rdfs:label')->getValue());
+                /* || 0 === strpos(
+                    $subject->getUri(), 'http://id.loc.gov/authorities/subjects/'
+                ) */
+                $pos = strpos($subject->getUri(), 'http://id.worldcat.org/fast/');
+                if (0 === $pos) {
+                    $subjectObject = \WorldCat\Discovery\Thing::findByUri(
+                        $subject->getUri(), ['accept' => 'application/rdf+xml']
+                    );
+                    $skosRelated = $subjectObject->allResources('skos:related');
+                    foreach ($skosRelated as $relatedSubject) {
+                        array_push(
+                            $relatedSubjects,
+                            $relatedSubject->getLiteral('rdfs:label')->getValue()
+                        );
                     }
-                    
+
                     // Add loop from broaderSubjects
                     // Add loop for narrowerSubjects
                     // Change next array to account for these
-            
-                    if(is_a($subject->getName(), 'EasyRdf_Literal')) {
-                        if(empty($subjects[$subject->getName()->getValue()])) {
-                            $subjects[$subject->getName()->getValue()] = $relatedSubjects;
+
+                    if (is_a($subject->getName(), 'EasyRdf_Literal')) {
+                        if (empty($subjects[$subject->getName()->getValue()])) {
+                            $subjects[$subject->getName()->getValue()]
+                                = $relatedSubjects;
                         }
-                    }
-                    else if($subject->getName() != null) {
+                    } elseif ($subject->getName() != null) {
                         $subjects[$subject->getName()] = [];
                     }
                 }
-                 
-            
+
+
             }
             $this->results = $subjects;
         endif;
     }
-    
+
     /**
      * Get an array of Record Driver objects representing other editions of the one
      * passed to the constructor.

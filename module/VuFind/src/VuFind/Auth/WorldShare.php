@@ -60,20 +60,22 @@ class WorldShare extends AbstractBase implements
 
     /**
      * Constructor
+     *
+     * @param Vufind/Config $globalConfig Configuration data
      */
     public function __construct($globalConfig)
     {
         $this->session = new \Zend\Session\Container('WorldCatDiscovery');
-        
+
         $worldCatDiscoveryConfig = $globalConfig->get('WorldCatDiscovery');
         $wmsConfig = $globalConfig->get('WMS');
-        
+
         if ($globalConfig->get('config')->Catalog->driver == 'WMS') {
             $this->wmsEnabled = true;
         } else {
             $this->wmsEnabled = false;
         }
-        
+
         if ($worldCatDiscoveryConfig) {
             $this->key = $worldCatDiscoveryConfig->General->wskey;
             $this->secret = $worldCatDiscoveryConfig->General->secret;
@@ -82,10 +84,11 @@ class WorldShare extends AbstractBase implements
             $this->key = $wmsConfig['Catalog']['wskey'];
             $this->secret = $wmsConfig['Catalog']['secret'];
             $this->institution = $wmsConfig['Catalog']['institution'];
-        } else{
-            $this->key = $globalConfig->get('config')->WorldShare->wskey;
-            $this->secret = $globalConfig->get('config')->WorldShare->secret;
-            $this->institution = $globalConfig->get('config')->WorldShare->institution;
+        } else {
+            $config = $globalConfig->get('config');
+            $this->key = $config->WorldShare->wskey;
+            $this->secret = $config->WorldShare->secret;
+            $this->institution = $config->WorldShare->institution;
         }
     }
 
@@ -112,7 +115,11 @@ class WorldShare extends AbstractBase implements
     protected function validateConfig()
     {
         if (empty($this->key) | empty($this->secret) | empty($this->institution)) {
-            throw new Exception('You do not have the proper properties setup in either the WorldCatDiscovery, WMS ini file or WorldShare section in the main config ini file');
+            throw new Exception(
+                'You do not have the proper properties setup '
+                . 'in either the WorldCatDiscovery, WMS ini file or WorldShare '
+                . 'section in the main config ini file'
+            );
         }
     }
 
@@ -130,23 +137,32 @@ class WorldShare extends AbstractBase implements
         $code = $request->getQuery()->get('code');
         if (empty($code)) {
             throw new AuthException('authentication_error_admin');
-            //throw new AuthException('Error ' . $request->getQuery()->get('error') . ' Error Description ' . $request->getQuery()->get('error_description'));
+            /* throw new AuthException(
+                'Error ' . $request->getQuery()->get('error')
+                . ' Error Description '
+                . $request->getQuery()->get('error_description')
+            ); */
         }
         $accessToken = $this->getAccessTokenFromCode($code);
         if (empty($accessToken)) {
             throw new AuthException('authentication_error_admin');
         }
-        
+
         if ($accessToken->getErrorCode()) {
-            throw new AuthException($accessToken->getErrorCode() . ' ' . $accessToken->getErrorMessage());
+            throw new AuthException(
+                $accessToken->getErrorCode() . ' ' . $accessToken->getErrorMessage()
+            );
         }
-        
+
         if (!$accessToken->getUser()) {
-            throw new AuthException('Access Token does is not associated with a user');
+            throw new AuthException(
+                'Access Token does is not ' . 'associated with a user'
+            );
         }
 
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername($accessToken->getUser()->getPrincipalID());
+        $principalID = $accessToken->getUser()->getPrincipalID();
+        $user = $this->getUserTable()->getByUsername($principalID);
 
         $user->cat_username = 'placeholderUsername';
         $user->cat_password = 'placeholderPassword';
@@ -178,7 +194,10 @@ class WorldShare extends AbstractBase implements
             $options['services'][] = 'WMS_NCIP';
         }
         $this->wskey = new WSKey($this->key, $this->secret, $options);
-        return $this->wskey->getLoginURL((int)$this->institution, (int)$this->institution);
+        return $this->wskey->getLoginURL(
+            (int)$this->institution,
+            (int)$this->institution
+        );
     }
 
     /**
@@ -190,7 +209,9 @@ class WorldShare extends AbstractBase implements
      */
     protected function getAccessTokenFromCode($code)
     {
-        $accessToken = $this->wskey->getAccessTokenWithAuthCode($code, $this->institution, $this->institution);
+        $accessToken = $this->wskey->getAccessTokenWithAuthCode(
+            $code, $this->institution, $this->institution
+        );
         if ($accessToken->getValue()) {
             $this->session->accessToken = $accessToken;
         }

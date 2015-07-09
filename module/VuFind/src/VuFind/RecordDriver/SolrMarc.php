@@ -73,7 +73,7 @@ class SolrMarc extends SolrDefault
      */
     protected $titleHoldLogic;
 
-    /*
+    /**
      * Set raw data to initialize the object.
      *
      * @param mixed $data Raw data representing the record; Record Model
@@ -1102,7 +1102,7 @@ class SolrMarc extends SolrDefault
         return ('monograph' == $biblioLevel || strstr('part', $biblioLevel));
     }
 
-    /*
+    /**
      * Magic method for legacy compatibility with marcRecord property.
      *
      * @param string $key Key to access.

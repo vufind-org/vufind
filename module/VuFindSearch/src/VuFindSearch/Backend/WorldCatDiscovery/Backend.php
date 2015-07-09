@@ -78,12 +78,14 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param RecordCollectionFactoryInterface $factory Record collection factory (null for default)
-     * (null for default)
+     * @param RecordCollectionFactoryInterface $factory Record collection factory
+     *                                                  (null for default)
+     * @param array                            $config  Configuration data
      *
      * @return void
      */
-    public function __construct(RecordCollectionFactoryInterface $factory = null, $config
+    public function __construct(RecordCollectionFactoryInterface $factory = null,
+        $config
     ) {
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
@@ -107,7 +109,9 @@ class Backend extends AbstractBackend
      */
     protected function getAccessToken()
     {
-        if (empty($this->session->accessToken) || $this->session->accessToken->isExpired()) {
+        if (empty($this->session->accessToken)
+            || $this->session->accessToken->isExpired()
+        ) {
             // need an if/else statement here about the WMS ILS Driver
             $options = [
                     'services' => ['WorldCatDiscoveryAPI', 'refresh_token']
@@ -117,7 +121,9 @@ class Backend extends AbstractBackend
                 $options['services'][] = 'WMS_NCIP';
             }
             $wskey = new WSKey($this->wskey, $this->secret, $options);
-            $accessToken = $wskey->getAccessTokenWithClientCredentials($this->institution, $this->institution);
+            $accessToken = $wskey->getAccessTokenWithClientCredentials(
+                $this->institution, $this->institution
+            );
             $this->session->accessToken = $accessToken;
         }
         return $this->session->accessToken;

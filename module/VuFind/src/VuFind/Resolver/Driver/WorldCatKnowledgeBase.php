@@ -57,8 +57,8 @@ class WorldCatKnowledgeBase implements DriverInterface
     /**
      * Constructor
      *
-     * @param array             $baseUrl    The OpenURL Configuration
-     * @param \Zend\Http\Client $httpClient HTTP client
+     * @param array             $openURLConfig The OpenURL Configuration
+     * @param \Zend\Http\Client $httpClient    HTTP client
      */
     public function __construct($openURLConfig, \Zend\Http\Client $httpClient)
     {
@@ -78,18 +78,21 @@ class WorldCatKnowledgeBase implements DriverInterface
      */
     public function fetchLinks($openURL)
     {
-        $kbrequest = "http://worldcat.org/webservices/kb/openurl/resolve?" . $openURL;
-        $kbrequest .= '&wskey=' . $this->wskey;
-         
+        $kbrequest = "http://worldcat.org/webservices/kb/openurl/resolve?"
+            . $openURL . '&wskey=' . $this->wskey;
+
         $this->httpClient->setUri($kbrequest);
         $adapter = new \Zend\Http\Client\Adapter\Curl();
         $this->httpClient->setAdapter($adapter);
         $result = $this->httpClient->setMethod('GET')->send();
-        
+
         if ($result->isSuccess()) {
             return $result->getBody();
         } else {
-            throw new \Exception('WorldCat Knowledge Base API error - ' . $result->getStatusCode() . ' - ' . $result->getReasonPhrase());
+            throw new \Exception(
+                'WorldCat Knowledge Base API error - '
+                . $result->getStatusCode() . ' - ' . $result->getReasonPhrase()
+            );
         }
     }
 
@@ -116,9 +119,9 @@ class WorldCatKnowledgeBase implements DriverInterface
                     $record['service_type'] = "getFulltext";
                 } elseif ($item['content'] == "ebook") {
                     $record['service_type'] = "getFulltext";
-                } elseif($item['content'] == "print") {
+                } elseif ($item['content'] == "print") {
                     $record['service_type'] = "getHolding";
-                }else{
+                } else {
                     // selectedft, abstracts, indexed
                     $record['service_type'] = "getWebService";
                 }
@@ -130,7 +133,7 @@ class WorldCatKnowledgeBase implements DriverInterface
         } catch (\Exception $e) {
             return $records;
         }
-                
+
         return $records;
     }
 }

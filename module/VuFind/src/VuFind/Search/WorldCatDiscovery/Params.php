@@ -62,7 +62,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function getBackendFacetParameters()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery');
+        $config = $this->getServiceLocator()
+            ->get('VuFind\Config')->get('WorldCatDiscovery');
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
         ? $config->Facet_Settings->facet_limit : 30;
 

@@ -67,8 +67,9 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Constructor.
      *
-     * @param Callable $recordFactory   Record factory function (null for default)
-     * @param string   $collectionClass Class of collection
+     * @param Callable   $recordFactory   Record factory function (null for default)
+     * @param string     $collectionClass Class of collection
+     * @param UrlService $urlService      Url Service
      *
      * @return void
      */
@@ -95,11 +96,12 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     public function factory($response)
     {
         // Add code to make sure its an OfferSet or BibSearchResults object
-        
+
         $collection = new $this->collectionClass($response);
-        
-        //Determine if its an OfferSet or BibSearchResults object and get the results accordingly
-        
+
+        // Determine if its an OfferSet or BibSearchResults object
+        // and get the results accordingly
+
         if (is_a($response, 'WorldCat\Discovery\BibSearchResults')) {
             $results = $response->getSearchResults();
             $offers = null;
@@ -109,9 +111,11 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         } else {
             echo 'Error';
         }
-        
+
         foreach ($results as $doc) {
-            $record = call_user_func($this->recordFactory, ['doc' => $doc, 'offers' => $offers]);
+            $record = call_user_func(
+                $this->recordFactory, ['doc' => $doc, 'offers' => $offers]
+            );
             $collection->add($record);
             if ($this->urlService) {
                 $this->urlService->addToQueue($record);

@@ -170,11 +170,15 @@ class Factory
     /**
      * Factory for HoldingsWorldCatDiscovery tab plugin.
      *
+     * @param ServiceManager $sm Service manager.
+     *
      * @return HoldingsWorldCatDiscovery
      */
     public static function getHoldingsWorldCatDiscovery(ServiceManager $sm)
     {
-        return new HoldingsWorldCatDiscovery($sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery'));
+        return new HoldingsWorldCatDiscovery(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery')
+        );
     }
 
     /**
@@ -256,7 +260,7 @@ class Factory
         }
         return new Reviews($loader, static::getHideSetting($config, 'reviews'));
     }
-    
+
     /**
      * Factory for StaffViewTurtleWorldCatDiscovery tab plugin.
      *

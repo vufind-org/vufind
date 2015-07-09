@@ -51,14 +51,15 @@ class RecordCollection extends AbstractRecordCollection
     /**
      * Constructor.
      *
-     * @param $response WorldCat response
+     * @param Response $response WorldCat response
      *
      * @return void
      */
     public function __construct($response)
     {
         $this->response = $response;
-        $this->offset = $this->response->getStartIndex() * $this->response->getItemsPerPage();
+        $this->offset = $this->response->getStartIndex();
+        $this->offset *= $this->response->getItemsPerPage();
         $this->rewind();
     }
 

@@ -40,12 +40,14 @@ class HoldingsWorldCatDiscovery extends AbstractBase
 {
     /**
      * Constructor
+     *
+     * @param VuFind/Config $config Configuration data
      */
     public function __construct($config)
     {
         $this->config = $config;
     }
-    
+
     /**
      * Get the on-screen description for this tab.
      *
@@ -66,7 +68,7 @@ class HoldingsWorldCatDiscovery extends AbstractBase
         $offers = $this->getHoldings();
         return !empty($offers);
     }
-    
+
     /**
      * Get the holdings for libraries based
      * @return array
@@ -80,5 +82,5 @@ class HoldingsWorldCatDiscovery extends AbstractBase
         }
         return $offers;
     }
-    
+
 }
