@@ -52,13 +52,11 @@
           <? $cover = $this->record($resource)->getCover('storageretrievalrequests', 'small'); ?>
           <? if ($cover): ?>
             <div class="col-sm-2 text-center">
-            <? /* Display thumbnail if appropriate: */ ?>
-            <? if($cover): ?>
+              <? /* Display thumbnail if appropriate: */ ?>
               <?=$cover?>
-            <? endif; ?>
             </div>
 
-            <div class="col-sm-6">
+            <div class="col-sm-7">
          <? else: ?>
             <div class="col-sm-9">
          <? endif; ?>
