@@ -32,11 +32,11 @@ class Region extends AbstractEc2
         $params = array();
         $params['Action'] = 'DescribeRegions';
 
-        if(is_array($region) && !empty($region)) {
-            foreach($region as $k=>$name) {
+        if (is_array($region) && !empty($region)) {
+            foreach ($region as $k=>$name) {
                 $params['Region.' . ($k+1)] = $name;
             }
-        } elseif($region) {
+        } elseif ($region) {
             $params['Region.1'] = $region;
         }
 

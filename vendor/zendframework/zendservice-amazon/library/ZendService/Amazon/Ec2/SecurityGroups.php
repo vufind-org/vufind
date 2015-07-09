@@ -62,11 +62,11 @@ class SecurityGroups extends AbstractEc2
     {
         $params = array();
         $params['Action'] = 'DescribeSecurityGroups';
-        if(is_array($name) && !empty($name)) {
-            foreach($name as $k=>$name) {
+        if (is_array($name) && !empty($name)) {
+            foreach ($name as $k=>$name) {
                 $params['GroupName.' . ($k+1)] = $name;
             }
-        } elseif($name) {
+        } elseif ($name) {
             $params['GroupName.1'] = $name;
         }
 
@@ -77,7 +77,7 @@ class SecurityGroups extends AbstractEc2
 
         $nodes = $xpath->query('//ec2:securityGroupInfo/ec2:item');
 
-        foreach($nodes as $node) {
+        foreach ($nodes as $node) {
             $item = array();
 
             $item['ownerId'] = $xpath->evaluate('string(ec2:ownerId/text())', $node);
@@ -86,7 +86,7 @@ class SecurityGroups extends AbstractEc2
 
             $ip_nodes = $xpath->query('ec2:ipPermissions/ec2:item', $node);
 
-            foreach($ip_nodes as $ip_node) {
+            foreach ($ip_nodes as $ip_node) {
                 $sItem = array();
 
                 $sItem['ipProtocol'] = $xpath->evaluate('string(ec2:ipProtocol/text())', $ip_node);
@@ -96,11 +96,11 @@ class SecurityGroups extends AbstractEc2
                 $ips = $xpath->query('ec2:ipRanges/ec2:item', $ip_node);
 
                 $sItem['ipRanges'] = array();
-                foreach($ips as $ip) {
+                foreach ($ips as $ip) {
                     $sItem['ipRanges'][] = $xpath->evaluate('string(ec2:cidrIp/text())', $ip);
                 }
 
-                if(count($sItem['ipRanges']) == 1) {
+                if (count($sItem['ipRanges']) == 1) {
                     $sItem['ipRanges'] = $sItem['ipRanges'][0];
                 }
 
@@ -177,7 +177,6 @@ class SecurityGroups extends AbstractEc2
         $success  = $xpath->evaluate('string(//ec2:return/text())');
 
         return ($success === "true");
-
     }
 
     /**

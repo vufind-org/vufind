@@ -82,7 +82,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
         // see Millennium manual page #105781 for the logic behind this
         for ($i = $numberLength; $i > 0; $i--) {
             $j = $numberLength - $i;
-            $partialCheck = $partialCheck + ($digitArray[$j] * ($i+1));
+            $partialCheck = $partialCheck + ($digitArray[$j] * ($i + 1));
         }
         $checkdigit = $partialCheck % 11;
         if ($checkdigit == 10) {
@@ -133,7 +133,7 @@ class Sierra extends AbstractBase implements TranslatorAwareInterface
         }
 
         // Convert hours to seconds:
-        $seconds = 60*60*$this->config['Catalog']['just_cataloged_time'];
+        $seconds = 60 * 60 * $this->config['Catalog']['just_cataloged_time'];
 
         // Was this a recently cataloged item? If so, return a special string
         // based on the append setting....

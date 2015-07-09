@@ -46,7 +46,6 @@ use InvalidArgumentException;
  */
 class RediTest extends \VuFindTest\Unit\TestCase
 {
-
     /**
      * Test-Config
      *

@@ -438,7 +438,7 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $creator
                 = trim((string)$prefix->PrimoNMBib->record->display->creator);
             if (strlen($creator) > 0) {
-                $item['creator'] = explode(';', $creator);
+                $item['creator'] = array_map('trim', explode(';', $creator));
             }
             // subjects
             $subject
@@ -471,12 +471,13 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $item['language']
                 = (string)$prefix->PrimoNMBib->record->display->language;
             $item['source']
-                = (string)$prefix->PrimoNMBib->record->display->source;
+                = implode('; ', (array)$prefix->PrimoNMBib->record->display->source);
             $item['identifier']
                 = (string)$prefix->PrimoNMBib->record->display->identifier;
             $item['fulltext']
                 = (string)$prefix->PrimoNMBib->record->delivery->fulltext;
 
+            $item['issn'] = [];
             foreach ($prefix->PrimoNMBib->record->search->issn as $issn) {
                 $item['issn'][] = (string)$issn;
             }
@@ -492,6 +493,36 @@ class Connector implements \Zend\Log\LoggerAwareInterface
             $item['url'] = !empty($sear->LINKS->openurl)
                 ? (string)$sear->LINKS->openurl
                 : (string)$sear->GETIT->attributes()->GetIt2;
+
+            // Container data
+            $addata = $prefix->PrimoNMBib->record->addata;
+            $item['container_title'] = (string)$addata->jtitle;
+            $item['container_volume'] = (string)$addata->volume;
+            $item['container_issue'] = (string)$addata->issue;
+            $item['container_start_page'] = (string)$addata->spage;
+            $item['container_end_page'] = (string)$addata->epage;
+            foreach ($addata->eissn as $eissn) {
+                if (!in_array((string)$eissn, $item['issn'])) {
+                    $item['issn'][] = (string)$eissn;
+                }
+            }
+            foreach ($addata->issn as $issn) {
+                if (!in_array((string)$issn, $item['issn'])) {
+                    $item['issn'][] = (string)$issn;
+                }
+            }
+
+            // Remove dash-less ISSNs if there are corresponding dashed ones
+            // (We could convert dash-less ISSNs to dashed ones, but try to stay
+            // true to the metadata)
+            $callback = function ($issn) use ($item) {
+                return strlen($issn) != 8
+                    || !in_array(
+                        substr($issn, 0, 4) . '-' . substr($issn, 4),
+                        $item['issn']
+                    );
+            };
+            $item['issn'] = array_values(array_filter($item['issn'], $callback));
 
             $item['fullrecord'] = $prefix->PrimoNMBib->record->asXml();
             $items[] = $item;

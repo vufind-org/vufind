@@ -11,8 +11,6 @@
 namespace ZendServiceTest\Amazon\Ec2;
 
 use ZendService\Amazon\Ec2;
-use ZendService\Amazon\Ec2\Exception;
-
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\Test as HttpClientTestAdapter;
 
@@ -73,7 +71,6 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         $return = $this->ec2ImageInstance->deregister('ami-61a54008');
 
         $this->assertTrue($return);
-
     }
 
     public function testDescribeSingleImageMultipleImagesByIds()
@@ -554,7 +551,6 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         $return = $this->ec2ImageInstance->modifyAttribute('ami-61a54008', 'productCodes', null, null, null, '774F4FF8');
 
         $this->assertTrue($return);
-
     }
 
     public function testRegister()
@@ -576,7 +572,6 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         $return = $this->ec2ImageInstance->register('mybucket-myimage.manifest.xml');
 
         $this->assertEquals('ami-61a54008', $return);
-
     }
 
     public function testResetAttribute()
@@ -598,7 +593,5 @@ class ImageTest extends \PHPUnit_Framework_TestCase
         $return = $this->ec2ImageInstance->resetAttribute('ami-61a54008', 'launchPermission');
 
         $this->assertTrue($return);
-
     }
-
 }

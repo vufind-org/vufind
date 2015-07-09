@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Solr;
 
-use \VuFind\I18n\TranslatableString;
+use VuFind\I18n\TranslatableString;
 
 /**
  * Functions for manipulating facets

@@ -285,7 +285,7 @@ class Less_Parser{
 			$filename = 'anonymous-file-'.Less_Parser::$next_id++.'.less';
 		}else{
 			$file_uri = self::WinPath($file_uri);
-			$filename = basename($file_uri);
+			$filename = $file_uri;
 			$uri_root = dirname($file_uri);
 		}
 
