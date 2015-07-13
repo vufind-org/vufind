@@ -74,7 +74,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * @param \Zend\Config\Config              $config       VuFind OpenUrl config
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
-                                $openUrlRules, $config = null
+        $openUrlRules, $config = null
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
