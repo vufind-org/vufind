@@ -48,3 +48,7 @@ html{direction:rtl}body{direction:rtl}.list-unstyled{padding-right:0;padding-lef
 
 /* Customization for sidebar */
 .sidebar .list-group:not(.filters) .title:after {float: left;}
+
+/* Customization for typeahead */
+span.twitter-typeahead,
+.search-query {direction: RTL !important;}
