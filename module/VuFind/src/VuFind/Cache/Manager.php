@@ -189,15 +189,15 @@ class Manager
 
     /**
      * Create a new file cache for the given theme name if neccessary.
-     *  
+     *
      * @param string $themeName Name of the theme
      *
      * @return void
      */
-    public function addLanguageCacheForTheme($themeName) 
+    public function addLanguageCacheForTheme($themeName)
     {
         $this->createFileCache(
-            $themeName, 
+            $themeName,
             $this->getCacheDir() . 'languages/' . $themeName
         );
     }
