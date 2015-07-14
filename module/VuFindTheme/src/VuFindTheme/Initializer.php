@@ -197,9 +197,6 @@ class Initializer
         // to display an error message!
         $this->setUpThemes(array_reverse($this->tools->getThemeInfo()));
 
-        // Add theme specific language files for translation
-        $this->updateTranslator(array_reverse($this->tools->getThemeInfo()));
-
         // If we encountered an error loading theme settings, fail now.
         if (isset($error)) {
             throw new \Exception($error->getMessage());
@@ -388,11 +385,14 @@ class Initializer
                 $current->setPaths($templatePathStack);
             }
         }
+
+        // Add theme specific language files for translation
+        $this->updateTranslator($themes);
     }
-    
-     /**
-     * Support method for init()
-     * add theme specific language files for translation.
+
+    /**
+     * Support method for setUpThemes() - add theme specific language files for
+     * translation.
      *
      * @param array $themes Theme configuration information.
      *
@@ -407,26 +407,25 @@ class Initializer
                 $pathStack[] = $dir;
             }
         }
- 
+
         if (!empty($pathStack)) {
             try {
                 $translator = $this->serviceManager->get('VuFind\Translator');
-                
+
                 $pm = $translator->getPluginManager();
                 $pm->get('extendedini')->addToPathStack($pathStack);
-                
             } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
                 // This exception likely indicates that translation is disabled,
                 // so we can't proceed.
                 return;
             }
-            
-            // Set up language caching for better performance:
+
+            // Override the default cache with a theme-specific cache to avoid
+            // key collisions in a multi-theme environment.
             try {
-                $themeName = end(array_keys($themes));
                 $cacheManager = $this->serviceManager->get('VuFind\CacheManager');
-                $cacheManager->addLanguageCacheForTheme($themeName);
-                $translator->setCache($cacheManager->getCache($themeName));
+                $cacheName = $cacheManager->addLanguageCacheForTheme($theme);
+                $translator->setCache($cacheManager->getCache($cacheName));
             } catch (\Exception $e) {
                 // Don't let a cache failure kill the whole application, but make
                 // note of it:
