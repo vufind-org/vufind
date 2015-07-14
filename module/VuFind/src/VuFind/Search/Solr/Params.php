@@ -91,7 +91,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         parent::__construct($options, $configLoader);
         // Use basic facet limit by default, if set:
-        $config = $configLoader->get('facets');
+        $config = $configLoader->get($options->getFacetsIni());
         if (isset($config->Results_Settings->facet_limit)
             && is_numeric($config->Results_Settings->facet_limit)
         ) {

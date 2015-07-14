@@ -47,7 +47,7 @@ class V2 extends AbstractAuthentication
         $parameters['SignatureVersion'] = $this->_signatureVersion;
         $parameters['Version']          = $this->_apiVersion;
         $parameters['SignatureMethod']  = $this->_signatureMethod;
-        if(!isset($parameters['Timestamp'])) {
+        if (!isset($parameters['Timestamp'])) {
             $parameters['Timestamp']    = gmdate('Y-m-d\TH:i:s\Z', time()+10);
         }
 
@@ -105,7 +105,7 @@ class V2 extends AbstractAuthentication
         unset($parameters['Signature']);
 
         $arrData = array();
-        foreach($parameters as $key => $value) {
+        foreach ($parameters as $key => $value) {
             $arrData[] = $key . '=' . str_replace('%7E', '~', rawurlencode($value));
         }
 

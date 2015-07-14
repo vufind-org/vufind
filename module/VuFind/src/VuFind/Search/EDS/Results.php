@@ -124,7 +124,7 @@ class Results extends \VuFind\Search\Base\Results
                     // an active filter for the current field?
                     $orField = '~' . $field;
                     $itemsToCheck = isset($filterList[$field])
-                    ? $filterList[$field] : [];
+                        ? $filterList[$field] : [];
                     if (isset($filterList[$orField])) {
                         $itemsToCheck += $filterList[$orField];
                     }
@@ -139,14 +139,12 @@ class Results extends \VuFind\Search\Base\Results
 
                     // Create display value:
                     $current['counts'][$facetIndex]['displayText'] = $translate
-                    ? $this->translate($facetDetails['displayText'])
-                    : $facetDetails['displayText'];
+                        ? $this->translate($facetDetails['displayText'])
+                        : $facetDetails['displayText'];
 
                     // Create display value:
-                    $current['counts'][$facetIndex]['value'] = $translate
-                    ? $this->translate($facetDetails['value'])
-                    : $facetDetails['value'];
-
+                    $current['counts'][$facetIndex]['value']
+                        = $facetDetails['value'];
                 }
                 // The EDS API returns facets in the order they should be displayed
                 $current['label'] = isset($filter[$field])
