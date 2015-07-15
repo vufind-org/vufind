@@ -46,6 +46,25 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
 
     /**
+     * Override title
+     *
+     * @var string
+     */
+    protected $overrideTitle = null;
+
+    /**
+     * Set override title.
+     *
+     * @param string $title Title
+     *
+     * @return void
+     */
+    public function setOverrideTitle($title)
+    {
+        $this->overrideTitle = $title;
+    }
+
+    /**
      * Set up Dublin Core extension.
      *
      * @return void
@@ -93,10 +112,14 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
 
         // Create the parent feed
         $feed = new Feed();
-        $feed->setTitle(
-            $this->translate('Results for') . ' '
-            . $results->getParams()->getDisplayQuery()
-        );
+        if (null !== $this->overrideTitle) {
+            $feed->setTitle($this->translate($this->overrideTitle));
+        } else {
+            $feed->setTitle(
+                $this->translate('Results for') . ' '
+                . $results->getParams()->getDisplayQuery()
+            );
+        }
         $feed->setLink(
             $baseUrl . $results->getUrlQuery()->setViewParam(null, false)
         );
@@ -121,7 +144,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         if ($params->getPage() > 1) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage()-1, false),
+                    ->setPage($params->getPage() - 1, false),
                 'previous',
                 $params->getView()
             );
@@ -130,7 +153,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         if ($params->getPage() < $lastPage) {
             $feed->addOpensearchLink(
                 $baseUrl . $results->getUrlQuery()
-                    ->setPage($params->getPage()+1, false),
+                    ->setPage($params->getPage() + 1, false),
                 'next',
                 $params->getView()
             );
@@ -145,7 +168,7 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         $feed->setOpensearchTotalResults($results->getResultTotal());
         $feed->setOpensearchItemsPerPage($params->getLimit());
         $feed->setOpensearchStartIndex($results->getStartRecord() - 1);
-        $feed->setOpensearchSearchTerms($params->getQuery()->getString());
+        $feed->setOpensearchSearchTerms($params->getQuery()->getAllTerms());
 
         $records = $results->getResults();
         foreach ($records as $current) {
@@ -153,6 +176,39 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
         }
 
         return $feed;
+    }
+
+    /**
+     * Support method to extract a date from a record driver. Return empty string
+     * if no valid match is found.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record Record to read from
+     *
+     * @return string
+     */
+    protected function getDcDate($record)
+    {
+        // See if we can extract a date that's pre-formatted in a DC-friendly way:
+        $dates = (array)$record->tryMethod('getPublicationDates');
+        $regex = '/[0-9]{4}(\-[01][0-9])?(\-[0-3][0-9])?/';
+        foreach ($dates as $date) {
+            if (preg_match($regex, $date, $matches)) {
+                // If the full string is longer than the match, see if we can use
+                // DateTime to format it to something more useful:
+                if (strlen($date) > strlen($matches[0])) {
+                    try {
+                        $formatter = new DateTime($date);
+                        return $formatter->format('Y-m-d');
+                    } catch (\Exception $ex) {
+                        // DateTime failed; fall through to default behavior below.
+                    }
+                }
+                return $matches[0];
+            }
+        }
+
+        // Still no good? Give up.
+        return '';
     }
 
     /**
@@ -167,7 +223,10 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
     {
         $entry = $feed->createEntry();
         $title = $record->tryMethod('getTitle');
-        $entry->setTitle(empty($title) ? $record->getBreadcrumb() : $title);
+        $title = empty($title) ? $record->getBreadcrumb() : $title;
+        $entry->setTitle(
+            empty($title) ? $this->translate('Title not available') : $title
+        );
         $serverUrl = $this->getView()->plugin('serverurl');
         $recordLink = $this->getView()->plugin('recordlink');
         try {
@@ -195,9 +254,9 @@ class ResultFeed extends AbstractHelper implements TranslatorAwareInterface
                 $entry->addDCFormat($format);
             }
         }
-        $date = $record->tryMethod('getPublicationDates');
-        if (isset($date[0]) && !empty($date[0])) {
-            $entry->setDCDate($date[0]);
+        $dcDate = $this->getDcDate($record);
+        if (!empty($dcDate)) {
+            $entry->setDCDate($dcDate);
         }
 
         $feed->addEntry($entry);

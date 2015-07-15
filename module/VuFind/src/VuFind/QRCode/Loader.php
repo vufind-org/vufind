@@ -28,7 +28,7 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\QRCode;
-use \PHPQRCode;
+use PHPQRCode;
 
 /**
  * QR Code Generator

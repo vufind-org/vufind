@@ -1354,8 +1354,7 @@ class Symphony extends AbstractBase
                         'fine' => $fee->billReasonDescription,
                         'balance' => $fee->amountOutstanding->_ * 100,
                         'createdate' =>
-                            isset($fee->feeItemInfo->dateBilled) ?
-                            $fee->feeItemInfo->dateBilled : null,
+                            isset($fee->dateBilled) ? $fee->dateBilled : null,
                         'duedate' =>
                             isset($fee->feeItemInfo->dueDate) ?
                             $fee->feeItemInfo->dueDate : null,

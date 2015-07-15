@@ -408,7 +408,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
 
         // Remove Resource (related tags are also removed implicitly)
         $userResourceTable = $this->getDbTable('UserResource');
-        $userResourceTable->destroyLinks($resourceIDs, $this->id);
+        // true here makes sure that only tags in lists are deleted
+        $userResourceTable->destroyLinks($resourceIDs, $this->id, true);
     }
 
     /**
@@ -542,12 +543,14 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
      * @param string $cardName Card name
      * @param string $username Username
      * @param string $password Password
+     * @param string $homeLib  Home Library
      *
      * @return int Card ID
      * @throws \VuFind\Exception\LibraryCard
      */
-    public function saveLibraryCard($id, $cardName, $username, $password)
-    {
+    public function saveLibraryCard($id, $cardName, $username,
+        $password, $homeLib = ''
+    ) {
         if (!$this->libraryCardsEnabled()) {
             throw new \VuFind\Exception\LibraryCard('Library Cards Disabled');
         }
@@ -575,6 +578,9 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
         $row->card_name = $cardName;
         $row->cat_username = $username;
+        if (!empty($homeLib)) {
+            $row->home_library = $homeLib;
+        }
         if ($this->passwordEncryptionEnabled()) {
             $row->cat_password = null;
             $row->cat_pass_enc = $this->encryptOrDecrypt($password, true);
@@ -584,6 +590,13 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
         }
 
         $row->save();
+
+        // If this is the first library card or no credentials are currently set,
+        // activate the card now
+        if ($this->getLibraryCards()->count() == 1 || empty($this->cat_username)) {
+            $this->activateLibraryCard($row->id);
+        }
+
         return $row->id;
     }
 

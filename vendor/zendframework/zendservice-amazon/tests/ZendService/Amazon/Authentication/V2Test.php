@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\Authentication;
 
 use ZendService\Amazon\Authentication;
-use ZendService\Amazon\Authentication\Exception;
 
 /**
  * Amazon V2 authentication test case
@@ -76,5 +75,4 @@ class V2Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals('YSw7HXDqokM/A6DhLz8kG+sd+oD5eMjqx3a02A0+GkE=', $params['Signature']);
         $this->assertEquals(str_replace("\r\n", "\n", file_get_contents(dirname(__FILE__) . '/_files/sqs_v2_get_return.txt')), $ret);
     }
-
 }

@@ -10,8 +10,8 @@
 
 namespace ZendServiceTest\Amazon;
 
-use ZendService\Amazon,
-    Zend\Http\Client\Adapter\Test as HttpClientAdapter;
+use ZendService\Amazon;
+use Zend\Http\Client\Adapter\Test as HttpClientAdapter;
 
 /**
  * Test helper
@@ -88,7 +88,7 @@ class OfflineTest extends \PHPUnit_Framework_TestCase
 
         $result = new Amazon\ResultSet($dom);
 
-        foreach($result AS $item) {
+        foreach ($result as $item) {
             $trackCount = $mozartTracks[$item->ASIN];
             $this->assertEquals($trackCount, count($item->Tracks));
         }
@@ -209,9 +209,9 @@ class OfflineTest extends \PHPUnit_Framework_TestCase
 
         $result = new Amazon\ResultSet($dom);
 
-        foreach($result AS $item) {
+        foreach ($result as $item) {
             $data = $dataExpected[$item->ASIN];
-            foreach($item->Offers->Offers as $offer) {
+            foreach ($item->Offers->Offers as $offer) {
                 $this->assertEquals($data['offers'][$offer->MerchantId]['name'], $offer->MerchantName);
                 $this->assertEquals($data['offers'][$offer->MerchantId]['price'], $offer->Price);
             }

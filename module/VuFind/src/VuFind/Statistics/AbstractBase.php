@@ -235,7 +235,7 @@ abstract class AbstractBase
         }
         if (strpos($agent, "Chrome") > -1) {
             $split = explode(' ', $agent);
-            return str_replace('/', ' ', $split[count($split)-2]);
+            return str_replace('/', ' ', $split[count($split) - 2]);
         }
         if (strpos($agent, "Firefox") > -1 || strpos($agent, "Safari") > -1) {
             $split = explode(' ', $agent);

@@ -81,13 +81,40 @@ trait TranslatorAwareTrait
      */
     public function getTranslatorLocale($default = 'en')
     {
-        return null === $this->translator
+        return null !== $this->translator
             ? $this->translator->getLocale()
             : $default;
     }
 
     /**
-     * Translate a string
+     * Translate a string (or string-castable object)
+     *
+     * @param string|object $str     String to translate
+     * @param array         $tokens  Tokens to inject into the translated string
+     * @param string        $default Default value to use if no translation is found
+     * (null for no default).
+     *
+     * @return string
+     */
+    public function translate($str, $tokens = [], $default = null)
+    {
+        // Special case: deal with objects with a designated display value:
+        if ($str instanceof \VuFind\I18n\TranslatableStringInterface) {
+            $translated = $this->translateString((string)$str, $tokens, $default);
+            if ($translated !== (string)$str) {
+                return $translated;
+            }
+            return $this->translateString(
+                $str->getDisplayString(), $tokens, $default
+            );
+        }
+
+        // Default case: deal with ordinary strings (or string-castable objects):
+        return $this->translateString((string)$str, $tokens, $default);
+    }
+
+    /**
+     * Get translation for a string
      *
      * @param string $str     String to translate
      * @param array  $tokens  Tokens to inject into the translated string
@@ -96,7 +123,7 @@ trait TranslatorAwareTrait
      *
      * @return string
      */
-    public function translate($str, $tokens = [], $default = null)
+    protected function translateString($str, $tokens = [], $default = null)
     {
         $msg = null === $this->translator
             ? $str : $this->translator->translate($str);

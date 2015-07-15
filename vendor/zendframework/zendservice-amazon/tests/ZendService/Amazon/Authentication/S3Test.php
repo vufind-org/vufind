@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\Authentication;
 
 use ZendService\Amazon\Authentication;
-use ZendService\Amazon\Authentication\Exception;
 
 /**
  * S3 authentication test case
@@ -34,7 +33,6 @@ class S3Test extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->_amazon = new Authentication\S3('0PN5J17HBGZHT7JJ3X82', 'uV3F3YluFJax1cknvbcGwgjvx4QpvB+leU8dUj2o', '2006-03-01');
-
     }
 
     /**
@@ -107,7 +105,6 @@ class S3Test extends \PHPUnit_Framework_TestCase
 
     public function testDeleteGeneratesCorrectSignature()
     {
-
         $headers = array();
         $headers['x-amz-date'] = "Tue, 27 Mar 2007 21:20:26 +0000";
 
@@ -150,5 +147,4 @@ class S3Test extends \PHPUnit_Framework_TestCase
                     . "//static.johnsmith.net/db-backup.dat.gz";
         $this->assertEquals($ret, $rawHttpResponse);
     }
-
 }
