@@ -1,4 +1,4 @@
-/*global bulkActionSubmit, cartCookieDomain, Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
+/*global cartCookieDomain, Cookies, vufindString */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -177,53 +177,4 @@ $(document).ready(function() {
     registerUpdateCart($form);
   }
   $("#updateCart, #bottom_updateCart").popover({content:'', html:true, trigger:'manual'});
-
-  /*/ Setup lightbox behavior
-  // Cart lightbox
-  $('#cartItems').click(function() {
-    return Lightbox.get('Cart','Cart');
-  });
-  // Overwrite
-  Lightbox.addFormCallback('accountForm', function(html) {
-    updatePageForLogin();
-    if (lastCartSubmit !== false) {
-      bulkActionSubmit(lastCartSubmit);
-      lastCartSubmit = false;
-    } else {
-      newAccountHandler(html);
-    }
-  });
-  Lightbox.addFormHandler('cartForm', function(evt) {
-    lastCartSubmit = $(evt.target);
-    bulkActionSubmit($(evt.target));
-    return false;
-  });
-  Lightbox.addFormCallback('bulkEmail', function(html) {
-    Lightbox.confirm(vufindString['bulk_email_success']);
-  });
-  Lightbox.addFormCallback('bulkSave', function(html) {
-    // After we close the lightbox, redirect to list view
-    Lightbox.addCloseAction(function() {
-      document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
-    });
-    Lightbox.confirm(vufindString['bulk_save_success']);
-  });
-  $('#modal').on('hidden.bs.modal', function() {
-    // Update cart items (add to cart, remove from cart, cart lightbox interface)
-    var cartCount = $('#cartItems strong');
-    if(cartCount.length > 0) {
-      var cart = getFullCartItems();
-      var id = $('#cartId');
-      if(id.length > 0) {
-        id = id.val();
-        $('#cart-add,#cart-remove').addClass('hidden');
-        if(cart.indexOf(id) > -1) {
-          $('#cart-remove').removeClass('hidden');
-        } else {
-          $('#cart-add').removeClass('hidden');
-        }
-      }
-      cartCount.html(cart.length);
-    }
-  }); */
 });

@@ -1,4 +1,4 @@
-/*global console, path, vufindString */
+/*global path, vufindString */
 
 /**
  * This is where you add click events to open the lightbox.
@@ -97,7 +97,7 @@ function lightboxFormSubmit(event) {
   var dataset = 'undefined' !== typeof event.target.dataset;
   if(dataset && "string" === typeof event.target.dataset.lightboxSubmit
     && "function" === typeof window[event.target.dataset.lightboxSubmit]) {
-    console.log(event.target.dataset.lightboxSubmit+"(event, data)");
+    // console.log(event.target.dataset.lightboxSubmit+"(event, data)");
     return window[event.target.dataset.lightboxSubmit](event, data);
   }
   if(dataset && "undefined" !== typeof event.target.dataset.lightboxAfterLogin) {

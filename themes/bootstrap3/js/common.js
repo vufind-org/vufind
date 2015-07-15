@@ -1,4 +1,4 @@
-/*global ajaxLoadTab, btoa, checkSaveStatuses, console, extractSource, hexEncode, isPhoneNumberValid, Lightbox, path, rc4Encrypt, refreshCommentList, refreshTagList, unescape, vufindString */
+/*global ajaxLoadTab, btoa, checkSaveStatuses, extractSource, hexEncode, isPhoneNumberValid, path, rc4Encrypt, refreshCommentList, unescape, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -108,31 +108,6 @@ function phoneNumberFormHandler(numID, regionCode) {
 }
 
 // Lightbox
-/*
- * This function adds jQuery events to elements in the lightbox
- *
- * This is a default open action, so it runs every time changeContent
- * is called and the 'shown' lightbox event is triggered
- */
-function bulkActionSubmit($form) {
-  var submit = $form.find('[type="submit"][clicked=true]').attr('name');
-  var checks = $form.find('input.checkbox-select-item:checked');
-  if(checks.length == 0 && submit != 'empty') {
-    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
-  }
-  if (submit == 'print') {
-    //redirect page
-    var url = path+'/Records/Home?print=true';
-    for(var i=0;i<checks.length;i++) {
-      url += '&id[]='+checks[i].value;
-    }
-    document.location.href = url;
-  } else {
-    Lightbox.submit($form, Lightbox.changeContent);
-  }
-  return false;
-}
-
 function updatePageForLogin() {
   // Hide "log in" options and show "log out" options:
   $('#loginOptions').addClass('hidden');
@@ -161,8 +136,6 @@ function updatePageForLogin() {
   $('.hiddenSource').each(function(i, e) {
     if(e.value == 'Summon') {
       summon = true;
-      // If summon, queue reload for when we close
-      Lightbox.addCloseAction(function(){document.location.reload(true);});
     }
   });
 
@@ -178,16 +151,7 @@ function updatePageForLogin() {
     lightboxLoginCallback = false;
   }
 }
-function newAccountHandler(html) {
-  updatePageForLogin();
-  var params = deparam(Lightbox.openingURL);
-  if (params['subaction'] != 'UserLogin') {
-    Lightbox.getByUrl(Lightbox.openingURL);
-    Lightbox.openingURL = false;
-  } else {
-    Lightbox.close();
-  }
-}
+
 function refreshTags() {
   var recordId = $('#record_id').val();
   var recordSource = $('.hiddenSource').val();
@@ -201,7 +165,7 @@ function refreshTags() {
       dataType: 'json',
       url: url,
       success: function(response) {
-        console.log(response);
+        // console.log(response);
         if (response.status == 'OK') {
           $.each(response.data, function(i, tag) {
             var href = path + '/Tag?' + $.param({lookfor:tag.tag});
@@ -257,13 +221,13 @@ function ajaxLogin(event, data) {
               lightboxAJAX(event, data);
             } else {
               $('#modal .modal-body .alert,.fa.fa-spinner').remove();
-              $('#modal .modal-body p.lead').after($('<div>').html(response.data).addClass('alert alert-danger'));
+              $('#modal .modal-body h2:first-child').after($('<div>').html(response.data).addClass('alert alert-danger'));
             }
           }
         });
       } else {
         $('#modal .modal-body .alert,.fa.fa-spinner').remove();
-        $('#modal .modal-body p.lead').after($('<div>').html(response.data).addClass('alert alert-danger'));
+        $('#modal .modal-body h2:first-child').after($('<div>').html(response.data).addClass('alert alert-danger'));
       }
     }
   });

@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, deparam, extractClassParams, htmlEncode, Lightbox, path, syn_get_widget, userIsLoggedIn, vufindString */
+/*global deparam, path, syn_get_widget, userIsLoggedIn, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -121,8 +121,6 @@ function registerAjaxCommentRecord() {
         refreshCommentList(id, recordSource);
         $(form).find('textarea[name="comment"]').val('');
         $(form).find('input[type="submit"]').button('loading');
-      } else {
-        Lightbox.displayError(response.data);
       }
     }
   });
@@ -146,8 +144,11 @@ function registerTabEvents() {
     var params = deparam($(this).attr('href'));
     params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', parts[parts.length-1], params, false, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
+    $.ajax({
+      url: path + 'Record/' + parts[parts.length-1],
+      type: 'POST',
+      data: params,
+      success: updateLightbox
     });
   });
 
@@ -245,65 +246,4 @@ $(document).ready(function(){
       return ajaxLoadTab(tabid);
     }
   });
-
-  /* --- LIGHTBOX --- /
-  // Cite lightbox
-  $('#cite-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Cite', {id:id});
-  });
-  // Mail lightbox
-  $('#mail-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Email', {id:id});
-  });
-  // Save lightbox
-  $('#save-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'Save', {id:id});
-  });
-  // SMS lightbox
-  $('#sms-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'SMS', {id:id});
-  });
-  $('#tagRecord').click(function() {
-    var id = $('.hiddenId')[0].value;
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
-  });
-  // Form handlers
-  Lightbox.addFormCallback('emailRecord', function(){
-    Lightbox.confirm(vufindString['bulk_email_success']);
-  });
-  Lightbox.addFormCallback('placeHold', function(html) {
-    Lightbox.checkForError(html, function(html) {
-      var divPattern = '<div class="alert alert-info">';
-      var fi = html.indexOf(divPattern);
-      var li = html.indexOf('</div>', fi+divPattern.length);
-      Lightbox.confirm(html.substring(fi+divPattern.length, li).replace(/^[\s<>]+|[\s<>]+$/g, ''));
-    });
-  });
-  Lightbox.addFormCallback('placeILLRequest', function() {
-    document.location.href = path+'/MyResearch/ILLRequests';
-  });
-  Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
-    document.location.href = path+'/MyResearch/StorageRetrievalRequests';
-  });
-  Lightbox.addFormCallback('placeILLRequest', function() {
-    document.location.href = path+'/MyResearch/ILLRequests';
-  });
-  Lightbox.addFormCallback('saveRecord', function() {
-    checkSaveStatuses();
-    refreshTagList();
-    Lightbox.confirm(vufindString['bulk_save_success']);
-  });
-  Lightbox.addFormCallback('smsRecord', function() {
-    Lightbox.confirm(vufindString['sms_success']);
-  });
-  // Tag lightbox
-  Lightbox.addFormCallback('tagRecord', function(html) {
-    refreshTagList(true);
-    Lightbox.confirm(vufindString['add_tag_success']);
-  });*/
 });
