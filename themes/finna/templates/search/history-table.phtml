@@ -3,13 +3,15 @@
     <th class="history-time"><?=$this->transEsc("history_time")?></th>
     <th class="history-search"><?=$this->transEsc("history_search")?></th>
     <th class="history-limits"><?=$this->transEsc("history_limits")?></th>
+    <? if ($this->primo()->isAvailable()) : ?><th class="history-search-index"><?=$this->transEsc("history_search_index")?></th><? endif; ?>
     <th class="history-results"><?=$this->transEsc("history_results")?></th>
-    <th class="history-schedule"><?=$this->transEsc($this->showSaved ? "history_schedule" : "")?></th>
+   <th class="history-schedule"><?if ($this->showSaved): ?><?=$this->transEsc("history_schedule")?><? endif; ?></th>
     <th class="history-save"><?=$this->transEsc($this->showSaved ? "history_delete" : "history_save")?></th>
   </tr>
   <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
     <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
       <td><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime("U", $info->getStartTime()))?></td>
+      
       <td>
         <?=$this->historylabel($info->getParams()->getSearchClassId())?>
         <a href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>"><?
@@ -17,6 +19,7 @@
           echo empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc);
         ?></a>
       </td>
+      
       <td>
         <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList() as $field => $filters): ?>
           <? foreach ($filters as $i => $filter): ?>
@@ -25,9 +28,24 @@
           <? endforeach; ?>
         <? endforeach; ?>
       </td>
+      
+      <? if ($this->primo()->isAvailable()) : ?>
+      <td class="history-search-index">
+      <? $searchindex = $info->getOptions()->getSearchAction(); ?>
+      <? if (0 === strpos($searchindex, 'primo')): ?>
+      <?=$this->transEsc('tabs_pci')?>
+      <? else: ?>
+      <?=$this->transEsc('tabs_local')?>
+      <? endif; ?>
+      </td>
+      <? endif; ?>
+      
       <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
+      
+      
       <td class="history-schedule">
-        <? if ($this->showSaved && isset($this->schedule[$info->getSearchId()])): ?>
+      <? if ($this->showSaved): ?>
+          <? if (isset($this->schedule[$info->getSearchId()])): ?> 
           <? $schedule = $this->schedule[$info->getSearchId()]; ?>
           <form class="form-inline jumpMenuForm" action="<?= $this->url('myresearch-savesearch')?>" method="get" name="schedule">
             <select name="schedule" class="jumpMenu form-control">
@@ -37,7 +55,15 @@
             </select>
             <input type="hidden" name="searchid" value="<?= $info->getSearchId(); ?>"/>
           </form>
-        <? endif; ?>
+          <? else: ?>
+          <span class="disable"><?=$this->transEsc("cannot set")?></span>
+          <? endif; ?>
+      <? endif; ?>
+      <? if ($schedule == 1 || $schedule == 2): ?>
+      <script type="text/javascript">
+        $('.alert-email-notification').removeClass('hidden');
+      </script>
+      <? endif; ?>
       </td>
       <td class="history-save">
         <? if ($this->showSaved): ?>
