@@ -331,13 +331,17 @@ abstract class Results implements ServiceLocatorAwareInterface
     {
         $total = $this->getResultTotal();
         $limit = $this->getParams()->getLimit();
-        $config = $this->getServiceLocator()->get('VuFind\Config');
-        $searchesConfig = $config->get('searches');
+
+        $config = $this->getServiceLocator();
+        if (isset($config)) {
+            $config = $config->get('VuFind\Config')
+                ->get('searches');
+        }
         $page = $this->getParams()->getPage();
-        if (isset($searchesConfig->General->max_pages)
-            && ($searchesConfig->General->max_pages < $page)
+        if (isset($config->General->max_pages)
+            && ($config->General->max_pages < $page)
         ) {
-            $page = $searchesConfig->General->max_pages;
+            $page = $config->General->max_pages;
         }
         if ($page * $limit > $total) {
             // The end of the current page runs past the last record, use total
@@ -475,7 +479,12 @@ abstract class Results implements ServiceLocatorAwareInterface
         $nullAdapter = "Zend\Paginator\Adapter\Null";
         $paginator = new Paginator(new $nullAdapter($total));
 
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
+
+        $config = $this->getServiceLocator();
+        if (isset($config)) {
+            $config = $config->get('VuFind\Config')
+                ->get('searches');
+        }
         $page = $this->getParams()->getPage();
         if (isset($config->General->max_pages)
             && ($config->General->max_pages < $page)
