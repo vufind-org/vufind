@@ -7,17 +7,26 @@
 
     <? if (count($this->pagesInRange) > 1): ?>
       <? foreach ($this->pagesInRange as $page): ?>
-        <? if ($page != $this->current): ?>
-          <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
+        <? if (($page != $this->current)): ?>
+          <? if (isset($this->max_pages) && ($page <= $this->max_pages)): ?>
+            <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
+          <? elseif (!isset($this->max_pages)): ?>
+            <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
+          <? endif; ?>
         <? else: ?>
-          <li class="active"><span><?=$page?></span></li>
+          <li class="active"><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($page)?>"><?=$page?></a></li>
         <? endif; ?>
       <? endforeach; ?>
     <? endif; ?>
 
     <? if (isset($this->next)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
+      <? if (isset($this->max_pages) && ($this->next <= $this->max_pages)): ?>
+        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
+        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->max_pages)?>">[<?=$this->max_pages?>]</a></li>
+      <? elseif (!isset($this->max_pages)): ?>
+        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a></li>
+        <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a></li>
+      <? endif; ?>
     <? endif; ?>
   </ul>
 <? endif; ?>

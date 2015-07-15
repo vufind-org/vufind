@@ -284,6 +284,8 @@ class AbstractSearch extends AbstractBase
         );
         $view->params = $results->getParams();
 
+        $view->config = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
+
         // If we received an EmptySet back, that indicates that the real search
         // failed due to some kind of syntax error, and we should display a
         // warning to the user; otherwise, we should proceed with normal post-search
