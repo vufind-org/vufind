@@ -9,7 +9,7 @@
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
 ?>
 <?=$this->flashmessages()?>
-<p class="lead"><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></p>
+<h2><?=$this->transEsc('Text this') ?>: <span class="title-in-heading"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></span></h2>
 <form method="post" action="" name="smsRecord" class="form-horizontal">
 <form method="post" name="smsRecord" class="form-horizontal">
   <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />

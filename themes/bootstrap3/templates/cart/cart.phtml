@@ -6,7 +6,7 @@
   $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
     . '<li class="active">' . $this->transEsc('Book Bag') . '</li>';
 ?>
-<p class="lead"><?=$this->transEsc('Book Bag') ?></p>
+<h2><?=$this->transEsc('Book Bag') ?></h2>
 <?=$this->flashmessages()?>
 <form class="form-inline" action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
   <input type="hidden" id="dropdown_value"/>
