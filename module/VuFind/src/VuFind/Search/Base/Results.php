@@ -308,8 +308,12 @@ abstract class Results implements ServiceLocatorAwareInterface
             return $this->startRecordOverride;
         }
         $params = $this->getParams();
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
-        $page = $params->getPage();
+        $config = $this->getServiceLocator();
+        if (isset($config)) {
+            $config = $config->get('VuFind\Config')
+                ->get('searches');
+        }
+        $page = $this->getParams()->getPage();
         if (isset($config->General->max_pages)
             && ($config->General->max_pages < $page)
         ) {
@@ -327,12 +331,13 @@ abstract class Results implements ServiceLocatorAwareInterface
     {
         $total = $this->getResultTotal();
         $limit = $this->getParams()->getLimit();
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('searches');
+        $config = $this->getServiceLocator()->get('VuFind\Config');
+        $searchesConfig = $config->get('searches');
         $page = $this->getParams()->getPage();
-        if (isset($config->General->max_pages)
-            && ($config->General->max_pages < $page)
+        if (isset($searchesConfig->General->max_pages)
+            && ($searchesConfig->General->max_pages < $page)
         ) {
-            $page = $config->General->max_pages;
+            $page = $searchesConfig->General->max_pages;
         }
         if ($page * $limit > $total) {
             // The end of the current page runs past the last record, use total
