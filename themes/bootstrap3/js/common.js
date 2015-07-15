@@ -132,6 +132,7 @@ function bulkActionSubmit($form) {
   }
   return false;
 }
+
 function updatePageForLogin() {
   // Hide "log in" options and show "log out" options:
   $('#loginOptions').addClass('hidden');

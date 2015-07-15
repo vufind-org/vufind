@@ -124,7 +124,7 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader,
         $apiInfo = null
     ) {
-        $this->searchIni = 'EDS';
+        $this->searchIni = $this->facetsIni = 'EDS';
         $searchSettings = $configLoader->get($this->searchIni);
         parent::__construct($configLoader);
         $this->viewOptions = [
@@ -134,6 +134,14 @@ class Options extends \VuFind\Search\Base\Options
         $this->apiInfo = $apiInfo;
         $this->setOptionsFromApi($searchSettings);
         $this->setOptionsFromConfig($searchSettings);
+        $facetConf = $configLoader->get($this->facetsIni);
+        if (isset($facetConf->Advanced_Facet_Settings->translated_facets)
+            && count($facetConf->Advanced_Facet_Settings->translated_facets) > 0
+        ) {
+            foreach ($facetConf->Advanced_Facet_Settings->translated_facets as $c) {
+                $this->translatedFacets[] = $c;
+            }
+        }
     }
 
     /**

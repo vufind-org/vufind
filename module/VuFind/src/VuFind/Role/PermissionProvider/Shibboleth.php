@@ -30,7 +30,6 @@
 namespace VuFind\Role\PermissionProvider;
 use Zend\Http\PhpEnvironment\Request;
 use VuFind\Auth\Shibboleth as ShibbolethAuth;
-use VuFind\Role\PermissionProvider\ServerParam;
 
 /**
  * Shibboleth permission provider for VuFind.

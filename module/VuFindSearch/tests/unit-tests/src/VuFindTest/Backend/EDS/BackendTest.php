@@ -29,7 +29,6 @@
 namespace VuFindTest\Backend\EDS;
 
 use VuFindSearch\Backend\EDS\Backend;
-use VuFindSearch\Backend\EDS\Response\RecordCollectionFactory;
 use VuFindSearch\Query\Query;
 use InvalidArgumentException;
 

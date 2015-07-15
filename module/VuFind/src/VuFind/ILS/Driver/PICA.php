@@ -180,10 +180,10 @@ class PICA extends DAIA
         if ($messages === 2) {
             // ignore the first message (its only the message to close the window
             // after finishing)
-            for ($n = 0; $n<2; $n++) {
+            for ($n = 0; $n < 2; $n++) {
                 $pos = strpos($postit, '<strong class="alert">', $position);
                 $pos_close = strpos($postit, '</strong>', $pos);
-                $value = substr($postit, $pos+22, ($pos_close-$pos-22));
+                $value = substr($postit, $pos + 22, ($pos_close - $pos - 22));
                 $position = $pos + 1;
             }
             $recordList['message'] = $value;
@@ -228,17 +228,17 @@ class PICA extends DAIA
             $position = strpos($postit, '<iframe');
             for ($i = 0; $i < $iframes; $i++) {
                 $pos = strpos($postit, 'VBAR=', $position);
-                $value = substr($postit, $pos+9, 8);
-                $completeValue = substr($postit, $pos+5, 12);
+                $value = substr($postit, $pos + 9, 8);
+                $completeValue = substr($postit, $pos + 5, 12);
                 $barcode[] = $completeValue;
                 $bc = $this->getPpnByBarcode($value);
                 $ppns[] = $bc;
                 $position = $pos + 1;
                 $current_position = $position;
                 $position_state = null;
-                for ($n = 0; $n<6; $n++) {
+                for ($n = 0; $n < 6; $n++) {
                     $current_position = $this->strposBackwards(
-                        $postit, '<td class="value-small">', $current_position-1
+                        $postit, '<td class="value-small">', $current_position - 1
                     );
                     if ($n === 1) {
                         $position_reservations = $current_position;
@@ -254,15 +254,16 @@ class PICA extends DAIA
                     }
                 }
                 if ($position_state !== null
-                    && substr($postit, $position_state+24, 8) !== 'bestellt'
+                    && substr($postit, $position_state + 24, 8) !== 'bestellt'
                 ) {
-                    $reservations[] = substr($postit, $position_reservations+24, 1);
-                    $expiration[] = substr($postit, $position_expire+24, 10);
+                    $reservations[]
+                        = substr($postit, $position_reservations + 24, 1);
+                    $expiration[] = substr($postit, $position_expire + 24, 10);
                     $renewals[] = $this->getRenewals($completeValue);
                     $closing_title = strpos($postit, '</td>', $position_title);
                     $titles[] = $completeValue . " " . substr(
-                        $postit, $position_title+24,
-                        ($closing_title-$position_title-24)
+                        $postit, $position_title + 24,
+                        ($closing_title - $position_title - 24)
                     );
                 } else {
                     $holdsByIframe--;
@@ -278,18 +279,18 @@ class PICA extends DAIA
             $position = strpos($postit, 'input type="checkbox" name="VB"');
             for ($i = 0; $i < $holds; $i++) {
                 $pos = strpos($postit, 'value=', $position);
-                $value = substr($postit, $pos+11, 8);
-                $completeValue = substr($postit, $pos+7, 12);
+                $value = substr($postit, $pos + 11, 8);
+                $completeValue = substr($postit, $pos + 7, 12);
                 $barcode[] = $completeValue;
                 $ppns[] = $this->getPpnByBarcode($value);
                 $position = $pos + 1;
                 $position_expire = $position;
-                for ($n = 0; $n<4; $n++) {
+                for ($n = 0; $n < 4; $n++) {
                     $position_expire = strpos(
-                        $postit, '<td class="value-small">', $position_expire+1
+                        $postit, '<td class="value-small">', $position_expire + 1
                     );
                 }
-                $expiration[] = substr($postit, $position_expire+24, 10);
+                $expiration[] = substr($postit, $position_expire + 24, 10);
                 $renewals[] = $this->getRenewals($completeValue);
             }
         }
@@ -338,9 +339,9 @@ class PICA extends DAIA
         $needle_reverse = strrev($needle);
         $position_brutto = strpos($haystack_reverse, $needle_reverse);
         if ($offset === 0) {
-            $position_netto = strlen($haystack)-$position_brutto-strlen($needle);
+            $position_netto = strlen($haystack) - $position_brutto - strlen($needle);
         } else {
-            $position_netto = $offset-$position_brutto-strlen($needle);
+            $position_netto = $offset - $position_brutto - strlen($needle);
         }
         return $position_netto;
     }
@@ -427,7 +428,7 @@ class PICA extends DAIA
         $postit = $this->postit($URL, $POST);
 
         // How many items are there?
-        $holds = substr_count($postit, '<td class="plain"')/3;
+        $holds = substr_count($postit, '<td class="plain"') / 3;
         $fineDate = [];
         $description = [];
         $fine = [];
@@ -437,17 +438,18 @@ class PICA extends DAIA
             // first class=plain => description
             // length = position of next </td> - startposition
             $nextClosingTd = strpos($postit, '</td>', $pos);
-            $description[$i] = substr($postit, $pos+18, ($nextClosingTd-$pos-18));
+            $description[$i]
+                = substr($postit, $pos + 18, ($nextClosingTd - $pos - 18));
             $position = $pos + 1;
             // next class=plain => date of fee creation
             $pos = strpos($postit, '<td class="plain"', $position);
             $nextClosingTd = strpos($postit, '</td>', $pos);
-            $fineDate[$i] = substr($postit, $pos+18, ($nextClosingTd-$pos-18));
+            $fineDate[$i] = substr($postit, $pos + 18, ($nextClosingTd - $pos - 18));
             $position = $pos + 1;
             // next class=plain => amount of fee
             $pos = strpos($postit, '<td class="plain"', $position);
             $nextClosingTd = strpos($postit, '</td>', $pos);
-            $fineString = substr($postit, $pos+32, ($nextClosingTd-$pos-32));
+            $fineString = substr($postit, $pos + 32, ($nextClosingTd - $pos - 32));
             $feeString = explode(',', $fineString);
             $feeString[1] = substr($feeString[1], 0, 2);
             $fine[$i] = (double) implode('', $feeString);
@@ -500,17 +502,17 @@ class PICA extends DAIA
         $position = strpos($postit, 'input type="checkbox" name="VB"');
         for ($i = 0; $i < $holds; $i++) {
             $pos = strpos($postit, 'value=', $position);
-            $value = substr($postit, $pos+11, 8);
+            $value = substr($postit, $pos + 11, 8);
             $ppns[] = $this->getPpnByBarcode($value);
             $position = $pos + 1;
             $position_create = $position;
-            for ($n = 0; $n<3; $n++) {
+            for ($n = 0; $n < 3; $n++) {
                 $position_create = strpos(
-                    $postit, '<td class="value-small">', $position_create+1
+                    $postit, '<td class="value-small">', $position_create + 1
                 );
             }
             $creation[]
-                = str_replace('-', '.', substr($postit, $position_create+24, 10));
+                = str_replace('-', '.', substr($postit, $position_create + 24, 10));
         }
         /* items, which are ordered and have no signature yet, are not included in
          * the for-loop getthem by checkbox PPN
@@ -520,32 +522,32 @@ class PICA extends DAIA
         for ($i = 0; $i < $moreholds; $i++) {
             $pos = strpos($postit, 'value=', $position);
             // get the length of PPN
-               $x = strpos($postit, '"', $pos+7);
-            $value = substr($postit, $pos+7, $x-$pos-7);
+               $x = strpos($postit, '"', $pos + 7);
+            $value = substr($postit, $pos + 7, $x - $pos - 7);
             // problem: the value presented here does not contain the checksum!
             // so its not a valid identifier
             // we need to calculate the checksum
             $checksum = 0;
-            for ($i = 0; $i<strlen($value);$i++) {
-                $checksum += $value[$i]*(9-$i);
+            for ($i = 0; $i < strlen($value);$i++) {
+                $checksum += $value[$i] * (9 - $i);
             }
-            if ($checksum%11 === 1) {
+            if ($checksum % 11 === 1) {
                 $checksum = 'X';
-            } else if ($checksum%11 === 0) {
+            } else if ($checksum % 11 === 0) {
                 $checksum = 0;
             } else {
-                $checksum = 11 - $checksum%11;
+                $checksum = 11 - $checksum % 11;
             }
             $ppns[] = $value . $checksum;
             $position = $pos + 1;
             $position_create = $position;
-            for ($n = 0; $n<3; $n++) {
+            for ($n = 0; $n < 3; $n++) {
                 $position_create = strpos(
-                    $postit, '<td class="value-small">', $position_create+1
+                    $postit, '<td class="value-small">', $position_create + 1
                 );
             }
             $creation[]
-                = str_replace('-', '.', substr($postit, $position_create+24, 10));
+                = str_replace('-', '.', substr($postit, $position_create + 24, 10));
         }
 
         /* media ordered from closed stack is not visible on the UI_LOR page
@@ -565,16 +567,18 @@ class PICA extends DAIA
         $position = 0;
         for ($i = 0; $i < $requests; $i++) {
             $position = strpos(
-                $postit_lol, '<td class="value-small">bestellt</td>', $position+1
+                $postit_lol, '<td class="value-small">bestellt</td>', $position + 1
             );
-            $pos = strpos($postit_lol, '<td class="value-small">', ($position-100));
+            $pos = strpos(
+                $postit_lol, '<td class="value-small">', ($position - 100)
+            );
             $nextClosingTd = strpos($postit_lol, '</td>', $pos);
-            $value = substr($postit_lol, $pos+27, ($nextClosingTd-$pos-27));
+            $value = substr($postit_lol, $pos + 27, ($nextClosingTd - $pos - 27));
             $ppns[] = $this->getPpnByBarcode($value);
             $creation[] = date('d.m.Y');
         }
 
-        for ($i = 0; $i < ($holds+$moreholds+$requests); $i++) {
+        for ($i = 0; $i < ($holds + $moreholds + $requests); $i++) {
             $holdList[] = [
                 "id"       => $ppns[$i],
                 "create"   => $creation[$i]

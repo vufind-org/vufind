@@ -13,7 +13,6 @@ namespace ZendService\Amazon\Sqs;
 use SimpleXMLElement;
 use Zend\Crypt\Hmac;
 use ZendService\Amazon;
-use ZendService\Amazon\Sqs\Exception;
 
 /**
  * Class for connecting to the Amazon Simple Queue Service (SQS)
@@ -102,7 +101,6 @@ class Sqs extends Amazon\AbstractAmazon
             } else {
                 return (string) $result->CreateQueueResult->QueueUrl;
             }
-
         } while ($retry);
 
         return false;
@@ -275,9 +273,9 @@ class Sqs extends Amazon\AbstractAmazon
             throw new Exception\RuntimeException($result->Error->Code);
         }
 
-        if(count($result->GetQueueAttributesResult->Attribute) > 1) {
+        if (count($result->GetQueueAttributesResult->Attribute) > 1) {
             $attr_result = array();
-            foreach($result->GetQueueAttributesResult->Attribute as $attribute) {
+            foreach ($result->GetQueueAttributesResult->Attribute as $attribute) {
                 $attr_result[(string)$attribute->Name] = (string)$attribute->Value;
             }
             return $attr_result;
@@ -406,7 +404,7 @@ class Sqs extends Amazon\AbstractAmazon
         unset($parameters['Signature']);
 
         $arrData = array();
-        foreach($parameters as $key => $value) {
+        foreach ($parameters as $key => $value) {
             $arrData[] = $key . '=' . str_replace('%7E', '~', urlencode($value));
         }
 

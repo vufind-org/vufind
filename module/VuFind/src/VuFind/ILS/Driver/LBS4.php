@@ -284,7 +284,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     $available = false;
                     $duedate = $this->getLoanexpire($volnum);
                     $is_holdable = true;
-                } else if ($loan_indi>6) {
+                } else if ($loan_indi > 6) {
                     $available = false;
                 }
 
@@ -757,7 +757,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             while ($row = sybase_fetch_row($sqlStmt)) {
                 //$fine = $this->translate(('3'==$row[1])?'Overdue':'Dues');
                 $fine = $this->picaRecode($row[5]);
-                $amount = (null == $row[2]) ? 0 : $row[2]*100;
+                $amount = (null == $row[2]) ? 0 : $row[2] * 100;
                 //$balance = (null==$row[3])?0:$row[3]*100;
                 $checkout = substr($row[3], 0,  12);
                 $duedate = substr($row[4], 0, 12);
@@ -804,13 +804,13 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     {
         $x = 0; $y = 0; $w = 2;
         $stra = str_split($str);
-        for ($i = strlen($str); $i>0; $i--) {
-            $c = $stra[$i-1];
+        for ($i = strlen($str); $i > 0; $i--) {
+            $c = $stra[$i - 1];
             $x = ord($c) - 48;
-            $y += $x*$w;
+            $y += $x * $w;
             $w++;
         }
-        $p = 11-$y%11;
+        $p = 11 - $y % 11;
         if ($p == 11) {
             $p = 0;
         }
