@@ -724,8 +724,15 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getVisibleSearchResultLimit()
     {
+        $config = $this->configLoader
+            ->get($this->getSearchIni());
         // No limit by default:
-        return -1;
+        $retVal = -1;
+
+        if (isset($config->General->result_limit)) {
+            $retVal = $config->General->result_limit;
+        }
+        return $retVal;
     }
 
     /**

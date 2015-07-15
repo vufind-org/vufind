@@ -308,18 +308,7 @@ abstract class Results implements ServiceLocatorAwareInterface
             return $this->startRecordOverride;
         }
         $params = $this->getParams();
-        $config = $this->getServiceLocator();
-        if (isset($config)) {
-            $config = $config->get('VuFind\Config')
-                ->get('searches');
-        }
-        $page = $this->getParams()->getPage();
-        if (isset($config->General->max_pages)
-            && ($config->General->max_pages < $page)
-        ) {
-            $page = $config->General->max_pages;
-        }
-        return (($page - 1) * $params->getLimit()) + 1;
+        return (($params->getPage() - 1) * $params->getLimit()) + 1;
     }
 
     /**
@@ -331,18 +320,7 @@ abstract class Results implements ServiceLocatorAwareInterface
     {
         $total = $this->getResultTotal();
         $limit = $this->getParams()->getLimit();
-
-        $config = $this->getServiceLocator();
-        if (isset($config)) {
-            $config = $config->get('VuFind\Config')
-                ->get('searches');
-        }
         $page = $this->getParams()->getPage();
-        if (isset($config->General->max_pages)
-            && ($config->General->max_pages < $page)
-        ) {
-            $page = $config->General->max_pages;
-        }
         if ($page * $limit > $total) {
             // The end of the current page runs past the last record, use total
             // results
@@ -478,21 +456,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         // Build the standard paginator control:
         $nullAdapter = "Zend\Paginator\Adapter\Null";
         $paginator = new Paginator(new $nullAdapter($total));
-
-
-        $config = $this->getServiceLocator();
-        if (isset($config)) {
-            $config = $config->get('VuFind\Config')
-                ->get('searches');
-        }
-        $page = $this->getParams()->getPage();
-        if (isset($config->General->max_pages)
-            && ($config->General->max_pages < $page)
-        ) {
-            $page = $config->General->max_pages;
-        }
-
-        $paginator->setCurrentPageNumber($page)
+        $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())
             ->setPageRange(11);
         return $paginator;
