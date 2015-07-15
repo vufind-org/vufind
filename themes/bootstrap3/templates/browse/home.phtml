@@ -70,8 +70,8 @@
   <? if (!empty($this->resultList)): ?>
     <div class="browse list-group col-sm-3" id="list4">
     <? foreach($this->resultList as $result): ?>
-      <a class="list-group-item clearfix" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['result']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
-        <?=$this->escapeHtml($result['result'])?>
+      <a class="list-group-item clearfix" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
+        <?=$this->escapeHtml($result['displayText'])?>
         <span class="badge"><?=number_format($result['count']) ?></span>
       </a>
     <? endforeach; ?>

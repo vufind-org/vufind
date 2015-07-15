@@ -233,14 +233,7 @@
 
 <div class="span-4 last">
   <? /* Display thumbnail if appropriate: */ ?>
-  <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
-  <? if ($mediumThumb): ?>
-    <? if ($largeThumb): ?><a href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
-      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
-    <? if ($largeThumb): ?></a><? endif; ?>
-  <? else: ?>
-    <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-  <? endif; ?>
+  <?=$this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('large')); ?>
 
   <? /* Display qrcode if appropriate: */ ?>
   <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>

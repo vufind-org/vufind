@@ -50,7 +50,7 @@
 <div class="span-5 browseNav">
     <ul class="browse" id="list4">
     <? foreach($this->resultList as $result): ?>
-        <li><a href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['result']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($result['result'])/*html*/?> (<?=$this->localizedNumber($result['count']) ?>)</a></li>
+        <li><a href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['value']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($result['displayText'])/*html*/?> (<?=$this->localizedNumber($result['count']) ?>)</a></li>
     <? endforeach; ?>
     </ul>
 </div>
