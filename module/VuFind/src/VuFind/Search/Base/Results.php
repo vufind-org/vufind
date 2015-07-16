@@ -308,7 +308,21 @@ abstract class Results implements ServiceLocatorAwareInterface
             return $this->startRecordOverride;
         }
         $params = $this->getParams();
-        return (($params->getPage() - 1) * $params->getLimit()) + 1;
+        $page = $params->getPage();
+        $config = $this->getServiceLocator();
+        $searchIni = $this->getOptions()->getSearchIni();
+
+        if (isset($config)) {
+            $config = $config->get('VuFind\Config')
+                ->get($searchIni);
+        }
+        if (isset($config->General->result_limit)
+            && ($config->General->result_limit < ($page * $params->getLimit()))
+        ) {
+            return ((($config->General->result_limit / $params->getLimit()) - 1)
+                * $params->getLimit()) + 1;
+        }
+        return (($page - 1) * $params->getLimit()) + 1;
     }
 
     /**
@@ -319,15 +333,29 @@ abstract class Results implements ServiceLocatorAwareInterface
     public function getEndRecord()
     {
         $total = $this->getResultTotal();
-        $limit = $this->getParams()->getLimit();
-        $page = $this->getParams()->getPage();
-        if ($page * $limit > $total) {
+        $params = $this->getParams();
+        $page = $params->getPage();
+        $config = $this->getServiceLocator();
+        $searchIni = $this->getOptions()->getSearchIni();
+
+        if (isset($config)) {
+            $config = $config->get('VuFind\Config')
+                ->get($searchIni);
+        }
+        if (isset($config->General->result_limit)
+            && ($config->General->result_limit < ($page * $params->getLimit()))
+        ) {
+            $record = $config->General->result_limit;
+        } else {
+            $record = $page * $params->getLimit();
+        }
+        if ($record > $total) {
             // The end of the current page runs past the last record, use total
             // results
             return $total;
         } else {
             // Otherwise use the last record on this page
-            return $page * $limit;
+            return $record;
         }
     }
 
