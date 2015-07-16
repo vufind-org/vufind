@@ -691,7 +691,8 @@ class User extends RowGateway implements \VuFind\Db\Table\DbTableAwareInterface,
     /**
      * __get
      *
-     * @param  string $name
+     * @param string $name Field to retrieve.
+     *
      * @throws Exception\InvalidArgumentException
      * @return mixed
      */
