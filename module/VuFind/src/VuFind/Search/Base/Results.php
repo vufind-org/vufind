@@ -304,25 +304,17 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function getStartRecord()
     {
-        if (!is_null($this->startRecordOverride)) {
+        if (null !== $this->startRecordOverride) {
             return $this->startRecordOverride;
         }
         $params = $this->getParams();
         $page = $params->getPage();
-        $config = $this->getServiceLocator();
-        $searchIni = $this->getOptions()->getSearchIni();
-
-        if (isset($config)) {
-            $config = $config->get('VuFind\Config')
-                ->get($searchIni);
+        $pageLimit = $params->getLimit();
+        $resultLimit = $this->getOptions()->getVisibleSearchResultLimit();
+        if ($resultLimit > -1 && $resultLimit < $page * $pageLimit) {
+            $page = ceil($resultLimit / $pageLimit);
         }
-        if (isset($config->General->result_limit)
-            && ($config->General->result_limit < ($page * $params->getLimit()))
-        ) {
-            return ((($config->General->result_limit / $params->getLimit()) - 1)
-                * $params->getLimit()) + 1;
-        }
-        return (($page - 1) * $params->getLimit()) + 1;
+        return (($page - 1) * $pageLimit) + 1;
     }
 
     /**
@@ -335,28 +327,17 @@ abstract class Results implements ServiceLocatorAwareInterface
         $total = $this->getResultTotal();
         $params = $this->getParams();
         $page = $params->getPage();
-        $config = $this->getServiceLocator();
-        $searchIni = $this->getOptions()->getSearchIni();
+        $pageLimit = $params->getLimit();
+        $resultLimit = $this->getOptions()->getVisibleSearchResultLimit();
 
-        if (isset($config)) {
-            $config = $config->get('VuFind\Config')
-                ->get($searchIni);
-        }
-        if (isset($config->General->result_limit)
-            && ($config->General->result_limit < ($page * $params->getLimit()))
-        ) {
-            $record = $config->General->result_limit;
+        if ($resultLimit > -1 && $resultLimit < ($page * $pageLimit)) {
+            $record = $resultLimit;
         } else {
-            $record = $page * $params->getLimit();
+            $record = $page * $pageLimit;
         }
-        if ($record > $total) {
-            // The end of the current page runs past the last record, use total
-            // results
-            return $total;
-        } else {
-            // Otherwise use the last record on this page
-            return $record;
-        }
+        // If the end of the current page runs past the last record, use total
+        // results; otherwise use the last record on this page:
+        return ($record > $total) ? $total : $record;
     }
 
     /**

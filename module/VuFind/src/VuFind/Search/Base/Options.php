@@ -213,6 +213,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $configLoader;
 
     /**
+     * Maximum number of results (no limit by default)
+     *
+     * @var int
+     */
+    protected $resultLimit = -1;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -724,15 +731,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getVisibleSearchResultLimit()
     {
-        $config = $this->configLoader
-            ->get($this->getSearchIni());
-        // No limit by default:
-        $retVal = -1;
-
-        if (isset($config->General->result_limit)) {
-            $retVal = $config->General->result_limit;
-        }
-        return $retVal;
+        return intval($this->resultLimit);
     }
 
     /**
