@@ -132,7 +132,7 @@ class RouteGenerator
         $config['router']['routes'][$routeBase] = [
             'type'    => 'Zend\Mvc\Router\Http\Segment',
             'options' => [
-                'route'    => '/' . $controller . '/[:id[/:tab]]',
+                'route'    => '/' . $controller . '/[:id[/[:tab]]]',
                 'constraints' => [
                     'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                     'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',

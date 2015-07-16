@@ -25,6 +25,9 @@
 <div class="resulthead">
   <div class="floatleft">
     <? if ($recordTotal > 0): ?>
+      <? foreach (($top = $results->getRecommendations('top')) as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
       <?=$this->transEsc("Showing")?>
       <strong><?=$this->localizedNumber($results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($results->getEndRecord())?></strong>
       <? if (!isset($view->skipTotalCount)): ?>

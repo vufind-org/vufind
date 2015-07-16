@@ -13,16 +13,15 @@
 <? endif;?>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
-  <div class="span-2">
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-      <? else: ?>
-        <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-      <? endif; ?>
-    </a>
-  </div>
+  <? $cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver)); ?>
+  <? if ($cover): ?>
+   <div class="span-2">
+     <?=$cover?>
+   </div>
   <div class="span-9">
+  <? else: ?>
+  <div class="span-11">
+  <? endif; ?>
     <? if ('full' == $dataView): ?>
       <div class="resultItemLine1">
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">

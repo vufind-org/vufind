@@ -164,8 +164,6 @@ class Tags extends Gateway
                 }
             }
         );
-
-        return $resultset->toArray();
     }
 
     /**

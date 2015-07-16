@@ -1720,7 +1720,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         //consortium&amp;conf=.%26%23047%3bchameleon.conf&amp;timedout=1" />
         $start = strpos($result, 'sessionid=') + 10;
         $end   = strpos($result, '&amp;skin=');
-        return substr($result, $start, $end-$start);
+        return substr($result, $start, $end - $start);
     }
 
     /**

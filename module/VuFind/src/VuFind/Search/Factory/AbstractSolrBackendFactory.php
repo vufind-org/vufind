@@ -29,6 +29,7 @@
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\FilterFieldConversionListener;
+use VuFind\Search\Solr\HideFacetValueListener;
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\InjectConditionalFilterListener;
 use VuFind\Search\Solr\InjectSpellingListener;
@@ -175,6 +176,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Load configurations:
         $config = $this->config->get('config');
         $search = $this->config->get($this->searchConfig);
+        $facet = $this->config->get($this->facetConfig);
 
         // Highlighting
         $this->getInjectHighlightingListener($backend, $search)->attach($events);
@@ -213,10 +215,10 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Apply deduplication if applicable:
-        if (isset($search->Records->deduplication)
-            && $search->Records->deduplication
-        ) {
-            $this->getDeduplicationListener($backend)->attach($events);
+        if (isset($search->Records->deduplication)) {
+            $this->getDeduplicationListener(
+                $backend, $search->Records->deduplication
+            )->attach($events);
         }
 
         // Attach hierarchical facet listener:
@@ -229,6 +231,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $facets->LegacyFields->toArray()
             );
             $filterFieldConversionListener->attach($events);
+        }
+
+        // Attach hide facet value listener:
+        if ($hfvListener = $this->getHideFacetValueListener($backend, $facet)) {
+            $hfvListener->attach($events);
         }
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
@@ -370,15 +377,41 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * Get a deduplication listener for the backend
      *
      * @param BackendInterface $backend Search backend
+     * @param bool             $enabled Whether deduplication is enabled
      *
      * @return DeduplicationListener
      */
-    protected function getDeduplicationListener(BackendInterface $backend)
+    protected function getDeduplicationListener(BackendInterface $backend, $enabled)
     {
         return new DeduplicationListener(
             $backend,
             $this->serviceLocator,
-            $this->searchConfig
+            $this->searchConfig,
+            'datasources',
+            $enabled
+        );
+    }
+
+    /**
+    * Get a hide facet value listener for the backend
+    *
+    * @param BackendInterface $backend Search backend
+    * @param Config           $facet   Configuration of facets
+    *
+    * @return mixed null|HideFacetValueListener
+    */
+    protected function getHideFacetValueListener(
+        BackendInterface $backend,
+        Config $facet
+    ) {
+        if (!isset($facet->HideFacetValue)
+            || ($facet->HideFacetValue->count()) == 0
+        ) {
+            return null;
+        }
+        return new HideFacetValueListener(
+            $backend,
+            $facet->HideFacetValue->toArray()
         );
     }
 

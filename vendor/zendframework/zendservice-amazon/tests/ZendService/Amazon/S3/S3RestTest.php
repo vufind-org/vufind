@@ -58,7 +58,6 @@ class S3RestTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-
         $accessKey = 'accessKey';
         $secretKey = 'secretKey';
 
@@ -203,7 +202,6 @@ BODY;
      */
     public function testValidBucketName()
     {
-
         $this->assertTrue($this->amazon->_validBucketName('iam.avalid.1bucket-name.endingwithnumber9'));
     }
 

@@ -31,7 +31,7 @@ use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Stdlib\Parameters;
+    VuFind\Search\RecommendListener, Zend\Stdlib\Parameters;
 
 /**
  * Controller for the user account area.
@@ -641,23 +641,28 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $results = $this->getServiceLocator()
-                ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
-            $params = $results->getParams();
+            $runner = $this->getServiceLocator()->get('VuFind\SearchRunner');
 
             // We want to merge together GET, POST and route parameters to
             // initialize our search object:
-            $params->initFromRequest(
-                new Parameters(
-                    $this->getRequest()->getQuery()->toArray()
-                    + $this->getRequest()->getPost()->toArray()
-                    + ['id' => $this->params()->fromRoute('id')]
-                )
-            );
+            $request = $this->getRequest()->getQuery()->toArray()
+                + $this->getRequest()->getPost()->toArray()
+                + ['id' => $this->params()->fromRoute('id')];
 
-            $results->performAndProcessSearch();
+            // Set up listener for recommendations:
+            $rManager = $this->getServiceLocator()
+                ->get('VuFind\RecommendPluginManager');
+            $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
+                $listener = new RecommendListener($rManager, $searchId);
+                $listener->setConfig(
+                    $params->getOptions()->getRecommendationSettings()
+                );
+                $listener->attach($runner->getEventManager()->getSharedManager());
+            };
+
+            $results = $runner->run($request, 'Favorites', $setupCallback);
             return $this->createViewModel(
-                ['params' => $params, 'results' => $results]
+                ['params' => $results->getParams(), 'results' => $results]
             );
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {
@@ -1052,8 +1057,28 @@ class MyResearchController extends AbstractBase
 
         // Get checked out item details:
         $result = $catalog->getMyTransactions($patron);
-        $transactions = [];
-        foreach ($result as $current) {
+
+        // Get page size:
+        $config = $this->getConfig();
+        $limit = isset($config->Catalog->checked_out_page_size)
+            ? $config->Catalog->checked_out_page_size : 50;
+
+        // Build paginator if needed:
+        if ($limit > 0 && $limit < count($result)) {
+            $adapter = new \Zend\Paginator\Adapter\ArrayAdapter($result);
+            $paginator = new \Zend\Paginator\Paginator($adapter);
+            $paginator->setItemCountPerPage($limit);
+            $paginator->setCurrentPageNumber($this->params()->fromQuery('page', 1));
+            $pageStart = $paginator->getAbsoluteItemNumber(1) - 1;
+            $pageEnd = $paginator->getAbsoluteItemNumber($limit) - 1;
+        } else {
+            $paginator = false;
+            $pageStart = 0;
+            $pageEnd = count($result);
+        }
+
+        $transactions = $hiddenTransactions = [];
+        foreach ($result as $i => $current) {
             // Add renewal details if appropriate:
             $current = $this->renewals()->addRenewDetails(
                 $catalog, $current, $renewStatus
@@ -1065,15 +1090,19 @@ class MyResearchController extends AbstractBase
                 $renewForm = true;
             }
 
-            // Build record driver:
-            $transactions[] = $this->getDriverForILSRecord($current);
+            // Build record driver (only for the current visible page):
+            if ($i >= $pageStart && $i <= $pageEnd) {
+                $transactions[] = $this->getDriverForILSRecord($current);
+            } else {
+                $hiddenTransactions[] = $current;
+            }
         }
 
         return $this->createViewModel(
-            [
-                'transactions' => $transactions, 'renewForm' => $renewForm,
-                'renewResult' => $renewResult
-            ]
+            compact(
+                'transactions', 'renewForm', 'renewResult', 'paginator',
+                'hiddenTransactions'
+            )
         );
     }
 
@@ -1189,7 +1218,7 @@ class MyResearchController extends AbstractBase
             $recoveryInterval = isset($config->Authentication->recover_interval)
                 ? $config->Authentication->recover_interval
                 : 60;
-            if (time()-$hashtime < $recoveryInterval) {
+            if (time() - $hashtime < $recoveryInterval) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_too_soon');
             } else {
@@ -1241,7 +1270,7 @@ class MyResearchController extends AbstractBase
             $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
                 ? $config->Authentication->recover_hash_lifetime
                 : 1209600; // Two weeks
-            if (time()-$hashtime > $hashLifetime) {
+            if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_expired_hash');
                 return $this->forwardTo('MyResearch', 'Login');

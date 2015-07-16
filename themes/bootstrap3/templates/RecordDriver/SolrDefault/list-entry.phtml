@@ -13,10 +13,24 @@
   $dataView = $this->params->getOptions()->getListViewOption();
 ?>
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
-  <div class="col-xs-1">
-    <?=$this->record($this->driver)->getCheckbox() ?>
+  <? $cover=$this->record($this->driver)->getCover('list-entry', 'small', $this->recordLink()->getUrl($this->driver)); ?>
+  <? if ($cover): ?>
+  <div class="col-xs-2 left">
+  <? else: ?>
+  <div class="col-xs-1 left">
+  <? endif ?>
+    <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
+    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
+  <? if ($cover): ?>
+    <?=$cover ?>
   </div>
-  <div class="col-xs-11">
+  <div class="col-xs-6 middle">
+  <? else: ?>
+  </div>
+  <div class="col-xs-7 middle">
+  <? endif ?>
+
+    <div class="resultItemLine1">
     <? if('full' != $dataView): ?>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$dataView ?>">
         <?=$this->record($this->driver)->getTitleHtml()?>
