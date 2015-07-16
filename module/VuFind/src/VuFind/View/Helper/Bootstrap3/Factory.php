@@ -69,15 +69,9 @@ class Factory
             ? false : $config->Site->sidebarOnLeft;
         $offcanvas = !isset($config->Site->offcanvas)
             ? false : $config->Site->offcanvas;
-        $rtl = false;
-        $rtlLangs = explode(',', $config->LanguageSettings->rtl_langs);
-        $locale = $sm->getServiceLocator()->get('VuFind\Translator')->getLocale();
-        foreach ($rtlLangs as $lang) {
-            if (trim($lang) == $locale) {
-                $rtl = true;
-                break;
-            }
-        }
-        return new LayoutClass($left, $offcanvas, $rtl);
+        // The right-to-left setting is injected into the layout by the Bootstrapper;
+        // pull it back out here to avoid duplicate effort.
+        $layout = $sm->getServiceLocator()->get('viewmanager')->getViewModel();
+        return new LayoutClass($left, $offcanvas, $layout->rtl);
     }
 }
