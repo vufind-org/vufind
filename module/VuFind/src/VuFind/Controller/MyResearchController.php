@@ -1218,7 +1218,7 @@ class MyResearchController extends AbstractBase
             $recoveryInterval = isset($config->Authentication->recover_interval)
                 ? $config->Authentication->recover_interval
                 : 60;
-            if (time()-$hashtime < $recoveryInterval) {
+            if (time() - $hashtime < $recoveryInterval) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_too_soon');
             } else {
@@ -1270,7 +1270,7 @@ class MyResearchController extends AbstractBase
             $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
                 ? $config->Authentication->recover_hash_lifetime
                 : 1209600; // Two weeks
-            if (time()-$hashtime > $hashLifetime) {
+            if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_expired_hash');
                 return $this->forwardTo('MyResearch', 'Login');

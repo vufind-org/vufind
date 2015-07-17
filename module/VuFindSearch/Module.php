@@ -56,7 +56,6 @@ namespace VuFindSearch;
  */
 class Module
 {
-
     /**
      * Return autoloader configuration.
      *

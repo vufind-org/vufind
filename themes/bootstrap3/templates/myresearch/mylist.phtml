@@ -24,7 +24,7 @@
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <div class="clearfix hidden-print">
-      <p class="lead pull-left"><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></p>
+      <h2 class="pull-left"><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></h2>
       <div class="pull-right">
         <? if (isset($list)): ?>
           <? if ($list->editAllowed($account->isLoggedIn())): ?>

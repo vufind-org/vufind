@@ -11,18 +11,23 @@
   }
 ?>
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
+  <? $cover=$this->record($this->driver)->getCover('list-entry', 'small', $this->recordLink()->getUrl($this->driver)); ?>
+  <? if ($cover): ?>
   <div class="col-xs-2 left">
+  <? else: ?>
+  <div class="col-xs-1 left">
+  <? endif ?>
     <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
     <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-      <? else: ?>
-        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-      <? endif; ?>
-    </a>
+  <? if ($cover): ?>
+    <?=$cover ?>
   </div>
   <div class="col-xs-6 middle">
+  <? else: ?>
+  </div>
+  <div class="col-xs-7 middle">
+  <? endif ?>
+
     <div class="resultItemLine1">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
         <?=$this->record($this->driver)->getTitleHtml()?>
