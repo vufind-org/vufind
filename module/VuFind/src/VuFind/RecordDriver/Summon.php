@@ -241,17 +241,17 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Get the OpenUrl parameters to represent this record (useful for the
+     * Get the OpenURL parameters to represent this record (useful for the
      * title attribute of a COinS span tag).
      *
      * @param bool $overrideSupportsOpenUrl Flag to override checking
      * supportsOpenUrl() (default is false)
      *
-     * @return string OpenUrl parameters.
+     * @return string OpenURL parameters.
      */
     public function getOpenUrl($overrideSupportsOpenUrl = false)
     {
-        // stop here if this record does not support OpenUrls
+        // stop here if this record does not support OpenURLs
         if (!$overrideSupportsOpenUrl && !$this->supportsOpenUrl()) {
             return false;
         }
@@ -262,13 +262,13 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Checks the current record if it's supported for generating OpenUrls.
+     * Checks the current record if it's supported for generating OpenURLs.
      *
      * @return bool
      */
     public function supportsOpenUrl()
     {
-        // Summon never uses OpenUrls for anything other than COinS:
+        // Summon never uses OpenURLs for anything other than COinS:
         return false;
     }
 

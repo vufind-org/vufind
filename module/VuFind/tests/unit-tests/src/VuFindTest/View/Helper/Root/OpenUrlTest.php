@@ -165,7 +165,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
     /**
      * Get mock driver that returns an openURL.
      *
-     * @param string $openUrl OpenUrl to return
+     * @param string $openUrl OpenURL to return
      *
      * @return \VuFind\RecordDriver\SolrDefault
      */
@@ -214,7 +214,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
      * @param array  $config      Configuration settings (optional)
      * @param object $mockContext Mock context helper (optional)
      *
-     * @return OpenUrl
+     * @return OpenURL
      */
     protected function getOpenUrl($rules = null, $config = [], $mockContext = null)
     {

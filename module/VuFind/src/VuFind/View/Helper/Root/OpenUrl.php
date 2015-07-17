@@ -46,14 +46,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $context;
 
     /**
-     * VuFind OpenUrl configuration
+     * VuFind OpenURL configuration
      *
      * @var \Zend\Config\Config
      */
     protected $config;
 
     /**
-     * OpenUrl rules
+     * OpenURL rules
      *
      * @var array
      */
@@ -70,8 +70,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * Constructor
      *
      * @param \VuFind\View\Helper\Root\Context $context      Context helper
-     * @param array                            $openUrlRules VuFind OpenUrl rules
-     * @param \Zend\Config\Config              $config       VuFind OpenUrl config
+     * @param array                            $openUrlRules VuFind OpenURL rules
+     * @param \Zend\Config\Config              $config       VuFind OpenURL config
      */
     public function __construct(\VuFind\View\Helper\Root\Context $context,
         $openUrlRules, $config = null
@@ -82,7 +82,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Render appropriate UI controls for an OpenUrl link.
+     * Render appropriate UI controls for an OpenURL link.
      *
      * @param \VuFind\RecordDriver $driver The current recorddriver
      *
@@ -95,13 +95,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Public method to render the OpenUrl template
+     * Public method to render the OpenURL template
      *
      * @return string
      */
     public function renderTemplate()
     {
-        // Static counter to ensure that each OpenUrl gets a unique ID.
+        // Static counter to ensure that each OpenURL gets a unique ID.
         static $counter = 0;
 
         if (null !== $this->config && isset($this->config->url)) {
@@ -140,7 +140,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Public method to check whether OpenUrls are active for current record
+     * Public method to check whether OpenURLs are active for current record
      *
      * @param string $area 'results', 'record' or 'holdings'
      *
@@ -148,8 +148,8 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     public function isActive($area)
     {
-        // check first if OpenUrls are enabled for this RecordDriver
-        // check second if OpenUrls are enabled for this context
+        // check first if OpenURLs are enabled for this RecordDriver
+        // check second if OpenURLs are enabled for this context
         // check third if any excluded_records rule applies
         // check last if this record is supported
         if (!$this->driver->getOpenUrl()
@@ -164,7 +164,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Does the OpenUrl configuration indicate that we should display OpenUrls in
+     * Does the OpenURL configuration indicate that we should display OpenURLs in
      * the specified context?
      *
      * @param string $area 'results', 'record' or 'holdings'
@@ -173,7 +173,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected function checkContext($area)
     {
-        // Doesn't matter the target area if no OpenUrl resolver is specified:
+        // Doesn't matter the target area if no OpenURL resolver is specified:
         if (!isset($this->config->url)) {
             return false;
         }

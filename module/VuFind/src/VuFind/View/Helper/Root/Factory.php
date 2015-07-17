@@ -307,11 +307,11 @@ class Factory
     }
 
     /**
-     * Construct the OpenUrl helper.
+     * Construct the OpenURL helper.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return OpenUrl
+     * @return OpenURL
      */
     public static function getOpenUrl(ServiceManager $sm)
     {

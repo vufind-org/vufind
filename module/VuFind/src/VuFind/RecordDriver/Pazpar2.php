@@ -242,7 +242,7 @@ class Pazpar2 extends SolrDefault
     }
 
     /**
-     * Support method for getOpenUrl() -- pick the OpenUrl format.
+     * Support method for getOpenUrl() -- pick the OpenURL format.
      *
      * @return string
      */

@@ -1357,7 +1357,7 @@ class AjaxController extends AbstractBase
     }
 
     /**
-     * Fetch Links from resolver given an OpenUrl and format as HTML
+     * Fetch Links from resolver given an OpenURL and format as HTML
      * and output the HTML content in JSON object.
      *
      * @return \Zend\Http\Response

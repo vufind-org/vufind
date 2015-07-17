@@ -666,7 +666,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Support method for getOpenUrl() -- pick the OpenUrl format.
+     * Support method for getOpenUrl() -- pick the OpenURL format.
      *
      * @return string
      */
@@ -713,7 +713,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get default OpenUrl parameters.
+     * Get default OpenURL parameters.
      *
      * @return array
      */
@@ -723,7 +723,7 @@ class SolrDefault extends AbstractBase
         $pubDate = $this->getPublicationDates();
         $pubDate = empty($pubDate) ? '' : $pubDate[0];
 
-        // Start an array of OpenUrl parameters:
+        // Start an array of OpenURL parameters:
         return [
             'url_ver' => 'Z39.88-2004',
             'ctx_ver' => 'Z39.88-2004',
@@ -735,7 +735,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get OpenUrl parameters for a book.
+     * Get OpenURL parameters for a book.
      *
      * @return array
      */
@@ -762,7 +762,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get OpenUrl parameters for an article.
+     * Get OpenURL parameters for an article.
      *
      * @return array
      */
@@ -792,7 +792,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get OpenUrl parameters for an unknown format.
+     * Get OpenURL parameters for an unknown format.
      *
      * @param string $format Name of format
      *
@@ -816,7 +816,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get OpenUrl parameters for a journal.
+     * Get OpenURL parameters for a journal.
      *
      * @return array
      */
@@ -824,7 +824,7 @@ class SolrDefault extends AbstractBase
     {
         $params = $this->getUnknownFormatOpenUrlParams('Journal');
         /* This is probably the most technically correct way to represent
-         * a journal run as an OpenUrl; however, it doesn't work well with
+         * a journal run as an OpenURL; however, it doesn't work well with
          * Zotero, so it is currently commented out -- instead, we just add
          * some extra fields and to the "unknown format" case.
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:journal';
@@ -835,7 +835,7 @@ class SolrDefault extends AbstractBase
          */
         $params['rft.issn'] = (string)$this->getCleanISSN();
 
-        // Including a date in a title-level Journal OpenUrl may be too
+        // Including a date in a title-level Journal OpenURL may be too
         // limiting -- in some link resolvers, it may cause the exclusion
         // of databases if they do not cover the exact date provided!
         unset($params['rft.date']);
@@ -852,17 +852,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the OpenUrl parameters to represent this record (useful for the
+     * Get the OpenURL parameters to represent this record (useful for the
      * title attribute of a COinS span tag).
      *
      * @param bool $overrideSupportsOpenUrl Flag to override checking
      * supportsOpenUrl() (default is false)
      *
-     * @return string OpenUrl parameters.
+     * @return string OpenURL parameters.
      */
     public function getOpenUrl($overrideSupportsOpenUrl = false)
     {
-        // stop here if this record does not support OpenUrls
+        // stop here if this record does not support OpenURLs
         if (!$overrideSupportsOpenUrl && !$this->supportsOpenUrl()) {
             return false;
         }
@@ -881,10 +881,10 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the OpenUrl parameters to represent this record for COinS even if
+     * Get the OpenURL parameters to represent this record for COinS even if
      * supportsOpenUrl() is false for this RecordDriver.
      *
-     * @return string OpenUrl parameters.
+     * @return string OpenURL parameters.
      */
     public function getCoinsOpenUrl()
     {
