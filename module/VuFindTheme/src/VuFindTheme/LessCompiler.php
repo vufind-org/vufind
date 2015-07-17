@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFindTheme;
-use \Zend\Console\Console;
+use Zend\Console\Console;
 
 /**
  * Class to compile LESS into CSS within a theme.
@@ -217,7 +217,7 @@ class LessCompiler
         }
         file_put_contents($finalFile, $this->makeRelative($css, $less));
 
-        $this->logMessage("\t\t" . (microtime(true)-$start) . ' sec');
+        $this->logMessage("\t\t" . (microtime(true) - $start) . ' sec');
     }
 
     /**

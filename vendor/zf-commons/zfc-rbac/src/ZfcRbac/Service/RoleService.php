@@ -74,6 +74,26 @@ class RoleService
     }
 
     /**
+     * Set the identity provider
+     *
+     * @param IdentityProviderInterface $identityProvider
+     */
+    public function setIdentityProvider(IdentityProviderInterface $identityProvider)
+    {
+        $this->identityProvider = $identityProvider;
+    }
+
+    /**
+     * Set the role provider
+     *
+     * @param RoleProviderInterface $roleProvider
+     */
+    public function setRoleProvider(RoleProviderInterface $roleProvider)
+    {
+        $this->roleProvider = $roleProvider;
+    }
+
+    /**
      * Set the guest role
      *
      * @param  string $guestRole

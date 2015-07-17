@@ -1,0 +1,62 @@
+<?
+// Convert Primo format to RefWorks format:
+$formats = $this->driver->tryMethod('getFormats');
+if (is_array($formats) && !empty($formats[0])) {
+    $format = $formats[0];
+} else {
+    $format = $formats;
+}
+$refworksFormat = 'Generic';
+
+switch ($format) {
+case 'Article':
+    $refworksFormat = 'Journal Article';
+    break;
+case 'Book Chapter':
+    $refworksFormat = 'Book, Section';
+    break;
+case 'Book':
+    $refworksFormat = 'Book, Whole';
+    break;
+case 'Audio':
+    $refworksFormat = 'Sound Recording';
+    break;
+case 'Audio Video':
+case 'Video':
+    $refworksFormat = 'Video/ DVD';
+    break;
+case 'Conference Proceeding':
+    $refworksFormat = 'Conference Proceedings';
+    break;
+case 'Database':
+    // No suitable mapping
+    break;
+case 'Dissertation':
+    $refworksFormat = 'Dissertation/Thesis';
+    break;
+case 'Image':
+    // No suitable mapping
+    break;
+case 'Journal':
+    $refworksFormat = 'Journal, Electronic';
+    break;
+case 'Legal Document':
+    // No suitable mapping
+    break;
+case 'Newspaper Article':
+    $refworksFormat = 'Newspaper Article';
+    break;
+case 'Reference Entry':
+    // No suitable mapping
+    break;
+case 'Score':
+    $refworksFormat = 'Music Score';
+    break;
+case 'Website':
+    $refworksFormat = 'Web Page';
+    break;
+}
+
+$this->overrideFormats = [$refworksFormat];
+// Use the default template, but override the formats:
+echo $this->render('RecordDriver/AbstractBase/export-refworks.phtml');

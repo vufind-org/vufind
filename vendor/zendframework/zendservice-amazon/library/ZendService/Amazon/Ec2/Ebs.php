@@ -11,8 +11,6 @@
 namespace ZendService\Amazon\Ec2;
 
 use ZendService\Amazon;
-use ZendService\Amazon\Ec2\Exception;
-
 /**
  * An Amazon EC2 interface to create, describe, attach, detach and delete Elastic Block
  * Storage Volumes and Snapshots.
@@ -96,11 +94,11 @@ class Ebs extends AbstractEc2
         $params = array();
         $params['Action'] = 'DescribeVolumes';
 
-        if(is_array($volumeId) && !empty($volumeId)) {
-            foreach($volumeId as $k=>$name) {
+        if (is_array($volumeId) && !empty($volumeId)) {
+            foreach ($volumeId as $k=>$name) {
                 $params['VolumeId.' . ($k+1)] = $name;
             }
-        } elseif($volumeId) {
+        } elseif ($volumeId) {
             $params['VolumeId.1'] = $volumeId;
         }
 
@@ -119,7 +117,7 @@ class Ebs extends AbstractEc2
             $item['createTime'] = $xpath->evaluate('string(ec2:createTime/text())', $node);
 
             $attachmentSet = $xpath->query('ec2:attachmentSet/ec2:item', $node);
-            if($attachmentSet->length == 1) {
+            if ($attachmentSet->length == 1) {
                 $_as = $attachmentSet->item(0);
                 $as = array();
                 $as['volumeId'] = $xpath->evaluate('string(ec2:volumeId/text())', $_as);
@@ -146,8 +144,8 @@ class Ebs extends AbstractEc2
         $volumes = $this->describeVolume();
 
         $return = array();
-        foreach($volumes as $vol) {
-            if(isset($vol['attachmentSet']) && $vol['attachmentSet']['instanceId'] == $instanceId) {
+        foreach ($volumes as $vol) {
+            if (isset($vol['attachmentSet']) && $vol['attachmentSet']['instanceId'] == $instanceId) {
                 $return[] = $vol;
             }
         }
@@ -280,11 +278,11 @@ class Ebs extends AbstractEc2
         $params = array();
         $params['Action'] = 'DescribeSnapshots';
 
-        if(is_array($snapshotId) && !empty($snapshotId)) {
-            foreach($snapshotId as $k=>$name) {
+        if (is_array($snapshotId) && !empty($snapshotId)) {
+            foreach ($snapshotId as $k=>$name) {
                 $params['SnapshotId.' . ($k+1)] = $name;
             }
-        } elseif($snapshotId) {
+        } elseif ($snapshotId) {
             $params['SnapshotId.1'] = $snapshotId;
         }
 

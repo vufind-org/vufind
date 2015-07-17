@@ -15,7 +15,6 @@ use Zend\Crypt\Hmac;
 use Zend\Http\Header;
 use Zend\Http\Response\Stream as StreamResponse;
 use ZendService\Amazon;
-use ZendService\Amazon\S3\Exception;
 use Zend\Uri;
 
 /**
@@ -253,15 +252,15 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
             $info['etag']  = $headers->get('ETag');
 
             //Prevents from the fatal error method call on a non-object
-            foreach ($info as $key => $value)
+            foreach ($info as $key => $value) {
                 if ($value instanceof Header\HeaderInterface) {
                     $info[$key] = $value->getFieldValue();
                 }
+            }
 
             if ($info['mtime']) {
                 $info['mtime'] = strtotime($headers->get('Last-modified')->getFieldValue());
             }
-
         } else {
             return false;
         }
@@ -531,7 +530,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         }
 
         if (!isset($meta[self::S3_CONTENT_TYPE_HEADER])) {
-           $meta[self::S3_CONTENT_TYPE_HEADER] = self::getMimeType($path);
+            $meta[self::S3_CONTENT_TYPE_HEADER] = self::getMimeType($path);
         }
 
         return $this->putObject($object, $data, $meta);
@@ -558,7 +557,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         }
 
         if (!isset($meta[self::S3_CONTENT_TYPE_HEADER])) {
-           $meta[self::S3_CONTENT_TYPE_HEADER] = self::getMimeType($path);
+            $meta[self::S3_CONTENT_TYPE_HEADER] = self::getMimeType($path);
         }
 
         if (!isset($meta['Content-MD5'])) {
@@ -816,8 +815,9 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         //US General bucket names must always be lowercased for the signature
         $urlPath = parse_url($path, PHP_URL_PATH);
         $urlPathParts = explode('/', $urlPath);
-        if (!empty($urlPathParts[0]))
+        if (!empty($urlPathParts[0])) {
             $urlPathParts[0] = strtolower($urlPathParts[0]);
+        }
 
         $sig_str .= '/'.implode('/', $urlPathParts);
         if (strpos($path, '?location') !== false) {
