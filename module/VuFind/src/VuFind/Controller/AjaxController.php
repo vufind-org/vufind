@@ -702,7 +702,7 @@ class AjaxController extends AbstractBase
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source')
         );
-        $viewtype=preg_replace(
+        $viewtype = preg_replace(
             '/\W/', '',
             trim(strtolower($this->params()->fromQuery('type')))
         );
@@ -717,8 +717,8 @@ class AjaxController extends AbstractBase
             );
         $html = $this->getViewRenderer()
             ->render(
-                "record/ajaxview-".$viewtype.".phtml",
-                array('driver' => $driver, 'tabs' => $allTabs)
+                "record/ajaxview-" . $viewtype . ".phtml",
+                ['driver' => $driver, 'tabs' => $allTabs]
             );
         return $this->output($html, self::STATUS_OK);
     }
