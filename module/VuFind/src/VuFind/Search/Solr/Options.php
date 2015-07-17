@@ -113,6 +113,10 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultFilters = $searchSettings->General->default_filters
                 ->toArray();
         }
+        // Result limit:
+        if (isset($searchSettings->General->result_limit)) {
+            $this->resultLimit = $searchSettings->General->result_limit;
+        }
         if (isset($searchSettings->Basic_Searches)) {
             foreach ($searchSettings->Basic_Searches as $key => $value) {
                 $this->basicHandlers[$key] = $value;
