@@ -1,22 +1,5 @@
 {
-  "__comment00" : "Here you can define rules for included(supported) and/or excluded ",
-  "__comment01" : "records for OpenURLs. The rules are defined in their ruletype ",
-  "__comment02" : "block by a set of key:value pairs. Keys are interpreted as method ",
-  "__comment03" : "names except for the key \"recorddriver\" which limits the current",
-  "__comment04" : "rule to the RecordDriver named as given in value (full class name).",
-  "__comment05" : "Any other values are interpreted as return values for the given ",
-  "__comment06" : "method. To match any value but false (i.e. also empty strings)",
-  "__comment07" : "set value to \"*\" - this allows any record with the defined ",
-  "__comment08" : "method returning anything but false.",
-  "__comment09" : "The rules are being checked top-down, first match applies. ",
-  "__comment10" : "Excluded records rules are checked FIRST, supported records are",
-  "__comment11" : "checked SECOND.",
-  "__comment12" : "Example:",
-  "__comment13" : "{\"exclude\":[{\"recorddriver\":\"VuFind\\RecordDriver\\SolrDefault\", \"getFormat:\":\"Journal\"}]}",
-  "__comment14" : "{\"include\":[{\"getFormat\":\"*\"}]}",
-
-  "__comment15" : "By default any record returning anything but false for",
-  "__comment16" : "getCleanISSN supports OpenURLs:",
+  "__comment" : "documentation: https://vufind.org/wiki/vufind2:openurls",
 
   "exclude" : [],
   "include" :
