@@ -251,7 +251,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             }
 
             foreach ($rule as $key => $value) {
-                if (method_exists($this->driver, $key)) {
+                if (is_callable([$this->driver, $key])) {
                     $recordValue = $this->driver->$key();
                     if ($value === "*" && $recordValue) {
                         // wildcard value
