@@ -5,6 +5,7 @@
  * We do it here so that non-JS users still have a good time.
  */
 var lightboxShown = false;
+var lightboxLastUrl = false;
 var lightboxLoginCallback = false;
 $(document).ready(function() {
   if(lightboxShown) {
@@ -77,6 +78,9 @@ function constrainLink(event) {
   }
   if(this.href.length > 1) {
     event.preventDefault();
+
+    lightboxLastUrl = this.href;
+
     var parts = this.href.split('#');
     parts[1] = parts.length < 2 ? '' : '#'+parts[1];
     var ajaxObj = {
@@ -112,10 +116,11 @@ function constrainLink(event) {
  */
 function constrainForms(selector) {
   //console.log('constrainForms', selector);
+  console.log(lightboxLastUrl);
   var forms = $(selector);
   for(var i=forms.length;i--;) {
-    if('undefined' === typeof forms[i].action || forms[i].action.length == 0) {
-      $(forms[i]).attr('action', path);
+    if(lightboxLastUrl && ('undefined' === typeof forms[i].action || forms[i].action.length == 0)) {
+      $(forms[i]).attr('action', lightboxLastUrl);
     }
     if(forms[i].action.length > 1) { // #
       $(forms[i]).unbind('submit').bind('submit', lightboxFormSubmit);
@@ -167,8 +172,11 @@ function lightboxFormSubmit(event) {
 }
 function lightboxAJAX(event, data) {
   var dataset = 'undefined' !== typeof event.target.dataset;
+  if(typeof event.target.action !== 'undefined') {
+    lightboxLastUrl = event.target.action;
+  }
   $.ajax({
-    url: event.target.action || path,
+    url: event.target.action || lightboxLastUrl,
     method: event.target.method || 'GET',
     data: data,
     success: function(html, status) {
