@@ -50,6 +50,55 @@ function updateLightbox(html, link) {
 }
 
 /**
+ * Modal link data options
+ *
+ * data-lightbox-close  = close lightbox after form success
+ * data-lightbox-href   = overwrite href with this value in lightbox
+ * data-lightbox-ignore = do not open this link in lightbox
+ * data-lightbox-post   = post json for link ajax
+ */
+function constrainLink(event) {
+  //console.log('constrainLink');
+  if('undefined' !== typeof this.dataset.lightboxIgnore) {
+    return true;
+  }
+  if('undefined' !== typeof this.dataset.lightboxHref) {
+    this.href = this.dataset.lightboxHref;
+  }
+  if('undefined' === typeof this.href) {
+    this.href = path;
+  }
+  if('undefined' !== typeof event.target.dataset.lightboxAfterLogin) {
+    if('hide' === event.target.dataset.lightboxAfterLogin) {
+      lightboxLoginCallback = function(){$('#modal').modal('hide');}
+    } else {
+      eval('lightboxLoginCallback = ' + event.target.dataset.lightboxAfterLogin);
+    }
+  }
+  if(this.href.length > 1) {
+    event.preventDefault();
+    var parts = this.href.split('#');
+    parts[1] = parts.length < 2 ? '' : '#'+parts[1];
+    var ajaxObj = {
+      url: parts[0].indexOf('?') < 0
+        ? parts[0]+'?layout=lightbox'+parts[1]
+        : parts[0]+'&layout=lightbox'+parts[1],
+      success: function(d){updateLightbox(d, event.target);}
+    };
+    if('undefined' !== typeof this.dataset.lightboxPost) {
+      ajaxObj.method = 'POST';
+      ajaxObj.data = this.dataset.lightboxPost;
+    }
+    $.ajax(ajaxObj);
+    if(!lightboxShown) {
+      $('#modal').modal('show');
+      lightboxShown = true;
+    }
+    return false;
+  }
+}
+
+/**
  * Form data options
  *
  * data-lightbox         = looked for at page ready, handles form response in Lightbox
@@ -62,18 +111,20 @@ function updateLightbox(html, link) {
  * data-lightbox-ignore = show form return outside lightbox
  */
 function constrainForms(selector) {
+  //console.log('constrainForms', selector);
   var forms = $(selector);
   for(var i=forms.length;i--;) {
-    if('undefined' === typeof forms[i].action) {
-      forms[i].action = path;
+    if('undefined' === typeof forms[i].action || forms[i].action.length == 0) {
+      $(forms[i]).attr('action', path);
     }
-    if(forms[i].action.length > 1) {
+    if(forms[i].action.length > 1) { // #
       $(forms[i]).unbind('submit').bind('submit', lightboxFormSubmit);
     }
   }
 }
 
 function lightboxFormSubmit(event) {
+  //console.log('lightboxFormSubmit', event);
   $('#modal .modal-body').prepend('<i class="fa fa-spinner fa-spin pull-right"></i>');
   // Gather data
   var data = $(event.target).serializeArray();
@@ -142,52 +193,4 @@ function lightboxAJAX(event, data) {
       //$('a[data-lightbox]').on('click', constrainLink);
     }
   });
-}
-
-/**
- * Modal link data options
- *
- * data-lightbox-close  = close lightbox after form success
- * data-lightbox-href   = overwrite href with this value in lightbox
- * data-lightbox-ignore = do not open this link in lightbox
- * data-lightbox-post   = post json for link ajax
- */
-function constrainLink(event) {
-  if('undefined' !== typeof this.dataset.lightboxIgnore) {
-    return true;
-  }
-  if('undefined' !== typeof this.dataset.lightboxHref) {
-    this.href = this.dataset.lightboxHref;
-  }
-  if('undefined' === typeof this.href) {
-    this.href = path;
-  }
-  if('undefined' !== typeof event.target.dataset.lightboxAfterLogin) {
-    if('hide' === event.target.dataset.lightboxAfterLogin) {
-      lightboxLoginCallback = function(){$('#modal').modal('hide');}
-    } else {
-      eval('lightboxLoginCallback = ' + event.target.dataset.lightboxAfterLogin);
-    }
-  }
-  if(this.href.length > 1) {
-    event.preventDefault();
-    var parts = this.href.split('#');
-    parts[1] = parts.length < 2 ? '' : '#'+parts[1];
-    var ajaxObj = {
-      url: parts[0].indexOf('?') < 0
-        ? parts[0]+'?layout=lightbox'+parts[1]
-        : parts[0]+'&layout=lightbox'+parts[1],
-      success: function(d){updateLightbox(d, event.target);}
-    };
-    if('undefined' !== typeof this.dataset.lightboxPost) {
-      ajaxObj.method = 'POST';
-      ajaxObj.data = this.dataset.lightboxPost;
-    }
-    $.ajax(ajaxObj);
-    if(!lightboxShown) {
-      $('#modal').modal('show');
-      lightboxShown = true;
-    }
-    return false;
-  }
 }
