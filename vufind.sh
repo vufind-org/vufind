@@ -68,10 +68,12 @@
 # JETTY_ARGS
 #   The default arguments to pass to jetty.
 #
+# RUN_NO_BACKGROUNG
+#   For running in systemd: avoid calling nohup and forking the jetty process
 
 usage()
 {
-    echo "Usage: $0 {start|stop|run|restart|check|supervise} [ CONFIGS ... ] "
+    echo "Usage: $0 [--no-background] {start|stop|run|restart|check|supervise}  [ CONFIGS ... ] "
     exit 1
 }
 
@@ -81,13 +83,24 @@ usage()
 TMPJ=/tmp/j$$
 
 ##################################################
+# Determine whether to avoid background mode
 # Get the action & configs
 ##################################################
+RUN_NO_BACKGROUND=""
+if [ -n "$1" ]
+then
+    if [ "$1" =  "--no-background" ]
+    then
+	RUN_NO_BACKGROUND="$1"
+	shift
+    fi
+fi
 
 ACTION=$1
 shift
 ARGS="$*"
 CONFIGS=""
+
 
 ##################################################
 # Find directory function
@@ -464,8 +477,21 @@ case "$ACTION" in
 
         echo "STARTED VuFind `date`" >> $JETTY_CONSOLE
         echo "$RUN_CMD"
-        nohup sh -c "exec $RUN_CMD >>$JETTY_CONSOLE 2>&1" > /dev/null &
-        echo $! > $JETTY_PID
+
+	# Avoid backgrounding if we were called with "--no-background"
+
+	if [ -n "$RUN_NO_BACKGROUND" ]
+	then
+	    echo "Not running in background mode"
+	    sh -c "exec $RUN_CMD >>$JETTY_CONSOLE 2>&1" > /dev/null
+	    echo $? > $JETTY_PID
+	else
+	    echo "Running in background mode"
+            nohup sh -c "exec $RUN_CMD >>$JETTY_CONSOLE 2>&1" > /dev/null &
+	    echo $! > $JETTY_PID
+	fi
+
+
         echo "VuFind running pid="`cat $JETTY_PID`
         ;;
 
@@ -480,14 +506,16 @@ case "$ACTION" in
         ;;
 
   restart)
-        if [ -x "$0" ]; then
-            "$0" stop $*
+        if [ -x "$0" ]
+	then
+	    "$0" stop $*
             sleep 5
-            "$0" start $*
-        else
+
+	    "$0" $RUN_NO_BACKGROUND start $*
+	else
             sh "$0" stop $*
             sleep 5
-            sh "$0" start $*
+	    sh "$0" $RUN_NO_BACKGROUND start $*
         fi
         ;;
 
