@@ -13,7 +13,7 @@
           </a>
       <? else: ?>
           <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-          <div><?=$this->driver->getPubType()?></div>
+          <div><?=$this->transEsc($this->driver->getPubType())?></div>
       <? endif; ?>
     </div>
     <div class="col-sm-7 col-xs-6 middle">
