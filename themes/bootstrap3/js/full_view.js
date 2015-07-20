@@ -81,31 +81,30 @@ $(document).ready(function() {
     var shortNode = mainNode.find('.short-view');
     var loadingNode = mainNode.find('.loading');
     var longNode = mainNode.find('.long-view');
-    if (longNode.is(':empty')) {
-      loadingNode.removeClass("hidden");
-      var url = path + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
-      $.ajax({
-        dataType: 'json',
-        url: url,
-        success: function(response) {
-          if (response.status == 'OK') {
-            longNode.html(response.data);
-            shortNode.addClass("hidden");
-            loadingNode.addClass("hidden");
-            longNode.removeClass("hidden");
-            registerFLLightbox(longNode, div_id);
-            $('.search_tabs .recordTabs a').unbind('click').click(function() {
-              return ajaxFLLoadTab($(this).attr('id'));
-            });
-            longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
-              return registerAjaxCommentRecord('[name=bulkActionForm]');
-            });
-          }
-        }
-      });
-    } else if (!longNode.is(":visible")) {
+    if (!longNode.is(":visible")) {
       shortNode.addClass("hidden");
       longNode.removeClass("hidden");
+      if (longNode.is(':empty')) {
+        loadingNode.removeClass("hidden");
+        var url = path + '/AJAX/JSON?' + $.param({method:'getRecordDetails',id:div_id,type:viewType,source:div_source});
+        $.ajax({
+          dataType: 'json',
+          url: url,
+          success: function(response) {
+            if (response.status == 'OK') {
+              longNode.html(response.data);
+              loadingNode.addClass("hidden");
+              registerFLLightbox(longNode, div_id);
+              $('.search_tabs .recordTabs a').unbind('click').click(function() {
+                return ajaxFLLoadTab($(this).attr('id'));
+              });
+              longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
+                return registerAjaxCommentRecord('[name=bulkActionForm]');
+              });
+            }
+          }
+        });
+      }
     } else {
       longNode.addClass("hidden");
       shortNode.removeClass("hidden");

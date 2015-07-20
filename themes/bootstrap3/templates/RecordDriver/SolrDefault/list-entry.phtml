@@ -11,48 +11,35 @@
   }
 
   $dataView = $this->params->getOptions()->getListViewOption();
+  $cover = $this->record($this->driver)->getCover('list-entry', 'small', $this->recordLink()->getUrl($this->driver));
 ?>
 <div class="row result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
-  <? $cover=$this->record($this->driver)->getCover('list-entry', 'small', $this->recordLink()->getUrl($this->driver)); ?>
-  <? if ($cover): ?>
-  <div class="col-xs-2 left">
-  <? else: ?>
-  <div class="col-xs-1 left">
-  <? endif ?>
+  <div class="col-xs-1">
     <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
-    <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
-  <? if ($cover): ?>
-    <?=$cover ?>
   </div>
-  <div class="col-xs-6 middle">
-  <? else: ?>
-  </div>
-  <div class="col-xs-7 middle">
-  <? endif ?>
-
-    <div class="resultItemLine1">
-    <? if('full' != $dataView): ?>
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$dataView ?>">
-        <?=$this->record($this->driver)->getTitleHtml()?>
-      </a>
-      <div class="loading hidden">
-        <i class="fa fa-spin fa-spinner"></i> <?=$this->transEsc("Loading")?>...
-      </div>
-      <div class="short-view">
-    <? endif; ?>
+  <? if('full' != $dataView): ?>
+    <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title getFull" data-view="<?=$dataView ?>">
+      <?=$this->record($this->driver)->getTitleHtml()?>
+    </a>
+    <div class="loading hidden">
+      <i class="fa fa-spin fa-spinner"></i> <?=$this->transEsc("Loading")?>...
+    </div>
+    <div class="short-view">
+  <? endif; ?>
+  <div class="col-xs-11">
     <div class="row">
-      <div class="col-xs-2 left">
+      <? if ($cover): ?>
+        <div class="col-xs-2 left">
+          <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+            <?=$cover ?>
+          </a>
+        </div>
+        <div class="col-xs-6 middle">
+      <? else: ?>
+        <div class="col-xs-8 middle">
+      <? endif ?>
         <input type="hidden" value="<?=$id ?>" class="hiddenId" />
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
-        <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-          <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-            <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-          <? else: ?>
-            <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-          <? endif; ?>
-        </a>
-      </div>
-      <div class="col-xs-7 middle">
         <? if('full' == $dataView): ?>
           <div class="resultItemLine1">
             <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
@@ -210,9 +197,9 @@
         <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
       </div>
     </div>
-    <? if('full' != $dataView): ?>
-      </div>
-      <div class="long-view hidden"></div>
-    <? endif; ?>
   </div>
+  <? if('full' != $dataView): ?>
+    </div>
+    <div class="long-view hidden"></div>
+  <? endif; ?>
 </div>
