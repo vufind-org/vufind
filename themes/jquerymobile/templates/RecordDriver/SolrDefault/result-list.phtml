@@ -24,8 +24,11 @@
     <? endif; ?>
     <?=$this->record($this->driver)->getFormatList()?>
     <?
-       $openUrlActive = $this->driver->openURLActive('results');
-       $urls = $this->record($this->driver)->getLinkDetails();
+       $openUrl = $this->openUrl($this->driver);
+       $openUrlActive = $openUrl->isActive('results');
+       $urls = $openUrlActive
+            ? $this->record($this->driver)->getLinkDetailsForOpenUrl()
+            : $this->record($this->driver)->getLinkDetails();
     ?>
     <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
       <p><span class="ajax_availability hide status"><?=$this->transEsc('Loading')?>...</span></p>
