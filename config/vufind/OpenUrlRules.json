@@ -6,6 +6,9 @@
   [
     {
       "getCleanISSN":"*"
+    },
+    {
+      "recorddriver":"VuFind\\RecordDriver\\Pazpar2"
     }
   ]
 }
