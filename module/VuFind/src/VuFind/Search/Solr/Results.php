@@ -240,6 +240,12 @@ class Results extends \VuFind\Search\Base\Results
 
         // Loop through every field returned by the result set
         $fieldFacets = $this->responseFacets->getFieldFacets();
+
+        //look at comment for Results_Settings in facets.ini
+        $configResultSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->getOptions()->getFacetsIni())->Results_Settings;
+
+
         foreach (array_keys($filter) as $field) {
             $data = isset($fieldFacets[$field]) ? $fieldFacets[$field] : [];
             // Skip empty arrays:
@@ -250,18 +256,25 @@ class Results extends \VuFind\Search\Base\Results
             $list[$field] = [];
             // Add the on-screen label
             $list[$field]['label'] = $filter[$field];
+
+            $translateInfo = $this->isFieldToTranslate($field);
+            //enable customized list length for single facets
+            //as far as I know, this attribute is only used in the swissbib template themes
+            $list[$field]['displayLimit'] = isset($configResultSettings->{'facet_limit_' . $translateInfo['normalizedFieldName']}) ?
+                $configResultSettings->{'facet_limit_' . $translateInfo['normalizedFieldName']} :  $configResultSettings->facet_limit_default;
+
             // Build our array of values for this field
             $list[$field]['list']  = [];
-            // Should we translate values for the current facet?
-            $translate
-                = in_array($field, $this->getOptions()->getTranslatedFacets());
+
             // Loop through values:
             foreach ($data as $value => $count) {
                 // Initialize the array of data about the current facet:
                 $currentSettings = [];
                 $currentSettings['value'] = $value;
                 $currentSettings['displayText']
-                    = $translate ? $this->translate($value) : $value;
+                    = $translateInfo['translate'] ? $this->translate(array($value , $translateInfo['field_domain'][1]))
+                    : $value;
+
                 $currentSettings['count'] = $count;
                 $currentSettings['operator']
                     = $this->getParams()->getFacetOperator($field);
@@ -355,4 +368,40 @@ class Results extends \VuFind\Search\Base\Results
         $flare->children = $visualFacets;
         return $flare;
     }
+
+    /*
+     * Utility method to inspect multi domain translation for facets
+     * @return array()
+     */
+    protected function isFieldToTranslate($field)
+    {
+        $translateInfo = array();
+
+        //getTranslatedFacets returns the entries in Advanced_Settings -> translated_facets
+        $refValuesToTranslate = $this->getOptions()->getTranslatedFacets();
+        //is the current field a facet which should be translated?
+        //we have to use this customized filter mechanism because facets going to be translated are indicated in conjunction with their domain facetName:domainName
+        $fieldToTranslateInArray =  array_filter($refValuesToTranslate,function ($passedValue) use ($field){
+            //return true, if the field shoul be translated
+            //either $field==value in arra with facets to be translated (simple translation)
+            //or multi domain translation where the domain is part of the configuration fieldname:domainName
+            return $passedValue === $field || count(preg_grep ( "/" .$field . ":" . "/", array ($passedValue))) > 0;
+        }) ;
+
+        //Did we detect the field should be translated (field is part of the filtered array)
+        $translateInfo['translate'] = count($fieldToTranslateInArray) > 0;
+        //this name is always without any colons and could be used in further processing
+        $translateInfo['normalizedFieldName'] = $field;
+        $translateInfo['field_domain'] = array();
+
+        $fieldToTranslate = $translateInfo['translate'] ? current($fieldToTranslateInArray) : null;
+        if ($translateInfo['translate']) {
+            $translateInfo['field_domain'] =  strstr($fieldToTranslate,':') === FALSE ? array($field,'default') : array($field,substr($fieldToTranslate,strpos( $fieldToTranslate,':') + 1 ));
+            //normalizedFieldName contains only the fieldname without any colons as seperator for the domain name (it's handy)
+            $translateInfo['normalizedFieldName'] = $translateInfo['field_domain'][0];
+        }
+
+        return $translateInfo;
+    }
+
 }

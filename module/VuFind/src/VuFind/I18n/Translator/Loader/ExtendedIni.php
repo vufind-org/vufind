@@ -112,23 +112,28 @@ class ExtendedIni implements FileLoaderInterface
      * @return TextDomain
      * @throws InvalidArgumentException
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function load($locale, $filename)
     {
+
         // Reset the loaded files list:
         $this->resetLoadedFiles();
-
-        // Load base data:
-        $data = $this->loadLanguageFile($locale . '.ini');
-
-        // Load fallback data, if any:
-        if (!empty($this->fallbackLocales)) {
-            foreach ($this->fallbackLocales as $fallbackLocale) {
-                $newData = $this->loadLanguageFile($fallbackLocale . '.ini');
-                $newData->merge($data);
-                $data = $newData;
+        if (!isset($filename))
+        {
+            //if the filename isn't initialized (standardized behaviour of VF so far)
+            //all the flat files (no dedicated TextDomains) are loaded
+            //load data from flat (not specialized domains) data
+            $data = $this->loadLanguageFile($locale . '.ini');
+            if (!empty($this->fallbackLocales)) {
+                foreach ($this->fallbackLocales as $fallbackLocale) {
+                    $newData = $this->loadLanguageFile($fallbackLocale . '.ini');
+                    $newData->merge($data);
+                    $data = $newData;
+                }
             }
+        } else {
+            //load the customized TextDomain
+            $data = $this->loadLanguageFromFile($filename);
         }
 
         return $data;
@@ -178,6 +183,7 @@ class ExtendedIni implements FileLoaderInterface
         foreach ($this->pathStack as $path) {
             if (file_exists($path . '/' . $filename)) {
                 // Load current file with parent data, if necessary:
+                //question from GH @Demian: what's the use case for ParentData??
                 $current = $this->loadParentData(
                     $this->reader->getTextDomain($path . '/' . $filename)
                 );
@@ -195,6 +201,30 @@ class ExtendedIni implements FileLoaderInterface
         return $data;
     }
 
+
+    /**
+     * Look up the translations from dedicated language file (no path stack)
+     * used for customized and named language domains
+     *
+     * @param string $filename Name of file to search path stack for.
+     *
+     * @return TextDomain
+     */
+    protected function loadLanguageFromFile($filename)
+    {
+        $data = [];
+        if (file_exists($filename)) {
+            $data = $this->reader->getTextDomain($filename);
+        } else {
+            throw new InvalidArgumentException("language file  '{$filename}' doesn't exist");
+
+        }
+
+        return $data;
+
+    }
+
+
     /**
      * Support method for loadLanguageFile: retrieve parent data.
      *
@@ -204,6 +234,7 @@ class ExtendedIni implements FileLoaderInterface
      */
     protected function loadParentData($data)
     {
+        //question @Demian: what is the use case for ParentData??
         if (!isset($data['@parent_ini'])) {
             return $data;
         }
