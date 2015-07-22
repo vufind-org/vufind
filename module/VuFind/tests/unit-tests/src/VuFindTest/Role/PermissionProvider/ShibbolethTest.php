@@ -51,7 +51,7 @@ class ShibbolethTest extends \VuFindTest\Unit\TestCase
         $this->checkShibboleth(
             ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp'],
             ['idpentityid https://example.org/shibboleth-idp'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
@@ -66,7 +66,7 @@ class ShibbolethTest extends \VuFindTest\Unit\TestCase
             ['Shib-Identity-Provider' => 'https://example.org/shibboleth-idp',
              'affiliation' => 'student@example.org;member@example.org'],
             ['affiliation member@example.org'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
