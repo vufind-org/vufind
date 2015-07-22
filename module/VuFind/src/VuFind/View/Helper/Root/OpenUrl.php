@@ -60,11 +60,18 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $openUrlRules;
 
     /**
-     * Current recorddriver
+     * Current RecordDriver
      *
      * @var \VuFind\RecordDriver
      */
-    protected $driver;
+    protected $recordDriver;
+
+    /**
+     * Resolverdriver for record (configured through OpenUrlRules.json)
+     *
+     * @var \VuFind\Resolver\Driver
+     */
+    protected $resolverDriver;
 
     /**
      * Constructor
@@ -90,7 +97,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($driver)
     {
-        $this->driver = $driver;
+        $this->recordDriver = $driver;
         return $this;
     }
 
@@ -119,7 +126,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
 
         // Build parameters needed to display the control:
         $params = [
-            'openUrl' => $this->driver->getOpenUrl(),
+            'openUrl' => $this->recordDriver->getOpenUrl(),
             'openUrlBase' => empty($base) ? false : $base,
             'openUrlWindow' => empty($this->config->window_settings)
                 ? false : $this->config->window_settings,
@@ -150,12 +157,10 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     {
         // check first if OpenURLs are enabled for this RecordDriver
         // check second if OpenURLs are enabled for this context
-        // check third if any excluded_records rule applies
-        // check last if this record is supported
-        if (!$this->driver->getOpenUrl()
+        // check last if any rules apply
+        if (!$this->recordDriver->getOpenUrl()
             || !$this->checkContext($area)
-            || $this->checkExcludedRecordsRules()
-            || !$this->checkSupportedRecordsRules()
+            || !$this->checkIfRulesApply()
         ) {
             return false;
         }
@@ -190,33 +195,60 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Check if excluded_records rules from the OpenUrlRules.json file apply to
-     * the current record
+     * Check if the rulesets found apply to the current record. First match counts.
      *
      * @return bool
      */
-    protected function checkExcludedRecordsRules()
+    protected function checkIfRulesApply()
     {
-        if (isset($this->openUrlRules['exclude'])) {
-            // No exclusion rules mean no exclusions -- return false
-            return count($this->openUrlRules['exclude'])
-                ? $this->checkRules($this->openUrlRules['exclude']) : false;
+        foreach ($this->openUrlRules as $resolverDriver => $resolverDriverRules) {
+            switch ($resolverDriver){
+            case 'default':
+                if (!$this->checkExcludedRecordsRules($resolverDriverRules)
+                    && $this->checkSupportedRecordsRules($resolverDriverRules)
+                ) {
+                    $this->resolverDriver = "default";
+                    return true;
+                }
+            default:
+                break;
+            }
         }
         return false;
     }
 
     /**
-     * Check if supported_records rules from the OpenUrlRules.json file apply to
+     * Check if "exclude" rules from the OpenUrlRules.json file apply to
      * the current record
+     *
+     * @param array $resolverDriverRules Array of rules for a specific resolverDriver
      *
      * @return bool
      */
-    protected function checkSupportedRecordsRules()
+    protected function checkExcludedRecordsRules($resolverDriverRules)
     {
-        if (isset($this->openUrlRules['include'])) {
+        if (isset($resolverDriverRules['exclude'])) {
+            // No exclusion rules mean no exclusions -- return false
+            return count($resolverDriverRules['exclude'])
+                ? $this->checkRules($resolverDriverRules['exclude']) : false;
+        }
+        return false;
+    }
+
+    /**
+     * Check if "include" rules from the OpenUrlRules.json file apply to
+     * the current record
+     *
+     * @param array $resolverDriverRules Array of rules for a specific resolverDriver
+     *
+     * @return bool
+     */
+    protected function checkSupportedRecordsRules($resolverDriverRules)
+    {
+        if (isset($resolverDriverRules['include'])) {
             // No inclusion rules mean include everything -- return true
-            return count($this->openUrlRules['include'])
-                ? $this->checkRules($this->openUrlRules['include']) : true;
+            return count($resolverDriverRules['include'])
+                ? $this->checkRules($resolverDriverRules['include']) : true;
         }
         return false;
     }
@@ -238,7 +270,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
 
             // check if current rule is RecordDriver specific
             if (isset($rule['recorddriver'])) {
-                if ($this->driver instanceof $rule['recorddriver']) {
+                if ($this->recordDriver instanceof $rule['recorddriver']) {
                     // get rid of recorddriver field as we have checked the
                     // current rule as being relevant for the current
                     // RecordDriver
@@ -251,16 +283,33 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             }
 
             foreach ($rule as $key => $value) {
-                if (is_callable([$this->driver, $key])) {
-                    $recordValue = $this->driver->$key();
+                if (is_callable([$this->recordDriver, $key])) {
+                    $recordValue = $this->recordDriver->$key();
                     if ($value === "*" && $recordValue) {
                         // wildcard value
                         $ruleMatchCounter++;
-                    } elseif (!count(
-                        array_diff((array)$value, (array)$recordValue)
-                    )) {
-                        // any other value
-                        $ruleMatchCounter++;
+                    } elseif (is_array($value) && in_array('*', $value)) {
+                        // wildcard present with some explicit values defined
+                        if (!count(
+                            array_diff(
+                                ['*'],
+                                array_diff($value, (array)$recordValue)
+                            )
+                        )) {
+                            // all explicitly defined values did match
+                            $ruleMatchCounter++;
+                        }
+                    } else {
+                        // for any other value first cast to array
+                        $value = (array)$value;
+                        $recordValue = (array)$recordValue;
+                        // then sort
+                        sort($value);
+                        sort($recordValue);
+                        // check if both resulting arrays are identical
+                        if ($value === $recordValue) {
+                            $ruleMatchCounter++;
+                        }
                     }
                 }
             }

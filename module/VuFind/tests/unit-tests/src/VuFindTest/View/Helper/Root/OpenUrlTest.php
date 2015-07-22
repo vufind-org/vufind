@@ -178,7 +178,7 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
         $driver->expects($this->any())->method('getCleanISSN')
             ->will($this->returnValue('1234-5678'));
         $driver->expects($this->any())->method('getFormats')
-            ->will($this->returnValue(['Article']));
+            ->will($this->returnValue(['ElectronicArticle', 'Article']));
         return $driver;
     }
 

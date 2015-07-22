@@ -1,13 +1,16 @@
 {
-  "include" :
-  [
+  "default" :
     {
-      "getCleanISSN": "*",
-      "getFormats": ["Journal"]
-    },
-    {
-      "getCleanISSN": "*",
-      "getFormats": ["Article"]
+      "include" :
+      [
+        {
+          "getCleanISSN": "*",
+          "getFormats": ["Journal"]
+        },
+        {
+          "getCleanISSN": "*",
+          "getFormats": ["Article", "ElectronicArticle"]
+        }
+      ]
     }
-  ]
 }
