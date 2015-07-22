@@ -282,7 +282,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                 }
             }
 
-            // check if current rule is RecordDriver specific
+            // check if defined methods-rules apply for current record
             if (isset($rule['methods'])) {
                 foreach ($rule['methods'] as $key => $value) {
                     if (is_callable([$this->recordDriver, $key])) {
