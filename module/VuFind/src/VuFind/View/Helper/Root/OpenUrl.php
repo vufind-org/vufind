@@ -282,41 +282,52 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                 }
             }
 
-            foreach ($rule as $key => $value) {
-                if (is_callable([$this->recordDriver, $key])) {
-                    $recordValue = $this->recordDriver->$key();
-                    $value = (array)$value;
-                    $recordValue = (array)$recordValue;
+            // check if current rule is RecordDriver specific
+            if (isset($rule['methods'])) {
+                foreach ($rule['methods'] as $key => $value) {
+                    if (is_callable([$this->recordDriver, $key])) {
+                        $recordValue = $this->recordDriver->$key();
+                        $value = (array)$value;
+                        $recordValue = (array)$recordValue;
 
-                    if (in_array('*', $value)) {
-                        // wildcard present
-                        if (!count(
-                            array_diff(
-                                ['*'],
-                                array_diff($value, $recordValue)
-                            )
-                        )) {
-                            // if explicit defined values existed along with wildcard
-                            // those all also existed in recordValue
-                            $ruleMatchCounter++;
-                        }
-                    } else {
-                        $valueCount = count($value);
-                        if ($valueCount == count($recordValue)
-                            && $valueCount == count(
-                                array_intersect($value, $recordValue)
-                            )
-                        ) {
-                            $ruleMatchCounter++;
+                        if (in_array('*', $value)) {
+                            // wildcard present
+                            if (!count(
+                                array_diff(
+                                    ['*'],
+                                    array_diff($value, $recordValue)
+                                )
+                            )) {
+                                // if explicit defined values existed along with
+                                // wildcard those all also existed in recordValue
+                                $ruleMatchCounter++;
+                            }
+                        } else {
+                            $valueCount = count($value);
+                            if ($valueCount == count($recordValue)
+                                && $valueCount == count(
+                                    array_intersect($value, $recordValue)
+                                )
+                            ) {
+                                $ruleMatchCounter++;
+                            }
                         }
                     }
                 }
+
+                if ($ruleMatchCounter == count($rule['methods'])) {
+                    // get rid of methods rules as we have checked the
+                    // current rule as being relevant for the current
+                    // record
+                    return true;
+                } else {
+                    // skip this rule as it's not relevant for the current record
+                    continue;
+                }
             }
 
-            if ($ruleMatchCounter == count($rule)) {
-                // this rule matched
-                return true;
-            }
+            // if we got this far this rule applies to the current record
+            return true;
         }
         // no rule matched
         return false;

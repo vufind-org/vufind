@@ -5,13 +5,17 @@
     [
       {
         "recorddriver": "VuFind\\RecordDriver\\SolrMarc",
-        "getFormats": ["Article"]
+        "methods": {
+          "getFormats": ["Article"]
+        }
       }
     ],
     "include" :
     [
       {
-        "getFormats": ["Article", "*"]
+        "methods": {
+          "getFormats": ["Article", "*"]
+        }
       }
     ]
   }

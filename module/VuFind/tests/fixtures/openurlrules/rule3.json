@@ -4,8 +4,10 @@
       "include" :
       [
         {
-          "getCleanISSN": "*",
-          "getFormats": ["Article"]
+          "methods": {
+            "getCleanISSN": "*",
+            "getFormats": ["Article"]
+          }
         }
       ]
     }

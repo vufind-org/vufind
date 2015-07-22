@@ -4,12 +4,16 @@
       "include" :
       [
         {
-          "getCleanISSN": "*",
-          "getFormats": ["Journal"]
+          "methods": {
+            "getCleanISSN": "*",
+            "getFormats": ["Journal"]
+          }
         },
         {
-          "getCleanISSN": "*",
-          "getFormats": ["Article", "ElectronicArticle"]
+          "methods": {
+            "getCleanISSN": "*",
+            "getFormats": ["Article", "ElectronicArticle"]
+          }
         }
       ]
     }
