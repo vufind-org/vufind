@@ -685,6 +685,8 @@ class SolrDefault extends AbstractBase
             return $formats[0];
         } else if (strlen($this->getCleanISSN()) > 0) {
             return 'Journal';
+        } else if (strlen($this->getCleanISBN()) > 0) {
+            return 'Book';
         }
         return 'UnknownFormat';
     }
