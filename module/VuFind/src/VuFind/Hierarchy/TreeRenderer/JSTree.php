@@ -206,7 +206,6 @@ class JSTree extends AbstractBase
             return $this->getUrlFromRouteCache('collection', $node->id)
                 . '#tabnav';
         } else {
-            $options['query']['hierarchy'] = $collectionID;
             $url = $this->getUrlFromRouteCache($node->type, $node->id);
             return $node->type == 'collection'
                 ? $url . '#tabnav'
