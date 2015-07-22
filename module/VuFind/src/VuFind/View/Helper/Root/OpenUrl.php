@@ -285,29 +285,28 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             foreach ($rule as $key => $value) {
                 if (is_callable([$this->recordDriver, $key])) {
                     $recordValue = $this->recordDriver->$key();
-                    if ($value === "*" && $recordValue) {
-                        // wildcard value
-                        $ruleMatchCounter++;
-                    } elseif (is_array($value) && in_array('*', $value)) {
-                        // wildcard present with some explicit values defined
+                    $value = (array)$value;
+                    $recordValue = (array)$recordValue;
+
+                    if (in_array('*', $value)) {
+                        // wildcard present
                         if (!count(
                             array_diff(
                                 ['*'],
-                                array_diff($value, (array)$recordValue)
+                                array_diff($value, $recordValue)
                             )
                         )) {
-                            // all explicitly defined values did match
+                            // if explicit defined values existed along with wildcard
+                            // those all also existed in recordValue
                             $ruleMatchCounter++;
                         }
                     } else {
-                        // for any other value first cast to array
-                        $value = (array)$value;
-                        $recordValue = (array)$recordValue;
-                        // then sort
-                        sort($value);
-                        sort($recordValue);
-                        // check if both resulting arrays are identical
-                        if ($value === $recordValue) {
+                        $valueCount = count($value);
+                        if ($valueCount == count($recordValue)
+                            && $valueCount == count(
+                                array_intersect($value, $recordValue)
+                            )
+                        ) {
                             $ruleMatchCounter++;
                         }
                     }
