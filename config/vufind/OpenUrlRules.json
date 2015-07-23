@@ -1,7 +1,6 @@
-{
-  "__comment" : "documentation: https://vufind.org/wiki/vufind2:openurls#defining_openurl_rules",
-
-  "0" : {
+[
+  {
+    "__comment" : "documentation: https://vufind.org/wiki/vufind2:openurls#defining_openurl_rules",
     "exclude" : [],
     "include" :
     [
@@ -15,4 +14,4 @@
       }
     ]
   }
-}
+]

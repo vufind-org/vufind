@@ -78,11 +78,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
-
-        // initialize \Zend\Config\Config with allowModifications=true for replacing
-        // resolver config settings in getCustomConfig()
-        $this->config = new \Zend\Config\Config([], true);
-        $this->config->merge($config);
+        $this->config = $config;
     }
 
     /**
@@ -144,21 +140,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Substitutes the resolver config read from config.ini with the custom config
-     * provided as parameter.
-     *
-     * @param array $customConfig Array containing the custom resolver config
-     *
-     * @return void
-     */
-    protected function getCustomConfig($customConfig)
-    {
-        foreach ($customConfig as $key => $value) {
-            $this->config->__set($key, $value);
-        }
-    }
-
-    /**
      * Public method to check whether OpenURLs are active for current record
      *
      * @param string $area 'results', 'record' or 'holdings'
@@ -216,9 +197,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             if (!$this->checkExcludedRecordsRules($rules)
                 && $this->checkSupportedRecordsRules($rules)
             ) {
-                if (isset($rules['resolver'])) {
-                    $this->getCustomConfig($rules['resolver']);
-                }
                 return true;
             }
         }
