@@ -67,13 +67,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $recordDriver;
 
     /**
-     * Resolverdriver for record (configured through OpenUrlRules.json)
-     *
-     * @var \VuFind\Resolver\Driver
-     */
-    protected $resolverDriver;
-
-    /**
      * Constructor
      *
      * @param \VuFind\View\Helper\Root\Context $context      Context helper
@@ -85,7 +78,11 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     ) {
         $this->context = $context;
         $this->openUrlRules = $openUrlRules;
-        $this->config = $config;
+
+        // initialize \Zend\Config\Config with allowModifications=true for replacing
+        // resolver config settings in getCustomConfig()
+        $this->config = new \Zend\Config\Config([], true);
+        $this->config->merge($config);
     }
 
     /**
@@ -147,6 +144,21 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Substitutes the resolver config read from config.ini with the custom config
+     * provided as parameter.
+     *
+     * @param array $customConfig Array containing the custom resolver config
+     *
+     * @return void
+     */
+    protected function getCustomConfig($customConfig)
+    {
+        foreach ($customConfig as $key => $value) {
+            $this->config->__set($key, $value);
+        }
+    }
+
+    /**
      * Public method to check whether OpenURLs are active for current record
      *
      * @param string $area 'results', 'record' or 'holdings'
@@ -164,7 +176,6 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         ) {
             return false;
         }
-
         return true;
     }
 
@@ -201,17 +212,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      */
     protected function checkIfRulesApply()
     {
-        foreach ($this->openUrlRules as $resolverDriver => $resolverDriverRules) {
-            switch ($resolverDriver){
-            case 'default':
-                if (!$this->checkExcludedRecordsRules($resolverDriverRules)
-                    && $this->checkSupportedRecordsRules($resolverDriverRules)
-                ) {
-                    $this->resolverDriver = "default";
-                    return true;
+        foreach ($this->openUrlRules as $rules) {
+            if (!$this->checkExcludedRecordsRules($rules)
+                && $this->checkSupportedRecordsRules($rules)
+            ) {
+                if (isset($rules['resolver'])) {
+                    $this->getCustomConfig($rules['resolver']);
                 }
-            default:
-                break;
+                return true;
             }
         }
         return false;

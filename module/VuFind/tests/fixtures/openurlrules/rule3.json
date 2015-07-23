@@ -1,14 +1,13 @@
 {
-  "default" :
-    {
-      "include" :
-      [
-        {
-          "methods": {
-            "getCleanISSN": "*",
-            "getFormats": ["Article"]
-          }
+  "0" : {
+    "include" :
+    [
+      {
+        "methods": {
+          "getCleanISSN": "*",
+          "getFormats": ["Article"]
         }
-      ]
-    }
+      }
+    ]
+  }
 }

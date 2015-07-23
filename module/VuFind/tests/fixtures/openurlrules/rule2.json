@@ -1,27 +1,26 @@
 {
-  "default" :
-    {
-      "exclude" :
-      [
-        {
-          "recorddriver": "VuFind\\RecordDriver\\SolrMarc",
-          "methods": {
-            "getFormats": ["Article"]
-          }
-        },
-        {
-          "methods": {
-            "getFormats": ["Article", "*"]
-          }
+  "0" : {
+    "exclude" :
+    [
+      {
+        "recorddriver": "VuFind\\RecordDriver\\SolrMarc",
+        "methods": {
+          "getFormats": ["Article"]
         }
-      ],
-      "include" :
-      [
-        {
-          "methods": {
-            "getFormats": ["Article"]
-          }
+      },
+      {
+        "methods": {
+          "getFormats": ["Article", "*"]
         }
-      ]
-    }
+      }
+    ],
+    "include" :
+    [
+      {
+        "methods": {
+          "getFormats": ["Article"]
+        }
+      }
+    ]
+  }
 }
