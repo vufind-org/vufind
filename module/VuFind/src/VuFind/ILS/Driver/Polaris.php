@@ -298,9 +298,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'barcode'         => $holdings_response->Barcode,
                 'shelf_location'  => $holdings_response->ShelfLocation,
                 'collection_name' => $holdings_response->CollectionName,
-            'per_item_holdable' => $per_item_holdable,
-            'designation' => $designation,
-            'holdable' => $holdings_response->Holdable,
+                //'per_item_holdable' => $per_item_holdable,
+                //'designation' => $designation,
+                'holdable' => $holdings_response->Holdable,
             ];
 
         }
@@ -745,7 +745,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             } elseif ($response->PAPIErrorCode == -2) {
                 $item_blocks[$renew_id]
                     = $response->ItemRenewResult->BlockRows[0]->ErrorDesc;
-                $item_response[$hold_id] = [
+                $item_response[$renew_id] = [
                 'success'  => -1,
                 'new_date' => false,
                 'item_id' => $response->ItemRenewResult->BlockRows[0]->ItemRecordID,
@@ -863,7 +863,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             return;
         }
 
-        $offset = $count - $items_per_page;
         $pages = ceil($count / $items_per_page);
 
         $penultimate_page = $pages - 1;
