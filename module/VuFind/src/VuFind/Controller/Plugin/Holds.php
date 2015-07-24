@@ -147,7 +147,7 @@ class Holds extends AbstractRequestBase
                     // messages so we can avoid a double translation here.
                     $msg = $this->getController()
                         ->translate('hold_cancel_success_items');
-                    $flashMsg->setNamespace('info')->addMessage(
+                    $flashMsg->setNamespace('success')->addMessage(
                         $cancelResults['count'] . ' ' . $msg
                     );
                 }

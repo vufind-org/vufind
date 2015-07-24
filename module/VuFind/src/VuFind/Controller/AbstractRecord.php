@@ -131,7 +131,7 @@ class AbstractRecord extends AbstractBase
                 $driver->getUniqueId(), $driver->getResourceSource(), true, $driver
             );
             $resource->addComment($comment, $user);
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('add_comment_success');
         } else {
             $this->flashMessenger()->setNamespace('error')
@@ -155,7 +155,7 @@ class AbstractRecord extends AbstractBase
         $id = $this->params()->fromQuery('delete');
         $table = $this->getTable('Comments');
         if (!is_null($id) && $table->deleteIfOwnedByUser($id, $user)) {
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('delete_comment_success');
         } else {
             $this->flashMessenger()->setNamespace('error')
@@ -188,7 +188,7 @@ class AbstractRecord extends AbstractBase
         if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage(['msg' => 'add_tag_success']);
             return $this->redirectToRecord();
         }
@@ -222,7 +222,7 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
             $driver->deleteTags($user, [$tag]);
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage(
                     [
                         'msg' => 'tags_deleted',
@@ -286,7 +286,7 @@ class AbstractRecord extends AbstractBase
         $driver->saveToFavorites($post, $user);
 
         // Display a success status message:
-        $this->flashMessenger()->setNamespace('info')
+        $this->flashMessenger()->setNamespace('success')
             ->addMessage('bulk_save_success');
 
         // redirect to followup url saved in saveAction
@@ -412,7 +412,7 @@ class AbstractRecord extends AbstractBase
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer(), $view->subject, $cc
                 );
-                $this->flashMessenger()->setNamespace('info')
+                $this->flashMessenger()->setNamespace('success')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
@@ -456,7 +456,7 @@ class AbstractRecord extends AbstractBase
                     ['driver' => $driver, 'to' => $view->to]
                 );
                 $sms->text($view->provider, $view->to, null, $body);
-                $this->flashMessenger()->setNamespace('info')
+                $this->flashMessenger()->setNamespace('success')
                     ->addMessage('sms_success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
