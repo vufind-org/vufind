@@ -175,6 +175,11 @@ class Export
     {
         return isset($this->exportConfig->$format->redirectUrl);
     }
+    
+    public function getExportType($format)
+    {
+        return (isset($this->mainConfig->BulkExport->type)) ? $this->mainConfig->BulkExport->type : 'url';
+    }
 
     /**
      * Convert an array of individual records into a single string for display.
@@ -218,6 +223,14 @@ class Export
                 }
             }
             return $retVal->asXML();
+        }
+        if ($format === 'HTML') {
+            
+            $html = '<!DOCTYPE html><html><body>';
+            $html .= implode('', $parts);
+            $html .= '</body></html>';
+            
+            return $html;
         } else {
             // Not in XML mode -- just concatenate everything together:
             return implode('', $parts);
