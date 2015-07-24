@@ -152,6 +152,27 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
     }
 
     /**
+     * Test checkSupportedRecordRules() to see if it accounts for record driver
+     * class.
+     *
+     * @return void
+     */
+    public function testRecordDriverClassInRules()
+    {
+        $formats = ['Article'];
+        $defaultDriver = $this->getMockDriver(
+            'fake-data', 'VuFind\RecordDriver\SolrDefault', $formats
+        );
+        $marcDriver = $this->getMockDriver(
+            'fake-data', 'VuFind\RecordDriver\SolrMarc', $formats
+        );
+        $openUrl = $this
+            ->getOpenUrl($this->getFixture("rule1.json"), $this->rulesConfig);
+        $this->assertTrue($openUrl->__invoke($defaultDriver)->isActive('results'));
+        $this->assertFalse($openUrl->__invoke($marcDriver)->isActive('results'));
+    }
+
+    /**
      * Get mock context helper.
      *
      * @return \VuFind\View\Helper\Root\Context
@@ -166,19 +187,23 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
      * Get mock driver that returns an openURL.
      *
      * @param string $openUrl OpenURL to return
+     * @param string $class   Class to mock
+     * @param array  $formats Formats to return from getFormats
      *
      * @return \VuFind\RecordDriver\SolrDefault
      */
-    protected function getMockDriver($openUrl = 'fake-data')
-    {
-        $driver = $this->getMockBuilder('VuFind\RecordDriver\SolrDefault')
+    protected function getMockDriver($openUrl = 'fake-data',
+        $class = 'VuFind\RecordDriver\SolrDefault',
+        $formats = ['ElectronicArticle', 'Article']
+    ) {
+        $driver = $this->getMockBuilder($class)
             ->disableOriginalConstructor()->getMock();
         $driver->expects($this->any())->method('getOpenUrl')
             ->will($this->returnValue($openUrl));
         $driver->expects($this->any())->method('getCleanISSN')
             ->will($this->returnValue('1234-5678'));
         $driver->expects($this->any())->method('getFormats')
-            ->will($this->returnValue(['ElectronicArticle', 'Article']));
+            ->will($this->returnValue($formats));
         return $driver;
     }
 
