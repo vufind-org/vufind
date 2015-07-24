@@ -240,6 +240,50 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Check if method rules match.
+     *
+     * @param array $rules Rules to check.
+     *
+     * @return bool
+     */
+    protected function checkMethodRules($rules)
+    {
+        $ruleMatchCounter = 0;
+        foreach ($rules as $key => $value) {
+            if (is_callable([$this->recordDriver, $key])) {
+                $value = (array)$value;
+                $recordValue = (array)$this->recordDriver->$key();
+
+                if (in_array('*', $value)) {
+                    // wildcard present
+                    if (!count(
+                        array_diff(
+                            ['*'],
+                            array_diff($value, $recordValue)
+                        )
+                    )) {
+                        // if explicit defined values existed along with
+                        // wildcard those all also existed in recordValue
+                        $ruleMatchCounter++;
+                    }
+                } else {
+                    $valueCount = count($value);
+                    if ($valueCount == count($recordValue)
+                        && $valueCount == count(
+                            array_intersect($value, $recordValue)
+                        )
+                    ) {
+                        $ruleMatchCounter++;
+                    }
+                }
+            }
+        }
+
+        // Did all the rules match?
+        return ($ruleMatchCounter == count($rules));
+    }
+
+    /**
      * Checks if rules from the OpenUrlRules.json file apply to the current
      * record
      *
@@ -251,69 +295,22 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     {
         // check each rule - first rule-match
         foreach ($ruleset as $rule) {
-
-            $ruleMatchCounter = 0;
-
-            // check if current rule is RecordDriver specific
-            if (isset($rule['recorddriver'])) {
-                if ($this->recordDriver instanceof $rule['recorddriver']) {
-                    // get rid of recorddriver field as we have checked the
-                    // current rule as being relevant for the current
-                    // RecordDriver
-                    unset($rule['recorddriver']);
-                } else {
-                    // skip this rule as it's not relevant for the current
-                    // RecordDriver
-                    continue;
-                }
+            // skip this rule if it's not relevant for the current RecordDriver
+            if (isset($rule['recorddriver'])
+                && !($this->recordDriver instanceof $rule['recorddriver'])
+            ) {
+                continue;
             }
 
             // check if defined methods-rules apply for current record
             if (isset($rule['methods'])) {
-                foreach ($rule['methods'] as $key => $value) {
-                    if (is_callable([$this->recordDriver, $key])) {
-                        $recordValue = $this->recordDriver->$key();
-                        $value = (array)$value;
-                        $recordValue = (array)$recordValue;
-
-                        if (in_array('*', $value)) {
-                            // wildcard present
-                            if (!count(
-                                array_diff(
-                                    ['*'],
-                                    array_diff($value, $recordValue)
-                                )
-                            )) {
-                                // if explicit defined values existed along with
-                                // wildcard those all also existed in recordValue
-                                $ruleMatchCounter++;
-                            }
-                        } else {
-                            $valueCount = count($value);
-                            if ($valueCount == count($recordValue)
-                                && $valueCount == count(
-                                    array_intersect($value, $recordValue)
-                                )
-                            ) {
-                                $ruleMatchCounter++;
-                            }
-                        }
-                    }
-                }
-
-                if ($ruleMatchCounter == count($rule['methods'])) {
-                    // get rid of methods rules as we have checked the
-                    // current rule as being relevant for the current
-                    // record
+                if ($this->checkMethodRules($rule['methods'])) {
                     return true;
-                } else {
-                    // skip this rule as it's not relevant for the current record
-                    continue;
                 }
+            } else {
+                // no method rules? Then assume a match by default!
+                return true;
             }
-
-            // if we got this far this rule applies to the current record
-            return true;
         }
         // no rule matched
         return false;
