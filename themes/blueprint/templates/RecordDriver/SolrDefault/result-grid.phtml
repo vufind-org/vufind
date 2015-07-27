@@ -19,7 +19,7 @@
         ?>
          if ($openUrlActive || !empty($urls)): ?>
         <? if ($openUrlActive): ?>
-          <?=$this->openUrl($openUrl)?><br />
+          <?=$openUrl->renderTemplate()?><br />
         <? endif; ?>
         <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
           <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
