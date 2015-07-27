@@ -268,6 +268,23 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Check if an array contains a non-empty value.
+     *
+     * @param array $in Array to check
+     *
+     * @return bool
+     */
+    protected function hasNonEmptyValue($in)
+    {
+        foreach ($in as $current) {
+            if (!empty($current)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Check if method rules match.
      *
      * @param array $rules Rules to check.
@@ -287,9 +304,12 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                     // Strip the wildcard out of the value list; what is left
                     // is the set of values that MUST be found in the record.
                     // If we subtract the record values from the required values
-                    // and still have something left behind, then the match fails.
+                    // and still have something left behind, then the match fails
+                    // as long as SOME non-empty value was provided.
                     $requiredValues = array_diff($value, ['*']);
-                    if (!count(array_diff($requiredValues, $recordValue))) {
+                    if (!count(array_diff($requiredValues, $recordValue))
+                        && $this->hasNonEmptyValue($recordValue)
+                    ) {
                         $ruleMatchCounter++;
                     }
                 } else {

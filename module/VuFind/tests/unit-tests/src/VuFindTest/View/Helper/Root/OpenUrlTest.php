@@ -130,6 +130,24 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
     }
 
     /**
+     * Test checkExcludedRecordRules() with no matching rule (isActive() will return
+     * FALSE!!). Specifically we're testing the case where a method has a generic
+     * wildcard match in the rules but returns an empty value.
+     *
+     * @return void
+     */
+    public function testCheckExcludedRecordsRulesFalseDueToWildcardFailure()
+    {
+        $driver = $this->getMockDriver(
+            'fake-data', 'VuFind\RecordDriver\SolrMarc', ['Article'], false
+        );
+        $openUrl = $this
+            ->getOpenUrl($this->getFixture("rule5.json"), $this->rulesConfig)
+            ->__invoke($driver, 'results');
+        $this->assertFalse($openUrl->isActive());
+    }
+
+    /**
      * Test checkSupportedRecordRules() with no matching rule (isActive() will return
      * FALSE!!)
      *
@@ -213,19 +231,21 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
      * @param string $openUrl OpenURL to return
      * @param string $class   Class to mock
      * @param array  $formats Formats to return from getFormats
+     * @param string $issn    ISSN to return from getCleanISSN
      *
      * @return \VuFind\RecordDriver\SolrDefault
      */
     protected function getMockDriver($openUrl = 'fake-data',
         $class = 'VuFind\RecordDriver\SolrDefault',
-        $formats = ['ElectronicArticle', 'Article']
+        $formats = ['ElectronicArticle', 'Article'],
+        $issn = '1234-5678'
     ) {
         $driver = $this->getMockBuilder($class)
             ->disableOriginalConstructor()->getMock();
         $driver->expects($this->any())->method('getOpenUrl')
             ->will($this->returnValue($openUrl));
         $driver->expects($this->any())->method('getCleanISSN')
-            ->will($this->returnValue('1234-5678'));
+            ->will($this->returnValue($issn));
         $driver->expects($this->any())->method('getFormats')
             ->will($this->returnValue($formats));
         return $driver;
