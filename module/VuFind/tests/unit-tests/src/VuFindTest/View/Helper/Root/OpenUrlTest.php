@@ -138,6 +138,24 @@ class OpenUrlTest extends \VuFindTest\Unit\ViewHelperTestCase
     }
 
     /**
+     * Test checkSupportedRecordRules() with no matching rule (isActive() will return
+     * FALSE!!) This test is specifically designed to test wildcards -- we want to
+     * be sure that ['CrazyFormat'] will NOT match ['Article', '*'].
+     *
+     * @return void
+     */
+    public function testCheckSupportedRecordsRulesWithWildcardStillFalse()
+    {
+        $driver = $this->getMockDriver(
+            'fake-openurl', 'VuFind\RecordDriver\SolrDefault', ['CrazyFormat']
+        );
+        $openUrl = $this
+            ->getOpenUrl($this->getFixture("rule5.json"), $this->rulesConfig)
+            ->__invoke($driver);
+        $this->assertFalse($openUrl->isActive('results'));
+    }
+
+    /**
      * Test checkSupportedRecordRules() with matching rule (isActive() will return
      * TRUE!!)
      *

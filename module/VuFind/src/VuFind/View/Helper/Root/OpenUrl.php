@@ -254,16 +254,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                 $value = (array)$value;
                 $recordValue = (array)$this->recordDriver->$key();
 
+                // wildcard present
                 if (in_array('*', $value)) {
-                    // wildcard present
-                    if (!count(
-                        array_diff(
-                            ['*'],
-                            array_diff($value, $recordValue)
-                        )
-                    )) {
-                        // if explicit defined values existed along with
-                        // wildcard those all also existed in recordValue
+                    // Strip the wildcard out of the value list; what is left
+                    // is the set of values that MUST be found in the record.
+                    // If we subtract the record values from the required values
+                    // and still have something left behind, then the match fails.
+                    $requiredValues = array_diff($value, ['*']);
+                    if (!count(array_diff($requiredValues, $recordValue))) {
                         $ruleMatchCounter++;
                     }
                 } else {
