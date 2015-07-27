@@ -67,6 +67,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $recordDriver;
 
     /**
+     * Template context
+     *
+     * @var string
+     */
+    protected $area;
+
+    /**
      * Constructor
      *
      * @param \VuFind\View\Helper\Root\Context $context      Context helper
@@ -120,11 +127,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         $embedAutoLoad = (isset($this->config->embed_auto_load)
             ? $this->config->embed_auto_load : false);
         // ini values 'true'/'false' are provided via ini reader as 1/0
-        /*if (!($embedAutoLoad === 1 || $embedAutoLoad === 0)) {
+        // only check embedAutoLoad for area if the current area passed checkContext
+        if (!($embedAutoLoad === "1" || $embedAutoLoad === "0")
+            && !empty($this->area)
+        ) {
             // embedAutoLoad is neither true nor false, so check if it contains an
             // area string defining where exactly to use autoloading
             $embedAutoLoad = in_array(
-                strtolower($area),
+                strtolower($this->area),
                 array_map(
                     'trim',
                     array_map(
@@ -133,7 +143,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                     )
                 )
             );
-        }*/
+        }
 
         // Build parameters needed to display the control:
         $params = [
@@ -176,6 +186,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         ) {
             return false;
         }
+        // as we passed positively checkContext this area is enabled for OpenURL
+        // so save area for later use
+        $this->area = $area;
         return true;
     }
 
