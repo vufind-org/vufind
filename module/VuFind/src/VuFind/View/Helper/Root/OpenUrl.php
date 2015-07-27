@@ -67,6 +67,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $recordDriver;
 
     /**
+     * 'results', 'record' or 'holdings'
+     *
+     * @var string
+     */
+    protected $area;
+
+    /**
      * Constructor
      *
      * @param \VuFind\View\Helper\Root\Context $context      Context helper
@@ -85,12 +92,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * Render appropriate UI controls for an OpenURL link.
      *
      * @param \VuFind\RecordDriver $driver The current recorddriver
+     * @param string               $area   'results', 'record' or 'holdings'
      *
      * @return object
      */
-    public function __invoke($driver)
+    public function __invoke($driver, $area)
     {
         $this->recordDriver = $driver;
+        $this->area = $area;
         return $this;
     }
 
@@ -117,6 +126,27 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             $counter++;
         }
 
+        $embedAutoLoad = (isset($this->config->embed_auto_load)
+            ? $this->config->embed_auto_load : false);
+        // ini values 'true'/'false' are provided via ini reader as 1/0
+        // only check embedAutoLoad for area if the current area passed checkContext
+        if (!($embedAutoLoad === "1" || $embedAutoLoad === "0")
+            && !empty($this->area)
+        ) {
+            // embedAutoLoad is neither true nor false, so check if it contains an
+            // area string defining where exactly to use autoloading
+            $embedAutoLoad = in_array(
+                strtolower($this->area),
+                array_map(
+                    'trim',
+                    array_map(
+                        'strtolower',
+                        explode(',', $embedAutoLoad)
+                    )
+                )
+            );
+        }
+
         // Build parameters needed to display the control:
         $params = [
             'openUrl' => $this->recordDriver->getOpenUrl(),
@@ -130,6 +160,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             'openUrlGraphicHeight' => empty($this->config->graphic_height)
                 ? false : $this->config->graphic_height,
             'openUrlEmbed' => $embed,
+            'openUrlEmbedAutoLoad' => $embedAutoLoad,
             'openUrlId' => $counter
         ];
 
@@ -142,17 +173,15 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Public method to check whether OpenURLs are active for current record
      *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
      * @return bool
      */
-    public function isActive($area)
+    public function isActive()
     {
         // check first if OpenURLs are enabled for this RecordDriver
         // check second if OpenURLs are enabled for this context
         // check last if any rules apply
         if (!$this->recordDriver->getOpenUrl()
-            || !$this->checkContext($area)
+            || !$this->checkContext()
             || !$this->checkIfRulesApply()
         ) {
             return false;
@@ -164,11 +193,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * Does the OpenURL configuration indicate that we should display OpenURLs in
      * the specified context?
      *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
      * @return bool
      */
-    protected function checkContext($area)
+    protected function checkContext()
     {
         // Doesn't matter the target area if no OpenURL resolver is specified:
         if (!isset($this->config->url)) {
@@ -176,14 +203,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // If a setting exists, return that:
-        $key = 'show_in_' . $area;
+        $key = 'show_in_' . $this->area;
         if (isset($this->config->$key)) {
             return $this->config->$key;
         }
 
         // If we got this far, use the defaults -- true for results, false for
         // everywhere else.
-        return ($area == 'results');
+        return ($this->area == 'results');
     }
 
     /**

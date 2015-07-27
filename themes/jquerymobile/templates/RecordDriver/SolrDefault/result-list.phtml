@@ -24,8 +24,8 @@
     <? endif; ?>
     <?=$this->record($this->driver)->getFormatList()?>
     <?
-       $openUrl = $this->openUrl($this->driver);
-       $openUrlActive = $openUrl->isActive('results');
+       $openUrl = $this->openUrl($this->driver, 'results');
+       $openUrlActive = $openUrl->isActive();
        $urls = $openUrlActive
             ? $this->record($this->driver)->getLinkDetailsForOpenUrl()
             : $this->record($this->driver)->getLinkDetails();
