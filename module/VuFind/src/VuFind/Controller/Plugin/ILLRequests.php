@@ -164,7 +164,7 @@ class ILLRequests extends AbstractRequestBase
                     $msg = $this->getController()->translate(
                         'ill_request_cancel_success_items'
                     );
-                    $flashMsg->setNamespace('info')->addMessage(
+                    $flashMsg->setNamespace('success')->addMessage(
                         $cancelResults['count'] . ' ' . $msg
                     );
                 }
