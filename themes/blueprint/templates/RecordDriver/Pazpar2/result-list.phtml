@@ -60,8 +60,8 @@
               but even if we don't plan to display the link, we still want to get the $openUrl
               value for use in generating a COinS (Z3988) tag -- see bottom of file.
             */
-        $openUrl = $this->openUrl($this->driver);
-        $openUrlActive = $openUrl->isActive('results');
+        $openUrl = $this->openUrl($this->driver, 'results');
+        $openUrlActive = $openUrl->isActive();
         // Account for replace_other_urls setting
         $urls = $openUrlActive ? $this->record($this->driver)->getLinkDetailsForOpenUrl() : $this->record($this->driver)->getLinkDetails() ;
         if ($openUrlActive || !empty($urls)): ?>

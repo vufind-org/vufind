@@ -67,6 +67,13 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     protected $recordDriver;
 
     /**
+     * OpenURL context ('results', 'record' or 'holdings')
+     *
+     * @var string
+     */
+    protected $area;
+
+    /**
      * Constructor
      *
      * @param \VuFind\View\Helper\Root\Context $context      Context helper
@@ -85,12 +92,15 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * Render appropriate UI controls for an OpenURL link.
      *
      * @param \VuFind\RecordDriver $driver The current recorddriver
+     * @param string               $area   OpenURL context ('results', 'record'
+     *  or 'holdings'
      *
      * @return object
      */
-    public function __invoke($driver)
+    public function __invoke($driver, $area)
     {
         $this->recordDriver = $driver;
+        $this->area = $area;
         return $this;
     }
 
@@ -142,17 +152,15 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Public method to check whether OpenURLs are active for current record
      *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
      * @return bool
      */
-    public function isActive($area)
+    public function isActive()
     {
         // check first if OpenURLs are enabled for this RecordDriver
         // check second if OpenURLs are enabled for this context
         // check last if any rules apply
         if (!$this->recordDriver->getOpenUrl()
-            || !$this->checkContext($area)
+            || !$this->checkContext()
             || !$this->checkIfRulesApply()
         ) {
             return false;
@@ -164,11 +172,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      * Does the OpenURL configuration indicate that we should display OpenURLs in
      * the specified context?
      *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
      * @return bool
      */
-    protected function checkContext($area)
+    protected function checkContext()
     {
         // Doesn't matter the target area if no OpenURL resolver is specified:
         if (!isset($this->config->url)) {
@@ -176,14 +182,14 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
         }
 
         // If a setting exists, return that:
-        $key = 'show_in_' . $area;
+        $key = 'show_in_' . $this->area;
         if (isset($this->config->$key)) {
             return $this->config->$key;
         }
 
         // If we got this far, use the defaults -- true for results, false for
         // everywhere else.
-        return ($area == 'results');
+        return ($this->area == 'results');
     }
 
     /**
