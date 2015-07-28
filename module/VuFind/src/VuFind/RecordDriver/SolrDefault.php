@@ -800,7 +800,7 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    protected function getUnknownFormatOpenUrlParams($format)
+    protected function getUnknownFormatOpenUrlParams($format = 'UnknownFormat')
     {
         $params = $this->getDefaultOpenUrlParams();
         $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:dc';
