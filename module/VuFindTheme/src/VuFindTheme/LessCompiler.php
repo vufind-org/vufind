@@ -202,11 +202,11 @@ class LessCompiler
             );
             return;
         }
-        $outFile = \Less_Cache::Regen(
+        $outFile = \Less_Cache::Get(
             [$lessDir . $less => $this->fakePath . "themes/$theme/css/less"],
             [
                 'cache_dir' => $this->tempPath,
-                'cache_method' => false,
+                'cache_method' => "php",
                 'compress' => true,
                 'import_dirs' => $directories
             ]
