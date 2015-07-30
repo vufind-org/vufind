@@ -199,7 +199,6 @@ class ExtendedIni implements FileLoaderInterface
         return $data;
     }
 
-
     /**
      * Look up the translations from dedicated language file (no path stack)
      * used for customized and named language domains
@@ -222,7 +221,6 @@ class ExtendedIni implements FileLoaderInterface
         return $data;
 
     }
-
 
     /**
      * Support method for loadLanguageFile: retrieve parent data.

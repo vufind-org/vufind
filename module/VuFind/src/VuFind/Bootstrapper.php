@@ -358,7 +358,7 @@ class Bootstrapper
             return;
         }
 
-        if ($this->config && $this->config->TranslationSubdomains 
+        if ($this->config && $this->config->TranslationSubdomains
             && $this->config->TranslationSubdomains->path
         ) {
 
@@ -405,8 +405,6 @@ class Bootstrapper
         }
 
     }
-
-
 
     /**
      * Set up theme handling.

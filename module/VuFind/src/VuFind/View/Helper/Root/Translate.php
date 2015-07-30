@@ -74,7 +74,7 @@ class Translate extends \Zend\View\Helper\AbstractHelper
             return $parts;
         }
 
-        return array( $str,'default');
+        return [ $str,'default'];
     }
 
 }

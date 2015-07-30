@@ -264,7 +264,7 @@ class Results extends \VuFind\Search\Base\Results
                 $currentSettings['value'] = $value;
                 $currentSettings['displayText']
                     = $translateInfo['translate'] ? $this->translate(
-                        array($value , $translateInfo['field_domain'][1])
+                        [$value , $translateInfo['field_domain'][1]]
                     )
                     : $value;
 
@@ -369,7 +369,7 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function isFieldToTranslate($field)
     {
-        $translateInfo = array();
+        $translateInfo = [];
 
         //getTranslatedFacets returns the entries in Advanced_Settings ->
         // translated_facets
@@ -386,8 +386,8 @@ class Results extends \VuFind\Search\Base\Results
                 //is part of the configuration fieldname:domainName
                 return $passedValue === $field || count(
                     preg_grep(
-                        "/" .$field . ":" . "/",
-                        array ($passedValue)
+                        "/" . $field . ":" . "/",
+                         [$passedValue]
                     )
                 ) > 0;
             }
@@ -399,15 +399,15 @@ class Results extends \VuFind\Search\Base\Results
         //this name is always without any colons and could be used in
         // further processing
         $translateInfo['normalizedFieldName'] = $field;
-        $translateInfo['field_domain'] = array();
+        $translateInfo['field_domain'] = [];
 
         $fieldToTranslate = $translateInfo['translate'] ?
             current($fieldToTranslateInArray) : null;
         if ($translateInfo['translate']) {
             $translateInfo['field_domain'] = strstr(
                 $fieldToTranslate, ':'
-            ) === false ? array($field,'default') : array($field,
-                substr($fieldToTranslate, strpos($fieldToTranslate, ':') + 1));
+            ) === false ? [$field,'default'] : [$field,
+                substr($fieldToTranslate, strpos($fieldToTranslate, ':') + 1)];
             //normalizedFieldName contains only the fieldname without any colons
             // as seperator for the domain name (it's handy)
             $translateInfo['normalizedFieldName']
