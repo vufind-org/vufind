@@ -384,43 +384,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     }
 
     /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
-     *
-     * @return bool
-     */
-    public function openURLActive($area)
-    {
-        // Doesn't matter the target area if no OpenURL resolver is specified:
-        if (!isset($this->mainConfig->OpenURL->url)) {
-            return false;
-        }
-
-        // If a setting exists, return that:
-        $key = 'show_in_' . $area;
-        if (isset($this->mainConfig->OpenURL->$key)) {
-            return $this->mainConfig->OpenURL->$key;
-        }
-
-        // If we got this far, use the defaults -- true for results, false for
-        // everywhere else.
-        return ($area == 'results');
-    }
-
-    /**
-     * Should we display regular URLs when an OpenURL is present?
-     *
-     * @return bool
-     */
-    public function replaceURLsWithOpenURL()
-    {
-        return isset($this->mainConfig->OpenURL->replace_other_urls)
-            ? $this->mainConfig->OpenURL->replace_other_urls : false;
-    }
-
-    /**
      * Returns true if the record supports real-time AJAX status lookups.
      *
      * @return bool
@@ -428,6 +391,26 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     public function supportsAjaxStatus()
     {
         return false;
+    }
+
+    /**
+     * Checks the current record if it's supported for generating OpenURLs.
+     *
+     * @return bool
+     */
+    public function supportsOpenUrl()
+    {
+        return true;
+    }
+
+    /**
+     * Checks the current record if it's supported for generating COinS-OpenURLs.
+     *
+     * @return bool
+     */
+    public function supportsCoinsOpenUrl()
+    {
+        return true;
     }
 
     /**

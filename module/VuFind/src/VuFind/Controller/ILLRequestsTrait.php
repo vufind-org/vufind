@@ -112,7 +112,7 @@ trait ILLRequestsTrait
 
             // Success: Go to Display ILL Requests
             if (isset($results['success']) && $results['success'] == true) {
-                $this->flashMessenger()->setNamespace('info')
+                $this->flashMessenger()->setNamespace('success')
                     ->addMessage('ill_request_place_success');
                 if ($this->inLightbox()) {
                     return false;
