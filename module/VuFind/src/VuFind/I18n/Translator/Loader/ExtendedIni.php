@@ -111,15 +111,13 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @return TextDomain
      * @throws InvalidArgumentException
-     *
      */
     public function load($locale, $filename)
     {
 
         // Reset the loaded files list:
         $this->resetLoadedFiles();
-        if (!isset($filename))
-        {
+        if (!isset($filename)) {
             //if the filename isn't initialized (standardized behaviour of VF so far)
             //all the flat files (no dedicated TextDomains) are loaded
             //load data from flat (not specialized domains) data
@@ -216,7 +214,8 @@ class ExtendedIni implements FileLoaderInterface
         if (file_exists($filename)) {
             $data = $this->reader->getTextDomain($filename);
         } else {
-            throw new InvalidArgumentException("language file  '{$filename}' doesn't exist");
+            throw new
+            InvalidArgumentException("language file  '{$filename}' doesn't exist");
 
         }
 

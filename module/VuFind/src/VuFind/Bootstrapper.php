@@ -349,6 +349,7 @@ class Bootstrapper
 
     /**
      * Initialize translator for multiple translation domains
+     * @return void
      */
     protected function initMultiTranslationTextDomains()
     {
@@ -357,31 +358,37 @@ class Bootstrapper
             return;
         }
 
-        if ($this->config && $this->config->TranslationSubdomains &&
-            $this->config->TranslationSubdomains->path) {
+        if ($this->config && $this->config->TranslationSubdomains 
+            && $this->config->TranslationSubdomains->path
+        ) {
 
             $domainConfig = $this->config->TranslationSubdomains->path->toArray();
             $callback = function ($event) use ($domainConfig) {
 
                 $domainStack = [];
-                $translator = $event->getApplication()->getServiceManager()->get('VuFind\Translator');
+                $translator = $event->getApplication()->getServiceManager()->get(
+                    'VuFind\Translator'
+                );
                 $language =  $translator->getLocale();
 
                 foreach ($domainConfig as $domainPath) {
-                    $startpath = APPLICATION_PATH . DIRECTORY_SEPARATOR . $domainPath;
+                    $startpath = APPLICATION_PATH . DIRECTORY_SEPARATOR .
+                        $domainPath;
                     $ar = glob($startpath . '/*', GLOB_ONLYDIR | GLOB_NOSORT);
-                    if (!$ar) continue;
-                    $domainStack = array_merge_recursive($domainStack,$ar);
+                    if (!$ar) {
+                        continue;
+                    }
+                    $domainStack = array_merge_recursive($domainStack, $ar);
                 }
 
                 //now look up the language files within the text domain directories
-                foreach ($domainStack as $subDomainPath)
-                {
-                    $languageFile = $subDomainPath . DIRECTORY_SEPARATOR . $language . '.ini';
-                    //register the language file for a specific domain only if we have a language file for the current language
+                foreach ($domainStack as $subDomainPath) {
+                    $languageFile = $subDomainPath . DIRECTORY_SEPARATOR .
+                        $language . '.ini';
+                    //register the language file for a specific domain only if we
+                    //have a language file for the current language
                     //todo: any fallback solution?
-                    if ( file_exists($languageFile))
-                    {
+                    if (file_exists($languageFile)) {
                         //convention: subdirname equals domain name
                         $translator->addTranslationFile(
                             'ExtendedIni',
