@@ -103,7 +103,7 @@ class ServerParam implements PermissionProviderInterface,
             }
             $this->debug("getPermissions: result = true");
         }
-        return ['loggedin'];
+        return ['guest', 'loggedin'];
     }
 
     /**

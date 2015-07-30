@@ -61,8 +61,8 @@ class StreamTest extends \PHPUnit_Framework_TestCase
         }
         $this->_amazon->unregisterStreamWrapper();
         $buckets = $this->_amazon->getBuckets();
-        foreach($buckets as $bucket) {
-            if(substr($bucket, 0, strlen($this->_bucket)) != $this->_bucket) {
+        foreach ($buckets as $bucket) {
+            if (substr($bucket, 0, strlen($this->_bucket)) != $this->_bucket) {
                 continue;
             }
             $this->_amazon->cleanBucket($bucket);

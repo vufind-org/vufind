@@ -86,7 +86,10 @@ class Factory
      */
     public static function getShibboleth(ServiceManager $sm)
     {
-        return new Shibboleth($sm->getServiceLocator()->get('Request'));
+        return new Shibboleth(
+            $sm->getServiceLocator()->get('Request'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
     }
 
     /**

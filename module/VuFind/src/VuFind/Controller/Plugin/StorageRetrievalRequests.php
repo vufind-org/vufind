@@ -164,7 +164,7 @@ class StorageRetrievalRequests extends AbstractRequestBase
                     $msg = $this->getController()->translate(
                         'storage_retrieval_request_cancel_success_items'
                     );
-                    $flashMsg->setNamespace('info')->addMessage(
+                    $flashMsg->setNamespace('success')->addMessage(
                         $cancelResults['count'] . ' ' . $msg
                     );
                 }

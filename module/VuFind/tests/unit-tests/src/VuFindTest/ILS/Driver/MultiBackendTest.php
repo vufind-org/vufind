@@ -30,7 +30,6 @@
 namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\MultiBackend, VuFind\Config\Reader as ConfigReader;
 use Zend\Log\Writer\Mock;
-use Zend\Log\Logger;
 
 /**
  * ILS driver test

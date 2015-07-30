@@ -123,7 +123,7 @@ class SearchController extends AbstractSearch
                     $view->to, $view->from, $view->message,
                     $view->url, $this->getViewRenderer(), $view->subject, $cc
                 );
-                $this->flashMessenger()->setNamespace('info')
+                $this->flashMessenger()->setNamespace('success')
                     ->addMessage('email_success');
                 return $this->redirect()->toUrl($view->url);
             } catch (MailException $e) {
@@ -462,6 +462,10 @@ class SearchController extends AbstractSearch
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
 
+        // Set up RSS feed title just in case:
+        $this->getViewRenderer()->plugin('resultfeed')
+            ->setOverrideTitle('Reserves Search Results');
+
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();
 
@@ -473,12 +477,16 @@ class SearchController extends AbstractSearch
             $view->course = $result[0]['course'];
         }
 
-        // Customize the URL helper to make sure it builds proper reserves URLs:
-        $url = $view->results->getUrlQuery();
-        $url->setDefaultParameter('course', $course);
-        $url->setDefaultParameter('inst', $inst);
-        $url->setDefaultParameter('dept', $dept);
-        $url->setSuppressQuery(true);
+        // Customize the URL helper to make sure it builds proper reserves URLs
+        // (but only do this if we have access to a results object, which we
+        // won't in RSS mode):
+        if (isset($view->results)) {
+            $url = $view->results->getUrlQuery();
+            $url->setDefaultParameter('course', $course);
+            $url->setDefaultParameter('inst', $inst);
+            $url->setDefaultParameter('dept', $dept);
+            $url->setSuppressQuery(true);
+        }
         return $view;
     }
 

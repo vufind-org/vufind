@@ -11,7 +11,6 @@
 namespace ZendService\Amazon\Ec2;
 
 use ZendService\Amazon;
-use ZendService\Amazon\Ec2\Exception;
 
 /**
  * An Amazon EC2 interface that allows yout to run, terminate, reboot and describe Amazon
@@ -107,7 +106,7 @@ class Instance extends AbstractEc2
         // set / override the defualt optoins if they are not passed into the array;
         $options = array_merge($_defaultOptions, $options);
 
-        if(!isset($options['imageId'])) {
+        if (!isset($options['imageId'])) {
             throw new Exception\InvalidArgumentException('No Image Id Provided');
         }
 
@@ -118,44 +117,44 @@ class Instance extends AbstractEc2
         $params['MinCount'] = $options['minCount'];
         $params['MaxCount'] = $options['maxCount'];
 
-        if(isset($options['keyName'])) {
+        if (isset($options['keyName'])) {
             $params['KeyName'] = $options['keyName'];
         }
 
-        if(is_array($options['securityGroup']) && !empty($options['securityGroup'])) {
-            foreach($options['securityGroup'] as $k=>$name) {
+        if (is_array($options['securityGroup']) && !empty($options['securityGroup'])) {
+            foreach ($options['securityGroup'] as $k=>$name) {
                 $params['SecurityGroup.' . ($k+1)] = $name;
             }
-        } elseif(isset($options['securityGroup'])) {
+        } elseif (isset($options['securityGroup'])) {
             $params['SecurityGroup.1'] = $options['securityGroup'];
         }
 
-        if(isset($options['userData'])) {
+        if (isset($options['userData'])) {
             $params['UserData'] = base64_encode($options['userData']);
         }
 
-        if(isset($options['instanceType'])) {
+        if (isset($options['instanceType'])) {
             $params['InstanceType'] = $options['instanceType'];
         }
 
-        if(isset($options['placement'])) {
+        if (isset($options['placement'])) {
             $params['Placement.AvailabilityZone'] = $options['placement'];
         }
 
-        if(isset($options['kernelId'])) {
+        if (isset($options['kernelId'])) {
             $params['KernelId'] = $options['kernelId'];
         }
 
-        if(isset($options['ramdiskId'])) {
+        if (isset($options['ramdiskId'])) {
             $params['RamdiskId'] = $options['ramdiskId'];
         }
 
-        if(isset($options['blockDeviceVirtualName']) && isset($options['blockDeviceName'])) {
+        if (isset($options['blockDeviceVirtualName']) && isset($options['blockDeviceName'])) {
             $params['BlockDeviceMapping.n.VirtualName'] = $options['blockDeviceVirtualName'];
             $params['BlockDeviceMapping.n.DeviceName'] = $options['blockDeviceName'];
         }
 
-        if(isset($options['monitor']) && $options['monitor'] === true) {
+        if (isset($options['monitor']) && $options['monitor'] === true) {
             $params['Monitoring.Enabled'] = true;
         }
 
@@ -168,14 +167,14 @@ class Instance extends AbstractEc2
         $return['ownerId'] = $xpath->evaluate('string(//ec2:ownerId/text())');
 
         $gs = $xpath->query('//ec2:groupSet/ec2:item');
-        foreach($gs as $gs_node) {
+        foreach ($gs as $gs_node) {
             $return['groupSet'][] = $xpath->evaluate('string(ec2:groupId/text())', $gs_node);
             unset($gs_node);
         }
         unset($gs);
 
         $is = $xpath->query('//ec2:instancesSet/ec2:item');
-        foreach($is as $is_node) {
+        foreach ($is as $is_node) {
             $item = array();
 
             $item['instanceId'] = $xpath->evaluate('string(ec2:instanceId/text())', $is_node);
@@ -197,7 +196,6 @@ class Instance extends AbstractEc2
         unset($is);
 
         return $return;
-
     }
 
     /**
@@ -221,11 +219,11 @@ class Instance extends AbstractEc2
         $params = array();
         $params['Action'] = 'DescribeInstances';
 
-        if(is_array($instanceId) && !empty($instanceId)) {
-            foreach($instanceId as $k=>$name) {
+        if (is_array($instanceId) && !empty($instanceId)) {
+            foreach ($instanceId as $k=>$name) {
                 $params['InstanceId.' . ($k+1)] = $name;
             }
-        } elseif($instanceId) {
+        } elseif ($instanceId) {
             $params['InstanceId.1'] = $instanceId;
         }
 
@@ -238,15 +236,17 @@ class Instance extends AbstractEc2
         $return = array();
         $return['instances'] = array();
 
-        foreach($nodes as $node) {
-            if($xpath->evaluate('string(ec2:instancesSet/ec2:item/ec2:instanceState/ec2:code/text())', $node) == 48 && $ignoreTerminated) continue;
+        foreach ($nodes as $node) {
+            if ($xpath->evaluate('string(ec2:instancesSet/ec2:item/ec2:instanceState/ec2:code/text())', $node) == 48 && $ignoreTerminated) {
+                continue;
+            }
             $item = array();
 
             $item['reservationId'] = $xpath->evaluate('string(ec2:reservationId/text())', $node);
             $item['ownerId'] = $xpath->evaluate('string(ec2:ownerId/text())', $node);
 
             $gs = $xpath->query('ec2:groupSet/ec2:item', $node);
-            foreach($gs as $gs_node) {
+            foreach ($gs as $gs_node) {
                 $item['groupSet'][] = $xpath->evaluate('string(ec2:groupId/text())', $gs_node);
                 unset($gs_node);
             }
@@ -254,8 +254,7 @@ class Instance extends AbstractEc2
 
             $is = $xpath->query('ec2:instancesSet/ec2:item', $node);
 
-            foreach($is as $is_node) {
-
+            foreach ($is as $is_node) {
                 $item['instanceId'] = $xpath->evaluate('string(ec2:instanceId/text())', $is_node);
                 $item['imageId'] = $xpath->evaluate('string(ec2:imageId/text())', $is_node);
                 $item['instanceState']['code'] = $xpath->evaluate('string(ec2:instanceState/ec2:code/text())', $is_node);
@@ -299,8 +298,10 @@ class Instance extends AbstractEc2
 
         $return = array();
 
-        foreach($arrInstances['instances'] as $instance) {
-            if($instance['imageId'] !== $imageId) continue;
+        foreach ($arrInstances['instances'] as $instance) {
+            if ($instance['imageId'] !== $imageId) {
+                continue;
+            }
             $return[] = $instance;
         }
 
@@ -321,11 +322,11 @@ class Instance extends AbstractEc2
         $params = array();
         $params['Action'] = 'TerminateInstances';
 
-        if(is_array($instanceId) && !empty($instanceId)) {
-            foreach($instanceId as $k=>$name) {
+        if (is_array($instanceId) && !empty($instanceId)) {
+            foreach ($instanceId as $k=>$name) {
                 $params['InstanceId.' . ($k+1)] = $name;
             }
-        } elseif($instanceId) {
+        } elseif ($instanceId) {
             $params['InstanceId.1'] = $instanceId;
         }
 
@@ -335,7 +336,7 @@ class Instance extends AbstractEc2
         $nodes = $xpath->query('//ec2:instancesSet/ec2:item');
 
         $return = array();
-        foreach($nodes as $node) {
+        foreach ($nodes as $node) {
             $item = array();
 
             $item['instanceId'] = $xpath->evaluate('string(ec2:instanceId/text())', $node);
@@ -364,11 +365,11 @@ class Instance extends AbstractEc2
         $params = array();
         $params['Action'] = 'RebootInstances';
 
-        if(is_array($instanceId) && !empty($instanceId)) {
-            foreach($instanceId as $k=>$name) {
+        if (is_array($instanceId) && !empty($instanceId)) {
+            foreach ($instanceId as $k=>$name) {
                 $params['InstanceId.' . ($k+1)] = $name;
             }
-        } elseif($instanceId) {
+        } elseif ($instanceId) {
             $params['InstanceId.1'] = $instanceId;
         }
 
@@ -431,7 +432,7 @@ class Instance extends AbstractEc2
 
         $result = $xpath->evaluate('string(//ec2:result/text())');
 
-        if($result === "true") {
+        if ($result === "true") {
             $return['result'] = true;
             $return['ownerId'] = $xpath->evaluate('string(//ec2:ownerId/text())');
 
@@ -452,11 +453,11 @@ class Instance extends AbstractEc2
         $params = array();
         $params['Action'] = 'MonitorInstances';
 
-        if(is_array($instanceId) && !empty($instanceId)) {
-            foreach($instanceId as $k=>$name) {
+        if (is_array($instanceId) && !empty($instanceId)) {
+            foreach ($instanceId as $k=>$name) {
                 $params['InstanceId.' . ($k+1)] = $name;
             }
-        } elseif($instanceId) {
+        } elseif ($instanceId) {
             $params['InstanceId.1'] = $instanceId;
         }
 
@@ -467,7 +468,7 @@ class Instance extends AbstractEc2
         $items = $xpath->query('//ec2:instancesSet/ec2:item');
 
         $arrReturn = array();
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $i = array();
             $i['instanceid'] = $xpath->evaluate('string(//ec2:instanceId/text())', $item);
             $i['monitorstate'] = $xpath->evaluate('string(//ec2:monitoring/ec2:state/text())');
@@ -488,11 +489,11 @@ class Instance extends AbstractEc2
         $params = array();
         $params['Action'] = 'UnmonitorInstances';
 
-        if(is_array($instanceId) && !empty($instanceId)) {
-            foreach($instanceId as $k=>$name) {
+        if (is_array($instanceId) && !empty($instanceId)) {
+            foreach ($instanceId as $k=>$name) {
                 $params['InstanceId.' . ($k+1)] = $name;
             }
-        } elseif($instanceId) {
+        } elseif ($instanceId) {
             $params['InstanceId.1'] = $instanceId;
         }
 
@@ -503,7 +504,7 @@ class Instance extends AbstractEc2
         $items = $xpath->query('//ec2:instancesSet/ec2:item');
 
         $arrReturn = array();
-        foreach($items as $item) {
+        foreach ($items as $item) {
             $i = array();
             $i['instanceid'] = $xpath->evaluate('string(//ec2:instanceId/text())', $item);
             $i['monitorstate'] = $xpath->evaluate('string(//ec2:monitoring/ec2:state/text())');
@@ -513,5 +514,4 @@ class Instance extends AbstractEc2
 
         return $arrReturn;
     }
-
 }

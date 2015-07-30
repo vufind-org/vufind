@@ -11,8 +11,6 @@
 namespace ZendService\Amazon\Ec2;
 
 use ZendService\Amazon;
-use ZendService\Amazon\Ec2\Exception;
-
 /**
  * An Amazon EC2 interface to allocate, associate, describe and release Elastic IP address
  * from your account.
@@ -52,11 +50,11 @@ class ElasticIp extends AbstractEc2
         $params = array();
         $params['Action'] = 'DescribeAddresses';
 
-        if(is_array($publicIp) && !empty($publicIp)) {
-            foreach($publicIp as $k=>$name) {
+        if (is_array($publicIp) && !empty($publicIp)) {
+            foreach ($publicIp as $k=>$name) {
                 $params['PublicIp.' . ($k+1)] = $name;
             }
-        } elseif($publicIp) {
+        } elseif ($publicIp) {
             $params['PublicIp.1'] = $publicIp;
         }
 
@@ -140,5 +138,4 @@ class ElasticIp extends AbstractEc2
 
         return ($return === "true");
     }
-
 }
