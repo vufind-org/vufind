@@ -387,7 +387,7 @@ class Results extends \VuFind\Search\Base\Results
                 return $passedValue === $field || count(
                     preg_grep(
                         "/" . $field . ":" . "/",
-                         [$passedValue]
+                        [$passedValue]
                     )
                 ) > 0;
             }
