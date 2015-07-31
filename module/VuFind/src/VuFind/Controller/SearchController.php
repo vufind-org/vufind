@@ -123,7 +123,7 @@ class SearchController extends AbstractSearch
                     $view->to, $view->from, $view->message,
                     $view->url, $this->getViewRenderer(), $view->subject, $cc
                 );
-                $this->flashMessenger()->setNamespace('info')
+                $this->flashMessenger()->setNamespace('success')
                     ->addMessage('email_success');
                 return $this->redirect()->toUrl($view->url);
             } catch (MailException $e) {
