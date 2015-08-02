@@ -835,6 +835,23 @@ class Factory
     }
 
     /**
+     * Construct the WorldCat Knowledge Base URL Service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Connection\WorldCatKnowledgeBaseUrlService
+     */
+    public static function getWorldCatKnowledgeBaseUrlService(ServiceManager $sm)
+    {
+        $config = $sm->get('VuFind\Config')->get('config');
+        $worldCatDiscConfig = $sm->get('VuFind\Config')->get('WorldCatDiscovery');
+
+        return new \VuFind\Connection\WorldCatKnowledgeBaseUrlService(
+            $config, $worldCatDiscConfig
+        );
+    }
+
+    /**
      * Construct the WorldCat helper.
      *
      * @param ServiceManager $sm Service manager.

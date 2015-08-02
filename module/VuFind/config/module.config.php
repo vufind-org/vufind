@@ -103,6 +103,8 @@ $config = [
             'tag' => 'VuFind\Controller\TagController',
             'web' => 'VuFind\Controller\WebController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
+            'worldcatdiscovery' => 'VuFind\Controller\WorldCatDiscoveryController',
+            'worldcatdiscoveryrecord' => 'VuFind\Controller\WorldCatDiscoveryrecordController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
         ],
         'initializers' => [
@@ -183,6 +185,7 @@ $config = [
             'VuFind\StatisticsDriverPluginManager' => 'VuFind\Service\Factory::getStatisticsDriverPluginManager',
             'VuFind\Tags' => 'VuFind\Service\Factory::getTags',
             'VuFind\Translator' => 'VuFind\Service\Factory::getTranslator',
+            'VuFind\WorldCatKnowledgeBaseUrlService' => 'VuFind\Service\Factory::getWorldCatKnowledgeBaseUrlService',
             'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
         ],
         'invokables' => [
@@ -239,6 +242,7 @@ $config = [
                 'factories' => [
                     'ils' => 'VuFind\Auth\Factory::getILS',
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
+                    'worldshare' => 'VuFind\Auth\Factory::getWorldShare',
                 ],
                 'invokables' => [
                     'cas' => 'VuFind\Auth\CAS',
@@ -382,6 +386,7 @@ $config = [
                     'unicorn' => 'VuFind\ILS\Driver\Factory::getUnicorn',
                     'voyager' => 'VuFind\ILS\Driver\Factory::getVoyager',
                     'voyagerrestful' => 'VuFind\ILS\Driver\Factory::getVoyagerRestful',
+                    'wms' => 'VuFind\ILS\Driver\Factory::getWMS',
                 ],
                 'invokables' => [
                     'amicus' => 'VuFind\ILS\Driver\Amicus',
@@ -409,6 +414,7 @@ $config = [
                     'authorityrecommend' => 'VuFind\Recommend\Factory::getAuthorityRecommend',
                     'catalogresults' => 'VuFind\Recommend\Factory::getCatalogResults',
                     'collectionsidefacets' => 'VuFind\Recommend\Factory::getCollectionSideFacets',
+                	'dbpediaauthorinfo' => 'VuFind\Recommend\Factory::getDBPediaAuthorInfo',
                     'dplaterms' => 'VuFind\Recommend\Factory::getDPLATerms',
                     'europeanaresults' => 'VuFind\Recommend\Factory::getEuropeanaResults',
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
@@ -457,6 +463,7 @@ $config = [
                     'solrweb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
                     'summon' => 'VuFind\RecordDriver\Factory::getSummon',
                     'worldcat' => 'VuFind\RecordDriver\Factory::getWorldCat',
+                    'worldcatdiscovery' => 'VuFind\RecordDriver\Factory::getWorldCatDiscovery',
                 ],
                 'invokables' => [
                     'libguides' => 'VuFind\RecordDriver\LibGuides',
@@ -471,10 +478,12 @@ $config = [
                     'hierarchytree' => 'VuFind\RecordTab\Factory::getHierarchyTree',
                     'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
                     'holdingsworldcat' => 'VuFind\RecordTab\Factory::getHoldingsWorldCat',
+                    'holdingsworldcatdiscovery' => 'VuFind\RecordTab\Factory::getHoldingsWorldCatDiscovery',
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'preview' => 'VuFind\RecordTab\Factory::getPreview',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
                     'similaritemscarousel' => 'VuFind\RecordTab\Factory::getSimilarItemsCarousel',
+                    'staffviewturtleworldcatdiscovery' => 'VuFind\RecordTab\Factory::getStaffViewTurtleWorldCatDiscovery',
                     'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
                 ],
                 'invokables' => [
@@ -495,14 +504,18 @@ $config = [
                     'worldcateditions' => 'VuFind\Related\Factory::getWorldCatEditions',
                     'worldcatsimilar' => 'VuFind\Related\Factory::getWorldCatSimilar',
                 ],
+            	'invokables' => [
+            		'fastSubjects' => 'VuFind\Related\FASTSubjects',
+            	],
             ],
             'resolver_driver' => [
                 'abstract_factories' => ['VuFind\Resolver\Driver\PluginFactory'],
                 'factories' => [
                     '360link' => 'VuFind\Resolver\Driver\Factory::getThreesixtylink',
                     'ezb' => 'VuFind\Resolver\Driver\Factory::getEzb',
-                    'sfx' => 'VuFind\Resolver\Driver\Factory::getSfx',
                     'redi' => 'VuFind\Resolver\Driver\Factory::getRedi',
+                    'sfx' => 'VuFind\Resolver\Driver\Factory::getSfx',
+                    'wckb' => 'VuFind\Resolver\Driver\Factory::getWorldCatKnowledgeBase',
                 ],
                 'aliases' => [
                     'threesixtylink' => '360link',
@@ -522,6 +535,7 @@ $config = [
                     'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',
                     'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
+                    'WorldCatDiscovery' => 'VuFind\Search\Factory\WorldCatDiscoveryBackendFactory',
                 ],
                 'aliases' => [
                     // Allow Solr core names to be used as aliases for services:
@@ -670,6 +684,18 @@ $config = [
                 ],
                 'defaultTab' => null,
             ],
+            'VuFind\RecordDriver\WorldCatDiscovery' => [
+                'tabs' => [
+                    'Holdings (ILS)' => 'HoldingsILS',
+                    'Holdings (WCD)' => 'HoldingsWorldCatDiscovery',
+                    'Description' => 'Description',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Preview' => 'preview',
+                    'Details' => 'StaffViewTurtleWorldCatDiscovery',
+                ],
+                'defaultTab' => 'Holdings (ILS)',
+            ],
         ],
     ],
     // Authorization configuration:
@@ -711,7 +737,8 @@ $recordRoutes = [
     'primorecord' => 'PrimoRecord',
     'solrauthrecord' => 'Authority',
     'summonrecord' => 'SummonRecord',
-    'worldcatrecord' => 'WorldcatRecord'
+    'worldcatrecord' => 'WorldcatRecord',
+    'worldcatdiscoveryrecord' => 'WorldCatDiscoveryRecord',
 ];
 
 // Define dynamic routes -- controller => [route name => action]
@@ -763,7 +790,9 @@ $staticRoutes = [
     'Upgrade/GetSourceDir', 'Upgrade/GetSourceVersion', 'Upgrade/Reset',
     'Upgrade/ShowSQL',
     'Web/Home', 'Web/Results',
-    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
+    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search',
+    'WorldCatDiscovery/Advanced', 'WorldCatDiscovery/Home',
+    'WorldCatDiscovery/Search',
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();

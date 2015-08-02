@@ -1,0 +1,7 @@
+/.project
+/vendor
+/composer.lock
+/composer.phar
+/.buildpath
+/autoload.php
+/.settings

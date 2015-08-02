@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="tests/bootstrap.php"
+         colors="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         testSuiteLoaderClass="PHPUnit_Runner_StandardTestSuiteLoader">     
+	   <testsuites>
+    <testsuite name="Bib">
+      <directory>tests/bib</directory>           
+    </testsuite>
+    <testsuite name="BibSearch">
+      <directory>tests/bibSearch</directory>
+    </testsuite>
+    <testsuite name="Offers">
+      <directory>tests/offers</directory>
+    </testsuite>
+    <testsuite name="Database">
+        <directory>tests/database</directory>
+    </testsuite>
+    <testsuite name="Entities">
+        <directory>tests/entities</directory>
+    </testsuite>
+    <testsuite name="Errors">
+        <directory>tests/errors</directory>
+    </testsuite>
+    <testsuite name="Config">
+        <directory>tests/config</directory>
+    </testsuite>
+  </testsuites>
+  <php>
+      <var name="integration" value="true"/>
+  </php>
+  </phpunit>

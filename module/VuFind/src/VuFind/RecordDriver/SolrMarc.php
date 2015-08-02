@@ -28,8 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Exception\ILS as ILSException,
-    VuFind\View\Helper\Root\RecordLink,
+use VuFind\View\Helper\Root\RecordLink,
     VuFind\XSLT\Processor as XSLTProcessor;
 
 /**
@@ -44,6 +43,8 @@ use VuFind\Exception\ILS as ILSException,
  */
 class SolrMarc extends SolrDefault
 {
+    use IlsAwareTrait;
+
     /**
      * MARC record. Access only via getMarcRecord() as this is initialized lazily.
      *
@@ -71,6 +72,42 @@ class SolrMarc extends SolrDefault
      * @var \VuFind\ILS\Logic\TitleHolds
      */
     protected $titleHoldLogic;
+
+    /**
+     * Set raw data to initialize the object.
+     *
+     * @param mixed $data Raw data representing the record; Record Model
+     * objects are normally constructed by Record Driver objects using data
+     * passed in from a Search Results object.  In this case, $data is a Solr record
+     * array containing MARC data in the 'fullrecord' field.
+     *
+     * @return void
+     */
+    public function setRawData($data)
+    {
+        // Call the parent's set method...
+        parent::setRawData($data);
+
+        // Also process the MARC record:
+        $marc = trim($data['fullrecord']);
+
+        // check if we are dealing with MARCXML
+        if (substr($marc, 0, 1) == '<') {
+            $marc = new \File_MARCXML($marc, \File_MARCXML::SOURCE_STRING);
+        } else {
+            // When indexing over HTTP, SolrMarc may use entities instead of certain
+            // control characters; we should normalize these:
+            $marc = str_replace(
+                ['#29;', '#30;', '#31;'], ["\x1D", "\x1E", "\x1F"], $marc
+            );
+            $marc = new \File_MARC($marc, \File_MARC::SOURCE_STRING);
+        }
+
+        $this->marcRecord = $marc->next();
+        if (!$this->marcRecord) {
+            throw new \File_MARC_Exception('Cannot Process MARC Record');
+        }
+    }
 
     /**
      * Get access restriction notes for the record.
@@ -992,85 +1029,6 @@ class SolrMarc extends SolrDefault
     }
 
     /**
-     * Attach an ILS connection and related logic to the driver
-     *
-     * @param \VuFind\ILS\Connection       $ils            ILS connection
-     * @param \VuFind\ILS\Logic\Holds      $holdLogic      Hold logic handler
-     * @param \VuFind\ILS\Logic\TitleHolds $titleHoldLogic Title hold logic handler
-     *
-     * @return void
-     */
-    public function attachILS(\VuFind\ILS\Connection $ils,
-        \VuFind\ILS\Logic\Holds $holdLogic,
-        \VuFind\ILS\Logic\TitleHolds $titleHoldLogic
-    ) {
-        $this->ils = $ils;
-        $this->holdLogic = $holdLogic;
-        $this->titleHoldLogic = $titleHoldLogic;
-    }
-
-    /**
-     * Do we have an attached ILS connection?
-     *
-     * @return bool
-     */
-    protected function hasILS()
-    {
-        return null !== $this->ils;
-    }
-
-    /**
-     * Get an array of information about record holdings, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHoldings()
-    {
-        return $this->hasILS() ? $this->holdLogic->getHoldings(
-            $this->getUniqueID(), $this->getConsortialIDs()
-        ) : [];
-    }
-
-    /**
-     * Get an array of information about record history, obtained in real-time
-     * from the ILS.
-     *
-     * @return array
-     */
-    public function getRealTimeHistory()
-    {
-        // Get Acquisitions Data
-        if (!$this->hasILS()) {
-            return [];
-        }
-        try {
-            return $this->ils->getPurchaseHistory($this->getUniqueID());
-        } catch (ILSException $e) {
-            return [];
-        }
-    }
-
-    /**
-     * Get a link for placing a title level hold.
-     *
-     * @return mixed A url if a hold is possible, boolean false if not
-     */
-    public function getRealTimeTitleHold()
-    {
-        if ($this->hasILS()) {
-            $biblioLevel = strtolower($this->getBibliographicLevel());
-            if ("monograph" == $biblioLevel || strstr("part", $biblioLevel)) {
-                if ($this->ils->getTitleHoldsMode() != "disabled") {
-                    return $this->titleHoldLogic->getHold($this->getUniqueID());
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * Returns true if the record supports real-time AJAX status lookups.
      *
      * @return bool
@@ -1131,6 +1089,17 @@ class SolrMarc extends SolrDefault
     public function getConsortialIDs()
     {
         return $this->getFieldArray('035', 'a', true);
+    }
+
+    /**
+     * Is a title level hold allowed on this item?
+     *
+     * @return bool
+     */
+    protected function titleLevelHoldAllowed()
+    {
+        $biblioLevel = strtolower($this->getBibliographicLevel());
+        return ('monograph' == $biblioLevel || strstr('part', $biblioLevel));
     }
 
     /**

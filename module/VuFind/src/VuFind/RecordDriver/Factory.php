@@ -262,4 +262,28 @@ class Factory
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'), $wc, $wc
         );
     }
+
+    /**
+     * Factory for WorldCatDiscovery record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return WorldCat
+     */
+    public static function getWorldCatDiscovery(ServiceManager $sm)
+    {
+        $driver = new WorldCatDiscovery(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery')
+        );
+        $driver->attachILS(
+            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
+            $sm->getServiceLocator()->get('VuFind\ILSHoldLogic'),
+            $sm->getServiceLocator()->get('VuFind\ILSTitleHoldLogic')
+        );
+        $driver->setWorldCatKnowledgeBaseUrlService(
+            $sm->getServiceLocator()->get('VuFind\WorldCatKnowledgeBaseUrlService')
+        );
+        return $driver;
+    }
 }

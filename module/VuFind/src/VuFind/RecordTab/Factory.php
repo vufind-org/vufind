@@ -168,6 +168,20 @@ class Factory
     }
 
     /**
+     * Factory for HoldingsWorldCatDiscovery tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HoldingsWorldCatDiscovery
+     */
+    public static function getHoldingsWorldCatDiscovery(ServiceManager $sm)
+    {
+        return new HoldingsWorldCatDiscovery(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCatDiscovery')
+        );
+    }
+
+    /**
      * Factory for Map tab plugin.
      *
      * @param ServiceManager $sm Service manager.
@@ -245,6 +259,16 @@ class Factory
             $loader = null;
         }
         return new Reviews($loader, static::getHideSetting($config, 'reviews'));
+    }
+
+    /**
+     * Factory for StaffViewTurtleWorldCatDiscovery tab plugin.
+     *
+     * @return StaffViewTurtleWorldCatDiscovery
+     */
+    public static function getStaffViewTurtleWorldCatDiscovery()
+    {
+        return new StaffViewTurtleWorldCatDiscovery();
     }
 
     /**

@@ -1,0 +1,18 @@
+-
+    request:
+        method: POST
+        url: 'https://authn.sd00.worldcat.org/oauth2/accessToken?grant_type=authorization_code&code=auth_12384794&authenticatingInstitutionId=128807&contextInstitutionId=128807'
+        headers:
+            Host: authn.sd00.worldcat.org
+            User-Agent: 'Guzzle/3.8.1 curl/7.21.4 PHP/5.3.28, oclc-auth-php'
+            Authorization: Authorization: 'http://www.worldcat.org/wskey/v2/hmac/v1 clientId="test", timestamp="1404244236", nonce="2fb4cfd7", signature="aJGtb3nr1sLsd227CdF8fxGtpBeFrTEwM9Y30pm5Le4="'
+            Accept: application/json
+            Content-Length: '0'
+    response:
+        status: 200
+        headers:
+            Content-Type: 'application/json'
+            Vary: 'Accept-Encoding, User-Agent'
+            Transfer-Encoding: chunked
+        body: '{"access_token":"tk_Yebz4BpEp9dAsghA7KpWx6dYD1OZKWBlHjqW","token_type":"bearer","expires_in":"3599","principalID":"cpe4c7f6-f5a4-41fa-35c9-9d59443f544p","principalIDNS":"urn:oclc:platform:128807","contextInstitutionId": "128807","expires_at": "2018-08-23 18:45:29Z"}'
+        

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="tests/bootstrap.php"
+         colors="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         syntaxCheck="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         testSuiteLoaderClass="PHPUnit_Runner_StandardTestSuiteLoader">     
+    <testsuites>
+    <testsuite>
+      <directory>tests</directory>
+    </testsuite>
+  </testsuites>
+  <listeners>
+      <listener class="PHPUnit_Util_Log_VCR" file="vendor/php-vcr/phpunit-testlistener-vcr/PHPUnit/Util/Log/VCR.php" />
+    </listeners>
+  </phpunit>

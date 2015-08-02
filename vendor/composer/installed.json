@@ -172,6 +172,413 @@
         "description": "Library for interacting with Serials Solutions' Summon API."
     },
     {
+        "name": "symfony/event-dispatcher",
+        "version": "v2.7.1",
+        "version_normalized": "2.7.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/EventDispatcher.git",
+            "reference": "be3c5ff8d503c46768aeb78ce6333051aa6f26d9"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/EventDispatcher/zipball/be3c5ff8d503c46768aeb78ce6333051aa6f26d9",
+            "reference": "be3c5ff8d503c46768aeb78ce6333051aa6f26d9",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "require-dev": {
+            "psr/log": "~1.0",
+            "symfony/config": "~2.0,>=2.0.5",
+            "symfony/dependency-injection": "~2.6",
+            "symfony/expression-language": "~2.6",
+            "symfony/phpunit-bridge": "~2.7",
+            "symfony/stopwatch": "~2.3"
+        },
+        "suggest": {
+            "symfony/dependency-injection": "",
+            "symfony/http-kernel": ""
+        },
+        "time": "2015-06-08 09:37:21",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.7-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\EventDispatcher\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony EventDispatcher Component",
+        "homepage": "https://symfony.com"
+    },
+    {
+        "name": "guzzle/guzzle",
+        "version": "v3.8.1",
+        "version_normalized": "3.8.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/guzzle/guzzle.git",
+            "reference": "4de0618a01b34aa1c8c33a3f13f396dcd3882eba"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/guzzle/guzzle/zipball/4de0618a01b34aa1c8c33a3f13f396dcd3882eba",
+            "reference": "4de0618a01b34aa1c8c33a3f13f396dcd3882eba",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "php": ">=5.3.3",
+            "symfony/event-dispatcher": ">=2.1"
+        },
+        "replace": {
+            "guzzle/batch": "self.version",
+            "guzzle/cache": "self.version",
+            "guzzle/common": "self.version",
+            "guzzle/http": "self.version",
+            "guzzle/inflection": "self.version",
+            "guzzle/iterator": "self.version",
+            "guzzle/log": "self.version",
+            "guzzle/parser": "self.version",
+            "guzzle/plugin": "self.version",
+            "guzzle/plugin-async": "self.version",
+            "guzzle/plugin-backoff": "self.version",
+            "guzzle/plugin-cache": "self.version",
+            "guzzle/plugin-cookie": "self.version",
+            "guzzle/plugin-curlauth": "self.version",
+            "guzzle/plugin-error-response": "self.version",
+            "guzzle/plugin-history": "self.version",
+            "guzzle/plugin-log": "self.version",
+            "guzzle/plugin-md5": "self.version",
+            "guzzle/plugin-mock": "self.version",
+            "guzzle/plugin-oauth": "self.version",
+            "guzzle/service": "self.version",
+            "guzzle/stream": "self.version"
+        },
+        "require-dev": {
+            "doctrine/cache": "*",
+            "monolog/monolog": "1.*",
+            "phpunit/phpunit": "3.7.*",
+            "psr/log": "1.0.*",
+            "symfony/class-loader": "*",
+            "zendframework/zend-cache": "<2.3",
+            "zendframework/zend-log": "<2.3"
+        },
+        "time": "2014-01-28 22:29:15",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.8-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Guzzle": "src/",
+                "Guzzle\\Tests": "tests/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Michael Dowling",
+                "email": "mtdowling@gmail.com",
+                "homepage": "https://github.com/mtdowling"
+            },
+            {
+                "name": "Guzzle Community",
+                "homepage": "https://github.com/guzzle/guzzle/contributors"
+            }
+        ],
+        "description": "Guzzle is a PHP HTTP client library and framework for building RESTful web service clients",
+        "homepage": "http://guzzlephp.org/",
+        "keywords": [
+            "client",
+            "curl",
+            "framework",
+            "http",
+            "http client",
+            "rest",
+            "web service"
+        ]
+    },
+    {
+        "name": "OCLC/Auth",
+        "version": "1.3",
+        "version_normalized": "1.3.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/OCLC-Developer-Network/oclc-auth-php.git",
+            "reference": "735ee8b475fd7b9cf6f3f5f1b6eac6a30163d5ae"
+        },
+        "require": {
+            "ext-curl": "*",
+            "ext-json": "*",
+            "ext-openssl": "*",
+            "guzzle/guzzle": ">=3.7.0,<3.9.0",
+            "lib-curl": "*",
+            "lib-openssl": "*",
+            "php": ">=5.3.3"
+        },
+        "require-dev": {
+            "php-vcr/php-vcr": "dev-master",
+            "php-vcr/phpunit-testlistener-vcr": "*",
+            "phpunit/phpunit": "~3",
+            "zendframework/zend-log": "2.0.*"
+        },
+        "time": "2014-11-26 19:21:38",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "OCLC": "src"
+            }
+        },
+        "license": [
+            "Apache-2.0"
+        ],
+        "description": "Authentication and Authorization Library for OCLC Web Services",
+        "keywords": [
+            "OCLC"
+        ]
+    },
+    {
+        "name": "easyrdf/easyrdf",
+        "version": "0.9.1",
+        "version_normalized": "0.9.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/njh/easyrdf.git",
+            "reference": "acd09dfe0555fbcfa254291e433c45fdd4652566"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/njh/easyrdf/zipball/acd09dfe0555fbcfa254291e433c45fdd4652566",
+            "reference": "acd09dfe0555fbcfa254291e433c45fdd4652566",
+            "shasum": ""
+        },
+        "require": {
+            "ext-mbstring": "*",
+            "ext-pcre": "*",
+            "php": ">=5.2.8"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~3.5",
+            "sami/sami": "~1.4",
+            "squizlabs/php_codesniffer": "~1.4.3"
+        },
+        "suggest": {
+            "ml/json-ld": "~1.0"
+        },
+        "time": "2015-02-27 09:45:49",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "EasyRdf_": "lib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Nicholas Humfrey",
+                "email": "njh@aelius.com",
+                "homepage": "http://www.aelius.com/njh/",
+                "role": "Developer"
+            },
+            {
+                "name": "Alexey Zakhlestin",
+                "email": "indeyets@gmail.com",
+                "role": "Developer"
+            }
+        ],
+        "description": "EasyRdf is a PHP library designed to make it easy to consume and produce RDF.",
+        "homepage": "http://www.easyrdf.org/",
+        "keywords": [
+            "Linked Data",
+            "RDF",
+            "Semantic Web",
+            "Turtle",
+            "rdfa",
+            "sparql"
+        ]
+    },
+    {
+        "name": "worldcat/discovery",
+        "version": "0.16.0",
+        "version_normalized": "0.16.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/OCLC-Developer-Network/worldcat-discovery-php.git",
+            "reference": "605821a3a51ec54139718f7f921f8c86da6ab584"
+        },
+        "require": {
+            "easyrdf/easyrdf": "*",
+            "ext-curl": "*",
+            "ext-json": "*",
+            "ext-openssl": "*",
+            "guzzle/guzzle": ">=3.7.0,<3.9.0",
+            "lib-curl": "*",
+            "lib-openssl": "*",
+            "oclc/auth": "*",
+            "php": ">=5.4.0"
+        },
+        "require-dev": {
+            "monolog/monolog": "*",
+            "php-vcr/php-vcr": "dev-master",
+            "php-vcr/phpunit-testlistener-vcr": "*",
+            "phpdocumentor/phpdocumentor": "2.*",
+            "phpunit/phpunit": "~3"
+        },
+        "time": "2015-07-01 15:19:17",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-4": {
+                "WorldCat\\Discovery\\": "src/"
+            }
+        },
+        "license": [
+            "Apache-2.0"
+        ],
+        "description": "Library to interact with OCLC's WorldCat Discovery Web Services",
+        "keywords": [
+            "OCLC"
+        ]
+    },
+    {
+        "name": "symfony/process",
+        "version": "v2.7.1",
+        "version_normalized": "2.7.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/Process.git",
+            "reference": "552d8efdc80980cbcca50b28d626ac8e36e3cdd1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/Process/zipball/552d8efdc80980cbcca50b28d626ac8e36e3cdd1",
+            "reference": "552d8efdc80980cbcca50b28d626ac8e36e3cdd1",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "require-dev": {
+            "symfony/phpunit-bridge": "~2.7"
+        },
+        "time": "2015-06-08 09:37:21",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.7-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\Process\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony Process Component",
+        "homepage": "https://symfony.com"
+    },
+    {
+        "name": "symfony/css-selector",
+        "version": "v2.7.1",
+        "version_normalized": "2.7.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/CssSelector.git",
+            "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/0b5c07b516226b7dd32afbbc82fe547a469c5092",
+            "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "require-dev": {
+            "symfony/phpunit-bridge": "~2.7"
+        },
+        "time": "2015-05-15 13:33:16",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.7-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\CssSelector\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jean-François Simon",
+                "email": "jeanfrancois.simon@sensiolabs.com"
+            },
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony CssSelector Component",
+        "homepage": "https://symfony.com"
+    },
+    {
         "name": "behat/mink",
         "version": "v1.6.1",
         "version_normalized": "1.6.1.0",
@@ -295,13 +702,13 @@
         "source": {
             "type": "git",
             "url": "https://github.com/zendframework/ZendXml.git",
-            "reference": "559b34f426d33a11c3db118e00ce14bb8dc64e5f"
+            "reference": "86e88c1d51da69f82e3ecd90a5effe4bac9c19c6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendxml-559b34f426d33a11c3db118e00ce14bb8dc64e5f-zip-6cf7a2.zip",
-            "reference": "559b34f426d33a11c3db118e00ce14bb8dc64e5f",
-            "shasum": "39abc614b5c26bcbf8102e203c52dee73c4460a8"
+            "url": "https://packages.zendframework.com/composer/zendframework-zendxml-1.0.0-f2d157.zip",
+            "reference": "86e88c1d51da69f82e3ecd90a5effe4bac9c19c6",
+            "shasum": "5b1d5903d4b3bc7db40110421b17b690aecebd7d"
         },
         "require": {
             "php": ">=5.3.3"
@@ -332,11 +739,7 @@
             "security",
             "xml",
             "zf2"
-        ],
-        "support": {
-            "source": "https://github.com/zendframework/ZendXml/tree/master",
-            "issues": "https://github.com/zendframework/ZendXml/issues"
-        }
+        ]
     },
     {
         "name": "zendframework/zendframework",
@@ -345,13 +748,13 @@
         "source": {
             "type": "git",
             "url": "https://github.com/zendframework/zf2.git",
-            "reference": "a1aae5fdd27a422beb32c56ddf5a197654a0f94a"
+            "reference": "f401d7b43dce150f8804345d391c60befedd551f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-a1aae5fdd27a422beb32c56ddf5a197654a0f94a-zip-06d4c7.zip",
-            "reference": "a1aae5fdd27a422beb32c56ddf5a197654a0f94a",
-            "shasum": "7033dd58d94b0c75fae8a00001f8a7275c218209"
+            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.3.7-415971.zip",
+            "reference": "f401d7b43dce150f8804345d391c60befedd551f",
+            "shasum": "16df2d1d339e3216c8f3ec983200ffa396dc3dd8"
         },
         "require": {
             "php": ">=5.3.23",
@@ -460,11 +863,7 @@
         "keywords": [
             "framework",
             "zf2"
-        ],
-        "support": {
-            "source": "https://github.com/zendframework/zf2/tree/release-2.3.7",
-            "issues": "https://github.com/zendframework/zf2/issues"
-        }
+        ]
     },
     {
         "name": "los/losrecaptcha",
@@ -591,6 +990,67 @@
             "proxy",
             "proxy pattern",
             "service proxies"
+        ]
+    },
+    {
+        "name": "oyejorge/less.php",
+        "version": "v1.7.0.4",
+        "version_normalized": "1.7.0.4",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/oyejorge/less.php.git",
+            "reference": "fc971e6d3eb54dff3d3eba4734ff207d37cb4e0e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/oyejorge/less.php/zipball/fc971e6d3eb54dff3d3eba4734ff207d37cb4e0e",
+            "reference": "fc971e6d3eb54dff3d3eba4734ff207d37cb4e0e",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.2"
+        },
+        "time": "2015-05-27 17:50:32",
+        "bin": [
+            "bin/lessc"
+        ],
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Less": "lib/"
+            },
+            "classmap": [
+                "lessc.inc.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Matt Agar",
+                "homepage": "https://github.com/agar"
+            },
+            {
+                "name": "Martin Jantošovič",
+                "homepage": "https://github.com/Mordred"
+            },
+            {
+                "name": "Josh Schmidt",
+                "homepage": "https://github.com/oyejorge"
+            }
+        ],
+        "description": "PHP port of the Javascript version of LESS http://lesscss.org",
+        "homepage": "http://lessphp.gpeasy.com",
+        "keywords": [
+            "css",
+            "less",
+            "less.js",
+            "lesscss",
+            "php",
+            "stylesheet"
         ]
     },
     {
@@ -854,6 +1314,57 @@
         "description": "Package containes ISPN (International Standard Product Numbers) validations such as:\n * ISSN\n * ISBN\n * ISMN\n * ISRC (International Standard Recording Code)\n * EAN8\n * EAN13\n * EAN14\n * UCC12\n * SSCC"
     },
     {
+        "name": "symfony/yaml",
+        "version": "v2.7.1",
+        "version_normalized": "2.7.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/Yaml.git",
+            "reference": "9808e75c609a14f6db02f70fccf4ca4aab53c160"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/Yaml/zipball/9808e75c609a14f6db02f70fccf4ca4aab53c160",
+            "reference": "9808e75c609a14f6db02f70fccf4ca4aab53c160",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "require-dev": {
+            "symfony/phpunit-bridge": "~2.7"
+        },
+        "time": "2015-06-10 15:30:22",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.7-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Symfony\\Component\\Yaml\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "https://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony Yaml Component",
+        "homepage": "https://symfony.com"
+    },
+    {
         "name": "vufind-org/vufindcode",
         "version": "v1.0.2",
         "version_normalized": "1.0.2.0",
@@ -946,13 +1457,13 @@
         "source": {
             "type": "git",
             "url": "https://github.com/zendframework/ZendRest.git",
-            "reference": "7427d242b4546e5aef1206d2c97e402109d8843e"
+            "reference": "9d2d631af7b4b54bfa2a7f5ca5f455192e3e0916"
         },
         "dist": {
             "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendrest-7427d242b4546e5aef1206d2c97e402109d8843e-zip-da96cc.zip",
-            "reference": "7427d242b4546e5aef1206d2c97e402109d8843e",
-            "shasum": "cd304d9e2fccccbd98348bfbead7d42b102e565a"
+            "url": "https://packages.zendframework.com/composer/zendframework-zendrest-2.0.2-2f9805.zip",
+            "reference": "9d2d631af7b4b54bfa2a7f5ca5f455192e3e0916",
+            "shasum": "445d681551a5c9f2be25b241e615e754278d79ba"
         },
         "require": {
             "php": ">=5.3.3",
@@ -976,175 +1487,7 @@
         "keywords": [
             "rest",
             "zf2"
-        ],
-        "support": {
-            "source": "https://github.com/zendframework/ZendRest/tree/release-2.0.2",
-            "issues": "https://github.com/zendframework/ZendRest/issues"
-        }
-    },
-    {
-        "name": "zfr/rbac",
-        "version": "1.2.0",
-        "version_normalized": "1.2.0.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/zf-fr/rbac.git",
-            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/zf-fr/rbac/zipball/493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
-            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.4"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "~3.7",
-            "satooshi/php-coveralls": "~0.6",
-            "squizlabs/php_codesniffer": "1.4.*",
-            "zendframework/zend-servicemanager": "~2.2"
-        },
-        "time": "2014-02-06 14:18:34",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Rbac\\": "src/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Michaël Gallego",
-                "email": "mic.gallego@gmail.com",
-                "homepage": "http://michaelgallego.fr"
-            }
-        ],
-        "description": "Zend Framework 3 prototype for Zend\\Permissions\\Rbac.",
-        "homepage": "https://github.com/zf-fr/rbac",
-        "keywords": [
-            "rbac",
-            "security",
-            "zf2",
-            "zf3"
         ]
-    },
-    {
-        "name": "oyejorge/less.php",
-        "version": "v1.7.0.4",
-        "version_normalized": "1.7.0.4",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/oyejorge/less.php.git",
-            "reference": "fc971e6d3eb54dff3d3eba4734ff207d37cb4e0e"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/oyejorge/less.php/zipball/fc971e6d3eb54dff3d3eba4734ff207d37cb4e0e",
-            "reference": "fc971e6d3eb54dff3d3eba4734ff207d37cb4e0e",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.2"
-        },
-        "time": "2015-05-27 17:50:32",
-        "bin": [
-            "bin/lessc"
-        ],
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Less": "lib/"
-            },
-            "classmap": [
-                "lessc.inc.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Apache-2.0"
-        ],
-        "authors": [
-            {
-                "name": "Matt Agar",
-                "homepage": "https://github.com/agar"
-            },
-            {
-                "name": "Martin Jantošovič",
-                "homepage": "https://github.com/Mordred"
-            },
-            {
-                "name": "Josh Schmidt",
-                "homepage": "https://github.com/oyejorge"
-            }
-        ],
-        "description": "PHP port of the Javascript version of LESS http://lesscss.org",
-        "homepage": "http://lessphp.gpeasy.com",
-        "keywords": [
-            "css",
-            "less",
-            "less.js",
-            "lesscss",
-            "php",
-            "stylesheet"
-        ]
-    },
-    {
-        "name": "symfony/yaml",
-        "version": "v2.7.1",
-        "version_normalized": "2.7.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/Yaml.git",
-            "reference": "9808e75c609a14f6db02f70fccf4ca4aab53c160"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Yaml/zipball/9808e75c609a14f6db02f70fccf4ca4aab53c160",
-            "reference": "9808e75c609a14f6db02f70fccf4ca4aab53c160",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.9"
-        },
-        "require-dev": {
-            "symfony/phpunit-bridge": "~2.7"
-        },
-        "time": "2015-06-10 15:30:22",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.7-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Symfony\\Component\\Yaml\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "https://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony Yaml Component",
-        "homepage": "https://symfony.com"
     },
     {
         "name": "zendframework/zendservice-amazon",
@@ -1207,6 +1550,58 @@
             "simpledb",
             "sqs",
             "zf2"
+        ]
+    },
+    {
+        "name": "zfr/rbac",
+        "version": "1.2.0",
+        "version_normalized": "1.2.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zf-fr/rbac.git",
+            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/zf-fr/rbac/zipball/493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
+            "reference": "493711bfc2a637fd7c6f23b71b7b55a621c35d9d",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.4"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~3.7",
+            "satooshi/php-coveralls": "~0.6",
+            "squizlabs/php_codesniffer": "1.4.*",
+            "zendframework/zend-servicemanager": "~2.2"
+        },
+        "time": "2014-02-06 14:18:34",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Rbac\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Michaël Gallego",
+                "email": "mic.gallego@gmail.com",
+                "homepage": "http://michaelgallego.fr"
+            }
+        ],
+        "description": "Zend Framework 3 prototype for Zend\\Permissions\\Rbac.",
+        "homepage": "https://github.com/zf-fr/rbac",
+        "keywords": [
+            "rbac",
+            "security",
+            "zf2",
+            "zf3"
         ]
     },
     {
@@ -1286,111 +1681,5 @@
             "rbac",
             "zf2"
         ]
-    },
-    {
-        "name": "symfony/css-selector",
-        "version": "v2.7.1",
-        "version_normalized": "2.7.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/CssSelector.git",
-            "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/CssSelector/zipball/0b5c07b516226b7dd32afbbc82fe547a469c5092",
-            "reference": "0b5c07b516226b7dd32afbbc82fe547a469c5092",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.9"
-        },
-        "require-dev": {
-            "symfony/phpunit-bridge": "~2.7"
-        },
-        "time": "2015-05-15 13:33:16",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.7-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Symfony\\Component\\CssSelector\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Jean-François Simon",
-                "email": "jeanfrancois.simon@sensiolabs.com"
-            },
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "https://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony CssSelector Component",
-        "homepage": "https://symfony.com"
-    },
-    {
-        "name": "symfony/process",
-        "version": "v2.7.1",
-        "version_normalized": "2.7.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/Process.git",
-            "reference": "552d8efdc80980cbcca50b28d626ac8e36e3cdd1"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Process/zipball/552d8efdc80980cbcca50b28d626ac8e36e3cdd1",
-            "reference": "552d8efdc80980cbcca50b28d626ac8e36e3cdd1",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.9"
-        },
-        "require-dev": {
-            "symfony/phpunit-bridge": "~2.7"
-        },
-        "time": "2015-06-08 09:37:21",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.7-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Symfony\\Component\\Process\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "https://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony Process Component",
-        "homepage": "https://symfony.com"
     }
 ]

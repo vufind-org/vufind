@@ -17,7 +17,11 @@ return array(
     'Rbac\\' => array($vendorDir . '/zfr/rbac/src'),
     'ProxyManager\\' => array($vendorDir . '/ocramius/proxy-manager/src'),
     'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
+    'OCLC' => array($vendorDir . '/OCLC/Auth/src'),
     'LosReCaptcha\\' => array($vendorDir . '/los/losrecaptcha/src'),
     'Less' => array($vendorDir . '/oyejorge/less.php/lib'),
+    'Guzzle\\Tests' => array($vendorDir . '/guzzle/guzzle/tests'),
+    'Guzzle' => array($vendorDir . '/guzzle/guzzle/src'),
+    'EasyRdf_' => array($vendorDir . '/easyrdf/easyrdf/lib'),
     'Behat\\Mink\\Driver' => array($vendorDir . '/behat/mink-zombie-driver/src'),
 );
