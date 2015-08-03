@@ -676,7 +676,7 @@ class DAIA extends AbstractBase implements
                 // get location
                 $result_item["location"] = $this->getItemLocation($item);
                 // status and availability will be calculated in own function
-                $result_item = $this->getItemStatus($item)+$result_item;
+                $result_item = $this->getItemStatus($item) + $result_item;
                 // add result_item to the result array
                 $result[] = $result_item;
             } // end iteration on item
