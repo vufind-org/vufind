@@ -61,7 +61,12 @@ function ajaxFLLoadTab(tabid, reload) {
         }
         refreshCommentList(id, source);
         $('#'+tabid+'-tab').find('input[type=submit]').unbind('click').click(function() {
-          return registerAjaxCommentRecord('[name=bulkActionForm]');
+          if($.trim($(this).siblings('textarea').val()) == '') {
+            Lightbox.displayError(vufindString['add_comment_fail_blank']);
+          } else {
+            registerAjaxCommentRecord('[name=bulkActionForm]');
+          }
+          return false;
         });
       }
     });
