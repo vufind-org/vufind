@@ -285,11 +285,11 @@ class MyResearchController extends AbstractBase
         $search = $this->getTable('Search');
         if (($id = $this->params()->fromQuery('save', false)) !== false) {
             $search->setSavedFlag($id, true, $user->id);
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('search_save_success');
         } else if (($id = $this->params()->fromQuery('delete', false)) !== false) {
             $search->setSavedFlag($id, false);
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('search_unsave_success');
         } else {
             throw new \Exception('Missing save and delete parameters.');
@@ -326,7 +326,7 @@ class MyResearchController extends AbstractBase
         if (!empty($homeLibrary)) {
             $user->changeHomeLibrary($homeLibrary);
             $this->getAuthManager()->updateSession($user);
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('profile_update');
         }
 
@@ -409,7 +409,7 @@ class MyResearchController extends AbstractBase
         // Process the deletes if necessary:
         if ($this->formWasSubmitted('submit')) {
             $this->favorites()->delete($ids, $listID, $user);
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('fav_delete_success');
             return $this->redirect()->toUrl($newUrl);
         }
@@ -460,12 +460,12 @@ class MyResearchController extends AbstractBase
             $table = $this->getTable('UserList');
             $list = $table->getExisting($listID);
             $list->removeResourcesById($user, [$id], $source);
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('Item removed from list');
         } else {
             // ...My Favorites
             $user->removeResourcesById([$id], $source);
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('Item removed from favorites');
         }
 
@@ -503,7 +503,7 @@ class MyResearchController extends AbstractBase
         if ($addToList > -1) {
             $driver->saveToFavorites(['list' => $addToList], $user);
         }
-        $this->flashMessenger()->setNamespace('info')
+        $this->flashMessenger()->setNamespace('success')
             ->addMessage('edit_list_success');
 
         $newUrl = is_null($listID)
@@ -801,7 +801,7 @@ class MyResearchController extends AbstractBase
                 $list->delete($this->getUser());
 
                 // Success Message
-                $this->flashMessenger()->setNamespace('info')
+                $this->flashMessenger()->setNamespace('success')
                     ->addMessage('fav_list_delete');
             } catch (\Exception $e) {
                 switch(get_class($e)) {
@@ -1245,7 +1245,7 @@ class MyResearchController extends AbstractBase
                         $this->translate('recovery_email_subject'),
                         $message
                     );
-                    $this->flashMessenger()->setNamespace('info')
+                    $this->flashMessenger()->setNamespace('success')
                         ->addMessage('recovery_email_sent');
                 } catch (MailException $e) {
                     $this->flashMessenger()->setNamespace('error')
@@ -1370,7 +1370,7 @@ class MyResearchController extends AbstractBase
         // Login
         $this->getAuthManager()->login($this->request);
         // Go to favorites
-        $this->flashMessenger()->setNamespace('info')
+        $this->flashMessenger()->setNamespace('success')
             ->addMessage('new_password_success');
         return $this->redirect()->toRoute('myresearch-home');
     }
