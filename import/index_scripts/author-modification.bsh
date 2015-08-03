@@ -85,12 +85,12 @@ public HashMap getParsedTagList(String tagList)
  * @param relatorConfig        The setting in author-classification.ini which
  * defines which relator terms are acceptable (or a colon-delimited list)
  * @param firstOnly            Return first result only?
- * @returns Set result
+ * @returns List result
  */
-public Set getAuthorsFilteredByRelator(Record record, String tagList,
+public List getAuthorsFilteredByRelator(Record record, String tagList,
     String acceptWithoutRelator, String relatorConfig, Boolean firstOnly
 ) {
-    Set result = new LinkedHashSet();
+    List result = new LinkedList();
     String[] noRelatorAllowed = acceptWithoutRelator.split(":");
     HashMap parsedTagList = getParsedTagList(tagList);
     List fields = indexer.getFieldSetMatchingTagList(record, tagList);
@@ -131,9 +131,9 @@ public Set getAuthorsFilteredByRelator(Record record, String tagList,
  * be accepted even if no relator subfield is defined
  * @param relatorConfig        The setting in author-classification.ini which
  * defines which relator terms are acceptable (or a colon-delimited list)
- * @returns Set result
+ * @returns List result
  */
-public Set getAuthorsFilteredByRelator(Record record, String tagList,
+public List getAuthorsFilteredByRelator(Record record, String tagList,
     String acceptWithoutRelator, String relatorConfig
 ) {
     // default firstOnly to false!
@@ -157,7 +157,7 @@ public Set getAuthorsFilteredByRelator(Record record, String tagList,
 public String getFirstAuthorFilteredByRelator(Record record, String tagList,
     String acceptWithoutRelator, String relatorConfig
 ) {
-    Set result = getAuthorsFilteredByRelator(
+    List result = getAuthorsFilteredByRelator(
         record, tagList, acceptWithoutRelator, relatorConfig, true
     );
     for (String s : result) {
@@ -178,13 +178,13 @@ public String getFirstAuthorFilteredByRelator(Record record, String tagList,
  * @param relatorConfig        The setting in author-classification.ini which
  * defines which relator terms are acceptable (or a colon-delimited list)
  * @param firstOnly            Return first result only?
- * @returns Set result
+ * @returns List result
  */
-public Set getRelatorsFilteredByRelator(Record record, String tagList,
+public List getRelatorsFilteredByRelator(Record record, String tagList,
     String acceptWithoutRelator, String relatorConfig, Boolean firstOnly,
     String defaultRelator
 ) {
-    Set result = new LinkedHashSet();
+    List result = new LinkedList();
     String[] noRelatorAllowed = acceptWithoutRelator.split(":");
     HashMap parsedTagList = getParsedTagList(tagList);
     List fields = indexer.getFieldSetMatchingTagList(record, tagList);
@@ -234,9 +234,9 @@ public Set getRelatorsFilteredByRelator(Record record, String tagList,
  * be accepted even if no relator subfield is defined
  * @param relatorConfig        The setting in author-classification.ini which
  * defines which relator terms are acceptable (or a colon-delimited list)
- * @returns Set result
+ * @returns List result
  */
-public Set getRelatorsFilteredByRelator(Record record, String tagList,
+public List getRelatorsFilteredByRelator(Record record, String tagList,
     String acceptWithoutRelator, String relatorConfig
 ) {
     // default firstOnly to false!
