@@ -3,10 +3,12 @@
     $results = $view->results;
     $params = $results->getParams();
     $lookfor = $params->getDisplayQuery();
+    $searchId = $params->getCombinedSearchId($searchClassId);
 
     // Set up Javascript for use below:
     $loadJs = 'var url = path + "/Combined/Result?id=' . urlencode($searchClassId)
-        . '&lookfor=' . urlencode($lookfor) . '";'
+        . '&lookfor=' . urlencode($lookfor) . '&search[]='
+        . urlencode($searchClassId . ':' . $searchId) . '";'
         . "\$('#combined_" . $this->escapeHtml($searchClassId) . "').load(url, '', function(responseText) { if (responseText.length == 0) $('#combined_" . $this->escapeHtml($searchClassId) . "').hide(); });";
 ?>
 <div class="row">

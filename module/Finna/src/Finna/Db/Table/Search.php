@@ -103,4 +103,33 @@ class Search extends \VuFind\Db\Table\Search
         };
         return $this->select($callback);
     }
+
+    /**
+     * Return filters for a saved search.
+     *
+     * @param int                                  $searchId  Search id
+     * @param int                                  $sessionId Session id
+     * @param \VuFind\Search\Results\PluginManager $results   PluginManager
+     *
+     * @return mixed array of filters or false if the given search has no filters.
+     */
+    public function getSearchFilters($searchId, $sessionId, $results)
+    {
+        if (!$search = $this->getRowById($searchId, false)) {
+            return false;
+        }
+
+        if ($search->session_id != $sessionId) {
+            return false;
+        }
+        $minSO = $search->getSearchObject();
+        $savedSearch = $minSO->deminify($results);
+        $params = $savedSearch->getUrlQuery()->getParamArray();
+        foreach ($params as $key => $value) {
+            if ($key == 'filter') {
+                return $value;
+            }
+        }
+        return false;
+    }
 }

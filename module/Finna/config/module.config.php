@@ -90,6 +90,7 @@ $config = array(
         ],
         'invokables' => array(
             'ajax' => 'Finna\Controller\AjaxController',
+            'combined' => 'Finna\Controller\CombinedController',
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
             'feedback' => 'Finna\Controller\FeedbackController',

@@ -98,13 +98,17 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         $helper = $this->getView()->results->getUrlQuery();
 
         $tabs = parent::__invoke($activeSearchClass, $query, $handler, $type);
+        $searchTable = $this->table->get('Search');
+        $sessionId = $this->session->getId();
 
         foreach ($tabs as &$tab) {
             if (isset($tab['url'])) {
                 $searchClass = $tab['class'];
                 if (isset($savedSearches[$searchClass])) {
                     $searchId = $savedSearches[$tab['class']];
-                    $filters = $this->getSearchFilters($searchId);
+                    $filters = $searchTable->getSearchFilters(
+                        $searchId, $sessionId, $this->results
+                    );
                     $targetClass = $tab['class'];
 
                     // Make sure that tab url does not contain the
@@ -185,33 +189,5 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         $results->getParams()->setBasicSearch($query, $targetHandler);
         return $this->url->__invoke($options->getSearchAction())
             . $query;
-    }
-
-    /**
-     * Return filters for a saved search.
-     *
-     * @param int $id Search id
-     *
-     * @return mixed array of filters or false if the given search has no filters.
-     */
-    protected function getSearchFilters($id)
-    {
-        if (!$search = $this->table->get('Search')->getRowById($id, false)) {
-            return false;
-        }
-
-        $sessId = $this->session->getId();
-        if ($search->session_id == $sessId) {
-            $minSO = $search->getSearchObject();
-            $savedSearch = $minSO->deminify($this->results);
-
-            $params = $savedSearch->getUrlQuery()->getParamArray();
-            foreach ($params as $key => $value) {
-                if ($key == 'filter') {
-                    return $value;
-                }
-            }
-        }
-        return false;
     }
 }

@@ -54,4 +54,60 @@ trait SearchControllerTrait
             $this->layout()->savedTabs = $saved;
         }
     }
+
+    /**
+     * Append search filters from a active search to the request object.
+     * This is used in the combined results view.
+     *
+     * @return void
+     */
+    protected function initCombinedViewFilters()
+    {
+        $query = $this->getRequest()->getQuery();
+        if (!(boolean)$query->get('combined')) {
+            return;
+        }
+
+        $combined = $this->getCombinedSearches();
+        if (!isset($combined[$this->searchClassId])) {
+            // No active search with this search class
+            return;
+        }
+
+        $searchId = $combined[$this->searchClassId];
+        $sessionId
+            = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
+        $manager
+            = $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
+
+        if (!$filters = $this->getTable('Search')->getSearchFilters(
+            $searchId, $sessionId, $manager
+        )) {
+            return;
+        }
+
+        $this->getRequest()->getQuery()->set('filter', $filters);
+    }
+
+    /**
+     * Return active searches from the request object as
+     * an array of searchClass => searchId elements.
+     * This is used in the combined results view.
+     *
+     * @return array
+     */
+    protected function getCombinedSearches()
+    {
+        $query = $this->getRequest()->getQuery();
+        if (!$saved = $query->get('search')) {
+            return false;
+        }
+
+        $ids = [];
+        foreach ($saved as $search) {
+            list($backend, $searchId) = explode(':', $search, 2);
+            $ids[$backend] = $searchId;
+        }
+        return $ids;
+    }
 }

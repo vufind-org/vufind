@@ -1,6 +1,6 @@
 <?php
 /**
- * Primo Central Controller
+ * Combined aspect of the Search Multi-class (Params)
  *
  * PHP version 5
  *
@@ -20,59 +20,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search_Base
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-namespace Finna\Controller;
+namespace Finna\Search\Combined;
 
 /**
- * Primo Central Controller
+ * Combined Search Parameters
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search_Base
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-class PrimoController extends \VuFind\Controller\PrimoController
+class Params extends \Finna\Search\Solr\Params
 {
-    use SearchControllerTrait;
+    protected $combinedSearches = null;
 
     /**
-     * Search class family to use.
+     * Set active search ids in combined results view.
      *
-     * @var string
-     */
-    protected $searchClassId = 'Primo';
-
-    /**
-     * Home action
+     * @param array $ids Array of searchClass => searchId elements.
      *
-     * @return mixed
+     * @return void
      */
-    public function homeAction()
+    public function setCombinedSearchIds($ids)
     {
-        $this->layout()->searchClassId = $this->searchClassId;
-        return parent::homeAction();
+        $this->combinedSearches = $ids;
     }
 
     /**
-     * Search action -- call standard results action
+     * Get active search ids in combined results view.
      *
-     * @return mixed
+     * @return array Array of searchClass => searchId elements.
      */
-    public function searchAction()
+    public function getCombinedSearchId($backend)
     {
-        if ($this->getRequest()->getQuery()->get('combined')) {
-            $this->saveToHistory = false;
-        }
-        $this->initCombinedViewFilters();
-        $view = parent::resultsAction();
-        $this->initSavedTabs();
-
-        return $view;
+        return isset($this->combinedSearches[$backend])
+            ? $this->combinedSearches[$backend] : null
+        ;
     }
 }
-
