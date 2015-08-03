@@ -81,8 +81,7 @@ class DAIA extends AbstractBase implements
     protected $multiQuery = false;
 
     /**
-     * acceptable ContentTypes delivered by DAIA server
-     * in HTTP header
+     * Acceptable ContentTypes delivered by DAIA server in HTTP header
      *
      * @var array
      */
@@ -762,7 +761,9 @@ class DAIA extends AbstractBase implements
                 if (isset($unavailable["expected"])) {
                     try {
                         $duedate = $this->dateConverter
-                            ->convertToDisplayDate("Y-m-d", $unavailable['expected']);
+                            ->convertToDisplayDate(
+                                "Y-m-d", $unavailable['expected']
+                            );
                     } catch (\Exception $e) {
                         $this->debug("Date conversion failed: " . $e->getMessage());
                         $duedate = null;
