@@ -424,6 +424,12 @@ $(document).ready(function() {
       dataType:'json',
       data:Lightbox.getFormData($(evt.target)),
       success:function(data) {
+        if(data.data.export_type == 'download') {
+          document.location.href = data.data.result_url;
+          Lightbox.close();
+          return false;
+        } 
+        
         if(data.data.needs_redirect) {
           document.location.href = data.data.result_url;
         } else {

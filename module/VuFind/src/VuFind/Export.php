@@ -338,4 +338,11 @@ class Export
         return isset($this->exportConfig->$format->label)
             ? $this->exportConfig->$format->label : $format;
     }
+
+
+    public function getExportType()
+    {
+        return (isset($this->mainConfig->BulkExport->type)) ? $this->mainConfig->BulkExport->type : 'url';
+    }
+
 }
