@@ -55,6 +55,8 @@ class Params extends \Finna\Search\Solr\Params
     /**
      * Get active search ids in combined results view.
      *
+     * @param string $backend Search class
+     *
      * @return array Array of searchClass => searchId elements.
      */
     public function getCombinedSearchId($backend)
