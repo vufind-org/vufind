@@ -1,0 +1,48 @@
+<?
+// Set page title.
+$this->headTitle($this->translate('Text this'));
+echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'vendor/libphonenumber.js', 'SET');
+
+// Set up breadcrumbs:
+$this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '</li> ')
+    . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '</li> '
+    . '<li class="active">' . $this->transEsc('Text this') . '</li>';
+?>
+<?= $this->flashmessages() ?>
+<form method="post" name="smsRecord">
+  <input type="hidden" name="id" value="<?= $this->escapeHtmlAttr($this->driver->getUniqueId()) ?>"/>
+  <input type="hidden" name="source" value="<?= $this->escapeHtmlAttr($this->driver->getResourceSource()) ?>"/>
+
+  <div class="row">
+    <label class="medium-3 columns" for="sms_to"><?= $this->transEsc('Number') ?>:</label>
+
+    <div class="medium-9 columns">
+      <input id="sms_to" type="tel" name="to" placeholder="<?= $this->transEsc('sms_phone_number') ?>" class="auto"/>
+
+      <div class="help-block with-errors"></div>
+    </div>
+  </div>
+  <? if (is_array($this->carriers) && count($this->carriers) > 1): ?>
+    <div class="row">
+      <label class="medium-3 columns" for="sms_provider"><?= $this->transEsc('Provider') ?>:</label>
+
+      <div class="medium-9 columns">
+        <select id="sms_provider" name="provider" class="auto">
+          <option selected="selected" value=""><?= $this->transEsc('Select your carrier') ?></option>
+          <? foreach ($this->carriers as $val => $details): ?>
+            <option value="<?= $this->escapeHtmlAttr($val) ?>"><?= $this->escapeHtml($details['name']) ?></option>
+          <? endforeach; ?>
+        </select>
+      </div>
+    </div>
+  <? else: ?>
+    <? $keys = is_array($this->carriers) ? array_keys($this->carriers) : array(); ?>
+    <input type="hidden" name="provider" value="<?= isset($keys[0]) ? $keys[0] : '' ?>"/>
+  <? endif; ?>
+  <?= $this->recaptcha()->html($this->useRecaptcha) ?>
+  <div class="row">
+    <div class="medium-9 columns medium-offset-3">
+      <input class="button small" type="submit" name="submit" role="button" value="<?= $this->transEsc('Send Text') ?>"<? if (isset($this->validation) && !empty($this->validation)): ?> onClick="return phoneNumberFormHandler('sms_to', '<?= $this->validation ?>')"<? endif; ?>/>
+    </div>
+  </div>
+</form>

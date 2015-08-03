@@ -1,0 +1,50 @@
+<!-- recordtab - similaritemscarousel.phtml -->
+<?=$this->headLink()->setStylesheet('vendor/slick.css')  ?><? /* Fixme - Why is this added twice? as headlink and inside the similarcarousel... snippet? - CK */ ?>
+<h4><?=$this->transEsc('Similar Items')?></h4>
+<? $similarRecords = $this->tab->getResults(); ?>
+<? if (!empty($similarRecords)): ?>
+  <div id="similar-items-carousel" class="carousel autoplay hide-for-print">
+    <? foreach ($similarRecords as $index=>$data): ?>
+      <div class="carousel-item">
+        <a class="hover-overlay" href="<?=$this->recordLink()->getUrl($data)?>">
+                <? $thumb = $this->record($data)->getThumbnail('large'); ?>
+                <img src="<?=$thumb ?>" title="<?=$data->getTitle() ?>"/>
+                <div class="content">
+                  <? $formats = $data->getFormats(); ?>
+                  <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>" title="<?=$formats[0] ?><? endif; ?>"></i>
+                  <?=$this->escapeHtml($data->getTitle())?>
+                  <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
+                    <br/><?=$this->transEsc('by')?>: <?=$this->escapeHtml($author);?>
+                  <? endif; ?>
+                  <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
+                    <br/><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+                  <? endif; ?>
+                </div>
+        </a>
+      </div>
+  <? endforeach; ?>
+  </div>
+<? else: ?>
+  <p><?=$this->transEsc('Cannot find similar records')?></p>
+<? endif; ?>
+
+<?
+// Set up carousel script and adapt values below
+$this->inlineScript()->appendFile('vendor/slick.min.js');
+
+$js = <<<JS
+$(document).ready(function(){
+    $('.autoplay').slick({
+      slidesToShow: 3,
+      slidesToScroll: 1,
+      autoplay: true,
+      autoplaySpeed: 9000,
+      accessibility: true,
+      prevArrow: '<button type="button" class="slick-prev" role="button" aria-label="submit form"><span></span></button>',
+      nextArrow: '<button type="button" class="slick-next" role="button" aria-label="submit form"><span></span></button>'
+    });
+  });
+JS;
+echo $this->inlineScript()->appendScript($js);
+?>
+<!-- recordtab - similaritemscarousel.phtml - END -->

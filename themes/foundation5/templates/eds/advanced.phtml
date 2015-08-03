@@ -1,0 +1,61 @@
+<!-- eds - advanced -->
+<?
+  // Load the EDS-specific advanced search controls and inject them into the
+  // standard advanced search layout:
+  $this->extraAdvancedControls = $this->render('search/advanced/eds.phtml');
+  $this->buildPageOverride = '/search/advanced/build_page_eds.phtml';
+
+  ob_start();
+?>
+<div id="new_group_template">
+  <div class="group panel clearfix">
+    <input type="hidden" name="join" value="AND"/>
+    <input type="hidden" name="bool0[]" value="AND"/>
+    <? for ($search=0;$search<3;$search++): ?>
+      <? if ($search == 0): ?>
+        <div id="new_search_template">
+      <? endif; ?>
+      <div class="search row">
+        <div class="medium-3 columns">
+          <input type="hidden" value="AND" class="first-op"/>
+          <label class="help-block<? if ($search > 0): ?> hide<?endif;?>"><?=$this->transEsc("adv_search_label")?>:</label>
+          <select id="search_op0_<?=$search ?>" name="op0[]" class="op medium-9 columns <? if ($search == 0): ?> hidden<?endif;?>">
+            <option value="AND"><?=$this->transEsc("AND")?></option>
+            <option value="OR"><?=$this->transEsc("OR")?></option>
+            <option value="NOT"><?=$this->transEsc("NOT")?></option>
+          </select>
+        </div>
+        <div class="medium-9 columns">
+          <div class="row">
+            <div class="medium-6 columns">
+              <input id="search_lookfor0_<?=$search ?>" name="lookfor0[]" class="auto" type="text" value=""/>
+            </div>
+            <span class="medium-1 columns help-block hide-for-small"><?=$this->transEsc("in")?></span>
+            <div class="medium-4 columns middle">
+              <select id="search_type0_<?=$search ?>" name="type0[]" class="type auto">
+                <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                  <option value="<?=$this->escapeHtml($searchVal)?>"><?=$this->transEsc($searchDesc)?></option>
+                <? endforeach; ?>
+              </select>
+            </div>
+            <div class="close">
+              <a href="#" class="help-block">&times;</a>
+            </div>
+          </div>
+        </div>
+        <br class="hide-for-large-up"/>
+      </div>
+      <? if ($search == 0): ?>
+        </div>
+      <? endif; ?>
+    <? endfor; ?>
+    <i class="fa fa-plus-circle search_place_holder hide"></i> <a href="#" class="add_search_link hide"><?=$this->transEsc("add_search")?></a>
+  </div>
+</div>
+<?
+  $this->formOverride = ob_get_contents();
+  ob_end_clean();
+
+  echo $this->render('search/advanced/layout.phtml');
+?>
+<!-- eds - advanced - END -->

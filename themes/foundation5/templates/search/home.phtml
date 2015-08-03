@@ -1,0 +1,112 @@
+<!-- search - home.PHTML begin -->
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Search Home'));
+
+  // Disable top search box -- this page has a special layout.
+  $this->layout()->searchbox = false;
+
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'Solr';
+  }
+
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $advSearch = $options->getAdvancedSearchAction();
+
+  $this->layout()->breadcrumbs = false;
+?>
+<div class="searchHomeContent">
+  <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
+    <div data-alert class="alert-box warning" tabindex="0" aria-live="assertive" role="dialogalert">
+      <h2><?=$this->transEsc('ils_offline_title')?></h2>
+      <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+      <p><?=$this->transEsc('ils_offline_home_message')?></p>
+      <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
+      <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+    </div>
+  <? endif; ?>
+  <div class="panel clearfix">
+    <?=$this->render("search/searchbox.phtml")?>
+  </div>
+</div>
+
+<? $facetList = is_object($this->results) ? $this->results->getFacetList() : array(); ?>
+<? if (isset($facetList) && is_array($facetList)): ?>
+  <div class="row">
+    <? foreach ($facetList as $field => $details): ?>
+      <? if (isset($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
+        <? $this->headScript()->appendFile('vendor/jsTree/jstree.min.js'); ?>
+        <? $this->headScript()->appendFile('facets.js'); ?>
+        <? $sort = isset($this->hierarchicalFacetSortOptions[$field]) ? $this->hierarchicalFacetSortOptions[$field] : ''; ?>
+        <?
+        $script = <<<JS
+$(document).ready(function() {
+  initFacetTree($('#facet_{$this->escapeHtml($field)}'), false);
+});
+JS;
+        ?>
+        <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+        <div class="facet <?=$field=='callnumber-first' ? 'medium-6 columns' : 'medium-3 columns' ?>">
+          <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
+          <div id="facet_<?=$this->escapeHtml($field)?>" class="jstree-facet"
+              data-facet="<?=$this->escapeHtml($field)?>"
+              data-path="<?=$this->url($basicSearch)?>"
+              data-exclude="0"
+              data-operator="AND"
+              data-exclude-title="<?=$this->transEsc('exclude_facet')?>"
+              data-sort="all">
+          </div>
+        </div>
+        <noscript>
+      <? endif; ?>
+      <? $sortedList = $this->sortFacetList($this->results, $field, $details['list'], $basicSearch); ?>
+      <div class="<?=$field=='callnumber-first' ? 'medium-6 columns' : 'medium-3 columns' ?>">
+        <h2><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
+        <div class="row">
+          <ul class="list-unstyled <?=$field == "callnumber-first" ? 'medium-6 columns' : 'medium-12 columns' ?>">
+          <? /* Special case: two columns for LC call numbers... */ ?>
+          <? if ($field == "callnumber-first"): ?>
+            <? $i = 0; foreach ($sortedList as $url => $value): ?>
+              <? if (!empty($value)): ?>
+                <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
+              <? else: $i--; ?>
+              <? endif; ?>
+              <? if (++$i == 10): ?>
+                </ul>
+				<ul class="list-unstyled medium-6 columns">
+              <? endif; ?>
+            <? endforeach; ?>
+          <? /* Special case: collections */ ?>
+          <? elseif ($field == 'hierarchy_top_title'): ?>
+            <? $i = 0; foreach ($sortedList as $url => $value): ?>
+              <? if (++$i > 10): ?>
+                <li><a href="<?=$this->url('collections-home')?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
+                <? break; ?>
+              <? else: ?>
+                <li><a href="<?=$this->url('collections-bytitle')?>?title=<?=urlencode($value)?>"><?=$this->escapeHtml($value)?></a></li>
+              <? endif; ?>
+            <? endforeach; ?>
+          <? else: ?>
+            <? $i = 0; foreach ($sortedList as $url => $value): ?>
+              <? if (++$i > 10): ?>
+                <li><a href="<?=$this->url($advSearch)?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
+                <? break; ?>
+              <? elseif (!empty($value)): ?>
+                <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
+              <? else: $i--; ?>
+              <? endif; ?>
+            <? endforeach; ?>
+          <? endif; ?>
+          </ul>
+        </div>
+      </div>
+      <? if (isset($this->hierarchicalFacets) && in_array($field, $this->hierarchicalFacets)): ?>
+        </noscript>
+      <? endif; ?>
+    <? endforeach; ?>
+  </div>
+<? endif; ?>
+<!-- search - home.PHTML end -->

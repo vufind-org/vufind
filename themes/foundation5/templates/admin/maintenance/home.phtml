@@ -1,0 +1,47 @@
+<!-- admin - maintenance - HOME.phtml -->
+<?
+    // Set page title.
+    $this->headTitle($this->translate('VuFind Administration - System Maintenance'));
+?>
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <h2><?=$this->transEsc('System Maintenance')?></h2>
+
+    <h3>Utilities</h3>
+    <?=$this->flashmessages()?>
+    <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'DeleteExpiredSearches'))?>">
+      <label for="del_daysOld">Delete unsaved user search histories older than</label>
+      <input id="del_daysOld" type="text" name="daysOld" size="5" value="2"
+             class="auto left" />
+      days.
+      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"
+             class="button small"/>
+    </form>
+    <hr />
+    <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'DeleteExpiredSessions'))?>">
+      <label for="delsess_daysOld">Delete user sessions older than</label>
+      <input id="delsess_daysOld" type="text" name="daysOld" size="5" value="2"
+      class="auto left" /> days.
+      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"
+             class="button small"/>
+    </form>
+    <hr />
+    <form method="get" action="<?=$this->url('admin/maintenance', array('action' => 'ClearCache'))?>">
+      Clear cache(s):
+      <ul class="list-unstyled">
+      <? foreach ($caches as $cache): ?>
+        <li>
+          <input type="checkbox" checked="checked" name="cache[]" value="<?=$this->escapeHtmlAttr($cache)?>" /> <?=$this->escapeHtml($cache) ?>
+        </li>
+      <? endforeach; ?>
+      </ul>
+      <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"
+             class="button small"/>
+    </form>
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->render("admin/menu.phtml")?>
+  </div>
+</div>
+<!-- admin - maintenance - HOME.phtml end -->

@@ -1,0 +1,71 @@
+<!-- myresearch - PROFILE.phtml -->
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('My Profile'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="active">' . $this->transEsc('Profile') . '</li>';
+
+    // Only display home library form if we have multiple pickup locations:
+    $showHomeLibForm = (isset($this->pickup) && count($this->pickup) > 1);
+
+    // Template for use by the renderArray helper:
+    $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
+?>
+
+<div class="row">
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <h2><?=$this->transEsc('Your Profile')?></h2>
+    <?=$this->flashmessages();?>
+
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
+    <table class="table" width="100%">
+      <?
+        echo $this->renderArray(
+          $arrTemplate, $this->profile,
+          array(
+            $this->transEsc('First Name') => 'firstname',
+            $this->transEsc('Last Name') => 'lastname'
+          )
+        );
+       ?>
+      <? if ($showHomeLibForm): ?>
+        <tr><th><?=$this->transEsc('Preferred Library')?>:</th>
+        <?
+          $selected = (isset($this->profile['home_library']) && $this->profile['home_library'] != "")
+              ? $this->profile['home_library'] : $this->defaultPickupLocation
+        ?>
+        <td>
+          <form id="profile_form" method="post">
+            <select id="home_library" name="home_library" class="auto">
+              <? foreach ($this->pickup as $lib): ?>
+                <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
+              <? endforeach; ?>
+            </select>
+            <input class="button secondary small" type="submit" role="button" value="<?=$this->transEsc('Save')?>" />
+          </form>
+        </td>
+      <? endif; ?>
+      <?
+        echo $this->renderArray(
+          $arrTemplate, $this->profile,
+          array(
+            $this->transEsc('Address') . ' 1' => 'address1',
+            $this->transEsc('Address') . ' 2' => 'address2',
+            $this->transEsc('Zip') => 'zip',
+            $this->transEsc('City') => 'city',
+            $this->transEsc('Country') => 'country',
+            $this->transEsc('Phone Number') => 'phone',
+            $this->transEsc('Group') => 'group'
+          )
+        );
+      ?>
+    </table>
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'profile'))?>
+  </div>
+</div>
+<!-- myresearch - PROFILE.phtml end -->

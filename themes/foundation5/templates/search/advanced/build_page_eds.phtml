@@ -1,0 +1,38 @@
+<!-- search - advanced - BUILD_PAGE_EDS.phtml -->
+$(document).ready(function() {
+  // Switch and prepare for JS mode
+  $('#groupPlaceHolder').addClass('hide');
+  $('#new_search_template').addClass('hide').detach().appendTo('[role="main"]');
+  $('#new_search_template').find('.search').removeAttr('id');
+  $('#new_search_template').find('input').removeAttr('value');
+  $('#new_search_template').find('option').removeAttr('selected');
+  $('#new_group_template').addClass('hide').detach().appendTo('[role="main"]');
+  $('#new_group_template .search').remove();
+  $('#advSearchForm .no-js').remove();
+  $('#groupJoin').remove();
+  // Build page
+  <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
+    <? foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
+      <? $i = 0; foreach ($searchGroup->getQueries() as $search): ?>
+        <? if (++$i == 1): ?>
+          var new_group = addGroup(
+            '<?=addslashes($search->getString())?>',
+            '<?=addslashes($search->getHandler())?>',
+            '<?=$searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator()?>'
+          );
+        <? else: ?>
+          addSearch(new_group, {
+            term :'<?=addslashes($search->getString())?>',
+            field:'<?=addslashes($search->getHandler())?>',
+            op   :'<?=addslashes($search->getOperator())?>'
+          });
+        <? endif; ?>
+      <? endforeach; ?>
+    <? endforeach; ?>
+  <? else: ?>
+    var new_group = addGroup();
+    addSearch(new_group);
+    addSearch(new_group);
+  <? endif; ?>
+});
+<!-- search - advanced - BUILD_PAGE_EDS.phtml - END -->

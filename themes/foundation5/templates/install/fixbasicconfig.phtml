@@ -1,0 +1,26 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('install-home') .'">' . $this->transEsc('auto_configure_title') . '</a></li> <li class="active">' . $this->transEsc('Fix Basic Config') . '</li>';
+?>
+<h2><?=$this->transEsc('auto_configure_title')?></h2>
+
+<? if (isset($this->configDir)): ?>
+  <p>VuFind cannot write to <b><?=$this->escapeHtml($this->configDir)?></b>.</p>
+
+  <p>Please make sure that write permissions are available on this directory.</p>
+
+  <p>In Linux, try this command (note that you may need to prefix with "sudo" on some flavors):</p>
+
+  <pre>
+    <? if (isset($this->runningUser)): ?>
+      chown <?=$this->escapeHtml($this->runningUser)?>:<?=$this->escapeHtml($this->runningUser)?> <?=$this->escapeHtml($this->configDir)?>
+    <? else: ?>
+      chmod 777 <?=$this->escapeHtml($this->configDir)?>
+    <? endif; ?>
+  </pre>
+<? else: ?>
+  <p>Your configuration has been successfully updated.</p>
+<? endif; ?>

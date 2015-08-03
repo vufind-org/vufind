@@ -1,0 +1,31 @@
+<!-- feedback - FORM.phtml -->
+<h2><?=$this->transEsc("Send us your feedback!")?></h2>
+<form name="feedback" method="post" action="<?=$this->url('feedback-email')?>">
+  <input type="hidden" id="formSuccess" value="<?=$this->transEsc("Form Submitted!")?>"/>
+  <input type="hidden" id="feedbackSuccess" value="<?=$this->transEsc("Thank you for your feedback.")?>"/>
+  <input type="hidden" id="feedbackFailure" value="<?=$this->transEsc("An error has occurred")?>"/>
+  <div class="row">
+    <label class="medium-3 columns" for="name"><?=$this->transEsc("feedback_name")?></label>
+    <div class="medium-9 columns">
+      <input type="text" id="name" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="email"><?=$this->transEsc("Email")?></label>
+    <div class="medium-9 columns">
+      <input type="email" id="email" class="auto"/>
+    </div>
+  </div>
+  <div class="row">
+    <label class="medium-3 columns" for="comments"><?=$this->transEsc("Comments")?></label>
+    <div class="medium-9 columns">
+      <textarea id="comments" class="auto"></textarea>
+    </div>
+  </div>
+  <div class="row">
+    <div class="medium-9 columns medium-offset-3">
+      <input type="submit" class="button small" role="button" value="<?=$this->transEsc("Send")?>" />
+    </div>
+  </div>
+</form>
+<!-- feedback - FORM.phtml end -->

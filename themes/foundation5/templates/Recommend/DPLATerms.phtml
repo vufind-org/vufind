@@ -1,0 +1,20 @@
+<!-- recommend - dplaterms.phtml -->
+<? $results = $this->recommend->getResults(); ?>
+<? if(!empty($results)): ?>
+  <ul class="accordion" id="side-panel-dpla" data-accordion>
+    <li class="accordion-navigation title<? if($this->recommend->isCollapsed()): ?> collapsed<? endif ?>" href="#side-collapse-dpla">
+      DPLA
+    </li>
+    <div id="side-collapse-dpla" class="content <? if(!$this->recommend->isCollapsed()): ?> active<? endif ?>">
+    <? foreach($results as $item): ?>
+      <li>
+        <a href="<?=$item['link'] ?>" target="new"><?=$this->escapeHtml($item['title']) ?></a><br/>
+        <? if(!empty($item['desc'])): ?>
+          <span class="desc" title="<?=$item['desc'] ?>"><?=$this->escapeHtml($this->truncate($item['desc'], 50)) ?></span><br/>
+        <? endif; ?>
+        (<span class="from"><?=$this->transEsc('Provider') ?>: <?=$this->escapeHtml($item['provider']) ?></span>)
+      </li>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>
+<!-- recommend - dplaterms.phtml - END -->

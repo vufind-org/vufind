@@ -1,0 +1,58 @@
+<!-- vudl - TECHINFO.phtml -->
+<!-- ALL FILES -->
+<ul class="accordion" data-accordion="AccordionGroup"><!-- check if AccordionGroup is necessary here -->
+  <li class="accordion-navigation">
+		<a href="#allFiles">
+			<?=$this->transEsc('All Files')?>
+		</a>
+    <div id="allFiles" class="content">
+      <? foreach ($this->record as $key=>$link): ?>
+          <? $mtKey = array_search(strToUpper($key), $this->record['datastreams']); ?>
+          <? if (
+            is_array($this->record[$key])
+            || strpos($this->record['mimetypes'][$mtKey], 'text') !== false
+            || strpos($this->record['mimetypes'][$mtKey], 'xml') !== false
+            || strpos($key, '-') !== false
+            || $key == 'techinfo'
+          ) continue; ?>
+          <a class="button secondary small clearfix" role="button" href="<?=$this->url(
+            'files',
+            array(
+              'id'=>$this->record['id'],
+              'type'=>strtoupper($key)
+            )
+          )?>?download=true">
+            <span class="left"><?=strToUpper($this->transEsc($key)) ?></span>
+            <? if (isset($this->record['mimetypes'])): ?>
+              <span class="pull-right small"><?=$this->record['mimetypes'][$mtKey] ?></span>
+            <? endif; ?>
+          </a>
+        <? endforeach; ?>
+    </div>
+  </li>
+
+  <!-- OCR --->
+  <? if (isset($this->record['ocr-dirty'])): ?>
+	<li class="accordion-navigation">
+    <a href="#ocr">
+      <?=$this->transEsc('Computer Generated Transcription (OCR)')?>
+    </a>
+    <div id="ocr" class="content">
+      <pre><?=$this->record['ocr-dirty'] ?></pre>
+    </div>
+	</li>
+  <? endif; ?>
+
+  <!-- Technical Information XML --->
+  <? if (isset($this->record['techinfo'])): ?>
+	<li class="accordion-navigation">
+    	<a href="#xml">
+      	<?=$this->transEsc('Technical Information (Master File)')?>
+    	</a>
+    <div id="xml" class="content">
+    	<?=$this->vudl()->formatTechInfo($this->record['techinfo'])?>
+    </div>
+	</li>
+  <? endif; ?>
+</ul>
+<!-- vudl - TECHINFO.phtml end -->
