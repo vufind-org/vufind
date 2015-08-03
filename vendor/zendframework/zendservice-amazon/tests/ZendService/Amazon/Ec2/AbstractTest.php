@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\Ec2;
 
 use ZendService\Amazon;
-use ZendService\Amazon\Ec2\Exception;
 
 /**
  * @category   Zend

@@ -58,13 +58,11 @@ class Params extends \VuFind\Search\Solr\Params
      * Pull the search parameters from the query and set up additional options using
      * a record driver representing a collection.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver  Record driver
-     * @param \Zend\StdLib\Parameters           $request Parameter object
-     * representing user request.
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
      *
      * @return void
      */
-    public function initFromRecordDriver($driver, $request)
+    public function initFromRecordDriver($driver)
     {
         $this->collectionID = $driver->getUniqueID();
         if ($hierarchyDriver = $driver->getHierarchyDriver()) {
@@ -77,26 +75,13 @@ class Params extends \VuFind\Search\Solr\Params
                 break;
             }
         }
-        $this->initFromRequest($request);
-    }
 
-    /**
-     * Pull the search parameters
-     *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request.
-     *
-     * @return void
-     */
-    public function initFromRequest($request)
-    {
         if (null === $this->collectionID) {
             throw new \Exception('Collection ID missing');
         }
         if (null === $this->collectionField) {
             throw new \Exception('Collection field missing');
         }
-        parent::initFromRequest($request);
 
         // We don't spellcheck this screen; it's not for free user input anyway
         $options = $this->getOptions();
@@ -106,24 +91,6 @@ class Params extends \VuFind\Search\Solr\Params
         $safeId = addcslashes($this->collectionID, '"');
         $options->addHiddenFilter($this->collectionField . ':"' . $safeId . '"');
         $options->addHiddenFilter('!id:"' . $safeId . '"');
-    }
-
-    /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
-     * associative array where the key is the location of the recommendations (top
-     * or side) and the value is the settings found in the file (which may be either
-     * a single string or an array of strings).
-     *
-     * @return array associative: location (top/side) => search settings
-     */
-    protected function getRecommendationSettings()
-    {
-        // Collection recommendations
-        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
-            ->get('Collection');
-        return isset($searchSettings->Recommend)
-            ? $searchSettings->Recommend->toArray()
-            : ['side' => ['CollectionSideFacets:Facets::Collection:true']];
     }
 
     /**

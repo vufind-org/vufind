@@ -55,7 +55,7 @@ class SimpleXML
 
         // strip off xml header
         $mark = strpos($xml, '?' . '>');
-        if ($mark>0 && $mark<40) {
+        if ($mark > 0 && $mark < 40) {
             $xml = substr($xml, $mark + 2);
         }
 

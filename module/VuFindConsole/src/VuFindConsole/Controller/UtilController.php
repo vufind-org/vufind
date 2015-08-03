@@ -235,11 +235,33 @@ class UtilController extends AbstractBase
     }
 
     /**
+     * Commit the Solr index.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function commitAction()
+    {
+        return $this->performCommit();
+    }
+
+    /**
      * Optimize the Solr index.
      *
      * @return \Zend\Console\Response
      */
     public function optimizeAction()
+    {
+        return $this->performCommit(true);
+    }
+
+    /**
+     * Commit (and possibly optimize) the Solr index.
+     *
+     * @param bool $optimize Should we optimize?
+     *
+     * @return \Zend\Console\Response
+     */
+    protected function performCommit($optimize = false)
     {
         ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
@@ -252,7 +274,9 @@ class UtilController extends AbstractBase
         // Commit and Optimize the Solr Index
         $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
         $solr->commit($core);
-        $solr->optimize($core);
+        if ($optimize) {
+            $solr->optimize($core);
+        }
         return $this->getSuccessResponse();
     }
 
@@ -283,9 +307,15 @@ class UtilController extends AbstractBase
      */
     public function deletesAction()
     {
-        // Parse the command line parameters -- see if we are in "flat file" mode,
-        // find out what file we are reading in,
-        // and determine the index we are affecting!
+        // Parse the command line parameters -- check verbosity, see if we are in
+        // "flat file" mode, find out what file we are reading in, and determine
+        // the index we are affecting!
+        $this->consoleOpts->addRules(
+            [
+                'verbose' => 'Verbose mode',
+            ]
+        );
+        $verbose = $this->consoleOpts->getOption('verbose');
         $argv = $this->consoleOpts->getRemainingArgs();
         $filename = isset($argv[0]) ? $argv[0] : null;
         $mode = isset($argv[1]) ? $argv[1] : 'marc';
@@ -294,19 +324,24 @@ class UtilController extends AbstractBase
         // No filename specified?  Give usage guidelines:
         if (empty($filename)) {
             Console::writeLine("Delete records from VuFind's index.");
-            Console::writeLine("");
-            Console::writeLine("Usage: deletes.php [filename] [format] [index]");
-            Console::writeLine("");
+            Console::writeLine('');
             Console::writeLine(
-                "[filename] is the file containing records to delete."
+                'Usage: deletes.php [--verbose] FILENAME FORMAT INDEX'
+            );
+            Console::writeLine('');
+            Console::writeLine(
+                'The optional --verbose switch turns on detailed feedback.'
             );
             Console::writeLine(
-                "[format] is the format of the file -- "
-                . "it may be one of the following:"
+                'FILENAME is the file containing records to delete.'
+            );
+            Console::writeLine(
+                'FORMAT is the format of the file -- '
+                . 'it may be one of the following:'
             );
             Console::writeLine(
                 "\tflat - flat text format "
-                . "(deletes all IDs in newline-delimited file)"
+                . '(deletes all IDs in newline-delimited file)'
             );
             Console::writeLine(
                 "\tmarc - binary MARC format (delete all record IDs from 001 fields)"
@@ -317,7 +352,7 @@ class UtilController extends AbstractBase
             Console::writeLine(
                 '"marc" is used by default if no format is specified.'
             );
-            Console::writeLine("[index] is the index to use (default = Solr)");
+            Console::writeLine('INDEX is the index to use (default = Solr)');
             return $this->getFailureResponse();
         }
 
@@ -331,6 +366,9 @@ class UtilController extends AbstractBase
         $ids = [];
 
         // Flat file mode:
+        if ($verbose) {
+            Console::writeLine("Loading IDs in {$mode} mode.");
+        }
         if ($mode == 'flat') {
             foreach (explode("\n", file_get_contents($filename)) as $id) {
                 $id = trim($id);
@@ -345,17 +383,39 @@ class UtilController extends AbstractBase
                 ? new File_MARCXML($filename) : new File_MARC($filename);
 
             // Once the records are loaded, the rest of the logic is always the same:
+            $missingIdCount = 0;
             while ($record = $collection->next()) {
                 $idField = $record->getField('001');
-                $ids[] = (string)$idField->getData();
+                if ($idField) {
+                    $ids[] = (string)$idField->getData();
+                } else {
+                    $missingIdCount++;
+                }
+            }
+            if ($verbose && $missingIdCount) {
+                Console::writeLine(
+                    "Encountered $missingIdCount record(s) without IDs."
+                );
             }
         }
 
         // Delete, Commit and Optimize if necessary:
         if (!empty($ids)) {
+            if ($verbose) {
+                Console::writeLine(
+                    'Attempting to delete ' . count($ids) . ' record(s): '
+                    . implode(', ', $ids)
+                );
+            }
             $writer = $this->getServiceLocator()->get('VuFind\Solr\Writer');
             $writer->deleteRecords($index, $ids);
+            if ($verbose) {
+                Console::writeLine('Delete operation completed.');
+            }
+        } elseif ($verbose) {
+            Console::writeLine('Nothing to delete.');
         }
+
         return $this->getSuccessResponse();
     }
 

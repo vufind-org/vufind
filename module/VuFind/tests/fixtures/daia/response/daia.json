@@ -1,0 +1,112 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+Date: Wed, 18 Mar 2015 11:49:40 GMT
+
+{
+   "timestamp" : "2015-03-18T11:49:40Z",
+   "version" : "0.5",
+   "document" : [
+      {
+         "href" : "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+         "item" : [
+            {
+               "department" : {
+                  "href" : "http://www.example-library.edu",
+                  "content" : "Example Library for DAIA Tests",
+                  "id" : "http://uri.gbv.de/organization/isil/DE-000"
+               },
+               "href" : "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+               "label" : "ABC 12",
+               "id" : "http://uri.gbv.de/document/opac-de-000:epn:711134758",
+               "storage" : {
+                  "content" : "Abteilung III"
+               },
+               "available" : [
+                  {
+                     "href" : "http://opac.example-library.edu/loan/REQ?EPN=711134758",
+                     "delay" : "unknown",
+                     "service" : "presentation"
+                  },
+                  {
+                     "href" : "http://opac.example-library.edu/loan/REQ?EPN=711134758",
+                     "delay" : "unknown",
+                     "service" : "loan"
+                  },
+                  {
+                     "href" : "http://opac.example-library.edu/loan/REQ?EPN=711134758",
+                     "delay" : "unknown",
+                     "service" : "interloan"
+                  }
+               ]
+            },
+            {
+               "department" : {
+                  "href" : "http://www.example-library.edu",
+                  "content" : "Example Library for DAIA Tests",
+                  "id" : "http://uri.gbv.de/organization/isil/DE-000"
+               },
+               "href" : "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+               "label" : "DEF 34",
+               "id" : "http://uri.gbv.de/document/opac-de-000:epn:711134766",
+               "storage" : {
+                  "content" : "Abteilung III"
+               },
+               "available" : [
+                  {
+                     "service" : "presentation"
+                  },
+                  {
+                     "service" : "loan",
+                     "limitation" : [
+                        {
+                           "content" : "mit Zustimmung"
+                        }
+                     ]
+                  },
+                  {
+                     "service" : "interloan",
+                     "limitation" : [
+                        {
+                           "content" : "nur Kopie"
+                        }
+                     ]
+                  }
+               ]
+            },
+            {
+               "department" : {
+                  "href" : "http://www.example-library.edu",
+                  "content" : "Example Library for DAIA Tests",
+                  "id" : "http://uri.gbv.de/organization/isil/DE-000"
+               },
+               "href" : "http://opac.example-library.edu/DB=1/PPNSET?PPN=027586081",
+               "label" : "GHI 56",
+               "id" : "http://uri.gbv.de/document/opac-de-000:epn:7111347777",
+               "storage" : {
+                  "content" : "Abteilung III"
+               },
+               "unavailable" : [
+                  {
+                     "expected" : "2115-02-09",
+                     "service" : "presentation"
+                  },
+                  {
+                     "expected" : "2115-02-09",
+                     "service" : "loan"
+                  },
+                  {
+                     "expected" : "2115-02-09",
+                     "service" : "interloan"
+                  }
+               ]
+            }
+         ],
+         "id" : "http://uri.gbv.de/document/opac-de-000:ppn:027586081"
+      }
+   ],
+   "institution" : {
+      "href" : "http://www.example-library.edu",
+      "content" : "Example Library for DAIA Tests",
+      "id" : "http://uri.gbv.de/organization/isil/DE-000"
+   }
+}

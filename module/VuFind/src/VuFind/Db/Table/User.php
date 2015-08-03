@@ -57,8 +57,23 @@ class User extends Gateway
     }
 
     /**
-     * Retrieve a user object from the database based on username; create a new
-     * row if no existing match is found.
+     * Create a row for the specified username.
+     *
+     * @param string $username Username to use for retrieval.
+     *
+     * @return UserRow
+     */
+    public function createRowForUsername($username)
+    {
+        $row = $this->createRow();
+        $row->username = $username;
+        $row->created = date('Y-m-d H:i:s');
+        return $row;
+    }
+
+    /**
+     * Retrieve a user object from the database based on username; when requested,
+     * create a new row if no existing match is found.
      *
      * @param string $username Username to use for retrieval.
      * @param bool   $create   Should we create users that don't already exist?
@@ -68,12 +83,8 @@ class User extends Gateway
     public function getByUsername($username, $create = true)
     {
         $row = $this->select(['username' => $username])->current();
-        if ($create && empty($row)) {
-            $row = $this->createRow();
-            $row->username = $username;
-            $row->created = date('Y-m-d H:i:s');
-        }
-        return $row;
+        return ($create && empty($row))
+            ? $this->createRowForUsername($username) : $row;
     }
 
     /**

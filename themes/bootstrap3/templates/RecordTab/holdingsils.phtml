@@ -11,6 +11,9 @@
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
 ?>
+
+<?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
 <? if ($offlineMode == "ils-offline"): ?>
   <div class="alert alert-warning">
     <h2><?=$this->transEsc('ils_offline_title')?></h2>

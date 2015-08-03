@@ -51,7 +51,7 @@ class ServerParamTest extends \VuFindTest\Unit\TestCase
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
             'testheader testvalue',
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
@@ -65,7 +65,7 @@ class ServerParamTest extends \VuFindTest\Unit\TestCase
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader testvalue'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
@@ -79,7 +79,7 @@ class ServerParamTest extends \VuFindTest\Unit\TestCase
         $this->checkServerParams(
             ['testheader1' => 'testvalue1', 'testheader2' => 'testvalue2'],
             ['testheader1 testvalue1', 'testheader2 testvalue2'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
@@ -107,7 +107,7 @@ class ServerParamTest extends \VuFindTest\Unit\TestCase
         $this->checkServerParams(
             ['testheader' => 'testvalue1'],
             ['testheader testvalue1 testvalue2'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
@@ -135,7 +135,7 @@ class ServerParamTest extends \VuFindTest\Unit\TestCase
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader ~ ^testvalue$'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
@@ -163,7 +163,7 @@ class ServerParamTest extends \VuFindTest\Unit\TestCase
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader ! testval'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 
@@ -191,7 +191,7 @@ class ServerParamTest extends \VuFindTest\Unit\TestCase
         $this->checkServerParams(
             ['testheader' => 'testvalue'],
             ['testheader !~ testval$'],
-            ['loggedin']
+            ['guest', 'loggedin']
         );
     }
 

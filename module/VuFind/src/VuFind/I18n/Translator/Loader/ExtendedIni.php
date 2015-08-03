@@ -92,6 +92,18 @@ class ExtendedIni implements FileLoaderInterface
     }
 
     /**
+     * Add additional directories to the path stack.
+     *
+     * @param array|string $pathStack Path stack addition(s).
+     *
+     * @return void
+     */
+    public function addToPathStack($pathStack)
+    {
+        $this->pathStack = array_merge($this->pathStack, (array)$pathStack);
+    }
+
+    /**
      * Load method defined by FileLoaderInterface.
      *
      * @param string $locale   Locale to read from language file

@@ -65,12 +65,12 @@ class AdvancedSearchTest extends \VuFindTest\Unit\MinkTestCase
         $session->executeScript("addSearch(0)"); // add_search_link_0 click
         $this->assertNotNull($page->findById('search0_3'));
         // No visible x next to lonely search term
-        $this->assertNotNull($page->find('css', '#search1_0 .delete.hidden'));
+        $this->assertNotNull($page->find('css', '#search1_0 .close.hidden'));
         // Add a search term in another group
         $session->executeScript("addSearch(1)"); // add_search_link_1 click
         $this->assertNotNull($page->findById('search1_1'));
         // Visible x next to lonely search term
-        $this->assertNotNull($page->find('css', '#search1_0 .delete:not(.hidden)'));
+        $this->assertNotNull($page->find('css', '#search1_0 .close:not(.hidden)'));
 
         // Enter search for bride of the tomb
         $page->findById('search_lookfor0_0')->setValue('bride');

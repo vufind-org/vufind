@@ -39,13 +39,6 @@ namespace VuFind\Search\Favorites;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
-     * Auth manager
-     *
-     * @var \VuFind\Auth\Manager
-     */
-    protected $account;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -54,20 +47,6 @@ class Params extends \VuFind\Search\Base\Params
     public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($options, $configLoader);
-        $this->recommendationsEnabled(true);
-    }
-
-    /**
-     * Load all recommendation settings from the relevant ini file.  Returns an
-     * associative array where the key is the location of the recommendations (top
-     * or side) and the value is the settings found in the file (which may be either
-     * a single string or an array of strings).
-     *
-     * @return array associative: location (top/side) => search settings
-     */
-    protected function getRecommendationSettings()
-    {
-        return ['side' => 'FavoriteFacets'];
     }
 
     /**
@@ -88,27 +67,5 @@ class Params extends \VuFind\Search\Base\Params
 
         // Otherwise use standard parent behavior:
         return parent::initFilters($request);
-    }
-
-    /**
-     * Get account manager.
-     *
-     * @return \VuFind\Auth\Manager
-     */
-    public function getAuthManager()
-    {
-        return $this->account;
-    }
-
-    /**
-     * Inject dependency: account manager.
-     *
-     * @param \VuFind\Auth\Manager $account Auth manager object.
-     *
-     * @return void
-     */
-    public function setAuthManager($account)
-    {
-        $this->account = $account;
     }
 }

@@ -47,7 +47,9 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
     {
         // Activate the cart:
         $this->changeConfigs(
-            ['config' => ['Site' => ['showBookBag' => true, 'theme' => 'blueprint']]]
+            ['config' =>
+                ['Site' => ['showBookBag' => true, 'theme' => 'bootprint3']]
+            ]
         );
 
         $session = $this->getMinkSession();
@@ -60,7 +62,7 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $updateCart = $page->find('css', '#updateCart');
         $this->assertTrue(is_object($updateCart));
         $updateCart->click();
-        $content = $page->find('css', '#contextHelpContent');
+        $content = $page->find('css', '.popover-content');
         $this->assertTrue(is_object($content));
         $this->assertEquals(
             'No items were selected. '
@@ -72,18 +74,21 @@ class CartTest extends \VuFindTest\Unit\MinkTestCase
         $selectAll = $page->find('css', '#addFormCheckboxSelectAll');
         $selectAll->check();
         $updateCart->click();
-        $this->assertEquals('2', $page->find('css', '#cartSize')->getText());
+        $this->assertEquals('2', $page->find('css', '#cartItems strong')->getText());
 
         // Open the cart and empty it:
-        $viewCart = $page->find('css', '#viewCart');
+        $viewCart = $page->find('css', '#cartItems');
         $this->assertTrue(is_object($viewCart));
         $viewCart->click();
-        $cartSelectAll = $page->find('css', '#cartCheckboxSelectAll');
+        $cartSelectAll = $page->find('css', '.modal-dialog .checkbox-select-all');
         $cartSelectAll->check();
-        $delete = $page->find('css', '.bookbagDelete');
+        $delete = $page->find('css', '#cart-delete-label');
         $delete->click();
-        $close = $page->find('css', '.ui-dialog-titlebar-close');
+        $deleteConfirm = $page->find('css', '#cart-confirm-delete');
+        $this->assertTrue(is_object($deleteConfirm));
+        $deleteConfirm->click();
+        $close = $page->find('css', 'button.close');
         $close->click();
-        $this->assertEquals('0', $page->find('css', '#cartSize')->getText());
+        $this->assertEquals('0', $page->find('css', '#cartItems strong')->getText());
     }
 }

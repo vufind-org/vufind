@@ -242,7 +242,8 @@ class BrowseController extends AbstractBase
             $resultList = [];
             foreach ($results as $result) {
                 $resultList[] = [
-                    'result' => $result['displayText'],
+                    'displayText' => $result['displayText'],
+                    'value' => $result['value'],
                     'count' => $result['count']
                 ];
             }
@@ -311,7 +312,8 @@ class BrowseController extends AbstractBase
                     foreach ($tags as $tag) {
                         if ($tag['cnt'] > 0) {
                             $tagList[] = [
-                                'result' => $tag['tag'],
+                                'displayText' => $tag['tag'],
+                                'value' => $tag['tag'],
                                 'count' => $tag['cnt']
                             ];
                         }
@@ -329,7 +331,8 @@ class BrowseController extends AbstractBase
                 $resultList = [];
                 foreach ($tagList as $i => $tag) {
                     $resultList[$i] = [
-                        'result' => $tag['tag'],
+                        'displayText' => $tag['tag'],
+                        'value' => $tag['tag'],
                         'count'    => $tag['cnt']
                     ];
                 }
@@ -356,7 +359,7 @@ class BrowseController extends AbstractBase
             'query_field' => 'callnumber-first',
             'facet_field' => 'callnumber-subject'
         ];
-        $view->searchParams = [];
+        $view->searchParams = ['sort' => 'callnumber-sort'];
         return $this->performSearch($view);
     }
 
@@ -378,6 +381,7 @@ class BrowseController extends AbstractBase
             ];
         }
         $view->categoryList = $categoryList;
+        $view->dewey_flag = 1;
         if ($this->params()->fromQuery('findby')) {
             $secondaryList = $this->quoteValues(
                 $this->getFacetList(
@@ -397,6 +401,7 @@ class BrowseController extends AbstractBase
                 'query_field' => 'dewey-tens',
                 'facet_field' => 'dewey-ones'
             ];
+            $view->searchParams = ['sort' => 'dewey-sort'];
         }
         return $this->performSearch($view);
     }
@@ -596,7 +601,6 @@ class BrowseController extends AbstractBase
         $params->setOverrideQuery($query);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
-        $params->recommendationsEnabled(false);
         // Get limit from config
         $params->setFacetLimit($this->config->Browse->result_limit);
         $params->setLimit(0);

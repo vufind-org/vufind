@@ -30,7 +30,6 @@
 namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\MultiBackend, VuFind\Config\Reader as ConfigReader;
 use Zend\Log\Writer\Mock;
-use Zend\Log\Logger;
 
 /**
  * ILS driver test
@@ -100,7 +99,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $this->callMethod($driver, 'getLocalId', ['bad']);
         $this->assertEquals(
             'VuFind\ILS\Driver\MultiBackend: '
-            . "Could not find local id in 'bad' using '.'",
+            . "Could not find local id in 'bad'",
             $writer->events[1]['message']
         );
     }
@@ -396,15 +395,13 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             = $this->callMethod($driver, 'stripIdPrefixes', [$data, $source]);
         $this->assertEquals("record", $result);
 
-        $delimiters = ['login' => "\t"];
-        $this->setproperty($driver, 'delimiters', $delimiters);
         $expected = [
             'id' => 'record1',
             'cat_username' => 'record2'
         ];
         $data = [
             'id' => "$source.record1",
-            'cat_username' => "$source\trecord2"
+            'cat_username' => "$source.record2"
         ];
         $result
             = $this->callMethod($driver, 'stripIdPrefixes', [$data, $source]);
@@ -429,7 +426,7 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
                 'id' => "$source.record2",
                 'cat_username' => [
                     'id' => "$source.record3",
-                    'cat_username' => "$source\trecord4"
+                    'cat_username' => "$source.record4"
                 ],
                 'cat_info' => "$source.record5",
                 'other' => "$source.something"
@@ -716,9 +713,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $term = "source.local";
         $return = $this->callMethod($driver, 'getLocalId', [$term]);
         $this->assertEquals("local", $return);
-
-        $return = $this->callMethod($driver, 'getLocalId', [$term, '!']);
-        $this->assertEquals($term, $return);
     }
 
     /**
@@ -875,10 +869,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             ->method('patronLogin')
             ->with('username', 'password')
             ->will($this->returnValue($patronReturn));
-        $ILS->expects($this->at(1))
-            ->method('patronLogin')
-            ->with('username', 'password')
-            ->will($this->returnValue($patronReturn));
 
         //Prep MultiBackend with values it will need
         $drivers = [$instance => 'Voyager'];
@@ -894,29 +884,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         //Check that it added username info properly.
         $this->assertSame(
             $instance . '.' . $patronReturn['cat_username'],
-            $patron['cat_username']
-        );
-
-        // Try with another delimiter
-        $driver->setConfig(
-            [
-                'Drivers' => [],
-                'Login' => [
-                    'drivers' => ['d2', 'd1']
-                ],
-                'Delimiters' => [
-                    'login' => "\t"
-                ]
-            ]
-        );
-        $driver->init();
-
-        //Call the method
-        $patron = $driver->patronLogin("$instance\tusername", 'password');
-
-        //Check that it added username info properly.
-        $this->assertSame(
-            $instance . "\t" . $patronReturn['cat_username'],
             $patron['cat_username']
         );
 

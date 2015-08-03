@@ -165,12 +165,12 @@ CREATE TABLE `tags` (
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(50) NOT NULL DEFAULT '',
+  `username` varchar(255) NOT NULL DEFAULT '',
   `password` varchar(32) NOT NULL DEFAULT '',
   `pass_hash` varchar(60) DEFAULT NULL,
   `firstname` varchar(50) NOT NULL DEFAULT '',
   `lastname` varchar(50) NOT NULL DEFAULT '',
-  `email` varchar(250) NOT NULL DEFAULT '',
+  `email` varchar(255) NOT NULL DEFAULT '',
   `cat_username` varchar(50) DEFAULT NULL,
   `cat_password` varchar(50) DEFAULT NULL,
   `cat_pass_enc` varchar(110) DEFAULT NULL,
@@ -258,6 +258,30 @@ CREATE TABLE `user_stats_fields` (
   PRIMARY KEY (`id`,`field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_card`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_card` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `card_name` varchar(255) NOT NULL DEFAULT '',
+  `cat_username` varchar(50) NOT NULL DEFAULT '',
+  `cat_password` varchar(50) DEFAULT NULL,
+  `cat_pass_enc` varchar(110) DEFAULT NULL,
+  `home_library` varchar(100) NOT NULL DEFAULT '',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `saved` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `user_card_cat_username` (`cat_username`),
+  CONSTRAINT `user_card_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

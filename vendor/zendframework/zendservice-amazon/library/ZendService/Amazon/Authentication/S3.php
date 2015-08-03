@@ -76,13 +76,11 @@ class S3 extends AbstractAuthentication
         $sig_str .= '/'.parse_url($path, PHP_URL_PATH);
         if (strpos($path, '?location') !== false) {
             $sig_str .= '?location';
-        } else
-            if (strpos($path, '?acl') !== false) {
-                $sig_str .= '?acl';
-            } else
-                if (strpos($path, '?torrent') !== false) {
-                    $sig_str .= '?torrent';
-                }
+        } elseif (strpos($path, '?acl') !== false) {
+            $sig_str .= '?acl';
+        } elseif (strpos($path, '?torrent') !== false) {
+            $sig_str .= '?torrent';
+        }
 
         $signature = Hmac::compute($this->_secretKey, 'sha1', utf8_encode($sig_str), Hmac::OUTPUT_BINARY);
         $headers['Authorization'] = 'AWS ' . $this->_accessKey . ':' . base64_encode($signature);

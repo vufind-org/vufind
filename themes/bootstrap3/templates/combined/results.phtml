@@ -30,7 +30,7 @@
   if (isset($this->overrideTitle)) {
     $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
   } else {
-    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Combined Search') . ': ' .
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Search') . ': ' .
       $this->escapeHtml($lookfor) . '</li>';
   }
 

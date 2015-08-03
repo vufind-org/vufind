@@ -11,7 +11,6 @@
 namespace ZendServiceTest\Amazon\Authentication;
 
 use ZendService\Amazon\Authentication;
-use ZendService\Amazon\Authentication\Exception;
 
 /**
  * Amazon V1 authentication test case
@@ -59,5 +58,4 @@ class V1Test extends \PHPUnit_Framework_TestCase
         $this->assertEquals('31Q2YlgABM5X3GkYQpGErcL10Xc=', $params['Signature']);
         $this->assertEquals("ActionActivateHostedProductAWSAccessKeyId0PN5J17HBGZHT7JJ3X82SignatureVersion1Timestamp2009-11-11T13:52:38ZVersion2007-12-01", $ret);
     }
-
 }

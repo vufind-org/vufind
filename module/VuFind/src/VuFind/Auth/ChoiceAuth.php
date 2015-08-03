@@ -207,6 +207,7 @@ class ChoiceAuth extends AbstractBase
      *
      * @param string $url URL to redirect user to after logging out.
      *
+     * @throws InvalidArgumentException
      * @return string     Redirect URL (usually same as $url, but modified in
      * some authentication modules).
      */
@@ -219,8 +220,15 @@ class ChoiceAuth extends AbstractBase
 
         // If we have a selected strategy, proxy the appropriate class; otherwise,
         // perform default behavior of returning unmodified URL:
-        return $this->strategy
-            ? $this->proxyAuthMethod('logout', func_get_args()) : $url;
+        try {
+            return $this->strategy
+                ? $this->proxyAuthMethod('logout', func_get_args()) : $url;
+        } catch (InvalidArgumentException $e) {
+            // If we're in an invalid state (due to an illegal login method),
+            // we should just clear everything out so the user can try again.
+            $this->strategy = false;
+            return false;
+        }
     }
 
     /**
@@ -302,7 +310,7 @@ class ChoiceAuth extends AbstractBase
         }
 
         if (!in_array($this->strategy, $this->strategies)) {
-            throw new \Exception("Illegal setting: {$this->strategy}");
+            throw new InvalidArgumentException("Illegal setting: {$this->strategy}");
         }
         $authenticator = $this->getPluginManager()->get($this->strategy);
         $authenticator->setConfig($this->getConfig());
