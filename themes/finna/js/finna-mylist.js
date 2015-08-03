@@ -2,6 +2,7 @@ finna.myList = (function() {
 
     var addNewListLabel = null;
 
+    // This is duplicated in image-popup.js to avoid dependency
     var getActiveListId = function() {
         return $('input[name="listID"]').val();
     };

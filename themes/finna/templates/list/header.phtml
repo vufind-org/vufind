@@ -4,7 +4,7 @@
     <? if (isset($this->overrideSearchHeading)): ?>
       <?=$this->overrideSearchHeading?>
     <? elseif ($this->params->getsearchType() == 'basic'): ?>
-      <?=$this->transEsc('Collection')?>: <strong><?=$this->escapeHtml($this->lookfor)?></strong>
+      <strong><?=$this->escapeHtml($this->lookfor)?></strong>
     <? endif; ?>
 
   </h1>

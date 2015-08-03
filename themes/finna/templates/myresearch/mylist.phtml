@@ -22,7 +22,6 @@
   $this->headScript()->appendFile("finna-mylist.js");
   $this->headScript()->appendFile("vendor/jquery.editable.js");
 
-  $this->headScript()->prependScript("var listId = $activeId;");
   $this->jsTranslations()->addStrings(['add_note' => 'Add note', 'loading' => 'Loading']);
 
   $recordTotal = $this->results->getResultTotal();
@@ -51,7 +50,7 @@
     </div>
     <div class="row">
       <div class="col-xs-7">
-      <h2 class="list-title<?= !$list ? ' no-edit' : '' ?>"><span><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("Your Favorites")?></span><? if(!$isDefaultList): ?><i class="list-title-edit fa fa-pen"></i><? endif; ?></h2><br>
+      <h2 class="list-title<?= !$list ? ' no-edit' : '' ?>"><span><?=$list ? $this->escapeHtml($list->title) : $this->transEsc("All Favourites")?></span><? if(!$isDefaultList): ?><i class="list-title-edit fa fa-pen"></i><? endif; ?></h2><br>
       <? if ($list && !empty($list->description)): ?>
         <h5 class="list-description"><span><?=preg_replace("/\r\n|\r|\n/",'<br class="newline">', $this->escapeHtml($list->description))?></span> <i class="list-description-edit fa fa-pen"></i></h5>
       <? elseif ($list && empty($list->description)): ?>

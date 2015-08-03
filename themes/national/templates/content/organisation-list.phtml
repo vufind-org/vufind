@@ -6,8 +6,8 @@
             <?=$name; ?>
         </div>
         <div class="link">
-            <a title="<?=$this->TransEsc('Find')?>: <?=$name; ?>" href="<?=$this->url('home'); ?>Search/Results<?=$item['link'] ?>"><i class="fa fa-search"></i></a>
+            <a title="<?=$this->TransEsc('Find')?>: <?=$name; ?>" href="<?=$this->url('home'); ?>Search/Results<?=$this->escapeHtmlAttr($item['link']) ?>"><i class="fa fa-search"></i></a>
         </div>
-    </li> 
+    </li>
   <? endforeach; ?>
 </ul>
