@@ -40,7 +40,7 @@ use VuFindSearch\ParamBag;
 class Params extends \VuFind\Search\Base\Params
 {
     /**
-     * Default facet result limit
+     * Facet result limit
      *
      * @var int
      */
