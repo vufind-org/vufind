@@ -213,7 +213,6 @@ class VuFindSitemap extends VuFind
      * @param string $url URL of file to retrieve.
      *
      * @return string     text contents of file.
-     * @access public
      */
     public static function getDocument($url)
     {

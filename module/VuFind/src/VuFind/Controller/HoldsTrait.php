@@ -134,7 +134,8 @@ trait HoldsTrait
                             '%%url%%' => $this->url()->fromRoute('myresearch-holds')
                         ],
                     ];
-                    $this->flashMessenger()->setNamespace('info')->addMessage($msg);
+                    $this->flashMessenger()->setNamespace('success')
+                        ->addMessage($msg);
                     return $this->redirectToRecord('#top');
                 } else {
                     // Failure: use flash messenger to display messages, stay on

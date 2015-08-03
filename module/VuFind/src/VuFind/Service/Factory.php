@@ -300,6 +300,19 @@ class Factory
     }
 
     /**
+     * Construct the Hierarchy\TreeDataFormatter Plugin Manager.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Hierarchy\TreeDataFormatter\PluginManager
+     */
+    public static function getHierarchyTreeDataFormatterPluginManager(
+        ServiceManager $sm
+    ) {
+        return static::getGenericPluginManager($sm, 'Hierarchy\TreeDataFormatter');
+    }
+
+    /**
      * Construct the Hierarchy\TreeDataSource Plugin Manager.
      *
      * @param ServiceManager $sm Service manager.
@@ -642,6 +655,20 @@ class Factory
     public static function getSearchResultsPluginManager(ServiceManager $sm)
     {
         return static::getGenericPluginManager($sm, 'Search\Results');
+    }
+
+    /**
+     * Construct the Search runner.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Search\SearchRunner
+     */
+    public static function getSearchRunner(ServiceManager $sm)
+    {
+        return new \VuFind\Search\SearchRunner(
+            $sm->get('VuFind\SearchResultsPluginManager')
+        );
     }
 
     /**

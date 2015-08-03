@@ -66,7 +66,7 @@ class MaintenanceController extends AbstractAdmin
         // If cache is unset, we didn't go through the loop above, so no message
         // needs to be displayed.
         if (isset($cache)) {
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('Cache(s) cleared.');
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
@@ -139,7 +139,7 @@ class MaintenanceController extends AbstractAdmin
                 $search->delete($query);
                 $msg = str_replace('%%count%%', $count, $successString);
             }
-            $this->flashMessenger()->setNamespace('info')->addMessage($msg);
+            $this->flashMessenger()->setNamespace('success')->addMessage($msg);
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
     }

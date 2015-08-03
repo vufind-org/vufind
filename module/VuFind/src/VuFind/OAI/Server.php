@@ -717,7 +717,6 @@ class Server
         $params->setLimit($limit);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
-        $params->recommendationsEnabled(false);
         $params->setSort('last_indexed asc', true);
 
         // Construct a range query based on last indexed time:
@@ -777,13 +776,13 @@ class Server
             // Set default date range if not already provided:
             if (empty($params['from'])) {
                 $params['from'] = $this->earliestDatestamp;
-                if (strlen($params['from'])>strlen($params['until'])) {
+                if (strlen($params['from']) > strlen($params['until'])) {
                     $params['from'] = substr($params['from'], 0, 10);
                 }
             }
             if (empty($params['until'])) {
                 $params['until'] = date($this->iso8601);
-                if (strlen($params['until'])>strlen($params['from'])) {
+                if (strlen($params['until']) > strlen($params['from'])) {
                     $params['until'] = substr($params['until'], 0, 10);
                 }
             }

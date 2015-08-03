@@ -180,7 +180,7 @@ class TagsController extends AbstractAdmin
             return $this->redirect()->toUrl($originUrl);
         }
 
-        $this->flashMessenger()->setNamespace('info')
+        $this->flashMessenger()->setNamespace('success')
             ->addMessage(
                 [
                     'msg' => 'tags_deleted',
