@@ -351,17 +351,15 @@ class Bootstrapper
             }
             try {
                 $translator = $sm->get('VuFind\Translator');
-                $translator
-                    ->addTranslationFile('ExtendedIni', null, 'default', $language)
-                    ->setLocale($language);
+                $translator->setLocale($language)
+                    ->addTranslationFile('ExtendedIni', null, 'default', $language);
                 foreach ($this->getTextDomains() as $domain) {
                     // Set up text domains using the domain name as the filename;
                     // this will help the ExtendedIni loader dynamically locate
                     // the appropriate files.
-                    $translator
-                        ->addTranslationFile(
-                            'ExtendedIni', $domain, $domain, $language
-                        )->setLocale($language);
+                    $translator->addTranslationFile(
+                        'ExtendedIni', $domain, $domain, $language
+                    );
                 }
             } catch (\Zend\Mvc\Exception\BadMethodCallException $e) {
                 if (!extension_loaded('intl')) {
