@@ -81,19 +81,24 @@ class Results extends \VuFind\Search\Base\Results
         $order = array_flip(array_keys($filter));
         // Loop through the facets returned by Primo.
         $facetResult = [];
+        $translatedFacets = $this->getOptions()->getTranslatedFacets();
         if (is_array($this->responseFacets)) {
             foreach ($this->responseFacets as $field => $current) {
-                $translate
-                    = in_array($field, $this->getOptions()->getTranslatedFacets());
+                if ($translate = in_array($field, $translatedFacets)) {
+                    $transTextDomain = $this->getOptions()
+                        ->getTextDomainForTranslatedFacet($field);
+                }
                 if (isset($filter[$field])) {
                     $new = [];
                     foreach ($current as $value => $count) {
+                        $display = $this->getParams()->fixPrimoFacetValue($value);
                         $new[] = [
                             'value' => $value,
                             'displayText' =>
                                 $translate
-                                    ? $this->translate($value)
-                                    : $this->getParams()->fixPrimoFacetValue($value),
+                                    ? $this->translate(
+                                        "$value::$transTextDomain", [], $display
+                                    ) : $display,
                             'isApplied' =>
                                 $this->getParams()->hasFilter("$field:" . $value),
                             'operator' => 'AND', 'count' => $count
