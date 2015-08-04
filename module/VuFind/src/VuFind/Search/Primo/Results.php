@@ -95,10 +95,9 @@ class Results extends \VuFind\Search\Base\Results
                         $new[] = [
                             'value' => $value,
                             'displayText' =>
-                                $translate
-                                    ? $this->translate(
-                                        "$value::$transTextDomain", [], $display
-                                    ) : $display,
+                                $translate ? $this->translate(
+                                    "$value::$transTextDomain", [], $display
+                                ) : $display,
                             'isApplied' =>
                                 $this->getParams()->hasFilter("$field:" . $value),
                             'operator' => 'AND', 'count' => $count
