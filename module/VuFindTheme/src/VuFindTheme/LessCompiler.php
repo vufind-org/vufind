@@ -141,11 +141,6 @@ class LessCompiler
                 $this->compileFile($theme, $less);
             }
         }
-
-        \Less_Cache::SetCacheDir(
-            APPLICATION_PATH . '/themes/' . $theme . '/css/less/'
-        );
-        \Less_Cache::CleanCache(); // deletes week old files
     }
 
     /**
@@ -206,7 +201,7 @@ class LessCompiler
             [$lessDir . $less => $this->fakePath . "themes/$theme/css/less"],
             [
                 'cache_dir' => $this->tempPath,
-                'cache_method' => "php",
+                'cache_method' => 'php',
                 'compress' => true,
                 'import_dirs' => $directories
             ]
