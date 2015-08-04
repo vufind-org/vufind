@@ -112,7 +112,7 @@ trait StorageRetrievalRequestsTrait
 
             // Success: Go to Display Storage Retrieval Requests
             if (isset($results['success']) && $results['success'] == true) {
-                $this->flashMessenger()->setNamespace('info')
+                $this->flashMessenger()->setNamespace('success')
                     ->addMessage('storage_retrieval_request_place_success');
                 if ($this->inLightbox()) {
                     return false;

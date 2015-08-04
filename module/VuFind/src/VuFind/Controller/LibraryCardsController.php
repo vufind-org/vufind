@@ -163,7 +163,7 @@ class LibraryCardsController extends AbstractBase
             $user->deleteLibraryCard($cardID);
 
             // Success Message
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('Library Card Deleted');
             // Redirect to MyResearch library cards
             return $this->redirect()->toRoute('librarycards-home');

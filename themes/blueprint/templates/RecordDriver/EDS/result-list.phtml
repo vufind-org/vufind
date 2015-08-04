@@ -12,7 +12,7 @@
         </a>
     <? else: ?>
         <span class="summcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
-        <div><?=$this->driver->getPubType()?></div>
+        <div><?=$this->transEsc($this->driver->getPubType())?></div>
     <? endif; ?>
   </div>
 
