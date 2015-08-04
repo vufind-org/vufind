@@ -266,6 +266,14 @@ finna.layout = (function() {
       });
     };
 
+    var initScrollLinks = function() {
+      $('.library-link').click(function() {
+        $('html, body').animate({
+          scrollTop: $('.recordProvidedBy').offset().top
+        }, 500);
+      });
+    };
+
     var my = {
         isTouchDevice: isTouchDevice,
         initTruncate: initTruncate,
@@ -285,6 +293,7 @@ finna.layout = (function() {
             initMultiSelect();
             initMobileNarrowSearch();
             initCheckboxClicks();
+            initScrollLinks();
         },
     };
 

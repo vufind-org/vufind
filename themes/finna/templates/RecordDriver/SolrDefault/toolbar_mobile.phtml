@@ -85,9 +85,8 @@
     <? if ($mergedData && count($mergedData['records']) > 1): ?>
     <ul class="nav nav-pills library-link">
       <li>
-        <span onClick="$('html, body').animate({
-        scrollTop: $('.recordProvidedBy').offset().top
-    }, 500);"><?=count($mergedData['records']);?> <?=$this->transEsc('In Libraries')?></a>
+        <span class="small-text"><?=$this->transEsc('Record Provided By')?></span>
+        <span><?=$this->transEsc('In Libraries', ['%%count%%' => count($mergedData['records'])])?></span>
       <li>
     </ul>
     <? endif; ?>
