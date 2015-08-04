@@ -91,13 +91,13 @@ class Results extends \VuFind\Search\Base\Results
                 if (isset($filter[$field])) {
                     $new = [];
                     foreach ($current as $value => $count) {
-                        $display = $this->getParams()->fixPrimoFacetValue($value);
+                        $rawFixed = $this->getParams()->fixPrimoFacetValue($value);
+                        $displayText = $translate ? $this->translate(
+                            "$value::$transTextDomain", [], $rawFixed
+                        ) : $rawFixed;
                         $new[] = [
                             'value' => $value,
-                            'displayText' =>
-                                $translate ? $this->translate(
-                                    "$value::$transTextDomain", [], $display
-                                ) : $display,
+                            'displayText' => $displayText,
                             'isApplied' =>
                                 $this->getParams()->hasFilter("$field:" . $value),
                             'operator' => 'AND', 'count' => $count
