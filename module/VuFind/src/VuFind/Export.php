@@ -339,10 +339,16 @@ class Export
             ? $this->exportConfig->$format->label : $format;
     }
 
-
-    public function getExportType()
+    public function getExportType($format)
     {
-        return (isset($this->mainConfig->BulkExport->type)) ? $this->mainConfig->BulkExport->type : 'url';
+        // if exportType is set on per-format basis in export.ini then use it
+        if (isset($format) && isset($this->exportConfig->$format->exportType)) {
+            return $this->exportConfig->$format->exportType;
+        }
+                
+        // else check if export type is set in config.ini
+        return (isset($this->mainConfig->BulkExport->type) ) 
+            ? $this->mainConfig->BulkExport->type : 'url';
     }
 
 }
