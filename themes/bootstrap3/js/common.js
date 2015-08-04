@@ -118,7 +118,8 @@ function bulkActionSubmit($form) {
   var submit = $form.find('[type="submit"][clicked=true]').attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
-    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    return false;
   }
   if (submit == 'print') {
     //redirect page
