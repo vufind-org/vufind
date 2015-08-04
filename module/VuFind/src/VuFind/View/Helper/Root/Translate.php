@@ -53,28 +53,6 @@ class Translate extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($str, $tokens = [], $default = null)
     {
-        list($str, $textDomain) = $this->extractTextDomain($str);
-        return $this->translate([$str,$textDomain], $tokens, $default);
+        return $this->translate($str, $tokens, $default);
     }
-
-    /**
-     * Extract text-domain from label. Use text-domain "default" if none given.
-     *
-     * Pattern is labelKey::textDomain
-     *
-     * @param String $str String to detect the text-domain from
-     *
-     * @return array
-     */
-    protected function extractTextDomain($str)
-    {
-        $parts = explode('::', $str);
-
-        if (count($parts) === 2) {
-            return $parts;
-        }
-
-        return [ $str,'default'];
-    }
-
 }

@@ -107,14 +107,10 @@ trait TranslatorAwareTrait
             return $this->translateString(
                 $str->getDisplayString(), $tokens, $default
             );
-        } elseif (is_array($str)) {
-            //if we go with this approach naming $str is bad
-            return $this->translateArray($str, $tokens, $default);
-        } else {
-            // Default case: deal with ordinary strings (or string-castable objects):
-            return $this->translateString((string)$str, $tokens, $default);
         }
 
+        // Default case: deal with ordinary strings (or string-castable objects):
+        return $this->translateString((string)$str, $tokens, $default);
     }
 
     /**
@@ -129,13 +125,11 @@ trait TranslatorAwareTrait
      */
     protected function translateString($str, $tokens = [], $default = null)
     {
+        // Figure out the text domain for the string:
+        list ($str, $domain) = $this->extractTextDomain($str);
 
-        //strings translated in a specialized text domain (not default)
-        // are indicated with field name:domain name
-        $msg = null !== $this->translator
-            ? is_array($str) && count($str) == 2 ?
-                $this->translator->translate($str[0], $str[1]) :
-                $this->translator->translate($str) : $str;
+        $msg = (null === $this->translator)
+            ? $str : $this->translator->translate($str, $domain);
 
         // Did the translation fail to change anything?  If so, use default:
         if (null !== $default && $msg == $str) {
@@ -156,50 +150,19 @@ trait TranslatorAwareTrait
     }
 
     /**
-     * Get translation for an array
+     * Given a translation string with or without a text domain, return an
+     * array with the raw string and the text domain separated.
      *
-     * @param array  $strWithTextDomain String to translate and TextDomain the string
-     *                                  is part of
-     * @param array  $tokens            Tokens to inject into the translated string
-     * @param string $default           Default value to use if no translation is
-     *                                  found (null for no default).
-     * for no default).
+     * @param string $str String to parse
      *
-     * @return string
+     * @return array
      */
-    protected function translateArray(array $strWithTextDomain, $tokens = [],
-        $default = null
-    ) {
-
-        //strings translated in a specialized text domain (not default) are
-        // indicated with field name:domain name
-        $msg = '';
-        if (null !== $this->translator) {
-            if (count($strWithTextDomain) == 2) {
-                $msg = $this->translator->translate(
-                    $strWithTextDomain[0],
-                    $strWithTextDomain[1]
-                );
-            } elseif (count($strWithTextDomain) == 1) {
-                $msg = $this->translator->translate($strWithTextDomain[0]);
-            }
+    protected function extractTextDomain($str)
+    {
+        $parts = explode('::', $str);
+        if (count($parts) == 2) {
+            return $parts;
         }
-
-        // Did the translation fail to change anything?  If so, use default:
-        if (null !== $default && $msg == '') {
-            $msg = $default;
-        }
-
-        // Do we need to perform substitutions?
-        if (!empty($tokens)) {
-            $in = $out = [];
-            foreach ($tokens as $key => $value) {
-                $in[] = $key;
-                $out[] = $value;
-            }
-            $msg = str_replace($in, $out, $msg);
-        }
-
-        return $msg;
+        return [$str, 'default'];
     }
 }
