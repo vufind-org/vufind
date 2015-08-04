@@ -107,6 +107,10 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
             ]
         );
         $entry->setCommentCount(count($record->getComments()));
+        $summaries = $record->tryMethod('getSummary');
+        if (!empty($summaries)) {
+            $entry->setDescription(implode(' -- ', $summaries));
+        }
 
         $feed->addEntry($entry);
     }
