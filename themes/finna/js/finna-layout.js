@@ -224,6 +224,7 @@ finna.layout = (function() {
             buttonClass: "form-control",
         });
     };
+    
     var initCheckboxClicks = function() {
       $('.checkboxFilter:not(.mylist-select-all) .checkbox input').click(function() {
         $(this).closest('.checkbox').toggleClass('checked');
@@ -240,31 +241,23 @@ finna.layout = (function() {
           $('.mylist-functions .jump-menu-style').addClass('disabled');
         }
       });
-      $('.checkboxFilter.mylist-select-all .checkbox .checkbox-select-all').click(function() {
-        if ($('.checkboxFilter.mylist-select-all .checkbox').hasClass('checked')) {
-          var isEverythingChecked = true;
-          $('.myresearch-row .checkboxFilter .checkbox').each(function() {
-            if (!$(this).hasClass('checked')) {
-              isEverythingChecked = false;
+
+        var myListSelectAll = $(".checkboxFilter.mylist-select-all");
+        var myListJumpMenu = $(".mylist-functions .jump-menu-style");
+        var myListFunctions = $(".mylist-functions button, .mylist-functions select");
+        myListSelectAll.find(".checkbox .checkbox-select-all").click(function() {            
+            var checkboxes = $(".myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox");
+            if ($(this).closest(".checkbox").hasClass("checked")) {
+                var isEverythingChecked = !$(".myresearch-row .checkboxFilter .checkbox").not(".checked").length;
+                checkboxes.toggleClass("checked", !isEverythingChecked);
+                myListJumpMenu.toggleClass("disabled", isEverythingChecked);
+                myListFunctions.attr("disabled", isEverythingChecked);
+            } else {
+                checkboxes.toggleClass("checked", true);
+                myListJumpMenu.toggleClass("disabled", false);                
+                myListFunctions.attr("disabled", false);
             }
-          });
-          if (isEverythingChecked == true) {
-            $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').removeClass('checked');
-            $('.mylist-functions button, .mylist-functions select').attr("disabled", true);
-            $('.mylist-functions .jump-menu-style').addClass('disabled');
-          }
-          else {
-            $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').addClass('checked');
-            $('.mylist-functions button, .mylist-functions select').removeAttr("disabled");
-            $('.mylist-functions .jump-menu-style').removeClass('disabled');
-          }
-        }
-        else {
-            $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').addClass('checked');
-            $('.mylist-functions button, .mylist-functions select').removeAttr("disabled");
-            $('.mylist-functions .jump-menu-style').removeClass('disabled');
-        }
-      });
+        });
     };
 
     var my = {
