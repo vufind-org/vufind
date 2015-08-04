@@ -262,7 +262,7 @@ class CartController extends AbstractBase
                     $view->to, $view->from, $view->message,
                     $url, $this->getViewRenderer(), $view->subject, $cc
                 );
-                return $this->redirectToSource('info', 'email_success');
+                return $this->redirectToSource('success', 'email_success');
             } catch (MailException $e) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
@@ -334,7 +334,7 @@ class CartController extends AbstractBase
                     'cart/export-success.phtml', ['url' => $url]
                 )
             ];
-            return $this->redirectToSource('info', $msg);
+            return $this->redirectToSource('success', $msg);
         }
 
         // Load the records:
@@ -422,7 +422,7 @@ class CartController extends AbstractBase
         if ($this->formWasSubmitted('submit')) {
             $this->favorites()
                 ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('bulk_save_success');
             $list = $this->params()->fromPost('list');
             if (!empty($list)) {

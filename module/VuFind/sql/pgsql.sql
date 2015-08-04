@@ -1,6 +1,6 @@
--- 
+--
 -- Table structure for table comments
--- 
+--
 
 DROP TABLE IF EXISTS "comments";
 
@@ -18,9 +18,9 @@ CREATE INDEX comments_resource_id_idx ON comments (resource_id);
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table resource
--- 
+--
 
 CREATE TABLE resource (
 id SERIAL,
@@ -36,9 +36,9 @@ CREATE INDEX resource_record_id_idx ON resource (record_id);
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table resource_tags
--- 
+--
 
 CREATE TABLE resource_tags (
 id SERIAL,
@@ -57,9 +57,9 @@ CREATE INDEX resource_tags_list_id_idx ON resource_tags (list_id);
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table search. Than fixed created column default value. Old value is 0000-00-00.
--- 
+--
 
 CREATE TABLE search (
 id SERIAL,
@@ -71,7 +71,7 @@ title varchar(20) DEFAULT NULL,
 saved int NOT NULL DEFAULT '0',
 search_object bytea,
 PRIMARY KEY (id)
-); 
+);
 CREATE INDEX search_user_id_idx ON search (user_id);
 CREATE INDEX search_folder_id_idx ON search (folder_id);
 CREATE INDEX session_id_idx ON search (session_id);
@@ -79,9 +79,9 @@ CREATE INDEX session_id_idx ON search (session_id);
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table tags
--- 
+--
 
 CREATE TABLE tags (
 id SERIAL,
@@ -91,18 +91,18 @@ PRIMARY KEY (id)
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table user
--- 
+--
 
 CREATE TABLE "user"(
 id SERIAL,
-username varchar(50) NOT NULL DEFAULT '',
+username varchar(255) NOT NULL DEFAULT '',
 password varchar(32) NOT NULL DEFAULT '',
 pass_hash varchar(60) DEFAULT NULL,
 firstname varchar(50) NOT NULL DEFAULT '',
 lastname varchar(50) NOT NULL DEFAULT '',
-email varchar(250) NOT NULL DEFAULT '',
+email varchar(255) NOT NULL DEFAULT '',
 cat_username varchar(50) DEFAULT NULL,
 cat_password varchar(50) DEFAULT NULL,
 cat_pass_enc varchar(110) DEFAULT NULL,
@@ -113,14 +113,14 @@ created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
 verify_hash varchar(42) NOT NULL DEFAULT '',
 PRIMARY KEY (id),
 UNIQUE (username)
-); 
+);
 
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table user_list
--- 
+--
 
 CREATE TABLE user_list (
 id SERIAL,
@@ -136,9 +136,9 @@ CREATE INDEX user_list_user_id_idx ON user_list (user_id);
 
 -- --------------------------------------------------------
 
--- 
+--
 -- Table structure for table user_resource
--- 
+--
 
 CREATE TABLE user_resource (
 id SERIAL,
@@ -156,9 +156,9 @@ CREATE INDEX user_resource_user_id_idx ON user_resource (user_id);
 CREATE INDEX user_resource_list_id_idx ON user_resource (list_id);
 
 
--- 
+--
 -- Table structure for table session
--- 
+--
 
 DROP TABLE IF EXISTS "session";
 
@@ -244,21 +244,45 @@ PRIMARY KEY (id)
 
 -- --------------------------------------------------------
 
--- 
--- Constraints for dumped tables
--- 
+--
+-- Table structure for table `user_card`
+--
 
--- 
+DROP TABLE IF EXISTS "user_card";
+
+CREATE TABLE `user_card` (
+id SERIAL,
+user_id int NOT NULL,
+card_name varchar(255) NOT NULL DEFAULT '',
+cat_username varchar(50) NOT NULL DEFAULT '',
+cat_password varchar(50) DEFAULT NULL,
+cat_pass_enc varchar(110) DEFAULT NULL,
+home_library varchar(100) NOT NULL DEFAULT '',
+created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
+saved timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+PRIMARY KEY (id),
+CONSTRAINT user_card_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE
+);
+CREATE INDEX user_card_cat_username_idx ON user_card (cat_username);
+CREATE INDEX user_card_user_id_idx ON user_card (user_id);
+
+-- --------------------------------------------------------
+
+--
+-- Constraints for dumped tables
+--
+
+--
 -- Constraints for table comments
--- 
+--
 ALTER TABLE comments
 ADD CONSTRAINT comments_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE,
 ADD CONSTRAINT comments_ibfk_2 FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE;
 
 
--- 
+--
 -- Constraints for table resource_tags
--- 
+--
 ALTER TABLE resource_tags
 ADD CONSTRAINT resource_tags_ibfk_14 FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE,
 ADD CONSTRAINT resource_tags_ibfk_15 FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE,
@@ -266,16 +290,16 @@ ADD CONSTRAINT resource_tags_ibfk_16 FOREIGN KEY (list_id) REFERENCES user_list 
 ADD CONSTRAINT resource_tags_ibfk_17 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL;
 
 
--- 
+--
 -- Constraints for table user_list
--- 
+--
 ALTER TABLE user_list
 ADD CONSTRAINT user_list_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
 
 
--- 
+--
 -- Constraints for table user_resource
--- 
+--
 ALTER TABLE user_resource
 ADD CONSTRAINT user_resource_ibfk_3 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE,
 ADD CONSTRAINT user_resource_ibfk_4 FOREIGN KEY (resource_id) REFERENCES resource (id) ON DELETE CASCADE,

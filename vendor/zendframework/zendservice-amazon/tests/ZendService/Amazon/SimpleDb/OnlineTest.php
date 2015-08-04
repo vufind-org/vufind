@@ -143,7 +143,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($attributeValue2, current($results[$attributeName2]->getValues()));
 
             $this->request('deleteDomain', array($domainName));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->request('deleteDomain', array($domainName));
             throw $e;
         }
@@ -176,7 +176,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($attributes[$attributeName1], $results[$attributeName1]);
             $this->assertEquals($attributes[$attributeName2], $results[$attributeName2]);
             $this->request('deleteDomain', array($domainName));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->request('deleteDomain', array($domainName));
             throw $e;
         }
@@ -269,7 +269,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals($items[$itemName1], $this->request('getAttributes', array($domainName, $itemName1)));
 
             $this->request('deleteDomain', array($domainName));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->request('deleteDomain', array($domainName));
             throw $e;
         }
@@ -336,7 +336,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals(0, count($results));
 
             $this->request('deleteDomain', array($domainName));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->request('deleteDomain', array($domainName));
             throw $e;
         }
@@ -353,7 +353,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         $domainName = null;
         try {
             // Create some domains
-            for($i = 1; $i <= 3; $i++) {
+            for ($i = 1; $i <= 3; $i++) {
                 $domainName = $this->_testDomainNamePrefix . '_testListDomains' . $i;
                 $this->request('deleteDomain', array($domainName));
                 $this->request('createDomain', array($domainName));
@@ -364,23 +364,23 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
             // Amazon returns an empty page as the last page :/
             $isLast = $page->isLast();
             if (!$isLast) {
-              // The old isLast() assertTrue failed in full suite runs. Token often
+                // The old isLast() assertTrue failed in full suite runs. Token often
               // decodes to 'TestsZendServiceAmazonSimpleDbDomain_testPutAttributes'
               // which no longer exists. Instead of a plain assertTrue, which seemed
               // to pass only in single-case runs, we'll make sure the token's
               // presence is worth a negative.
               $token = $page->getToken();
-              if ($token) {
-                $tokenDomainName = base64_decode($token);
-                if (false !== strpos($tokenDomainName, $this->_testDomainNamePrefix)) {
-                  try {
-                    $this->request('domainMetadata', array($tokenDomainName));
-                    $this->fail('listDomains call with 3 domain maximum did not return last page');
-                  } catch (Exception $e) {
-                    $this->assertContains('The specified domain does not exist', $e->getMessage());
-                  }
+                if ($token) {
+                    $tokenDomainName = base64_decode($token);
+                    if (false !== strpos($tokenDomainName, $this->_testDomainNamePrefix)) {
+                        try {
+                            $this->request('domainMetadata', array($tokenDomainName));
+                            $this->fail('listDomains call with 3 domain maximum did not return last page');
+                        } catch (Exception $e) {
+                            $this->assertContains('The specified domain does not exist', $e->getMessage());
+                        }
+                    }
                 }
-              }
             }
             $this->assertEquals(1, count($this->request('listDomains', array(1, $page->getToken()))));
 
@@ -398,13 +398,13 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
             $this->assertTrue($nextPage->isLast());
 
             // Delete the domains
-            for($i = 1; $i <= 3; $i++) {
+            for ($i = 1; $i <= 3; $i++) {
                 $domainName = $this->_testDomainNamePrefix . '_testListDomains' . $i;
                 $this->request('deleteDomain', array($domainName));
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             // Delete the domains
-            for($i = 1; $i <= 3; $i++) {
+            for ($i = 1; $i <= 3; $i++) {
                 $domainName = $this->_testDomainNamePrefix . '_testListDomains' . $i;
                 $this->request('deleteDomain', array($domainName));
             }
@@ -441,7 +441,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
 
             // Delete the domain
             $this->request('deleteDomain', array($domainName));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->request('deleteDomain', array($domainName));
             throw $e;
         }
@@ -462,7 +462,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
             $this->assertContains($domainName, $domainListPage->getData());
             // Delete the domain
             $this->request('deleteDomain', array($domainName));
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->request('deleteDomain', array($domainName));
             throw $e;
         }
@@ -481,7 +481,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
             $this->request('deleteDomain', array($domainName));
             $domainListPage = $this->request('listDomains');
             $this->assertNotContains($domainName, $domainListPage->getData());
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $this->request('deleteDomain', array($domainName));
             throw $e;
         }

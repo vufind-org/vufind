@@ -94,16 +94,17 @@ class Record extends AbstractHelper
         // in case we need to use a parent class' name to find the appropriate
         // template.
         $className = get_class($this->driver);
+        $resolver = $this->view->resolver();
         while (true) {
             // Guess the template name for the current class:
             $classParts = explode('\\', $className);
             $template = 'RecordDriver/' . array_pop($classParts) . '/' . $name;
-            try {
+            if ($resolver->resolve($template)) {
                 // Try to render the template....
                 $html = $this->view->render($template);
                 $this->contextHelper->restore($oldContext);
                 return $html;
-            } catch (RuntimeException $e) {
+            } else {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent class:
                 $className = get_parent_class($className);
@@ -303,6 +304,31 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Get HTML to render a title.
+     *
+     * @param int $maxLength Maximum length of non-highlighted title.
+     *
+     * @return string
+     */
+    public function getTitleHtml($maxLength = 180)
+    {
+        $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
+        $title = $this->driver->tryMethod('getTitle');
+        if (!empty($highlightedTitle)) {
+            $highlight = $this->getView()->plugin('highlight');
+            $addEllipsis = $this->getView()->plugin('addEllipsis');
+            return $highlight($addEllipsis($highlightedTitle, $title));
+        }
+        if (!empty($title)) {
+            $escapeHtml = $this->getView()->plugin('escapeHtml');
+            $truncate = $this->getView()->plugin('truncate');
+            return $escapeHtml($truncate($title, $maxLength));
+        }
+        $transEsc = $this->getView()->plugin('transEsc');
+        return $transEsc('Title not available');
+    }
+
+    /**
      * Get the name of the controller used by the record route.
      *
      * @return string
@@ -392,6 +418,45 @@ class Record extends AbstractHelper
             = ['id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix];
         return $this->contextHelper->renderInContext(
             'record/checkbox.phtml', $context
+        );
+    }
+
+    /**
+     * Render a cover for the current record.
+     *
+     * @param string $context Context of code being genarated
+     * @param string $default The default size of the cover
+     * @param string $link    The link for the anchor
+     *
+     * @return string
+     */
+    public function getCover($context, $default, $link = false)
+    {
+        if (isset($this->config->Content->coversize)
+            && !$this->config->Content->coversize
+        ) {
+            // covers disabled entirely
+            $preferredSize = false;
+        } else {
+            // check for context-specific overrides
+            $preferredSize = isset($this->config->Content->coversize[$context])
+                ? $this->config->Content->coversize[$context] : $default;
+        }
+        if (empty($preferredSize)) {
+            return '';
+        }
+
+        // Find best option if more than one size is defined (e.g. small:medium)
+        $cover = false;  // assume invalid until good size found below
+        foreach (explode(':', $preferredSize) as $size) {
+            if ($cover = $this->getThumbnail($size)) {
+                break;
+            }
+        }
+
+        $driver = $this->driver;    // for convenient use in compact()
+        return $this->contextHelper->renderInContext(
+            'record/cover.phtml', compact('cover', 'link', 'context', 'driver')
         );
     }
 
@@ -529,10 +594,27 @@ class Record extends AbstractHelper
             if (!isset($link['desc'])) {
                 $link['desc'] = $link['url'];
             }
-            
+
             return $link;
         };
 
         return array_map($formatLink, $urls);
+    }
+
+    /**
+     * Get all the links associated with this record depending on the OpenURL setting
+     * replace_other_urls.  Returns an array of associative arrays each containing
+     * 'desc' and 'url' keys.
+     *
+     * @return array
+     */
+    public function getLinkDetailsForOpenUrl()
+    {
+        if (isset($this->config->OpenURL->replace_other_urls)
+            && $this->config->OpenURL->replace_other_urls
+        ) {
+            return [];
+        }
+        return $this->getLinkDetails();
     }
 }

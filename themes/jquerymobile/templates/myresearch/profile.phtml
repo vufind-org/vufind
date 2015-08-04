@@ -7,6 +7,9 @@
   <div data-role="content">
     <h3><?=$this->transEsc('Your Profile')?></h3>
     <?=$this->flashmessages();?>
+
+    <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', array('user' => $this->auth()->isLoggedIn())); ?>
+
     <dl class="biblio">
     <?
         echo $this->renderArray(

@@ -18,7 +18,7 @@
       </div>
     <? endif; ?>
     <? if ($pubType): ?>
-      <p><?=$this->escapeHtml($pubType)?></p>
+      <p><?=$this->transEsc($pubType)?></p>
     <? endif; ?>
 
     <div class="external-links">
@@ -97,7 +97,7 @@
             <?=$this->transEsc('Full text is not displayed to guests')?>
           </td>
           <td>
-            <a class="login" href="<?=$this->url('myresearch-home')?>">
+            <a class="login" href="<?=$this->url('myresearch-home')?>" rel="nofollow">
               <strong><?=$this->transEsc('Login for full access')?></strong>
             </a>
           </td>
