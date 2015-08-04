@@ -199,9 +199,15 @@ class CartController extends AbstractBase
         foreach ($records as $record) {
             $parts[] = $recordHelper($record)->getExport($format);
         }
+        
+        
+        $content = $this->getExport()->processGroup($format, $parts);
+        $content = '<!DOCTYPE html><html><body><pre>';
+        $content .= implode('', $parts);
+        $content .= '</pre></body></html>';
 
         // Process and display the exported records
-        $response->setContent($this->getExport()->processGroup($format, $parts));
+        $response->setContent($content);
         return $response;
     }
 

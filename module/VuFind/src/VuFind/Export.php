@@ -218,13 +218,6 @@ class Export
                 }
             }
             return $retVal->asXML();
-        }
-        if ($format === 'HTML') {
-            $html = '<!DOCTYPE html><html><body>';
-            $html .= implode('', $parts);
-            $html .= '</body></html>';
-            
-            return $html;            
         } else {
             // Not in XML mode -- just concatenate everything together:
             return implode('', $parts);
