@@ -224,6 +224,23 @@ finna.layout = (function() {
             buttonClass: "form-control",
         });
     };
+  
+    var initMobileNarrowSearch = function() {
+        var filterAmount = $('.checkboxFilter input[checked]').length+$('.list-group.filters .list-group-item.active').length;
+        if (filterAmount > 0) {
+          $('.mobile-navigation .sidebar-navigation .active-filters').removeClass('hidden');
+          $('.mobile-navigation .sidebar-navigation .active-filters').append(' '+filterAmount);
+        }
+        $('.mobile-navigation .sidebar-navigation, .sidebar h4').click(function() {
+            $('.sidebar').toggleClass('open');
+            $('.mobile-navigation .sidebar-navigation i').toggleClass('fa-arrow-up');
+            $('body').toggleClass('prevent-scroll'); 
+        });
+        $('.mobile-navigation .sidebar-navigation .active-filters').click(function() {
+            $('.sidebar').scrollTop(0);
+        });  
+    };
+    
     var initCheckboxClicks = function() {
       $('.checkboxFilter:not(.mylist-select-all) .checkbox input').click(function() {
         $(this).closest('.checkbox').toggleClass('checked');
@@ -267,6 +284,14 @@ finna.layout = (function() {
       });
     };
 
+    var initScrollLinks = function() {
+      $('.library-link').click(function() {
+        $('html, body').animate({
+          scrollTop: $('.recordProvidedBy').offset().top
+        }, 500);
+      });
+    };
+
     var my = {
         isTouchDevice: isTouchDevice,
         initTruncate: initTruncate,
@@ -284,7 +309,9 @@ finna.layout = (function() {
             initContentNavigation();
             initRecordSwipe();
             initMultiSelect();
+            initMobileNarrowSearch();
             initCheckboxClicks();
+            initScrollLinks();
         },
     };
 
