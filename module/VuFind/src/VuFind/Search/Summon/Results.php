@@ -240,7 +240,7 @@ class Results extends \VuFind\Search\Base\Results
 
             // Create display value:
             $current['counts'][$facetIndex]['displayText'] = $translate
-                ? $this->translate($facetDetails['value'] . '::' . $transTextDomain)
+                ? $this->translate("$transTextDomain::{$facetDetails['value']}")
                 : $facetDetails['value'];
         }
 

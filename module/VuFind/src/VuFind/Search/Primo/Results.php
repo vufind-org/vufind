@@ -93,7 +93,7 @@ class Results extends \VuFind\Search\Base\Results
                     foreach ($current as $value => $count) {
                         $rawFixed = $this->getParams()->fixPrimoFacetValue($value);
                         $displayText = $translate ? $this->translate(
-                            "$value::$transTextDomain", [], $rawFixed
+                            "$transTextDomain::$value", [], $rawFixed
                         ) : $rawFixed;
                         $new[] = [
                             'value' => $value,

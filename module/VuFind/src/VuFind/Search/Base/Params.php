@@ -949,7 +949,7 @@ class Params implements ServiceLocatorAwareInterface
     {
         if ($translate) {
             $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
-            $displayText = $this->translate($value . '::' . $domain);
+            $displayText = $this->translate("$domain::$value");
         } else {
             $displayText = $value;
         }

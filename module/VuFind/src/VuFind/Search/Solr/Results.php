@@ -265,7 +265,7 @@ class Results extends \VuFind\Search\Base\Results
                 $currentSettings['value'] = $value;
                 $currentSettings['displayText']
                     = $translate
-                    ? $this->translate("$value::$translateTextDomain") : $value;
+                    ? $this->translate("$translateTextDomain::$value") : $value;
                 $currentSettings['count'] = $count;
                 $currentSettings['operator']
                     = $this->getParams()->getFacetOperator($field);

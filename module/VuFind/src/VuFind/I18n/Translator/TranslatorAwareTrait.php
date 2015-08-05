@@ -126,7 +126,7 @@ trait TranslatorAwareTrait
     protected function translateString($str, $tokens = [], $default = null)
     {
         // Figure out the text domain for the string:
-        list($str, $domain) = $this->extractTextDomain($str);
+        list($domain, $str) = $this->extractTextDomain($str);
 
         $msg = (null === $this->translator)
             ? $str : $this->translator->translate($str, $domain);
@@ -163,6 +163,6 @@ trait TranslatorAwareTrait
         if (count($parts) == 2) {
             return $parts;
         }
-        return [$str, 'default'];
+        return ['default', $str];
     }
 }
