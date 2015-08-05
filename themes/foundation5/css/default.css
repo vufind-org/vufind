@@ -2701,9 +2701,11 @@ ul.date-range-slider { margin: 0.25rem 1rem 0 1rem; }
 
 #searchForm select { margin-bottom: .5em; }
 
-#searchForm .checkbox label { color: #FFFFFF; /*font-size: .75rem;*/ line-height: 0.2; margin-left: .75rem; }
+#searchForm .checkbox { margin-top: -.8em; margin-bottom: 0; margin-left: 1.4em; }
 
-#searchForm input[type="checkbox"] { margin-left: 0; top: .8rem; }
+#searchForm .checkbox input[type="checkbox"] { margin-top: 4px; }
+
+#searchForm .checkbox label { padding-left: 0; color: #FFFFFF; }
 
 .top-bar + .nav.searchbox { background-color: #333333; }
 
@@ -2713,15 +2715,9 @@ ul.date-range-slider { margin: 0.25rem 1rem 0 1rem; }
 
 @media only screen and (min-width: 48rem) { .top-bar + .nav.searchbox ul li { display: inline; } }
 
-.top-bar #searchForm input[type="checkbox"] { margin-left: 0; }
+#shard-selector { /* @media only screen and (min-width: 20em) { clear: both; color: $iron; } @media only screen and (min-width: 45rem) { float: left; font-size: .7rem; line-height: 1; padding: 0; } @media (min-width: 62rem) { left: 1rem; top: 2.5rem; } @media (min-width: 80rem) { left: 0; } */ }
 
-@media only screen and (min-width: 20em) { #shard-selector { clear: both; color: #CCCCCC; } }
-
-@media only screen and (min-width: 45rem) { #shard-selector { float: left; font-size: .7rem; line-height: 1; padding: 0; } }
-
-@media (min-width: 62rem) { #shard-selector { left: 1rem; top: 2.5rem; } }
-
-@media (min-width: 80rem) { #shard-selector { left: 0; } }
+#shard-selector:before { content: " "; display: block; clear: both; }
 
 .searchHomeContent .panel { padding-bottom: 0; /*padding-left: 0; padding-right: 0;*/ }
 

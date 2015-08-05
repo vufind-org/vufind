@@ -474,19 +474,17 @@ ul.date-range-slider {
   }
 
   // Keep filter checkbox
-  .checkbox label {
-    color: $white;
-    /*font-size: .75rem;*/
-    line-height: 0.2;
-    margin-left: .75rem;
+  .checkbox {
+    margin-top: -.8em;
+    margin-bottom: 0;
+    margin-left: 1.4em;
+    input[type="checkbox"] {margin-top: 4px;}
+    label {
+      padding-left: 0;
+      color: $white;
+    }
   }
   // Keep filter checkbox - END
-
-  // Shard selector checkboxes for developer machines - see also below
-  input[type="checkbox"] {
-    margin-left: 0;
-    top: .8rem;
-  }
 }
 
 // Searchbox BG for search box when located directly under top-bar, used for search box AND adv search terms display
@@ -512,12 +510,13 @@ ul.date-range-slider {
   }
 }
 
-// Shard selector checkboxes for developer machines in top-bar and search form
-.top-bar #searchForm input[type="checkbox"] {
-  margin-left: 0;
-}
-
 #shard-selector {
+  &:before {
+    content: " ";
+    display: block;
+    clear: both;
+  }
+ /*
   @media only screen and (min-width: 20em) {
     clear: both;
     color: $iron;
@@ -535,6 +534,7 @@ ul.date-range-slider {
   @media (min-width: 80rem) {
     left: 0;
   }
+  */
 }
 
 // Shard selector checkboxes for developer machines - END
