@@ -2599,9 +2599,7 @@ ul .label { float: right; }
 
 .sidebar .side-nav li .active { background-color: #008CBA; color: #FFFFFF !important; z-index: 2; }
 
-.sidebar .side-nav li .active:hover { background-color: #f08a24; }
-
-.sidebar .side-nav li .active:focus { background-color: #a0d3e8; }
+.sidebar .side-nav li .active:hover { background-color: #008CBA; }
 
 .sidebar .side-nav li:not(.accordion-navigation) { border-left: 1px solid #e8e8e8; border-right: 1px solid #e8e8e8; }
 
@@ -2661,8 +2659,6 @@ ul.date-range-slider { margin: 0.25rem 1rem 0 1rem; }
 
 .top-bar .has-form li.has-form, .top-bar.search li.has-form { height: 2.5rem; }
 
-.top-bar .logoutLink > a { color: #F00; }
-
 .contain-to-grid .breadcrumbs { margin: 0 auto; margin-bottom: 0; max-width: 82rem; }
 
 .breadcrumbs.columns { float: none; }
@@ -2679,7 +2675,7 @@ ul.date-range-slider { margin: 0.25rem 1rem 0 1rem; }
 
 @media only screen and (max-width: 767px) { .twitter-typeahead { width: 100%; } }
 
-.top-bar .twitter-typeahead { line-height: 1.5; top: .4rem; }
+.top-bar .twitter-typeahead { line-height: 1.5; top: .5rem; }
 
 .top-bar .twitter-typeahead input { top: 0; }
 
@@ -2694,6 +2690,8 @@ ul.date-range-slider { margin: 0.25rem 1rem 0 1rem; }
 .tt-suggestion.tt-cursor { background-color: #008CBA; color: #FFFFFF; cursor: pointer; }
 
 .tt-suggestion p { font-size: 85% !important; margin: 0; }
+
+#searchForm_type { margin-top: 1px; }
 
 #searchForm ul { margin-bottom: 0; }
 

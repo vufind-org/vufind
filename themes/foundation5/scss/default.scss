@@ -161,13 +161,7 @@ ul {
         color: $white !important;
         z-index: 2;
 
-        &:hover {
-          background-color: $warning-color;
-        }
-
-        &:focus {
-          background-color: $info-color;
-        }
+        &:hover {background-color: $primary-color;}
       }
     }
     // create border around normal nav items
@@ -363,7 +357,7 @@ ul.date-range-slider {
   }
 
   .logoutLink > a {
-    color: #F00;
+    // color: #F00;
   }
 }
 
@@ -418,7 +412,7 @@ ul.date-range-slider {
 .top-bar {
   .twitter-typeahead {
     line-height: 1.5;
-    top: .4rem;
+    top: .5rem;
 
     input {
       top: 0;
@@ -460,6 +454,7 @@ ul.date-range-slider {
 }
 
 // Search form general - top-bar searchForm above
+#searchForm_type {margin-top: 1px;}
 #searchForm {
 
   ul {
