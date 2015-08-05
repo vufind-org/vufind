@@ -39,8 +39,9 @@
 <? if ($holdsAllowed && (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings)) || $this->ils()->getTitleHoldsMode() == 'driver')): ?>
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
-      <div class="alert alert-info">
-        <a href="<?=$this->currentPath()?>?login=true&amp;catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+      <div class="pull-right">
+        <a href="<?=$this->currentPath()?>?login=true&amp;catalogLogin=true" class="btn btn-primary"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+        <p>&nbsp;</p>
       </div>
     <? elseif (!$user->cat_username): ?>
       <div class="alert alert-info">

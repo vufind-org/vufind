@@ -305,6 +305,9 @@
         background: @body-bg;
         line-height: 39px;
     }
+    &.disabled {
+        .opacity(0.65);   
+    }
 }
 .jump-menu-style select::-ms-expand {
     display: none; /* to ie 10 */
@@ -327,39 +330,49 @@ button.multiselect {
 
 // List & grid view
 .view-buttons {
-    margin-right: 10px;
-    margin-bottom: 10px;
+    background: @link-color;
+    color: @body-bg;
+    display: inline-block;
+    font-weight: normal;
+    border-radius: @finna-button-radius;
+    padding: 7px 10px;
+    &:hover {
+        background: darken(@link-color, 10%);   
+    }
+    & .dropdown > a {
+        color: @body-bg;
+        &:hover, &:focus {
+            text-decoration: none;   
+        }
+    }
+    & i {
+        font-size: 18px;
+        vertical-align: middle;
+        color: #fff;
+        margin-top: -3px;
+        margin-right: 3px;
+    }
+    & i.fa-arrow-down {
+        font-size: 1em;   
+    }
+    & .dropdown-menu > li > a {
+        text-align: left;
+        color: @gray;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        & i {
+            color: @gray;   
+        }
+        & i.fa-available {
+            font-size: 1em;
+            float: right;
+        }
+    }
     @media(max-width:@screen-xs-max) {
         float: left;
         margin-right: 5px;
     }
 }
-.view-buttons, .view-buttons a {
-    display: inline-block;
-    color: @gray-dark;
-    font-weight: bold;
-    
-}
-.view-buttons i {
-    font-size: 18px;
-    padding: 8px 9px;
-    vertical-align: middle;
-    background: @link-color;
-    color: #fff;
-    border-radius: @finna-button-radius;   
-}
-.view-buttons a {
-    .opacity(0.6);
-    transition: opacity 0.1s linear;
-    &:hover {
-     .opacity(1);   
-    }
-}
-.view-buttons span {
-    line-height: 33px;
-    margin-right: 5px;
-}
-
 .swipe-arrow-navigation {
     position: fixed;
     width: 50px;

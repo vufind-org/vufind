@@ -985,7 +985,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
 
                         // Can we find an ISSN in subfield x? (same note as above)
                         $issn = $this->getSubfieldArray($currentField, ['x']);
-                        if (isset($number[0])) {
+                        if (isset($issn[0])) {
                             $currentArray['issn'] = $this->stripTrailingPunctuation(
                                 $issn[0]
                             );
