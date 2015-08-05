@@ -35,7 +35,7 @@ body {
   /*@include fs-smaller;*/
 }
 
-// ICONS 
+// ICONS
 .fa-grid:before {
   content: "\f00a";
 }
@@ -74,7 +74,7 @@ ul {
 
 // LISTS - END
 
-// TABLES 
+// TABLES
 .alphabrowse.table {
   margin-bottom: 0;
   table-layout: fixed;
@@ -191,7 +191,7 @@ ul {
     margin-bottom: 1rem;
 
     li {
-      border-color: $gainsboro $gainsboro -moz-use-text-color;
+      border-color: $gainsboro;
       border-image: none;
       border-style: solid solid none;
       border-width: 1px 1px medium;
@@ -503,7 +503,7 @@ ul.date-range-slider {
       margin-bottom: 0;
     }
   }
-  
+
   // Inline on larger devices
   @media only screen and (min-width: 48rem) {
     ul li {
@@ -945,6 +945,18 @@ button,
     font-size: 1rem;
     padding: .5rem 1rem;
   }
+}
+header #searchForm .tabs {
+  border: 0;
+
+  &:before {display: none;}
+
+  a {color: $white;}
+}
+.searchHomeContent .tabs {
+  border: 0;
+
+  &:before, &:after {display: none;}
 }
 
 .tabs-content {
