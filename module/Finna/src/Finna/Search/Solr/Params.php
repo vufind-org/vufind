@@ -28,7 +28,6 @@
  */
 namespace Finna\Search\Solr;
 
-
 /**
  * Solr Search Parameters
  *

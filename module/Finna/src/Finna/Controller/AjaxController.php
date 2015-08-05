@@ -154,7 +154,6 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $view->driver = $driver;
         $view->index = $index;
 
-
         $user = null;
         if ($publicList) {
             // Public list view: fetch list owner
@@ -669,7 +668,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
                         }
                     } else if ($setting == 'date') {
                         if (isset($tmp['date'])) {
-                            $tmp= new \DateTime(($tmp['date']));
+                            $tmp = new \DateTime(($tmp['date']));
                             $tmp = $tmp->format($dateFormat);
                         }
                     } else {

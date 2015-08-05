@@ -181,7 +181,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         preg_match('/Date\((\d+)\-(\d){2}(\d){2}\)/', $jsontime, $matches);
         if (count($matches) > 0) {
-            $matchestmp = intval($matches[1]/1000);
+            $matchestmp = intval($matches[1] / 1000);
             $date = date("n-j-Y", $matchestmp);
         } else {
             $date = 'n/a';
@@ -298,9 +298,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'barcode'         => $holdings_response->Barcode,
                 'shelf_location'  => $holdings_response->ShelfLocation,
                 'collection_name' => $holdings_response->CollectionName,
-            'per_item_holdable' => $per_item_holdable,
-            'designation' => $designation,
-            'holdable' => $holdings_response->Holdable,
+                //'per_item_holdable' => $per_item_holdable,
+                //'designation' => $designation,
+                'holdable' => $holdings_response->Holdable,
             ];
 
         }
@@ -618,10 +618,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         foreach ($fines_response_array as $fines_response) {
             $fineList[] = [
             // fees in vufind are in pennies
-            'amount'   => $fines_response->TransactionAmount*100,
+            'amount'   => $fines_response->TransactionAmount * 100,
             'checkout' => $this->formatJSONTime($fines_response->CheckOutDate),
             'fine'     => $fines_response->FeeDescription,
-            'balance'  => $fines_response->OutstandingAmount*100,
+            'balance'  => $fines_response->OutstandingAmount * 100,
             'duedate'    => $this->formatJSONTime($fines_response->DueDate),
             'createdate' => $this->formatJSONTime($fines_response->TransactionDate),
             'id'    => $fines_response->BibID,
@@ -745,7 +745,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             } elseif ($response->PAPIErrorCode == -2) {
                 $item_blocks[$renew_id]
                     = $response->ItemRenewResult->BlockRows[0]->ErrorDesc;
-                $item_response[$hold_id] = [
+                $item_response[$renew_id] = [
                 'success'  => -1,
                 'new_date' => false,
                 'item_id' => $response->ItemRenewResult->BlockRows[0]->ItemRecordID,
@@ -863,10 +863,9 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             return;
         }
 
-        $offset = $count-$items_per_page;
         $pages = ceil($count / $items_per_page);
 
-        $penultimate_page = $pages-1;
+        $penultimate_page = $pages - 1;
 
         if ($penultimate_page > 0) {
             $page_offset = $penultimate_page;

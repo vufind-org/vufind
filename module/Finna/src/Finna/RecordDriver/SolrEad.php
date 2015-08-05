@@ -102,7 +102,6 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
      * @param string $size Size of requested images
      *
      * @return mixed
-     * @access protected
      */
     public function getAllThumbnails($size = 'large')
     {
@@ -282,30 +281,30 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
             && !$this->isDigitized()
             && in_array('1/Document/ArchiveItem/', $this->getFormats())
         ) {
-            $urls[] = array(
+            $urls[] = [
                 'url' => $this->replaceURLPlaceholders(
                     $config->ead_document_order_link_template[$source]
                 ),
                 'desc' => 'ead_document_order'
-            );
+            ];
         }
         if (isset($config->ead_usage_permission_request_link_template[$source])
             && $this->getAccessRestrictions()
         ) {
-            $urls[] = array(
+            $urls[] = [
                 'url' => $this->replaceURLPlaceholders(
                     $config->ead_usage_permission_request_link_template[$source]
                 ),
                 'desc' => 'ead_usage_permission_request'
-            );
+            ];
         }
         if (isset($config->ead_external_link_template[$source])) {
-            $urls[] = array(
+            $urls[] = [
                 'url' => $this->replaceURLPlaceholders(
                     $config->ead_external_link_template[$source]
                 ),
                 'desc' => 'ead_external_link_description'
-            );
+            ];
         }
         return $urls;
     }
@@ -380,10 +379,10 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
                 }
             }
             if (!$this->urlBlacklisted($url, $desc)) {
-                $urls[] = array(
+                $urls[] = [
                     'url' => $url,
                     'desc' => $desc
-                );
+                ];
             }
         }
 
@@ -394,10 +393,10 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
                 (string)$node->p,
                 $matches
             )) {
-                $urls[] = array(
+                $urls[] = [
                     'url' => $matches[2],
                     'desc' => $matches[1]
-                );
+                ];
             }
         }
         return $urls;
@@ -473,16 +472,16 @@ class SolrEad extends \VuFind\RecordDriver\SolrDefault
         $originationId = $this->getOriginationId();
         list(, $nonPrefixedOriginationId) = explode('-', $originationId, 2);
         $url = str_replace(
-            array(
+            [
                 '{id}',
                 '{originationId}',
                 '{nonPrefixedOriginationId}'
-            ),
-            array(
+            ],
+            [
                 urlencode($this->getUniqueID()),
                 urlencode($originationId),
                 urlencode($nonPrefixedOriginationId),
-            ),
+            ],
             $url
         );
         return $url;

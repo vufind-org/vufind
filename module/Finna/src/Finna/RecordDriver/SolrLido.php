@@ -74,7 +74,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
         $this->dateConverter = $dateConverter;
     }
 
-
     /**
      * Return access restriction notes for the record.
      *
@@ -95,7 +94,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     && strtolower($attributes->type) == 'copyright'
                 ) {
                     if ($desc = $rights->xpath('term')) {
-                        return array((string)$desc[0]);
+                        return [(string)$desc[0]];
                     }
                 }
             }
@@ -304,10 +303,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                     if (isset($appellationValue) && trim($appellationValue) != '') {
                         $role = isset($actor->actorInRole->roleActor->term)
                             ? $actor->actorInRole->roleActor->term : '';
-                        $actors[] = array(
+                        $actors[] = [
                             'name' => $appellationValue,
                             'role' => $role
-                        );
+                        ];
                     }
                 }
             }
@@ -315,7 +314,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 ? (string)$node->culture->term : '';
             $description = isset($node->eventDescriptionSet->descriptiveNoteValue)
                 ? (string)$node->eventDescriptionSet->descriptiveNoteValue : '';
-            $event = array(
+            $event = [
                 'type' => $type,
                 'name' => $name,
                 'date' => $date,
@@ -325,7 +324,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 'actors' => $actors,
                 'culture' => $culture,
                 'description' => $description
-            );
+            ];
             $events[$type][] = $event;
         }
         return $events;
@@ -396,7 +395,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      *   'description Human readable description (array)
      *   'link'       Link to copyright info
      *   or false if the record contains no images
-     * @access protected
      */
     public function getImageRights($language)
     {
@@ -521,11 +519,11 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
                 ) {
                     $role = isset($actor->actorInRole->roleActor->term)
                         ? $actor->actorInRole->roleActor->term : '';
-                    $authors[] = array(
+                    $authors[] = [
                         'name' => $actor->actorInRole->actor->nameActorSet
                             ->appellationValue,
                         'role' => $role
-                    );
+                    ];
                 }
             }
         }
@@ -723,7 +721,6 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
      * @param string $confParam string of configuration parameter name
      *
      * @return bool
-     * @access protected
      */
     protected function getDataSourceConfigurationValue($confParam)
     {
@@ -756,12 +753,12 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault
         if ($startDate->format('m') == 1 && $startDate->format('d') == 1
             && $endDate->format('m') == 12 && $endDate->format('d') == 31
         ) {
-            return array($startDate->format('Y'), $endDate->format('Y'));
+            return [$startDate->format('Y'), $endDate->format('Y')];
         }
-        return array(
+        return [
             $this->dateConverter->convertToDisplayDate('U', $range[0]),
             $this->dateConverter->convertToDisplayDate('U', $range[1])
-        );
+        ];
     }
 
     /**

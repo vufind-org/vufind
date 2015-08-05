@@ -27,15 +27,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace Finna\Search\Factory;
 
 use Finna\Search\Solr\DeduplicationListener;
 use Finna\Search\Solr\SolrExtensionsListener;
 
-use \VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\BackendInterface;
 
-use \VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\Backend;
 
 /**
  * Abstract factory for SOLR backends.

@@ -73,11 +73,11 @@ class Primo extends \VuFind\RecordDriver\Primo
                 $url = substr($parts[1], 1);
 
                 $urlParts = parse_url($url);
-                $urls[] = array(
+                $urls[] = [
                    'url' => $url,
                    'urlShort' => $urlParts['host'],
                    'citation' => $citation
-                );
+                ];
                 break;
             }
         }
@@ -231,7 +231,7 @@ class Primo extends \VuFind\RecordDriver\Primo
      *
      * @return array
      */
-    protected function getDefaultOpenURLParams()
+    protected function getDefaultOpenUrlParams()
     {
         $link = isset($this->fields['url']) ? $this->fields['url'] : '';
 
@@ -239,7 +239,7 @@ class Primo extends \VuFind\RecordDriver\Primo
         // Take params from the OpenURL returned from Primo, if available
         if ($link && strpos($link, 'url_ver=Z39.88-2004') !== false) {
             parse_str(substr($link, strpos($link, '?') + 1), $params);
-            $params = $this->processOpenURLParams($params);
+            $params = $this->processOpenUrlParams($params);
         }
         $params['rfr_id'] = !empty($this->mainConfig->OpenURL->rfr_id)
             ? $this->mainConfig->OpenURL->rfr_id
@@ -277,7 +277,7 @@ class Primo extends \VuFind\RecordDriver\Primo
      *
      * @return array
      */
-    protected function processOpenURLParams($params)
+    protected function processOpenUrlParams($params)
     {
         foreach ($params as $key => $val) {
             if (strpos($key, 'rft_') === 0) {

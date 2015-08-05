@@ -50,14 +50,19 @@
               <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
             </div>
           <? endif; ?>
-          <div class="col-sm-2 col-xs-11 text-center">
-            <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-              <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="recordcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-            <? else: ?>
-              <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+          <? $cover = $this->record($resource)->getCover('holds', 'small'); ?>
+          <? if ($cover): ?>
+            <div class="col-sm-2 col-xs-11 text-center">
+            <? /* Display thumbnail if appropriate: */ ?>
+            <? if($cover): ?>
+              <?=$cover?>
             <? endif; ?>
-          </div>
-          <div class="col-sm-6 col-xs-12">
+            </div>
+
+            <div class="col-sm-6 col-xs-12">
+         <? else: ?>
+            <div class="col-sm-9 col-xs-11">
+         <? endif; ?>
             <?
               // If this is a non-missing Solr record, we should display a link:
               if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {

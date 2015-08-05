@@ -1,17 +1,18 @@
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>col-xs-11">
   <div class="row">
-    <div class="col-sm-2 col-xs-3 left">
+    <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-        <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-          <img class="recordcover" src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-        <? else: ?>
-          <img class="recordcover" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-        <? endif; ?>
-      </a>
+    </div>
+    <? $cover = $this->record($this->driver)->getCover('result-list', 'medium', $this->recordLink()->getUrl($this->driver)); ?>
+    <? if ($cover): ?>
+    <div class="col-sm-2 col-xs-3 left">
+      <?=$cover ?>
     </div>
     <div class="col-sm-7 col-xs-6 middle">
+    <? else : ?>
+    <div class="col-sm-9 col-xs-9 middle">
+    <? endif ?>
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
           <?=$this->record($this->driver)->getTitleHtml()?>

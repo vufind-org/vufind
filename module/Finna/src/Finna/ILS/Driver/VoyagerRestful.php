@@ -204,7 +204,7 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
             return false;
         }
 
-        $allowedLibraries = array();
+        $allowedLibraries = [];
         foreach ($libraries as $library) {
             if ($patronHomeUBID === $library['id']) {
                 $allowedLibraries[] = $library;
@@ -230,7 +230,7 @@ class VoyagerRestful extends \VuFind\ILS\Driver\VoyagerRestful
             return $locations;
         }
 
-        $allowedLocations = array();
+        $allowedLocations = [];
         foreach ($locations as $location) {
             if (in_array($location['id'], $allowedIDs)) {
                 $allowedLocations[] = $location;

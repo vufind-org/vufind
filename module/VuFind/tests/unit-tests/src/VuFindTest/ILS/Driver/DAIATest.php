@@ -45,7 +45,6 @@ use InvalidArgumentException;
  */
 class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
-
     /**
      * Constructor
      */

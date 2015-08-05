@@ -732,7 +732,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc
     public function getUniformTitles()
     {
         $results = [];
-        foreach (array('130', '240') as $fieldCode) {
+        foreach (['130', '240'] as $fieldCode) {
             foreach ($this->getMarcRecord()->getFields($fieldCode) as $field) {
                 foreach ($field->getSubfields() as $subfield) {
                     $subfields[] = $subfield->getData();

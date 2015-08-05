@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\View\Helper\Root;
-use \Finna\Search\UrlQueryHelper;
 
 /**
  * "Search tabs" view helper
@@ -132,7 +131,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                     if ($filters) {
                         $tab['url'] .= '&' .
                             $helper->buildQueryString(
-                                array('filter' => $filters), false
+                                ['filter' => $filters], false
                             );
                     }
                 }
