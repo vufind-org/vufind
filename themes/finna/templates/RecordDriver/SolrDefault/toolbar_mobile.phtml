@@ -85,8 +85,7 @@
     <? if ($mergedData && count($mergedData['records']) > 1): ?>
     <ul class="nav nav-pills library-link">
       <li>
-        <span class="small-text"><?=$this->transEsc('Record Provided By')?></span>
-        <span><?=$this->transEsc('In Libraries', ['%%count%%' => count($mergedData['records'])])?></span>
+        <?=$this->translate('record_library_count_html', ['%%count%%' => count($mergedData['records'])])?>
       <li>
     </ul>
     <? endif; ?>
