@@ -600,4 +600,21 @@ class Record extends AbstractHelper
 
         return array_map($formatLink, $urls);
     }
+
+    /**
+     * Get all the links associated with this record depending on the OpenURL setting
+     * replace_other_urls.  Returns an array of associative arrays each containing
+     * 'desc' and 'url' keys.
+     *
+     * @return array
+     */
+    public function getLinkDetailsForOpenUrl()
+    {
+        if (isset($this->config->OpenURL->replace_other_urls)
+            && $this->config->OpenURL->replace_other_urls
+        ) {
+            return [];
+        }
+        return $this->getLinkDetails();
+    }
 }

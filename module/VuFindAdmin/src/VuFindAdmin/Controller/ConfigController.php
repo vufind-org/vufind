@@ -65,7 +65,7 @@ class ConfigController extends AbstractAdmin
         $writer = new \VuFind\Config\Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
         if ($writer->save()) {
-            $this->flashMessenger()->setNamespace('info')
+            $this->flashMessenger()->setNamespace('success')
                 ->addMessage('Auto-configuration enabled.');
 
             // Reload config now that it has been edited (otherwise, old setting
