@@ -355,7 +355,7 @@ class Export
 
         // else check if export type is set in config.ini
         return isset($this->mainConfig->BulkExport->defaultType)
-            ? $this->mainConfig->BulkExport->defaultType : 'url';
+            ? $this->mainConfig->BulkExport->defaultType : 'link';
     }
 
 }
