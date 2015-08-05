@@ -128,6 +128,14 @@ function bulkActionSubmit($form) {
       url += '&id[]='+checks[i].value;
     }
     document.location.href = url;
+  }
+  
+  if (submit == 'exportHTML') {  
+  	Lightbox.submit($form, function(data) {
+      var win = window.open();
+      $(win.document.body).html(data);
+      Lightbox.close();
+    })
   } else {
     Lightbox.submit($form, Lightbox.changeContent);
   }
@@ -472,6 +480,12 @@ $(document).ready(function() {
       dataType:'json',
       data:Lightbox.getFormData($(evt.target)),
       success:function(data) {
+        if(data.data.export_type == 'download') {
+          document.location.href = data.data.result_url;
+          Lightbox.close();
+          return false;
+        } 
+      
         if(data.data.needs_redirect) {
           document.location.href = data.data.result_url;
         } else {
