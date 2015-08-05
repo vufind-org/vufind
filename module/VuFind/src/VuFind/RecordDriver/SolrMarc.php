@@ -131,7 +131,7 @@ class SolrMarc extends SolrDefault
         }
 
         // Send back everything we collected:
-        return $retval;
+        return array_unique($retval, SORT_REGULAR);
     }
 
     /**
