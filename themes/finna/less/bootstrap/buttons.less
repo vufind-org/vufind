@@ -330,19 +330,25 @@ button.multiselect {
 
 // List & grid view
 .view-buttons {
-    background: @link-color;
     color: @body-bg;
     display: inline-block;
     font-weight: normal;
-    border-radius: @finna-button-radius;
-    padding: 7px 10px;
-    &:hover {
-        background: darken(@link-color, 10%);   
+    margin-top: 7px;
+    & .dropdown {
+        border-radius: 10px;
     }
     & .dropdown > a {
+        background: @link-color;
         color: @body-bg;
+        border-radius: @finna-button-radius;
+        padding: 9px 10px;
+        & span {
+            padding-right: 20px;   
+        }
         &:hover, &:focus {
-            text-decoration: none;   
+            text-decoration: none;
+            background: darken(@link-color, 10%);
+            transition: background 0.2s linear;
         }
     }
     & i {
@@ -351,9 +357,12 @@ button.multiselect {
         color: #fff;
         margin-top: -3px;
         margin-right: 3px;
+        border-radius: @finna-button-radius;
     }
     & i.fa-arrow-down {
-        font-size: 1em;   
+        font-size: 1em;
+        margin-left: -18px;
+        -webkit-margin-end: -2px;  // fix for unknown border radius bug
     }
     & .dropdown-menu > li > a {
         text-align: left;
@@ -371,6 +380,7 @@ button.multiselect {
     @media(max-width:@screen-xs-max) {
         float: left;
         margin-right: 5px;
+        margin-bottom: 10px;
     }
 }
 .swipe-arrow-navigation {
