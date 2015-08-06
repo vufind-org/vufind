@@ -52,7 +52,7 @@ class OnlineTest extends \PHPUnit_Framework_TestCase
         if (!constant('TESTS_ZEND_SERVICE_AMAZON_ONLINE_ENABLED')) {
             $this->markTestSkipped('Zend_Service_Amazon_S3 online tests are not enabled');
         }
-        if(!defined('TESTS_ZEND_SERVICE_AMAZON_ONLINE_ACCESSKEYID') || !defined('TESTS_ZEND_SERVICE_AMAZON_ONLINE_SECRETKEY')) {
+        if (!defined('TESTS_ZEND_SERVICE_AMAZON_ONLINE_ACCESSKEYID') || !defined('TESTS_ZEND_SERVICE_AMAZON_ONLINE_SECRETKEY')) {
             $this->markTestSkipped('Constants AccessKeyId and SecretKey have to be set.');
         }
 

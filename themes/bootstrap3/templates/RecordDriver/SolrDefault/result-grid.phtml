@@ -15,15 +15,7 @@ $urls = $this->record($this->driver)->getLinkDetails();
     <?=$this->record($this->driver)->getCheckbox() ?></br>
   <? endif; ?>
   <div class="text-center">
-    <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-      <? if ($summThumb = $this->record($this->driver)->getThumbnail('large')): ?>
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-      <? elseif ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
-      <? else: ?>
-        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
-      <? endif; ?>
-    </a>
+    <?=$this->record($this->driver)->getCover('result-grid', 'small', $this->recordLink()->getUrl($this->driver)); ?>
   </div>
   <? if (!$openUrlActive && empty($urls)): ?>
     <? if ($this->driver->supportsAjaxStatus()): ?>

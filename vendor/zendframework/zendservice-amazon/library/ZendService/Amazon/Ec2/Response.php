@@ -133,5 +133,4 @@ class Response
     {
         $this->_xmlNamespace = $namespace;
     }
-
 }

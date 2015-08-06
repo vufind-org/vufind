@@ -3,8 +3,8 @@
 
   <ul class="pagination">
     <? if (isset($this->previous)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>"><i class="fa fa-first-page"></i></a></li>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><i class="fa fa-arrow-left"></i><span class="sr-only"><?=$this->transEsc('Prev')?></span></a></li>
+      <li class="pagination-button"><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>"><i class="fa fa-first-page"></i><span class="sr-only"><?=$this->transEsc('First')?></span></a></li>
+      <li class="pagination-button"><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>"><i class="fa fa-arrow-left"></i><span class="sr-only"><?=$this->transEsc('Prev')?></span></a></li>
     <? endif; ?>
     <? if (count($this->pagesInRange) > 1): ?>
       <? foreach ($this->pagesInRange as $page): ?>
@@ -16,8 +16,8 @@
       <? endforeach; ?>
     <? endif; ?>
     <? if (isset($this->next)): ?>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><i class="fa fa-arrow-right"></i><span class="sr-only"><?=$this->transEsc('Next');?></span></a></li>
-      <li><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>"><i class="fa fa-last-page"></i> <?=$this->pageCount?></a></li>
+      <li class="pagination-button"><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><i class="fa fa-arrow-right"></i><span class="sr-only"><?=$this->transEsc('Next');?></span></a></li>
+      <li class="pagination-button"><a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>"><i class="fa fa-last-page"></i><span class="sr-only"><?=$this->transEsc('Last')?></span></a></li>
     <? endif; ?>
   </ul>
 <? endif; ?>

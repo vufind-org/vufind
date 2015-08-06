@@ -164,7 +164,7 @@ class Loader extends \VuFind\Cover\Loader
     protected function getIdentifiers()
     {
         if ($this->url) {
-            return array('url' => $this->url);
+            return ['url' => $this->url];
         } else {
             return parent::getIdentifiers();
         }
@@ -197,9 +197,9 @@ class Loader extends \VuFind\Cover\Loader
 
         $keys = array_merge(
             $keys,
-            array(
+            [
                   $this->index, $this->width, $this->height
-            )
+            ]
         );
 
         $file = implode('-', $keys);
@@ -252,7 +252,6 @@ class Loader extends \VuFind\Cover\Loader
             return false;
         }
 
-
         // Figure out file paths -- $tempFile will be used to store the
         // image for analysis.  $finalFile will be used for long-term storage if
         // $cache is true or for temporary display purposes if $cache is false.
@@ -268,7 +267,6 @@ class Loader extends \VuFind\Cover\Loader
         if (!is_callable('imagecreatefromstring')) {
             return false;
         }
-
 
         // Try to create a GD image and rewrite as JPEG, fail if we can't:
         if (!($imageGD = @imagecreatefromstring($image))) {
@@ -313,7 +311,6 @@ class Loader extends \VuFind\Cover\Loader
                 return false;
             }
         }
-
 
         // Display the image:
         $this->contentType = 'image/jpeg';

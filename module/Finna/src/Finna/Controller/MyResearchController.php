@@ -38,7 +38,6 @@ namespace Finna\Controller;
  */
 class MyResearchController extends \VuFind\Controller\MyResearchController
 {
-
     /**
      * Send list of checked out books to view.
      * Added profile to view, so borrow blocks can be shown.
@@ -214,7 +213,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         if (isset($profile['messagingServices'])) {
             $view->services = $profile['messagingServices'];
             $emailDays = [];
-            foreach (array(1, 2, 3, 4, 5) as $day) {
+            foreach ([1, 2, 3, 4, 5] as $day) {
                 if ($day == 1) {
                     $label = $this->translate('messaging_settings_num_of_days');
                 } else {
@@ -250,7 +249,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             $view->success = $this->processDeleteAccount();
         } elseif ($this->formWasSubmitted('reset')) {
             return $this->redirect()->toRoute(
-                'default', ['controller'=> 'MyResearch', 'action' => 'Profile']
+                'default', ['controller' => 'MyResearch', 'action' => 'Profile']
             );
         }
         $view->setTemplate('myresearch/delete-account');

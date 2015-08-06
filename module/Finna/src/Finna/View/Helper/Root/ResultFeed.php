@@ -53,7 +53,10 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
     {
         $entry = $feed->createEntry();
         $title = $record->tryMethod('getTitle');
-        $entry->setTitle(empty($title) ? $record->getBreadcrumb() : $title);
+        $title = empty($title) ? $record->getBreadcrumb() : $title;
+        $entry->setTitle(
+            empty($title) ? $this->translate('Title not available') : $title
+        );
         $serverUrl = $this->getView()->plugin('serverurl');
         $recordLink = $this->getView()->plugin('recordlink');
         try {
@@ -75,19 +78,28 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
         if (!empty($author)) {
             $entry->addAuthor(['name' => $author]);
         }
-        $formats = $record->tryMethod('getFormats');
-        if (is_array($formats)) {
-            foreach ($formats as $format) {
-                $entry->addDCFormat($format);
+        $authors = $record->tryMethod('getSecondaryAuthors');
+        if (is_array($authors)) {
+            foreach ($authors as $author) {
+                $entry->addAuthor(['name' => $author]);
             }
         }
-        $date = $record->tryMethod('getPublicationDates');
-        if (isset($date[0]) && !empty($date[0])) {
-            $entry->setDCDate($date[0]);
+        $formats = $record->tryMethod('getFormats');
+        if (is_array($formats)) {
+            // Take only the most specific format and get rid of level indicator 
+            // and trailing slash
+            $format = end($formats);
+            $format = implode('/', array_slice(explode('/', $format), 1, -1));
+            $entry->addDCFormat($format);
+        }
+        $dcDate = $this->getDcDate($record);
+        if (!empty($dcDate)) {
+            $entry->setDCDate($dcDate);
         }
         $urlHelper = $this->getView()->plugin('url');
-        $imageUrl = $urlHelper('cover-show') . '?'
-            . http_build_query($record->getRecordImage('large'));
+        $recordHelper = $this->getView()->plugin('record');
+        $recordImage = $this->getView()->plugin('recordImage');
+        $imageUrl = $recordImage($recordHelper($record))->getLargeImage();
         $entry->setEnclosure(
             [
                 'uri' => $serverUrl($imageUrl),
@@ -97,6 +109,11 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
                 'length' => 1
             ]
         );
+        $entry->setCommentCount(count($record->getComments()));
+        $summaries = $record->tryMethod('getSummary');
+        if (!empty($summaries)) {
+            $entry->setDescription(implode(' -- ', $summaries));
+        }
 
         $feed->addEntry($entry);
     }

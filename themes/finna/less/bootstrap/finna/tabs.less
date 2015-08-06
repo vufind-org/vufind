@@ -6,7 +6,7 @@
         border-bottom: none;
         margin: 0 0 0 15px;
         
-            @media(max-width: @screen-sm) {
+            @media(max-width: @screen-xs-max) {
             margin-left: 0;
             }
 
@@ -24,6 +24,13 @@
                 font-weight: bold;
                 color: #fff;
                 transition: none;
+                @media(max-width: @screen-xs-max) {
+                    max-width: 100px;
+                    padding: 8px 10px;
+                    font-size: .9em;
+                    display: inline-flex;
+                    line-height: 1.3em;
+                }
             }
 
             &.active {

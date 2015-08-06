@@ -75,7 +75,6 @@ class Search extends \VuFind\Db\Row\Search
      * @param object            $user User object
      *
      * @return string token
-     * @access public
      */
     public function getUnsubscribeSecret(HMAC $hmac, $user)
     {

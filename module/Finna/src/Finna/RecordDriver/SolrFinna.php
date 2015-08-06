@@ -297,7 +297,7 @@ trait SolrFinna
                 }
             }
             if (!is_array($url)) {
-                return array('id' => $this->getUniqueId(), 'url' => $url);
+                return ['id' => $this->getUniqueId(), 'url' => $url];
             }
         }
         $params = parent::getThumbnail($size);
@@ -383,7 +383,7 @@ trait SolrFinna
      *
      * @return bool
      */
-    public function openURLActive($area)
+    public function openUrlActive($area)
     {
         // Only display OpenURL link if the option is turned on and we have
         // an ISSN, ISBN or SFX Object ID.
@@ -395,7 +395,7 @@ trait SolrFinna
 
         // Bypass SolrDefault since it only allows OpenURL's for records that have
         // an ISSN
-        return AbstractBase::openURLActive($area);
+        return AbstractBase::openUrlActive($area);
     }
 
     /**
@@ -403,9 +403,9 @@ trait SolrFinna
      *
      * @return array
      */
-    protected function getBookSectionOpenURLParams()
+    protected function getBookSectionOpenUrlParams()
     {
-        $params = $this->getBookOpenURLParams();
+        $params = $this->getBookOpenUrlParams();
         $params['rft.volume'] = $this->getContainerVolume();
         $params['rft.issue'] = $this->getContainerIssue();
         $params['rft.spage'] = $this->getContainerStartPage();
@@ -421,9 +421,9 @@ trait SolrFinna
      *
      * @return array
      */
-    protected function getJournalOpenURLParams()
+    protected function getJournalOpenUrlParams()
     {
-        $params = parent::getJournalOpenURLParams();
+        $params = parent::getJournalOpenUrlParams();
         if ($objectId = $this->getSfxObjectId()) {
             $params['rft.object_id'] = $objectId;
         }
@@ -435,7 +435,7 @@ trait SolrFinna
      *
      * @return string
      */
-    protected function getOpenURLFormat()
+    protected function getOpenUrlFormat()
     {
         // If we have multiple formats, Book, Journal and Article are most
         // important...

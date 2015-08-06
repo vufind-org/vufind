@@ -91,7 +91,6 @@ class ElasticIpTest extends \PHPUnit_Framework_TestCase
         $return = $this->elasticip->associate('67.202.55.255', 'i-ag8ga0a');
 
         $this->assertTrue($return);
-
     }
 
     /**
@@ -166,7 +165,7 @@ class ElasticIpTest extends \PHPUnit_Framework_TestCase
             )
         );
 
-        foreach($response as $k => $r) {
+        foreach ($response as $k => $r) {
             $this->assertSame($arrIps[$k], $r);
         }
     }
@@ -193,7 +192,6 @@ class ElasticIpTest extends \PHPUnit_Framework_TestCase
         $return = $this->elasticip->disassocate('67.202.55.255');
 
         $this->assertTrue($return);
-
     }
 
     /**
@@ -218,7 +216,5 @@ class ElasticIpTest extends \PHPUnit_Framework_TestCase
         $return = $this->elasticip->release('67.202.55.255');
 
         $this->assertTrue($return);
-
     }
-
 }

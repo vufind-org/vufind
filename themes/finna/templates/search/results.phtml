@@ -126,7 +126,7 @@
 <div class="container-fluid pagination-background">
   <div class="container">
     <div class="row">
-      <div class="col-xs-12 text-center">
+      <div class="<?=$this->layoutClass('mainbody')?> text-center">
         <?=$pagination ?>
       </div>
     </div>        
@@ -151,12 +151,9 @@
       </div>
   </div>
 </div>
-<div class="mobile-navigation visible-xs">
-        <div class="extra-link-1">
-        </div>
-        <div class="extra-link-2">
-             <p class="back-to-top"> <i class="fa fa-handle-close"></i></p>
-             <p class="scroll-sidebar"><i class="fa fa-handle-open"></i></p>
-        </div>
+<div class="mobile-navigation brand-primary visible-xs">
+  <ul>
+    <li class="sidebar-navigation"><i class="fa fa-arrow-up fa-arrow-down"></i> <?=$this->transEsc('Narrow Search')?> <span class="active-filters hidden"><?=$this->transEsc('Active filters')?>: </span></li>
+  </div>
 </div>
 

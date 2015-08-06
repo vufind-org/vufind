@@ -116,7 +116,7 @@ class Generator
      */
     protected function generateSolid($title, $author, $callnumber)
     {
-        $half = $this->settings->size/2;
+        $half = $this->settings->size / 2;
         // Create image
         if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
             throw new \Exception("Cannot Initialize new GD image stream");
@@ -131,7 +131,7 @@ class Generator
         // Number to color, hsb to control saturation and lightness
         $color = $this->makeHSBColor(
             $im,
-            $seed%256,
+            $seed % 256,
             $this->settings->saturation,
             $this->settings->lightness
         );
@@ -150,7 +150,7 @@ class Generator
             $im,
             strtoupper($title[0]),
             $half,
-            $half+28,
+            $half + 28,
             $this->settings->titleFont,
             60,
             $this->white,
@@ -182,8 +182,8 @@ class Generator
     protected function generateGrid($title, $author, $callnumber)
     {
         // Set up common variables
-        $half = $this->settings->size/2;
-        $box  = $this->settings->size/8;
+        $half = $this->settings->size / 2;
+        $box  = $this->settings->size / 8;
 
         // Create image
         if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
@@ -199,7 +199,7 @@ class Generator
         // Number to color, hsb to control saturation and lightness
         $grid_color = $this->makeHSBColor(
             $im,
-            $seed%256,
+            $seed % 256,
             $this->settings->saturation,
             $this->settings->lightness
         );
@@ -241,7 +241,7 @@ class Generator
         }
         if (null !== $callnumber) {
             $cv = 0;
-            for ($i = 0;$i<strlen($callnumber);$i++) {
+            for ($i = 0;$i < strlen($callnumber);$i++) {
                 $cv += ord($callnumber[$i]);
             }
             return $cv;
@@ -297,7 +297,7 @@ class Generator
         $line = '';
         $lineCount = 0;
         $i = 0;
-        while ($i<count($words) && $lineCount<$this->settings->maxLines-1) {
+        while ($i < count($words) && $lineCount < $this->settings->maxLines - 1) {
             $pline = $line;
             // Format
             $text = strtoupper($words[$i]);
@@ -313,7 +313,7 @@ class Generator
                     $im,
                     $pline,
                     3,
-                    $this->settings->topPadding+$lineHeight*$lineCount,
+                    $this->settings->topPadding + $lineHeight * $lineCount,
                     $this->settings->titleFont,
                     $this->settings->fontSize,
                     $this->black,
@@ -329,21 +329,22 @@ class Generator
             $im,
             $line,
             3,
-            $this->settings->topPadding+$lineHeight*$lineCount,
+            $this->settings->topPadding + $lineHeight * $lineCount,
             $this->settings->titleFont,
             $this->settings->fontSize,
             $this->black,
             $this->white
         );
         // Add ellipses if we've truncated
-        if ($i < count($words)-1) {
+        if ($i < count($words) - 1) {
             $this->drawText(
                 $im,
                 '...',
                 5,
-                $this->settings->topPadding+$this->settings->maxLines*$lineHeight,
+                $this->settings->topPadding
+                + $this->settings->maxLines * $lineHeight,
                 $this->settings->titleFont,
-                $this->settings->fontSize+1,
+                $this->settings->fontSize + 1,
                 $this->black,
                 $this->white
             );
@@ -382,7 +383,7 @@ class Generator
             $im,
             $author,
             5,
-            $this->settings->size-3,
+            $this->settings->size - 3,
             $this->settings->authorFont,
             $fontSize,
             $this->white,
@@ -418,7 +419,7 @@ class Generator
     protected function textWidth($text, $font, $size)
     {
         $p = imagettfbbox($size, 0, $font, $text);
-        return $p[2]-$p[0]-4;
+        return $p[2] - $p[0] - 4;
     }
 
     /**
@@ -453,21 +454,21 @@ class Generator
         }
         if ($align == 'center') {
             $p = imagettfbbox($fontSize, 0, $this->settings->titleFont, $text);
-            $txtWidth = $p[2]-$p[0]-4;
-            $x = ($this->settings->size-$txtWidth)/2;
+            $txtWidth = $p[2] - $p[0] - 4;
+            $x = ($this->settings->size - $txtWidth) / 2;
         }
         if ($align == 'right') {
             $p = imagettfbbox($fontSize, 0, $this->settings->titleFont, $text);
-            $txtWidth = $p[2]-$p[0]-4;
-            $x = $this->settings->size-$txtWidth-$x;
+            $txtWidth = $p[2] - $p[0] - 4;
+            $x = $this->settings->size - $txtWidth - $x;
         }
 
         // Generate 5 lines of text, 4 offset in a border color
         if ($scolor) {
-            imagettftext($im, $fontSize, 0, $x,   $y+1, $scolor, $font, $text);
-            imagettftext($im, $fontSize, 0, $x,   $y-1, $scolor, $font, $text);
-            imagettftext($im, $fontSize, 0, $x+1, $y,   $scolor, $font, $text);
-            imagettftext($im, $fontSize, 0, $x-1, $y,   $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x,   $y + 1, $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x,   $y - 1, $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x + 1, $y,   $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x - 1, $y,   $scolor, $font, $text);
         }
         // 1 centered in main color
         imagettftext($im, $fontSize, 0, $x,   $y,   $mcolor, $font, $text);
@@ -488,18 +489,20 @@ class Generator
     protected function render($bc, $im, $color, $half, $box)
     {
         $bc = str_split($bc);
-        for ($k = 0;$k<4;$k++) {
-            $x = $k%2   ? $half : $half-$box;
-            $y = $k/2<1 ? $half : $half-$box;
-            $u = $k%2   ? $box : -$box;
-            $v = $k/2<1 ? $box : -$box;
-            for ($i = 0;$i<16;$i++) {
+        for ($k = 0;$k < 4;$k++) {
+            $x = $k % 2   ? $half : $half - $box;
+            $y = $k / 2 < 1 ? $half : $half - $box;
+            $u = $k % 2   ? $box : -$box;
+            $v = $k / 2 < 1 ? $box : -$box;
+            for ($i = 0;$i < 16;$i++) {
                 if ($bc[$i] == "1") {
-                    imagefilledrectangle($im, $x, $y, $x+$box-1, $y+$box-1, $color);
+                    imagefilledrectangle(
+                        $im, $x, $y, $x + $box - 1, $y + $box - 1, $color
+                    );
                 }
                 $x += $u;
                 if ($x >= $this->settings->size || $x < 0) {
-                    $x = $k%2 ? $half : $half-$box;
+                    $x = $k % 2 ? $half : $half - $box;
                     $y += $v;
                 }
             }

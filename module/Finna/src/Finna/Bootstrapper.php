@@ -39,7 +39,6 @@ use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
  */
 class Bootstrapper extends \VuFind\Bootstrapper
 {
-
     /**
      * Set up configuration manager.
      *
