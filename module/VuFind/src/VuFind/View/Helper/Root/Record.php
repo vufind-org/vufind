@@ -562,6 +562,9 @@ class Record extends AbstractHelper
         if (empty($urls)) {
             return [];
         }
+        
+        //removes duplicates that have the same url and desc (would be better to remove a duplicate based on url only, but that does not seem to be very efficient)
+        $urls = array_map('unserialize', array_unique(array_map('serialize', $urls)));
 
         // If we found links, we may need to convert from the "route" format
         // to the "full URL" format.
