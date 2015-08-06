@@ -128,6 +128,11 @@ class DAIA extends AbstractBase implements
     {
         if (isset($this->config['DAIA']['baseUrl'])) {
             $this->baseUrl = $this->config['DAIA']['baseUrl'];
+        } elseif (isset($this->config['Global']['baseUrl'])) {
+            throw new ILSException(
+                'Deprecated [Global] section in DAIA.ini present, but no [DAIA] ' .
+                'section found: please update DAIA.ini (cf. config/vufind/DAIA.ini).'
+            );
         } else {
             throw new ILSException('DAIA/baseUrl configuration needs to be set.');
         }
