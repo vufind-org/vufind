@@ -1976,7 +1976,7 @@ EOT;
                 $cancel = $cancel->children();
                 $node = "reply-text";
                 $reply = (string)$cancel->$node;
-                $count = ($reply == "ok") ? $count+1 : $count;
+                $count = ($reply == "ok") ? $count + 1 : $count;
 
                 $response[$itemId] = [
                     'success' => ($reply == "ok") ? true : false,
@@ -2100,7 +2100,7 @@ EOT;
                     if ($dueTimeStamp !== false && is_numeric($dueTimeStamp)) {
                         if ($now > $dueTimeStamp) {
                             $dueStatus = 'overdue';
-                        } else if ($now > $dueTimeStamp-(1*24*60*60)) {
+                        } else if ($now > $dueTimeStamp - (1 * 24 * 60 * 60)) {
                             $dueStatus = 'due';
                         }
                     }
@@ -3069,7 +3069,7 @@ EOT;
                 $cancel = $cancel->children();
                 $node = "reply-text";
                 $reply = (string)$cancel->$node;
-                $count = ($reply == "ok") ? $count+1 : $count;
+                $count = ($reply == "ok") ? $count + 1 : $count;
 
                 $response[$itemId] = [
                     'success' => ($reply == "ok") ? true : false,

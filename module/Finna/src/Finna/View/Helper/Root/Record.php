@@ -76,7 +76,7 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function getRecordImage($size)
     {
-        $params = $this->driver->tryMethod('getRecordImage', array($size));
+        $params = $this->driver->tryMethod('getRecordImage', [$size]);
         if (empty($params)) {
             return $this->getThumbnail($size);
         }
@@ -93,7 +93,7 @@ class Record extends \VuFind\View\Helper\Root\Record
      */
     public function getNumOfRecordImages($size)
     {
-        $images = $this->driver->trymethod('getAllThumbnails', array($size));
+        $images = $this->driver->trymethod('getAllThumbnails', [$size]);
         return count($images);
     }
 

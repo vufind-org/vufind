@@ -26,10 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 namespace Finna\Search\Solr;
 
-use \VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\BackendInterface;
 
 use Zend\EventManager\EventInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
@@ -105,8 +104,8 @@ class SolrExtensionsListener
     public function attach(
         SharedEventManagerInterface $manager
     ) {
-        $manager->attach('VuFind\Search', 'pre', array($this, 'onSearchPre'));
-        $manager->attach('VuFind\Search', 'post', array($this, 'onSearchPost'));
+        $manager->attach('VuFind\Search', 'pre', [$this, 'onSearchPre']);
+        $manager->attach('VuFind\Search', 'post', [$this, 'onSearchPost']);
     }
 
     /**
@@ -126,7 +125,7 @@ class SolrExtensionsListener
             $context = $event->getParam('context');
             $query = $event->getParam('query');
             if ($params && ($context == 'search' || $context == 'similar')
-                && ($query === null || !is_callable(array($query, 'getHandler'))
+                && ($query === null || !is_callable([$query, 'getHandler'])
                 || $query->getHandler() !== 'ParentID')
             ) {
                 $params->add('fq', '-hidden_component_boolean:TRUE');

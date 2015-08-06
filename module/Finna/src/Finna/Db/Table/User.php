@@ -38,7 +38,6 @@ namespace Finna\Db\Table;
  */
 class User extends \VuFind\Db\Table\User
 {
-
     /**
      * Constructor
      *

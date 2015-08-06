@@ -63,7 +63,7 @@ class ContentController extends \VuFind\Controller\AbstractBase
             $page = "{$page}_$language";
         }
 
-        return $this->createViewModel(array('page' => $page));
+        return $this->createViewModel(['page' => $page]);
     }
 
     /**

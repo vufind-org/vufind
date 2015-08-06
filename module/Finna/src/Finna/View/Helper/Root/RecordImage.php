@@ -38,7 +38,6 @@ namespace Finna\View\Helper\Root;
  */
 class RecordImage extends \Zend\View\Helper\AbstractHelper
 {
-
     /**
      * Image parameters
      *
@@ -144,9 +143,9 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
 
         $images = [];
         if ($numOfImages > 1) {
-            for ($i=0; $i<$numOfImages; $i++) {
+            for ($i = 0; $i < $numOfImages; $i++) {
                 $params['index'] = $i;
-                $images[] = array(
+                $images[] = [
                     'small' => $urlHelper('cover-show') . '?' .
                         http_build_query(
                             array_merge($params, $this->params['small'])
@@ -161,7 +160,7 @@ class RecordImage extends \Zend\View\Helper\AbstractHelper
                         http_build_query(
                             array_merge($params, $this->params['large'])
                         )
-                );
+                ];
             }
         }
         $view->allImages = $images;

@@ -12,14 +12,15 @@
 ?>
 <div class="listentry recordId source<?=$this->escapeHtmlAttr($source)?><?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>" id="record<?=$this->escapeHtmlAttr($id)?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-  <div class="span-2">
-    <? if ($listThumb = $this->record($this->driver)->getThumbnail()): ?>
-      <img src="<?=$this->escapeHtmlAttr($listThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-    <? else: ?>
-      <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-    <? endif; ?>
-  </div>
+  <? $cover = $this->record($this->driver)->getCover('list-entry', 'small'); ?>
+  <? if ($cover): ?>
+   <div class="span-2">
+     <?=$cover?>
+   </div>
   <div class="span-10">
+  <? else: ?>
+  <div class="span-12">
+  <? endif; ?>
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
       <?=$this->record($this->driver)->getTitleHtml()?>
     </a><br/>

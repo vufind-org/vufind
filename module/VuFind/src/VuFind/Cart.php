@@ -163,7 +163,7 @@ class Cart
         $this->items = array_slice(array_unique($items), 0, $this->maxSize);
         $this->save();
         if ($total > $this->maxSize) {
-            $notAdded = $total-$this->maxSize;
+            $notAdded = $total - $this->maxSize;
             return ['success' => false, 'notAdded' => $notAdded];
         }
         return ['success' => true];

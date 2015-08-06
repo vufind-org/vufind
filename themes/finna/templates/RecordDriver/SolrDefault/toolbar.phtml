@@ -15,7 +15,7 @@
   $author = $this->driver->getDeduplicatedAuthors();
   $publisher = $this->driver->getPublicationDetails();
 ?>
-<div class="row">
+<div class="row hidden-xs">
 <div class="col-xs-12">
   <ul class="nav nav-pills hidden-print">
   <? if ($this->userlist()->getMode() !== 'disabled'): ?>
@@ -62,9 +62,6 @@
       <? if ($publisher): /* TODO */ ?><meta property="article:publisher" content="" /><? endif; ?>
       <meta property="og:image" content="<?=$this->escapeHtmlAttr($mediumThumb);?>" />
       -->
-    </li>
-    <li class="whatsapp">
-      <span class="visible-xs"><a id="whatsapp-record" href="whatsapp://send?text=<?=$this->url('record-sms', array('id'=>$id)) ?>" data-action="share/whatsapp/share"><i class="fa fa-phone"></i></a></span>
     </li>
   <? endif; ?>
   <? if ($cart->isActive()): ?>

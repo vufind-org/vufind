@@ -27,7 +27,6 @@
  * @link     http://vufind.org
  */
 namespace FinnaSearch\Backend\Primo;
-use Zend\Http\Client as HttpClient;
 
 /**
  * Primo Central connector.
@@ -107,13 +106,13 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
             $docset = $sxe->JAGROOT->RESULT->DOCSET->DOC;
         }
 
-        for ($i=0; $i<count($docset); $i++) {
+        for ($i = 0; $i < count($docset); $i++) {
             $doc = $docset[$i];
 
             // Set OpenURL
             $sear = $doc->children($namespaces['sear']);
-            if ($openURL = $this->getOpenURL($sear)) {
-                $res['documents'][$i]['url'] = $openURL;
+            if ($openUrl = $this->getOpenUrl($sear)) {
+                $res['documents'][$i]['url'] = $openUrl;
             } else {
                 unset($res['documents'][$i]['url']);
             }
@@ -222,7 +221,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
      * @throws \Exception
      * @return string|false
      */
-    protected function getOpenURL($sear)
+    protected function getOpenUrl($sear)
     {
         if (!empty($sear->LINKS->openurl)) {
             if (($url = $sear->LINKS->openurl) !== '') {

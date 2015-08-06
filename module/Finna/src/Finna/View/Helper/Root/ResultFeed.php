@@ -53,7 +53,10 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
     {
         $entry = $feed->createEntry();
         $title = $record->tryMethod('getTitle');
-        $entry->setTitle(empty($title) ? $record->getBreadcrumb() : $title);
+        $title = empty($title) ? $record->getBreadcrumb() : $title;
+        $entry->setTitle(
+            empty($title) ? $this->translate('Title not available') : $title
+        );
         $serverUrl = $this->getView()->plugin('serverurl');
         $recordLink = $this->getView()->plugin('recordlink');
         try {
@@ -74,7 +77,7 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
         $author = $record->tryMethod('getPrimaryAuthor');
         if (!empty($author)) {
             $entry->addAuthor(['name' => $author]);
-        } 
+        }
         $authors = $record->tryMethod('getSecondaryAuthors');
         if (is_array($authors)) {
             foreach ($authors as $author) {
@@ -89,9 +92,9 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
             $format = implode('/', array_slice(explode('/', $format), 1, -1));
             $entry->addDCFormat($format);
         }
-        $date = $record->tryMethod('getPublicationDates');
-        if (isset($date[0]) && !empty($date[0])) {
-            $entry->setDCDate($date[0]);
+        $dcDate = $this->getDcDate($record);
+        if (!empty($dcDate)) {
+            $entry->setDCDate($dcDate);
         }
         $urlHelper = $this->getView()->plugin('url');
         $recordHelper = $this->getView()->plugin('record');
