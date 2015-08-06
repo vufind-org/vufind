@@ -274,10 +274,10 @@ class EDS extends SolrDefault
         ) {
             foreach ($this->fields['FullText']['Links'] as $link) {
                 if (isset($link['Type']) && 'pdflink' == $link['Type']) {
-                    return "pdflink"; // return PDF to call retrieve method after
+                    return $link["Url"]; // return PDF link
                 }
                 if (isset($link['Type']) && 'ebook-pdf' == $link['Type']) {
-                    return "pdflink"; // return PDF to call retrieve method after
+                    return $link["Url"]; // return PDF link
                 }
             }
         }
