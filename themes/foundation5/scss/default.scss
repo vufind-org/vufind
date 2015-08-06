@@ -21,6 +21,14 @@ $include-html-classes: false;
   padding-right: 1rem;
 }
 
+// Panel with smaller padding
+.small-padding-panel {
+  @include panel(
+    // Sets the panel padding amount. Default: $panel-padding
+    $padding: .5rem
+  );
+}
+
 // Avoid Mozilla horizontal jumps
 html {
   overflow: -moz-scrollbars-vertical !important;
@@ -163,7 +171,7 @@ ul {
 
         &:hover {background-color: $primary-color;}
       }
-    }
+  }
     // create border around normal nav items
     li:not(.accordion-navigation) {
       border-left: 1px solid $accordion-navigation-active-bg-color;
@@ -357,7 +365,7 @@ ul.date-range-slider {
   }
 
   .logoutLink > a {
-    // color: #F00;
+    // color: #F00; // shows in white
   }
 }
 
@@ -408,7 +416,7 @@ ul.date-range-slider {
   }
 }
 
-// This following still needed? fixme - CK
+// Top-bar typeahead
 .top-bar {
   .twitter-typeahead {
     line-height: 1.5;
@@ -454,7 +462,8 @@ ul.date-range-slider {
 }
 
 // Search form general - top-bar searchForm above
-#searchForm_type {margin-top: 1px;}
+#searchForm_lookfor, #searchForm_type {margin-top: 1px;} // search term and all fields fields
+
 #searchForm {
 
   ul {
@@ -464,25 +473,28 @@ ul.date-range-slider {
   input[type="text"] {
     margin-bottom: 0;
   }
+
   select {
     margin-bottom: .5em;
   }
 
   // Keep filter checkbox
   .checkbox {
-    margin-top: -.8em;
     margin-bottom: 0;
     margin-left: 1.4em;
-    input[type="checkbox"] {margin-top: 4px;}
+    margin-top: -.8em;
+    input[type="checkbox"] {
+      margin-top: 4px;
+    }
     label {
-      padding-left: 0;
       color: $white;
+      padding-left: 0;
     }
   }
   // Keep filter checkbox - END
 }
 
-// Searchbox BG for search box when located directly under top-bar, used for search box AND adv search terms display
+// Searchbox BG and sizes, test for search box AND adv search terms display
 .top-bar + .nav.searchbox {
   background-color: $topbar-bg-color;
 
@@ -490,7 +502,7 @@ ul.date-range-slider {
   ul {
     width: 100%;
 
-    // bottom margin for buttons on small devices
+    // no bottom margin for buttons on small devices
     button,
     .button {
       margin-bottom: 0;
@@ -505,160 +517,179 @@ ul.date-range-slider {
   }
 }
 
+// Shard selector checkboxes for developer machines in top-bar and search form
 #shard-selector {
   &:before {
     content: " ";
     display: block;
     clear: both;
   }
- /*
-  @media only screen and (min-width: 20em) {
-    clear: both;
-    color: $iron;
-  }
-  @media only screen and (min-width: 45rem) {
+ input[type="checkbox"] + label{
+   color: $secondary-color;
+ }
+ // Add sufficient space for selecting on devices up to 768px
+  @media only screen and (max-width: 767px) {
     float: left;
-    font-size: .7rem;
-    line-height: 1;
-    padding: 0;
+    margin-top: 1rem;
   }
-  @media (min-width: 62rem) {
-    left: 1rem;
-    top: 2.5rem;
-  }
-  @media (min-width: 80rem) {
-    left: 0;
-  }
-  */
 }
-
-// Shard selector checkboxes for developer machines - END
-
-// Searchbox on Home page - special case - searchbox not in header!
-.searchHomeContent .panel {
-  padding-bottom: 0;
-  /*padding-left: 0;
-  padding-right: 0;*/
-
-  // full width lis on small
-  ul {
-    width: 100%
+  // shard selector on home page
+.searchHomeContent #shard-selector {
+  input[type="checkbox"] + label {
+    color: $oil;
   }
+}
+  // Shard selector checkboxes for developer machines - END
 
-  // Inline on larger displays, stacked on small
-  @media only screen and (min-width: 48rem) {
+  // Searchbox on Home page - special case - searchbox not in header!
+  .searchHomeContent .panel {
+    padding-bottom: 0;
+
+    // full width lis on small
     ul {
-      display: inline;
+      width: 100%;
 
-      li {
-        float: left;
-        padding-right: 1rem;
+      // no bottom margin for buttons on small devices
+      button,
+      .button {
+        margin-bottom: 0;
+      }
+    }
 
-        // Reset Advanced Search button to normal appearance  on home page (not in top-bar)
-        .postfix.button {
-          padding: 0 2.28571rem 1.21429rem;
+    // Inline on larger displays, stacked on small
+    @media only screen and (min-width: 48rem) {
+      ul {
+        display: inline;
+
+        li {
+          float: left;
+          padding-right: 1rem;
+
+         // Reset Advanced Search button to normal appearance  on home page (not in top-bar)
+          .postfix.button {
+            padding: 0 2.28571rem 1.21429rem;
+          }
         }
       }
     }
   }
-}
 
-// Advanced Search terms
-p.adv_search_terms {
-  background-color: #f1f1f1;
-  border: 1px solid $iron;
-  margin-bottom: .25rem;
-  padding: .35rem .5rem;
-  width: 100%;
-}
-
-ul.adv_search_links {
-  list-style: none; // shorten this? - Fixme - CK
-  margin-bottom: 0;
-  margin-left: 0;
-
-  li {
-    border-bottom: 1px solid $iron;
-    border-top: none;
-    padding-left: .5em;
-
-    &:last-of-type {
-      border-bottom: none;
-    }
+  // Advanced Search terms
+  p.adv_search_terms {
+    background-color: #f1f1f1;
+    border: 1px solid $iron;
+    margin-bottom: .25rem;
+    padding: .35rem .5rem;
+    width: 100%;
   }
-  // 786px and above as inline list
-  @media only screen and (min-width: 48rem) {
-    li {
-      border-bottom: none;
-      border-right: 1px solid $iron;
-      display: inline;
 
-      padding-right: .5em;
+  ul.adv_search_links {
+    list-style: none; // shorten this? - Fixme - CK
+    margin-bottom: 0;
+    margin-left: 0;
+
+    li {
+      border-bottom: 1px solid $iron;
+      border-top: none;
+      padding-left: .5em;
 
       &:last-of-type {
-        border-right: none;
+        border-bottom: none;
+      }
+    }
+    // 786px and above as inline list
+    @media only screen and (min-width: 48rem) {
+      li {
+        border-bottom: none;
+        border-right: 1px solid $iron;
+        display: inline;
+
+        padding-right: .5em;
+
+        &:last-of-type {
+          border-right: none;
+        }
       }
     }
   }
-}
 
-.top-bar-section .adv_search_links {
-  float: left;
-  margin-bottom: 1rem;
+  .top-bar-section .adv_search_links {
+    float: left;
+    margin-bottom: 1rem;
 
-  > a {
-    font-size: .80rem;
+    > a {
+      font-size: .80rem;
+    }
   }
-}
 
-// Advanced Search: search term insert - END
+  // Advanced Search: search term insert - END
 
 
-// Searchbox - END
+  // Searchbox - END
 
-.grid {
-  @media only screen and (max-width: 767px) {
-    min-height: 250px; // e.g. search/list-grid.phtml
+  .grid {
+    @media only screen and (max-width: 767px) {
+      min-height: 250px; // e.g. search/list-grid.phtml
+    }
   }
-}
 
 
-// HEADER - END
+  // HEADER - END
 
-// NAVIGATION BAR
-ul[role=navigation] {
-  list-style: none;
-}
+  // NAVIGATION BAR
+  ul[role=navigation] {
+    list-style: none;
+  }
 
-// NAVIGATION BAR - END
+  // NAVIGATION BAR - END
 
-// MAIN content area
-// for Search Box see header, above, for Advanced Search fields see below
+  // MAIN content area
+  // for Search Box see header, above, for Advanced Search fields see below
 
-// padding for main content including sidebar
-#content.panel {
-  padding: 1rem;
+  // padding for main content including sidebar
+  #content.panel {
+    padding: 1rem;
 
   p.lead {margin-bottom: .875rem}
 }
 
 // Advanced Search: criterion remove button and other settings
 #advSearchForm {
+
+  .small-padding-panel {
+    margin-bottom: 1rem;
+  }
+
+// Add a border around all subfield groups + padding on small devices
+  div[id^="search0_"] {
+    @media screen and (max-width: 767px) {
+      border: 1px solid $secondary-color;
+      margin-bottom: 1rem;
+      padding: .5rem .5rem 0 .5rem;
+
+      // Move delete-button up on small devices
+      .close {margin-top: -2rem}
+  }
+  }
   .close,
   .group-close {
     float: right;
     font-weight: bold;
+    font-size: x-large;
   }
+  // normal removal link for field selection
+  .close a {
+    color: #f08a24 !important;
+  }
+  // removal link that appears after 'add group' has been clicked, placement for medium (768px) up
+  // a.group-close {
+//    @media screen and (min-width: 48rem) {
+//      margin-right: -1rem;
+//      margin-top: -1.5rem;
+//    }
+//  }
 
-  .group-close {
-    font-size: 120%;
-    margin-right: -1rem;
-    margin-top: -1.5rem;
-  }
 
-  .panel {
-    margin-bottom: 1rem;
-  }
   // top-align the fields at the bottom of advanced search page
   #limit {
     margin-top: 1.25rem;
@@ -667,6 +698,13 @@ ul[role=navigation] {
   #groupPlaceHolder {
     display: block;
     margin-bottom: 1rem;
+  }
+
+  // add space between 'add searchfield' and 'matches ...' on small screens
+  .match {
+    @media screen and (max-width: 767px) {
+      margin-top: 1rem;
+    }
   }
 }
 
@@ -944,14 +982,21 @@ button,
 header #searchForm .tabs {
   border: 0;
 
-  &:before {display: none;}
+  &:before {
+    display: none;
+  }
 
-  a {color: $white;}
+  a {
+    color: $white;
+  }
 }
 .searchHomeContent .tabs {
   border: 0;
 
-  &:before, &:after {display: none;}
+  &:before,
+  &:after {
+    display: none;
+  }
 }
 
 .tabs-content {
@@ -1272,6 +1317,66 @@ select {
 .visible-small-inline {
   @media (max-width: 767px) {
     display: inline !important;
+  }
+}
+
+// Redi link-resolver traffic lights
+.traffic-light {
+  display: inline;
+  padding: 0;
+  span {
+    background-color: $silver; // temporary, will be overwritten by first, second, third items below
+    background-image: -webkit-gradient(radial, 50% 0, 100, 50% 0, 0, from(rgba(255, 255, 255, 0)), to(rgba(255, 255, 255, 0.38)));
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    display: inline-block;
+    height: 1em;
+    margin: 0 -3px 0 0;
+    padding-right: .5rem;
+    width: 1em;
+
+    &.last {
+      margin-right: .5em;
+    }
+  }
+  
+  &.access-denied {
+    span {
+      &.first {
+        background-color: $alert-color;
+      }
+      &.second {
+        background-color: $gainsboro;
+      }
+      &.last {
+        background-color: $gainsboro;
+      }
+    }
+  }
+  &.access-limited {
+    span {
+      &.first {
+        background-color: $gainsboro;
+      }
+      &.second {
+        background-color: $warning-color;
+      }
+      &.last {
+        background-color: $gainsboro;
+      }
+    }
+  }
+  &.access-open {
+    span {
+      &.first {
+        background-color: $gainsboro;
+      }
+     &.second {
+        background-color: $gainsboro;
+      }
+      &.last {
+        background-color: $success-color;
+      }
+    }
   }
 }
 

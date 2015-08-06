@@ -73,7 +73,7 @@ $lastLimit = $options->getLastLimit();
       ?>
       <? foreach ($shards as $shard => $val): ?>
         <? $isSelected = empty($selectedShards) || in_array($shard, $selectedShards); ?>
-        <input type="checkbox" <?= $isSelected ? 'checked="checked" ' : '' ?>name="shard[]" value='<?= $this->escapeHtmlAttr($shard) ?>'/> <?= $this->transEsc($shard) ?>
+        <input type="checkbox" <?= $isSelected ? 'checked="checked" ' : '' ?>name="shard[]" value='<?= $this->escapeHtmlAttr($shard) ?>' id='checkbox_<?= $this->escapeHtmlAttr($shard) ?>' /> <label for="checkbox_<?= $this->escapeHtmlAttr($shard) ?>"><?= $this->transEsc($shard) ?></label>
       <? endforeach; ?>
     <? endif; ?>
   </div>
@@ -86,7 +86,7 @@ $lastLimit = $options->getLastLimit();
   <? if ((isset($hasDefaultsApplied) && $hasDefaultsApplied) || !empty($filterDetails)): ?>
     <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
     <div class="checkbox">
-      <input onChange="$('.applied-filter').click()" type="checkbox"<?= $defaultFilterState ?> id="searchFormKeepFilters"/>
+        <input onChange="$('.applied-filter').click()" type="checkbox"<?= $defaultFilterState ?> id="searchFormKeepFilters"/>
       <label><?= $this->transEsc("basic_search_keep_filters") ?></label>
     </div>
     <div class="hide">
