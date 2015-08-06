@@ -59,6 +59,8 @@ trait SearchResultsTrait
      * Set search hash.
      *
      * @param string $hash Hash
+     *
+     * @return string hash
      */
     public function setSearchHash($hash)
     {
