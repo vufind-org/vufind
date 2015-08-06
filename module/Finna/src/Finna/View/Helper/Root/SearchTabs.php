@@ -47,13 +47,6 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     protected $table;
 
     /**
-     * Session manager
-     *
-     * @var SessionManager
-     */
-    protected $session;
-
-    /**
      * Active search class
      *
      * @var string
@@ -63,19 +56,16 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     /**
      * Constructor
      *
-     * @param SessionManager $session Session manager
      * @param PluginManager  $table   Database manager
      * @param PluginManager  $results Search results plugin manager
      * @param array          $config  Tab configuration
      * @param Url            $url     URL helper
      */
     public function __construct(
-        \Zend\Session\SessionManager $session,
         \VuFind\Db\Table\PluginManager $table,
         \VuFind\Search\Results\PluginManager $results,
         array $config, \Zend\View\Helper\Url $url
     ) {
-        $this->session = $session;
         $this->table = $table;
         parent::__construct($results, $config, $url);
     }
@@ -99,7 +89,6 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
 
         $tabs = parent::__invoke($activeSearchClass, $query, $handler, $type);
         $searchTable = $this->table->get('Search');
-        $sessionId = $this->session->getId();
 
         foreach ($tabs as &$tab) {
             if (isset($tab['url'])) {
@@ -107,7 +96,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                 if (isset($savedSearches[$searchClass])) {
                     $searchId = $savedSearches[$tab['class']];
                     $filters = $searchTable->getSearchFilters(
-                        $searchId, $sessionId, $this->results
+                        $searchId, $this->results
                     );
                     $targetClass = $tab['class'];
 
@@ -179,7 +168,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         if (!empty($filters)) {
             // Filters active, include current search id in the url
             $searchClass = $this->activeSearchClass;
-            $searchId = $this->getView()->results->getSearchId();
+            $searchId = $this->getView()->results->getSearchHash();
             $query = $urlQuery->setSearchId($searchClass, $searchId);
         } else {
             $query = $urlQuery->getParams(false);

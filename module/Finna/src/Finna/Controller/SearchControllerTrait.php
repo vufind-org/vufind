@@ -75,13 +75,11 @@ trait SearchControllerTrait
         }
 
         $searchId = $combined[$this->searchClassId];
-        $sessionId
-            = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
         $manager
             = $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
 
         if (!$filters = $this->getTable('Search')->getSearchFilters(
-            $searchId, $sessionId, $manager
+            $searchId, $manager
         )) {
             return;
         }

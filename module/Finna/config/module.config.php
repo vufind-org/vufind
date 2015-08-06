@@ -108,6 +108,7 @@ $config = array(
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
             'VuFind\DbTablePluginManager' => 'Finna\Service\Factory::getDbTablePluginManager',
             'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
+            'VuFind\SearchResultsPluginManager' => 'Finna\Service\Factory::getSearchResultsPluginManager',
         )
     ),
     // This section contains all VuFind-specific settings (i.e. configurations
@@ -166,6 +167,7 @@ $config = array(
                 'abstract_factories' => ['Finna\Search\Params\PluginFactory'],
             ],
             'search_results' => array(
+                'abstract_factories' => ['Finna\Search\Results\PluginFactory'],
                 'factories' => array(
                     'solr' => 'Finna\Search\Results\Factory::getSolr',
                     'primo' => 'Finna\Search\Results\Factory::getPrimo'
