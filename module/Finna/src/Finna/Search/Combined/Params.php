@@ -53,7 +53,7 @@ class Params extends \Finna\Search\Solr\Params
     }
 
     /**
-     * Get active search ids in combined results view.
+     * Get active search id in combined results view.
      *
      * @param string $backend Search class
      *
@@ -64,5 +64,15 @@ class Params extends \Finna\Search\Solr\Params
         return isset($this->combinedSearches[$backend])
             ? $this->combinedSearches[$backend] : null
         ;
+    }
+
+    /**
+     * Get all active search ids in combined results view.
+     *
+     * @return array Array of searchClass => searchId elements.
+     */
+    public function getCombinedSearchIds()
+    {
+        return $this->combinedSearches;
     }
 }
