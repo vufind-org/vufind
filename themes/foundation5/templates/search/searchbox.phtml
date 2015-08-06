@@ -86,10 +86,8 @@ $lastLimit = $options->getLastLimit();
   <? if ((isset($hasDefaultsApplied) && $hasDefaultsApplied) || !empty($filterDetails)): ?>
     <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
     <div class="checkbox">
-      <label>
-        <input onChange="$('.applied-filter').click()" type="checkbox"<?= $defaultFilterState ?> id="searchFormKeepFilters"/>
-        <?= $this->transEsc("basic_search_keep_filters") ?>
-      </label>
+      <input onChange="$('.applied-filter').click()" type="checkbox"<?= $defaultFilterState ?> id="searchFormKeepFilters"/>
+      <label><?= $this->transEsc("basic_search_keep_filters") ?></label>
     </div>
     <div class="hide">
       <? foreach ($filterDetails as $current): ?>

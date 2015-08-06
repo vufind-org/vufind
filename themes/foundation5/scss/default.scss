@@ -35,7 +35,7 @@ body {
   /*@include fs-smaller;*/
 }
 
-// ICONS 
+// ICONS
 .fa-grid:before {
   content: "\f00a";
 }
@@ -74,7 +74,7 @@ ul {
 
 // LISTS - END
 
-// TABLES 
+// TABLES
 .alphabrowse.table {
   margin-bottom: 0;
   table-layout: fixed;
@@ -161,13 +161,7 @@ ul {
         color: $white !important;
         z-index: 2;
 
-        &:hover {
-          background-color: $warning-color;
-        }
-
-        &:focus {
-          background-color: $info-color;
-        }
+        &:hover {background-color: $primary-color;}
       }
     }
     // create border around normal nav items
@@ -191,7 +185,7 @@ ul {
     margin-bottom: 1rem;
 
     li {
-      border-color: $gainsboro $gainsboro -moz-use-text-color;
+      border-color: $gainsboro;
       border-image: none;
       border-style: solid solid none;
       border-width: 1px 1px medium;
@@ -363,7 +357,7 @@ ul.date-range-slider {
   }
 
   .logoutLink > a {
-    color: #F00;
+    // color: #F00;
   }
 }
 
@@ -418,7 +412,7 @@ ul.date-range-slider {
 .top-bar {
   .twitter-typeahead {
     line-height: 1.5;
-    top: .4rem;
+    top: .5rem;
 
     input {
       top: 0;
@@ -460,6 +454,7 @@ ul.date-range-slider {
 }
 
 // Search form general - top-bar searchForm above
+#searchForm_type {margin-top: 1px;}
 #searchForm {
 
   ul {
@@ -474,19 +469,17 @@ ul.date-range-slider {
   }
 
   // Keep filter checkbox
-  .checkbox label {
-    color: $white;
-    /*font-size: .75rem;*/
-    line-height: 0.2;
-    margin-left: .75rem;
+  .checkbox {
+    margin-top: -.8em;
+    margin-bottom: 0;
+    margin-left: 1.4em;
+    input[type="checkbox"] {margin-top: 4px;}
+    label {
+      padding-left: 0;
+      color: $white;
+    }
   }
   // Keep filter checkbox - END
-
-  // Shard selector checkboxes for developer machines - see also below
-  input[type="checkbox"] {
-    margin-left: 0;
-    top: .8rem;
-  }
 }
 
 // Searchbox BG for search box when located directly under top-bar, used for search box AND adv search terms display
@@ -503,7 +496,7 @@ ul.date-range-slider {
       margin-bottom: 0;
     }
   }
-  
+
   // Inline on larger devices
   @media only screen and (min-width: 48rem) {
     ul li {
@@ -512,12 +505,13 @@ ul.date-range-slider {
   }
 }
 
-// Shard selector checkboxes for developer machines in top-bar and search form
-.top-bar #searchForm input[type="checkbox"] {
-  margin-left: 0;
-}
-
 #shard-selector {
+  &:before {
+    content: " ";
+    display: block;
+    clear: both;
+  }
+ /*
   @media only screen and (min-width: 20em) {
     clear: both;
     color: $iron;
@@ -535,6 +529,7 @@ ul.date-range-slider {
   @media (min-width: 80rem) {
     left: 0;
   }
+  */
 }
 
 // Shard selector checkboxes for developer machines - END
@@ -945,6 +940,18 @@ button,
     font-size: 1rem;
     padding: .5rem 1rem;
   }
+}
+header #searchForm .tabs {
+  border: 0;
+
+  &:before {display: none;}
+
+  a {color: $white;}
+}
+.searchHomeContent .tabs {
+  border: 0;
+
+  &:before, &:after {display: none;}
 }
 
 .tabs-content {
