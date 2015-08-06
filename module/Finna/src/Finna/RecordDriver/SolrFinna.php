@@ -28,8 +28,6 @@
  */
 namespace Finna\RecordDriver;
 
-use VuFind\RecordDriver\AbstractBase;
-
 /**
  * Additional functionality for Finna Solr records.
  *
@@ -376,26 +374,15 @@ trait SolrFinna
     }
 
     /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
+     * Checks the current record if it's supported for generating OpenURLs.
      *
      * @return bool
      */
-    public function openUrlActive($area)
+    public function supportsOpenUrl()
     {
-        // Only display OpenURL link if the option is turned on and we have
-        // an ISSN, ISBN or SFX Object ID.
-        if (!$this->getCleanISSN() && !$this->getCleanISBN()
-            && !$this->getSfxObjectId()
-        ) {
-            return false;
-        }
-
-        // Bypass SolrDefault since it only allows OpenURL's for records that have
-        // an ISSN
-        return AbstractBase::openUrlActive($area);
+        // OpenURL is supported only if we have an ISSN, ISBN or SFX Object ID.
+        return  $this->getCleanISSN() || $this->getCleanISBN()
+            || !$this->getSfxObjectId();
     }
 
     /**

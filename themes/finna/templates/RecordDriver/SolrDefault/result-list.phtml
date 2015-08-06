@@ -159,7 +159,7 @@
       </div>
     </div>
     <?=$this->record($this->driver)->getOnlineUrls('results')?>
-      <?=$this->record($this->driver)->getPreviews()?>
+    <?=$this->record($this->driver)->getPreviews()?>
 
   </div>
   <div class="col-xs-3 col-sm-2 col-sm-pull-9 resultThumb">
@@ -201,8 +201,7 @@
         <? endforeach; ?>
       <? endif; ?>
 
-      <? $openUrl = $this->driver->getOpenURL(); ?>
-      <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
   </div>
   <div class="col-xs-12 col-sm-9 col-sm-push-2">
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>

@@ -152,8 +152,16 @@ class Factory extends \VuFind\View\Helper\Root\Factory
     public static function getOpenUrl(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $openUrlRules = json_decode(
+            file_get_contents(
+                \VuFind\Config\Locator::getConfigPath('OpenUrlRules.json')
+            ),
+            true
+        );
         return new OpenUrl(
-            $sm->get('context'), isset($config->OpenURL) ? $config->OpenURL : null
+            $sm->get('context'),
+            $openUrlRules,
+            isset($config->OpenURL) ? $config->OpenURL : null
         );
     }
 

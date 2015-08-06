@@ -3,10 +3,11 @@
     $account = $this->auth()->getManager();
     $user = $account->isLoggedIn();
     $holdings = $this->driver->getRealTimeHoldings();
-    $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
-    $offlineMode = $this->ils()->getOfflineMode();
+    $openUrl = $this->openUrl($this->driver, 'holdings');
+    $openUrlActive = $openUrl->isActive();
     // Account for replace_other_urls setting
-    $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
+    $urls = $openUrlActive ? $this->record($this->driver)->getLinkDetailsForOpenUrl() : $this->record($this->driver)->getLinkDetails() ;
+    $offlineMode = $this->ils()->getOfflineMode();
     $holdsAllowed = $this->driver->tryMethod('getHoldsAllowed');
 
     $illRequestLink = false;
@@ -51,14 +52,14 @@
   <? endif; ?>
 <? endif; ?>
 
-<? if (!empty($urls) || $openUrl): ?>
+<? if (!empty($urls) || $openUrlActive): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
   <? if (!empty($urls)): ?>
     <? foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
     <? endforeach; ?>
   <? endif; ?>
-  <? if ($openUrl): ?><?=$this->openUrl($openUrl);?><? endif; ?>
+  <? if ($openUrlActive): ?><?=$openUrl->renderTemplate()?><? endif; ?>
 <? endif; ?>
 <? if ($holdsAllowed): ?>
   <div class="place-hold-wrapper text-right">

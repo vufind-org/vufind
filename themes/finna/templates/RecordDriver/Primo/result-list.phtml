@@ -173,14 +173,12 @@
     </div>
     <div class="col-xs-12">
       <?
-      $openUrlActive = $this->driver->openURLActive('results');
-      $openUrlMoreOptions = false;
+      $openUrl = $this->openUrl($driver, 'results');
+      $openUrlActive = $openUrl->isActive();
       if ($openUrlActive) {
-        $openUrl = $this->driver->getOpenURL();
-        $openUrlMoreOptions = $this->openUrl($openUrl, true);
+        echo $openUrl->renderMoreOptions();
       }
       ?>
-      <?= $openUrlMoreOptions ? $openUrlMoreOptions : '' ?>
     </div>
 </div>
 <!-- end of result-list.phtml -->

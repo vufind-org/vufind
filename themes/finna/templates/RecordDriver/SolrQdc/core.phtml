@@ -28,17 +28,18 @@
     </div>
 
     <?
-        $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
+        $openUrl = $this->openUrl($this->driver, 'record');
+        $openUrlActive = $openUrl->isActive();
         // Account for replace_other_urls setting
-        $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
+        $urls = $openUrlActive ? $this->record($this->driver)->getLinkDetailsForOpenUrl() : $this->record($this->driver)->getLinkDetails() ;
       ?>
-    <? if (!empty($urls) || $openUrl): ?>
+    <? if (!empty($urls) || $openUrlActive): ?>
     <div class="local-available-online-record">
       <? foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($current['desc'])?></a><br/>
       <? endforeach; ?>
-      <? if ($openUrl): ?>
-            <?=$this->openUrl($openUrl)?><br/>
+      <? if ($openUrlActive): ?>
+            <?=$openUrl->renderTemplate()?><br/>
       <? endif; ?>
     </div>
     <? endif; ?>
@@ -61,12 +62,12 @@
        </div>
        <? endif; ?>
     <? endif; ?>
-    
-    <div class="record-authors">     
+
+    <div class="record-authors">
         <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
           <span><?=$this->record($this->driver)->getFormatList()?></span>
         <? endif; ?>
-        
+
         <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
         <div class="truncate-field">
           <span property="author">
@@ -76,7 +77,7 @@
           </span>
         </div>
         <? endif; ?>
-        
+
         <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
         <? foreach ($publications as $field): ?>
             <span property="publisher" typeof="Organization">
@@ -93,7 +94,7 @@
           <? endforeach; ?>
         <? endif; ?>
     </div>
-    
+
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
       <div class="savedLists hidden alert alert-info" id="savedLists">

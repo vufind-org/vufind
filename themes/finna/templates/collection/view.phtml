@@ -20,7 +20,7 @@
   // Set flag for special cases relating to full-width hierarchy tree tab:
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
-  
+
   if (!empty($lastSearch)) {
     $this->layout()->breadcrumbs = '<li>' . $lastSearch . '</li> ';
   }
@@ -106,7 +106,7 @@
       </div>
     </div>
 
-    <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
+    <?=$this->driver->supportsCoinsOpenURL()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenURL()).'"></span>':''?>
   </div>
 
   <? if (isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
