@@ -563,8 +563,8 @@ class Record extends AbstractHelper
             return [];
         }
         
-        //removes duplicates that have the same url and desc (would be better to remove a duplicate based on url only, but that does not seem to be very efficient)
-        $urls = array_map('unserialize', array_unique(array_map('serialize', $urls)));
+		// Calling function for the deduplication of URLs
+		$urls = $this->dedupe_urls($urls);
 
         // If we found links, we may need to convert from the "route" format
         // to the "full URL" format.
@@ -620,4 +620,59 @@ class Record extends AbstractHelper
         }
         return $this->getLinkDetails();
     }
+    
+    /**
+     * Deduplicates multi-dimensional URL array:
+	 * 1) Removes duplicates with complete matches, i.e. for which url and desc are the same.
+     * 2) Collapses array items with the same value in url field into one item.
+     *
+     * @return array
+     */	
+	protected function dedupe_urls($urls) {
+
+		// Removes duplicates with complete matches, i.e. for which url and desc are the same.
+		$urls = array_map('unserialize', array_unique(array_map('serialize', $urls)));
+		
+		// Loop variables
+		$urls_url_dedupe = array(); // For storing unique url values that have already been looped through
+		$urls_all_dedupe = array(); // For storing and collapsing url/desc arrays
+					
+		foreach ($urls as $url) {
+	
+			// Check if url value has already been stored
+			if(!in_array($url['url'], $urls_url_dedupe)){
+			
+				// If it has not already been stored, add it and add the url/desc array
+				$urls_url_dedupe[] = $url['url'];
+				$urls_all_dedupe[] = $url;
+
+			// If the url value has already been stored, then check if the desc field of the duplicate URL is set	
+			} elseif(isset($url['desc'])) {	
+			
+				// If the desc field is set check whether it has the same value as the url field
+				if($url['url'] != $url['desc']) {
+				
+					// If it does not have the same value as the url field loop through the already stored url/desc arrays
+					foreach($urls_all_dedupe as $url_all_dedupe) {
+					
+						// Check for the same url
+						if($url_all_dedupe['url'] == $url['url']) {
+
+							// Check whether the already stored url and desc fields have same value
+							if($url_all_dedupe['url'] == $url_all_dedupe['desc']) {		
+								// If the already stored url and desc fields have the same value, replace the desc field
+								$urls_all_dedupe[key($urls_all_dedupe)]['desc'] = $url['desc'];					
+							} else {
+								// If they do not have the same value, then add combine the values of both desc fields
+								$urls_all_dedupe[key($urls_all_dedupe)]['desc'] = $url_all_dedupe['desc']."/".$url['desc'];
+							}
+						}
+					}	
+				}	
+			}
+		
+		}
+		
+		return $urls_all_dedupe;
+	}
 }
