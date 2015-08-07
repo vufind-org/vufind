@@ -1,7 +1,12 @@
+<?php
+    $isEDS=stripos(get_class($this->results),"eds")>=0?true:false;
+?>
 <? if ($this->pageCount): ?>
   <div class="pagination">
   <? if (isset($this->previous)): ?>
-    <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a>
+    <?php if (!$isEDS): ?>
+        <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage(1)?>">[1]</a>
+    <? endif; ?>
     <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a>
   <? endif; ?>
 
@@ -17,7 +22,9 @@
 
   <? if (isset($this->next)): ?>
     <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a>
-    <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a>
+    <?php if (!$isEDS): ?>
+        <a href="<?=$this->currentPath() . $this->results->getUrlQuery()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a>
+    <? endif; ?>
   <? endif; ?>
   </div>
 <? endif; ?>
