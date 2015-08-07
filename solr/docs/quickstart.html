@@ -1,0 +1,310 @@
+<html>
+<head>
+<title>Solr Quick Start</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+<h1>Solr Quick Start</h1><h2>Overview</h2><p>This document covers getting Solr up and running, ingesting a variety of data sources into multiple collections, and getting a feel for the Solr administrative and search interfaces.</p><h2>Requirements</h2><p>To follow along with this tutorial, you will need&hellip;</p>
+<ol>
+  <li>To meet the <a href="SYSTEM_REQUIREMENTS.html">system requirements</a></li>
+  <li>An Apache Solr release. This tutorial was written using Apache Solr 5.0.0.</li>
+</ol><h2>Getting Started</h2><p>Please run the browser showing this tutorial and the Solr server on the same machine so tutorial links will correctly point to your Solr server.</p><p>Begin by unzipping the Solr release and changing your working directory to the subdirectory where Solr was installed. Note that the base directory name may vary with the version of Solr downloaded. For example, with a shell in UNIX, Cygwin, or MacOS:</p>
+<pre><code>/:$ ls solr*
+solr-5.0.0.zip
+/:$ unzip -q solr-5.0.0.zip
+/:$ cd solr-5.0.0/
+</code></pre><p>To launch Solr, run: <code>bin/solr start -e cloud -noprompt</code></p>
+<pre><code>/solr-5.0.0:$ bin/solr start -e cloud -noprompt
+
+Welcome to the SolrCloud example!
+
+
+Starting up 2 Solr nodes for your example SolrCloud cluster.
+...
+
+Started Solr server on port 8983 (pid=8404). Happy searching!
+...
+
+Started Solr server on port 7574 (pid=8549). Happy searching!
+...
+
+SolrCloud example running, please visit http://localhost:8983/solr
+
+/solr-5.0.0:$ _
+</code></pre><p>You can see that the Solr is running by loading the Solr Admin UI in your web browser: <a href="http://localhost:8983/solr/">http://localhost:8983/solr/</a>. This is the main starting point for administering Solr.</p><p>Solr will now be running two "nodes", one on port 7574 and one on port 8983. There is one collection created automatically, <code>gettingstarted</code>, a two shard collection, each with two replicas. The <a href="http://localhost:8983/solr/#/~cloud">Cloud tab</a> in the Admin UI diagrams the collection nicely:</p><p><img alt="Solr Quick Start: SolrCloud diagram" class="float-right" width="50%" src="images/quickstart-solrcloud.png" /></p><h2>Indexing Data</h2><p>Your Solr server is up and running, but it doesn't contain any data. The Solr install includes the <code>bin/post</code>* tool in order to facilitate getting various types of documents easily into Solr from the start. We'll be using this tool for the indexing examples below.</p><p>You'll need a command shell to run these examples, rooted in the Solr install directory; the shell from where you launched Solr works just fine.</p>
+<ul>
+  <li>NOTE: Currently the <code>bin/post</code> tool does not have a comparable Windows script, but the underlying Java program invoked is available. See the <a href="https://cwiki.apache.org/confluence/display/solr/Post+Tool#PostTool-Windows">Post Tool, Windows section</a> for details.</li>
+</ul><h3>Indexing a directory of "rich" files</h3><p>Let's first index local "rich" files including HTML, PDF, Microsoft Office formats (such as MS Word), plain text and many other formats. <code>bin/post</code> features the ability to crawl a directory of files, optionally recursively even, sending the raw content of each file into Solr for extraction and indexing. A Solr install includes a <code>docs/</code> subdirectory, so that makes a convenient set of (mostly) HTML files built-in to start with.</p>
+<pre><code>bin/post -c gettingstarted docs/
+</code></pre><p>Here's what it'll look like:</p>
+<pre><code>/solr-5.0.0:$ bin/post -c gettingstarted docs/
+java -classpath /solr-5.0.0/dist/solr-core-5.0.0.jar -Dauto=yes -Dc=gettingstarted -Ddata=files -Drecursive=yes org.apache.solr.util.SimplePostTool docs/
+SimplePostTool version 5.0.0
+Posting files to [base] url http://localhost:8983/solr/gettingstarted/update...
+Entering auto mode. File endings considered are xml,json,csv,pdf,doc,docx,ppt,pptx,xls,xlsx,odt,odp,ods,ott,otp,ots,rtf,htm,html,txt,log
+Entering recursive mode, max depth=999, delay=0s
+Indexing directory docs (3 files, depth=0)
+POSTing file index.html (text/html) to [base]/extract
+POSTing file quickstart.html (text/html) to [base]/extract
+POSTing file SYSTEM_REQUIREMENTS.html (text/html) to [base]/extract
+Indexing directory docs/changes (1 files, depth=1)
+POSTing file Changes.html (text/html) to [base]/extract
+...
+3248 files indexed.
+COMMITting Solr index changes to http://localhost:8983/solr/gettingstarted/update...
+Time spent: 0:00:41.660
+</code></pre><p>The command-line breaks down as follows:</p>
+<ul>
+  <li><code>-c gettingstarted</code>: name of the collection to index into</li>
+  <li><code>docs/</code>: a relative path of the Solr install <code>docs/</code> directory</li>
+</ul><p>You have now indexed thousands of documents into the <code>gettingstarted</code> collection in Solr and committed these changes. You can search for "solr" by loading the Admin UI <a href="#admin-collection">Query tab</a>, enter "solr" in the <code>q</code> param (replacing <code>*:*</code>, which matches all documents), and "Execute Query". See the <a href="#searching">Searching</a> section below for more information.</p><p>To index your own data, re-run the directory indexing command pointed to your own directory of documents. For example, on a Mac instead of <code>docs/</code> try <code>~/Documents/</code> or <code>~/Desktop/</code>! You may want to start from a clean, empty system again rather than have your content in addition to the Solr <code>docs/</code> directory; see the Cleanup section <a href="#cleanup">below</a> for how to get back to a clean starting point.</p><h3>Indexing Solr XML</h3><p>Solr supports indexing structured content in a variety of incoming formats. The historically predominant format for getting structured content into Solr has been <a href="https://cwiki.apache.org/confluence/display/solr/Uploading+Data+with+Index+Handlers#UploadingDatawithIndexHandlers-XMLFormattedIndexUpdates">Solr XML</a>. Many Solr indexers have been coded to process domain content into Solr XML output, generally HTTP POSTed directly to Solr's <code>/update</code> endpoint.</p><p><a name="techproducts"/> Solr's install includes a handful of Solr XML formatted files with example data (mostly mocked tech product data). NOTE: This tech product data as a more domain-specific configuration, including schema and browse UI. The <code>bin/solr</code> script includes built-in support for this by running <code>bin/solr start -e techproducts</code> which not only starts Solr but also then indexes this data too (be sure to <code>bin/solr stop -all</code> before trying it out). beforehand).</p><p>Using <code>bin/post</code>, index the example Solr XML files in <code>example/exampledocs/</code>:</p>
+<pre><code>bin/post -c gettingstarted example/exampledocs/*.xml
+</code></pre><p>Here's what you'll see:</p>
+<pre><code>/solr-5.0.0:$ bin/post -c gettingstarted example/exampledocs/*.xml
+java -classpath /solr-5.0.0/dist/solr-core-5.0.0-SNAPSHOT.jar -Dauto=yes -Dc=gettingstarted -Ddata=files org.apache.solr.util.SimplePostTool example/exampledocs/gb18030-example.xml ...
+SimplePostTool version 5.0.0
+Posting files to [base] url http://localhost:8983/solr/gettingstarted/update...
+Entering auto mode. File endings considered are xml,json,csv,pdf,doc,docx,ppt,pptx,xls,xlsx,odt,odp,ods,ott,otp,ots,rtf,htm,html,txt,log
+POSTing file gb18030-example.xml (application/xml) to [base]
+POSTing file hd.xml (application/xml) to [base]
+POSTing file ipod_other.xml (application/xml) to [base]
+POSTing file ipod_video.xml (application/xml) to [base]
+POSTing file manufacturers.xml (application/xml) to [base]
+POSTing file mem.xml (application/xml) to [base]
+POSTing file money.xml (application/xml) to [base]
+POSTing file monitor.xml (application/xml) to [base]
+POSTing file monitor2.xml (application/xml) to [base]
+POSTing file mp500.xml (application/xml) to [base]
+POSTing file sd500.xml (application/xml) to [base]
+POSTing file solr.xml (application/xml) to [base]
+POSTing file utf8-example.xml (application/xml) to [base]
+POSTing file vidcard.xml (application/xml) to [base]
+14 files indexed.
+COMMITting Solr index changes to http://localhost:8983/solr/gettingstarted/update...
+Time spent: 0:00:01.857
+</code></pre><p>&hellip;and now you can search for all sorts of things using the default <a href="https://cwiki.apache.org/confluence/display/solr/The+Standard+Query+Parser#TheStandardQueryParser-SpecifyingTermsfortheStandardQueryParser">Solr Query Syntax</a> (a superset of the Lucene query syntax)&hellip;</p><p>NOTE: You can browse the documents indexed at <a href="http://localhost:8983/solr/gettingstarted/browse">http://localhost:8983/solr/gettingstarted/browse</a>. The <code>/browse</code> UI allows getting a feel for how Solr's technical capabilities can be worked with in a familiar, though a bit rough and prototypical, interactive HTML view. (The <code>/browse</code> view defaults to assuming the <code>gettingstarted</code> schema and data are a catch-all mix of structured XML, JSON, CSV example data, and unstructured rich documents. Your own data may not look ideal at first, though the <code>/browse</code> templates are customizable.)</p><h3>Indexing JSON</h3><p>Solr supports indexing JSON, either arbitrary structured JSON or "Solr JSON" (which is similar to Solr XML).</p><p>Solr includes a small sample Solr JSON file to illustrate this capability. Again using <code>bin/post</code>, index the sample JSON file:</p>
+<pre><code>bin/post -c gettingstarted example/exampledocs/books.json
+</code></pre><p>You'll see:</p>
+<pre><code>/solr-5.0.0:$ bin/post -c gettingstarted example/exampledocs/books.json
+java -classpath /solr-5.0.0/dist/solr-core-5.0.0-SNAPSHOT.jar -Dauto=yes -Dc=gettingstarted -Ddata=files org.apache.solr.util.SimplePostTool example/exampledocs/books.json
+SimplePostTool version 5.0.0
+Posting files to [base] url http://localhost:8983/solr/gettingstarted/update...
+Entering auto mode. File endings considered are xml,json,csv,pdf,doc,docx,ppt,pptx,xls,xlsx,odt,odp,ods,ott,otp,ots,rtf,htm,html,txt,log
+POSTing file books.json (application/json) to [base]
+1 files indexed.
+COMMITting Solr index changes to http://localhost:8983/solr/gettingstarted/update...
+Time spent: 0:00:00.377
+</code></pre><p>To flatten (and/or split) and index arbitrary structured JSON, a topic beyond this quick start guide, check out <a href="https://cwiki.apache.org/confluence/display/solr/Uploading+Data+with+Index+Handlers#UploadingDatawithIndexHandlers-TransformingandIndexingcustomJSONdata">Transforming and Indexing Custom JSON data</a>.</p><h3>Indexing CSV (Comma/Column Separated Values)</h3><p>A great conduit of data into Solr is via CSV, especially when the documents are homogeneous by all having the same set of fields. CSV can be conveniently exported from a spreadsheet such as Excel, or exported from databases such as MySQL. When getting started with Solr, it can often be easiest to get your structured data into CSV format and then index that into Solr rather than a more sophisticated single step operation.</p><p>Using <code>bin/post</code> index the included example CSV file:</p>
+<pre><code>bin/post -c gettingstarted example/exampledocs/books.csv
+</code></pre><p>In your terminal you'll see:</p>
+<pre><code>/solr-5.0.0:$ bin/post -c gettingstarted example/exampledocs/books.csv
+java -classpath /solr-5.0.0/dist/solr-core-5.0.0-SNAPSHOT.jar -Dauto=yes -Dc=gettingstarted -Ddata=files org.apache.solr.util.SimplePostTool example/exampledocs/books.csv
+SimplePostTool version 5.0.0
+Posting files to [base] url http://localhost:8983/solr/gettingstarted/update...
+Entering auto mode. File endings considered are xml,json,csv,pdf,doc,docx,ppt,pptx,xls,xlsx,odt,odp,ods,ott,otp,ots,rtf,htm,html,txt,log
+POSTing file books.csv (text/csv) to [base]
+1 files indexed.
+COMMITting Solr index changes to http://localhost:8983/solr/gettingstarted/update...
+Time spent: 0:00:00.099
+</code></pre><h3>Other indexing techniques</h3>
+<ul>
+  <li><p>Import records from a database using the <a href="https://cwiki.apache.org/confluence/display/solr/Uploading+Structured+Data+Store+Data+with+the+Data+Import+Handler">Data Import Handler (DIH)</a>.</p></li>
+  <li><p>Use <a href="https://cwiki.apache.org/confluence/display/solr/Using+SolrJ">SolrJ</a> from JVM-based languages or other <a href="https://cwiki.apache.org/confluence/display/solr/Client+APIs">Solr clients</a> to programatically create documents to send to Solr.</p></li>
+  <li><p>Use the Admin UI core-specific Documents tab to paste in a document to be indexed, or select <code>Document Builder</code> from the <code>Document Type</code> dropdown to build a document one field at a time. Click on the <code>Submit Document</code> button below the form to index your document.</p></li>
+</ul>
+<hr/><h2>Updating Data</h2><p>You may notice that even if you index content in this guide more than once, it does not duplicate the results found. This is because the example <code>schema.xml</code> specifies a "<code>uniqueKey</code>" field called "<code>id</code>". Whenever you POST commands to Solr to add a document with the same value for the <code>uniqueKey</code> as an existing document, it automatically replaces it for you. You can see that that has happened by looking at the values for <code>numDocs</code> and <code>maxDoc</code> in the core-specific Overview section of the Solr Admin UI.</p><p><code>numDocs</code> represents the number of searchable documents in the index (and will be larger than the number of XML, JSON, or CSV files since some files contained more than one document). The maxDoc value may be larger as the maxDoc count includes logically deleted documents that have not yet been physically removed from the index. You can re-post the sample files over and over again as much as you want and <code>numDocs</code> will never increase, because the new documents will constantly be replacing the old.</p><p>Go ahead and edit any of the existing example data files, change some of the data, and re-run the SimplePostTool command. You'll see your changes reflected in subsequent searches.</p><h2>Deleting Data</h2><p>You can delete data by POSTing a delete command to the update URL and specifying the value of the document's unique key field, or a query that matches multiple documents (be careful with that one!). Since these commands are smaller, we specify them right on the command line rather than reference a JSON or XML file.</p><p>Execute the following command to delete a specific document:</p>
+<pre><code>bin/post -c gettingstarted -d &quot;&lt;delete&gt;&lt;id&gt;SP2514N&lt;/id&gt;&lt;/delete&gt;&quot;
+</code></pre><p><a name="searching"/></p><h2>Searching</h2><p>Solr can be queried via REST clients, cURL, wget, Chrome POSTMAN, etc., as well as via the native clients available for many programming languages.</p><p>The Solr Admin UI includes a query builder interface - see the <code>gettingstarted</code> query tab at <a href="http://localhost:8983/solr/#/gettingstarted_shard1_replica1/query">http://localhost:8983/solr/#/gettingstarted_shard1_replica1/query</a>. If you click the <code>Execute Query</code> button without changing anything in the form, you'll get 10 documents in JSON format (<code>*:*</code> in the <code>q</code> param matches all documents):</p><p><img style="border:1px solid #ccc" width="50%" src="images/quickstart-query-screen.png" alt="Solr Quick Start: gettingstarted Query tab" class="float-right"/></p><p>The URL sent by the Admin UI to Solr is shown in light grey near the top right of the above screenshot - if you click on it, your browser will show you the raw response. To use cURL, give the same URL in quotes on the <code>curl</code> command line:</p>
+<pre><code>curl &quot;http://localhost:8983/solr/gettingstarted/select?q=*%3A*&amp;wt=json&amp;indent=true&quot;
+</code></pre><p>In the above URL, the "<code>:</code>" in "<code>q=*:*</code>" has been URL-encoded as "<code>%3A</code>", but since "<code>:</code>" has no reserved purpose in the query component of the URL (after the "<code>?</code>"), you don't need to URL encode it. So the following also works:</p>
+<pre><code>curl &quot;http://localhost:8983/solr/gettingstarted/select?q=*:*&amp;wt=json&amp;indent=true&quot;
+</code></pre><h3>Basics</h3><h4>Search for a single term</h4><p>To search for a term, give it as the <code>q</code> param value in the core-specific Solr Admin UI Query section, replace <code>*:*</code> with the term you want to find. To search for "foundation":</p>
+<pre><code>curl &quot;http://localhost:8983/solr/gettingstarted/select?wt=json&amp;indent=true&amp;q=foundation&quot;
+</code></pre><p>You'll see:</p>
+<pre><code>/solr-5.0.0$ curl &quot;http://localhost:8983/solr/gettingstarted/select?wt=json&amp;indent=true&amp;q=foundation&quot;
+{
+  &quot;responseHeader&quot;:{
+    &quot;status&quot;:0,
+    &quot;QTime&quot;:0,
+    &quot;params&quot;:{
+      &quot;indent&quot;:&quot;true&quot;,
+      &quot;q&quot;:&quot;foundation&quot;,
+      &quot;wt&quot;:&quot;json&quot;}},
+  &quot;response&quot;:{&quot;numFound&quot;:2812,&quot;start&quot;:0,&quot;docs&quot;:[
+      {
+        &quot;id&quot;:&quot;0553293354&quot;,
+        &quot;cat&quot;:[&quot;book&quot;],
+        &quot;name&quot;:&quot;Foundation&quot;,
+...
+</code></pre><p>The response indicates that there are 2,812 hits (<code>&quot;numFound&quot;:2812</code>), of which the first 10 were returned, since by default <code>start=0</code> and <code>rows=10</code>. You can specify these params to page through results, where <code>start</code> is the (zero-based) position of the first result to return, and <code>rows</code> is the page size.</p><p>To restrict fields returned in the response, use the <code>fl</code> param, which takes a comma-separated list of field names. E.g. to only return the <code>id</code> field:</p>
+<pre><code>curl &quot;http://localhost:8983/solr/gettingstarted/select?wt=json&amp;indent=true&amp;q=foundation&amp;fl=id&quot;
+</code></pre><p><code>q=foundation</code> matches nearly all of the docs we've indexed, since most of the files under <code>docs/</code> contain "The Apache Software Foundation". To restrict search to a particular field, use the syntax "<code>q=field:value</code>", e.g. to search for <code>foundation</code> only in the <code>name</code> field:</p>
+<pre><code>curl &quot;http://localhost:8983/solr/gettingstarted/select?wt=json&amp;indent=true&amp;q=name:foundation&quot;
+</code></pre><p>The above request returns only one document (<code>&quot;numFound&quot;:1</code>) - from the response:</p>
+<pre><code>...
+  &quot;response&quot;:{&quot;numFound&quot;:1,&quot;start&quot;:0,&quot;docs&quot;:[
+      {
+        &quot;id&quot;:&quot;0553293354&quot;,
+        &quot;cat&quot;:[&quot;book&quot;],
+        &quot;name&quot;:&quot;Foundation&quot;,
+...
+</code></pre><h4>Phrase search</h4><p>To search for a multi-term phrase, enclose it in double quotes: <code>q=&quot;multiple terms here&quot;</code>. E.g. to search for "CAS latency" - note that the space between terms must be converted to "<code>+</code>" in a URL (the Admin UI will handle URL encoding for you automatically):</p>
+<pre><code>curl &quot;http://localhost:8983/solr/gettingstarted/select?wt=json&amp;indent=true&amp;q=\&quot;CAS+latency\&quot;&quot;
+</code></pre><p>You'll get back:</p>
+<pre><code>{
+  &quot;responseHeader&quot;:{
+    &quot;status&quot;:0,
+    &quot;QTime&quot;:0,
+    &quot;params&quot;:{
+      &quot;indent&quot;:&quot;true&quot;,
+      &quot;q&quot;:&quot;\&quot;CAS latency\&quot;&quot;,
+      &quot;wt&quot;:&quot;json&quot;}},
+  &quot;response&quot;:{&quot;numFound&quot;:2,&quot;start&quot;:0,&quot;docs&quot;:[
+      {
+        &quot;id&quot;:&quot;VDBDB1A16&quot;,
+        &quot;name&quot;:&quot;A-DATA V-Series 1GB 184-Pin DDR SDRAM Unbuffered DDR 400 (PC 3200) System Memory - OEM&quot;,
+        &quot;manu&quot;:&quot;A-DATA Technology Inc.&quot;,
+        &quot;manu_id_s&quot;:&quot;corsair&quot;,
+        &quot;cat&quot;:[&quot;electronics&quot;, &quot;memory&quot;],
+        &quot;features&quot;:[&quot;CAS latency 3,\t 2.7v&quot;],
+...
+</code></pre><h4>Combining searches</h4><p>By default, when you search for multiple terms and/or phrases in a single query, Solr will only require that one of them is present in order for a document to match. Documents containing more terms will be sorted higher in the results list.</p><p>You can require that a term or phrase is present by prefixing it with a "<code>+</code>"; conversely, to disallow the presence of a term or phrase, prefix it with a "<code>-</code>".</p><p>To find documents that contain both terms "<code>one</code>" and "<code>three</code>", enter <code>+one +three</code> in the <code>q</code> param in the core-specific Admin UI Query tab. Because the "<code>+</code>" character has a reserved purpose in URLs (encoding the space character), you must URL encode it for <code>curl</code> as "<code>%2B</code>":</p>
+<pre><code>curl &quot;http://localhost:8983/solr/gettingstarted/select?wt=json&amp;indent=true&amp;q=%2Bone+%2Bthree&quot;
+</code></pre><p>To search for documents that contain the term "<code>two</code>" but <strong>don't</strong> contain the term "<code>one</code>", enter <code>+two -one</code> in the <code>q</code> param in the Admin UI. Again, URL encode "<code>+</code>" as "<code>%2B</code>":</p>
+<pre><code>curl &quot;http://localhost:8983/solr/gettingstarted/select?wt=json&amp;indent=true&amp;q=%2Btwo+-one&quot;
+</code></pre><h4>In depth</h4><p>For more Solr search options, see the Solr Reference Guide's <a href="https://cwiki.apache.org/confluence/display/solr/Searching">Searching</a> section.</p><h3>Faceting</h3><p>One of Solr's most popular features is faceting. Faceting allows the search results to be arranged into subsets (or buckets or categories), providing a count for each subset. There are several types of faceting: field values, numeric and date ranges, pivots (decision tree), and arbitrary query faceting.</p><h4>Field facets</h4><p>In addition to providing search results, a Solr query can return the number of documents that contain each unique value in the whole result set.</p><p>From the core-specific Admin UI Query tab, if you check the "<code>facet</code>" checkbox, you'll see a few facet-related options appear:</p><p><img style="border:1px solid #ccc" src="images/quickstart-admin-ui-facet-options.png" alt="Solr Quick Start: Query tab facet options"/></p><p>To see facet counts from all documents (<code>q=*:*</code>): turn on faceting (<code>facet=true</code>), and specify the field to facet on via the <code>facet.field</code> param. If you only want facets, and no document contents, specify <code>rows=0</code>. The <code>curl</code> command below will return facet counts for the <code>manu_id_s</code> field:</p>
+<pre><code>curl http://localhost:8983/solr/gettingstarted/select?wt=json&amp;indent=true&amp;q=*:*&amp;rows=0 \
+                                                  &amp;facet=true&amp;facet.field=manu_id_s
+</code></pre><p>In your terminal, you'll see:</p>
+<pre><code>{
+  &quot;responseHeader&quot;:{
+    &quot;status&quot;:0,
+    &quot;QTime&quot;:3,
+    &quot;params&quot;:{
+      &quot;facet&quot;:&quot;true&quot;,
+      &quot;indent&quot;:&quot;true&quot;,
+      &quot;q&quot;:&quot;*:*&quot;,
+      &quot;facet.field&quot;:&quot;manu_id_s&quot;,
+      &quot;wt&quot;:&quot;json&quot;,
+      &quot;rows&quot;:&quot;0&quot;}},
+  &quot;response&quot;:{&quot;numFound&quot;:2990,&quot;start&quot;:0,&quot;docs&quot;:[]
+  },
+  &quot;facet_counts&quot;:{
+    &quot;facet_queries&quot;:{},
+    &quot;facet_fields&quot;:{
+      &quot;manu_id_s&quot;:[
+        &quot;corsair&quot;,3,
+        &quot;belkin&quot;,2,
+        &quot;canon&quot;,2,
+        &quot;apple&quot;,1,
+        &quot;asus&quot;,1,
+        &quot;ati&quot;,1,
+        &quot;boa&quot;,1,
+        &quot;dell&quot;,1,
+        &quot;eu&quot;,1,
+        &quot;maxtor&quot;,1,
+        &quot;nor&quot;,1,
+        &quot;uk&quot;,1,
+        &quot;viewsonic&quot;,1,
+        &quot;samsung&quot;,0]},
+    &quot;facet_dates&quot;:{},
+    &quot;facet_ranges&quot;:{},
+    &quot;facet_intervals&quot;:{}}}
+</code></pre><h4>Range facets</h4><p>For numerics or dates, it's often desirable to partition the facet counts into ranges rather than discrete values. A prime example of numeric range faceting, using the example product data, is <code>price</code>. In the <code>/browse</code> UI, it looks like this:</p><p><img style="border:1px solid #ccc" src="images/quickstart-range-facet.png" alt="Solr Quick Start: Range facets"/></p><p>The data for these price range facets can be seen in JSON format with this command:</p>
+<pre><code>curl http://localhost:8983/solr/gettingstarted/select?q=*:*&amp;wt=json&amp;indent=on&amp;rows=0&amp;facet=true \
+                                                  &amp;facet.range=price \
+                                                  &amp;f.price.facet.range.start=0 \
+                                                  &amp;f.price.facet.range.end=600 \
+                                                  &amp;f.price.facet.range.gap=50 \
+                                                  &amp;facet.range.other=after
+</code></pre><p>In your terminal you will see:</p>
+<pre><code>{
+  &quot;responseHeader&quot;:{
+    &quot;status&quot;:0,
+    &quot;QTime&quot;:1,
+    &quot;params&quot;:{
+      &quot;facet.range.other&quot;:&quot;after&quot;,
+      &quot;facet&quot;:&quot;true&quot;,
+      &quot;indent&quot;:&quot;on&quot;,
+      &quot;q&quot;:&quot;*:*&quot;,
+      &quot;f.price.facet.range.gap&quot;:&quot;50&quot;,
+      &quot;facet.range&quot;:&quot;price&quot;,
+      &quot;f.price.facet.range.end&quot;:&quot;600&quot;,
+      &quot;wt&quot;:&quot;json&quot;,
+      &quot;f.price.facet.range.start&quot;:&quot;0&quot;,
+      &quot;rows&quot;:&quot;0&quot;}},
+  &quot;response&quot;:{&quot;numFound&quot;:2990,&quot;start&quot;:0,&quot;docs&quot;:[]
+  },
+  &quot;facet_counts&quot;:{
+    &quot;facet_queries&quot;:{},
+    &quot;facet_fields&quot;:{},
+    &quot;facet_dates&quot;:{},
+    &quot;facet_ranges&quot;:{
+      &quot;price&quot;:{
+        &quot;counts&quot;:[
+          &quot;0.0&quot;,19,
+          &quot;50.0&quot;,1,
+          &quot;100.0&quot;,0,
+          &quot;150.0&quot;,2,
+          &quot;200.0&quot;,0,
+          &quot;250.0&quot;,1,
+          &quot;300.0&quot;,1,
+          &quot;350.0&quot;,2,
+          &quot;400.0&quot;,0,
+          &quot;450.0&quot;,1,
+          &quot;500.0&quot;,0,
+          &quot;550.0&quot;,0],
+        &quot;gap&quot;:50.0,
+        &quot;start&quot;:0.0,
+        &quot;end&quot;:600.0,
+        &quot;after&quot;:2}},
+    &quot;facet_intervals&quot;:{}}}
+</code></pre><h4>Pivot facets</h4><p>Another faceting type is pivot facets, also known as "decison trees", allowing two or more fields to be nested for all the various possible combinations. Using the example technical product data, pivot facets can be used to see how many of the products in the "book" category (the <code>cat</code> field) are in stock or not in stock. Here's how to get at the raw data for this scenario:</p>
+<pre><code>curl http://localhost:8983/solr/gettingstarted/select?q=*:*&amp;rows=0&amp;wt=json&amp;indent=on \
+                                                  &amp;facet=on&amp;facet.pivot=cat,inStock
+</code></pre><p>This results in the following response (trimmed to just the book category output), which says out of 14 items in the "book" category, 12 are in stock and 2 are not in stock:</p>
+<pre><code>...
+&quot;facet_pivot&quot;:{
+  &quot;cat,inStock&quot;:[{
+      &quot;field&quot;:&quot;cat&quot;,
+      &quot;value&quot;:&quot;book&quot;,
+      &quot;count&quot;:14,
+      &quot;pivot&quot;:[{
+          &quot;field&quot;:&quot;inStock&quot;,
+          &quot;value&quot;:true,
+          &quot;count&quot;:12},
+        {
+          &quot;field&quot;:&quot;inStock&quot;,
+          &quot;value&quot;:false,
+          &quot;count&quot;:2}]},
+...
+</code></pre><h4>More faceting options</h4><p>For the full scoop on Solr faceting, visit the Solr Reference Guide's <a href="https://cwiki.apache.org/confluence/display/solr/Faceting">Faceting</a> section.</p><h3>Spatial</h3><p>Solr has sophisticated geospatial support, including searching within a specified distance range of a given location (or within a bounding box), sorting by distance, or even boosting results by the distance. Some of the example tech products documents in <code>example/exampledocs/*.xml</code> have locations associated with them to illustrate the spatial capabilities. To run the tech products example, see the <a href="#techproducts">techproducts example section</a>. Spatial queries can be combined with any other types of queries, such as in this example of querying for "ipod" within 10 kilometers from San Francisco:</p><p><img style="border:1px solid #ccc" width="50%" src="images/quickstart-spatial.png" alt="Solr Quick Start: spatial search" class="float-right"/></p><p>The URL to this example is <a href="http://localhost:8983/solr/techproducts/browse?q=ipod&pt=37.7752%2C-122.4232&d=10&sfield=store&fq=%7B%21bbox%7D&queryOpts=spatial&queryOpts=spatial">http://localhost:8983/solr/techproducts/browse?q=ipod&pt=37.7752%2C-122.4232&d=10&sfield=store&fq=%7B%21bbox%7D&queryOpts=spatial&queryOpts=spatial</a>, leveraging the <code>/browse</code> UI to show a map for each item and allow easy selection of the location to search near.</p><p>To learn more about Solr's spatial capabilities, see the Solr Reference Guide's <a href="https://cwiki.apache.org/confluence/display/solr/Spatial+Search">Spatial Search</a> section.</p><h2>Wrapping up</h2><p>If you've run the full set of commands in this quick start guide you have done the following:</p>
+<ul>
+  <li>Launched Solr into SolrCloud mode, two nodes, two collections including shards and replicas</li>
+  <li>Indexed a directory of rich text files</li>
+  <li>Indexed Solr XML files</li>
+  <li>Indexed Solr JSON files</li>
+  <li>Indexed CSV content</li>
+  <li>Opened the admin console, used its query interface to get JSON formatted results</li>
+  <li>Opened the /browse interface to explore Solr's features in a more friendly and familiar interface</li>
+</ul><p>Nice work! The script (see below) to run all of these items took under two minutes! (Your run time may vary, depending on your computer's power and resources available.)</p><p>Here's a Unix script for convenient copying and pasting in order to run the key commands for this quick start guide:</p>
+<pre><code>date ;
+bin/solr start -e cloud -noprompt ;
+  open http://localhost:8983/solr ;
+  bin/post -c gettingstarted docs/ ;
+  open http://localhost:8983/solr/gettingstarted/browse ;
+  bin/post -c gettingstarted example/exampledocs/*.xml ;
+  bin/post -c gettingstarted example/exampledocs/books.json ;
+  bin/post -c gettingstarted example/exampledocs/books.csv ;
+  bin/post -c gettingstarted -d &quot;&lt;delete&gt;&lt;id&gt;SP2514N&lt;/id&gt;&lt;/delete&gt;&quot; ;
+  bin/solr healthcheck -c gettingstarted ;
+date ;
+</code></pre><p><a name="cleanup"/></p><h2>Cleanup</h2><p>As you work through this guide, you may want to stop Solr and reset the environment back to the starting point. The following command line will stop Solr and remove the directories for each of the two nodes that the start script created:</p>
+<pre><code>bin/solr stop -all ; rm -Rf example/cloud/
+</code></pre><h2>Where to next?</h2><p>For more information on Solr, check out the following resources:</p>
+<ul>
+  <li><a href="https://cwiki.apache.org/confluence/display/solr/Apache+Solr+Reference+Guide">Solr Reference Guide</a> (ensure you match the version of the reference guide with your version of Solr)</li>
+  <li>See also additional <a href="http://lucene.apache.org/solr/resources.html">Resources</a></li>
+</ul>
+</body>
+</html>

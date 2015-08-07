@@ -1,0 +1,7 @@
+org.apache.solr
+org.apache.solr.analysis
+org.apache.solr.cloud
+org.apache.solr.core
+org.apache.solr.handler.component
+org.apache.solr.update.processor
+org.apache.solr.util

@@ -1,0 +1,3 @@
+org.apache.solr.hadoop
+org.apache.solr.hadoop.dedup
+org.apache.solr.hadoop.morphline
