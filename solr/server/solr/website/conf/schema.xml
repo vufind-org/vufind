@@ -4,7 +4,7 @@
     <!-- Define fieldType long as it is needed by the _version_ field required by Solr 4.x -->
     <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
-    <fieldType name="sint" class="solr.SortableIntField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="sint" class="solr.TrieIntField" sortMissingLast="true" omitNorms="true"/>
     <fieldType name="textFacet" class="solr.TextField" sortMissingLast="true" omitNorms="true">
       <analyzer>
         <tokenizer class="solr.KeywordTokenizerFactory"/>
