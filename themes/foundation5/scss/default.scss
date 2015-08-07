@@ -75,7 +75,8 @@ ul {
 }
 
     // labels in sidebar and browse collections pages
-    & .label {
+  // check: may be redundant if pull-right used consistently - fixme CK
+    &.label {
       float: right;
     }
 }
@@ -129,7 +130,7 @@ ul {
 
 // MODALS - END
 
-// former LIST GROUPS - (list-groups do not exist in FNDTN, use ul side-nav for nav items in sidebar otherwise list-unstyled and define via parent container e.g. sidebar ul ...)
+// former LIST GROUPS - (list-groups do not exist in FNDTN, use ul side-nav for nav items in sidebar otherwise list-unstyled and define via parent container e.g. sidebar ul ...) - used in facets etc
 .sidebar {
   .accordion {
     margin-left: 0;
@@ -156,13 +157,26 @@ ul {
   .side-nav {
     padding: 0;
 
+    // this is for the labels of item numbers and exclude option
    .label {
      @include fs-smaller;
+
+     a {
+       color: $snow
+     }
     }
 
     li {
       border-bottom: 1px solid $accordion-navigation-active-bg-color;
       margin: 0;
+
+      &.facetOR,
+      &.facetAND {
+        .label {
+          margin-top: .4em;
+          padding-left: .5em;
+        }
+      }
 
       .active {
         background-color: $primary-color;
@@ -171,7 +185,7 @@ ul {
 
         &:hover {background-color: $primary-color;}
       }
-  }
+    }
     // create border around normal nav items
     li:not(.accordion-navigation) {
       border-left: 1px solid $accordion-navigation-active-bg-color;
@@ -180,6 +194,13 @@ ul {
       &:first-of-type {
         border-top: 1px solid $accordion-navigation-active-bg-color;
       }
+    }
+    // Facets exclude-symbol in label immediately followed by link
+    // Improve this later - fixme -CK
+    li.facetOR span.label > a:not(.button),
+    li.facetAND span.label > a:not(.button) {
+        display: inline-block;
+        padding: .25em 0 .25em .25em;
     }
   }
 
@@ -517,7 +538,7 @@ ul.date-range-slider {
   }
 }
 
-// Shard selector checkboxes for developer machines in top-bar and search form
+// Shard selector checkboxes for developer machines in top-bar and search form + Keep Filters
 #shard-selector {
   &:before {
     content: " ";
@@ -539,14 +560,39 @@ ul.date-range-slider {
     color: $oil;
   }
 }
-  // Shard selector checkboxes for developer machines - END
 
-  // Searchbox on Home page - special case - searchbox not in header!
-  .searchHomeContent .panel {
-    padding-bottom: 0;
+// Keep Filters checkbox
+#keepfilters {
+  clear: left;
+  display: inline-block;
+  float: left;
 
-    // full width lis on small
-    ul {
+  &:before {
+    content: " ";
+    display: block;
+    clear: both;
+  }
+  &.checkbox {
+    margin-top: 0;
+  }
+  input[type="checkbox"] {
+    margin-top: 0 !important;
+
+    + label {
+      color: $secondary-color;
+      margin-top: 1em;
+    }
+  }
+
+}
+
+// Shard selector checkboxes for developer machines + Keep Filters  - END
+// Searchbox on Home page - special case - searchbox not in header!
+.searchHomeContent .panel {
+  padding-bottom: 0;
+
+  // full width lis on small
+  ul {
       width: 100%;
 
       // no bottom margin for buttons on small devices
@@ -1076,7 +1122,7 @@ li.jstree-facet,
 li.jstree-node {
   list-style: none;
 }
-li.jstree-facet .badge {cursor: text;}
+li.jstree-facet .badge {cursor: text;}  // check and replace badge with label! - fixme CK
 li.jstree-facet ul {padding-left: 1rem;}
 
 // jsTree arrows in hierarchy tree !

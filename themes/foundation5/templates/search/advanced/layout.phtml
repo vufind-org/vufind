@@ -68,7 +68,7 @@ if (isset($searchDetails) && is_object($searchDetails)) {
       <div class="clearfix">
         <h2 class="left"><?= $this->transEsc('Advanced Search') ?></h2>
 
-        <div id="groupJoin" class="pull-right hide"><? /* check if hide still correct - fixme - CK */ ?>
+        <div id="groupJoin" class="right hide">
           <label for="groupJoinOptions"><?= $this->transEsc("search_match") ?>:</label>
           <select id="groupJoinOptions" name="join" class="auto"><? /* leave class=auto - was form-control and used in advanced_search.js - check and fixme - CK */ ?>
             <option value="AND"<? if ($searchDetails && $searchDetails->getOperator() == 'ALL'): ?> selected<? endif ?>><?= $this->transEsc('group_AND') ?></option>
@@ -78,7 +78,7 @@ if (isset($searchDetails) && is_object($searchDetails)) {
       </div>
       <? /* An empty div. This is the target for the javascript that builds this screen */ ?>
       <span id="groupPlaceHolder" class="hide">
-        <i class="fa fa-plus-circle"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
+        <i class="fa fa-plus"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
       </span>
       <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
       <div class="no-js">
@@ -89,25 +89,26 @@ if (isset($searchDetails) && is_object($searchDetails)) {
             <? if ($group == 0): ?>
               <div id="new_group_template">
             <? endif; ?>
-            <div id="group<?= $group ?>" class="group panel row">
-              <a href="#" class="group-close hide" title="<?= $this->transEsc("del_search") ?>">&times;</a>
-
+            <div id="group<?= $group ?>" class="group small-padding-panel row collapse">
+              <div class="small-12 columns text-right">
+                <a href="#" class="group-close hide" title="<?= $this->transEsc("del_search") ?>"><span class="show-for-medium-up">&times;</span><span class="show-for-small-only">&times;&nbsp;<small><?= $this->transEsc("del_search") ?></small> </span> </a>
+              </div>
               <div class="medium-9 columns">
                 <div class="row">
-                  <div class="medium-3 columns">
+                  <div class="small-12 columns">
                     <label class="help-block"><?= $this->transEsc("adv_search_label") ?>:</label>
                   </div>
-                  <div class="medium-9 columns">
+                  <div class="large-9 columns">
                     <? for ($search = 0; $search < 3 || (isset($setQueries[$group]) && $search < count($setQueries[$group])); $search++): ?>
                       <? if ($group == 0 && $search == 0): ?>
                         <div id="new_search_template">
                       <? endif; ?>
                       <div id="search<?= $group . '_' . $search ?>" class="search">
                         <div class="row">
-                          <div class="medium-7 columns left">
+                          <div class="small-10 medium-7 columns">
                             <input name="lookfor<?= $group ?>[]" id="search_lookfor<?= $group . '_' . $search ?>" class="input_slot" type="text"<? if (isset($setQueries[$group][$search])): ?> value="<?= $this->escapeHtml($setQueries[$group][$search]->getString()) ?>"<? endif; ?>><? /* Leave input_slot  in - used in advancedsearch.js */ ?>
                           </div>
-                          <div class="medium-4 columns middle">
+                          <div class="small-10 medium-4 columns">
                             <select class="type" name="type<?= $group ?>[]">
                               <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                                 <option
@@ -115,14 +116,14 @@ if (isset($searchDetails) && is_object($searchDetails)) {
                               <? endforeach; ?>
                             </select>
                           </div>
-                          <div class="medium-1 columns close hide">
-                            <a class="help-block" href="#">&times;</a>
+                          <div class="small-2 medium-1 columns close hide">
+                            <a class="help-block small-text-right medium-text-center" title="<?= $this->transEsc("Delete") ?>" href="#"><span class="show-for-medium-up alert">&times;</span> <span class="show-for-small-only alert">&times; <small class="sr-only"><?= $this->transEsc("Delete") ?></small></span></a>
                           </div>
                         </div>
                       </div>
                       <? if ($group == 0 && $search == 0): ?>
                         </div>
-                        <i class="fa fa-plus-circle search_place_holder hide"></i> <a href="#" class="add_search_link hide"><?= $this->transEsc("add_search") ?></a>
+                        <i class="fa fa-plus search_place_holder hide"></i> <a href="#" class="add_search_link hide"><?= $this->transEsc("add_search") ?></a>
                       <? endif; ?>
                     <? endfor; ?>
                   </div>

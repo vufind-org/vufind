@@ -8620,7 +8620,7 @@ ul.list-unstyled li, .savedLists ul li {
   margin-left: 0;
 }
 
-ul .label {
+ul.label {
   float: right;
 }
 
@@ -8697,9 +8697,19 @@ ul .label {
   font-size: .875rem;
 }
 
+.sidebar .side-nav .label a {
+  color: #F9F9F9;
+}
+
 .sidebar .side-nav li {
   border-bottom: 1px solid #e8e8e8;
   margin: 0;
+}
+
+.sidebar .side-nav li.facetOR .label,
+.sidebar .side-nav li.facetAND .label {
+  margin-top: .4em;
+  padding-left: .5em;
 }
 
 .sidebar .side-nav li .active {
@@ -8719,6 +8729,12 @@ ul .label {
 
 .sidebar .side-nav li:not(.accordion-navigation):first-of-type {
   border-top: 1px solid #e8e8e8;
+}
+
+.sidebar .side-nav li.facetOR span.label > a:not(.button),
+.sidebar .side-nav li.facetAND span.label > a:not(.button) {
+  display: inline-block;
+  padding: 0.25em 0 0.25em 0.25em;
 }
 
 .sidebar h4 {
@@ -9065,6 +9081,31 @@ ul.date-range-slider {
 
 .searchHomeContent #shard-selector input[type="checkbox"] + label {
   color: #333333;
+}
+
+#keepfilters {
+  clear: left;
+  display: inline-block;
+  float: left;
+}
+
+#keepfilters:before {
+  content: " ";
+  display: block;
+  clear: both;
+}
+
+#keepfilters.checkbox {
+  margin-top: 0;
+}
+
+#keepfilters input[type="checkbox"] {
+  margin-top: 0 !important;
+}
+
+#keepfilters input[type="checkbox"] + label {
+  color: #e7e7e7;
+  margin-top: 1em;
 }
 
 .searchHomeContent .panel {

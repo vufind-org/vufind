@@ -201,7 +201,7 @@ JS;
                   <span class="label pull-right">
                     <?= $this->localizedNumber($thisFacet['count']) ?>
                     <? if ($allowExclude): ?>
-                      <a href="<?= $this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?= $this->transEsc('exclude_facet') ?>"><i class="fa fa-times"></i></a>
+                      <a href="<?= $this->currentPath() . $results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?= $this->transEsc('exclude_facet') ?>"><i class="fa fa-minus-circle"></i></a>
                     <? endif; ?>
                   </span>
                <? if ($allowExclude): ?>
