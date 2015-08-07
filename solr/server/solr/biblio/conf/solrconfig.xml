@@ -39,6 +39,9 @@
        If replication is in use, this should match the replication configuration. -->
   <dataDir>${solr.solr.home:./solr}/biblio</dataDir>
 
+  <lib dir="../../../contrib/analysis-extras/lib" regex=".*\.jar" />
+  <lib dir="../../../contrib/analysis-extras/lucene-libs" regex=".*\.jar" />
+  <lib dir="../../../vufind-lib" regex=".*\.jar" />
 
   <indexConfig>
 
