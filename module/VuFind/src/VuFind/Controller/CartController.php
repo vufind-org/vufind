@@ -207,8 +207,11 @@ class CartController extends AbstractBase
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
 
+        $view->emailFormatOptions = $this->getEmailFormats();
+        
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            
             // Build the URL to share:
             $params = [];
             foreach ($ids as $current) {
@@ -223,10 +226,22 @@ class CartController extends AbstractBase
                 $mailer->setMaxRecipients($view->maxRecipients);
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
-                $mailer->sendLink(
-                    $view->to, $view->from, $view->message,
-                    $url, $this->getViewRenderer(), $view->subject, $cc
-                );
+                
+                $format = $this->params()->fromPost('email_format');
+                if ($format == 'URL') {
+                    $mailer->sendLink(
+                            $view->to, $view->from, $view->message,
+                            $url, $this->getViewRenderer(), $view->subject, $cc
+                    );
+                } else {
+                    $records = $this->getRecordLoader()->loadBatch($ids);
+                    $mailer->sendAttachement(
+                            $view->to, $view->from, $view->message,
+                            $this->getExportDetails($records, $format), 
+                            $this->getViewRenderer(), $view->subject, $cc
+                    );
+                }
+                
                 return $this->redirectToSource('info', 'email_success');
             } catch (MailException $e) {
                 $this->flashMessenger()->setNamespace('error')
@@ -339,19 +354,15 @@ class CartController extends AbstractBase
         $response = $this->getResponse();
         $response->getHeaders()->addHeaders($this->getExport()->getHeaders($format));
 
-        // Actually export the records
+        // Get records in export format
         $records = $this->getRecordLoader()->loadBatch($ids);
-        $recordHelper = $this->getViewRenderer()->plugin('record');
-        $parts = [];
-        foreach ($records as $record) {
-            $parts[] = $recordHelper($record)->getExport($format);
-        }
-
+        $exportedRecords = $this->exportRecords($records, $format);
+        
         // Process and display the exported records
-        $response->setContent($this->getExport()->processGroup($format, $parts));
+        $response->setContent($exportedRecords);
         return $response;
     }
-
+    
     /**
      * Save a batch of records.
      *
@@ -434,4 +445,9 @@ class CartController extends AbstractBase
         }
         return $this->redirect()->toUrl($target);
     }
+    
+    
+    
+    
+    
 }
