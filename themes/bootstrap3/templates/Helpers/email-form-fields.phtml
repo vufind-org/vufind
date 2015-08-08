@@ -1,3 +1,8 @@
+<?php 
+$this->to = "rds@bohr.ub.uni-freiburg.de";
+$this->from = "markus.beh@bohr.ub.uni-freiburg.de";
+?>
+
 <div class="form-group">
   <label class="col-sm-3 control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
   <div class="col-sm-9">
@@ -24,6 +29,21 @@
     <label class="col-sm-3 control-label" for="email_subject"><?=$this->transEsc('email_subject')?>:</label>
     <div class="col-sm-9">
       <input type="text" id="email_subject" oninvalid="$('#modal .fa-spinner').remove()" name="subject" value="<?=isset($this->subject) ? $this->subject : ''?>" size="40" class="form-control"/>
+    </div>
+  </div>
+<? endif; ?>
+<? if (true): ?>
+  <div class="form-group <?=count($this->emailFormatOptions) <= 1 ? 'hidden' : ''?>">
+    <label class="col-sm-3 control-label" for="email_format"><?=$this->transEsc('email_format')?>:</label>
+    <div class="col-sm-9">
+    
+    	  <select name="email_format" id="email_format" class="form-control">
+          <? foreach ($this->emailFormatOptions as $emailFormatOptions): ?>
+            <option value="<?=$this->escapeHtmlAttr($emailFormatOptions)?>"><?=$this->transEsc($this->export()->getLabelForFormat($emailFormatOptions))?></option>
+          <? endforeach; ?>
+        </select>
+        
+        
     </div>
   </div>
 <? endif; ?>

@@ -338,4 +338,20 @@ class Export
         return isset($this->exportConfig->$format->label)
             ? $this->exportConfig->$format->label : $format;
     }
+    
+    public function getFilename($format) {
+        return isset($this->exportConfig->$format->filename)
+        ? $this->exportConfig->$format->filename : 'VuFindExport';
+    }
+    
+    public function getMimeType($format) {
+        return isset($this->exportConfig->$format->mimeType)
+        ? $this->exportConfig->$format->mimeType : 'text/plain';
+    }
+    
+    public function getFilenameExtension($format) {
+        return isset($this->exportConfig->$format->filenameExtension)
+        ? $this->exportConfig->$format->filenameExtension : 'txt';
+    }
+
 }
