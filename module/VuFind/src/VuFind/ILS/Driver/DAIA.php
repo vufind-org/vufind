@@ -836,7 +836,7 @@ class DAIA extends AbstractBase implements
      */
     protected function getItemCallnumber($item)
     {
-        return array_key_exists("label", $item)
+        return array_key_exists("label", $item) && !empty($item['label'])
             ? $item['label']
             : "Unknown";
     }
