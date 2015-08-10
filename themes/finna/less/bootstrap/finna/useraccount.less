@@ -363,6 +363,12 @@
         & li {
             float:left;
             margin:0;
+            @media(max-width: @screen-md-max) {
+                max-width: 160px;  
+            }
+            @media(max-width: @screen-sm-max) {
+                    max-width: 95px;
+            }
             &:first-child {
                 border-left: 2px solid @myresearch-header-background;  
             }
@@ -381,10 +387,8 @@
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
-                    max-width: 160px;
                 }
                 @media(max-width: @screen-sm-max) {
-                    max-width: 95px;
                     font-size: 0.9em;
                     padding: 10px 8px;
                 }
