@@ -80,6 +80,7 @@ class Search extends \VuFind\Db\Table\Search
     {
         $callback = function ($select) use ($baseUrl) {
             $select->columns(['*']);
+            $select->where->equalTo('saved', 1);
             $select->where('finna_schedule > 0');
             $select->where->equalTo('finna_schedule_base_url', $baseUrl);
             $select->order('user_id');
