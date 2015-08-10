@@ -90,10 +90,10 @@
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
   <target name="php-cs-fixer">
-    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers}" escape="false" />
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --verbose" passthru="true" escape="false" />
   </target>
   <target name="php-cs-fixer-dryrun">
-    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run" escape="false" checkreturn="true" />
+    <exec command="php-cs-fixer fix ${srcdir}/module --fixers=${php-cs-fixers} --dry-run --verbose --diff" passthru="true" escape="false" checkreturn="true" />
   </target>
 
   <!-- PHP API Documentation -->
