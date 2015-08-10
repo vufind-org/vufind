@@ -265,7 +265,10 @@ input[type="checkbox"],
 }
 .navbar-form .form-control.search-query {
     margin-top: -2px;
-    width: @finna-search-input-width; 
+    width: percentage(@finna-search-input-width);
+    @media (max-width: @screen-xs-max) {
+        width: percentage((@finna-search-input-width - 0.06));  
+    }
     border:none;
     box-shadow: none;
     background:transparent;
@@ -280,7 +283,10 @@ input[type="checkbox"],
   background: transparent;
   height: 39px;
   margin-left: 10px;
-  width: @finna-search-input-width;
+  width: percentage(@finna-search-input-width);
+  @media (max-width: @screen-xs-max) {
+        width: percentage((@finna-search-input-width - 0.06));  
+  }
   .tt-hint {}
 }
 // prevent appearance of smaller input field when twitter-typeahead.js is loaded

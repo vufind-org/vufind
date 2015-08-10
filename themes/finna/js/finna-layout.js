@@ -283,6 +283,29 @@ finna.layout = (function() {
         }, 500);
       });
     };
+    
+    var initSearchboxFunctions = function() {
+      if ($('.navbar-form .checkbox')[0]) {
+        $('.tt-dropdown-menu').addClass('checkbox-active');
+      }
+      if ($('#searchForm_lookfor').val() != "" ) {
+        $('.clear-button').removeClass('hidden');
+      }
+      $('#searchForm_lookfor').on('input', function() {
+        if ($('#searchForm_lookfor').val() != "" ) {
+          $('.clear-button').removeClass('hidden');
+        }
+        else {
+          $('.clear-button').addClass('hidden');
+        }
+      });
+      
+      $('.clear-button').click(function() {
+        $('#searchForm_lookfor').val("");
+        $('.clear-button').addClass('hidden');
+        $('#searchForm_lookfor').focus();
+      });
+    }
 
     var my = {
         isTouchDevice: isTouchDevice,
@@ -304,6 +327,7 @@ finna.layout = (function() {
             initMobileNarrowSearch();
             initCheckboxClicks();
             initScrollLinks();
+            initSearchboxFunctions();
         },
     };
 
