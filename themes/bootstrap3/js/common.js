@@ -218,7 +218,16 @@ function ajaxLogin(event, data) {
           success: function(response) {
             if (response.status == 'OK') {
               updatePageForLogin();
+              console.log(event, data);
               lightboxAJAX(event, data);
+              if (false !== lightboxLoginCallback) {
+                if (true === lightboxLoginCallback) {
+                  window.location.reload();
+                } else {
+                  lightboxLoginCallback();
+                }
+                lightboxLoginCallback = false;
+              }
             } else {
               $('#modal .modal-body .alert,.fa.fa-spinner').remove();
               $('#modal .modal-body h2:first-child').after($('<div>').html(response.data).addClass('alert alert-danger'));

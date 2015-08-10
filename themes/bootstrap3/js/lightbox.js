@@ -71,7 +71,7 @@ function constrainLink(event) {
   }
   if('undefined' !== typeof event.target.dataset.lightboxAfterLogin) {
     if('hide' === event.target.dataset.lightboxAfterLogin) {
-      lightboxLoginCallback = function(){$('#modal').modal('hide');}
+      lightboxLoginCallback = true;
     } else {
       eval('lightboxLoginCallback = ' + event.target.dataset.lightboxAfterLogin);
     }
@@ -158,7 +158,7 @@ function lightboxFormSubmit(event) {
   }
   if(dataset && "undefined" !== typeof event.target.dataset.lightboxAfterLogin) {
     if('hide' === event.target.dataset.lightboxAfterLogin) {
-      lightboxLoginCallback = function(){$('#modal').modal('hide');}
+      lightboxLoginCallback = true;
     } else {
       eval('lightboxLoginCallback = ' + event.target.dataset.lightboxAfterLogin);
     }
