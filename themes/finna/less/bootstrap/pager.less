@@ -8,15 +8,12 @@
   margin: @line-height-computed 0;
   list-style: none;
   text-align: right;
-  & .pager-text {
-    font-size: 16px;
-    margin: 0px 10px;
-  }
+
   &:extend(.clearfix all);
-  li {
+  & li {
     display: inline;
-    > a,
-    > span {
+    & > a,
+    & > span {
       display: inline-block;
       padding: 4px 7px 2px;
       color: #fff;
@@ -24,11 +21,21 @@
       border-radius: 50%;
       font-size: 16px;
     }
-
-    > a:hover,
-    > a:focus {
+  }
+  & li.pager-text {
+    background-color: none;
+    margin: 0px 10px;
+    font-size: 1.1em;
+    margin-top: -2px;
+  }
+  & li.disabled i {
+    cursor: initial; 
+  }
+  & li:not(.disabled) {    
+    & > a:hover, & > a:focus {
       text-decoration: none;
-      background-color: @pager-hover-bg;
+      cursor: pointer;
+      background-color: darken(@pager-hover-bg, 8%);
     }
   }
 
