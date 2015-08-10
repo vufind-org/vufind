@@ -10,7 +10,7 @@
 <form class="form-inline" action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
   <? if (!$this->cart()->isEmpty()): ?>
     <div class="cart-controls clearfix">
-      <div class="checkbox pull-left">
+      <div class="checkbox pull-left flip">
         <label>
           <input type="checkbox" name="selectAll" class="checkbox-select-all"/>
           <?=$this->transEsc('select_page')?>

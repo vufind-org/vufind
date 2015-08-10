@@ -15,7 +15,7 @@
   <? if ($cover): ?>
   <div class="col-xs-2 left">
   <? else: ?>
-  <div class="col-xs-1 left">
+  <div class="col-xs-1 left flip">
   <? endif ?>
     <label class="pull-left"><?=$this->record($this->driver)->getCheckbox() ?></label>
     <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
