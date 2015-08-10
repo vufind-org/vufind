@@ -42,8 +42,8 @@
     <? if (!$user): ?>
       <div class="pull-right">
         <a href="<?=$this->currentPath()?>?login=true&amp;catalogLogin=true" class="btn btn-primary"><i class="fa fa-sign-in"></i> <?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
-        <p>&nbsp;</p>
       </div>
+      <div class="clearfix"></div>
     <? elseif (!$user->cat_username): ?>
       <div class="alert alert-info">
         <?=$this->translate("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true'))?>
