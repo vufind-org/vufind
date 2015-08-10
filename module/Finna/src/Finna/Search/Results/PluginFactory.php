@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace Finna\Search\Results;
-use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Search results plugin factory
