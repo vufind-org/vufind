@@ -8,7 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'ZfcRbac\\' => array($vendorDir . '/zf-commons/zfc-rbac/src'),
     'Zend\\' => array($vendorDir . '/zendframework/zendframework/library'),
-    'ZendXml' => array($vendorDir . '/zendframework/zendxml/library'),
+    'ZendXml\\' => array($vendorDir . '/zendframework/zendxml/library'),
     'ZendService\\Amazon\\' => array($vendorDir . '/zendframework/zendservice-amazon/library'),
     'ZendRest' => array($vendorDir . '/zendframework/zendrest/library'),
     'VuFindHttp\\' => array($vendorDir . '/vufind-org/vufindhttp/src'),
