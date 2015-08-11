@@ -27,6 +27,21 @@
     </div>
   </div>
 <? endif; ?>
+<? if (true): ?>
+  <div class="form-group <?=count($this->emailFormatOptions) <= 1 ? 'hidden' : ''?>">
+    <label class="col-sm-3 control-label" for="email_format"><?=$this->transEsc('email_format')?>:</label>
+    <div class="col-sm-9">
+    
+    	  <select name="email_format" id="email_format" class="form-control">
+          <? foreach ($this->emailFormatOptions as $emailFormatOptions): ?>
+            <option value="<?=$this->escapeHtmlAttr($emailFormatOptions)?>"><?=$this->transEsc($this->export()->getLabelForFormat($emailFormatOptions))?></option>
+          <? endforeach; ?>
+        </select>
+        
+        
+    </div>
+  </div>
+<? endif; ?>
 <div class="form-group">
   <label class="col-sm-3 control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
   <div class="col-sm-9">
