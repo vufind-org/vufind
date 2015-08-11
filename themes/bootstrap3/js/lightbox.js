@@ -7,6 +7,7 @@
 var lightboxShown = false;
 var lightboxLastUrl = false;
 var lightboxLoginCallback = false;
+var lightboxRefreshOnClose = false;
 $(document).ready(function() {
   if(lightboxShown) {
     $('#modal .modal-body').html('');
@@ -17,8 +18,12 @@ $(document).ready(function() {
   }
   constrainForms('form[data-lightbox]');
   $('#modal').on('hidden.bs.modal', function() {
-    $('#modal .modal-body').html(vufindString.loading+'...');
-    lightboxShown = false;
+    if (lightboxRefreshOnClose) {
+      window.location.reload();
+    } else {
+      $('#modal .modal-body').html(vufindString.loading+'...');
+      lightboxShown = false;
+    }
   });
 });
 
@@ -115,8 +120,6 @@ function constrainLink(event) {
  * data-lightbox-ignore = show form return outside lightbox
  */
 function constrainForms(selector) {
-  //console.log('constrainForms', selector);
-  console.log(lightboxLastUrl);
   var forms = $(selector);
   for(var i=forms.length;i--;) {
     if(lightboxLastUrl && ('undefined' === typeof forms[i].action || forms[i].action.length == 0)) {

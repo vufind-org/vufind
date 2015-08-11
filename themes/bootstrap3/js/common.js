@@ -107,51 +107,6 @@ function phoneNumberFormHandler(numID, regionCode) {
   return valid == true;
 }
 
-// Lightbox
-function updatePageForLogin() {
-  // Hide "log in" options and show "log out" options:
-  $('#loginOptions').addClass('hidden');
-  $('.logoutOptions').removeClass('hidden');
-
-  var recordId = $('#record_id').val();
-
-  // Update user save statuses if the current context calls for it:
-  if (typeof(checkSaveStatuses) == 'function') {
-    checkSaveStatuses();
-  }
-
-  // refresh the comment list so the "Delete" links will show
-  $('.commentList').each(function(){
-    var recordSource = extractSource($('#record'));
-    refreshCommentList(recordId, recordSource);
-  });
-  // Logged in AJAX
-  if ('function' === typeof registerAjaxCommentRecord) {
-    $('form[name="commentRecord"]').unbind('submit').submit(registerAjaxCommentRecord);
-    $('form[name="commentRecord"]').removeAttr('data-lightbox');
-    $('form[name="commentRecord"]').removeAttr('data-lightbox-after-login');
-  }
-
-  var summon = false;
-  $('.hiddenSource').each(function(i, e) {
-    if(e.value == 'Summon') {
-      summon = true;
-    }
-  });
-
-  // Refresh tab content
-  var recordTabs = $('.recordTabs');
-  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
-    var tab = recordTabs.find('.active a').attr('id');
-    ajaxLoadTab(tab);
-  }
-
-  if(!('undefined' === typeof lightboxLoginCallback || false === lightboxLoginCallback)) {
-    lightboxLoginCallback();
-    lightboxLoginCallback = false;
-  }
-}
-
 function refreshTags() {
   var recordId = $('#record_id').val();
   var recordSource = $('.hiddenSource').val();
@@ -217,8 +172,7 @@ function ajaxLogin(event, data) {
           data: params,
           success: function(response) {
             if (response.status == 'OK') {
-              updatePageForLogin();
-              console.log(event, data);
+              lightboxRefreshOnClose = true;
               lightboxAJAX(event, data);
               if (false !== lightboxLoginCallback) {
                 if (true === lightboxLoginCallback) {
