@@ -36,7 +36,9 @@ function updateLightbox(html, link) {
   if(lightboxShown) {
     $('#modal').modal('handleUpdate');
   }
-  $('#modal .modal-body').on('click', 'a', constrainLink);
+  if(!$(link).hasClass('help-link')) {
+    $('#modal .modal-body').on('click', 'a', constrainLink);
+  }
   if("undefined" !== typeof link
   && "undefined" !== typeof link.dataset
   && "undefined" !== typeof link.dataset.lightboxClose) {
