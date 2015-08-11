@@ -104,4 +104,78 @@ class Search extends \VuFind\Db\Table\Search
         };
         return $this->select($callback);
     }
+
+    /**
+     * Return filters for a saved search.
+     *
+     * @param string                               $searchHash Search hash
+     * @param \VuFind\Search\Results\PluginManager $results    PluginManager
+     *
+     * @return mixed array of filters or false if the given search has no filters.
+     */
+    public function getSearchFilters($searchHash, $results)
+    {
+        $search = $this->select(['finna_search_id' => $searchHash])->current();
+        if (empty($search)) {
+            return false;
+        }
+
+        $minSO = $search->getSearchObject();
+        $savedSearch = $minSO->deminify($results);
+        $params = $savedSearch->getUrlQuery()->getParamArray();
+        foreach ($params as $key => $value) {
+            if ($key == 'filter') {
+                return $value;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Add a search into the search table (history)
+     *
+     * @param \VuFind\Search\Results\PluginManager $manager       Search manager
+     * @param \VuFind\Search\Base\Results          $newSearch     Search to save
+     * @param string                               $sessionId     Current session ID
+     * @param array                                $searchHistory Existing saved
+     * searches (for deduplication purposes)
+     *
+     * @return void
+     */
+    public function saveSearch(\VuFind\Search\Results\PluginManager $manager,
+        $newSearch, $sessionId, $searchHistory = []
+    ) {
+        // Resolve search hash of current search
+        $hash = null;
+
+        // Duplicate elimination
+        foreach ($searchHistory as $oldSearch) {
+            // Deminify the old search (note that if we have a resource, we need
+            // to grab the contents -- this is necessary for PostgreSQL compatibility
+            // although MySQL returns a plain string).
+            $minSO = $oldSearch->getSearchObject();
+            $dupSearch = $minSO->deminify($manager);
+            // See if the classes and urls match
+            $oldUrl = $dupSearch->getUrlQuery()->getParams();
+            $newUrl = $newSearch->getUrlQuery()->getParams();
+            if (get_class($dupSearch) == get_class($newSearch)
+                && $oldUrl == $newUrl
+            ) {
+                $hash = $oldSearch->finna_search_id;
+                break;
+            }
+        }
+
+        parent::saveSearch($manager, $newSearch, $sessionId, $searchHistory);
+
+        // Augment row updated by parent with search hash
+        $row = $this->select(['id' => $newSearch->getSearchId()])->current();
+        if (empty($row)) {
+            return false;
+        }
+        $row->finna_search_id = $hash ?: md5($row->search_object);
+        $row->save();
+
+        $newSearch->setSearchHash($row->finna_search_id);
+    }
 }

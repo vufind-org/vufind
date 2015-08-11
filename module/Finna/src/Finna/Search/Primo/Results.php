@@ -1,6 +1,6 @@
 <?php
 /**
- * Primo Central Controller
+ * Primo Central Search Results
  *
  * PHP version 5
  *
@@ -20,59 +20,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search_Primo
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-namespace Finna\Controller;
+namespace Finna\Search\Primo;
 
 /**
- * Primo Central Controller
+ * Primo Central Search Parameters
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search_Primo
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-class PrimoController extends \VuFind\Controller\PrimoController
+class Results extends \VuFind\Search\Primo\Results
 {
-    use SearchControllerTrait;
-
-    /**
-     * Search class family to use.
-     *
-     * @var string
-     */
-    protected $searchClassId = 'Primo';
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
-    {
-        $this->layout()->searchClassId = $this->searchClassId;
-        return parent::homeAction();
-    }
-
-    /**
-     * Search action -- call standard results action
-     *
-     * @return mixed
-     */
-    public function searchAction()
-    {
-        if ($this->getRequest()->getQuery()->get('combined')) {
-            $this->saveToHistory = false;
-        }
-        $this->initCombinedViewFilters();
-        $view = parent::resultsAction();
-        $this->initSavedTabs();
-
-        return $view;
-    }
+    use \Finna\Search\Results\SearchResultsTrait;
 }
-

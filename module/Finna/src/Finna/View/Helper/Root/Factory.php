@@ -135,7 +135,6 @@ class Factory extends \VuFind\View\Helper\Root\Factory
         $config = isset($config->SearchTabs)
             ? $config->SearchTabs->toArray() : [];
         return new SearchTabs(
-            $locator->get('VuFind\SessionManager'),
             $locator->get('VuFind\DbTablePluginManager'),
             $locator->get('VuFind\SearchResultsPluginManager'),
             $config, $sm->get('url')

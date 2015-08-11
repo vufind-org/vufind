@@ -1,6 +1,6 @@
 <?php
 /**
- * Primo Central Controller
+ * Search results plugin manager
  *
  * PHP version 5
  *
@@ -20,59 +20,36 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-namespace Finna\Controller;
+namespace Finna\Search\Results;
+use Zend\ServiceManager\ConfigInterface;
 
 /**
- * Primo Central Controller
+ * Search results plugin manager
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class PrimoController extends \VuFind\Controller\PrimoController
+class PluginManager extends \VuFind\Search\Results\PluginManager
 {
-    use SearchControllerTrait;
-
     /**
-     * Search class family to use.
+     * Constructor
      *
-     * @var string
+     * @param ConfigInterface $configuration Configuration settings (optional)
      */
-    protected $searchClassId = 'Primo';
-
-    /**
-     * Home action
-     *
-     * @return mixed
-     */
-    public function homeAction()
+    public function __construct(ConfigInterface $configuration = null)
     {
-        $this->layout()->searchClassId = $this->searchClassId;
-        return parent::homeAction();
-    }
+        // These objects are not meant to be shared -- every time we retrieve one,
+        // we are building a brand new object.
+        $this->setShareByDefault(false);
 
-    /**
-     * Search action -- call standard results action
-     *
-     * @return mixed
-     */
-    public function searchAction()
-    {
-        if ($this->getRequest()->getQuery()->get('combined')) {
-            $this->saveToHistory = false;
-        }
-        $this->initCombinedViewFilters();
-        $view = parent::resultsAction();
-        $this->initSavedTabs();
-
-        return $view;
+        parent::__construct($configuration);
     }
 }
-

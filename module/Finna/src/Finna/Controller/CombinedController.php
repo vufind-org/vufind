@@ -1,6 +1,6 @@
 <?php
 /**
- * Default Controller
+ * Combined Search Controller
  *
  * PHP version 5
  *
@@ -23,7 +23,7 @@
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org   Main Site
  */
 namespace Finna\Controller;
 
@@ -34,60 +34,39 @@ namespace Finna\Controller;
  * @package  Controller
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://vufind.org   Main Site
  */
-class SearchController extends \VuFind\Controller\SearchController
+class CombinedController extends \VuFind\Controller\CombinedController
 {
     use SearchControllerTrait;
 
     /**
-     * Results action.
+     * Results action
      *
      * @return mixed
      */
     public function resultsAction()
     {
-        if ($this->getRequest()->getQuery()->get('combined')) {
-            $this->saveToHistory = false;
-        }
-
-        $this->initCombinedViewFilters();
         $view = parent::resultsAction();
-        $this->initSavedTabs();
+        if ($saved = $this->getCombinedSearches()) {
+            $view->params->setCombinedSearchIds($saved);
+        }
         return $view;
     }
 
     /**
-     * Sends search history, alert schedules for saved searches and user's
-     * email address to view.
+     * Convenience method to make invocation of forward() helper less verbose.
+     *
+     * @param string $controller Controller to invoke
+     * @param string $action     Action to invoke
+     * @param array  $params     Extra parameters for the RouteMatch object (no
+     * need to provide action here, since $action takes care of that)
      *
      * @return mixed
      */
-    public function historyAction()
+    public function forwardTo($controller, $action, $params = [])
     {
-        $view = parent::historyAction();
-        $user = $this->getUser();
-        if ($user) {
-            $view->alertemail = $user->email;
-        }
-
-        // Retrieve saved searches
-        $search = $this->getTable('Search');
-        $savedsearches
-            = $search->getSavedSearches(is_object($user) ? $user->id : null);
-
-        $schedule = [];
-        foreach ($savedsearches as $current) {
-            $minSO = $current->getSearchObject();
-            // Only Solr searches allowed
-            if ($minSO->cl !== 'Solr') {
-                continue;
-            }
-            $minSO = $minSO->deminify($this->getResultsManager());
-            $schedule[$minSO->getSearchId()] = $current->finna_schedule;
-        }
-        $view->schedule = $schedule;
-        return $view;
+        $this->getRequest()->getQuery()->set('combined', 1);
+        return parent::forwardTo($controller, $action, $params);
     }
 }
-

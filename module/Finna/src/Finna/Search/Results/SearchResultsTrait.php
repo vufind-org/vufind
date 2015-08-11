@@ -1,6 +1,6 @@
 <?php
 /**
- * Primo Central Controller
+ * Finna search results trait
  *
  * PHP version 5
  *
@@ -20,59 +20,50 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-namespace Finna\Controller;
+namespace Finna\Search\Results;
 
 /**
- * Primo Central Controller
+ * Finna search results trait
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-class PrimoController extends \VuFind\Controller\PrimoController
+trait SearchResultsTrait
 {
-    use SearchControllerTrait;
-
     /**
-     * Search class family to use.
+     * A hash for saving/retrieving search
      *
      * @var string
      */
-    protected $searchClassId = 'Primo';
+    protected $searchHash = null;
 
     /**
-     * Home action
+     * Get search hash.
      *
-     * @return mixed
+     * @return string hash
      */
-    public function homeAction()
+    public function getSearchHash()
     {
-        $this->layout()->searchClassId = $this->searchClassId;
-        return parent::homeAction();
+        return $this->searchHash;
     }
 
     /**
-     * Search action -- call standard results action
+     * Set search hash.
      *
-     * @return mixed
+     * @param string $hash Hash
+     *
+     * @return string hash
      */
-    public function searchAction()
+    public function setSearchHash($hash)
     {
-        if ($this->getRequest()->getQuery()->get('combined')) {
-            $this->saveToHistory = false;
-        }
-        $this->initCombinedViewFilters();
-        $view = parent::resultsAction();
-        $this->initSavedTabs();
-
-        return $view;
+        return $this->searchHash = $hash;
     }
 }
-
