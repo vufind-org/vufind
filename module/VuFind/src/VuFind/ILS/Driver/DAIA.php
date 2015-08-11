@@ -598,7 +598,7 @@ class DAIA extends AbstractBase implements
         // restructure the array, moving single elements to their parent's index [0]
         $restructure = function ($array) use (&$restructure) {
             $elements
-                = ["document", "item", "available", "unavailable", "limitation"];
+                = ["document", "item", "available", "unavailable", "limitation","message"];
             foreach ($array as $key => $value) {
                 if (is_array($value)) {
                     $value = $restructure($value);
