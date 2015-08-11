@@ -519,6 +519,11 @@ function registerAjaxCartExport() {
             url: url,
             dataType: 'json',
             success: function(response, statusText, xhr, $form) {
+               if(response.data.export_type == 'download') {
+                   document.location.href = response.data.result_url;
+                   hideLightbox();
+                   return false;
+                } 
                 if (response.status == 'OK') {
                     $form.parent().empty().append(response.data.result_additional);
                 } else {
