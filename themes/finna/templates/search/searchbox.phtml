@@ -30,6 +30,7 @@
 <? if ($this->searchType != 'advanced'): ?>
   <form role="search" class="navbar-form navbar-left col-xs-12 col-sm-10 col-md-8 col-lg-7" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" autocomplete="off">
     <label for="searchForm_lookfor" class="sr-only" hidden><?=$this->transEsc("Find")?></label><input class="form-control search-query<? if($this->searchbox()->autocompleteEnabled($this->searchClassId)):?> autocomplete searcher:<?=$this->escapeHtmlAttr($this->searchClassId) ?><? endif ?>" placeholder="<?=$this->transEsc("Find")?>..." id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtmlAttr($this->lookfor)?>"/>
+    <span class="clear-button hidden"></span>
     <? if ($handlerCount > 1): ?>
     <span class="jump-menu-style prefilter-select fa-arrow-down">
       <label for="searchForm_type" hidden class="sr-only"><?=$this->transEsc("Narrow Search")?></label>

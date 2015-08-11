@@ -81,16 +81,22 @@
     margin-top: 5px;
 }
 .navbar-form {
-     & .clear-input {
+    & .clear-button {
         position: absolute;
-        height: 22px;
-        width: 22px;
-         top: 7px;
-        right: 38%;
-        vertical-align: middle;
-        border-radius: 50%;
-        padding: 3px 5px;
-        color: rgb(66, 66, 66);   
+        margin-left: 0px;
+        font-size: 1.5em;
+        padding-top: 5px;
+        background: @body-bg;
+        color: @gray-light;
+        margin-left: -22px;
+        height: 39px;
+        &:before {
+            font-family: 'icomoon';
+            content: "\e01a";      
+        }
+        &:hover {
+            cursor: pointer;   
+        }
     }
 }
 .nav.searchbox .btn.btn-link {
@@ -290,7 +296,10 @@
         position: relative;
         background: transparent;
         height: 39px;
-        width: 25%;
+        width: 21%;
+        @media (max-width: @screen-xs-max) {
+            width: 25%;  
+        }
         height: auto;
         padding-top: 0px;
         padding-bottom: 0px;

@@ -27,7 +27,7 @@ header {
      }
      background: @header-background-color;
 }
-section.main.template-dir-search.template-name-results > .container, section.main.template-dir-primo.template-name-search > .container {
+section.template-name-results > .container {
     margin-top: 20px;
     padding-bottom: 25px;
 }
@@ -460,15 +460,25 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .tt-dropdown-menu {
     .list-group;
     margin-top: 10px;
-    .box-shadow(0px 10px 12px black);
+    .box-shadow(0px 5px 16px 2px @gray);
     border-radius: 10px;
+    &.checkbox-active {
+        margin-top: 40px !important;   
+    }
 }
 
 /* --- Autocomplete --- */
 .twitter-typeahead {
-  background: transparent;
-  vertical-align: top;
-  .tt-hint {color: @gray-light !important;}
+      background: transparent;
+      vertical-align: top;
+      padding-right: 20px;
+      .tt-hint {color: @gray-light !important;}
+}
+.form-control.search-query {
+    padding-right: 20px;
+}
+.twitter-typeahead .form-control.search-query {
+    padding-right: 0px;
 }
 .tt-dropdown-menu {.list-group;margin-top:10px;}
 
@@ -812,6 +822,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     .list-group:not(.filters) .title {
         margin-bottom: 5px;
         cursor:pointer;
+        padding-right: 25px;
         &.collapsed {
             border-radius:none;
             &:after {
@@ -821,8 +832,10 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
         }
         &:after {
             font-family:'icomoon';
-             content:'\e612';
+            content:'\e612';
             float: right;
+            position: absolute;
+            right: 8px;
         }
     }
     .collapse,.collapsing {
@@ -1271,6 +1284,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
 .mobileMargin {
     margin: 15px -8.333% 0px -23%;   
 }
+// mobile toolbar
 
 @media (max-width: @screen-xs-max) {
     .mobile-toolbar {
@@ -1421,9 +1435,21 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
         overflow: hidden;  
     }
     .datepicker.datepicker-dropdown {
-        margin-top: -300px;   
+        margin-top: -340px;   
     }
 }
+// tablet & mobile facet adjustments
+@media (max-width: @screen-sm-max) {
+    .datepicker.datepicker-dropdown {
+        font-size: 1.4em;
+    }
+    .jstree-facet .jstree-container-ul .jstree-icon {
+        font-size: 1.2em;
+        margin-left: -20px;
+        margin-top: -2px;
+    }
+}
+
 // Content page styles
 .main.template-dir-content.template-name-content {
     & .odd-fluid {
