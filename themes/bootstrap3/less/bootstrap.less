@@ -585,7 +585,7 @@ li.jstree-facet ul {padding-left: 20px;}
       padding-right: 0;
       overflow-y: auto;
       h4 {padding-left: @padding-base-horizontal;}
-      .checkbox {margin-left: calc(20px + @padding-base-horizontal);}
+      .checkbox {margin-left: 20px + @padding-base-horizontal;}
       .list-group, .list-group-item {
         border-left: 0;
         border-right: 0;
@@ -594,7 +594,7 @@ li.jstree-facet ul {padding-left: 20px;}
     }
     &.active {overflow-y: hidden;}
     &.offcanvas-left {
-      padding-left: calc(@offcanvas-padding - @grid-gutter-width/2);
+      padding-left: @offcanvas-padding - @grid-gutter-width/2;
       & .main {background: #FFF;}
       &.active {
         margin-left: @offcanvas-offset;
@@ -611,7 +611,7 @@ li.jstree-facet ul {padding-left: 20px;}
       }
     }
     &.offcanvas-right {
-      padding-right: calc(@offcanvas-padding - @grid-gutter-width/2);
+      padding-right: @offcanvas-padding - @grid-gutter-width/2;
       & .main > .container {background: #FFF;}
       &.active {
         margin-left: -@offcanvas-offset;

@@ -18,6 +18,10 @@
         )
       );
     ?>
+    <!-- RTL styling -->
+    <? if ($this->layout()->rtl) {
+      $this->headLink()->appendStylesheet('vendor/bootstrap-rtl.min.css');
+    } ?>
     <?=$this->headLink()?>
     <?=$this->headStyle()?>
     <?
