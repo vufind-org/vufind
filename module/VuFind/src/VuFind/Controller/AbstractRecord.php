@@ -131,11 +131,9 @@ class AbstractRecord extends AbstractBase
                 $driver->getUniqueId(), $driver->getResourceSource(), true, $driver
             );
             $resource->addComment($comment, $user);
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage('add_comment_success');
+            $this->flashMessenger()->addMessage('add_comment_success', 'success');
         } else {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('add_comment_fail_blank');
+            $this->flashMessenger()->addMessage('add_comment_fail_blank', 'error');
         }
 
         return $this->redirectToRecord('', 'UserComments');
@@ -155,11 +153,9 @@ class AbstractRecord extends AbstractBase
         $id = $this->params()->fromQuery('delete');
         $table = $this->getTable('Comments');
         if (!is_null($id) && $table->deleteIfOwnedByUser($id, $user)) {
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage('delete_comment_success');
+            $this->flashMessenger()->addMessage('delete_comment_success', 'success');
         } else {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('delete_comment_failure');
+            $this->flashMessenger()->addMessage('delete_comment_failure', 'error');
         }
         return $this->redirectToRecord('', 'UserComments');
     }
@@ -188,8 +184,8 @@ class AbstractRecord extends AbstractBase
         if ($tags = $this->params()->fromPost('tag')) {
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage(['msg' => 'add_tag_success']);
+            $this->flashMessenger()
+                ->addMessage(['msg' => 'add_tag_success'], 'success');
             return $this->redirectToRecord();
         }
 
@@ -222,13 +218,12 @@ class AbstractRecord extends AbstractBase
         // Save tags, if any:
         if ($tag = $this->params()->fromPost('tag')) {
             $driver->deleteTags($user, [$tag]);
-            $this->flashMessenger()->setNamespace('success')
-                ->addMessage(
-                    [
-                        'msg' => 'tags_deleted',
-                        'tokens' => ['%count%' => 1]
-                    ]
-                );
+            $this->flashMessenger()->addMessage(
+                [
+                    'msg' => 'tags_deleted',
+                    'tokens' => ['%count%' => 1]
+                ], 'success'
+            );
         }
 
         return $this->redirectToRecord();
@@ -286,8 +281,7 @@ class AbstractRecord extends AbstractBase
         $driver->saveToFavorites($post, $user);
 
         // Display a success status message:
-        $this->flashMessenger()->setNamespace('success')
-            ->addMessage('bulk_save_success');
+        $this->flashMessenger()->addMessage('bulk_save_success', 'success');
 
         // redirect to followup url saved in saveAction
         if ($url = $this->getFollowupUrl()) {
@@ -412,12 +406,10 @@ class AbstractRecord extends AbstractBase
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer(), $view->subject, $cc
                 );
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage('email_success');
+                $this->flashMessenger()->addMessage('email_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }
         }
 
@@ -456,12 +448,10 @@ class AbstractRecord extends AbstractBase
                     ['driver' => $driver, 'to' => $view->to]
                 );
                 $sms->text($view->provider, $view->to, null, $body);
-                $this->flashMessenger()->setNamespace('success')
-                    ->addMessage('sms_success');
+                $this->flashMessenger()->addMessage('sms_success', 'success');
                 return $this->redirectToRecord();
             } catch (MailException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
+                $this->flashMessenger()->addMessage($e->getMessage(), 'error');
             }
         }
 
@@ -497,8 +487,8 @@ class AbstractRecord extends AbstractBase
         $export = $this->getServiceLocator()->get('VuFind\Export');
         if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('export_invalid_format');
+                $this->flashMessenger()
+                    ->addMessage('export_invalid_format', 'error');
             }
             $view->setTemplate('record/export-menu');
             return $view;
