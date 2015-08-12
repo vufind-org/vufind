@@ -513,7 +513,7 @@ class DAIA extends AbstractBase implements
                 $this->logMessages($docs["message"], "document");
             }
 
-            // do DAIA documents exist?
+            // do DAIA documents exist that have items?
             if (array_key_exists("document", $docs) && array_key_exists("item", $docs) && $this->multiQuery) {
                 // now loop through the found DAIA documents
                 foreach ($docs["document"] as $doc) {
