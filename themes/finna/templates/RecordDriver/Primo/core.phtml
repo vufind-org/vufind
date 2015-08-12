@@ -44,13 +44,6 @@
       </div>
     <? endif; ?>
 
-    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <? /* Display the lists that this record is saved to */ ?>
-      <div class="savedLists hidden alert alert-info" id="savedLists">
-        <strong><?=$this->transEsc("Saved in")?>:</strong>
-      </div>
-    <? endif; ?>
-
     <div class="record-authors">
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <div><?=$this->record($this->driver)->getFormatList()?></div>
@@ -460,6 +453,12 @@
     <?=$openUrl ? $openUrl->renderMoreOptions() : '' ?>
 
     </div>
+        <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <? /* Display the lists that this record is saved to */ ?>
+      <div class="savedLists hidden alert alert-info" id="savedLists">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <? endif; ?>
     <?/* End Main Details */?>
   </div>
 </div>

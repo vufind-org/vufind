@@ -160,14 +160,15 @@
 // Pills This is the toolbar 
 // -------------------------
 .nav-pills {
-  padding: 0px 0px 10px;
+  padding: 0px;
   margin: 0px;
+  margin-bottom: 10px;
   & a:hover {
     text-decoration: none;   
   }
   & > li:not(.addthis-share-buttons):not(.whatsapp) {
     float: left;
-    margin: 5px 0px;
+    margin: 5px 20px 5px 0px;
     @media (max-width: @screen-xs-max) {
         padding-top: 10px;   
     }
@@ -177,6 +178,7 @@
     // Links rendered as pills
     & > a {
       border-radius: @nav-pills-border-radius;
+      padding: 0px;
     }
     & + li {
       margin-left: 0px;

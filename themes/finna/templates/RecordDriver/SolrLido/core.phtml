@@ -48,7 +48,7 @@
     </div>
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
     <? if ($summary): ?>
-      <div class="truncate-field">
+      <div class="truncate-field wide">
         <p class="summary"><?=$summary?></p>
       </div>
     <? endif; ?>
@@ -64,7 +64,8 @@
     <table class="table table-finna-record record-details">
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
       <tr>
-        <td colspan="2"><?=$this->record($this->driver)->getFormatList()?></td>
+        <th><?=$this->transEsc('Format');?>:</th>
+        <td><?=$this->record($this->driver)->getFormatList()?></td>
       </tr>
       <? endif; ?>
       <? $journalTitle = $this->driver->getContainerTitle(); if (!empty($journalTitle)): ?>

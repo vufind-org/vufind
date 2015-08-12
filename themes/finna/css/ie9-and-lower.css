@@ -16,3 +16,8 @@
 body, th, td {
 	line-height: 1.5em !important; 
 }
+/* fallback for clear slider area in slider-selection */
+.slider .slider-track, .slider .slider-track .slider-selection {	
+	filter: none;	
+}
+

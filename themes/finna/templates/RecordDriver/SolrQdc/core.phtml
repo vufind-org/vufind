@@ -44,25 +44,6 @@
     </div>
     <? endif; ?>
 
-    <? if ($abstracts = $this->driver->getAbstracts()): ?>
-      <div class="truncate-field wide">
-        <p class="summary">
-        <? if (isset($abstracts[$this->layout()->userLang])): ?>
-            <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
-          <? else: ?>
-            <?=implode('', array_map(array($this, 'escapeHtml'), $abstracts))?>
-          <? endif; ?>
-        </p>
-      </div>
-    <? else: ?>
-       <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
-       <? if ($summary): ?>
-       <div class="truncate-field wide">
-          <p class="summary"><?=$summary ?></p>
-       </div>
-       <? endif; ?>
-    <? endif; ?>
-
     <div class="record-authors">
         <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
           <span><?=$this->record($this->driver)->getFormatList()?></span>
@@ -93,7 +74,26 @@
             </span>
           <? endforeach; ?>
         <? endif; ?>
-    </div>
+    </div> 
+    
+    <? if ($abstracts = $this->driver->getAbstracts()): ?>
+      <div class="truncate-field wide">
+        <p class="summary">
+        <? if (isset($abstracts[$this->layout()->userLang])): ?>
+            <?=$this->escapeHtml($abstracts[$this->layout()->userLang])?>
+          <? else: ?>
+            <?=implode('', array_map(array($this, 'escapeHtml'), $abstracts))?>
+          <? endif; ?>
+        </p>
+      </div>
+    <? else: ?>
+       <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
+       <? if ($summary): ?>
+       <div class="truncate-field wide">
+          <p class="summary"><?=$summary ?></p>
+       </div>
+       <? endif; ?>
+    <? endif; ?>
 
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
