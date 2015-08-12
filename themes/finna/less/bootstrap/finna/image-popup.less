@@ -154,6 +154,12 @@
     .image {    
         float: left;
 	    max-width: 68%;
+	    @media(max-width:@screen-md-max) and (min-width: @screen-md-min) {
+                max-width: 60%;
+        }
+        @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+                max-width: 54%;
+        }
 	    z-index: 99999999;
 	    min-width: 130px;
 	    min-height: 130px;
@@ -313,12 +319,6 @@
                 vertical-align: middle;
             }
         }           
-    }
-}
-
-@media(max-width:@screen-md-max) {
-    .imagepopup-holder .image {
-        max-width: 500px;
     }
 }
 

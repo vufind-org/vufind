@@ -127,12 +127,6 @@
           <p class="summary"><?=$summary;?></p>
         </div>
       <? endif; ?>
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
-        </div>
-      <? endif; ?>
     </div>
     <div class="col-xs-1 col-sm-1 col-sm-push-3 hidden-print">
       <? /* Display qrcode if appropriate: */ ?>
@@ -179,6 +173,13 @@
         echo $openUrl->renderMoreOptions();
       }
       ?>
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <? /* Saved lists */ ?>
+        <div class="savedLists alert alert-info hidden col-md-11">
+          <strong><?=$this->transEsc("Saved in")?>:</strong>
+        </div>
+    <? endif; ?>
     </div>
+
 </div>
 <!-- end of result-list.phtml -->

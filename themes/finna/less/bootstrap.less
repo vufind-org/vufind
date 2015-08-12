@@ -27,10 +27,16 @@ header {
      }
      background: @header-background-color;
 }
-section.template-name-results > .container {
-    margin-top: 20px;
-    padding-bottom: 25px;
+section.main.template-dir-search.template-name-results, section.main.template-dir-primo.template-name-search {
+    & >.container {
+        margin-top: 20px;
+        padding-bottom: 25px;
+    }
+    & .resultItemFormat {
+        margin: 3px 0px;
+    }
 }
+
 section.main.template-dir-content.template-name-content > .container {
   padding-top: 0;
   padding-bottom: 3.4em;
@@ -1148,9 +1154,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
   text-decoration: line-through;
 }
 //== PCI
-.template-dir-primo.template-name-search .row.result, .sourcePrimo {
-    border-bottom: 1px solid @gray-lighter;
-}
+
 .summary {
     color: @gray-light; 
     font-size: 1.05em; 
@@ -1307,26 +1311,38 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
                 height: 44px;
                 margin: 0;
                 & .fa {
-                    font-size: 20px;   
+                    font-size: 20px;  
                 }
                 &>a {
-                    padding: 12px 7px 0px 3px;
+                    padding: 11px 9px 0px 9px;
                     height: 44px;
                     margin-top: 0px;
                     border-radius: 0px !important;
                     color: @body-bg;
                 }
             }
-        }
-        & .addthis_toolbox.addthis_default_style a {
-            margin-bottom: 5px;
-            display: block;
-            margin-left: 3px;
-            margin-top: 20px;
-            & .fa {
-                padding-right: 4px;
-                  margin-left: 6px;
+            & li.whatsapp {
+                margin: 0;
             }
+            & .addthis-share-buttons {
+                margin-right: 0 !important;   
+            }
+        }
+        & .nav-pills.mobile-sharing .whatsapp a, .addthis_toolbox.addthis_default_style a, .nav-pills.mobile-sharing .mail-record a {
+            padding: 12px 10px !important;
+            display: block;
+            &:hover {
+                background: rgba(255,255,255,0.2);   
+            }
+            & .fa {
+                padding: 6px;
+            }
+            & i {
+                margin: 0;   
+            }
+        }
+        & .nav-pills.mobile-sharing .whatsapp a, .nav-pills.mobile-sharing .mail-record a {
+            padding: 6px 10px !important;   
         }
         & .dropdown-toggle {
             color: @body-bg;
