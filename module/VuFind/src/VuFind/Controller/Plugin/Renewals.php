@@ -105,7 +105,7 @@ class Renewals extends AbstractPlugin
                     && is_array($renewResult['blocks'])
                 ) {
                     foreach ($renewResult['blocks'] as $block) {
-                        $flashMsg->setNamespace('info')->addMessage($block);
+                        $flashMsg->addMessage($block, 'info');
                     }
                 }
 
@@ -113,11 +113,11 @@ class Renewals extends AbstractPlugin
                 return $renewResult['details'];
             } else {
                 // System failure:
-                $flashMsg->setNamespace('error')->addMessage('renew_error');
+                $flashMsg->addMessage('renew_error', 'error');
             }
         } else if (!empty($all) || !empty($selected)) {
             // Button was clicked but no items were selected:
-            $flashMsg->setNamespace('error')->addMessage('renew_empty_selection');
+            $flashMsg->addMessage('renew_empty_selection', 'error');
         }
 
         return [];
