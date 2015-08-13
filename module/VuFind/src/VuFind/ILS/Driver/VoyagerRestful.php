@@ -770,6 +770,27 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 ];
             }
         }
+
+        // Sort pick up locations
+        $pickUpLocationOrder = isset($this->config['Holds']['pickUpLocationOrder'])
+            ? explode(":", $this->config['Holds']['pickUpLocationOrder']) : [];
+        $pickUpLocationOrder = array_flip($pickUpLocationOrder);
+        $sortFunction = function($a, $b) use ($pickUpLocationOrder) {
+            $aLoc = $a['locationID'];
+            $bLoc = $b['locationID'];
+            if (isset($pickUpLocationOrder[$aLoc])) {
+                if (isset($pickUpLocationOrder[$bLoc])) {
+                    return $pickUpLocationOrder[$aLoc] - $pickUpLocationOrder[$bLoc];
+                }
+                return -1;
+            }
+            if (isset($pickUpLocationOrder[$bLoc])) {
+                return 1;
+            }
+            return strcasecmp($aLoc, $bLoc);
+        };
+        usort($pickResponse, $sortFunction);
+
         return $pickResponse;
     }
 
