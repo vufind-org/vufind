@@ -443,9 +443,16 @@
         padding: 10px;
         & .list-url {
             font-weight: bold;
+            word-break: break-word;
         }
-        & #visibility-hidden {
+
+        & .list-visibility-hidden {
             margin-left: 10px;
+            margin-bottom: 5px;
+            @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+                margin-left: 0;
+                display: block;
+            }
         }
     }
 
