@@ -48,6 +48,12 @@ trait ILSFinna
      */
     protected function processILSUser($info)
     {
+        if (empty($info['email'])) {
+            // Try to fetch patron's profile to get the email address
+            $profile = $this->getCatalog()->getMyProfile($info);
+            $info['email'] = $profile['email'];
+        }
+
         // Figure out which field of the response to use as an identifier; fail
         // if the expected field is missing or empty:
         $config = $this->getConfig();
