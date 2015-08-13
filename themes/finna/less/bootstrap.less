@@ -226,7 +226,6 @@ footer {
 }
 .sidebar {
     margin-bottom: 30px;
-    padding-right: 20px;
     @media (max-width: @screen-xs-max) {
         clear: both;   
     }
@@ -615,7 +614,9 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
     & .hierarchy-tree .jstree-clicked {
         color: @link-color;
         font-weight: bold;
-        background: #f5f5f5;
+        background: @gray-lighter;
+        padding: 5px;
+        border-radius: 4px;
     }
     & .jstree-container-ul {
         background: none;
@@ -625,6 +626,19 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
             white-space: nowrap;
             display: block;
             text-overflow: ellipsis;
+            font-size: 1em;
+        }
+        & > li.jstree-node {
+            padding: 0px;   
+        }
+        & .jstree-ocl {
+            @media (max-width: @screen-sm-max) {
+                font-size: 1.35em;
+                vertical-align: middle;
+            }
+        }
+        & .jstree-leaf > .jstree-ocl {
+            margin-right: 8px;
         }
     }
 }
@@ -1109,7 +1123,6 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     cursor:pointer;
     padding:0;
     width:10px;
-    margin-left:-18px;
   }
   .jstree-open > .jstree-ocl:before {
     content: "\e027";
@@ -1118,7 +1131,7 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
     content: "\e025";
   }
   .jstree-leaf > .jstree-ocl:before {
-    content:" ";
+    content:"";
   }
   .jstree-icon {
     color:#000;
@@ -1141,6 +1154,17 @@ ul.jstree-container-ul > li.jstree-node, .list-group.facet .list-group-item:not(
       color:#FFF;
     }
   }
+}
+.back-to-up {
+    text-align: center;
+    padding: 10px;
+    margin-top: 30px;
+    font-size: 1.1em;
+    color: @link-color;
+    background-color: #f5f5f5;
+    &:hover {
+        cursor: pointer;   
+    }
 }
 
 // styling of selected OR facet

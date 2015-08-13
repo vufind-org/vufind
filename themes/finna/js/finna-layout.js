@@ -282,6 +282,36 @@ finna.layout = (function() {
           scrollTop: $('.recordProvidedBy').offset().top
         }, 500);
       });
+      var scroll = $(window).scrollTop();
+      var modalContent = 0;
+      $(window).scroll(function (event) {
+        scroll = $(window).scrollTop();
+        if (scroll > 2000) {
+           $('.template-dir-record .back-to-up').removeClass('hidden');
+        }
+        else {
+          $('.template-dir-record .back-to-up').addClass('hidden');
+        }
+      });
+      
+      $( "#modal" ).on('shown.bs.modal', function (e) {
+        $('#hierarchyTree').scroll(function () {
+          modalContent = $('#hierarchyTree').scrollTop();
+          if (modalContent > 1500) {
+            $('#modal .back-to-up').removeClass('hidden');
+          }
+          else {
+            $('#modal .back-to-up').addClass('hidden');
+          }
+        });
+        $('.back-to-up').click(function() {
+            $('#hierarchyTree, #modal').animate({scrollTop: 0 }, 200);
+        });
+      });
+      
+      $('.template-dir-record .back-to-up').click(function() {
+        $('html, body').animate({scrollTop: $('#hierarchyTreeHolder').offset().top-70}, 200);
+      }); 
     };
     
     var initSearchboxFunctions = function() {
