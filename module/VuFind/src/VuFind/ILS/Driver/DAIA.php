@@ -513,8 +513,8 @@ class DAIA extends AbstractBase implements
                 $this->logMessages($docs["message"], "document");
             }
 
-            // do DAIA documents exist that have items?
-            if (array_key_exists("document", $docs) && array_key_exists("item", $docs) && $this->multiQuery) {
+            // do DAIA documents exist?
+            if (array_key_exists("document", $docs) && $this->multiQuery) {
                 // now loop through the found DAIA documents
                 foreach ($docs["document"] as $doc) {
                     // DAIA documents should use URIs as value for id
@@ -522,14 +522,20 @@ class DAIA extends AbstractBase implements
                         && $doc["id"] == $this->generateURI($id)
                     ) {
                         // we've found the document element with the matching URI
-                        return $doc;
+			// if the document has an item, then we return it
+			if(isset($doc["item"])) {
+				return $doc;
+			}
                     }
                 }
-            } elseif (array_key_exists("document", $docs) && array_key_exists("item", $docs)) {
+            } elseif (array_key_exists("document", $docs)) {
                 // since a document exists but multiQuery is disabled, the first
-                // document is returned
-                return array_shift($docs['document']);
-            }
+                // document is returned if it contains an item
+		$doc = array_shift($docs['document']);
+		if(isset($doc["item"])) {
+			return $doc;
+		}
+            }            
             // no (id matching) document element found
             return null;
         } else {
