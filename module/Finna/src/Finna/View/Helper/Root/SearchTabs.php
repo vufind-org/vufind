@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace Finna\View\Helper\Root;
-use \Finna\Search\UrlQueryHelper;
 
 /**
  * "Search tabs" view helper
@@ -47,13 +46,6 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     protected $table;
 
     /**
-     * Session manager
-     *
-     * @var SessionManager
-     */
-    protected $session;
-
-    /**
      * Active search class
      *
      * @var string
@@ -63,19 +55,16 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
     /**
      * Constructor
      *
-     * @param SessionManager $session Session manager
-     * @param PluginManager  $table   Database manager
-     * @param PluginManager  $results Search results plugin manager
-     * @param array          $config  Tab configuration
-     * @param Url            $url     URL helper
+     * @param PluginManager $table   Database manager
+     * @param PluginManager $results Search results plugin manager
+     * @param array         $config  Tab configuration
+     * @param Url           $url     URL helper
      */
     public function __construct(
-        \Zend\Session\SessionManager $session,
         \VuFind\Db\Table\PluginManager $table,
         \VuFind\Search\Results\PluginManager $results,
         array $config, \Zend\View\Helper\Url $url
     ) {
-        $this->session = $session;
         $this->table = $table;
         parent::__construct($results, $config, $url);
     }
@@ -98,13 +87,16 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         $helper = $this->getView()->results->getUrlQuery();
 
         $tabs = parent::__invoke($activeSearchClass, $query, $handler, $type);
+        $searchTable = $this->table->get('Search');
 
         foreach ($tabs as &$tab) {
             if (isset($tab['url'])) {
                 $searchClass = $tab['class'];
                 if (isset($savedSearches[$searchClass])) {
                     $searchId = $savedSearches[$tab['class']];
-                    $filters = $this->getSearchFilters($searchId);
+                    $filters = $searchTable->getSearchFilters(
+                        $searchId, $this->results
+                    );
                     $targetClass = $tab['class'];
 
                     // Make sure that tab url does not contain the
@@ -132,7 +124,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
                     if ($filters) {
                         $tab['url'] .= '&' .
                             $helper->buildQueryString(
-                                array('filter' => $filters), false
+                                ['filter' => $filters], false
                             );
                     }
                 }
@@ -175,7 +167,7 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         if (!empty($filters)) {
             // Filters active, include current search id in the url
             $searchClass = $this->activeSearchClass;
-            $searchId = $this->getView()->results->getSearchId();
+            $searchId = $this->getView()->results->getSearchHash();
             $query = $urlQuery->setSearchId($searchClass, $searchId);
         } else {
             $query = $urlQuery->getParams(false);
@@ -185,33 +177,5 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         $results->getParams()->setBasicSearch($query, $targetHandler);
         return $this->url->__invoke($options->getSearchAction())
             . $query;
-    }
-
-    /**
-     * Return filters for a saved search.
-     *
-     * @param int $id Search id
-     *
-     * @return mixed array of filters or false if the given search has no filters.
-     */
-    protected function getSearchFilters($id)
-    {
-        if (!$search = $this->table->get('Search')->getRowById($id, false)) {
-            return false;
-        }
-
-        $sessId = $this->session->getId();
-        if ($search->session_id == $sessId) {
-            $minSO = $search->getSearchObject();
-            $savedSearch = $minSO->deminify($this->results);
-
-            $params = $savedSearch->getUrlQuery()->getParamArray();
-            foreach ($params as $key => $value) {
-                if ($key == 'filter') {
-                    return $value;
-                }
-            }
-        }
-        return false;
     }
 }

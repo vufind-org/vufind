@@ -62,7 +62,7 @@
     ?>
 <? if (!empty($filterList) || $queryHandler != 'AllFields'): ?>
   <div class="list-group filters">
-    <div class="list-group-item title"><?=$this->transEsc('Filters')?></div>
+    
     <? // Finna query handler (type) remove link ?>
     <? if ($queryHandler != 'AllFields'): ?>
         <? $removeLink = $this->currentPath().$results->getUrlQuery()->setHandler('AllFields'); ?>
@@ -248,7 +248,7 @@ JS;
             ?>
             <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtmlAttr($title).' hidden'; ?>
           <? if ($i == 6): ?>
-            <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item" href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?> ...</a>
+            <a id="more-narrowGroupHidden-<?=$this->escapeHtmlAttr($title)?>" class="list-group-item more-narrow-toggle" href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?>...<i class="fa fa-handle-open"></i></a>
           <? endif; ?>
           <? if ($thisFacet['isApplied']): ?>
             <a class="list-group-item active<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied<? endif ?>" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>">
@@ -287,7 +287,7 @@ JS;
             <? endif; ?>
           <? endif; ?>
         <? endforeach; ?>
-          <? if ($i > 5): ?><a class="list-group-item <?=$moreClass ?>" href="javascript:lessFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('less')?> ...</a><? endif; ?>
+          <? if ($i > 5): ?><a class="list-group-item <?=$moreClass ?> less-narrow-toggle" href="javascript:lessFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('less')?>...<i class="fa fa-handle-close"></i></a><? endif; ?>
         <? endif; ?>
         <? if (in_array($title, $hierarchicalFacets)): ?>
           </noscript>

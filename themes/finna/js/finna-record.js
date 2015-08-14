@@ -104,6 +104,24 @@ finna.record = (function() {
             Lightbox.confirm(vufindString['feedback_success']);
         });
     };
+      
+    var initMobileModals = function() {
+      var id = $('.hiddenId')[0].value;
+      $('#cite-record-mobile').click(function() {
+        var params = extractClassParams(this);
+        return Lightbox.get(params['controller'], 'Cite', {id:id});
+      });
+      // Mail lightbox
+      $('#mail-record-mobile').click(function() {
+        var params = extractClassParams(this);
+        return Lightbox.get(params['controller'], 'Email', {id:id});
+      });
+      // Save lightbox
+      $('#save-record-mobile').click(function() {
+        var params = extractClassParams(this);
+        return Lightbox.get(params['controller'], 'Save', {id:id});
+      });
+    };
     
     var my = {
         checkRequestsAreValid: checkRequestsAreValid,
@@ -112,6 +130,7 @@ finna.record = (function() {
             initHoldingsControls();
             initRecordFeedbackForm();
             setUpCheckRequest();
+            initMobileModals();
         },
     };
 

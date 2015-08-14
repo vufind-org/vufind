@@ -224,30 +224,120 @@ finna.layout = (function() {
             buttonClass: "form-control",
         });
     };
+  
+    var initMobileNarrowSearch = function() {
+        var filterAmount = $('.checkboxFilter input[checked]').length+$('.list-group.filters .list-group-item.active').length;
+        if (filterAmount > 0) {
+          $('.mobile-navigation .sidebar-navigation .active-filters').removeClass('hidden');
+          $('.mobile-navigation .sidebar-navigation .active-filters').append(' '+filterAmount);
+        }
+        $('.mobile-navigation .sidebar-navigation, .sidebar h4').click(function() {
+            $('.sidebar').toggleClass('open');
+            $('.mobile-navigation .sidebar-navigation i').toggleClass('fa-arrow-up');
+            $('body').toggleClass('prevent-scroll'); 
+        });
+        $('.mobile-navigation .sidebar-navigation .active-filters').click(function() {
+            $('.sidebar').scrollTop(0);
+        });  
+    };
+    
     var initCheckboxClicks = function() {
       $('.checkboxFilter:not(.mylist-select-all) .checkbox input').click(function() {
         $(this).closest('.checkbox').toggleClass('checked');
-      });
-      $('.checkboxFilter.mylist-select-all .checkbox .checkbox-select-all').click(function() {
-        if ($('.checkboxFilter.mylist-select-all .checkbox').hasClass('checked')) {
-          var isEverythingChecked = true;
-          $('.myresearch-row .checkboxFilter .checkbox').each(function() {
-            if (!$(this).hasClass('checked')) {
-              isEverythingChecked = false;
+        var nonChecked = true;
+        $('.myresearch-row .checkboxFilter .checkbox').each(function() {
+            if ($(this).hasClass('checked')) {
+              $('.mylist-functions button, .mylist-functions select').removeAttr("disabled");
+              $('.mylist-functions .jump-menu-style').removeClass('disabled');
+              nonChecked = false;
             }
-          });
-          if (isEverythingChecked == true) {
-            $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').removeClass('checked');
-          }
-          else {
-            $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').addClass('checked');
-          }
+        });
+        if (nonChecked == true) {
+          $('.mylist-functions button, .mylist-functions select').attr("disabled", true);
+          $('.mylist-functions .jump-menu-style').addClass('disabled');
+        }
+      });
+
+        var myListSelectAll = $(".checkboxFilter.mylist-select-all");
+        var myListJumpMenu = $(".mylist-functions .jump-menu-style");
+        var myListFunctions = $(".mylist-functions button, .mylist-functions select");
+        myListSelectAll.find(".checkbox .checkbox-select-all").click(function() {            
+            var checkboxes = $(".myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox");
+            if ($(this).closest(".checkbox").hasClass("checked")) {
+                var isEverythingChecked = !$(".myresearch-row .checkboxFilter .checkbox").not(".checked").length;
+                checkboxes.toggleClass("checked", !isEverythingChecked);
+                myListJumpMenu.toggleClass("disabled", isEverythingChecked);
+                myListFunctions.attr("disabled", isEverythingChecked);
+            } else {
+                checkboxes.toggleClass("checked", true);
+                myListJumpMenu.toggleClass("disabled", false);                
+                myListFunctions.attr("disabled", false);
+            }
+        });
+    };
+
+    var initScrollLinks = function() {
+      $('.library-link').click(function() {
+        $('html, body').animate({
+          scrollTop: $('.recordProvidedBy').offset().top
+        }, 500);
+      });
+      var scroll = $(window).scrollTop();
+      var modalContent = 0;
+      $(window).scroll(function (event) {
+        scroll = $(window).scrollTop();
+        if (scroll > 2000) {
+           $('.template-dir-record .back-to-up').removeClass('hidden');
         }
         else {
-            $('.myresearch-row .checkboxFilter .checkbox, .checkboxFilter.mylist-select-all .checkbox').addClass('checked');
+          $('.template-dir-record .back-to-up').addClass('hidden');
         }
       });
+      
+      $( "#modal" ).on('shown.bs.modal', function (e) {
+        $('#hierarchyTree').scroll(function () {
+          modalContent = $('#hierarchyTree').scrollTop();
+          if (modalContent > 1500) {
+            $('#modal .back-to-up').removeClass('hidden');
+          }
+          else {
+            $('#modal .back-to-up').addClass('hidden');
+          }
+        });
+        $('.back-to-up').click(function() {
+            $('#hierarchyTree, #modal').animate({scrollTop: 0 }, 200);
+        });
+      });
+      
+      $('.template-dir-record .back-to-up').click(function() {
+        $('html, body').animate({scrollTop: $('#hierarchyTreeHolder').offset().top-70}, 200);
+      }); 
     };
+    
+    var initSearchboxFunctions = function() {
+      if ($('.navbar-form .checkbox')[0]) {
+        $('.tt-dropdown-menu').addClass('checkbox-active');
+      }
+      if ($('#searchForm_lookfor').val() != "" ) {
+        $('.clear-button').removeClass('hidden');
+      }
+      $('#searchForm_lookfor').on('input', function() {
+        if ($('#searchForm_lookfor').val() != "" ) {
+          $('.clear-button').removeClass('hidden');
+        }
+        else {
+          $('.clear-button').addClass('hidden');
+        }
+      });
+      
+      $('.clear-button').click(function() {
+        $('#searchForm_lookfor').val("");
+        $('.clear-button').addClass('hidden');
+        $('#searchForm_lookfor').focus();
+      });
+    };
+      
+
     
     var initToolTips = function () {
       $('[data-toggle="tooltip"]').tooltip();
@@ -276,8 +366,11 @@ finna.layout = (function() {
             initContentNavigation();
             initRecordSwipe();
             initMultiSelect();
+            initMobileNarrowSearch();
             initCheckboxClicks();
             initToolTips();
+            initScrollLinks();
+            initSearchboxFunctions();
         },
     };
 

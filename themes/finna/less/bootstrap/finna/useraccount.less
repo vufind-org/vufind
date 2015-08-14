@@ -22,6 +22,7 @@
         font-weight: bold;
         padding: 7px 10px;
         margin: 0px;
+        background: @gray;
         background: linear-gradient( @gray-light, darken(@gray-light,8%));
         color: @body-bg;
     }
@@ -75,6 +76,7 @@
         border-top: none;
         box-shadow: 0px 15px 30px -35px @gray;
         & .headers {
+            background: @gray;
             background: linear-gradient( @gray-light, darken(@gray-light,8%));
             color: @body-bg;
         }
@@ -171,16 +173,15 @@
               margin-right: 3px;
         }
         & .mylist-functions {
-            & .jump-menu-style.controls {
-                border-radius: 0 10px 10px 0;
-                height: inherit;
-            }
             & i#add-to-list {
                 position: absolute;
                 top: 8px;
             }
             & select#add-to-list {
                 max-width: 140px;
+            }
+            & select, button {
+                margin-bottom: 4px;   
             }
         }
         &.fixed {
@@ -202,7 +203,7 @@
         border-right: none;
         border-bottom: 1px solid @gray-lighter;
     }
-    .row.record-container.ajaxItem.myresearch-row:last-child {
+    .row.record-container.myresearch-row:last-child {
         margin-bottom: 20px;
         box-shadow: 0px 15px 30px -25px @gray;
     }
@@ -362,6 +363,12 @@
         & li {
             float:left;
             margin:0;
+            @media(max-width: @screen-md-max) {
+                max-width: 160px;  
+            }
+            @media(max-width: @screen-sm-max) {
+                    max-width: 95px;
+            }
             &:first-child {
                 border-left: 2px solid @myresearch-header-background;  
             }
@@ -380,10 +387,8 @@
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
-                    max-width: 160px;
                 }
                 @media(max-width: @screen-sm-max) {
-                    max-width: 95px;
                     font-size: 0.9em;
                     padding: 10px 8px;
                 }
@@ -438,9 +443,16 @@
         padding: 10px;
         & .list-url {
             font-weight: bold;
+            word-break: break-word;
         }
-        & #visibility-hidden {
+
+        & .list-visibility-hidden {
             margin-left: 10px;
+            margin-bottom: 5px;
+            @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+                margin-left: 0;
+                display: block;
+            }
         }
     }
 

@@ -65,6 +65,10 @@ class PrimoController extends \VuFind\Controller\PrimoController
      */
     public function searchAction()
     {
+        if ($this->getRequest()->getQuery()->get('combined')) {
+            $this->saveToHistory = false;
+        }
+        $this->initCombinedViewFilters();
         $view = parent::resultsAction();
         $this->initSavedTabs();
 

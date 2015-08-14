@@ -27,7 +27,7 @@
  */
 namespace Finna\Search\Results;
 use Finna\Search\UrlQueryHelper,
-    \VuFind\Search\Results\PluginFactory,
+    \Finna\Search\Results\PluginFactory,
     Zend\ServiceManager\ServiceManager;
 
 /**
@@ -52,7 +52,16 @@ class Factory extends \VuFind\Search\Results\Factory
      */
     public static function getSolr(ServiceManager $sm)
     {
-        $solr = parent::getSolr($sm);
+        $factory = new PluginFactory();
+        $solr = $factory->createServiceWithName($sm, 'solr', 'Solr');
+        $config = $sm->getServiceLocator()
+            ->get('VuFind\Config')->get('config');
+        $spellConfig = isset($config->Spelling)
+            ? $config->Spelling : null;
+        $solr->setSpellingProcessor(
+            new \VuFind\Search\Solr\SpellingProcessor($spellConfig)
+        );
+
         return Factory::initUrlQueryHelper($solr, $sm);
     }
 

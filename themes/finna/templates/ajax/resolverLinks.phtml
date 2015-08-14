@@ -4,8 +4,8 @@
       <ul>
         <? foreach ($this->electronic as $link): ?>
           <li>
-            <? if (isset($link['href']) && !empty($link['href'])): ?>
-              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>" target="_blank"><i class="fa fa-external-link"></i> <?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
+            <? if (!empty($link['href'])): ?>
+              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-'.$link['access'].'"':''?> target="_blank"><i class="fa fa-external-link"></i> <?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
             <? else: ?>
               <?=isset($link['title'])?$this->escapeHtml($link['title']):''?>
             <? endif; ?>
@@ -20,8 +20,8 @@
       <ul>
         <? foreach ($this->print as $link): ?>
           <li>
-            <? if (isset($link['href']) && !empty($link['href'])): ?>
-              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>" target="_blank"><i class="fa fa-external-link"></i> <?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
+            <? if (!empty($link['href'])): ?>
+              <a href="<?=$this->escapeHtmlAttr($link['href'])?>" title="<?=isset($link['service_type'])?$this->escapeHtmlAttr($link['service_type']):''?>"<?=!empty($link['access'])?' class="access-'.$link['access'].'"':''?> target="_blank"><i class="fa fa-external-link"></i> <?=isset($link['title'])?$this->escapeHtml($link['title']):''?></a>
             <? else: ?>
               <?=isset($link['title'])?$this->escapeHtml($link['title']):''?>
             <? endif; ?>

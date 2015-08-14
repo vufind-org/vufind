@@ -37,13 +37,22 @@ label.list-group-item {
 #modal {background-color: rgba(0,0,0,.2);}
 #modal .modal-body > h2:first-child {display: none;}
 .popover {width: 250px;}
-p.lead {
+h2 {
   @media (min-width: 768px) {
     font-size: 23px;
     font-weight: normal;
   }
   @media (max-width: 767px) {
     font-size: 20px;
+  }
+}
+h3 {
+  @media (min-width: 768px) {
+    font-size: 20px;
+    font-weight: normal;
+  }
+  @media (max-width: 767px) {
+    font-size: 16px;
   }
 }
 .recordcover {max-height: 300px;}
@@ -546,7 +555,7 @@ li.jstree-facet ul {padding-left: 20px;}
 
 /* --- Offcanvas --- */
 @offcanvas-offset: 75%;
-@offcanvas-padding: 25px;
+@offcanvas-padding: 30px;
 
 .offcanvas-overlay,
 .offcanvas-toggle {display: none;}
@@ -563,7 +572,7 @@ li.jstree-facet ul {padding-left: 20px;}
       padding-right: 0;
       overflow-y: auto;
       h4 {padding-left: @padding-base-horizontal;}
-      .checkbox {margin-left: 20px+@padding-base-horizontal;}
+      .checkbox {margin-left: calc(20px + @padding-base-horizontal);}
       .list-group, .list-group-item {
         border-left: 0;
         border-right: 0;
@@ -572,10 +581,8 @@ li.jstree-facet ul {padding-left: 20px;}
     }
     &.active {overflow-y: hidden;}
     &.offcanvas-left {
-      & > .container {
-        background: #FFF;
-        padding-left: @offcanvas-padding;
-      }
+      padding-left: calc(@offcanvas-padding - @grid-gutter-width/2);
+      & .main {background: #FFF;}
       &.active {
         margin-left: @offcanvas-offset;
         margin-right: -@offcanvas-offset;
@@ -591,10 +598,8 @@ li.jstree-facet ul {padding-left: 20px;}
       }
     }
     &.offcanvas-right {
-      & > .container {
-        background: #FFF;
-        padding-right: @offcanvas-padding;
-      }
+      padding-right: calc(@offcanvas-padding - @grid-gutter-width/2);
+      & .main > .container {background: #FFF;}
       &.active {
         margin-left: -@offcanvas-offset;
         margin-right: @offcanvas-offset;
@@ -622,7 +627,7 @@ li.jstree-facet ul {padding-left: 20px;}
       display: block;
       position: fixed;
       top: 50%;
-      width: @offcanvas-padding;
+      width: calc(@offcanvas-padding - 5px);
       padding: 20px 0;
       background: @brand-primary;
       color: #EEE;

@@ -12,7 +12,6 @@ namespace ZendService\Amazon\Ec2;
 
 use DOMXPath;
 use ZendService\Amazon;
-use ZendService\Amazon\Ec2\Exception;
 use Zend\Crypt\Hmac;
 use Zend\Http\Client as HttpClient;
 
@@ -138,7 +137,6 @@ abstract class AbstractEc2 extends Amazon\AbstractAmazon
             $request->setParameterPost($params);
 
             $httpResponse = $request->send();
-
         } catch (\Zend\Http\Client\Exception\ExceptionInterface $zhce) {
             $message = 'Error in request to AWS service: ' . $zhce->getMessage();
             throw new Exception\RuntimeException($message, $zhce->getCode(), $zhce);

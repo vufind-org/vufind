@@ -8,11 +8,10 @@
   // More link should use default limit, not custom limit:
   $limit = $params->getLimit();
   $params->setLimit($params->getOptions()->getDefaultLimit());
-  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
-  $params->setLimit($limit);
-  
-   
 
+  $url = $results->getUrlQuery();
+  $url->setSearchId($searchClassId, null);
+  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $url->setPage(1);
 ?>
 <div class="row">
   <div class="col-xs-12 combined-titles">

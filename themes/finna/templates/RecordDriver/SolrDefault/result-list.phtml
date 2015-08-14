@@ -1,12 +1,6 @@
 <!-- start of Default result-list.phtml -->
 <div class="record-container<?=$this->driver->supportsAjaxStatus()?' ajaxItem ':''?> list-view">
-    <div class="col-xs-2 resultThumb">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
-      <? $img = $this->recordImage($this->record($this->driver))?>
-      <?= $img->render('list', array('medium' => array('w' => 250))) ?>
-    </div>
-    <div class="col-xs-9">
+    <div class="col-xs-9 col-sm-push-2">
       <div>
         <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
           <?=$this->record($this->driver)->getTitleHtml()?>
@@ -59,7 +53,20 @@
           <? $journalTitle = $this->driver->getContainerTitle(); $summDate = $this->driver->getPublicationDates(); ?>
           <? if (!empty($journalTitle)): ?>
             <?=!empty($summAuthor) ? '' : ' '?>
-            <? $parentId = $this->driver->getHierarchyParentId(); $parentLink = $parentId ? $this->recordLink()->getUrl("VuFind|{$parentId[0]}") : $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle)); ?>
+            <?
+            $parentId = $this->driver->getHierarchyParentId();
+            $parentLink = false;
+            if ($parentId) {
+              try {
+                $parentLink = $this->recordLink()->getUrl("VuFind|{$parentId[0]}");
+              } catch (Exception $e) {
+                // Probably parent record doesn't exist, fall back to linking by title
+              }
+            }
+            if ($parentLink === false) {
+              $parentLink = $this->record($this->driver)->getLink('journaltitle', str_replace(array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'), '', $journalTitle));
+            }
+            ?>
             <?=/* TODO: handle highlighting more elegantly here */ $this->transEsc('Published in') . ' <a href="' . $parentLink . '">' . $this->highlight($journalTitle) . '</a>';?>
             <? $ref = $this->driver->getContainerReference(); if (!empty($ref)): ?>
               <?=$this->escapeHtml($ref); ?>
@@ -165,18 +172,17 @@
       </div>
     </div>
     <?=$this->record($this->driver)->getOnlineUrls('results')?>
-      <?=$this->record($this->driver)->getPreviews()?>
-      <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <? /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
-          <strong><?=$this->transEsc("Saved in")?>:</strong>
-        </div>
-      <? endif; ?>
-      <? if ($this->layout()->templateDir === 'list'): ?>
-        <?=$this->render('list/list-notes.phtml')?>
-      <? endif; ?>
+    <?=$this->record($this->driver)->getPreviews()?>
+
   </div>
-  <div class="col-xs-1 hidden-print">
+  <div class="col-xs-3 col-sm-2 col-sm-pull-9 resultThumb">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
+      <? $img = $this->recordImage($this->record($this->driver))?>
+      <?= $img->render('list', array('medium' => array('w' => 250))) ?>
+  </div>
+  <div class="clearfix visible-xs"></div>
+  <div class="col-xs-12 col-sm-1 hidden-print add-to-favorite-col">
       <? /* Display qrcode if appropriate: */ ?>
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
@@ -193,9 +199,8 @@
 
       <? if ($this->userlist()->getMode() !== 'disabled'): ?>
         <? /* Add to favorites */ ?>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="sr-only"><?=$this->transEsc('Add to favorites')?></span></a>
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span class="hidden-sm hidden-md hidden-lg"><?=$this->transEsc('Add to favorites')?></span> <span class="sr-only hidden-xs"><?=$this->transEsc('Add to favorites')?></span></a>
       <? endif; ?>
-
       <? /* Hierarchy tree link */ ?>
       <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
         <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
@@ -209,9 +214,19 @@
         <? endforeach; ?>
       <? endif; ?>
 
-      <? $openUrl = $this->driver->getOpenURL(); ?>
-      <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
+      <?=$this->driver->supportsCoinsOpenUrl()?'<span class="Z3988" title="'.$this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()).'"></span>':''?>
+  </div>
+  <div class="col-xs-12 col-sm-9 col-sm-push-2">
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <? /* Saved lists */ ?>
+    <div class="savedLists alert alert-info hidden">
+      <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
+    <? endif; ?>
+    <? if ($this->layout()->templateDir === 'list'): ?>
+      <?=$this->render('list/list-notes.phtml')?>
+    <? endif; ?>
+  </div>
 </div>
 <!-- End of Default result-list.phtml -->
 

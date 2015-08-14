@@ -87,19 +87,24 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
     }
 
     /**
-     * Sets search id in the params and returns resulting query string.
+     * Sets search id in the params.
      *
-     * @param string $class Search class.
-     * @param int    $id    Search id.
+     * @param string  $class  Search class.
+     * @param int     $id     Search id or NULL if the current id for this
+     *                        search class should be removed.
+     * @param boolean $output Output query string?
      *
      * @return string
      */
-    public function setSearchId($class, $id)
+    public function setSearchId($class, $id, $output = true)
     {
-        $params = $this->getParamArray();
+        $params = $this->defaultParams;
         $searches = isset($params['search']) ? $params['search'] : [];
+
         $res = [];
-        $res[] = "$class:$id";
+        if ($id !== null) {
+            $res[] = "$class:$id";
+        }
 
         foreach ($searches as $search) {
             list($searchClass, $searchId) = explode(':', $search);
@@ -107,8 +112,11 @@ class UrlQueryHelper extends \VuFind\Search\UrlQueryHelper
                 $res[] = "$searchClass:$searchId";
             }
         }
-        $params['search'] = $res;
+        $this->setDefaultParameter('search', $res);
 
-        return '?' . $this->buildQueryString($params, false);
+        if ($output) {
+            $params = $this->getParamArray();
+            return '?' . $this->buildQueryString($params, false);
+        }
     }
 }

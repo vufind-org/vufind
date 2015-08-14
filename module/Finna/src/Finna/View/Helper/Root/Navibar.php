@@ -172,16 +172,16 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
         $parseUrl = function ($url) {
             if (preg_match('/^(http|https):\/\//', $url)) {
                 // external url
-                return array('url' => $url, 'route' => false);
+                return ['url' => $url, 'route' => false];
             }
 
-            $data = array('route' => true);
+            $data = ['route' => true];
 
             $needle = 'content-';
             if (($pos = strpos($url, $needle)) === 0) {
                 // Content pages do not have static routes, so we
                 // need to add required route parameters for url view helper.
-                $page = substr($url, $pos+strlen($needle));
+                $page = substr($url, $pos + strlen($needle));
                 $data['routeParams'] = [];
                 $data['routeParams']['page'] = $page;
                 $url = 'content-page';
@@ -200,9 +200,9 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
             if (!count($items)) {
                 continue;
             }
-            $item = array(
+            $item = [
                 'label' => "menu_$menuKey",
-            );
+            ];
 
             $desc = 'menu_' . $menuKey . '_desc';
             if ($translator->translate($desc, null, false) !== false) {
@@ -215,7 +215,7 @@ class Navibar extends \Zend\View\Helper\AbstractHelper
                     continue;
                 }
                 $option = array_merge(
-                    array('label' => "menu_$itemKey"),
+                    ['label' => "menu_$itemKey"],
                     $parseUrl($action)
                 );
 

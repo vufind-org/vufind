@@ -1,11 +1,19 @@
-<div class="view-buttons">
-  <? $viewList = $this->params->getViewList(); if (count($viewList) > 1): ?>
+<? $viewList = $this->params->getViewList(); if (count($viewList) > 1): ?>
+  <div class="view-buttons">
+    <div class="dropdown">
     <? foreach ($viewList as $viewType => $viewData): ?>
-      <? if (!$viewData['selected']): ?>
-        <a href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEsc('Switch view to')?> <?=$this->transEsc($viewData['desc'])?>" >
+      <? if ($viewData['selected']): ?>
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-<?=$viewType ?>"></i> <span><?=$this->transEsc('Show As '.$viewData['desc'])?></span> <i class="fa fa-arrow-down"></i></a>
       <? endif; ?>
-      <span class="hidden-xs hidden-sm"><?=$this->transEsc($viewData['desc']) ?></span><i class="fa fa-<?=$viewType ?>"<? if($viewData['selected']): ?> title="<?=$this->transEsc($viewData['desc']) ?> <?=$this->transEsc('view already selected') ?>" <? endif ?>></i>
-      <? if (!$viewData['selected']): ?></a><? endif; ?>&nbsp;
     <? endforeach; ?>
-  <? endif; ?>
-</div>
+
+    <ul class="dropdown-menu">
+      <? foreach ($viewList as $viewType => $viewData): ?>
+        <li role="menuitem">
+          <a href="<? if (!$viewData['selected']): ?> <?=$this->results->getUrlQuery()->setViewParam($viewType)?><? else: ?>#<? endif; ?>" title="<?=$this->transEsc($viewData['desc'])?>" ><i class="fa fa-<?=$viewType ?>"></i> <?=$this->transEsc('Show As '.$viewData['desc'])?></a>
+        </li>
+      <? endforeach; ?>
+    </ul>
+    </div>
+  </div>
+<? endif; ?>

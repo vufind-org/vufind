@@ -81,16 +81,22 @@
     margin-top: 5px;
 }
 .navbar-form {
-     & .clear-input {
+    & .clear-button {
         position: absolute;
-        height: 22px;
-        width: 22px;
-         top: 7px;
-        right: 38%;
-        vertical-align: middle;
-        border-radius: 50%;
-        padding: 3px 5px;
-        color: rgb(66, 66, 66);   
+        margin-left: 0px;
+        font-size: 1.5em;
+        padding-top: 5px;
+        background: @body-bg;
+        color: @gray-light;
+        margin-left: -22px;
+        height: 39px;
+        &:before {
+            font-family: 'icomoon';
+            content: "\e01a";      
+        }
+        &:hover {
+            cursor: pointer;   
+        }
     }
 }
 .nav.searchbox .btn.btn-link {
@@ -290,7 +296,10 @@
         position: relative;
         background: transparent;
         height: 39px;
-        width: 25%;
+        width: 21%;
+        @media (max-width: @screen-xs-max) {
+            width: 25%;  
+        }
         height: auto;
         padding-top: 0px;
         padding-bottom: 0px;
@@ -304,6 +313,9 @@
         right: 12px;
         background: @body-bg;
         line-height: 39px;
+    }
+    &.disabled {
+        .opacity(0.65);   
     }
 }
 .jump-menu-style select::-ms-expand {
@@ -327,39 +339,60 @@ button.multiselect {
 
 // List & grid view
 .view-buttons {
-    margin-right: 10px;
-    margin-bottom: 10px;
+    color: @body-bg;
+    display: inline-block;
+    font-weight: normal;
+    & .dropdown {
+        border-radius: 10px;
+        
+    }
+    & .dropdown > a {
+        background: @link-color;
+        color: @body-bg;
+        border-radius: @finna-button-radius;
+        padding: 7px 10px;
+        display: block;
+        & span {
+            padding-right: 20px;   
+        }
+        &:hover, &:focus {
+            text-decoration: none;
+            background: darken(@link-color, 10%);
+            transition: background 0.2s linear;
+        }
+    }
+    & i {
+        font-size: 18px;
+        vertical-align: middle;
+        color: #fff;
+        margin-top: -3px;
+        margin-right: 3px;
+        border-radius: @finna-button-radius;
+    }
+    & i.fa-arrow-down {
+        font-size: 1em;
+        margin-left: -18px;
+        -webkit-margin-end: -2px;  // fix for unknown border radius bug
+    }
+    & .dropdown-menu > li > a {
+        text-align: left;
+        color: @gray;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        & i {
+            color: @gray;   
+        }
+        & i.fa-available {
+            font-size: 1em;
+            float: right;
+        }
+    }
     @media(max-width:@screen-xs-max) {
         float: left;
         margin-right: 5px;
+        margin-bottom: 10px;
     }
 }
-.view-buttons, .view-buttons a {
-    display: inline-block;
-    color: @gray-dark;
-    font-weight: bold;
-    
-}
-.view-buttons i {
-    font-size: 18px;
-    padding: 8px 9px;
-    vertical-align: middle;
-    background: @link-color;
-    color: #fff;
-    border-radius: @finna-button-radius;   
-}
-.view-buttons a {
-    .opacity(0.6);
-    transition: opacity 0.1s linear;
-    &:hover {
-     .opacity(1);   
-    }
-}
-.view-buttons span {
-    line-height: 33px;
-    margin-right: 5px;
-}
-
 .swipe-arrow-navigation {
     position: fixed;
     width: 50px;

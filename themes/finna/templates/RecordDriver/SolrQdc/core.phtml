@@ -28,21 +28,54 @@
     </div>
 
     <?
-        $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
+        $openUrl = $this->openUrl($this->driver, 'record');
+        $openUrlActive = $openUrl->isActive();
         // Account for replace_other_urls setting
-        $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
+        $urls = $openUrlActive ? $this->record($this->driver)->getLinkDetailsForOpenUrl() : $this->record($this->driver)->getLinkDetails() ;
       ?>
-    <? if (!empty($urls) || $openUrl): ?>
+    <? if (!empty($urls) || $openUrlActive): ?>
     <div class="local-available-online-record">
       <? foreach ($urls as $current): ?>
       <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><i class="fa fa-external-link"></i> <?=$this->escapeHtml($current['desc'])?></a><br/>
       <? endforeach; ?>
-      <? if ($openUrl): ?>
-            <?=$this->openUrl($openUrl)?><br/>
+      <? if ($openUrlActive): ?>
+            <?=$openUrl->renderTemplate()?><br/>
       <? endif; ?>
     </div>
     <? endif; ?>
 
+    <div class="record-authors">
+        <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+          <span><?=$this->record($this->driver)->getFormatList()?></span>
+        <? endif; ?>
+
+        <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
+        <div class="truncate-field">
+          <span property="author">
+          <? foreach($results as $index => $author): ?>
+            <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
+          <? endforeach; ?>
+          </span>
+        </div>
+        <? endif; ?>
+
+        <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
+        <? foreach ($publications as $field): ?>
+            <span property="publisher" typeof="Organization">
+            <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
+              <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
+            <? endif; ?>
+            <? $pubName = $field->getName(); if (!empty($pubName)): ?>
+              <span property="name"><?=$this->escapeHtml($pubName)?></span>
+            <? endif; ?>
+            <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
+              <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
+            <? endif; ?>
+            </span>
+          <? endforeach; ?>
+        <? endif; ?>
+    </div> 
+    
     <? if ($abstracts = $this->driver->getAbstracts()): ?>
       <div class="truncate-field wide">
         <p class="summary">
@@ -61,39 +94,7 @@
        </div>
        <? endif; ?>
     <? endif; ?>
-    
-    <div class="record-authors">     
-        <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
-          <span><?=$this->record($this->driver)->getFormatList()?></span>
-        <? endif; ?>
-        
-        <? if ($results = $this->driver->getNonPresenterAuthors()): ?>
-        <div class="truncate-field">
-          <span property="author">
-          <? foreach($results as $index => $author): ?>
-            <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?><? if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><? endif; ?></a>
-          <? endforeach; ?>
-          </span>
-        </div>
-        <? endif; ?>
-        
-        <? $publications = $this->driver->getPublicationDetails(); if (!empty($publications)): ?>
-        <? foreach ($publications as $field): ?>
-            <span property="publisher" typeof="Organization">
-            <? $pubPlace = $field->getPlace(); if (!empty($pubPlace)): ?>
-              <span property="location"><?=$this->escapeHtml($pubPlace)?></span>
-            <? endif; ?>
-            <? $pubName = $field->getName(); if (!empty($pubName)): ?>
-              <span property="name"><?=$this->escapeHtml($pubName)?></span>
-            <? endif; ?>
-            <? $pubDate = $field->getDate(); if (!empty($pubDate)): ?>
-              <span property="publicationDate"><?=$this->escapeHtml($pubDate)?></span>
-            <? endif; ?>
-            </span>
-          <? endforeach; ?>
-        <? endif; ?>
-    </div>
-    
+
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
       <? /* Display the lists that this record is saved to */ ?>
       <div class="savedLists hidden alert alert-info" id="savedLists">

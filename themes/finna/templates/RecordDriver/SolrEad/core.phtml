@@ -67,7 +67,8 @@
 
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
       <tr>
-        <td colspan="2">
+        <th><?=$this->transEsc('Format');?>:</th>
+        <td colspan>
           <?=$this->record($this->driver)->getFormatList()?>
           <? $physical = $this->driver->getPhysicalDescriptions(); if (!empty($physical)): ?>
             <? foreach ($physical as $field): ?>

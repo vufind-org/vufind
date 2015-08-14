@@ -95,6 +95,9 @@
       margin-bottom: -1px;
       border-radius: @tabs-border-radius @tabs-border-radius 0 0;
       transition: none;
+      @media (max-width: @screen-xs-max) {
+        font-size: .9em;   
+      }
       &:hover {
           color: @nav-tabs-link-hover-color;
           border-color: @nav-tabs-border-color @nav-tabs-border-color @nav-tabs-border-color;
@@ -157,14 +160,15 @@
 // Pills This is the toolbar 
 // -------------------------
 .nav-pills {
-  padding: 0px 0px 10px;
+  padding: 0px;
   margin: 0px;
+  margin-bottom: 10px;
   & a:hover {
     text-decoration: none;   
   }
   & > li:not(.addthis-share-buttons):not(.whatsapp) {
     float: left;
-    margin: 5px 0px;
+    margin: 5px 20px 5px 0px;
     @media (max-width: @screen-xs-max) {
         padding-top: 10px;   
     }
@@ -174,6 +178,7 @@
     // Links rendered as pills
     & > a {
       border-radius: @nav-pills-border-radius;
+      padding: 0px;
     }
     & + li {
       margin-left: 0px;
@@ -338,30 +343,6 @@
     }
 }
 
-// Mobile navigation
-.mobile-navigation {
-    position: fixed;
-    bottom: 0px;
-    right: 0px;
-    width: auto;
-    z-index: 1000;
-    & p {
-     float:right;
-     margin: 0px;
-     padding: 13px;
-     margin-left: 5px;
-     background: rgba(1,1,1,0.7);
-     color: #fff;
-    }
-    & .back-to-top {
-        display: none;   
-    }
-    & i {
-        font-size: 20px;
-        vertical-align: -5px;
-        font-weight: 900;
-    }    
-}
 // content-navigation-menu
 .main.template-dir-content.template-name-content .content-navigation-menu {
     margin: 40px 0px 20px;

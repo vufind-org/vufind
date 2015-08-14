@@ -27,7 +27,6 @@
  */
 namespace Finna\Search\Primo;
 
-
 /**
  * Primo Central Search Parameters
  *

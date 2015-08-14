@@ -71,10 +71,10 @@ class SimpleDb extends \ZendService\Amazon\AbstractAmazon
      */
     public function setEndpoint($endpoint)
     {
-        if(!($endpoint instanceof Uri\Uri)) {
+        if (!($endpoint instanceof Uri\Uri)) {
             $endpoint = Uri\UriFactory::factory($endpoint);
         }
-        if(!$endpoint->isValid()) {
+        if (!$endpoint->isValid()) {
             throw new Exception\InvalidArgumentException("Invalid endpoint supplied");
         }
         $this->_endpoint = $endpoint;
@@ -118,13 +118,13 @@ class SimpleDb extends \ZendService\Amazon\AbstractAmazon
 
         // Return an array of arrays
         $attributes = array();
-        foreach($attributeNodes as $attributeNode) {
+        foreach ($attributeNodes as $attributeNode) {
             $name       = (string)$attributeNode->Name;
             $valueNodes = $attributeNode->Value;
             $data       = null;
             if (is_array($valueNodes) && !empty($valueNodes)) {
                 $data = array();
-                foreach($valueNodes as $valueNode) {
+                foreach ($valueNodes as $valueNode) {
                     $data[] = (string)$valueNode;
                 }
             } elseif (isset($valueNodes)) {
@@ -164,7 +164,7 @@ class SimpleDb extends \ZendService\Amazon\AbstractAmazon
                 $params['Attribute.' . $index . '.Value'] = $value;
 
                 // Check if it should be replaced
-                if(array_key_exists($attributeName, $replace) && $replace[$attributeName]) {
+                if (array_key_exists($attributeName, $replace) && $replace[$attributeName]) {
                     $params['Attribute.' . $index . '.Replace'] = 'true';
                 }
                 $index++;
@@ -185,7 +185,6 @@ class SimpleDb extends \ZendService\Amazon\AbstractAmazon
      */
     public function batchPutAttributes($items, $domainName, array $replace = array())
     {
-
         $params               = array();
         $params['Action']     = 'BatchPutAttributes';
         $params['DomainName'] = $domainName;
@@ -197,7 +196,7 @@ class SimpleDb extends \ZendService\Amazon\AbstractAmazon
             foreach ($attributes as $attribute) {
                 // attribute value cannot be array, so when several items are passed
                 // they are treated as separate values with the same attribute name
-                foreach($attribute->getValues() as $value) {
+                foreach ($attribute->getValues() as $value) {
                     $params['Item.' . $itemIndex . '.Attribute.' . $attributeIndex . '.Name'] = $attribute->getName();
                     $params['Item.' . $itemIndex . '.Attribute.' . $attributeIndex . '.Value'] = $value;
                     if (isset($replace[$name])

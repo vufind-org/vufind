@@ -26,70 +26,70 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://github.com/KDK-Alli/NDL-VuFind2   NDL-VuFind2
  */
-
 namespace Finna\Module\Configuration;
 
-$config = array(
-    'router' => array(
-        'routes' => array(
-            'content-page' => array(
+$config = [
+    'router' => [
+        'routes' => [
+            'content-page' => [
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
+                'options' => [
                     'route'    => '/Content/[:page]',
-                    'constraints' => array(
+                    'constraints' => [
                         'page'     => '[a-zA-Z][a-zA-Z0-9_-]+',
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'controller' => 'Contentpage',
                         'action'     => 'Content',
-                    )
-                ),
-            ),
-            'list-page' => array(
+                    ]
+                ],
+            ],
+            'list-page' => [
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
+                'options' => [
                     'route'    => '/List[/:lid]',
-                    'constraints' => array(
+                    'constraints' => [
                         'lid'     => '[0-9]+',
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'controller' => 'Listpage',
                         'action'     => 'List',
-                    )
-                ),
-            ),
-            'myresearch-unsubscribe' => array(
+                    ]
+                ],
+            ],
+            'myresearch-unsubscribe' => [
                 'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => array(
+                'options' => [
                     'route'    => '/MyResearch/Unsubscribe',
-                    'defaults' => array(
+                    'defaults' => [
                         'controller' => 'MyResearch',
                         'action'     => 'Unsubscribe',
-                    )
-                ),
-            ),
-            'record-feedback' => array(
+                    ]
+                ],
+            ],
+            'record-feedback' => [
                 'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
+                'options' => [
                     'route'    => '/Record/[:id]/Feedback',
-                    'constraints' => array(
+                    'constraints' => [
                         'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ),
-                    'defaults' => array(
+                    ],
+                    'defaults' => [
                         'controller' => 'Record',
                         'action'     => 'Feedback',
-                    )
-                )
-            )
-        )
-    ),
-    'controllers' => array(
+                    ]
+                ]
+            ]
+        ]
+    ],
+    'controllers' => [
         'factories' => [
             'record' => 'Finna\Controller\Factory::getRecordController',
         ],
-        'invokables' => array(
+        'invokables' => [
             'ajax' => 'Finna\Controller\AjaxController',
+            'combined' => 'Finna\Controller\CombinedController',
             'contentpage' => 'Finna\Controller\ContentController',
             'cover' => 'Finna\Controller\CoverController',
             'feedback' => 'Finna\Controller\FeedbackController',
@@ -98,40 +98,41 @@ $config = array(
             'primorecord' => 'Finna\Controller\PrimorecordController',
             'search' => 'Finna\Controller\SearchController',
             'listpage' => 'Finna\Controller\ListController',
-        ),
-    ),
-    'service_manager' => array(
+        ],
+    ],
+    'service_manager' => [
         'allow_override' => true,
-        'factories' => array(
+        'factories' => [
             'VuFind\CacheManager' => 'Finna\Service\Factory::getCacheManager',
             'VuFind\ILSConnection' => 'Finna\Service\Factory::getILSConnection',
             'VuFind\DbTablePluginManager' => 'Finna\Service\Factory::getDbTablePluginManager',
             'VuFind\AuthManager' => 'Finna\Auth\Factory::getManager',
-        )
-    ),
+            'VuFind\SearchResultsPluginManager' => 'Finna\Service\Factory::getSearchResultsPluginManager',
+        ]
+    ],
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
-    'vufind' => array(
-        'plugin_managers' => array(
-            'auth' => array(
+    'vufind' => [
+        'plugin_managers' => [
+            'auth' => [
                 'factories' => [
                     'ils' => 'Finna\Auth\Factory::getILS',
                     'multiils' => 'Finna\Auth\Factory::getMultiILS',
                 ],
-                'invokables' => array(
+                'invokables' => [
                     'mozillapersona' => 'Finna\Auth\MozillaPersona',
                     'shibboleth' => 'Finna\Auth\Shibboleth',
-                ),
-            ),
+                ],
+            ],
             'db_table' => [
                 'factories' => [
                     'resource' => 'Finna\Db\Table\Factory::getResource',
                     'user' => 'Finna\Db\Table\Factory::getUser',
                 ],
-                'invokables' => array(
+                'invokables' => [
                     'comments' => 'Finna\Db\Table\Comments',
                     'search' => 'Finna\Db\Table\Search'
-                ),
+                ],
             ],
             'ils_driver' => [
                 'factories' => [
@@ -148,52 +149,53 @@ $config = array(
                     'sfx' => 'Finna\Resolver\Driver\Factory::getSfx',
                 ],
             ],
-            'search_backend' => array(
-                'factories' => array(
+            'search_backend' => [
+                'factories' => [
                     'Primo' => 'Finna\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'Finna\Search\Factory\SolrDefaultBackendFactory',
-                ),
-                'aliases' => array(
+                ],
+                'aliases' => [
                     // Allow Solr core names to be used as aliases for services:
                     'biblio' => 'Solr',
-                )
-            ),
+                ]
+            ],
             'search_options' => [
                 'abstract_factories' => ['Finna\Search\Options\PluginFactory'],
             ],
             'search_params' => [
                 'abstract_factories' => ['Finna\Search\Params\PluginFactory'],
             ],
-            'search_results' => array(
-                'factories' => array(
+            'search_results' => [
+                'abstract_factories' => ['Finna\Search\Results\PluginFactory'],
+                'factories' => [
                     'solr' => 'Finna\Search\Results\Factory::getSolr',
                     'primo' => 'Finna\Search\Results\Factory::getPrimo'
-                )
-            ),
-            'content_covers' => array(
-                'invokables' => array(
+                ]
+            ],
+            'content_covers' => [
+                'invokables' => [
                     'natlibfi' => 'Finna\Content\Covers\NatLibFi'
-                ),
-            ),
-            'recorddriver' => array(
-                'factories' => array(
+                ],
+            ],
+            'recorddriver' => [
+                'factories' => [
                     'solrdefault' => 'Finna\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'Finna\RecordDriver\Factory::getSolrMarc',
                     'solread' => 'Finna\RecordDriver\Factory::getSolrEad',
                     'solrlido' => 'Finna\RecordDriver\Factory::getSolrLido',
                     'solrqdc' => 'Finna\RecordDriver\Factory::getSolrQdc',
                     'primo' => 'Finna\RecordDriver\Factory::getPrimo'
-                ),
-            ),
-            'recordtab' => array(
-                'invokables' => array(
+                ],
+            ],
+            'recordtab' => [
+                'invokables' => [
                     'componentparts' => 'Finna\RecordTab\ComponentParts',
-                ),
-            ),
-        ),
-        'recorddriver_tabs' => array(
-            'Finna\RecordDriver\SolrMarc' => array(
-                'tabs' => array(
+                ],
+            ],
+        ],
+        'recorddriver_tabs' => [
+            'Finna\RecordDriver\SolrMarc' => [
+                'tabs' => [
                     'Holdings' => 'HoldingsILS',
                     'ComponentParts' => 'ComponentParts',
                     'TOC' => 'TOC', 'UserComments' => 'UserComments',
@@ -201,46 +203,46 @@ $config = array(
                     'Preview' => 'preview',
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewMARC',
-                ),
+                ],
                 'defaultTab' => null,
-            ),
-            'Finna\RecordDriver\SolrEad' => array(
-                'tabs' => array(
+            ],
+            'Finna\RecordDriver\SolrEad' => [
+                'tabs' => [
                     'HierarchyTree' => 'HierarchyTree',
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
                     'Map' => 'Map',
                     'Details' => 'StaffViewArray',
-                ),
+                ],
                 'defaultTab' => null,
-            ),
-            'Finna\RecordDriver\SolrLido' => array(
-                'tabs' => array(
+            ],
+            'Finna\RecordDriver\SolrLido' => [
+                'tabs' => [
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
                     'Map' => 'Map',
                     'Details' => 'StaffViewArray',
-                ),
+                ],
                 'defaultTab' => null,
-            ),
-            'Finna\RecordDriver\SolrQdc' => array(
-                'tabs' => array(
+            ],
+            'Finna\RecordDriver\SolrQdc' => [
+                'tabs' => [
                     'UserComments' => 'UserComments',
                     'Reviews' => 'Reviews',
                     'Map' => 'Map',
                     'Details' => 'StaffViewArray',
-                ),
+                ],
                 'defaultTab' => null,
-            ),
-            'Finna\RecordDriver\Primo' => array(
-                'tabs' => array(
+            ],
+            'Finna\RecordDriver\Primo' => [
+                'tabs' => [
                     'UserComments' => 'UserComments',
                     'Details' => 'StaffViewArray'
-                ),
+                ],
                 'defaultTab' => null,
-            ),
-        ),
-    )
-);
+            ],
+        ],
+    ]
+];
 
 return $config;

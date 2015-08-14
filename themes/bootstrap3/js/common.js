@@ -118,7 +118,8 @@ function bulkActionSubmit($form) {
   var submit = $form.find('[type="submit"][clicked=true]').attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
-    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    return false;
   }
   if (submit == 'print') {
     //redirect page
@@ -176,10 +177,7 @@ function registerLightboxEvents() {
    * if it matches the title bar of the lightbox
    */
   var header = $('#modal .modal-title').html();
-  var contentHeader = $('#modal .modal-body .lead');
-  if(contentHeader.length == 0) {
-    contentHeader = $('#modal .modal-body h2');
-  }
+  var contentHeader = $('#modal .modal-body h2');
   contentHeader.each(function(i,op) {
     if (op.innerHTML == header) {
       $(op).hide();

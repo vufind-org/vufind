@@ -47,6 +47,11 @@ class SearchController extends \VuFind\Controller\SearchController
      */
     public function resultsAction()
     {
+        if ($this->getRequest()->getQuery()->get('combined')) {
+            $this->saveToHistory = false;
+        }
+
+        $this->initCombinedViewFilters();
         $view = parent::resultsAction();
         $this->initSavedTabs();
         return $view;

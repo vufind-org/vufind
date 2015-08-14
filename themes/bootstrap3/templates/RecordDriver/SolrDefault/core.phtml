@@ -7,20 +7,18 @@
   }
 ?>
 <div class="row" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
+  <? $QRCode = $this->record($this->driver)->getQRCode("core"); 
+     $cover = $this->record($this->driver)->getCover('core', 'medium', $this->record($this->driver)->getThumbnail('large'));
+     $preview = $this->record($this->driver)->getPreviews(); ?>
+  <? if ($QRCode || $cover || $preview): ?>
   <div class="col-sm-3">
     <div class="text-center">
       <? /* Display thumbnail if appropriate: */ ?>
-      <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
-      <? if ($mediumThumb): ?>
-        <? if ($largeThumb): ?><a href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
-          <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
-        <? if ($largeThumb): ?></a><? endif; ?>
-      <? else: ?>
-        <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      <? if($cover): ?>
+        <?=$cover?>
       <? endif; ?>
 
       <? /* Display qrcode if appropriate: */ ?>
-      <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>
         <span class="hidden-xs">
           <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
@@ -32,10 +30,14 @@
        // from this area of the record view, this can be split into
        // getPreviewData() (should stay here) and
        // getPreviewLink() (can go in your desired tab) ?>
-    <?=$this->record($this->driver)->getPreviews()?>
+    <? if ($preview): ?><?=$preview?><? endif; ?>
   </div>
 
   <div class="col-sm-9">
+  <? else: ?>
+  <div class="col-sm-12">
+  <? endif; ?>
+
     <h3 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h3>
 
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false; ?>
@@ -211,19 +213,20 @@
       <? endif; ?>
 
       <?
-        $openUrl = $this->driver->openURLActive('record') ? $this->driver->getOpenURL() : false;
+        $openUrl = $this->openUrl($this->driver, 'record');
+        $openUrlActive = $openUrl->isActive();
         // Account for replace_other_urls setting
-        $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
+        $urls = $openUrlActive ? $this->record($this->driver)->getLinkDetailsForOpenUrl() : $this->record($this->driver)->getLinkDetails() ;
       ?>
-      <? if (!empty($urls) || $openUrl): ?>
+      <? if (!empty($urls) || $openUrlActive): ?>
       <tr>
         <th><?=$this->transEsc('Online Access')?>: </th>
         <td>
           <? foreach ($urls as $current): ?>
             <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
           <? endforeach; ?>
-          <? if ($openUrl): ?>
-            <?=$this->openUrl($openUrl)?><br/>
+          <? if ($openUrlActive): ?>
+            <?=$openUrl->renderTemplate()?><br/>
           <? endif; ?>
         </td>
       </tr>

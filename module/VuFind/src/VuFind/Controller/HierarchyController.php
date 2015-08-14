@@ -93,7 +93,7 @@ class HierarchyController extends AbstractBase
             ->get('VuFind\SearchResultsPluginManager')->get('Solr');
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
-        $facets = $results->getFullFieldFacets(['id'], false, $limit+1);
+        $facets = $results->getFullFieldFacets(['id'], false, $limit + 1);
 
         $callback = function ($data) {
             return $data['value'];

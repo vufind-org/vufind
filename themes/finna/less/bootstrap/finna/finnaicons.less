@@ -40,6 +40,9 @@
       vertical-align: text-bottom;
   }
 }
+table .iconlabel {
+    line-height: 1.3em;   
+}
 .template-name-results .iconlabel {
   letter-spacing: 0px;
   font-size: 1em;
@@ -266,7 +269,7 @@
 .fa-public:before {
     content: "\e040";
 }
-.fa-files:before {
+.fa-files:before, .fa-ComponentParts:before {
     content: "\e03f";
 }
 .fa-Details:before {
@@ -326,7 +329,7 @@
 .fa-available:before {
     content: "\e02d";
 }
-.fa-sitemap:before {
+.fa-sitemap:before, .fa-HierarchyTree:before {
     content: "\e02c";
 }
 .fa-ratefull:before {
@@ -475,22 +478,15 @@
     content: "\e605";
 }
 /** toolbar icons **/
-.nav-pills > li > a {
-    padding:0px 5px;
-}
 .nav-pills .fa {
     font-size: 14px;
-    padding: 6px;
+    padding: 0px;
     padding-right: 1px;
     border-radius: 50%;
-    margin-left: 6px;
     display: inline;
 }
 .nav-pills {
     & > li.addthis-share-buttons, li.whatsapp {
-        @media (max-width:@screen-md-max) {
-            margin: 10px;
-        }
         float: right;
         & .fa {
             display: block;
@@ -499,7 +495,7 @@
         }
     }
 }
-.nav-pills > li > a .fa:first-child {
+.nav-pills > li > a:first-child {
     margin-left: 0;   
 }
 
@@ -517,11 +513,6 @@
 /* Addthis icons for sharing styling */
 .addthis-share-buttons {
     margin-right: 5px !important;
-
-    @media(min-width:@screen-md-min) and (max-width:@screen-md-max) {
-        clear: both;
-        margin-left: 5px !important;
-    }
 }
 .addthis_toolbox.addthis_default_style {
     display: inline-block;

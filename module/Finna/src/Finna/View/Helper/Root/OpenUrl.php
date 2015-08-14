@@ -39,37 +39,30 @@ namespace Finna\View\Helper\Root;
 class OpenUrl extends \VuFind\View\Helper\Root\OpenUrl
 {
     /**
-     * Render appropriate UI controls for an OpenURL link.
-     *
-     * @param string  $openUrl         The OpenURL to display
-     * @param boolean $onlyMoreOptions If true, returns a static link to
-     * resolver service.
+     * Public method to render the OpenURL more options template
      *
      * @return string
      */
-    public function __invoke($openUrl, $onlyMoreOptions = false)
+    public function renderMoreOptions()
     {
-        if (!$onlyMoreOptions) {
-            return parent::__invoke($openUrl);
+        if (null !== $this->config && isset($this->config->url)) {
+            // Trim off any parameters (for legacy compatibility -- default config
+            // used to include extraneous parameters):
+            list($base) = explode('?', $this->config->url);
         } else {
-            if (null !== $this->config && isset($this->config->url)) {
-                // Trim off any parameters (for legacy compatibility -- default
-                // config used to include extraneous parameters):
-                list($base) = explode('?', $this->config->url);
-
-                // Build parameters needed to display the control:
-                $params = [
-                    'openUrl' => $openUrl,
-                    'openUrlBase' => empty($base) ? false : $base
-                ];
-
-                // Render the subtemplate:
-                return $this->context->renderInContext(
-                    'Helpers/openurl-moreoptions.phtml', $params
-                );
-            }
-
-            return false;
+            $base = false;
         }
+
+        // Build parameters needed to display the control:
+        $params = [
+            'openUrl' => $this->recordDriver->getOpenUrl(),
+            'openUrlBase' => empty($base) ? false : $base,
+        ];
+
+        // Render the subtemplate:
+        return $this->context->__invoke($this->getView())->renderInContext(
+            'Helpers/openurl-moreoptions.phtml', $params
+        );
+
     }
 }

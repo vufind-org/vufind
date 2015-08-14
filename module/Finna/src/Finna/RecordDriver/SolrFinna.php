@@ -28,8 +28,6 @@
  */
 namespace Finna\RecordDriver;
 
-use VuFind\RecordDriver\AbstractBase;
-
 /**
  * Additional functionality for Finna Solr records.
  *
@@ -297,7 +295,7 @@ trait SolrFinna
                 }
             }
             if (!is_array($url)) {
-                return array('id' => $this->getUniqueId(), 'url' => $url);
+                return ['id' => $this->getUniqueId(), 'url' => $url];
             }
         }
         $params = parent::getThumbnail($size);
@@ -376,26 +374,15 @@ trait SolrFinna
     }
 
     /**
-     * Does the OpenURL configuration indicate that we should display OpenURLs in
-     * the specified context?
-     *
-     * @param string $area 'results', 'record' or 'holdings'
+     * Checks the current record if it's supported for generating OpenURLs.
      *
      * @return bool
      */
-    public function openURLActive($area)
+    public function supportsOpenUrl()
     {
-        // Only display OpenURL link if the option is turned on and we have
-        // an ISSN, ISBN or SFX Object ID.
-        if (!$this->getCleanISSN() && !$this->getCleanISBN()
-            && !$this->getSfxObjectId()
-        ) {
-            return false;
-        }
-
-        // Bypass SolrDefault since it only allows OpenURL's for records that have
-        // an ISSN
-        return AbstractBase::openURLActive($area);
+        // OpenURL is supported only if we have an ISSN, ISBN or SFX Object ID.
+        return  $this->getCleanISSN() || $this->getCleanISBN()
+            || !$this->getSfxObjectId();
     }
 
     /**
@@ -403,9 +390,9 @@ trait SolrFinna
      *
      * @return array
      */
-    protected function getBookSectionOpenURLParams()
+    protected function getBookSectionOpenUrlParams()
     {
-        $params = $this->getBookOpenURLParams();
+        $params = $this->getBookOpenUrlParams();
         $params['rft.volume'] = $this->getContainerVolume();
         $params['rft.issue'] = $this->getContainerIssue();
         $params['rft.spage'] = $this->getContainerStartPage();
@@ -421,9 +408,9 @@ trait SolrFinna
      *
      * @return array
      */
-    protected function getJournalOpenURLParams()
+    protected function getJournalOpenUrlParams()
     {
-        $params = parent::getJournalOpenURLParams();
+        $params = parent::getJournalOpenUrlParams();
         if ($objectId = $this->getSfxObjectId()) {
             $params['rft.object_id'] = $objectId;
         }
@@ -435,7 +422,7 @@ trait SolrFinna
      *
      * @return string
      */
-    protected function getOpenURLFormat()
+    protected function getOpenUrlFormat()
     {
         // If we have multiple formats, Book, Journal and Article are most
         // important...
