@@ -535,7 +535,8 @@ class DAIA extends AbstractBase implements
 		if(isset($doc["item"])) {
 			return $doc;
 		}
-            }            // no (id matching) document element found
+            }            
+            // no (id matching) document element found
             return null;
         } else {
             throw new ILSException('Unsupported document format.');
