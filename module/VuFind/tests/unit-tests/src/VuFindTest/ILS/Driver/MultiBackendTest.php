@@ -798,27 +798,127 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Testing method for getCourses
+     *
+     * @return void
+     */
+    public function testGetCourses()
+    {
+        $expected = ['test' => 'true'];
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->never(),
+            'getCourses',
+            [],
+            $expected,
+            $expected
+        );
+
+        // getCourses  only works with a default driver, so the first calls fails
+        $result = $driver->getCourses();
+        $this->assertEquals([], $result);
+
+        $this->setProperty($driver, 'defaultDriver', 'd1');
+        $result = $driver->getCourses();
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for getDepartments
+     *
+     * @return void
+     */
+    public function testGetDepartments()
+    {
+        $expected = ['test' => 'true'];
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->never(),
+            'getDepartments',
+            [],
+            $expected,
+            $expected
+        );
+
+        // getCourses  only works with a default driver, so the first calls fails
+        $result = $driver->getDepartments();
+        $this->assertEquals([], $result);
+
+        $this->setProperty($driver, 'defaultDriver', 'd1');
+        $result = $driver->getDepartments();
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing method for getInstructors
+     *
+     * @return void
+     */
+    public function testGetInstructors()
+    {
+        $expected = ['test' => 'true'];
+        $driver = $this->initSimpleMethodTest(
+            $this->once(),
+            $this->never(),
+            'getInstructors',
+            [],
+            $expected,
+            $expected
+        );
+
+        // getCourses  only works with a default driver, so the first calls fails
+        $result = $driver->getInstructors();
+        $this->assertEquals([], $result);
+
+        $this->setProperty($driver, 'defaultDriver', 'd1');
+        $result = $driver->getInstructors();
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Testing method for findReserves
      *
      * @return void
      */
     public function testFindReserves()
     {
-        $expected = ['test' => 'true'];
-        $driver = $this->initSimpleMethodTest(
-            $this->once(),
-            $this->never(),
-            'findReserves',
-            ['course', 'inst', 'dept'],
-            $expected,
-            $expected
-        );
+        $driver = $this->getDriver();
+        $drivers = ['d1' => 'Voyager'];
+        $this->setProperty($driver, 'drivers', $drivers);
+        $id = '123456';
+
+        $reservesReturn = [
+            [
+                'BIB_ID' => '12345',
+                'COURSE_ID' => 1,
+                'DEPARTMENT_ID' => 2,
+                'INSTRUCTOR_ID' => 3,
+            ],
+            [
+                'BIB_ID' => '56789',
+                'COURSE_ID' => 4,
+                'DEPARTMENT_ID' => 5,
+                'INSTRUCTOR_ID' => 6,
+            ]
+        ];
+
+        $ILS = $this->getMockILS('Voyager', ['findReserves', 'init']);
+        $ILS->expects($this->once())
+            ->method('findReserves')
+            ->with($this->equalTo('course'), $this->equalTo('inst'), $this->equalTo('dept'))
+            ->will($this->returnValue($reservesReturn));
+
+        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $driver->setServiceLocator($sm);
 
         // findReserves only works with a default driver, so the first calls fails
         $result = $driver->findReserves('course', 'inst', 'dept');
         $this->assertEquals([], $result);
 
         $this->setProperty($driver, 'defaultDriver', 'd1');
+        $expected = $reservesReturn;
+        $expected[0]['BIB_ID'] = 'd1.' . $expected[0]['BIB_ID'];
+        $expected[1]['BIB_ID'] = 'd1.' . $expected[1]['BIB_ID'];
         $result = $driver->findReserves('course', 'inst', 'dept');
         $this->assertEquals($expected, $result);
     }

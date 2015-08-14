@@ -294,6 +294,54 @@ class MultiBackend extends AbstractBase
     }
 
     /**
+     * Get Departments
+     *
+     * Obtain a list of departments for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = dept. ID, value = dept. name.
+     */
+    public function getDepartments()
+    {
+        $driver = $this->getDriver($this->defaultDriver);
+        if ($driver) {
+            return $driver->getDepartments();
+        }
+        return [];
+    }
+
+    /**
+     * Get Instructors
+     *
+     * Obtain a list of instructors for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getInstructors()
+    {
+        $driver = $this->getDriver($this->defaultDriver);
+        if ($driver) {
+            return $driver->getInstructors();
+        }
+        return [];
+    }
+
+    /**
+     * Get Courses
+     *
+     * Obtain a list of courses for use in limiting the reserves list.
+     *
+     * @return array An associative array with key = ID, value = name.
+     */
+    public function getCourses()
+    {
+        $driver = $this->getDriver($this->defaultDriver);
+        if ($driver) {
+            return $driver->getCourses();
+        }
+        return [];
+    }
+
+    /**
      * Find Reserves
      *
      * Obtain information on course reserves.
@@ -308,7 +356,11 @@ class MultiBackend extends AbstractBase
     {
         $driver = $this->getDriver($this->defaultDriver);
         if ($driver) {
-            return $driver->findReserves($course, $inst, $dept);
+            return $this->addIdPrefixes(
+                $driver->findReserves($course, $inst, $dept),
+                $this->defaultDriver,
+                ['BIB_ID']
+            );
         }
         return [];
     }
