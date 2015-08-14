@@ -29,7 +29,7 @@
 namespace Finna\Search\Solr;
 use Finna\Solr\Utils;
 
-/*
+/**
  * Solr Search Parameters
  *
  * @category VuFind2

@@ -169,12 +169,11 @@ trait FinnaParams
     }
 
     /**
-     * Return an array structure containing information about all current filters.
+     * Remove data range filter from the given list of filters.
      *
-     * @param bool $excludeCheckboxFilters Should we exclude checkbox filters from
-     * the list (to be used as a complement to getCheckboxFacets()).
+     * @param array $filters Filters
      *
-     * @return array                       Field, values and translation status
+     * @return array
      */
     public function removeDatarangeFilter($filters)
     {
