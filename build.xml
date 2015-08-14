@@ -166,7 +166,8 @@
     </if>
 
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
+    <exec command="touch ${srcdir}/local/vufindtest.pid" />
+    <exec command="${srcdir}/solr/bin/solr restart -p 8080" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- wait for Solr to finish spinning up -->
@@ -209,7 +210,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid ${srcdir}/vufind.sh stop" outputProperty="LASTOUTPUT" />
+    <exec command="${srcdir}/solr/bin/solr stop -p 8080" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- run extra cleanup action, if any -->
@@ -221,16 +222,17 @@
     </if>
 
     <!-- delete the configuration, sample index, logs and cache data -->
-    <delete dir="${srcdir}/solr/logs" includeemptydirs="true" failonerror="false" />
+    <delete dir="${srcdir}/solr/server/logs" includeemptydirs="true" failonerror="false" />
+    <delete dir="${srcdir}/solr/server/solr-webapp" includeemptydirs="true" failonerror="false" />
     <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/conf" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/conf" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/tlog" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
-    <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/server/solr/authority/conf" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/server/solr/authority/index" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/server/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/server/solr/biblio/index" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/server/solr/biblio/conf" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/server/solr/biblio/tlog" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/server/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/server/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
     <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
     <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
     <exec command="git reset --hard" />
