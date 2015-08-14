@@ -778,20 +778,32 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
      */
     public function testGetNewItems()
     {
-        $expected = ['test' => 'true'];
-        $driver = $this->initSimpleMethodTest(
-            $this->once(),
-            $this->never(),
-            'getNewItems',
-            [1, 10, 5, 0],
-            $expected,
-            $expected
-        );
+        $driver = $this->getDriver();
+        $drivers = ['d1' => 'Voyager'];
+        $this->setProperty($driver, 'drivers', $drivers);
+
+        $return = [
+            'count' => 2,
+            'results' => ['id' => '1', 'id' => '2']
+        ];
+
+        $ILS = $this->getMockILS('Voyager', ['getNewItems', 'init']);
+        $ILS->expects($this->once())
+            ->method('getNewItems')
+            ->with($this->equalTo('1'), $this->equalTo('10'), $this->equalTo('5'), $this->equalTo('0'))
+            ->will($this->returnValue($return));
+
+        $sm = $this->getMockSM($this->any(), 'Voyager', $ILS);
+        $driver->setServiceLocator($sm);
 
         // getNewItems only works with a default driver, so the first calls fails
         $result = $driver->getNewItems(1, 10, 5, 0);
         $this->assertEquals([], $result);
 
+        $expected = [
+            'count' => 2,
+            'results' => ['id' => 'd1.1', 'id' => 'd1.2']
+        ];
         $this->setProperty($driver, 'defaultDriver', 'd1');
         $result = $driver->getNewItems(1, 10, 5, 0);
         $this->assertEquals($expected, $result);

@@ -288,7 +288,12 @@ class MultiBackend extends AbstractBase
     {
         $driver = $this->getDriver($this->defaultDriver);
         if ($driver) {
-            return $driver->getNewItems($page, $limit, $daysOld, $fundId);
+            $result = $driver->getNewItems($page, $limit, $daysOld, $fundId);
+            if (isset($result['results'])) {
+                $result['results']
+                    = $this->addIdPrefixes($result['results'], $this->defaultDriver);
+            }
+            return $result;
         }
         return [];
     }
