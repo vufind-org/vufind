@@ -66,6 +66,10 @@ class SearchTabs extends \VuFind\View\Helper\Root\SearchTabs
         array $config, \Zend\View\Helper\Url $url
     ) {
         $this->table = $table;
+        if (isset($config['Combined'])) {
+            // Make sure that combined view is the first tab
+            $config = ['Combined' => $config['Combined']] + $config;
+        }
         parent::__construct($results, $config, $url);
     }
 
