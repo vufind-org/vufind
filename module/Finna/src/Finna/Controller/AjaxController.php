@@ -821,4 +821,89 @@ class AjaxController extends \VuFind\Controller\AjaxController
         }
         return $img ? $img->getAttribute('src') : null;
     }
+
+    /**
+     * Return data for data range visualization module in JSON format.
+     *
+     * @return mixed
+     */
+    public function dateRangeVisualAjax()
+    {
+        $backend = $this->params()->fromQuery('backend');
+        if (!$backend) {
+            $backend = 'solr';
+        }
+        $isSolr = $backend == 'solr';
+
+        $configFile = $isSolr ? 'facets' : 'Primo';
+        $config
+            = $this->getServiceLocator()->get('VuFind\Config')->get($configFile);
+        if (!isset($config->SpecialFacets->dateRangeVis)) {
+            return $this->output([], self::STATUS_ERROR);
+        }
+
+        list($filterField, $facet)
+            = explode(':', $config->SpecialFacets->dateRangeVis);
+
+        $this->writeSession();  // avoid session write timing bug
+        $facetList = $this->getFacetList($isSolr, $filterField, $facet);
+
+        if (empty($facetList)) {
+            return $this->output([], self::STATUS_OK);
+        }
+
+        $res = [];
+        $min = PHP_INT_MAX;
+        $max = -$min;
+
+        foreach ($facetList as $f) {
+            $count = $f['count'];
+            $val = $f['displayText'];
+            // Only retain numeric values
+            if (!preg_match("/^-?[0-9]+$/", $val)) {
+                continue;
+            }
+            $min = min($min, (int)$val);
+            $max = max($max, (int)$val);
+            $res[] = [$val, $count];
+        }
+        $res = [$facet => ['data' => $res, 'min' => $min, 'max' => $max]];
+        return $this->output($res, self::STATUS_OK);
+    }
+
+    /**
+     * Return facet data (labels, counts, min/max values) for a search.
+     * Used by dateRangeVisualAjax.
+     *
+     * @param boolean $solr  Solr search?
+     * @param string  $field Index field to be used in faceting
+     * @param string  $facet Facet
+     * @param string  $query Search query
+     *
+     * @return array
+     */
+    protected function getFacetList($solr, $field, $facet, $query = false)
+    {
+        $results = $this->getResultsManager()->get($solr ? 'Solr' : 'Primo');
+        $params = $results->getParams();
+
+        if (!$query) {
+            $query = $this->getRequest()->getQuery();
+        }
+        $params->addFacet($field);
+        $params->initFromRequest($query);
+
+        if ($solr) {
+            $facets = $results->getFullFieldFacets(
+                [$facet], false, -1, 'count'
+            );
+            $facetList = $facets[$facet]['data']['list'];
+        } else {
+            $results->performAndProcessSearch();
+            $facets = $results->getFacetlist([$facet => $facet]);
+            $facetList = $facets[$facet]['list'];
+        }
+
+        return $facetList;
+    }
 }

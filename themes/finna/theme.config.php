@@ -9,6 +9,7 @@ return array(
             'holdingsDetailsMode' => 'Finna\View\Helper\Root\Factory::getHoldingsDetailsMode',
             'imageSrc' => 'Finna\View\Helper\Root\Factory::getImageSrc',
             'indexedTotal' => 'Finna\View\Helper\Root\Factory::getTotalIndexed',
+            'layoutclass' => 'Finna\View\Helper\Root\Factory::getLayoutClass',
             'logoutMessage' => 'Finna\View\Helper\Root\Factory::getLogoutMessage',
             'navibar' => 'Finna\View\Helper\Root\Factory::getNavibar',
             'openUrl' => 'Finna\View\Helper\Root\Factory::getOpenUrl',
@@ -41,6 +42,8 @@ return array(
     'js' => array(
         'finna.js',
         'image-popup.js',
+        'finna-adv-search.js',
+        'finna-daterange-vis.js',
         'finna-feed.js',
         'finna-layout.js',
         'finna-persona.js',
