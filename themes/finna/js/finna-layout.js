@@ -151,15 +151,6 @@ finna.layout = (function() {
         });
     };
     
-    var initOpenUrlLinks = function() {
-        var links = $('a.openUrlEmbed');
-        links.each(function(ind, e) {
-            $(e).one('inview', function() {
-                $(this).click();
-            });
-        });
-    };
-    
     var initContentNavigation = function() {
       if ($('.content-navigation-menu')[0]) {
         $('.content-section').each(function(index) {
@@ -363,16 +354,28 @@ finna.layout = (function() {
       }
     };
 
+    var initSaveRecordLinks = function(holder) {
+        if (typeof(holder) == "undefined") {
+            holder = $("body");
+        }
+        holder.find('.save-record').one("click", function() {
+            var parts = this.href.split('/');
+            return finna.layout.lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+        });
+    };
+
     var my = {
         isTouchDevice: isTouchDevice,
         initTruncate: initTruncate,
+        initSaveRecordLinks: initSaveRecordLinks,
+        lightbox: Lightbox,
         init: function() {
             $('select.jumpMenu').unbind('change').change(function() { $(this).closest('form').submit(); });
             $('select.jumpMenuUrl').unbind('change').change(function(e) { window.location.href = $(e.target).val(); });
 
             initAnchorNavigationLinks();
             initFixFooter();
-            initOpenUrlLinks();
+            
             initHideDetails();
 
             initTruncatedRecordImageNavi();
