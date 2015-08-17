@@ -1,5 +1,9 @@
 <?
-  $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1></div>';
+  if (!$this->translationEmpty('tooltip_myaccount_html')): 
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1> <span class="tooltip-myaccount" data-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="' . $this->transesc("tooltip_myaccount_html") . '"><i class="fa fa-info-big"></i></span></div>';
+  else:
+    $this->layout()->finnaMainHeader = '<div class="col-xs-12"><h1><i class="fa fa-user"></i> ' . $this->transEsc('Your Account') . '</h1></div>';
+  endif;
 ?>
 
 <div class="col-xs-12">
