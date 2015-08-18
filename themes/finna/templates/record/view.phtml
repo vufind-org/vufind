@@ -2,6 +2,9 @@
   // Set up standard record scripts:
   $this->headScript()->appendFile("record.js");
   $this->headScript()->appendFile("check_save_statuses.js");
+  if ($this->driver->getResourceSource() == 'Primo') {
+    $this->headScript()->appendFile("finna-bx.js");
+  }
   // Activate Syndetics Plus if necessary:
   if ($this->syndeticsPlus()->isActive()) {
     echo $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
@@ -102,12 +105,20 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
-    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->escapeHtmlAttr($this->driver->getResourceSource()) == 'VuFind' ): ?>
+    <? if ($this->resolver('record/record-organisation-menu.phtml') && $this->driver->getResourceSource() == 'VuFind'): ?>
       <?=$this->render('record/record-organisation-menu.phtml') ?>
     <? endif; ?>
     <? foreach ($this->related()->getList($this->driver) as $current): ?>
       <?=$this->related()->render($current)?>
     <? endforeach; ?>
+    <? if ($this->driver->getResourceSource() == 'Primo'): ?>
+      <div id="bx-recommendations" class="bx-recommendations hidden">
+        <h4><?=$this->transEsc('bX Recommendations')?></h4>
+        <ul class="list-group">
+          <li> </li>
+        </ul>
+      </div>
+    <? endif; ?>
   </div>
  </div>
 </div>

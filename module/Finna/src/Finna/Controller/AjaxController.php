@@ -125,6 +125,88 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
+     * Retrieve bX recommendations and output them in JSON format
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getBxRecommendationsAjax()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (!isset($config->bX['token'])) {
+            return $this->output('bX support not enabled', self::STATUS_ERROR);
+        }
+
+        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
+        $parts = explode('|', $id, 2);
+        if (count($parts) < 2) {
+            $source = 'VuFind';
+            $id = $parts[0];
+        } else {
+            $source = $parts[0];
+            $id = $parts[1];
+        }
+
+        $driver = $this->getServiceLocator()->get('VuFind\RecordLoader')
+            ->load($id, $source);
+        $openUrl = $driver->tryMethod('getOpenUrl', [true]);
+        if (empty($openUrl)) {
+            return $this->output([], self::STATUS_OK);
+        }
+
+        $params = http_build_query(
+            [
+                'token' => $config->bX['token'],
+                'format' => 'xml',
+                'source' => isset($config->bX['source']) ? $config->bX['source']
+                    : 'global',
+                'maxRecords' => isset($config->bX['maxRecords'])
+                    ? $config->bX['maxRecords'] : '5',
+                'threshold' => isset($config->bX['threshold'])
+                    ? $config->bX['threshold'] : '50'
+            ]
+        );
+        $openUrl .= '&res_dat=' . urlencode($params);
+
+        $baseUrl = isset($config->bX['baseUrl'])
+            ? $config->bX
+            : 'http://recommender.service.exlibrisgroup.com/service/recommender/'
+            . 'openurl';
+
+        // Create Proxy Request
+        $httpService = $this->getServiceLocator()->get('\VuFind\Http');
+        $client = $httpService->createClient("$baseUrl?$openUrl");
+        $result = $client->setMethod('GET')->send();
+
+        if ($result->isSuccess()) {
+            // Even if we get a response, make sure it's a 'good' one.
+            if ($result->getStatusCode() != 200) {
+                return $this->output(
+                    'bX request failed, response code ' . $result->getStatusCode(),
+                    self::STATUS_ERROR);
+            }
+        } else {
+            return $this->output(
+                'bX request failed: ' . $result->getStatusCode()
+                . ': ' . $result->getReasonPhrase(),
+                self::STATUS_ERROR
+            );
+        }
+        $xml = simplexml_load_string($result->getBody());
+        $data = [];
+        $jnl = 'info:ofi/fmt:xml:xsd:journal';
+        $xml->registerXPathNamespace('jnl', $jnl);
+        foreach ($xml->xpath('//jnl:journal') as $journal) {
+            $item = $this->convertToArray($journal, $jnl);
+            if (!isset($item['authors']['author'][0])) {
+                $item['authors']['author'] = [$item['authors']['author']];
+            }
+            $item['openurl'] = $this->createBxOpenUrl($item);
+            $data[] = $item;
+        }
+        return $this->output($data, self::STATUS_OK);
+    }
+
+    /**
      * Return rendered HTML for record image popup.
      *
      * @return mixed
@@ -187,7 +269,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     /**
      * Return record description in JSON format.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function getDescriptionAjax()
     {
@@ -247,7 +329,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     /**
      * Return rendered HTML for my lists navigation.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function getMyListsAjax()
     {
@@ -349,7 +431,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     /**
      * Update or create a list object.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function editListAjax()
     {
@@ -397,7 +479,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     /**
      * Update list resource note.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function editListResourceAjax()
     {
@@ -452,7 +534,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     /**
      * Add resources to a list.
      *
-     * @return mixed \Zend\Http\Response
+     * @return \Zend\Http\Response
      */
     public function addToListAjax()
     {
@@ -775,6 +857,78 @@ class AjaxController extends \VuFind\Controller\AjaxController
 
         $res = ['html' => $html, 'settings' => $settings];
         return $this->output($res, self::STATUS_OK);
+    }
+
+    /**
+     * Convert XML to array for bX recommendations
+     *
+     * @param \simpleXMLElement $xml XML to convert
+     * @param string            $ns  Optional namespace for nodes
+     *
+     * @return array
+     */
+    protected function convertToArray($xml, $ns = '')
+    {
+        $result = [];
+        foreach ($xml->children($ns) as $node) {
+            $children = $node->children($ns);
+            if (count($children) > 0) {
+                $item = $this->convertToArray($node, $ns);
+            } else {
+                $item = (string)$node;
+            }
+            $key = $node->getName();
+            if (isset($result[$key])) {
+                if (!is_array($result[$key])) {
+                    $result[$key] = [$result[$key]];
+                }
+                $result[$key][] = $item;
+            } else {
+                $result[$key] = $item;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Create OpenURL for a bX recommendation
+     *
+     * @param array $item Recommendation fields
+     *
+     * @return string
+     */
+    protected function createBxOpenUrl($item)
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        if (!isset($config->OpenURL['url'])) {
+            return '';
+        }
+
+        if (!empty($this->config->OpenURL['rfr_id'])) {
+            $coinsID = $this->config->OpenURL['rfr_id'];
+        } elseif (!empty($this->config->COINS['identifier'])) {
+            $coinsID = $this->config->COINS['identifier'];
+        } else {
+            $coinsID = 'finna.fi';
+        }
+
+        $params = [
+            'ctx_ver' => 'Z39.88-2004',
+            'ctx_enc' => 'info:ofi/enc:UTF-8',
+            'rfr_id' => "info:sid/{$coinsID}:generator",
+            'rft_val_fmt' => 'info:ofi/fmt:kev:mtx:journal'
+        ];
+
+        foreach ($item as $key => $value) {
+            if ($key == 'authors') {
+                foreach ($value['author'][0] as $auKey => $auValue) {
+                    $params["rft.$auKey"] = $auValue;
+                }
+            } else {
+                $params["rft.$key"] = $value;
+            }
+        }
+        return $config->OpenURL['url'] . '?' . http_build_query($params);
     }
 
     /**
