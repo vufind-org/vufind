@@ -50,6 +50,9 @@ function html_entity_decode(string, quote_style)
 
 // Turn GET string into array
 function deparam(url) {
+  if(!url.match(/\?/)) {
+    return [];
+  }
   var request = {};
   var pairs = url.substring(url.indexOf('?') + 1).split('&');
   for (var i = 0; i < pairs.length; i++) {
@@ -472,8 +475,10 @@ $(document).ready(function() {
       dataType:'json',
       data:Lightbox.getFormData($(evt.target)),
       success:function(data) {
-        if(data.data.needs_redirect) {
+        if(data.data.export_type == 'download' || data.data.needs_redirect) {
           document.location.href = data.data.result_url;
+          Lightbox.close();
+          return false;
         } else {
           Lightbox.changeContent(data.data.result_additional);
         }

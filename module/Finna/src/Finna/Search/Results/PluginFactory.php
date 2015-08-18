@@ -23,9 +23,10 @@
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     http://www.vufind.org  Main Page
  */
 namespace Finna\Search\Results;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Search results plugin factory
@@ -34,7 +35,7 @@ namespace Finna\Search\Results;
  * @package  Search
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     http://www.vufind.org  Main Page
  */
 class PluginFactory extends \VuFind\Search\Results\PluginFactory
 {
@@ -45,5 +46,30 @@ class PluginFactory extends \VuFind\Search\Results\PluginFactory
     {
         parent::__construct();
         $this->defaultNamespace = 'Finna\Search';
+    }
+
+    /**
+     * Create a service for the specified name.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Service locator
+     * @param string                  $name           Name of service
+     * @param string                  $requestedName  Unfiltered name of service
+     *
+     * @return object
+     */
+    public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
+        $name, $requestedName
+    ) {
+        $params = $serviceLocator->getServiceLocator()
+            ->get('VuFind\SearchParamsPluginManager')->get($requestedName);
+        $class = $this->getClassName($name, $requestedName);
+        if (class_exists($class)) {
+            return new $class($params);
+        } else {
+            $this->defaultNamespace = 'VuFind\Search';
+            return parent::createServiceWithName(
+                $serviceLocator, $name, $requestedName
+            );
+        }
     }
 }

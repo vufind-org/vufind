@@ -1,2 +1,42 @@
-<div class="col-xs-12">home-3.phtml<h1>Aikajana tähän</h1>
+<div class="col-xs-12">
+<?
+  $txt = [
+    'fi' => '<span class="large">Aikarajaushaulla löydät </span> kuvat, teokset, esineet, asiakirjat ja muut aineistot historiasta nykypäivään. Rajaus kohdistuu valmistusvuoteen.',
+    'sv' => '<span class="large">Genom att begränsa sökningen </span> till en viss tidsintervall kan du hitta bilder, verk, föremål, dokument eller annat material från en viss tid. Sökningen begränsas enligt framställningsår.',
+    'en-gb' => '<span class="large">By narrowing your search by year, </span> you can find images, books, objects, documents and other material from the past to the present.'
+];
+   $lng = $this->layout()->userLang;
+   $txt = isset($txt[$lng]) ? $txt[$lng] : $txt['fi'];
+?>
+  <div class="daterange-facet national">
+    <div class="row">
+      <div class="col-md-9">
+        <div class="text">
+          <p><?= $txt ?></p>
+        </div>
+      </div>
+    </div>
+    <div>
+  </div>
+      <?= $this->partial(
+      'Recommend/DateRangeVisAjax.phtml',
+      [
+      'submitLabel' => 'Search',
+      'from' => null,
+      'to' => null,
+      'daterangeFacet' => 'search_daterange_mv',
+      'daterangeFacetOperator' => '', // AND
+      'type' => 'overlap',
+      'formAction' => $this->url('search-results'),
+       'searchParams' => '?lookfor=',
+       'baseParams' => '?lookfor=',
+       'backend' => 'solr',
+       'plotFrom' => 1795,
+       'plotTo' => null,
+       'plotImmediately' => true,
+       'hideType' => true
+      ]
+    ); ?>
+    </div>
+  </div>
 </div>

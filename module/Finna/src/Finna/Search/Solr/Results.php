@@ -39,4 +39,49 @@ namespace Finna\Search\Solr;
 class Results extends \VuFind\Search\Solr\Results
 {
     use \Finna\Search\Results\SearchResultsTrait;
+
+    /**
+     * Returns the stored list of facets for the last search
+     *
+     * @param array $filter Array of field => on-screen description listing
+     * all of the desired facet fields; set to null to get all configured values.
+     *
+     * @return array        Facets data arrays
+     */
+    public function getFacetList($filter = null)
+    {
+        $list = parent::getFacetList($filter);
+
+        // Append date range facet to the list so that it gets
+        // included even when facet counts are zero.
+        if (!isset($list[Params::SPATIAL_DATERANGE_FIELD])
+            && (is_null($filter) || isset($filter[Params::SPATIAL_DATERANGE_FIELD]))
+        ) {
+            // Resolve facet index in list
+            $ind = 0;
+            $filter = $filter ?: $this->getParams()->getFacetConfig();
+
+            if (!isset($filter[Params::SPATIAL_DATERANGE_FIELD])) {
+                return $list;
+            }
+
+            foreach (array_keys($filter) as $field) {
+                if ($field == Params::SPATIAL_DATERANGE_FIELD) {
+                    break;
+                }
+                $ind++;
+            }
+
+            $data = [];
+            $filter = $filter[Params::SPATIAL_DATERANGE_FIELD];
+            $data['label'] = $filter;
+            $data['list'] = $filter;
+
+            $list
+                = array_slice($list, 0, $ind)
+                + [Params::SPATIAL_DATERANGE_FIELD => $data]
+                + array_slice($list, $ind);
+        }
+        return $list;
+    }
 }

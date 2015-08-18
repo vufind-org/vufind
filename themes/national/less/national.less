@@ -47,6 +47,73 @@
         }
     }
 }
+.main.template-dir-search.template-name-home {
+    & .daterange-facet.national {
+        background-color: inherit;
+        margin-top: @line-height-computed;
+        margin-bottom: (@line-height-computed);
+
+        & .text {
+            & .large {
+                font-size: @font-size-h2;
+                font-weight: @headings-font-weight;
+                line-height: @headings-line-height;
+            }
+        }
+        & .daterange-vis {
+            display: block;
+            margin: 0;
+            & .form-ui {
+                float: right;
+                @media (min-width: @screen-md-min) {
+                    position: absolute;
+                    top: 30px;
+                    right: 20px;   
+                }   
+            }
+            & .content {
+                width: @container-large-desktop - 15;
+                & .fa-spinner {
+                    left: 550px;
+                }
+                & .date-vis {
+                    border-radius: 5px;
+                    box-shadow: 0 5px 20px -26px;   
+                }
+                @media (min-width: @screen-sm) and (max-width: @screen-md) {
+                    width: @screen-sm - 35;
+                    & .fa-spinner {
+                        left: 350px;
+                    }
+                }
+                @media (min-width: @screen-md) and (max-width: (@screen-lg - 1)) {
+                    width: @screen-md - 40;
+                    & .fa-spinner {
+                        left: 460px;
+                    }
+                }
+            }
+            & .navigation {
+                float: none;
+                width: 30px;
+                padding-left: 0;
+                position: absolute;
+                margin-top: -107px;
+                padding-top: 0;
+                & .prev,.next,.zoom-out,.zoom-in {
+                    margin: 0;
+                    padding-left: 5px;
+                }
+                & .expand-modal {
+                    display: none;   
+                }
+            }
+            & .form-ui .year-separator {
+                color: inherit;
+            }
+        }
+    }
+}
 .main.template-dir-content.template-name-content {
     ul.organisations {
         & li:nth-child(even) {

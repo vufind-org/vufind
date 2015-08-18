@@ -54,6 +54,12 @@
 <? $hierarchicalFacets = $this->recommend->getHierarchicalFacets() ?>
 <? $newItemsFacets = $this->recommend->getNewItemsFacets(); ?>
 <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); ?>
+<? $module = $this->layout()->templateDir == 'primo' ? 'primo' : 'solr'; ?>
+<?
+   $params = $this->results->getParams();
+   $daterangeFacetField = $params->getSpatialDateRangeField();
+   $plotFrom = null;
+?>
 <?
     $queryHandler = 'AllFields';
     if ($results->getParams()->getSearchType() == 'basic') {
@@ -109,10 +115,38 @@
 <? $sideFacetSet = $this->recommend->getFacetSet(); $rangeFacets = $this->recommend->getAllRangeFacets(); ?>
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
-    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <div class="list-group facet" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
+  <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
+    <? $daterangeFacet = $title == $daterangeFacetField; ?>
+    <div class="list-group facet<?= $daterangeFacet ? ' daterange-facet' : '' ?>" id="side-panel-<?=$this->escapeHtmlAttr($title) ?>">
       <div class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" data-target="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>" >
         <?=$this->transEsc($cluster['label'])?>
+        <?
+          if ($daterangeFacet) {
+            $fromVal = $toVal = $type = null;
+            $queryHelper = $this->results->getUrlQuery();
+            $paramArray = $queryHelper->getParamArray();
+            unset($paramArray["{$daterangeFacetField}_type"]);
+            $searchParams = $formParams = '?' . $queryHelper->buildQueryString($paramArray, false);
+            if ($spatialFilter = $params->getSpatialDateRangeFilter()) {
+              if (isset($spatialFilter['val'])) {
+                $formParams = $queryHelper->removeFacet($spatialFilter['field'], $spatialFilter['val'], false, 'AND', $paramArray);
+              }
+              $from = isset($spatialFilter['from']) ? $spatialFilter['from'] : null;
+              $to = isset($spatialFilter['to']) ? $spatialFilter['to'] : null;
+              $fromVal = $from != '*' ? $from : '';
+              $toVal = $to != '*' ? $to : '';
+              if (isset($spatialFilter['type'])) {
+                $type =$spatialFilter['type'];
+              }
+              if ($params->getSearchType() != 'advanced') {
+                $lookfor = $params->getQuery()->getString();  
+                if ($lookfor == '' && $fromVal === null && $toVal === null) {
+                  $plotFrom = 0;
+                }
+              }
+            }
+          }
+         ?>
       </div>
       <div id="side-collapse-<?=$this->escapeHtmlAttr($title) ?>" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>">
         <? if (isset($newItemsFacets[$title])): ?>
@@ -157,6 +191,25 @@ EOT
               </div>
             </div>
           </div>
+
+        <? elseif ($daterangeFacet): ?>
+            <div class="list-group-item daterange">
+              <?= $this->partial('Recommend/DateRangeVisAjax.phtml', [
+              'submitLabel' => 'Update',
+              'from' => $fromVal,
+              'to' => $toVal,
+              'formAction' => $formParams,
+              'searchParams' => $searchParams,
+              'baseParams' => $formParams,
+              'facetField' => 'search_sdaterange_mv',
+              'filterField' => 'main_date_str',
+              'type' => $type,
+              'backend' => $module,
+              'daterangeFacet' => $daterangeFacetField,
+              'plotFrom' => $plotFrom              
+              ]);
+              ?>
+            </div>
         <? elseif (isset($rangeFacets[$title])): ?>
           <div class="list-group-item">
             <form name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">

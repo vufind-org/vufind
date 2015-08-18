@@ -53,7 +53,7 @@ class Less_Parser{
 	 */
 	private $env;
 
-	private $rules = array();
+	protected $rules = array();
 
 	private static $imports = array();
 
