@@ -14,7 +14,7 @@ set -e
 set -x
 
 cd "`dirname $0`/import"
-CLASSPATH="browse-indexing.jar:../solr/lib/*"
+CLASSPATH="browse-indexing.jar:../solr/vufind-lib/*:../solr/contrib/extraction/lib/*"
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties
@@ -38,9 +38,9 @@ function locate_index
     eval $targetVar="$indexDir/$subDir"
 }
 
-locate_index "bib_index" "../solr/biblio"
-locate_index "auth_index" "../solr/authority"
-index_dir="../solr/alphabetical_browse"
+locate_index "bib_index" "../solr/server/solr/biblio"
+locate_index "auth_index" "../solr/server/solr/authority"
+index_dir="../solr/server/solr/alphabetical_browse"
 
 mkdir -p "$index_dir"
 
