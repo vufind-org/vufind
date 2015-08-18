@@ -64,28 +64,21 @@ class LanguageController extends AbstractBase
         $source = $argv[0];
         $target = $argv[1];
 
-        $langDir = realpath(__DIR__ . '/../../../../../languages');
-        $handle = opendir($langDir);
-        if (!$handle) {
-            Console::writeLine("Could not open directory $langDir");
+        if (!($dir = $this->getLangDir())) {
             return $this->getFailureResponse();
         }
-        while ($file = readdir($handle)) {
-            // Only process .ini files, and ignore native.ini special case file:
-            if (substr($file, -4) == '.ini' && $file !== 'native.ini') {
-                Console::writeLine("Processing $file...");
-                $full = $langDir . '/' . $file;
-                $strings = $reader->getTextDomain($full, false);
-                if (!isset($strings[$source])) {
-                    Console::writeLine("Source key not found.");
-                } else {
-                    $fHandle = fopen($full, "a");
-                    fputs($fHandle, "\n$target = \"" . $strings[$source] . "\"\n");
-                    fclose($fHandle);
-                    $normalizer->normalizeFile($full);
-                }
+        $callback = function ($full) use ($source, $target, $reader, $normalizer) {
+            $strings = $reader->getTextDomain($full, false);
+            if (!isset($strings[$source])) {
+                Console::writeLine("Source key not found.");
+            } else {
+                $fHandle = fopen($full, "a");
+                fputs($fHandle, "\n$target = \"" . $strings[$source] . "\"\n");
+                fclose($fHandle);
+                $normalizer->normalizeFile($full);
             }
-        }
+        };
+        $this->processDirectory($dir, $callback);
 
         return $this->getSuccessResponse();
     }
@@ -110,35 +103,28 @@ class LanguageController extends AbstractBase
         $normalizer = new ExtendedIniNormalizer();
         $target = $argv[0] . ' = "';
 
-        $langDir = realpath(__DIR__ . '/../../../../../languages');
-        $handle = opendir($langDir);
-        if (!$handle) {
-            Console::writeLine("Could not open directory $langDir");
+        if (!($dir = $this->getLangDir())) {
             return $this->getFailureResponse();
         }
-        while ($file = readdir($handle)) {
-            // Only process .ini files, and ignore native.ini special case file:
-            if (substr($file, -4) == '.ini' && $file !== 'native.ini') {
-                Console::writeLine("Processing $file...");
-                $full = $langDir . '/' . $file;
-                $lines = file($full);
-                $out = '';
-                $found = false;
-                foreach ($lines as $line) {
-                    if (substr($line, 0, strlen($target)) !== $target) {
-                        $out .= $line;
-                    } else {
-                        $found = true;
-                    }
-                }
-                if ($found) {
-                    file_put_contents($full, $out);
-                    $normalizer->normalizeFile($full);
+        $callback = function ($full) use ($target, $normalizer) {
+            $lines = file($full);
+            $out = '';
+            $found = false;
+            foreach ($lines as $line) {
+                if (substr($line, 0, strlen($target)) !== $target) {
+                    $out .= $line;
                 } else {
-                    Console::writeLine("Source key not found.");
+                    $found = true;
                 }
             }
-        }
+            if ($found) {
+                file_put_contents($full, $out);
+                $normalizer->normalizeFile($full);
+            } else {
+                Console::writeLine("Source key not found.");
+            }
+        };
+        $this->processDirectory($dir, $callback);
 
         return $this->getSuccessResponse();
     }
@@ -171,5 +157,39 @@ class LanguageController extends AbstractBase
             return $this->getFailureResponse();
         }
         return $this->getSuccessResponse();
+    }
+
+    /**
+     * Open the language directory as an object using dir(). Return false on
+     * failure.
+     *
+     * @return object|bool
+     */
+    protected function getLangDir()
+    {
+        $langDir = realpath(__DIR__ . '/../../../../../languages');
+        $dir = dir($langDir);
+        if (!$dir) {
+            Console::writeLine("Could not open directory $langDir");
+            return false;
+        }
+        return $dir;
+    }
+
+    /**
+     * Process a language directory.
+     *
+     * @param object   $dir      Directory object from dir() to process
+     * @param Callable $callback Function to run on all .ini files in $dir
+     */
+    protected function processDirectory($dir, $callback)
+    {
+        while ($file = $dir->read()) {
+            // Only process .ini files, and ignore native.ini special case file:
+            if (substr($file, -4) == '.ini' && $file !== 'native.ini') {
+                Console::writeLine("Processing $file...");
+                $callback($dir->path . '/' . $file);
+            }
+        }
     }
 }
