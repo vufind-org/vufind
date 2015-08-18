@@ -200,6 +200,8 @@ class LanguageController extends AbstractBase
      *
      * @param object   $dir      Directory object from dir() to process
      * @param Callable $callback Function to run on all .ini files in $dir
+     *
+     * @return void
      */
     protected function processDirectory($dir, $callback)
     {
