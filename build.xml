@@ -169,7 +169,7 @@
     <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
-    <!-- wait for Solor to finish spinning up -->
+    <!-- wait for Solr to finish spinning up -->
     <echo message="Waiting for Solr to start up..." />
     <exec command="sleep 30" />
 
