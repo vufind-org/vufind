@@ -61,7 +61,7 @@
         "symfony/yaml": "*",
         "vufind-org/vufindcode": "*",
         "vufind-org/vufindhttp": "*",
-        "zendframework/zendframework": "2.3.7",
+        "zendframework/zendframework": "2.4.6",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",
         "zf-commons/zfc-rbac": "~2.4"

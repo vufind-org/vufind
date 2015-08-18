@@ -704,7 +704,7 @@ class Less_Functions{
 
 			if( $order[$j]->unit->toString() === "" && $unitClone ){
 				$temp = new Less_Tree_Dimension( $order[$j]->value, $unitClone);
-				$referenceUnified = $temp->unifiy();
+				$referenceUnified = $temp->unify();
 			}else{
 				$referenceUnified = $order[$j]->unify();
 			}
