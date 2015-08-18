@@ -391,16 +391,18 @@ class MyResearchController extends AbstractBase
             ? $this->url()->fromRoute('myresearch-favorites')
             : $this->url()->fromRoute('userList', ['id' => $listID]);
 
-        // Fail if we have nothing to delete:
-        $ids = is_null($this->params()->fromPost('selectAll'))
-            ? $this->params()->fromPost('ids')
-            : $this->params()->fromPost('idsAll');
-        if (!is_array($ids) || empty($ids)) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('bulk_noitems_advice');
-            return $this->redirect()->toUrl($newUrl);
-        }
 
+        $ids = $this->getIds();
+        if (!is_array($ids) || empty($ids)) {
+            $view = $this->createViewModel();
+            $listID = $this->params()->fromPost('listID', -1);
+        
+            $view->setVariable('listID', $listID);
+            $view->setTemplate('myresearch/delete-all.phtml');
+            return $view;
+        }
+        
+        
         // Process the deletes if necessary:
         if ($this->formWasSubmitted('submit')) {
             $this->favorites()->delete($ids, $listID, $user);

@@ -92,9 +92,9 @@ function bulkActionSubmit($form) {
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
   var checks = $form.find('input.checkbox-select-item:checked');
   if(checks.length == 0 && submit != 'empty') {
-    return Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    //return Lightbox.displayError(vufindString['bulk_noitems_advice']);
   }
-  if (submit == 'print') {
+  if (submit == 'print' && checks.length > 0) {
     //redirect page
     var url = path+'/Records/Home?print=true';
     for(var i=0;i<checks.length;i++) {
@@ -436,6 +436,74 @@ $(document).ready(function() {
     });
     return false;
   });
+  
+  Lightbox.addFormHandler('exportListForm', function(evt) {
+    $.ajax({
+      url: path + '/AJAX/JSON?' + $.param({method:'getLightbox',submodule:'Cart',subaction:'Export'}),
+      type:'POST',
+      dataType:'html',
+      data:Lightbox.getFormData($(evt.target)),
+      success:function(data) {
+          Lightbox.changeContent(data);
+      },
+      error:function(d,e) {
+        //console.log(d,e); // Error reporting
+      }
+    });
+    return false;
+  });
+  
+  Lightbox.addFormHandler('emailListForm', function(evt) {
+    $.ajax({
+      url: path + '/AJAX/JSON?' + $.param({method:'getLightbox',submodule:'Cart',subaction:'Email'}),
+      type:'POST',
+      dataType:'html',
+      data:Lightbox.getFormData($(evt.target)),
+      success:function(data) {
+          Lightbox.changeContent(data);
+      },
+      error:function(d,e) {
+        //console.log(d,e); // Error reporting
+      }
+    });
+    return false;
+  });
+  
+  Lightbox.addFormHandler('deleteListForm', function(evt) {
+    $.ajax({
+      url: path + '/AJAX/JSON?' + $.param({method:'getLightbox',submodule:'MyResearch',subaction:'Delete'}),
+      type:'POST',
+      dataType:'html',
+      data:Lightbox.getFormData($(evt.target)),
+      success:function(data) {
+          Lightbox.changeContent(data);
+      },
+      error:function(d,e) {
+        //console.log(d,e); // Error reporting
+      }
+    });
+    return false;
+  });
+  
+  Lightbox.addFormHandler('printListForm', function(evt) {
+    
+    
+    $.ajax({
+      url: path + '/AJAX/JSON?' + $.param({method:'getLightbox',submodule:'Cart',subaction:'Printcart'}),
+      type:'POST',
+      dataType:'html',
+      data:Lightbox.getFormData($(evt.target)),
+      success:function(url) {
+        Lightbox.close();
+        window.open(url);
+      },
+      error:function(d,e) {
+        //console.log(d,e); // Error reporting
+      }
+    });
+    return false;
+  });
+  
   Lightbox.addFormHandler('feedback', function(evt) {
     var $form = $(evt.target);
     // Grabs hidden inputs

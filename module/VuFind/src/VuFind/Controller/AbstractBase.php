@@ -29,6 +29,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Forbidden as ForbiddenException,
+    Zend\Stdlib\Parameters,
     Zend\Mvc\Controller\AbstractActionController,
     Zend\Mvc\MvcEvent,
     Zend\View\Model\ViewModel,
@@ -749,5 +750,41 @@ class AbstractBase extends AbstractActionController
     
         $exportedRecords = $export->processGroup($format, $parts);
         return $exportedRecords;
+    }
+    
+    protected function getIds() {
+        $ids = [];
+        $allFromList = $this->params()->fromPost('allFromList');
+        
+        if(isset($allFromList)) {
+            $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
+            $params = $results->getParams();
+            $params->setAuthManager($this->getAuthManager());
+    
+            $parameters = new Parameters(
+                    $this->getRequest()->getQuery()->toArray()
+                    + $this->getRequest()->getPost()->toArray()
+                    );
+    
+            if ($allFromList != -1) {
+                $parameters->set('id', $allFromList);
+            }
+    
+            $params->initFromRequest($parameters);
+            $params->setLimit(999);
+    
+            $results->performAndProcessSearch();
+    
+            $ids = [];
+            foreach ($results->getResults() as $result) {
+                $ids[] = $result->getResourceSource() . "|" . $result->getUniqueID();
+            }
+    
+        } else {
+            $ids = $this->params()->fromPost('ids', []);
+        }
+    
+        return $ids;
     }
 }

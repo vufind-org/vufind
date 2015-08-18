@@ -1325,9 +1325,10 @@ class AjaxController extends AbstractBase
     {
         $format = $this->params()->fromPost('format');
         $export = $this->getServiceLocator()->get('VuFind\Export');
+        
         $url = $export->getBulkUrl(
             $this->getViewRenderer(), $format,
-            $this->params()->fromPost('ids', [])
+            $this->getIds()
         );
         $html = $this->getViewRenderer()->render(
             'ajax/export-favorites.phtml',
