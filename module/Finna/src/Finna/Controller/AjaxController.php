@@ -125,7 +125,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
     }
 
     /**
-     * Retrieve bX recommendations and output them in JSON format
+     * Retrieve bX recommendations
      *
      * @return \Zend\Http\Response
      */
@@ -168,7 +168,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
         $openUrl .= '&res_dat=' . urlencode($params);
 
         $baseUrl = isset($config->bX['baseUrl'])
-            ? $config->bX
+            ? $config->bX['baseUrl']
             : 'http://recommender.service.exlibrisgroup.com/service/recommender/'
             . 'openurl';
 
@@ -193,7 +193,7 @@ class AjaxController extends \VuFind\Controller\AjaxController
             );
         }
         $xml = simplexml_load_string($result->getBody());
-        $data = [];
+        $recommendations = [];
         $jnl = 'info:ofi/fmt:xml:xsd:journal';
         $xml->registerXPathNamespace('jnl', $jnl);
         foreach ($xml->xpath('//jnl:journal') as $journal) {
@@ -202,9 +202,13 @@ class AjaxController extends \VuFind\Controller\AjaxController
                 $item['authors']['author'] = [$item['authors']['author']];
             }
             $item['openurl'] = $this->createBxOpenUrl($item);
-            $data[] = $item;
+            $recommendations[] = $item;
         }
-        return $this->output($data, self::STATUS_OK);
+        $html = $this->getViewRenderer()->partial(
+            'Recommend/bx.phtml',
+            ['recommendations' => $recommendations]
+        );
+        return $this->output($html, self::STATUS_OK);
     }
 
     /**
