@@ -71,6 +71,9 @@
           );
         }
         $this->headScript()->appendScript($this->jsTranslations()->getScript());
+        $this->headScript()->appendScript(
+           'var userIsLoggedIn = ' . ($this->auth()->isLoggedIn() ? 'true' : 'false') . ';'
+        );
       }
 
       // Session keep-alive
