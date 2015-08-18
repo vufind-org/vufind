@@ -96,14 +96,18 @@ class LanguageController extends AbstractBase
             Console::writeLine(
                 "Usage: {$_SERVER['argv'][0]} [target]"
             );
-            Console::writeLine("\ttarget - the target key to remove");
+            Console::writeLine(
+                "\ttarget - the target key to remove "
+                . "(may include 'textdomain::' prefix"
+            );
             return $this->getFailureResponse();
         }
 
         $normalizer = new ExtendedIniNormalizer();
-        $target = $argv[0] . ' = "';
+        list($domain, $key) = $this->extractTextDomain($argv[0]);
+        $target = $key . ' = "';
 
-        if (!($dir = $this->getLangDir())) {
+        if (!($dir = $this->getLangDir($domain))) {
             return $this->getFailureResponse();
         }
         $callback = function ($full) use ($target, $normalizer) {
@@ -160,14 +164,29 @@ class LanguageController extends AbstractBase
     }
 
     /**
+     * Extract a text domain and key from a raw language key.
+     *
+     * @param string $raw Raw language key
+     *
+     * @return array [textdomain, key]
+     */
+    protected function extractTextDomain($raw)
+    {
+        $parts = explode('::', $raw, 2);
+        return count($parts) > 1 ? $parts : ['default', $raw];
+    }
+
+    /**
      * Open the language directory as an object using dir(). Return false on
      * failure.
      *
+     * @param string $domain Text domain to retrieve.
      * @return object|bool
      */
-    protected function getLangDir()
+    protected function getLangDir($domain = 'default')
     {
-        $langDir = realpath(__DIR__ . '/../../../../../languages');
+        $subDir = $domain == 'default' ? '' : ('/' . $domain);
+        $langDir = realpath(__DIR__ . '/../../../../../languages' . $subDir);
         $dir = dir($langDir);
         if (!$dir) {
             Console::writeLine("Could not open directory $langDir");
