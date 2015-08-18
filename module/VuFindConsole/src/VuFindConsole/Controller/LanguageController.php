@@ -56,6 +56,9 @@ class LanguageController extends AbstractBase
             );
             Console::writeLine("\tsource - the source key to read");
             Console::writeLine("\ttarget - the target key to write");
+            Console::writeLine(
+                "(source and target may include 'textdomain::' prefix)"
+            );
             return $this->getFailureResponse();
         }
 
@@ -117,7 +120,7 @@ class LanguageController extends AbstractBase
             );
             Console::writeLine(
                 "\ttarget - the target key to remove "
-                . "(may include 'textdomain::' prefix"
+                . "(may include 'textdomain::' prefix)"
             );
             return $this->getFailureResponse();
         }
