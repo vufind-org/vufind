@@ -335,4 +335,76 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $processedQ = $response->get('q');
         $this->assertEquals('((field_a:(value*)^100 OR field_c:(value*)^200) OR (_query_:"{!dismax qf=\"field_b\" }value2"))', $processedQ[0]);
     }
+
+    /**
+     * Test generation with multiple quoted phrases.
+     *
+     * @return void
+     */
+    public function testMultipleQuotedPhrases()
+    {
+        $qb = new QueryBuilder(
+            [
+                'a' => [
+                    'QueryFields' => [
+                        'field_a' => [['or', '~']],
+                    ]
+                ]
+            ]
+        );
+
+        $q = new Query('"foo" "bar" "baz"', 'a');
+
+        $response = $qb->build($q);
+        $processedQ = $response->get('q');
+        $this->assertEquals('(field_a:("foo" OR "bar" OR "baz"))', $processedQ[0]);
+    }
+
+    /**
+     * Test generation with mix of quoted and unquoted phrases
+     *
+     * @return void
+     */
+    public function testMixedQuotedPhrases()
+    {
+        $qb = new QueryBuilder(
+            [
+                'a' => [
+                    'QueryFields' => [
+                        'field_a' => [['or', '~']],
+                    ]
+                ]
+            ]
+        );
+
+        $q = new Query('708396 "708398" 708399 "708400"', 'a');
+
+        $response = $qb->build($q);
+        $processedQ = $response->get('q');
+        $this->assertEquals('(field_a:(708396 OR "708398" OR 708399 OR "708400"))', $processedQ[0]);
+    }
+
+    /**
+     * Test generation with mix of quoted and unquoted phrases
+     *
+     * @return void
+     */
+    public function testMixedQuotedPhrasesWithEscapedQuote()
+    {
+        $qb = new QueryBuilder(
+            [
+                'a' => [
+                    'QueryFields' => [
+                        'field_a' => [['or', '~']],
+                    ]
+                ]
+            ]
+        );
+
+        $q = new Query('708396 "708398" 708399 "foo\"bar"', 'a');
+
+        $response = $qb->build($q);
+        $processedQ = $response->get('q');
+        $this->assertEquals('(field_a:(708396 OR "708398" OR 708399 OR "foo\"bar"))', $processedQ[0]);
+    }
 }

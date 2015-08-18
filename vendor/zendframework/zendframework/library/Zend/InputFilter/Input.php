@@ -13,7 +13,9 @@ use Zend\Filter\FilterChain;
 use Zend\Validator\NotEmpty;
 use Zend\Validator\ValidatorChain;
 
-class Input implements InputInterface, EmptyContextInterface
+class Input implements
+    InputInterface,
+    EmptyContextInterface
 {
     /**
      * @var bool
@@ -102,7 +104,7 @@ class Input implements InputInterface, EmptyContextInterface
 
     /**
      * @param bool $continueIfEmpty
-     * @return \Zend\InputFilter\Input
+     * @return Input
      */
     public function setContinueIfEmpty($continueIfEmpty)
     {
@@ -147,7 +149,6 @@ class Input implements InputInterface, EmptyContextInterface
     public function setRequired($required)
     {
         $this->required = (bool) $required;
-        $this->setAllowEmpty(!$required);
         return $this;
     }
 
@@ -319,16 +320,31 @@ class Input implements InputInterface, EmptyContextInterface
      */
     public function isValid($context = null)
     {
-        // Empty value needs further validation if continueIfEmpty is set
-        // so don't inject NotEmpty validator which would always
-        // mark that as false
-        if (!$this->continueIfEmpty()) {
+        $value           = $this->getValue();
+        $empty           = ($value === null || $value === '' || $value === array());
+        $required        = $this->isRequired();
+        $allowEmpty      = $this->allowEmpty();
+        $continueIfEmpty = $this->continueIfEmpty();
+
+        if ($empty && ! $required && ! $continueIfEmpty) {
+            return true;
+        }
+
+        if ($empty && $required && $allowEmpty && ! $continueIfEmpty) {
+            return true;
+        }
+
+        // At this point, we need to run validators.
+        // If we do not allow empty and the "continue if empty" flag are
+        // BOTH false, we inject the "not empty" validator into the chain,
+        // which adds that logic into the validation routine.
+        if (! $allowEmpty && ! $continueIfEmpty) {
             $this->injectNotEmptyValidator();
         }
+
         $validator = $this->getValidatorChain();
-        $value     = $this->getValue();
         $result    = $validator->isValid($value, $context);
-        if (!$result && $this->hasFallback()) {
+        if (! $result && $this->hasFallback()) {
             $this->setValue($this->getFallbackValue());
             $result = true;
         }
@@ -372,7 +388,14 @@ class Input implements InputInterface, EmptyContextInterface
             }
         }
 
-        $chain->prependByName('NotEmpty', array(), true);
         $this->notEmptyValidator = true;
+
+        if (class_exists('Zend\ServiceManager\AbstractPluginManager')) {
+            $chain->prependByName('NotEmpty', array(), true);
+
+            return;
+        }
+
+        $chain->prependValidator(new NotEmpty(), true);
     }
 }

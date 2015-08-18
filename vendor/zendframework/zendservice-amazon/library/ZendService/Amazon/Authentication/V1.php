@@ -40,7 +40,7 @@ class V1 extends AbstractAuthentication
         $parameters['AWSAccessKeyId']   = $this->_accessKey;
         $parameters['SignatureVersion'] = $this->_signatureVersion;
         $parameters['Version']          = $this->_apiVersion;
-        if(!isset($parameters['Timestamp'])) {
+        if (!isset($parameters['Timestamp'])) {
             $parameters['Timestamp']    = gmdate('Y-m-d\TH:i:s\Z', time()+10);
         }
 
@@ -76,7 +76,7 @@ class V1 extends AbstractAuthentication
         uksort($parameters, 'strcasecmp');
         unset($parameters['Signature']);
 
-        foreach($parameters as $key => $value) {
+        foreach ($parameters as $key => $value) {
             $data .= $key . $value;
         }
 

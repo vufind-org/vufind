@@ -13,7 +13,7 @@
 <? endif; ?>
 <? if (!isset($this->layout()->renderingError)): ?>
   <div class="collapse navbar-collapse" id="header-collapse">
-    <ul role="navigation" class="nav navbar-nav navbar-right">
+    <ul role="navigation" class="nav navbar-nav navbar-right flip">
       <? if ($this->feedback()->tabEnabled()): ?>
         <li>
           <a id="feedbackLink" class="modal-link" href="<?=$this->url('feedback-home') ?>"><i class="fa fa-envelope"></i> <?=$this->transEsc("Feedback")?></a>
@@ -42,7 +42,7 @@
 
       <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
         <li class="dropdown">
-          <form method="post" name="themeForm" action="" id="themeForm">
+          <form method="post" name="themeForm" id="themeForm">
             <input type="hidden" name="ui"/>
           </form>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Theme")?> <b class="caret"></b></a>
@@ -56,7 +56,7 @@
 
       <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
         <li class="dropdown">
-          <form method="post" name="langForm" action="" id="langForm">
+          <form method="post" name="langForm" id="langForm">
             <input type="hidden" name="mylang"/>
           </form>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><?=$this->transEsc("Language")?> <b class="caret"></b></a>

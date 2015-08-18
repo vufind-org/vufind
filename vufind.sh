@@ -425,6 +425,15 @@ then
     JAVA_OPTIONS="$JAVA_OPTIONS -Djetty.logs=$JETTY_LOG"
 fi
 
+#####################################################
+# Set log4j configuration file
+#####################################################
+if [ "$SOLR_LOG4J" != "" ]
+then
+  JAVA_OPTIONS="$JAVA_OPTIONS -Dlog4j.configuration=$SOLR_LOG4J"
+else
+  JAVA_OPTIONS="$JAVA_OPTIONS -Dlog4j.configuration=file://$SOLR_HOME/log4j.properties"
+fi
 
 #####################################################
 # Are we running on Windows? Could be, with Cygwin/NT.

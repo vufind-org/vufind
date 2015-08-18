@@ -1,0 +1,21 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Export Record'));
+?>
+<div data-role="page" id="Record-view">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <?=$this->flashmessages()?>
+    <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); if (count($exportFormats) > 0): ?>
+      <?=$this->transEsc('export_choose_format')?>
+      <ul>
+      <? foreach ($exportFormats as $exportFormat): ?>
+        <li><a rel="external" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtml($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->transEsc($this->export()->getLabelForFormat($exportFormat))?></a></li>
+      <? endforeach; ?>
+      </ul>
+    <? else: ?>
+      <?=$this->transEsc('export_no_formats')?>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

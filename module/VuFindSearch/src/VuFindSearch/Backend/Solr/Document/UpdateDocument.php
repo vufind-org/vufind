@@ -43,7 +43,6 @@ use XMLWriter;
  */
 class UpdateDocument extends AbstractDocument
 {
-
     /**
      * Records and index attributes.
      *

@@ -30,7 +30,7 @@ use Zend\View\Variables;
  *
  * Convenience methods for build in helpers (@see __call):
  *
- * @method \Zend\View\Helper\BasePath basePath($file = null)
+ * @method string|null basePath($file = null)
  * @method \Zend\View\Helper\Cycle cycle(array $data = array(), $name = \Zend\View\Helper\Cycle::DEFAULT_NAME)
  * @method \Zend\View\Helper\DeclareVars declareVars()
  * @method \Zend\View\Helper\Doctype doctype($doctype = null)
@@ -130,11 +130,6 @@ class PhpRenderer implements Renderer, TreeRendererInterface
      * @var array Temporary variable stack; used when variables passed to render()
      */
     private $__varsCache = array();
-
-    /**
-     * @var array Cache for the plugin call
-     */
-    private $__pluginCache = array();
 
     /**
      * Constructor.
@@ -392,13 +387,13 @@ class PhpRenderer implements Renderer, TreeRendererInterface
      */
     public function __call($method, $argv)
     {
-        if (!isset($this->__pluginCache[$method])) {
-            $this->__pluginCache[$method] = $this->plugin($method);
+        $plugin = $this->plugin($method);
+
+        if (is_callable($plugin)) {
+            return call_user_func_array($plugin, $argv);
         }
-        if (is_callable($this->__pluginCache[$method])) {
-            return call_user_func_array($this->__pluginCache[$method], $argv);
-        }
-        return $this->__pluginCache[$method];
+
+        return $plugin;
     }
 
     /**

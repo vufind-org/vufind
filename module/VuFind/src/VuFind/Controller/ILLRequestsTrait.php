@@ -45,8 +45,7 @@ trait ILLRequestsTrait
      */
     public function blockedILLRequestAction()
     {
-        $this->flashMessenger()->setNamespace('error')
-            ->addMessage('ill_request_error_blocked');
+        $this->flashMessenger()->addMessage('ill_request_error_blocked', 'error');
         return $this->redirectToRecord('#top');
     }
 
@@ -112,8 +111,8 @@ trait ILLRequestsTrait
 
             // Success: Go to Display ILL Requests
             if (isset($results['success']) && $results['success'] == true) {
-                $this->flashMessenger()->setNamespace('info')
-                    ->addMessage('ill_request_place_success');
+                $this->flashMessenger()
+                    ->addMessage('ill_request_place_success', 'success');
                 if ($this->inLightbox()) {
                     return false;
                 }
@@ -124,12 +123,12 @@ trait ILLRequestsTrait
                 // Failure: use flash messenger to display messages, stay on
                 // the current form.
                 if (isset($results['status'])) {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage($results['status']);
+                    $this->flashMessenger()
+                        ->addMessage($results['status'], 'error');
                 }
                 if (isset($results['sysMessage'])) {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage($results['sysMessage']);
+                    $this->flashMessenger()
+                        ->addMessage($results['sysMessage'], 'error');
                 }
             }
         }

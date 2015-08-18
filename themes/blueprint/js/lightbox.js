@@ -1,4 +1,4 @@
-/*global btoa, checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, Recaptcha, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, unescape, vufindString*/
+/*global btoa, checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, Recaptcha, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, unescape, userIsLoggedIn, vufindString*/
 
 // keep a handle to the current opened dialog so we can access it later
 var __dialogHandle = {dialog: null, processFollowup:false, followupModule: null, followupAction: null, recordId: null, postParams: null};
@@ -273,27 +273,29 @@ function registerAjaxCart() {
     });
 }
 
-function refreshTagList(id, recordSource) {
-    var tagList = $('#tagList');
-    if (tagList.length > 0) {
-        tagList.empty();
-        var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:id,'source':recordSource});
-        $.ajax({
-            dataType: 'json',
-            url: url,
-            success: function(response) {
-                if (response.status == 'OK') {
-                    $.each(response.data, function(i, tag) {
-                        var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-                        var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
-                        tagList.append(html);
-                    });
-                } else if (response.data && response.data.length > 0) {
-                    tagList.append(response.data);
-                }
-            }
-        });
-    }
+function refreshTagList(loggedin) {
+  loggedin = !!loggedin || userIsLoggedIn;
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+  var tagList = $('#tagList');
+  if (tagList.length > 0) {
+    tagList.empty();
+    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    $.ajax({
+      dataType: 'json',
+      url: url,
+      complete: function(response) {
+        if(response.status == 200) {
+          tagList.html(response.responseText);
+          if(loggedin) {
+            $('#tagList').addClass('loggedin');
+          } else {
+            $('#tagList').removeClass('loggedin');
+          }
+        }
+      }
+    });
+  }
 }
 
 function registerAjaxSaveRecord() {
@@ -327,7 +329,7 @@ function registerAjaxSaveRecord() {
 
         $('a.listEdit').unbind('click').click(function(){
             var id = this.href.substring(this.href.indexOf('?')+'recordId='.length+1);
-            id = decodeURIComponent(id.split('&')[0]);
+            id = decodeURIComponent(id.split('&')[0].replace(/\+/g, ' '));
             var controller = extractController(this);
             hideLightbox();
             getLightbox('MyResearch', 'EditList', 'NEW', null, this.title, controller, 'Save', id);
@@ -517,6 +519,11 @@ function registerAjaxCartExport() {
             url: url,
             dataType: 'json',
             success: function(response, statusText, xhr, $form) {
+               if(response.data.export_type == 'download') {
+                   document.location.href = response.data.result_url;
+                   hideLightbox();
+                   return false;
+                } 
                 if (response.status == 'OK') {
                     $form.parent().empty().append(response.data.result_additional);
                 } else {
@@ -553,7 +560,7 @@ function registerAjaxBulkSave() {
         $('a.listEdit').unbind('click').click(function(){
             var $form = $('#modalDialog form[name="bulkSave"]');
             var id = this.href.substring(this.href.indexOf('?')+'recordId='.length+1);
-            id = decodeURIComponent(id.split('&')[0]);
+            id = decodeURIComponent(id.split('&')[0].replace(/\+/g, ' '));
             var ids = $("input[name='ids[]']", $form);
             var postParams = [];
             $.each(ids, function(i) {

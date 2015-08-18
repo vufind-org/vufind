@@ -12,7 +12,7 @@
 <div class="row">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h3><?=$this->transEsc('Search For Items on Reserve')?></h3>
-    <form class="form-inline" method="get" action="" name="reservesSearchForm">
+    <form class="form-inline" method="get" name="reservesSearchForm">
       <label for="reservesSearchForm_lookfor"><?=$this->transEsc("Your search terms")?></label>
       <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtmlAttr($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?> />
       <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
@@ -20,7 +20,7 @@
     <script type="text/javascript">$("#reservesSearchForm_lookfor").focus()</script>
 
     <div class="resulthead">
-      <div class="pull-left">
+      <div class="pull-left flip">
         <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
           <?=$this->transEsc("Showing")?>
           <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
@@ -32,7 +32,7 @@
         <? endif; ?>
       </div>
 
-      <div class="pull-right">
+      <div class="pull-right flip">
         <?=$this->render('search/controls/sort.phtml')?>
       </div>
     </div>

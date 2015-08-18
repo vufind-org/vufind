@@ -12,7 +12,6 @@ if ($zf2Path = getenv('ZF2_PATH')) {
         )
     ));
     $loader->register();
-
 } elseif (!file_exists(__DIR__ . '/../vendor/autoload.php')) {
     throw new RuntimeException('This component has dependencies that are unmet.
 
