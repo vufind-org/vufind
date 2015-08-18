@@ -182,7 +182,8 @@ class AjaxController extends \VuFind\Controller\AjaxController
             if ($result->getStatusCode() != 200) {
                 return $this->output(
                     'bX request failed, response code ' . $result->getStatusCode(),
-                    self::STATUS_ERROR);
+                    self::STATUS_ERROR
+                );
             }
         } else {
             return $this->output(
