@@ -174,9 +174,9 @@
     <exec command="sleep 30" />
 
     <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
-    <exec command="find ${srcdir}/tests/data -name *.mrc -printf %p," outputProperty="buglist" />
+    <exec escape="false" command="find ${srcdir}/tests/data -name '*.mrc' -printf '%p,'" outputProperty="buglist" />
     <foreach list="${buglist}" param="filename" delimiter="," target="importrec" />
-    <exec command="find ${srcdir}/tests/data/authority -name *.mrc -printf %p," outputProperty="authlist" />
+    <exec escape="false" command="find ${srcdir}/tests/data/authority -name '*.mrc' -printf '%p,'" outputProperty="authlist" />
     <foreach list="${authlist}" param="filename" delimiter="," target="importauthrec" />
 
     <!-- build alphabrowse index -->
