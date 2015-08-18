@@ -366,32 +366,16 @@ class AbstractRecord extends AbstractBase
 
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
-        
-        $view->emailFormatOptions = $this->getEmailFormats(); 
-        
         // Process form submission:
         if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
-
-                
-                $format = $this->params()->fromPost('email_format');
-                if ($format == 'URL') {
-                    $mailer->sendRecord(
-                        $view->to, $view->from, $view->message, $driver,
-                        $this->getViewRenderer(), $view->subject, $cc
-                    );
-                } else {
-                    $mailer->sendAttachement(
-                            $view->to, $view->from, $view->message,
-                            $this->getExportDetails([$driver], $format),
-                            $this->getViewRenderer(), $view->subject, $cc
-                    );
-                    
-                }    
-                
+                $mailer->sendRecord(
+                    $view->to, $view->from, $view->message, $driver,
+                    $this->getViewRenderer(), $view->subject, $cc
+                );
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();
@@ -405,7 +389,7 @@ class AbstractRecord extends AbstractBase
         $view->setTemplate('record/email');
         return $view;
     }
-    
+
     /**
      * SMS action - Allows the SMS form to appear.
      *
