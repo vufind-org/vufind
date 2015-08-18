@@ -95,7 +95,14 @@
       margin-bottom: -1px;
       border-radius: @tabs-border-radius @tabs-border-radius 0 0;
       transition: none;
-      @media (max-width: @screen-xs-max) {
+      @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+           max-width: 120px;
+           & i {
+                display: block;
+                text-align: center;
+           }
+      }
+      @media (max-width: @screen-sm-max) {
         font-size: .9em;   
       }
       &:hover {

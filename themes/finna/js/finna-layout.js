@@ -345,10 +345,23 @@ finna.layout = (function() {
       
       $('.clear-button').click(function() {
         $('#searchForm_lookfor').val("");
+        $('.autocomplete').typeahead('val', '');
         $('.clear-button').addClass('hidden');
         $('#searchForm_lookfor').focus();
       });
-    }
+    };
+      
+
+    
+    var initToolTips = function () {
+      $('[data-toggle="tooltip"]').tooltip();
+      // prevent link opening if tooltip is placed inside link element for touch devices
+      if (isTouchDevice()) {
+        $('[data-toggle="tooltip"] > i').click(function(event) {
+          event.preventDefault();
+        });
+      }
+    };
 
     var my = {
         isTouchDevice: isTouchDevice,
