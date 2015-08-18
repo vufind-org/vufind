@@ -57,7 +57,7 @@ class Utils extends \VuFind\Solr\Utils
         $filter = "[$from TO $to]";
 
         if ($type) {
-            $map = ['within' => 'Contains'];
+            $map = ['within' => 'Within'];
             // overlap => Intersects is default
             $op = 'Intersects';
             if (isset($map[$type])) {
