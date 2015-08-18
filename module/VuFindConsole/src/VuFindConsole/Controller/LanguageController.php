@@ -61,24 +61,43 @@ class LanguageController extends AbstractBase
 
         $reader = new ExtendedIniReader();
         $normalizer = new ExtendedIniNormalizer();
-        $source = $argv[0];
-        $target = $argv[1];
+        list($sourceDomain, $sourceKey) = $this->extractTextDomain($argv[0]);
+        list($targetDomain, $targetKey) = $this->extractTextDomain($argv[1]);
 
-        if (!($dir = $this->getLangDir())) {
+        if (!($sourceDir = $this->getLangDir($sourceDomain))
+            || !($targetDir = $this->getLangDir($targetDomain, true))
+        ) {
             return $this->getFailureResponse();
         }
-        $callback = function ($full) use ($source, $target, $reader, $normalizer) {
+
+        // First, collect the source values from the source text domain:
+        $sources = [];
+        $sourceCallback = function ($full) use ($sourceKey, $reader, & $sources) {
             $strings = $reader->getTextDomain($full, false);
-            if (!isset($strings[$source])) {
+            if (!isset($strings[$sourceKey])) {
                 Console::writeLine("Source key not found.");
             } else {
+                $sources[basename($full)] = $strings[$sourceKey];
+            }
+        };
+        $this->processDirectory($sourceDir, $sourceCallback);
+
+        // Make sure that all target files exist:
+        $this->createMissingFiles($targetDir->path, array_keys($sources));
+
+        // Now copy the values to their destination:
+        $targetCallback = function ($full) use ($targetKey, $normalizer, $sources) {
+            if (isset($sources[basename($full)])) {
                 $fHandle = fopen($full, "a");
-                fputs($fHandle, "\n$target = \"" . $strings[$source] . "\"\n");
+                fputs(
+                    $fHandle,
+                    "\n$targetKey = \"" . $sources[basename($full)] . "\"\n"
+                );
                 fclose($fHandle);
                 $normalizer->normalizeFile($full);
             }
         };
-        $this->processDirectory($dir, $callback);
+        $this->processDirectory($targetDir, $targetCallback);
 
         return $this->getSuccessResponse();
     }
@@ -180,19 +199,41 @@ class LanguageController extends AbstractBase
      * Open the language directory as an object using dir(). Return false on
      * failure.
      *
-     * @param string $domain Text domain to retrieve.
+     * @param string $domain          Text domain to retrieve.
+     * @param bool   $createIfMissing Should we create a missing directory?
+     *
      * @return object|bool
      */
-    protected function getLangDir($domain = 'default')
+    protected function getLangDir($domain = 'default', $createIfMissing = false)
     {
         $subDir = $domain == 'default' ? '' : ('/' . $domain);
-        $langDir = realpath(__DIR__ . '/../../../../../languages' . $subDir);
-        $dir = dir($langDir);
+        $langDir = __DIR__ . '/../../../../../languages' . $subDir;
+        if ($createIfMissing && !is_dir($langDir)) {
+            mkdir($langDir);
+        }
+        $dir = dir(realpath($langDir));
         if (!$dir) {
             Console::writeLine("Could not open directory $langDir");
             return false;
         }
         return $dir;
+    }
+
+    /**
+     * Create empty files if they do not already exist.
+     *
+     * @param string $path  Directory path
+     * @param array  $files Filenames to create in directory
+     *
+     * @return void
+     */
+    protected function createMissingFiles($path, $files)
+    {
+        foreach ($files as $file) {
+            if (!file_exists($path . '/' . $file)) {
+                file_put_contents($path . '/' . $file, '');
+            }
+        }
     }
 
     /**
