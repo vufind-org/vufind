@@ -90,6 +90,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
 
     /**
      * Render appropriate UI controls for an OpenURL link.
+     *
      * @param \VuFind\RecordDriver $driver The current recorddriver
      * @param string               $area   OpenURL context ('results', 'record'
      *  or 'holdings'
@@ -106,7 +107,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
     /**
      * Public method to render the OpenURL template
      *
-     * @param bool       $imagebased   Indicates if an image based link
+     * @param bool $imagebased Indicates if an image based link
      * should be displayed or not
      *
      * @return string
@@ -142,9 +143,9 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
                 $imagebasedopenurl = $this->recordDriver->getImageBasedOpenUrl();
             }
 
-            // Fallback to normal OpenUrl if no specific image based open url is defined
-            // or if the method to get a specific image based open url is missing
-            // or not supported by the RecordDriver
+            // Fallback to normal OpenUrl if no specific image based open url
+            // is defined or if the method to get a specific image based
+            // open url is missing or not supported by the RecordDriver
             if (!$imagebasedopenurl) {
                 $imagebasedopenurl = $this->recordDriver->getOpenUrl();
             }
