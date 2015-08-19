@@ -764,7 +764,6 @@ class AbstractBase extends AbstractActionController
             $results = $this->getServiceLocator()
             ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
             $params = $results->getParams();
-            $params->setAuthManager($this->getAuthManager());
     
             $parameters = new Parameters(
                     $this->getRequest()->getQuery()->toArray()
