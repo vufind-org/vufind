@@ -226,7 +226,7 @@
             <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
           <? endforeach; ?>
           <? if ($openUrlActive): ?>
-            <?=$openUrl->renderTemplate()?><br/>
+            <?=$openUrl->renderTemplate($openUrl->imageBasedLinkingIsActive())?><br/>
           <? endif; ?>
         </td>
       </tr>

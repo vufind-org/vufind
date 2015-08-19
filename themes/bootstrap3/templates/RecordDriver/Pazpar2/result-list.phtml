@@ -82,7 +82,7 @@
           if ($openUrlActive || !empty($urls)): ?>
           <? if ($openUrlActive): ?>
             <br/>
-            <?=$openUrl->renderTemplate()?>
+            <?=$openUrl->renderTemplate($openUrl->imageBasedLinkingIsActive())?>
           <? endif; ?>
           <? if (!is_array($urls)) $urls = array();
             if(!$this->driver->isCollection()):
