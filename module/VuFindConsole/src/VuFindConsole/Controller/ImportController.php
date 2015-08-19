@@ -157,8 +157,17 @@ class ImportController extends AbstractBase
 
         // Perform the delete of outdated records:
         $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+        if ($verbose) {
+            Console::writeLine("Deleting old records (prior to $startTime)...");
+        }
         $solr->deleteByQuery('SolrWeb', 'last_indexed:[* TO ' . $startTime . ']');
+        if ($verbose) {
+            Console::writeLine('Committing...');
+        }
         $solr->commit('SolrWeb');
+        if ($verbose) {
+            Console::writeLine('Optimizing...');
+        }
         $solr->optimize('SolrWeb');
     }
 
