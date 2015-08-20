@@ -1,7 +1,7 @@
 <?
   $this->headScript()->appendFile("openurl.js");
   if ($this->openUrlEmbed) {
-    $classes = "fulltext openUrlEmbed openurl_id:{$this->openUrlId}"
+    $classes = "fulltext openUrlEmbed"
       . ($this->openUrlEmbedAutoLoad ? ' openUrlEmbedAutoLoad' : '');
     $class = ' class="' . $classes . '"';
   } elseif ($this->openUrlWindow) {
@@ -29,5 +29,5 @@
   <? endif; ?>
 </a>
 <? if ($this->openUrlEmbed): ?>
-  <div id="openUrlEmbed<?=$this->openUrlId?>" class="resolver hidden"><?=$this->transEsc('Loading')?>...</div>
+  <div class="resolver hidden"><?=$this->transEsc('Loading')?>...</div>
 <? endif; ?>
