@@ -372,12 +372,21 @@ class AjaxController extends AbstractBase
             ? $messages['unknown']
             : $messages[$available ? 'available' : 'unavailable'];
 
+        $loc = $rec['locationhref'];
+        if ($loc) {
+            $location = '<a href="'.$loc.'" target="_blank">' .
+                htmlentities($location, ENT_COMPAT, 'UTF-8').'</a>';
+        }
+        else {
+            $location = htmlentities($location, ENT_COMPAT, 'UTF-8');
+        }
+
         // Send back the collected details:
         return [
             'id' => $record[0]['id'],
             'availability' => ($available ? 'true' : 'false'),
             'availability_message' => $availability_message,
-            'location' => htmlentities($location, ENT_COMPAT, 'UTF-8'),
+            'location' => $loc,
             'locationList' => false,
             'reserve' =>
                 ($record[0]['reserve'] == 'Y' ? 'true' : 'false'),
