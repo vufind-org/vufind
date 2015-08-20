@@ -27,7 +27,7 @@
     </div>
   </div>
 <? endif; ?>
-<? if (true): ?>
+<? if (is_array($this->emailFormatOptions)): ?>
   <div class="form-group <?=count($this->emailFormatOptions) <= 1 ? 'hidden' : ''?>">
     <label class="col-sm-3 control-label" for="email_format"><?=$this->transEsc('email_format')?>:</label>
     <div class="col-sm-9">
