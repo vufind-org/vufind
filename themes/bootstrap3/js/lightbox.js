@@ -8,6 +8,7 @@ var lightboxShown = false;
 var lightboxLastUrl = false;
 var lightboxLoginCallback = false;
 var lightboxRefreshOnClose = false;
+var lightboxCloseTimeout = false;
 $(document).ready(function() {
   if(lightboxShown) {
     $('#modal .modal-body').html('');
@@ -103,6 +104,7 @@ function constrainLink(event) {
     $.ajax(ajaxObj);
     if(!lightboxShown) {
       $('#modal').modal('show');
+      clearTimeout(lightboxCloseTimeout);
       lightboxShown = true;
     }
     return false;
@@ -185,9 +187,14 @@ function lightboxAJAX(event, data) {
     method: event.target.method || 'GET',
     data: data,
     success: function(html, status) {
-      if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess
-        && "function" === typeof window[event.target.dataset.lightboxSuccess]) {
-        window[event.target.dataset.lightboxSuccess](html, status);
+      if(dataset && 'undefined' !== typeof event.target.dataset.lightboxSuccess) {
+        if("function" === typeof window[event.target.dataset.lightboxSuccess]) {
+          window[event.target.dataset.lightboxSuccess](html, status);
+        } else {
+          updateLightbox('<div class="alert alert-success">'+event.target.dataset.lightboxSuccess+'</div>');
+          lightboxCloseTimeout = setTimeout("$('#modal').modal('hide');", 2500);
+          return false;
+        }
       }
       if(dataset && 'undefined' !== typeof event.target.dataset.lightboxClose) {
         $('#modal').modal('hide');

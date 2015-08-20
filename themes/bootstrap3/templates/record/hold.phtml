@@ -14,7 +14,7 @@
 
 <?=$this->flashmessages()?>
 <div class="hold-form">
-  <form class="form-horizontal" method="post" name="placeHold">
+  <form class="form-horizontal" method="post" name="placeHold" data-lightbox-success="<?=$this->transEsc('hold_success') ?>">
     <? if (in_array("comments", $this->extraHoldFields)): ?>
       <div class="form-group">
         <label class="col-sm-3 control-label"><?=$this->transEsc("Comments")?>:</label>
