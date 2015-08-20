@@ -50,7 +50,7 @@ class AuthenticationStrategy implements PermissionProviderInterface
     /**
      * Constructor
      *
-     * @param Request $request Request object
+     * @param ServiceLocator $serviceLocator ServiceLocator object
      */
     public function __construct($serviceLocator)
     {
