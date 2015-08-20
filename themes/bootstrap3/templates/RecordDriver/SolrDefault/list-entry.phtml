@@ -136,7 +136,7 @@
       ?>
         <? if ($openUrlActive): ?>
           <br/>
-          <?=$openUrl->renderTemplate($openUrl->imageBasedLinkingIsActive())?>
+          <?=$openUrl->renderTemplate()?>
         <? endif;?>
 
         <? if (!is_array($urls)) { $urls = array(); }

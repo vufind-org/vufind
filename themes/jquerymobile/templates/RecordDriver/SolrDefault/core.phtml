@@ -145,7 +145,7 @@
         <p><a rel="external" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a></p>
       <? endforeach; ?>
       <? if ($openUrlActive): ?>
-        <?=$openUrl->renderTemplate($openUrl->imageBasedLinkingIsActive())?><br/>
+        <?=$openUrl->renderTemplate()?><br/>
       <? endif; ?>
     </dd>
   <? endif; ?>

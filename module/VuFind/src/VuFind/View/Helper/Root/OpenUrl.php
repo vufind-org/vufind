@@ -112,7 +112,7 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function renderTemplate($imagebased = false)
+    public function renderTemplate($imagebased = null)
     {
         // Static counter to ensure that each OpenURL gets a unique ID.
         static $counter = 0;
@@ -123,6 +123,10 @@ class OpenUrl extends \Zend\View\Helper\AbstractHelper
             list($base) = explode('?', $this->config->url);
         } else {
             $base = false;
+        }
+
+        if (null === $imagebased) {
+            $imagebased = $this->imageBasedLinkingIsActive();
         }
 
         $imagebasedopenurl = null;
