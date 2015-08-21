@@ -201,8 +201,6 @@ function lightboxAJAX(event, data) {
         if("function" === typeof window[event.target.dataset.lightboxClose]) {
           window[event.target.dataset.lightboxClose](html, status);
         }
-      } else if(dataset && 'string' === typeof event.target.dataset.lightboxConfirm) {
-        updateLightbox('<div class="alert alert-info">'+event.target.dataset.lightboxConfirm+'</div>');
       } else {
         updateLightbox(html);
       }
