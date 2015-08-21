@@ -28,10 +28,20 @@ function registerFLLightbox(longNode, div_id) {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'SMS', {id:div_id});
   });
+  // Tag lightbox
+  $(longNode).find('.tagRecord').click(function() {
+    var parts = this.href.split('/');
+    var id = $(this).closest('.record').find('.hiddenId')[0].value;
+    return Lightbox.get(parts[parts.length-3], 'AddTag', {id:id});
+  });
   // Form handlers
   Lightbox.addFormCallback('saveRecord',  function() { Lightbox.confirm(vufindString['bulk_save_success']); });
   Lightbox.addFormCallback('smsRecord',   function() { Lightbox.confirm(vufindString['sms_success']); });
   Lightbox.addFormCallback('emailRecord', function() { Lightbox.confirm(vufindString['bulk_email_success']); });
+  Lightbox.addFormCallback('tagRecord',   function() {
+    refreshTagList(true, longNode);
+    Lightbox.confirm(vufindString['add_tag_success']);
+  });
 }
 
 function ajaxFLLoadTab(tabid, reload) {

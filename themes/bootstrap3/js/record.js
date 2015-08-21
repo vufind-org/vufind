@@ -107,50 +107,6 @@ function ajaxLoadTab(tabid) {
   return false;
 }
 
-function refreshTagList(loggedin) {
-  loggedin = !!loggedin || userIsLoggedIn;
-  var recordId = $('#record_id').val();
-  var recordSource = $('.hiddenSource').val();
-  var tagList = $('#tagList');
-  if (tagList.length > 0) {
-    tagList.empty();
-    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
-    $.ajax({
-      dataType: 'json',
-      url: url,
-      complete: function(response) {
-        if(response.status == 200) {
-          tagList.html(response.responseText);
-          if(loggedin) {
-            $('#tagList').addClass('loggedin');
-          } else {
-            $('#tagList').removeClass('loggedin');
-          }
-        }
-      }
-    });
-  }
-}
-
-function ajaxTagUpdate(tag, remove) {
-  if(typeof remove === "undefined") {
-    remove = false;
-  }
-  var recordId = $('#record_id').val();
-  var recordSource = $('.hiddenSource').val();
-  $.ajax({
-    url:path+'/AJAX/JSON?method=tagRecord',
-    method:'POST',
-    data:{
-      tag:'"'+tag.replace(/\+/g, ' ')+'"',
-      id:recordId,
-      source:recordSource,
-      remove:remove
-    },
-    complete:refreshTagList
-  });
-}
-
 $(document).ready(function(){
   var id = $('.hiddenId')[0].value;
   registerTabEvents();
@@ -195,10 +151,10 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'SMS', {id:id});
   });
-  $('#tagRecord').click(function() {
+  $('.tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
+    return Lightbox.get(parts[parts.length-3], 'AddTag', {id:id});
   });
   // Form handlers
   Lightbox.addFormCallback('emailRecord', function(){

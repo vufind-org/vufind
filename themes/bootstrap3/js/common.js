@@ -119,6 +119,59 @@ function refreshCommentList(recordId, recordSource, parent) {
     }
   });
 }
+
+function refreshTagList(loggedin, parent) {
+  loggedin = !!loggedin || userIsLoggedIn;
+  var recordId = typeof parent === "undefined"
+    ? $('.hiddenId').val()
+    : $(parent).find('.hiddenId').val();
+  var recordSource = typeof parent === "undefined"
+    ? $('.hiddenSource').val()
+    : $(parent).find('.hiddenSource').val();
+  var $tagList = typeof parent === "undefined"
+    ? $('.tagList')
+    : $(parent).find('.tagList');
+  if ($tagList.length > 0) {
+    $tagList.empty();
+    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+    $.ajax({
+      dataType: 'json',
+      url: url,
+      complete: function(response) {
+        if(response.status == 200) {
+          $tagList.html(response.responseText);
+          if(loggedin) {
+            $tagList.addClass('loggedin');
+          } else {
+            $tagList.removeClass('loggedin');
+          }
+        }
+      }
+    });
+  }
+}
+function ajaxTagUpdate(link, tag, remove) {
+  if(typeof remove === "undefined") {
+    remove = false;
+  }
+  var $parent = $(link).closest('.record');
+  var recordId = $parent.find('.hiddenId').val();
+  var recordSource = $parent.find('.hiddenSource').val();
+  $.ajax({
+    url:path+'/AJAX/JSON?method=tagRecord',
+    method:'POST',
+    data:{
+      tag:'"'+tag.replace(/\+/g, ' ')+'"',
+      id:recordId,
+      source:recordSource,
+      remove:remove
+    },
+    complete:function() {
+      refreshTagList(false, $parent);
+    }
+  });
+}
+
 /**
  * @param string form Form or element containing the comment hidden, textarea, and button
  */
