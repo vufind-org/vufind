@@ -1,4 +1,7 @@
 <!-- start of Primo result-list.phtml -->
+<?
+  $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
+?>
 <div class="<?=$this->driver->supportsAjaxStatus()?'ajaxItem ':''?>">
     <div>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
@@ -128,7 +131,7 @@
         </div>
       <? endif; ?>
     </div>
-    <div class="col-xs-1 col-sm-1 col-sm-push-3 hidden-print">
+    <div class="<?= $combinedView ? 'hidden' : 'hidden-xs' ?> col-sm-1 col-sm-push-3 hidden-print">
       <? /* Display qrcode if appropriate: */ ?>
       <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
         <?
@@ -162,7 +165,7 @@
       <? endif; ?>
     </div>
     <div class="clearfix visible-xs"></div>
-    <div class="col-sm-3 col-sm-pull-1">
+    <div class="<?= $combinedView ? ' col-sm-4' : 'col-sm-3 col-sm-pull-1' ?>">
       <?=$this->record($this->driver)->getOnlineUrls('results')?>
     </div>
     <div class="col-xs-12">
@@ -178,6 +181,14 @@
         <div class="savedLists alert alert-info hidden col-md-11">
           <strong><?=$this->transEsc("Saved in")?>:</strong>
         </div>
+    <? endif; ?>
+    </div>
+    <div class="clearfix visible-xs"></div>
+    <div class="col-xs-12 <?= $combinedView ? '' : 'visible-xs' ?>">
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <? /* Add to favorites */ ?>
+        <br/>
+        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record <?= $combinedView ? 'pull-left combined-save-record' : '' ?>  modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="fa fa-heart"></i> <span><?=$this->transEsc('Add to favorites')?></span></a>
     <? endif; ?>
     </div>
 

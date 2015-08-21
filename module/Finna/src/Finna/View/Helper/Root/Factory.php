@@ -266,4 +266,34 @@ class Factory extends \VuFind\View\Helper\Root\Factory
             $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
         );
     }
+
+    /**
+     * Construct the SearchBox helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchBox
+     */
+    public static function getSearchBox(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config');
+        return new SearchBox(
+            $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
+            $config->get('searchbox')->toArray()
+        );
+    }
+
+    /**
+     * Construct the authorization notification helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return AuthorizationNotification
+     */
+    public static function getAuthorizationNote(ServiceManager $sm)
+    {
+        $authService
+            = $sm->getServiceLocator()->get('ZfcRbac\Service\AuthorizationService');
+        return new AuthorizationNotification($authService);
+    }
 }
