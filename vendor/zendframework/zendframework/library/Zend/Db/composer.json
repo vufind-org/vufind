@@ -8,11 +8,10 @@
     ],
     "homepage": "https://github.com/zendframework/zf2",
     "autoload": {
-        "psr-0": {
+        "psr-4": {
             "Zend\\Db\\": ""
         }
     },
-    "target-dir": "Zend/Db",
     "require": {
         "php": ">=5.3.23",
         "zendframework/zend-stdlib": "self.version"
@@ -28,8 +27,8 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.3-dev",
-            "dev-develop": "2.4-dev"
+            "dev-master": "2.4-dev",
+            "dev-develop": "2.5-dev"
         }
     }
 }

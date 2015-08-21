@@ -69,6 +69,9 @@ class Factory
             ? false : $config->Site->sidebarOnLeft;
         $offcanvas = !isset($config->Site->offcanvas)
             ? false : $config->Site->offcanvas;
-        return new LayoutClass($left, $offcanvas);
+        // The right-to-left setting is injected into the layout by the Bootstrapper;
+        // pull it back out here to avoid duplicate effort.
+        $layout = $sm->getServiceLocator()->get('viewmanager')->getViewModel();
+        return new LayoutClass($left, $offcanvas, $layout->rtl);
     }
 }

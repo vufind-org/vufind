@@ -338,4 +338,24 @@ class Export
         return isset($this->exportConfig->$format->label)
             ? $this->exportConfig->$format->label : $format;
     }
+
+    /**
+     * Get the bulk export type for the specified export format.
+     *
+     * @param string $format Format identifier
+     *
+     * @return string
+     */
+    public function getBulkExportType($format)
+    {
+        // if exportType is set on per-format basis in export.ini then use it
+        if (isset($this->exportConfig->$format->bulkExportType)) {
+            return $this->exportConfig->$format->bulkExportType;
+        }
+
+        // else check if export type is set in config.ini
+        return isset($this->mainConfig->BulkExport->defaultType)
+            ? $this->mainConfig->BulkExport->defaultType : 'link';
+    }
+
 }
