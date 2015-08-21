@@ -121,6 +121,9 @@ function refreshCommentList(recordId, recordSource, parent) {
     }
   });
 }
+/**
+ * @param string form Form or element containing the comment hidden, textarea, and button
+ */
 function registerAjaxCommentRecord(form) {
   // Form submission
   var $form = $(form);
