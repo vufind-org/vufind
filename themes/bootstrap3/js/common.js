@@ -104,11 +104,9 @@ function refreshCommentList(recordId, recordSource, parent) {
     success: function(response) {
       // Update HTML
       if (response.status == 'OK') {
-        console.log(parent);
         $commentList = typeof parent === "undefined" || $(parent).find('.commentList').length === 0
           ? $('.commentList')
           : $(parent).find('.commentList');
-        console.log($commentList);
         $commentList.empty();
         $commentList.append(response.data);
         $('input[type="submit"]').button('reset');
@@ -146,7 +144,6 @@ function registerAjaxCommentRecord(form) {
         $form.find('textarea[name="comment"]').val('');
         $form.find('input[type="submit"]').button('loading');
       } else {
-        console.log(response);
         Lightbox.displayError(response.data);
       }
     }
