@@ -96,7 +96,7 @@ function setupOrFacets() {
 }
 
 // Record
-function refreshCommentList(recordId, recordSource) {
+function refreshCommentList(recordId, recordSource, parent) {
   var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
   $.ajax({
     dataType: 'json',
@@ -104,8 +104,13 @@ function refreshCommentList(recordId, recordSource) {
     success: function(response) {
       // Update HTML
       if (response.status == 'OK') {
-        $('#commentList').empty();
-        $('#commentList').append(response.data);
+        console.log(parent);
+        $commentList = typeof parent === "undefined" || $(parent).find('.commentList').length === 0
+          ? $('.commentList')
+          : $(parent).find('.commentList');
+        console.log($commentList);
+        $commentList.empty();
+        $commentList.append(response.data);
         $('input[type="submit"]').button('reset');
         $('.delete').unbind('click').click(function() {
           var commentId = $(this).attr('id').substr('recordComment'.length);
@@ -119,12 +124,11 @@ function refreshCommentList(recordId, recordSource) {
 function registerAjaxCommentRecord(form) {
   // Form submission
   var $form = $(form);
-  form = $form[0];
-  var id = form.id.value;
-  var recordSource = form.source.value;
+  var id = $form.find('[name="id"]').val();
+  var recordSource = $form.find('[name="source"]').val();
   var url = path + '/AJAX/JSON?' + $.param({method:'commentRecord'});
   var data = {
-    comment:form.comment.value,
+    comment:$form.find('[name="comment"]').val(),
     id:id,
     source:recordSource
   };
@@ -135,10 +139,11 @@ function registerAjaxCommentRecord(form) {
     dataType: 'json',
     success: function(response) {
       if (response.status == 'OK') {
-        refreshCommentList(id, recordSource);
+        refreshCommentList(id, recordSource, form);
         $form.find('textarea[name="comment"]').val('');
         $form.find('input[type="submit"]').button('loading');
       } else {
+        console.log(response);
         Lightbox.displayError(response.data);
       }
     }

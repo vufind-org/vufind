@@ -59,12 +59,12 @@ function ajaxFLLoadTab(tabid, reload) {
         if(typeof syn_get_widget === "function") {
           syn_get_widget();
         }
-        refreshCommentList(id, source);
+        refreshCommentList(id, source, '#'+tabid+'-tab');
         $('#'+tabid+'-tab').find('input[type=submit]').unbind('click').click(function() {
           if($.trim($(this).siblings('textarea').val()) == '') {
             Lightbox.displayError(vufindString['add_comment_fail_blank']);
           } else {
-            registerAjaxCommentRecord('[name=bulkActionForm]');
+            registerAjaxCommentRecord('#'+tabid+'-tab');
           }
           return false;
         });
@@ -104,7 +104,7 @@ $(document).ready(function() {
                 return ajaxFLLoadTab($(this).attr('id'));
               });
               longNode.find('[id^=usercomment]').find('input[type=submit]').unbind('click').click(function() {
-                return registerAjaxCommentRecord('[name=bulkActionForm]');
+                return registerAjaxCommentRecord(longNode.find('[id^=usercomment]').find('input[type=submit]').closest('form'));
               });
             }
           }
