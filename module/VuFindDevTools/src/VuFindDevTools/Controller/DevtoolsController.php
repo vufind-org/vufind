@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
  */
 namespace VuFindDevTools\Controller;
+use VuFind\I18n\Translator\Loader\ExtendedIni;
 use Zend\I18n\Translator\TextDomain;
 
 /**
@@ -159,7 +160,9 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
             $dir = opendir($base);
             $domains = [];
             while ($current = readdir($dir)) {
-                if ($current != '.' && $current != '..' && is_dir("$base/$current")) {
+                if ($current != '.' && $current != '..'
+                    && is_dir("$base/$current")
+                ) {
                     $domains[] = $current;
                 }
             }
@@ -171,11 +174,12 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     /**
      * Load a language, including text domains.
      *
-     * @param string $lang Language to load
+     * @param ExtendedIni $loader Language loader
+     * @param string      $lang   Language to load
      *
      * @return array
      */
-    protected function loadLanguage($loader, $lang)
+    protected function loadLanguage(ExtendedIni $loader, $lang)
     {
         $base = $loader->load($lang, null);
         foreach ($this->getTextDomains($lang) as $domain) {
@@ -201,9 +205,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     public function languageAction()
     {
         // Test languages with no local overrides and no fallback:
-        $loader = new \VuFind\I18n\Translator\Loader\ExtendedIni(
-            [APPLICATION_PATH  . '/languages']
-        );
+        $loader = new ExtendedIni([APPLICATION_PATH  . '/languages']);
         $mainLanguage = $this->params()->fromQuery('main', 'en');
         $main = $this->loadLanguage($loader, $mainLanguage);
 
