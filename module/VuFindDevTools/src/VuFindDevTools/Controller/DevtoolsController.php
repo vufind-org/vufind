@@ -145,6 +145,55 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     }
 
     /**
+     * Get text domains for a language.
+     *
+     * @param string $lang Language to load
+     *
+     * @return array
+     */
+    protected function getTextDomains($lang)
+    {
+        static $domains = false;
+        if (!$domains) {
+            $base = APPLICATION_PATH  . '/languages';
+            $dir = opendir($base);
+            $domains = [];
+            while ($current = readdir($dir)) {
+                if ($current != '.' && $current != '..' && is_dir("$base/$current")) {
+                    $domains[] = $current;
+                }
+            }
+            closedir($dir);
+        }
+        return $domains;
+    }
+
+    /**
+     * Load a language, including text domains.
+     *
+     * @param string $lang Language to load
+     *
+     * @return array
+     */
+    protected function loadLanguage($loader, $lang)
+    {
+        $base = $loader->load($lang, null);
+        foreach ($this->getTextDomains($lang) as $domain) {
+            $current = $loader->load($lang, $domain);
+            foreach ($current as $k => $v) {
+                if ($k != '@parent_ini') {
+                    $base["$domain::$k"] = $v;
+                }
+            }
+        }
+        if (isset($base['@parent_ini'])) {
+            // don't count macros in comparison:
+            unset($base['@parent_ini']);
+        }
+        return $base;
+    }
+
+    /**
      * Language action
      *
      * @return array
@@ -156,17 +205,13 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
             [APPLICATION_PATH  . '/languages']
         );
         $mainLanguage = $this->params()->fromQuery('main', 'en');
-        $main = $loader->load($mainLanguage, null);
+        $main = $this->loadLanguage($loader, $mainLanguage);
 
         $details = [];
         $allLangs = $this->getLanguages();
         sort($allLangs);
         foreach ($allLangs as $langCode) {
-            $lang = $loader->load($langCode, null);
-            if (isset($lang['@parent_ini'])) {
-                // don't count macros in comparison:
-                unset($lang['@parent_ini']);
-            }
+            $lang = $this->loadLanguage($loader, $langCode);
             $details[$langCode] = $this->compareLanguages($main, $lang);
             $details[$langCode]['object'] = $lang;
             $details[$langCode]['name'] = $this->getLangName($langCode);
