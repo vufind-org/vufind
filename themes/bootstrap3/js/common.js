@@ -454,6 +454,10 @@ $(document).ready(function() {
   Lightbox.addFormCallback('bulkDelete', function(html) {
     location.reload();
   });
+  Lightbox.addFormCallback('bulkSave', function(html) {
+    Lightbox.addCloseAction(updatePageForLogin);
+    Lightbox.confirm(vufindString['bulk_save_success']);
+  });
   Lightbox.addFormCallback('bulkRecord', function(html) {
     Lightbox.close();
     checkSaveStatuses();
