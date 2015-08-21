@@ -54,13 +54,6 @@ class Export
     protected $exportConfig;
 
     /**
-     * Bulk options (initialized to boolean false, populated later)
-     *
-     * @var array|bool
-     */
-    protected $bulkOptions = false;
-
-    /**
      * Constructor
      *
      * @param Config $mainConfig   Main VuFind configuration
@@ -70,33 +63,6 @@ class Export
     {
         $this->mainConfig = $mainConfig;
         $this->exportConfig = $exportConfig;
-    }
-
-    /**
-     * Get bulk export options.
-     *
-     * @return array
-     */
-    public function getBulkOptions()
-    {
-        if ($this->bulkOptions === false) {
-            $this->bulkOptions = [];
-            if (isset($this->mainConfig->BulkExport->enabled)
-                && isset($this->mainConfig->BulkExport->options)
-                && $this->mainConfig->BulkExport->enabled
-            ) {
-                $config = explode(':', $this->mainConfig->BulkExport->options);
-                foreach ($config as $option) {
-                    if (isset($this->mainConfig->Export->$option)
-                        && $this->mainConfig->Export->$option == true
-                    ) {
-                        $this->bulkOptions[] = $option;
-                    }
-                }
-            }
-        }
-
-        return $this->bulkOptions;
     }
 
     /**
@@ -271,14 +237,13 @@ class Export
     {
         // Get an array of enabled export formats (from config, or use defaults
         // if nothing in config array).
-        $active = isset($this->mainConfig->Export)
-            ? $this->mainConfig->Export->toArray()
-            : ['RefWorks' => true, 'EndNote' => true];
-
+       
+        $active = $this->getActiveFormats('record');
+        
         // Loop through all possible formats:
         $formats = [];
         foreach (array_keys($this->exportConfig->toArray()) as $format) {
-            if (isset($active[$format]) && $active[$format]
+            if (in_array($format, $active)
                 && $this->recordSupportsFormat($driver, $format)
             ) {
                 $formats[] = $format;
@@ -299,7 +264,7 @@ class Export
      */
     public function getFormatsForRecords($drivers)
     {
-        $formats = $this->getBulkOptions();
+        $formats = $this->getActiveFormats('bulkExport');
         foreach ($drivers as $driver) {
             // Filter out unsupported export formats:
             $newFormats = [];
@@ -337,5 +302,41 @@ class Export
     {
         return isset($this->exportConfig->$format->label)
             ? $this->exportConfig->$format->label : $format;
+    }
+       
+    public function getActiveFormats($context='record') {
+        $formatSettings = isset($this->mainConfig->Export) 
+            ? $this->mainConfig->Export->toArray()
+            : ['RefWorks' => 'record', 'EndNote' => 'record'];
+
+        $active = [];
+        foreach ($formatSettings as $format=>$allowedContexts) {
+            if (strpos($allowedContexts,$context) !== false 
+                || ($context == 'record' && $allowedContexts == 1)) 
+            {
+                $active[] = $format;
+            }
+        }
+     
+        // for legacy settings [BulkExport]
+        if ($context == 'bulkExport') {
+ 
+                if (isset($this->mainConfig->BulkExport->enabled)
+                        && isset($this->mainConfig->BulkExport->options)
+                        && $this->mainConfig->BulkExport->enabled
+                ) {
+                    $config = explode(':', $this->mainConfig->BulkExport->options);
+                    foreach ($config as $option) {
+                        if (isset($this->mainConfig->Export->$option)
+                                && $this->mainConfig->Export->$option == true
+                        ) {
+                            $active[] = $option;
+                        }
+                    }
+                }
+          	$active = array_unique($active);
+        }
+         
+        return $active;
     }
 }

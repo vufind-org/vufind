@@ -40,11 +40,11 @@ use VuFind\Export, Zend\Config\Config;
 class ExportTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Test bulk options.
+     * Test active formats.
      *
      * @return void
      */
-    public function testGetBulkOptions()
+    public function testGetActiveFormats()
     {
         $config = [
             'BulkExport' => [
@@ -59,7 +59,7 @@ class ExportTest extends \PHPUnit_Framework_TestCase
             ],
         ];
         $export = $this->getExport($config);
-        $this->assertEquals(['foo', 'bar'], $export->getBulkOptions());
+        $this->assertEquals(['foo', 'bar'], $export->getActiveFormats('bulkExport'));
     }
 
     /**
