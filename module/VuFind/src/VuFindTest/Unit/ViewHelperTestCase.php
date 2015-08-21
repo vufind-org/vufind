@@ -47,7 +47,7 @@ abstract class ViewHelperTestCase extends TestCase
      *
      * @return \Zend\View\Renderer\PhpRenderer
      */
-    protected function getPhpRenderer($plugins = [], $theme = 'blueprint')
+    protected function getPhpRenderer($plugins = [], $theme = 'bootstrap3')
     {
         $resolver = new \Zend\View\Resolver\TemplatePathStack();
 
